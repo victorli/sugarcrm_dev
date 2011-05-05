@@ -167,7 +167,7 @@ if ( typeof(SUGAR.field.file) == 'undefined' ) {
         getFileExtension:function(fileName) {
             var lastindex = fileName.lastIndexOf(".");   
             if(lastindex == -1)
-                return false;
+                return '';
             else
                 return fileName.substr(++lastindex);
         },
@@ -175,7 +175,7 @@ if ( typeof(SUGAR.field.file) == 'undefined' ) {
             var docType = document.getElementById('doc_type').value;
             var fileExtension = this.getFileExtension(fileName);
             
-            if( typeof(SUGAR.eapm[docType]) == 'undefined' || ! fileExtension || ! SUGAR.eapm[docType].restrictUploadsByExtension ){
+            if( typeof(SUGAR.eapm[docType]) == 'undefined' || ! SUGAR.eapm[docType].restrictUploadsByExtension ){
                 return true;
             }   
             var whiteSuffixlist = SUGAR.eapm[docType]['restrictUploadsByExtension']; 
@@ -196,7 +196,7 @@ if ( typeof(SUGAR.field.file) == 'undefined' ) {
             var fileName = fileEl.value;
             
             var isValid = sff.isFileExtensionValid(fileName);
-            if( !isValid ){
+            if( !isValid && fileName != '' ){
                 var errorPannel = new YAHOO.widget.SimpleDialog('sugarMsgWindow', {
         			width: '240px',visible: true, fixedcenter: true,constraintoviewport: true,
         	        draggable: true,type:'alert',modal:true,id:'sugarMsgWindow',close:true

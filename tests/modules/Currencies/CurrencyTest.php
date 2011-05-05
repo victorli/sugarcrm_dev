@@ -8,8 +8,7 @@ class CurrencyTest extends Sugar_PHPUnit_Framework_TestCase {
     public function setUp() 
     {
     	global $current_user;
-    	$this->previousCurrentUser = $current_user;
-        $this->useOutputBuffering = false;        
+    	$this->previousCurrentUser = $current_user;       
         $current_user = SugarTestUserUtilities::createAnonymousUser();
         $current_user->setPreference('num_grp_sep', ',', 0, 'global');
         $current_user->setPreference('dec_sep', '.', 0, 'global');

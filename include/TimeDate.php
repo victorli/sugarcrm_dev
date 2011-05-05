@@ -63,8 +63,8 @@ class TimeDate
      * @var array
      */
     protected static $format_to_regexp = array(
-    	'a' => '[ap]m',
-    	'A' => '[AP]M',
+    	'a' => '[ ]*[ap]m',
+    	'A' => '[ ]*[AP]M',
     	'd' => '[0-9]{1,2}',
     	'j' => '[0-9]{1,2}',
     	'h' => '[0-9]{1,2}',

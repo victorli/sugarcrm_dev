@@ -43,7 +43,7 @@
 <script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_yui_widgets.js'}"></script>
 <link rel="stylesheet" type="text/css" href="{sugar_getjspath file='modules/Connectors/tpls/tabs.css'}"/>
 
-<form name='UnifiedSearchAdvancedMain' action='index.php' onsubmit="SUGAR.saveGlobalSearchSettings();" method='POST'>
+<form name='UnifiedSearchAdvancedMain' action='index.php' onsubmit="SUGAR.saveGlobalSearchSettings();" method='POST' class="search_form">
 <input type='hidden' name='module' value='Home'>
 <input type='hidden' name='query_string' value='test'>
 <input type='hidden' name='advanced' value='true'>
@@ -51,25 +51,25 @@
 <input type='hidden' name='search_form' value='false'>
 <input type='hidden' name='search_modules' value=''>
 <input type='hidden' name='skip_modules' value=''>
-	<table width='600' class='edit view' border='0' cellspacing='1'>
+<input type='hidden' id='showGSDiv' name='showGSDiv' value='{$SHOWGSDIV}'>
+	<table width='600' border='0' cellspacing='1'>
 	<tr style='padding-bottom: 10px'>
-		<td colspan='8' nowrap>
+		<td class="submitButtons" colspan='8' nowrap>
 			<input id='searchFieldMain' class='searchField' type='text' size='80' name='query_string' value='{$query_string}'>
 		    <input type="submit" class="button primary" value="{$LBL_SEARCH_BUTTON_LABEL}">&nbsp;
-			<a href='javascript:toggleInlineSearch()' style='color: #005A9B; text-decoration:none; font-weight: bold;'>{$MOD.LBL_SELECT_MODULES}&nbsp;
+			<a href="#" onclick="javascript:toggleInlineSearch();" style="font-size:12px; font-weight:bold; text-decoration:none; text-shadow:0 1px #FFFFFF;">{$MOD.LBL_SELECT_MODULES}&nbsp;
             {if $SHOWGSDIV == 'yes'}
 			<img src='{sugar_getimagepath file="basic_search.gif"}' id='up_down_img' border=0>
 			{else}
 			<img src='{sugar_getimagepath file="advanced_search.gif"}' id='up_down_img' border=0>
 			{/if}
 			</a>
-			<input type='hidden' id='showGSDiv' name='showGSDiv' value='{$SHOWGSDIV}'>
 		</td>
 	</tr>
 	<tr height='5'><td></td></tr>
 	<tr style='padding-top: 10px;'>
 		<td colspan='8' nowrap'>
-		<div id='inlineGlobalSearch' class='add_table'>
+		<div id='inlineGlobalSearch' class='add_table' {if $SHOWGSDIV != 'yes'}style="display:none;"{/if}>
 		<table id="GlobalSearchSettings" class="GlobalSearchSettings edit view" style='margin-bottom:0px;' border="0" cellspacing="0" cellpadding="0">
 		    <tr>
 		    	<td colspan="2">
@@ -121,7 +121,23 @@ var disabled_modules = {$disabled_modules};
 var lblEnabled = '{sugar_translate label="LBL_ACTIVE_MODULES" module="Administration"}';
 var lblDisabled = '{sugar_translate label="LBL_DISABLED_MODULES" module="Administration"}';
 {literal}
+SUGAR.saveGlobalSearchSettings = function()
+{
+	var enabledTable = SUGAR.globalSearchEnabledTable;
+	var modules = "";
+	for(var i=0; i < enabledTable.getRecordSet().getLength(); i++){
+		var data = enabledTable.getRecord(i).getData();
+		if (data.module && data.module != '')
+		    modules += "," + data.module;
+	}
+	modules = modules == "" ? modules : modules.substr(1);
+	document.forms['UnifiedSearchAdvancedMain'].elements['search_modules'].value = modules;
+}
+{/literal}
 
+document.getElementById("inlineGlobalSearch").style.display={if $SHOWGSDIV == 'yes'}"";{else}"none";{/if}
+
+{literal}
 SUGAR.globalSearchEnabledTable = new YAHOO.SUGAR.DragDropTable(
 	"enabled_div",
 	[{key:"label",  label: lblEnabled, width: 200, sortable: false},
@@ -148,32 +164,5 @@ SUGAR.globalSearchEnabledTable.addRow({module: "", label: ""});
 SUGAR.globalSearchDisabledTable.addRow({module: "", label: ""});
 SUGAR.globalSearchEnabledTable.render();
 SUGAR.globalSearchDisabledTable.render();
-
-SUGAR.saveGlobalSearchSettings = function()
-{
-	var enabledTable = SUGAR.globalSearchEnabledTable;
-	var modules = "";
-	for(var i=0; i < enabledTable.getRecordSet().getLength(); i++){
-		var data = enabledTable.getRecord(i).getData();
-		if (data.module && data.module != '')
-		    modules += "," + data.module;
-	}
-	modules = modules == "" ? modules : modules.substr(1);
-	document.forms['UnifiedSearchAdvancedMain'].elements['search_modules'].value = modules;
-}
 {/literal}
-
-var handleHideShow = function()
-{ldelim}
-
-{if $SHOWGSDIV == 'yes'}
-	document.getElementById("inlineGlobalSearch").style.display="";
-{else}
-	document.getElementById("inlineGlobalSearch").style.display="none";
-{/if}	
-
-{rdelim};
-
-YAHOO.util.Event.onDOMReady(handleHideShow); 
-
 </script>

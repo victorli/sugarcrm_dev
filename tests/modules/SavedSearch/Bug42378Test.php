@@ -7,7 +7,6 @@ class Bug42378Test extends Sugar_PHPUnit_Framework_TestCase
 	
     public function setUp() 
     {
-        //$this->useOutputBuffering = false;
         $this->saved_search_id = md5(gmmktime());
         
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();

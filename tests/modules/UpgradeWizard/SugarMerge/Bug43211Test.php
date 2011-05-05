@@ -6,7 +6,6 @@ class Bug43211Test extends Sugar_PHPUnit_Framework_TestCase  {
 var $merge;
 
 function setUp() {
-   $this->useOutputBuffering = false;
    SugarTestMergeUtilities::setupFiles(array('Leads', 'Accounts'), array('searchdefs'), 'tests/modules/UpgradeWizard/SugarMerge/metadata_files');
 }
 

@@ -187,9 +187,9 @@ if (!$test) {
         $delete_query =  "DELETE FROM emailman ";
         $delete_query .= "WHERE emailman.campaign_id='".$campaign->id."' ";
         $delete_query .= "and emailman.related_id in ";
-        $delete_query .= "(select prospect_lists_prospects.related_id from prospect_lists_prospects where prospect_lists_prospects.prospect_list_id in (select prospect_lists.id from prospect_lists where prospect_lists.list_type = 'exempt' and prospect_lists_prospects.prospect_list_id in(select prospect_list_campaigns.prospect_list_id from prospect_list_campaigns where prospect_list_campaigns.campaign_id = '".$campaign->id."'))) ";
+        $delete_query .= "(select prospect_lists_prospects.related_id from prospect_lists_prospects where prospect_lists_prospects.deleted = 0 and prospect_lists_prospects.prospect_list_id in (select prospect_lists.id from prospect_lists where prospect_lists.list_type = 'exempt' and prospect_lists_prospects.prospect_list_id in(select prospect_list_campaigns.prospect_list_id from prospect_list_campaigns where prospect_list_campaigns.campaign_id = '".$campaign->id."'))) ";
         $delete_query .= "and emailman.related_type in ";
-        $delete_query .= "(select prospect_lists_prospects.related_type from prospect_lists_prospects where prospect_lists_prospects.prospect_list_id in (select prospect_lists.id from prospect_lists where prospect_lists.list_type = 'exempt' and prospect_lists_prospects.prospect_list_id in(select prospect_list_campaigns.prospect_list_id from prospect_list_campaigns where prospect_list_campaigns.campaign_id = '".$campaign->id."'))) ";
+        $delete_query .= "(select prospect_lists_prospects.related_type from prospect_lists_prospects where prospect_lists_prospects.deleted = 0 and prospect_lists_prospects.prospect_list_id in (select prospect_lists.id from prospect_lists where prospect_lists.list_type = 'exempt' and prospect_lists_prospects.prospect_list_id in(select prospect_list_campaigns.prospect_list_id from prospect_list_campaigns where prospect_list_campaigns.campaign_id = '".$campaign->id."'))) ";
         $campaign->db->query($delete_query);
     }
 }

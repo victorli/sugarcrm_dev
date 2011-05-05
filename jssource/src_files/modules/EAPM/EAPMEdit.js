@@ -113,3 +113,35 @@ function EAPMEditStart(userIsAdmin) {
         apiElem.disabled = true;
     }
 }
+
+var EAPMPopupCheckCount = 0;
+function EAPMPopupCheck(newWin, popup_url, redirect_url, popup_warning_message) {
+    if ( newWin == false || newWin == null || typeof newWin.close != 'function' || EAPMPopupCheckCount > 35 ) {
+        // Opening the popup failed, redirect them to the popup_url
+        alert(popup_warning_message);
+        document.location = redirect_url;
+        return;
+    }
+    
+    if ( typeof(newWin.innerHeight) != 'undefined' && newWin.innerHeight != 0 ) {
+        // Popup was successful
+        document.location = redirect_url;
+        return;
+    }
+
+    // If we are here, we don't know if it worked or not.
+    EAPMPopupCheckCount++;
+    setTimeout(function() { EAPMPopupCheck(newWin, popup_url, redirect_url, popup_warning_message); },100);
+}
+
+function EAPMPopupAndRedirect(popup_url, redirect_url, popup_warning_message) {
+    var newWin = false;
+
+    try {
+        newWin = window.open(popup_url + '&closeWhenDone=1&refreshParentWindow=1','_blank');
+    } catch (e) {
+        newWin = false;
+    }
+
+    EAPMPopupCheck(newWin, popup_url, redirect_url, popup_warning_message);
+}

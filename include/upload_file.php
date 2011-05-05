@@ -194,8 +194,12 @@ class UploadFile
 	{
 
 		$filename = $_FILES_element['name'];
+        $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
 
-		if( $_FILES_element['type'] )
+        //If no file extension is available and the mime is octet-stream try to determine the mime type.
+        $recheckMime = empty($file_ext) && ($_FILES_element['type']  == 'application/octet-stream');
+
+		if( $_FILES_element['type'] && !$recheckMime)
 		{
 			$mime = $_FILES_element['type'];
 		}
@@ -310,7 +314,6 @@ class UploadFile
                     $GLOBALS['log']->error("Could not load the requested API (".$doc_type.")");
                     $result['errorMessage'] = 'Could not find a proper API';
                 }
-                unlink($new_destination);
             }catch(Exception $e){
                 $result['success'] = FALSE;
                 $result['errorMessage'] = $e->getMessage();
@@ -326,6 +329,9 @@ class UploadFile
                 $error_message = isset($result['errorMessage']) ? $result['errorMessage'] : $GLOBALS['app_strings']['ERR_EXTERNAL_API_SAVE_FAIL'];
                 $_SESSION['user_error_message'][] = $error_message;
 
+            }
+            else {
+                unlink($new_destination);
             }
         }
 	}

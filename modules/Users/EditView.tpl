@@ -98,11 +98,13 @@ EditView_tabs.on('contentReady', function(e){
 {/literal}
 {if $ID}
 {literal}
-    EditView_tabs.getTab(4).set('dataSrc','index.php?sugar_body_only=1&module=Users&subpanel=eapm&action=SubPanelViewer&inline=1&record={/literal}{$ID}{literal}&layout_def_key=UserEAPM&inline=1&ajaxSubpanel=true');
-    EditView_tabs.getTab(4).set('cacheData',true);
+    var eapmTabIndex = 4;
+    {/literal}{if !$SHOW_THEMES}{literal}eapmTabIndex = 3;{/literal}{/if}{literal}
+    EditView_tabs.getTab(eapmTabIndex).set('dataSrc','index.php?sugar_body_only=1&module=Users&subpanel=eapm&action=SubPanelViewer&inline=1&record={/literal}{$ID}{literal}&layout_def_key=UserEAPM&inline=1&ajaxSubpanel=true');
+    EditView_tabs.getTab(eapmTabIndex).set('cacheData',true);
 
     if ( document.location.hash == '#tab5' ) {
-        EditView_tabs.selectTab(4);
+        EditView_tabs.selectTab(eapmTabIndex);
     }
 {/literal}
 {/if}

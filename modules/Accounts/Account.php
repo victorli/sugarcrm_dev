@@ -140,8 +140,12 @@ class Account extends Company {
 
         $this->setupCustomFields('Accounts');
 
-		foreach ($this->field_defs as $field) {
-			$this->field_name_map[$field['name']] = $field;
+		foreach ($this->field_defs as $field) 
+		{
+			if(isset($field['name']))
+			{
+				$this->field_name_map[$field['name']] = $field;
+			}
 		}
 
 

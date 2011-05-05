@@ -228,6 +228,16 @@ abstract class ExternalAPIBase implements ExternalAPIPlugin
 	    if( isset($GLOBALS['app_strings'][$language_key]) )
 	       return $GLOBALS['app_strings'][$language_key];
 	    else 
-	       return '';	    
+	       return $GLOBALS['app_strings']['ERR_EXTERNAL_API_SAVE_FAIL'];	    
+	}
+
+    /**
+     * Determine if mime detection extensions are available.
+     *
+     * @return bool
+     */
+    public function isMimeDetectionAvailable()
+	{
+	    return ( function_exists('mime_content_type') || function_exists( 'ext2mime' ) );
 	}
 }

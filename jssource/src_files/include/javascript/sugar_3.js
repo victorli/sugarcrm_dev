@@ -2577,13 +2577,15 @@ SUGAR.unifiedSearchAdvanced = function() {
 		   YAHOO.util.Event.addListener('unified_search_advanced_img', 'click', SUGAR.unifiedSearchAdvanced.get_content);
 		},
 
-		get_content: function(e) {
-	   		if(SUGAR.unifiedSearchAdvanced.usa_content == null) {
-		   		ajaxStatus.showStatus(SUGAR.language.get('app_strings', 'LBL_LOADING'));
-				var cObj = YAHOO.util.Connect.asyncRequest('GET','index.php?to_pdf=1&module=Home&action=UnifiedSearch&usa_form=true',
-														  {success: SUGAR.unifiedSearchAdvanced.animate, failure: SUGAR.unifiedSearchAdvanced.animate}, null);
-			}
-			else SUGAR.unifiedSearchAdvanced.animate();
+		get_content: function(e) 
+		{
+		    query_string = trim(document.getElementById('query_string').value);
+		    if(query_string != '')
+		    {
+		    	window.location.href = 'index.php?module=Home&action=UnifiedSearch&query_string=' + query_string;
+		    } else {
+		        window.location.href = 'index.php?module=Home&action=UnifiedSearch&form_only=true';
+		    }
 	    },
 
 		animate: function(data) {

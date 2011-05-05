@@ -6,7 +6,6 @@ class Bug43468Test extends Sugar_PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-    	$this->useOutputBuffering = false;
 		$GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
 		$GLOBALS['current_user']->setPreference('datef', "Y/m/d");
 		$GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);

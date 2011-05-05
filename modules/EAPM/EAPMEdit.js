@@ -40,3 +40,8 @@ urlObj.exec();userObj.exec();passObj.exec();var messageDiv=document.getElementBy
 function EAPMSetFieldRequired(fieldName,isRequired){var formname='EditView';for(var i=0;i<validate[formname].length;i++){if(validate[formname][i][0]==fieldName){validate[formname][i][2]=isRequired;}}}
 function EAPMEditStart(userIsAdmin){var apiElem=document.getElementById('application');EAPM_url_validate=null;EAPM_name_validate=null;EAPM_password_validate=null;apiElem.onchange=EAPMChange;setTimeout(EAPMChange,100);if(!userIsAdmin){document.getElementById('assigned_user_name').parentNode.innerHTML=document.getElementById('assigned_user_name').value;}
 if(apiElem.form.record.value!=''){apiElem.disabled=true;}}
+var EAPMPopupCheckCount=0;function EAPMPopupCheck(newWin,popup_url,redirect_url,popup_warning_message){if(newWin==false||newWin==null||typeof newWin.close!='function'||EAPMPopupCheckCount>35){alert(popup_warning_message);document.location=redirect_url;return;}
+if(typeof(newWin.innerHeight)!='undefined'&&newWin.innerHeight!=0){document.location=redirect_url;return;}
+EAPMPopupCheckCount++;setTimeout(function(){EAPMPopupCheck(newWin,popup_url,redirect_url,popup_warning_message);},100);}
+function EAPMPopupAndRedirect(popup_url,redirect_url,popup_warning_message){var newWin=false;try{newWin=window.open(popup_url+'&closeWhenDone=1&refreshParentWindow=1','_blank');}catch(e){newWin=false;}
+EAPMPopupCheck(newWin,popup_url,redirect_url,popup_warning_message);}

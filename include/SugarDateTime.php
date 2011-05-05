@@ -74,7 +74,19 @@ class SugarDateTime extends DateTime
      */
     protected $_strings;
 
-	/**
+    /**
+     * For testing - if we allowed to use PHP date parse
+     * @var bool
+     */
+    public static $use_php_parser = true;
+
+    /**
+     * For testing - if we allowed to use strptime()
+     * @var bool
+     */
+    public static $use_strptime = true;
+
+    /**
 	 * Copy of DateTime::createFromFormat
 	 *
 	 * Needed to return right type of the object
@@ -90,7 +102,7 @@ class SugarDateTime extends DateTime
 	    if(empty($time) || empty($format)) {
 	        return false;
 	    }
-		if(is_callable(array("DateTime", "createFromFormat"))) {
+		if(self::$use_php_parser && is_callable(array("DateTime", "createFromFormat"))) {
 			// 5.3, hurray!
 			if(!empty($timezone)) {
 			    $d = parent::createFromFormat($format, $time, $timezone);
@@ -115,10 +127,12 @@ class SugarDateTime extends DateTime
 		if(!empty($timezone)) {
 		    $res->setTimezone($timezone);
 		}
-		if(function_exists("strptime")) {
+		if(self::$use_strptime && function_exists("strptime")) {
     		$str_format = str_replace(array_keys(TimeDate::$format_to_str), array_values(TimeDate::$format_to_str), $format);
     		// for a reason unknown to modern science, %P doesn't work in strptime
     		$str_format = str_replace("%P", "%p", $str_format);
+    		// strip spaces before am/pm as our formats don't have them
+    		$time = preg_replace('/\s+(AM|PM)/i', '\1', $time);
     		// TODO: better way to not risk locale stuff problems?
     		$data = strptime($time, $str_format);
     		if(empty($data)) {
@@ -500,7 +514,7 @@ class SugarDateTime extends DateTime
             }
         }
         if ( isset($regexp['positions']['a']) && !empty($dateparts[$regexp['positions']['a']])) {
-            $ampm = $dateparts[$regexp['positions']['a']];
+            $ampm = trim($dateparts[$regexp['positions']['a']]);
             if($ampm == 'pm') {
                 if($data["tm_hour"] != 12) $data["tm_hour"] += 12;
             } else if($ampm == 'am') {
@@ -514,7 +528,7 @@ class SugarDateTime extends DateTime
         }
 
         if ( isset($regexp['positions']['A']) && !empty($dateparts[$regexp['positions']['A']])) {
-            $ampm = $dateparts[$regexp['positions']['A']];
+            $ampm = trim($dateparts[$regexp['positions']['A']]);
             if($ampm == 'PM') {
                 if($data["tm_hour"] != 12) $data["tm_hour"] += 12;
             } else if($ampm == 'AM') {

@@ -47,10 +47,15 @@
 {
 	function action_save(){
 		require_once('include/upload_file.php');
-		// Check for both relate_id and parent_id, and prevent overriding of parent_id
-		if (!empty($_REQUEST['relate_id']) && !empty($_REQUEST['parent_id'])) {
+		
+		// CCL - Bugs 41103 and 43751.  41103 address the issue where the parent_id is set, but
+		// the relate_id field overrides the relationship.  43751 fixes the problem where the relate_id and
+		// parent_id are the same value (in which case it should just use relate_id) by adding the != check
+		if ((!empty($_REQUEST['relate_id']) && !empty($_REQUEST['parent_id'])) && ($_REQUEST['relate_id'] != $_REQUEST['parent_id']))
+		{
 			$_REQUEST['relate_id'] = false;
 		}
+		
 		$GLOBALS['log']->debug('PERFORMING NOTES SAVE');
 		$upload_file = new UploadFile('uploadfile');
 		$do_final_move = 0;

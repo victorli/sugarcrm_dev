@@ -525,7 +525,7 @@ class Scheduler extends SugarBean {
 		if(!empty($focus->date_time_end)) { // do the same for date_time_end if not empty
 			$dateTimeEnd = $focus->date_time_end;
 		} else {
-			$dateTimeEnd = $timedate->getNow()+get('+1 day')->asDb();
+			$dateTimeEnd = $timedate->getNow()->get('+1 day')->asDb();
 //			$dateTimeEnd = '2020-12-31 23:59:59'; // if empty, set it to something ridiculous
 		}
 		$timeEndTs = strtotime($dateTimeEnd.' UTC'); // GMT end timestamp if necessary

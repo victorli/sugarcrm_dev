@@ -205,13 +205,20 @@ EOHTML;
 			$limit = ( !empty($GLOBALS['sugar_config']['max_spotresults_more']) ? $GLOBALS['sugar_config']['max_spotresults_more'] : 20 );
 		}
     	$totalCounted = empty($GLOBALS['sugar_config']['disable_count_query']);
-
-	    foreach($modules as $moduleName){
-		    if (empty($primary_module)) $primary_module=$moduleName;
-
-			$searchFields = SugarSpot::getSearchFields($moduleName);         
+ 	
 			
-			if (empty($searchFields[$moduleName])) continue;
+	    foreach($modules as $moduleName){
+		    if (empty($primary_module))
+		    {
+		    	$primary_module=$moduleName;
+		    } 
+
+			$searchFields = SugarSpot::getSearchFields($moduleName);         			
+			
+			if (empty($searchFields[$moduleName]))
+			{
+				continue;
+			}
 
 			$class = $GLOBALS['beanList'][$moduleName];
 			$return_fields = array();

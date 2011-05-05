@@ -209,7 +209,11 @@ function check_now($send_usage_info=true, $get_request_data=false, $response_dat
 	if($response_data || !$sclient->getError()){
 		$serializedResultData = sugarDecode($key,$encodedResult);
 		$resultData = unserialize($serializedResultData);
-		if($response_data && empty($resultData))$resultData['validation'] = 'invalid validation key';
+		if($response_data && empty($resultData))
+		{
+			$resultData = array();
+			$resultData['validation'] = 'invalid validation key';
+		}
 	}else
 	{
 		$resultData = array();

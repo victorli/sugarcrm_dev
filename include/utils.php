@@ -926,7 +926,7 @@ function return_module_language($language, $module, $refresh=false)
 		return array();
 	}
 
-	$cache_key = "mod_strings_lang.".$language.$module;
+	$cache_key = LanguageManager::getLanguageCacheKey($module, $language);
 	// Check for cached value
 	$cache_entry = sugar_cache_retrieve($cache_key);
 	if(!empty($cache_entry))

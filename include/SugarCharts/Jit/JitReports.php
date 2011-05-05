@@ -119,12 +119,12 @@ class JitReports extends Jit {
 			$this->checkYAxis($total);						
 
 			$data .= $this->tab('<group>', 2);
-			$data .= $this->tab('<title>' . $key . '</title>', 3);
+			$data .= $this->tabValue('title',$key, 3);
 			$data .= $this->tab('<subgroups>', 3);
 			$data .= $this->tab('<group>',4);
-			$data .= $this->tab('<title>' . $total . '</title>',5);
-			$data .= $this->tab('<value>' . $total . '</value>',5);
-			$data .= $this->tab('<label>' . $key . '</label>',5);
+			$data .= $this->tabValue('title',$total,5);
+			$data .= $this->tabValue('value',$total,5);
+			$data .= $this->tabValue('label',$key,5);
 			$data .= $this->tab('<link></link>',5);
 			$data .= $this->tab('</group>',4);
 			$data .= $this->tab('</subgroups>', 3);				
@@ -143,9 +143,9 @@ class JitReports extends Jit {
 			$this->checkYAxis($total);
 			
 			$data .= $this->tab('<group>', 2);
-			$data .= $this->tab('<title>' . $key . '</title>', 3);
-			$data .= $this->tab('<value>' . $total . '</value>', 3);
-			$data .= $this->tab('<label>' . $total . '</label>', 3);				
+			$data .= $this->tabValue('title',$key, 3);
+			$data .= $this->tabValue('value',$total, 3);
+			$data .= $this->tabValue('label',$total, 3);				
 			$data .= $this->tab('<subgroups>', 3);
 			
 			if ((isset($dataset[$total]) && $total != $dataset[$total]['numerical_value']) || !array_key_exists($key, $dataset)){
@@ -204,7 +204,9 @@ class JitReports extends Jit {
      * @return	string returns the html code through smarty
      */					
 	function display($name, $xmlFile, $width='320', $height='480', $reportChartDivStyle, $resize=false){
-		
+		if(empty($name)) {
+			$name = "unsavedReport";	
+		}
 		
 		parent::display($name, $xmlFile, $width, $height, $resize=false);			
 		

@@ -45,13 +45,8 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 require_once('modules/Home/UnifiedSearchAdvanced.php');
+global $mod_strings, $modListHeader, $app_strings, $beanList, $beanFiles;
+$usa = new UnifiedSearchAdvanced();
+$usa->search();
 
-if(!empty($_REQUEST['usa_form'])) {
-	$usa = new UnifiedSearchAdvanced();
-	echo $usa->getDropDownDiv();
-} else {
-	global $mod_strings, $modListHeader, $app_strings, $beanList, $beanFiles;
-	$usa = new UnifiedSearchAdvanced();
-	$usa->search();
-}	
 ?>

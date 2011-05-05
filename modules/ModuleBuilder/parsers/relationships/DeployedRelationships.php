@@ -152,7 +152,13 @@ class DeployedRelationships extends AbstractRelationships implements Relationshi
      */
     function delete ($rel_name)
     {
-    	require_once("ModuleInstall/ModuleInstaller.php");
+    	//Remove any fields from layouts
+        $rel = $this->get($rel_name);
+        if (!empty($rel))
+        {
+            $this->removeFieldsFromDeployedLayout($rel);
+        }
+        require_once("ModuleInstall/ModuleInstaller.php");
     	require_once ('modules/Administration/QuickRepairAndRebuild.php') ;
     	$mi = new ModuleInstaller();
     	$mi->silent = true;

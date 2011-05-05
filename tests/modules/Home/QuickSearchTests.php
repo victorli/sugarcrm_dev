@@ -1,5 +1,5 @@
 <?php
-class QuickSearchTest extends Sugar_PHPUnit_Framework_TestCase
+class QuickSearchTest extends Sugar_PHPUnit_Framework_OutputTestCase
 {
 	private $quickSearch;
 	

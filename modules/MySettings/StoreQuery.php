@@ -138,13 +138,15 @@ class StoreQuery{
 		   $bean = loadBean($this->query['module']);
 		}
 
+
 		foreach($this->query as $key=>$value)
 		{
             // todo wp: remove this
-            if($key != 'advanced' && $key != 'module'  && (substr($key, -7) != "_offset" || !isset($_REQUEST[$key]))) 
+            if($key != 'advanced' && $key != 'module'
+               && (($key != "lvso" && substr($key, -7) != "_offset") || !isset($_REQUEST[$key])))
             {   
             	//Filter date fields to ensure it is saved to DB format, but also avoid empty values
-				if(!empty($value) && !empty($bean) && preg_match('/^(start_range_|end_range_|range_)?(.*?)(_advanced|_basic)$/', $key, $match))
+                if(!empty($value) && !empty($bean) && preg_match('/^(start_range_|end_range_|range_)?(.*?)(_advanced|_basic)$/', $key, $match))
 				{
 				   $field = $match[2];
 				   if(isset($bean->field_defs[$field]['type']))

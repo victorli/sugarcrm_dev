@@ -10,8 +10,7 @@ class Bug42915Test extends Sugar_PHPUnit_Framework_TestCase
     {
     	global $current_user;
     	$this->previousCurrentUser = $current_user;
-    	$this->saved_search_id = md5(gmmktime());
-        $this->useOutputBuffering = false;        
+    	$this->saved_search_id = md5(gmmktime());      
         $current_user = SugarTestUserUtilities::createAnonymousUser();
         $current_user->setPreference('num_grp_sep', ',', 0, 'global');
         $current_user->setPreference('dec_sep', '.', 0, 'global');
