@@ -1,7 +1,7 @@
 <?php
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
- * SugarCRM is a customer relationship management program developed by
+ * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -182,8 +182,10 @@ if(!empty($focus->stored_options)) {
 // return action
 if(isset($focus->id)) {
 	$return_action = 'DetailView';
+    $validatePass = FALSE;
 } else {
 	$return_action = 'ListView';
+    $validatePass = TRUE;
 }
 
 // javascript
@@ -191,7 +193,7 @@ $javascript->setSugarBean($focus);
 $javascript->setFormName('EditView');
 $javascript->addRequiredFields();
 $javascript->addFieldGeneric('email_user', 'alpha', $mod_strings['LBL_LOGIN'], true);
-$javascript->addFieldGeneric('email_password', 'alpha', $mod_strings['LBL_PASSWORD'], false);
+$javascript->addFieldGeneric('email_password', 'alpha', $mod_strings['LBL_PASSWORD'], $validatePass);
 $javascript->addFieldRange('email_num_autoreplies_24_hours', 'int', $mod_strings['LBL_MAX_AUTO_REPLIES'], true, "", 1, $focus->maxEmailNumAutoreplies24Hours);
 
 $r = $focus->db->query('SELECT value FROM config WHERE name = \'fromname\'');
@@ -232,7 +234,8 @@ $xtpl->assign('NAME', $focus->name);
 $xtpl->assign('STATUS', $status);
 $xtpl->assign('SERVER_URL', $focus->server_url);
 $xtpl->assign('USER', $focus->email_user);
-// Don't send password back $xtpl->assign('PASSWORD', $focus->email_password);
+// Don't send password back
+$xtpl->assign('HAS_PASSWORD', empty($focus->email_password)?0:1);
 $xtpl->assign('TRASHFOLDER', $trashFolder);
 $xtpl->assign('SENTFOLDER', $sentFolder);
 $xtpl->assign('MAILBOX', $mailbox);
@@ -264,6 +267,7 @@ else
 {
 	$groupId = create_guid();
 	$is_auto_import = 'checked';
+    $xtpl->assign('EMAIL_PASS_REQ_SYMB', $app_strings['LBL_REQUIRED_SYMBOL']);
 }
 
 $xtpl->assign('GROUP_ID', $groupId);

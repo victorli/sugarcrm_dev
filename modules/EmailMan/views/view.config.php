@@ -1,7 +1,7 @@
 <?php
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
- * SugarCRM is a customer relationship management program developed by
+ * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -84,14 +84,9 @@ class ViewConfig extends SugarView
         global $app_strings;
         global $current_user;
         global $sugar_config;
-        
-        
-        echo $this->getModuleTitle(false);
+
+        echo $this->getModuleTitle();
         global $currentModule;
-
-
-
-
 
         $focus = new Administration();
         $focus->retrieveSettings(); //retrieve all admin settings.
@@ -105,8 +100,7 @@ class ViewConfig extends SugarView
 
         $this->ss->assign("MODULE", $currentModule);
         $this->ss->assign("PRINT_URL", "index.php?".$GLOBALS['request_string']);
-        $this->ss->assign("HEADER", getClassicModuleTitle("EmailMan", array("{MOD.LBL_CONFIGURE_SETTINGS}"), true));
-        
+        $this->ss->assign("HEADER", get_module_title("EmailMan", "{MOD.LBL_CONFIGURE_SETTINGS}", true));
         $this->ss->assign("notify_fromaddress", $focus->settings['notify_fromaddress']);
         $this->ss->assign("notify_send_from_assigning_user", (isset($focus->settings['notify_send_from_assigning_user']) && !empty($focus->settings['notify_send_from_assigning_user'])) ? "checked='checked'" : "");
         $this->ss->assign("notify_on", ($focus->settings['notify_on']) ? "checked='checked'" : "");
@@ -118,6 +112,7 @@ class ViewConfig extends SugarView
         $this->ss->assign("mail_smtpport", $focus->settings['mail_smtpport']);
         $this->ss->assign("mail_smtpuser", $focus->settings['mail_smtpuser']);
         $this->ss->assign("mail_smtpauth_req", ($focus->settings['mail_smtpauth_req']) ? "checked='checked'" : "");
+        $this->ss->assign("mail_haspass", empty($focus->settings['mail_smtppass'])?0:1);
         $this->ss->assign("MAIL_SSL_OPTIONS", get_select_options_with_id($app_list_strings['email_settings_for_ssl'], $focus->settings['mail_smtpssl']));
 
         //Assign the current users email for the test send dialogue.

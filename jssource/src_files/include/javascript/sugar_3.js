@@ -1,5 +1,5 @@
 /*********************************************************************************
- * SugarCRM is a customer relationship management program developed by
+ * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -107,7 +107,7 @@ function isSupportedIE() {
 	// IE Check supports ActiveX controls
 	if (userAgent.indexOf("msie") != -1 && userAgent.indexOf("mac") == -1 && userAgent.indexOf("opera") == -1) {
 		var version = navigator.appVersion.match(/MSIE (.\..)/)[1] ;
-		if(version >= 5.5 ) {
+		if(version >= 5.5) {
 			return true;
 		} else {
 			return false;
@@ -449,10 +449,10 @@ function isBefore(value1, value2) {
 }
 
 function isValidEmail(emailStr) {
-	if(emailStr.length== 0) {
+	
+    if(emailStr.length== 0) {
 		return true;
 	}
-
 	// cn: bug 7128, a period at the end of the string mangles checks. (switched to accept spaces and delimiters)
 	var lastChar = emailStr.charAt(emailStr.length - 1);
 	if(!lastChar.match(/[^\.]/i)) {
@@ -480,23 +480,21 @@ function isValidEmail(emailStr) {
 
 
 	var reg = /@.*?;/g;
+    var results;
 	while ((results = reg.exec(emailStr)) != null) {
-			orignial = results[0];
+			var original = results[0];
 			parsedResult = results[0].replace(';', '::;::');
-			emailStr = emailStr.replace (orignial, parsedResult);
+			emailStr = emailStr.replace (original, parsedResult);
 	}
 
-	reg = /@.*?,/g;
+	reg = /.@.*?,/g;
 	while ((results = reg.exec(emailStr)) != null) {
-			orignial = results[0];
-			var check = results[0].substr(1);// bug 42259 - "Error Encountered When Trying to Send to Multiple Recipients with Commas in Name"
-			 // if condition to check the presence of @ charcater before replacing ','
-			//now if ',' is used to separate two email addresses, then only it will be replaced by ::;::
-		   //if name has ',' e.g. smith, jr ',' will not be replaced (which was causing the given problem)
-			if(check.indexOf('@') !=-1){
-			parsedResult = results[0].replace(',', '::;::');
-			emailStr = emailStr.replace (orignial, parsedResult);
-			}
+			var original = results[0];
+			//Check if we were using ; as a delimiter. If so, skip the commas
+            if(original.indexOf("::;::") == -1) {
+                var parsedResult = results[0].replace(',', '::;::');
+			    emailStr = emailStr.replace (original, parsedResult);
+            }
 	}
 
 	// mfh: bug 15010 - more practical implementation of RFC 2822 from http://www.regular-expressions.info/email.html, modifed to accept CAPITAL LETTERS
@@ -507,7 +505,7 @@ function isValidEmail(emailStr) {
 	//allowed special characters ! # $ % & ' * + - / = ?  ^ _ ` . { | } ~ in local part
     var emailArr = emailStr.split(/::;::/);
 	for (var i = 0; i < emailArr.length; i++) {
-		emailAddress = emailArr[i];
+		var emailAddress = emailArr[i];
 		if (trim(emailAddress) != '') {
 			if(!/^\s*[\w.%+\-&'#!\$\*=\?\^_`\{\}~\/]+@([A-Z0-9-]+\.)*[A-Z0-9-]+\.[\w-]{2,}\s*$/i.test(emailAddress) &&
 			   !/^.*<[A-Z0-9._%+\-&'#!\$\*=\?\^_`\{\}~]+?@([A-Z0-9-]+\.)*[A-Z0-9-]+\.[\w-]{2,}>\s*$/i.test(emailAddress)) {
@@ -2955,6 +2953,22 @@ SUGAR.util = function () {
 			} else {
 				document.location.href = url;
 			}
+		},
+
+		openWindow : function(URL, windowName, windowFeatures) {
+			if(SUGAR.isIE) {
+				// IE needs special treatment since otherwise it would not pass Referer
+				win = window.open('', windowName, windowFeatures);
+				var trampoline = document.createElement('a');
+				trampoline.href = URL;
+				trampoline.target = windowName;
+				document.body.appendChild(trampoline);
+				trampoline.click();
+				document.body.removeChild(trampoline);
+			} else {
+				win = window.open(URL, windowName, windowFeatures);
+			}
+			return win;
 		}
 	};
 }(); // end util
@@ -3795,18 +3809,7 @@ function open_popup(module_name, width, height, initial_filter, close_popup, hid
 		URL+='&metadata='+metadata;
 	}
 
-	if(SUGAR.isIE) {
-		// IE needs special treatment since otherwise it would not pass Referer
-		win = window.open('', windowName, windowFeatures);
-		var trampoline = document.createElement('a');
-		trampoline.href = URL;
-		trampoline.target = windowName;
-		document.body.appendChild(trampoline);
-		trampoline.click();
-		document.body.removeChild(trampoline);
-	} else {
-		win = window.open(URL, windowName, windowFeatures);
-	}
+	win = SUGAR.util.openWindow(URL, windowName, windowFeatures);
 
 	if(window.focus)
 	{
@@ -4172,3 +4175,25 @@ SUGAR.util.closeActivityPanel = {
         SUGAR.util.closeActivityPanel.panel.show();
     }
 }
+
+SUGAR.util.setEmailPasswordDisplay = function(id, exists) {
+	link = document.getElementById(id+'_link');
+	pwd = document.getElementById(id);
+	if(!pwd || !link) return;
+	if(exists) {
+    	pwd.style.display = 'none';
+    	link.style.display = '';
+	} else {
+    	pwd.style.display = '';
+    	link.style.display = 'none';
+	}
+}
+
+SUGAR.util.setEmailPasswordEdit = function(id) {
+	link = document.getElementById(id+'_link');
+	pwd = document.getElementById(id);
+	if(!pwd || !link) return;
+	pwd.style.display = '';
+	link.style.display = 'none';
+}
+

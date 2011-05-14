@@ -1,6 +1,6 @@
 <!--
 /*********************************************************************************
- * SugarCRM is a customer relationship management program developed by
+ * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -306,7 +306,10 @@ EditView_tabs.on('contentReady', function(e){
                             </tr>
                             <tr id="mail_smtppass_tr">
                                 <td width="20%" scope="row" nowrap="nowrap"><span id="mail_smtppass_label">{$MOD.LBL_MAIL_SMTPPASS}</span></td>
-                                <td width="30%" ><slot><input type="password" id="mail_smtppass" name="mail_smtppass" size="25" maxlength="64" value="{$mail_smtppass}" tabindex='1'></slot></td>
+                                <td width="30%" ><slot>
+                                <input type="password" id="mail_smtppass" name="mail_smtppass" size="25" maxlength="64" value="{$mail_smtppass}" tabindex='1'>
+                                <a href="javascript:void(0)" id='mail_smtppass_link' onClick="SUGAR.util.setEmailPasswordEdit('mail_smtppass')" style="display: none">{$APP.LBL_CHANGE_PASSWORD}</a>
+                                </slot></td>
                                 <td>&nbsp;</td>
                                 <td >&nbsp;</td>
                             </tr>
@@ -826,6 +829,15 @@ document.getElementById('email_link_type').onchange();
 {literal}
 <script type="text/javascript" language="Javascript">
 {/literal}
+{if !$IS_GROUP && !$IS_PORTALONLY}
+{literal}
+if(window.addEventListener){
+    window.addEventListener("load", function() { SUGAR.util.setEmailPasswordDisplay('mail_smtppass', {/literal}{$mail_haspass}{literal}); }, false);
+}else{
+    window.attachEvent("onload", function() { SUGAR.util.setEmailPasswordDisplay('mail_smtppass', {/literal}{$mail_haspass}{literal}); });
+}
+{/literal}
+{/if}
 {$getNameJs}
 {$getNumberJs}
 {$confirmReassignJs}

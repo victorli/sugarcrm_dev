@@ -1,7 +1,7 @@
 <?php
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
- * SugarCRM is a customer relationship management program developed by
+ * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -485,8 +485,9 @@ class MssqlManager extends DBManager
                             if ($ob_pos) {
                                 $distinctSQLARRAY[1] = substr($distinctSQLARRAY[1],0,$ob_pos);
                             }
-                            
-                            $distinctSQLARRAY[1] = preg_replace('/\)\s$/', ' ', $distinctSQLARRAY[1]);
+
+                            // strip off last closing parathese from the where clause
+                            $distinctSQLARRAY[1] = preg_replace("/\)\s$/"," ",$distinctSQLARRAY[1]);
                         }
 
                         //place group by string into array
@@ -501,7 +502,7 @@ class MssqlManager extends DBManager
                             //this way both fields are added in correctly to the group by
                             $gb = str_replace("isnull(","",$gb);
                             $gb = str_replace("'') + ' ' + ","",$gb);
-                            
+
                             //remove outer reference if they exist
                             if (strpos($gb,"'")!==false){
                                 continue;
@@ -620,6 +621,7 @@ class MssqlManager extends DBManager
             {
 				break;   
             }     	
+
             $beg_sin = strpos($p_sql, $strip_beg, $offset);
             if (!$beg_sin)
             {

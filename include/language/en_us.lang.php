@@ -1,7 +1,7 @@
 <?php
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
- * SugarCRM is a customer relationship management program developed by
+ * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -1575,6 +1575,7 @@ $app_strings = array (
     'LBL_CASE'=>'Case',
     'LBL_CASES'=>'Cases',
     'LBL_CHANGE_BUTTON_KEY' => 'G',
+    'LBL_CHANGE_PASSWORD' => 'Change password',
     'LBL_CHANGE_BUTTON_LABEL' => 'Change',
     'LBL_CHANGE_BUTTON_TITLE' => 'Change [Alt+G]',
     'LBL_CHARSET' => 'UTF-8',
@@ -1906,9 +1907,8 @@ $app_strings = array (
     'NTC_DATE_FORMAT' => '(yyyy-mm-dd)',
     'NTC_DATE_TIME_FORMAT' => '(yyyy-mm-dd 24:00)',
     'NTC_DELETE_CONFIRMATION_MULTIPLE' => 'Are you sure you want to delete selected record(s)?',
-    'NTC_TEMPLATE_IS_USED' => 'The template is used in at least one email marketing record or system settings. Are you sure you want to delete it?',
-    'NTC_TEMPLATES_IS_USED' => "The following templates are used in email marketing records or system settings. Are you sure you want to delete them?\n",
-
+    'NTC_TEMPLATE_IS_USED' => 'The template is used in at least one email marketing record. Are you sure you want to delete it?',
+    'NTC_TEMPLATES_IS_USED' => "The following templates are used in email marketing records. Are you sure you want to delete them?\n",
     'NTC_DELETE_CONFIRMATION' => 'Are you sure you want to delete this record?',
     'NTC_DELETE_CONFIRMATION_NUM' => 'Are you sure you want to delete the ',
     'NTC_UPDATE_CONFIRMATION_NUM' => 'Are you sure you want to update the ',

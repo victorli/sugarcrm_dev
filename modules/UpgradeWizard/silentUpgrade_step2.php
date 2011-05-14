@@ -1,7 +1,7 @@
 <?php
 
 /*********************************************************************************
- * SugarCRM is a customer relationship management program developed by
+ * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -324,10 +324,6 @@ copy($argv[1], $install_file);
 ////	END UPGRADE PREP
 ///////////////////////////////////////////////////////////////////////////////
 
-if(function_exists('repairTableDictionaryExtFile'))
-{
-    repairTableDictionaryExtFile();
-}
 
 if(function_exists('set_upgrade_vars')){
 	set_upgrade_vars();

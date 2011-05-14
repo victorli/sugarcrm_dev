@@ -1,5 +1,5 @@
 /*********************************************************************************
- * SugarCRM is a customer relationship management program developed by
+ * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -185,10 +185,16 @@ function loadSugarChart (chartId,jsonFilename,css,chartConfig) {
 					table += "<tr>"; 
 					for(td=0;td<cols;td++) {
 						
-						table += '<td nowrap>';
+						table += '<td width=\'16\' valign=\'top\'>';
 						if(legend["name"][j] != undefined) {
 							table += '<div class=\'query-color\' style=\'background-color:'
-							  + legend["color"][j] +'\'>&nbsp;</div>' + legend["name"][j];
+							  + legend["color"][j] +'\'>&nbsp;</div>';
+						}
+						  
+						table += '</td>';
+						table += '<td class=\'label\' valign=\'top\'>';
+						if(legend["name"][j] != undefined) {
+							table += legend["name"][j];
 						}
 						  
 						table += '</td>';
@@ -348,10 +354,16 @@ function loadSugarChart (chartId,jsonFilename,css,chartConfig) {
 					table += "<tr>"; 
 					for(td=0;td<cols;td++) {
 						
-						table += '<td nowrap>';
+						table += '<td width=\'16\' valign=\'top\'>';
 						if(legend["name"][j] != undefined) {
 							table += '<div class=\'query-color\' style=\'background-color:'
-							  + legend["color"][j] +'\'>&nbsp;</div>' + legend["name"][j];
+							  + legend["color"][j] +'\'>&nbsp;</div>';
+						}
+						  
+						table += '</td>';
+						table += '<td class=\'label\' valign=\'top\'>';
+						if(legend["name"][j] != undefined) {
+							table += legend["name"][j];
 						}
 						  
 						table += '</td>';
@@ -482,10 +494,16 @@ function loadSugarChart (chartId,jsonFilename,css,chartConfig) {
 					table += "<tr>"; 
 					for(td=0;td<cols;td++) {
 						
-						table += '<td nowrap>';
+						table += '<td width=\'16\' valign=\'top\'>';
 						if(legend["name"][j] != undefined) {
 							table += '<div class=\'query-color\' style=\'background-color:'
-							  + legend["color"][j] +'\'>&nbsp;</div>' + legend["name"][j];
+							  + legend["color"][j] +'\'>&nbsp;</div>';
+						}
+						  
+						table += '</td>';
+						table += '<td class=\'label\' valign=\'top\'>';
+						if(legend["name"][j] != undefined) {
+							table += legend["name"][j];
 						}
 						  
 						table += '</td>';
@@ -635,10 +653,16 @@ function loadSugarChart (chartId,jsonFilename,css,chartConfig) {
 					table += "<tr>"; 
 					for(td=0;td<cols;td++) {
 						
-						table += '<td nowrap>';
+						table += '<td width=\'16\' valign=\'top\'>';
 						if(legend["name"][j] != undefined) {
 							table += '<div class=\'query-color\' style=\'background-color:'
-							  + legend["color"][j] +'\'>&nbsp;</div>' + legend["name"][j];
+							  + legend["color"][j] +'\'>&nbsp;</div>';
+						}
+						  
+						table += '</td>';
+						table += '<td class=\'label\' valign=\'top\'>';
+						if(legend["name"][j] != undefined) {
+							table += legend["name"][j];
 						}
 						  
 						table += '</td>';
@@ -766,10 +790,16 @@ function loadSugarChart (chartId,jsonFilename,css,chartConfig) {
 					table += "<tr>"; 
 					for(td=0;td<cols;td++) {
 						
-						table += '<td nowrap>';
+						table += '<td width=\'16\' valign=\'top\'>';
 						if(legend["name"][j] != undefined) {
 							table += '<div class=\'query-color\' style=\'background-color:'
-							  + legend["color"][j] +'\'>&nbsp;</div>' + legend["name"][j];
+							  + legend["color"][j] +'\'>&nbsp;</div>';
+						}
+						  
+						table += '</td>';
+						table += '<td class=\'label\' valign=\'top\'>';
+						if(legend["name"][j] != undefined) {
+							table += legend["name"][j];
 						}
 						  
 						table += '</td>';

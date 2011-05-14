@@ -1,7 +1,7 @@
 <?php
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
- * SugarCRM is a customer relationship management program developed by
+ * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -79,8 +79,9 @@ class SugarChartFactory
         } else if(file_exists($file)) {
           require_once($file);
         } else {
-        	$GLOBALS['log']->debug("using default engine include/SugarCharts/".$defaultEngine."/".$defaultEngine.$module.".php");
-           require_once("include/SugarCharts/".$defaultEngine."/".$defaultEngine.$module.".php");
+          $GLOBALS['log']->debug("using default engine include/SugarCharts/".$defaultEngine."/".$defaultEngine.$module.".php");
+          require_once("include/SugarCharts/".$defaultEngine."/".$defaultEngine.$module.".php");
+          $chartEngine = $defaultEngine;
         }
 
         $className = $chartEngine.$module;

@@ -1,5 +1,5 @@
 /*********************************************************************************
- * SugarCRM is a customer relationship management program developed by
+ * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -123,7 +123,7 @@ function selectDocument(target) {
 	windowName = 'selectDocument';
 	windowFeatures = 'width=800' + ',height=600' + ',resizable=1,scrollbars=1';
 
-	win = window.open(URL, windowName, windowFeatures);
+	win = SUGAR.util.openWindow(URL, windowName, windowFeatures);
 	if(window.focus) {
 		// put the focus on the popup if the browser supports the focus() method
 		win.focus();
@@ -660,7 +660,7 @@ function selectDoc() {
 	URL="index.php?module=EmailTemplates&action=PopupDocumentsCampaignTemplate&to_pdf=true&target=" ;
 	windowName = 'selectDocument';
 	windowFeatures = 'width=800' + ',height=600' + ',resizable=1,scrollbars=1';
-	win = window.open(URL, windowName, windowFeatures);
+	win = SUGAR.util.openWindow(URL, windowName, windowFeatures);
 	if(window.focus) {
 		// put the focus on the popup if the browser supports the focus() method
 		win.focus();

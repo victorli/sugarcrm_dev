@@ -1,7 +1,7 @@
 <?php
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
- * SugarCRM is a customer relationship management program developed by
+ * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -567,6 +567,7 @@ if( !($usertype=='GROUP' || $usertype=='PORTAL_ONLY') )
     $sugar_smarty->assign("mail_smtpserver", $mail_smtpserver);
     $sugar_smarty->assign("mail_smtpuser", $mail_smtpuser);
     $sugar_smarty->assign("mail_smtppass", "");
+    $sugar_smarty->assign("mail_haspass", empty($systemOutboundEmail->mail_smtppass)?0:1);
     $sugar_smarty->assign("mail_smtpauth_req", $mail_smtpauth_req);
     $sugar_smarty->assign('MAIL_SMTPPORT',$mail_smtpport);
     $sugar_smarty->assign('MAIL_SMTPSSL',$mail_smtpssl);

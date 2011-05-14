@@ -818,4 +818,49 @@ class TimeDateTest extends Sugar_PHPUnit_Framework_TestCase
 	    SugarDateTime::$use_php_parser = true;
 	    SugarDateTime::$use_strptime = true;
 	}
+
+	public function testGetTimeDate()
+	{
+	    global $current_user;
+	    $this->_setPrefs("Y-m-d", "H:i", "GMT");
+
+	    $f = $this->time_date->get_date_time_format();
+	    $this->assertEquals("Y-m-d H:i", $f);
+
+	    $f = $this->time_date->get_date_time_format(true);
+	    $this->assertEquals("Y-m-d H:i", $f);
+
+	    $f = $this->time_date->get_date_time_format(false);
+	    $this->assertEquals("Y-m-d H:i", $f);
+
+	    $f = $this->time_date->get_date_time_format(null);
+	    $this->assertEquals("Y-m-d H:i", $f);
+
+	    $f = $this->time_date->get_date_time_format(true, null);
+	    $this->assertEquals("Y-m-d H:i", $f);
+
+	    $f = $this->time_date->get_date_time_format(false, null);
+	    $this->assertEquals("Y-m-d H:i", $f);
+
+	    $f = $this->time_date->get_date_time_format(null, null);
+	    $this->assertEquals("Y-m-d H:i", $f);
+
+	    $f = $this->time_date->get_date_time_format(true, $current_user);
+	    $this->assertEquals("Y-m-d H:i", $f);
+
+	    $f = $this->time_date->get_date_time_format(false, $current_user);
+	    $this->assertEquals("Y-m-d H:i", $f);
+
+	    $f = $this->time_date->get_date_time_format(null, $current_user);
+	    $this->assertEquals("Y-m-d H:i", $f);
+
+	    $f = $this->time_date->get_date_time_format($current_user);
+	    $this->assertEquals("Y-m-d H:i", $f);
+
+	    $f = $this->time_date->get_date_time_format($current_user);
+	    $this->assertEquals("Y-m-d H:i", $f);
+
+	    $f = $this->time_date->get_date_time_format($current_user);
+	    $this->assertEquals("Y-m-d H:i", $f);
+	}
 }

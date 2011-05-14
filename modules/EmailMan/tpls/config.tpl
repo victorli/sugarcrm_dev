@@ -1,6 +1,6 @@
 <!--
 /*********************************************************************************
- * SugarCRM is a customer relationship management program developed by
+ * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -170,7 +170,10 @@ function change_state(radiobutton) {
                        </tr>
                        <tr id="smtp_auth2">
                             <td width="20%" scope="row"><span id="mail_smtppass_label">{$MOD.LBL_MAIL_SMTPPASS}</span> <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></td>
-                            <td width="30%" ><input type="password" id="mail_smtppass" name="mail_smtppass" size="25" maxlength="64" tabindex='1'></td>
+                            <td width="30%" >
+                            <input type="password" id="mail_smtppass" name="mail_smtppass" size="25" maxlength="64" tabindex='1'>
+                            <a href="javascript:void(0)" id='mail_smtppass_link' onClick="SUGAR.util.setEmailPasswordEdit('mail_smtppass')" style="display: none">{$APP.LBL_CHANGE_PASSWORD}</a>
+                            </td>
                             <td width="20%">&nbsp;</td>
                             <td width="30%">&nbsp;</td>
                        </tr>
@@ -692,6 +695,11 @@ oButtonGroup.subscribe('checkedButtonChange', function(e)
     document.getElementById('EditView').mail_smtptype.value = e.newValue.get('value');
 });
 YAHOO.widget.Button.addHiddenFieldsToForm(document.ConfigureSettings);
+if(window.addEventListener){
+    window.addEventListener("load", function() { SUGAR.util.setEmailPasswordDisplay('mail_smtppass', {/literal}{$mail_haspass}{literal}); }, false);
+}else{
+    window.attachEvent("onload", function() { SUGAR.util.setEmailPasswordDisplay('mail_smtppass', {/literal}{$mail_haspass}{literal}); });
+}
 {/literal}{if !empty($mail_smtptype)}{literal}
 changeEmailScreenDisplay("{/literal}{$mail_smtptype}{literal}", false);
 {/literal}{/if}{literal}

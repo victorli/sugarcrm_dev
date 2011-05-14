@@ -1,5 +1,5 @@
 /*********************************************************************************
- * SugarCRM is a customer relationship management program developed by
+ * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -456,7 +456,6 @@ AjaxObject.accounts = {
 			document.getElementById("outboundEmailForm").mail_smtptype.value = ret.mail_smtptype;
 			document.getElementById("mail_smtpport").value = ret.mail_smtpport;
 			document.getElementById("mail_smtpuser").value = ret.mail_smtpuser;
-			//document.getElementById("mail_smtppass").value = ret.mail_smtppass;
 			document.getElementById("mail_smtpauth_req").checked = (ret.mail_smtpauth_req == 1) ? true : false;
 			SUGAR.email2.accounts.smtp_authenticate_field_display();
 			document.getElementById("mail_smtpssl").options[ret.mail_smtpssl].selected = true;
@@ -469,7 +468,7 @@ AjaxObject.accounts = {
 			     SUGAR.email2.accounts.toggleOutboundAccountDisabledFields(false);
 			     SUGAR.email2.accounts.changeEmailScreenDisplay(ret.mail_smtptype,false);
             }
-
+            SUGAR.util.setEmailPasswordDisplay('mail_smtppass', ret.has_password);
 
 		},
 		failure	: AjaxObject.handleFailure,
