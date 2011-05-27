@@ -547,6 +547,7 @@ function isDBName(str) {
 }
 var time_reg_format = "[0-9]{1,2}\:[0-9]{2}";
 function isTime(timeStr) {
+    var time_reg_format = "[0-9]{1,2}\:[0-9]{2}";
 	time_reg_format = time_reg_format.replace('([ap]m)', '');
 	time_reg_format = time_reg_format.replace('([AP]M)', '');
 	if(timeStr.length== 0){
@@ -3781,7 +3782,7 @@ function open_popup(module_name, width, height, initial_filter, close_popup, hid
 	if (initial_filter != '') {
 		URL += '&query=true' + initial_filter;
 		// Bug 41891 - Popup Window Name
-		popupName = initial_filter.replace(/[^a-z_\-0-9]+/ig, '_');
+		popupName = initial_filter.replace(/[^a-z_0-9]+/ig, '_');
 		windowName = module_name + '_popup_window' + popupName;
 	} else {
 		windowName = module_name + '_popup_window' + popupCount;

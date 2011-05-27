@@ -46,6 +46,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 class JSON
 {
+
     /**
      * JSON encode a string
      *
@@ -60,6 +61,7 @@ class JSON
         if($addSecurityEnvelope) {
             $encodedString = "while(1);/*" . $encodedString . "*/";
         }
+
 
         if ($encodeSpecial)
         {
@@ -80,7 +82,7 @@ class JSON
      * @param bool $examineEnvelope Default false, true to extract and verify envelope
      * @return string 
      */
-    public static function decode($string, $examineEnvelope=false)
+    public static function decode($string, $examineEnvelope=false, $assoc = true)
     {
         if ($examineEnvelope) {
             $meta = json_decode($string,true);
@@ -88,11 +90,11 @@ class JSON
                 $GLOBALS['log']->fatal("*** SECURITY: received asynchronous call with invalid ['asychronous_key'] value. Possible CSRF attack.");
                 return '';
             }
-            
+
             return $meta['jsonObject'];
         }
-        
-        return json_decode($string,true);
+
+        return json_decode($string,$assoc);
     }
 
     /**

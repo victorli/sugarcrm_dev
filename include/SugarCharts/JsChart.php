@@ -244,7 +244,7 @@ class JsChart extends SugarChart {
 		$properties = array();
 		$xml = new SimpleXMLElement($xmlstr);
 		foreach($xml->properties->children() as $property) {
-			$properties[] = $this->tab("'".$property->getName()."':"."'".$property."'",2);
+			$properties[] = $this->tab("'".$property->getName()."':"."'".$this->processSpecialChars($property)."'",2);
 		}
 		$content .= $this->tab("{\n",1);
 		$content .= join(",\n",$properties)."\n";

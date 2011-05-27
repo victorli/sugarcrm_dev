@@ -357,7 +357,7 @@ class RepairAndClear
 	}
 
 	/**
-	 * Remove the cached unified_search_modules.php and unified_search_modules_display.php files
+	 * Remove the cached unified_search_modules.php file
 	 */
     public function clearSearchCache() {
         global $mod_strings, $sugar_config;

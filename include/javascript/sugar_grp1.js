@@ -127,7 +127,7 @@ function isDBName(str){if(str.length==0){return true;}
 if(!/^[a-zA-Z][a-zA-Z\_0-9]*$/.test(str))
 return false
 return true}
-var time_reg_format="[0-9]{1,2}\:[0-9]{2}";function isTime(timeStr){time_reg_format=time_reg_format.replace('([ap]m)','');time_reg_format=time_reg_format.replace('([AP]M)','');if(timeStr.length==0){return true;}
+var time_reg_format="[0-9]{1,2}\:[0-9]{2}";function isTime(timeStr){var time_reg_format="[0-9]{1,2}\:[0-9]{2}";time_reg_format=time_reg_format.replace('([ap]m)','');time_reg_format=time_reg_format.replace('([AP]M)','');if(timeStr.length==0){return true;}
 myregexp=new RegExp(time_reg_format)
 if(!myregexp.test(timeStr))
 return false
@@ -552,7 +552,7 @@ function open_popup(module_name,width,height,initial_filter,close_popup,hide_cle
 {if(typeof(popupCount)=="undefined"||popupCount==0)
 popupCount=1;window.document.popup_request_data=popup_request_data;window.document.close_popup=close_popup;width=(width==600)?800:width;height=(height==400)?800:height;URL='index.php?'
 +'module='+module_name
-+'&action=Popup';if(initial_filter!=''){URL+='&query=true'+initial_filter;popupName=initial_filter.replace(/[^a-z_\-0-9]+/ig,'_');windowName=module_name+'_popup_window'+popupName;}else{windowName=module_name+'_popup_window'+popupCount;}
++'&action=Popup';if(initial_filter!=''){URL+='&query=true'+initial_filter;popupName=initial_filter.replace(/[^a-z_0-9]+/ig,'_');windowName=module_name+'_popup_window'+popupName;}else{windowName=module_name+'_popup_window'+popupCount;}
 popupCount++;if(hide_clear_button){URL+='&hide_clear_button=true';}
 windowFeatures='width='+width
 +',height='+height

@@ -374,8 +374,19 @@ class TimeDate
      * @param [User] $user user object, current user if not specified
      * @return string
      */
-    public function get_date_time_format(User $user = null)
+    public function get_date_time_format($user = null)
     {
+        // BC fix - had (bool, user) signature before
+        if(!($user instanceof User)) {
+            if(func_num_args() > 1) {
+                $user = func_get_arg(1);
+                if(!($user instanceof User)) {
+                    $user = null;
+                }
+            } else {
+                $user = null;
+            }
+        }
         return $this->merge_date_time($this->get_date_format($user), $this->get_time_format($user));
     }
 
@@ -1711,14 +1722,14 @@ class TimeDate
 	 */
     public function getDSTRange($year, $zone)
     {
-        $year = SugarDateTime::createFromFormat("Y", $year, self::$gmtTimezone);
-        $year_end = clone $year;
+        $year_date = SugarDateTime::createFromFormat("Y", $year, self::$gmtTimezone);
+        $year_end = clone $year_date;
         $year_end->setDate((int) $year, 12, 31);
         $year_end->setTime(23, 59, 59);
-        $year->setDate((int) $year, 1, 1);
-        $year->setTime(0, 0, 0);
+        $year_date->setDate((int) $year, 1, 1);
+        $year_date->setTime(0, 0, 0);
         $tz = $this->_getUserTZ();
-        $transitions = $tz->getTransitions($year->getTimestamp(), $year_end->getTimestamp());
+        $transitions = $tz->getTransitions($year_date->getTimestamp(), $year_end->getTimestamp());
         $idx = 0;
         while (! $transitions[$idx]["isdst"])
             $idx ++;

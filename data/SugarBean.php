@@ -2093,7 +2093,7 @@ function save_relationship_changes($is_update, $exclude=array())
                     }
                     if ( preg_match('/(am|pm)/i',$this->$field) ) {
                         // This time appears to be formatted in the user's format
-                        $this->$field = $timedate->asDbTime($timedate->fromUserTime($this->$field));
+                        $this->$field = $timedate->fromUserTime($this->$field)->format(TimeDate::DB_TIME_FORMAT);
                         $reformatted = true;
                     }
                     break;

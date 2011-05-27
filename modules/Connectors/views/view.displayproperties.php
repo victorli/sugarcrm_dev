@@ -109,6 +109,12 @@ class ViewDisplayProperties extends ViewList
     	$this->ss->assign('theme', $GLOBALS['theme']);
    	    $this->ss->assign('external', !empty($sources[$source]['eapm']));
    	    $this->ss->assign('externalOnly', !empty($sources[$source]['eapm']['only']));
+
+        // We don't want to tell the user to set the properties of the connector if there aren't any
+        $s = SourceFactory::getSource($source);
+        $fields = $s->getRequiredConfigFields();
+   	    $this->ss->assign('externalHasProperties', !empty($fields));
+
    	    $this->ss->assign('externalChecked', !empty($sources[$source]['eapm']['enabled'])?" checked":"");
    	    echo $this->ss->fetch('modules/Connectors/tpls/display_properties.tpl');
     }

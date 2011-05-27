@@ -169,7 +169,7 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
             {
                 $label = !empty( $app_list_strings['moduleList'][$key] ) ? $app_list_strings['moduleList'][$key] : '';
         	    $acl = $this->checkModuleRoleAccess($key);
-        	    $fav = $this->is_favorites_enabled($label);
+        	    $fav = $this->is_favorites_enabled($key);
         	    $enabled_modules[] = array('module_key' => $key,'module_label' => $label, 'favorite_enabled' => $fav, 'acls' => $acl);
             }
         }

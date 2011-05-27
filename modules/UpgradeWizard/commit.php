@@ -350,58 +350,65 @@ $uwMain = $upgrade_directories_not_found;
 	logThis('post_install() done.');
 	//// END POSTINSTALL SCRIPTS
 	///////////////////////////////////////////////////////////////////////////////
+	
+logThis('check if current_db_version in $_SESSION equals target_db_version in $_SESSION');	
 if($_SESSION['current_db_version'] == $_SESSION['target_db_version']){
 
+	logThis('current_db_version in $_SESSION and target_db_version in $_SESSION are equal');
 	$_SESSION['license_seats_needed'] = '';
 	//Clean modules from cache
     if(is_dir($GLOBALS['sugar_config']['cache_dir'].'modules')){
-    	$allModFiles = array();
-    	$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'modules',$allModFiles);
+       logThis('clear ' . $GLOBALS['sugar_config']['cache_dir'].'modules' . ' files');
+       $allModFiles = array();
+       $allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'modules',$allModFiles);
        foreach($allModFiles as $file){
            	//$file_md5_ref = str_replace(clean_path(getcwd()),'',$file);
-           	if(file_exists($file)){
+           	if(file_exists($file))
+           	{
+           		logThis('unlink ' . $file);
 				unlink($file);
            	}
        }
     }
     //Clean jsLanguage from cache
-    if(is_dir($GLOBALS['sugar_config']['cache_dir'].'jsLanguage')){
-    	$allModFiles = array();
-    	$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'jsLanguage',$allModFiles);
+    if(is_dir($GLOBALS['sugar_config']['cache_dir'].'jsLanguage'))
+    {
+       logThis('clear ' . $GLOBALS['sugar_config']['cache_dir'].'jsLanguage' . ' files');
+       $allModFiles = array();
+       $allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'jsLanguage',$allModFiles);
        foreach($allModFiles as $file){
            	//$file_md5_ref = str_replace(clean_path(getcwd()),'',$file);
-           	if(file_exists($file)){
+           	if(file_exists($file))
+           	{
+           		logThis('unlink ' . $file);
 				unlink($file);
            	}
        }
     }
+    
 }
-//cleanup cache modules
-if(substr($sugar_version,0,1) == 5){
-		//Clean modules from cache
-    if(is_dir($GLOBALS['sugar_config']['cache_dir'].'modules')){
-    	$allModFiles = array();
-    	$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'modules',$allModFiles);
-       foreach($allModFiles as $file){
-           	//$file_md5_ref = str_replace(clean_path(getcwd()),'',$file);
-           	if(file_exists($file)){
-				unlink($file);
-           	}
-       }
-    }
-}
+logThis('finished check to see if current_db_version in $_SESSION equals target_db_version in $_SESSION');
+
+
 //Look for chance folder and delete it if found. Bug 23595
-if(function_exists('deleteChance')){
+if(function_exists('deleteChance'))
+{
+	logThis('running deleteChance() function');
 	@deleteChance();
 }
 
 //also add the cache cleaning here.
-if(function_exists('deleteCache')){
+if(function_exists('deleteCache'))
+{
+	logThis('running deleteCache() function');
 	@deleteCache();
 }
+
 //add tabs
 $from_dir = clean_path(remove_file_extension($install_file) . "-restore");
+logThis('call addNewSystemTabsFromUpgrade(' . $from_dir . ')');
 addNewSystemTabsFromUpgrade($from_dir);
+logThis('finished addNewSystemTabsFromUpgrade');
 
 //run fix on dropdown lists that may have been incorrectly named
 //fix_dropdown_list();

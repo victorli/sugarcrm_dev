@@ -455,10 +455,14 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
     	//bug: 38232 - Set the sync detail and editview settings
         if (isset($_REQUEST['sync_detail_and_edit']))
         {
-        	if ($_REQUEST['sync_detail_and_edit'] == false || $_REQUEST['sync_detail_and_edit'] == "false")
+        	if ($_REQUEST['sync_detail_and_edit'] === false || $_REQUEST['sync_detail_and_edit'] === "false")
+            {
         	   $this->setSyncDetailEditViews( false );
-        	else
+            }
+            elseif(!empty($_REQUEST['sync_detail_and_edit']))
+            {
         	   $this->setSyncDetailEditViews( true );
+            }
         }
 
         $GLOBALS [ 'log' ]->debug ( print_r ( $this->_viewdefs [ 'panels' ], true ) ) ;

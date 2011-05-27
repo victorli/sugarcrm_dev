@@ -254,7 +254,11 @@ EOHTML;
 					    }
 					}
 				}else if(empty($GLOBALS['dictionary'][$class]['fields'][$k]) ){
-					unset($searchFields[$moduleName][$k]);
+					//If module did not have unified_search defined, then check the exception for an email search before we unset
+					if(strpos($k,'email') === false || !$searchEmail)
+					{
+					   unset($searchFields[$moduleName][$k]);
+					}
 				}else{
 					switch($GLOBALS['dictionary'][$class]['fields'][$k]['type']){
 						case 'id':

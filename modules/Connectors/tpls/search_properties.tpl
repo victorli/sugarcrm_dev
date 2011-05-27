@@ -84,10 +84,10 @@ YAHOO.example.DDApp = {
 init: function() { 
 {/literal}	    
 {foreach from=$modules_sources key=module item=field_defs}  
-    new YAHOO.util.DDTarget("{$source_id}:{$module}:enabled_ul"); 
-	new YAHOO.util.DDTarget("{$source_id}:{$module}:disabled_ul"); 
+    new YAHOO.util.DDTarget("{$source_id}:{$module}:enabled_ul", "{$source_id}:{$module}"); 
+	new YAHOO.util.DDTarget("{$source_id}:{$module}:disabled_ul", "{$source_id}:{$module}"); 
 	{foreach from=$field_defs key=index item=field}
-	     new YAHOO.example.DDList("{$source_id}:{$module}:{$index}", ["{$source_id}:{$module}:enabled_ul",  "{$source_id}:{$module}:disabled_ul"]);
+	     new YAHOO.example.DDList("{$source_id}:{$module}:{$index}", "{$source_id}:{$module}");
 	{/foreach}
 {/foreach}    
 {literal}	        

@@ -492,7 +492,7 @@ class CalendarActivity
 			default:
 				// Date for the past 5 days as that is the maximum duration of a single activity
 				$start = $start_ts_obj->get("-5 days")->get_day_begin();
-				$end =  $start_ts_obj->get("+5 days")->get_day_begin();
+				$end =  $start_ts_obj->get("+5 days")->get_day_end();
 				break;
 		}
 

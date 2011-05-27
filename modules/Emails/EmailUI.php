@@ -388,7 +388,9 @@ eoq;
     	}
 
     	$quickComposeOptions = array('fullComposeUrl' => $fullLinkUrl,'composePackage' => $composePackage);
-    	$j_quickComposeOptions = json::encode($quickComposeOptions, false ,true);
+
+    	$j_quickComposeOptions = JSON::encode($quickComposeOptions, false ,true);
+
 
     	return $j_quickComposeOptions;
     }

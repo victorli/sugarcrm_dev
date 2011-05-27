@@ -3809,11 +3809,6 @@ class InboundEmail extends SugarBean {
 			$unixHeaderDate = strtotime('now');
 		}
 
-		// now get it to user's datetime format for save
-//		$gmt0dateTime = $timedate->to_display_date_time(date('Y-m-d H:i:s', $unixHeaderDate));
-//		$gmt0dateTime = $timedate->swap_formats($gmt0dateTime, $timedate->get_date_time_format(), $timedate->get_db_date_time_format());
-//		$unixHeaderDate = strtotime($gmt0dateTime);
-//
 		return $unixHeaderDate;
 		////	END CALCULATE CORRECT SENT DATE/TIME FOR EMAIL
 		///////////////////////////////////////////////////////////////////
@@ -5608,10 +5603,6 @@ eoq;
 		foreach($fetchedAttributes as $k) {
 			if ($k == 'date_start') {
 				$this->email->$k . " " . $this->email->time_start;
-				//$timedate->to_display_date_time($msg->date)
-				//$souEmail[$k] = $timedate->to_display_date_time(date('r', strtotime($this->email->$k . " " . $this->email->time_start)));
-				//$souEmail[$k] = $timedate->swap_formats($this->email->$k . " " . $this->email->time_start, $timedate->get_date_time_format(true,$current_user), $timedate->get_db_date_time_format());
-				//$souEmail[$k] = $timedate->to_display_date_time($souEmail[$k]);
 				$souEmail[$k] = $this->email->$k . " " . $this->email->time_start;
 			} elseif ($k == 'time_start') {
 				$souEmail[$k] = "";
