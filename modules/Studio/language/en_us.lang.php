@@ -133,6 +133,7 @@ $mod_strings = array (
 
 //BUTTONS
 'LBL_BTN_SAVE'=>'Save',
+'LBL_BTN_CANCEL'=>'Cancel',
 'LBL_BTN_SAVEPUBLISH'=>'Save & Deploy',
 'LBL_BTN_HISTORY'=>'History',
 'LBL_BTN_NEXT'=>'Next',
@@ -158,7 +159,7 @@ $mod_strings = array (
 'LBL_TAB_GROUP_LANGUAGE_HELP' => 'Select an available language, edit the Group labels and click Save & Deploy to apply the labels in the selected language.',
 'LBL_ADD_GROUP'=>'Add Group',
 'LBL_NEW_GROUP'=>'New Group',
-'LBL_RENAME_TABS'=>'Rename Tabs',
+'LBL_RENAME_TABS'=>'Rename Modules',
 'LBL_DISPLAY_OTHER_TAB' => 'Display \'Other\' Tab',
 
 //LIST VIEW EDITOR
@@ -184,6 +185,9 @@ $mod_strings = array (
 'LBL_SP_UPLOADED'=> 'Uploaded',
 'ERROR_SP_UPLOADED'=>'Please ensure that you are uploading a css style sheet.',
 'LBL_SP_PREVIEW'=>'Here is a preview of what your style sheet will look like',
-
+'LBL_LANGUAGE_TOOLTIP' => 'Select the language to edit.',
+'LBL_SINGULAR' => 'Singular Label',
+'LBL_PLURAL' => 'Plural Label',
+'LBL_RENAME_MOD_SAVE_HELP' => 'Click <b>Save</b> to apply the changes.'
 );
 ?>

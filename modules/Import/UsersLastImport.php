@@ -106,12 +106,9 @@ class UsersLastImport extends SugarBean
      *
      * @param string $user_id user id of the user doing the import
      */
-    public function mark_deleted_by_user_id(
-        $user_id
-        )
+    public function mark_deleted_by_user_id($user_id)
     {
-        $query = "DELETE FROM $this->table_name
-                    WHERE assigned_user_id = '$user_id'";
+        $query = "DELETE FROM $this->table_name WHERE assigned_user_id = '$user_id'";
         $this->db->query($query,true,"Error marking last imported records deleted: ");
     }
 
@@ -120,17 +117,12 @@ class UsersLastImport extends SugarBean
      *
      * @param string $id specific users_last_import id to undo
      */
-    public function undoById(
-        $id
-        )
+    public function undoById($id)
     {
         global $current_user;
 
-        $query1 = "SELECT bean_id, bean_type
-                        FROM users_last_import
-                        WHERE assigned_user_id = '$current_user->id'
-                            AND id = '$id'
-                            AND deleted=0";
+        $query1 = "SELECT bean_id, bean_type FROM users_last_import WHERE assigned_user_id = '$current_user->id'
+                   AND id = '$id' AND deleted=0";
 
         $result1 = $this->db->query($query1);
         if ( !$result1 )
@@ -147,17 +139,12 @@ class UsersLastImport extends SugarBean
      *
      * @param string $module  module being imported into
      */
-    public function undo(
-        $module
-        )
+    public function undo($module)
     {
         global $current_user;
 
-        $query1 = "SELECT bean_id, bean_type
-                        FROM users_last_import
-                        WHERE assigned_user_id = '$current_user->id'
-                            AND import_module = '$module'
-                            AND deleted=0";
+        $query1 = "SELECT bean_id, bean_type FROM users_last_import WHERE assigned_user_id = '$current_user->id'
+                   AND import_module = '$module' AND deleted=0";
 
         $result1 = $this->db->query($query1);
         if ( !$result1 )
@@ -175,10 +162,7 @@ class UsersLastImport extends SugarBean
      * @param $bean_id
      * @param $module
      */
-    protected function _deleteRecord(
-        $bean_id,
-        $module
-        )
+    protected function _deleteRecord($bean_id,$module)
     {
         static $focus;
 
@@ -227,17 +211,12 @@ class UsersLastImport extends SugarBean
      *
      * @param string $module  module being imported into
      */
-    public static function getBeansByImport(
-        $module
-        )
+    public static function getBeansByImport($module)
     {
         global $current_user;
 
-        $query1 = "SELECT DISTINCT bean_type
-                        FROM users_last_import
-                        WHERE assigned_user_id = '$current_user->id'
-                            AND import_module = '$module'
-                            AND deleted=0";
+        $query1 = "SELECT DISTINCT bean_type FROM users_last_import WHERE assigned_user_id = '$current_user->id'
+                   AND import_module = '$module' AND deleted=0";
 
         $result1 = $GLOBALS['db']->query($query1);
         if ( !$result1 )

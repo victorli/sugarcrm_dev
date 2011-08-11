@@ -37,6 +37,9 @@
 $dictionary['{{$class.name}}'] = array(
 	'table'=>'{{$class.table_name}}',
 	'audited'=>{{$class.audited}},
+	{{if !($class.templates|strstr:"file")}}
+	'duplicate_merge'=>true,
+	{{/if}}
 	'fields'=>{{$class.fields_string}},
 	'relationships'=>{{$class.relationships}},
 	'optimistic_locking'=>true,

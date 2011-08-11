@@ -337,12 +337,13 @@ class DeployedRelationships extends AbstractRelationships implements Relationshi
 
             
             VardefManager::clearVardef () ;
-            
+
             $mi->install_relationships () ;
             $mi->install_languages () ;
             $mi->install_vardefs () ;
             $mi->install_layoutdefs () ;
-            
+
+            $mi->rebuild_relationships();
         }
         
         // now clear all caches so that our changes are visible
@@ -356,10 +357,7 @@ class DeployedRelationships extends AbstractRelationships implements Relationshi
         $this->save () ;
         
         $GLOBALS [ 'log' ]->info ( get_class ( $this ) . "->build(): finished relationship installation" ) ;
-        
 
-
-    
     }
 
     /*

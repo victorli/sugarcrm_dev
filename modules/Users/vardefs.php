@@ -68,7 +68,7 @@ $dictionary['User'] = array(
             'reportable' => false,
             'massupdate' => false,
         ) ,
-        
+
         'pwd_last_changed' => array(
             'name' => 'pwd_last_changed',
             'vname' => 'LBL_PSW_MODIFIED',
@@ -391,6 +391,15 @@ $dictionary['User'] = array(
             'source' => 'non-db',
             'vname' => 'LBL_REPORTS_TO',
         ) ,
+        'reportees' => array(
+            'name' => 'reportees',
+            'type' => 'link',
+            'relationship' => 'user_direct_reports',
+            'link_type' => 'many',
+            'side' => 'left',
+            'source' => 'non-db',
+            'vname' => 'LBL_REPORTS_TO',
+        ) ,
         'email1' => array(
             'name' => 'email1',
             'vname' => 'LBL_EMAIL',
@@ -509,7 +518,18 @@ $dictionary['User'] = array(
 		    'vname' => 'LBL_ASSIGNED_TO_USER',
 		    'source'=>'non-db',
 		  ),
-        
+	 'oauth_tokens' =>
+      array (
+        'name' => 'oauth_tokens',
+        'type' => 'link',
+        'relationship' => 'oauthtokens_assigned_user',
+        'vname' => 'LBL_OAUTH_TOKENS',
+        'link_type' => 'one',
+        'module'=>'OAuthTokens',
+        'bean_name'=>'OAuthToken',
+        'source'=>'non-db',
+        'side' => 'left',
+      ),
     ) ,
     'indices' => array(
         array(
@@ -537,32 +557,32 @@ $dictionary['User'] = array(
   		'users_users_signatures' =>
   		   array(
   		       'lhs_module'=> 'Users',
-  		       'lhs_table'=> 'users', 
+  		       'lhs_table'=> 'users',
   		       'lhs_key' => 'id',
-  		       'rhs_module'=> 'UserSignature', 
-  		       'rhs_table'=> 'users_signatures', 
+  		       'rhs_module'=> 'UserSignature',
+  		       'rhs_table'=> 'users_signatures',
   		       'rhs_key' => 'user_id',
   		       'relationship_type'=>'one-to-many'
   		       ),
-    	'users_email_addresses' => 
+    	'users_email_addresses' =>
 		    array(
 		        'lhs_module'=> "Users", 'lhs_table'=> 'users', 'lhs_key' => 'id',
 		        'rhs_module'=> 'EmailAddresses', 'rhs_table'=> 'email_addresses', 'rhs_key' => 'id',
 		        'relationship_type'=>'many-to-many',
-		        'join_table'=> 'email_addr_bean_rel', 'join_key_lhs'=>'bean_id', 'join_key_rhs'=>'email_address_id', 
+		        'join_table'=> 'email_addr_bean_rel', 'join_key_lhs'=>'bean_id', 'join_key_rhs'=>'email_address_id',
 		        'relationship_role_column'=>'bean_module',
 		        'relationship_role_column_value'=>"Users"
 		    ),
-		'users_email_addresses_primary' => 
+		'users_email_addresses_primary' =>
 		    array('lhs_module'=> "Users", 'lhs_table'=> 'users', 'lhs_key' => 'id',
 		        'rhs_module'=> 'EmailAddresses', 'rhs_table'=> 'email_addresses', 'rhs_key' => 'id',
 		        'relationship_type'=>'many-to-many',
-		        'join_table'=> 'email_addr_bean_rel', 'join_key_lhs'=>'bean_id', 'join_key_rhs'=>'email_address_id', 
-		        'relationship_role_column'=>'primary_address', 
+		        'join_table'=> 'email_addr_bean_rel', 'join_key_lhs'=>'bean_id', 'join_key_rhs'=>'email_address_id',
+		        'relationship_role_column'=>'primary_address',
 		        'relationship_role_column_value'=>'1'
 		    ),
     ),
 
-      
-    
+
+
 );

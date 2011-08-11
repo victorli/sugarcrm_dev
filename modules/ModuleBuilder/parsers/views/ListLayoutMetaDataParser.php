@@ -251,7 +251,7 @@ class ListLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
         $GLOBALS [ 'log' ]->debug ( get_class ( $this ) . "->populateFromRequest() - fielddefs = ".print_r($this->_fielddefs, true));
         // Transfer across any reserved fields, that is, any where studio !== true, which are not editable but must be preserved
         $newViewdefs = array ( ) ;
-        $rejectTypes = array ( 'html'=>'html' , 'enum'=>'enum' , 'text'=>'text', 'encrypt'=>'encrypt' ) ;
+        $rejectTypes = array ( 'html'=>'html', 'text'=>'text', 'encrypt'=>'encrypt' ) ;
 
         $originalViewDefs = $this->getOriginalViewDefs();
 

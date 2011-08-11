@@ -56,7 +56,7 @@ function enableQS(noReload){
         var qsFields = Dom.getElementsByClassName('sqsEnabled');
         
         //Now loop through all these fields and process them
-        for(qsField in qsFields){
+        for(var qsField in qsFields){
         	
         	//Safety checks to skip processing of invalid entries
         	if(typeof qsFields[qsField] == 'function' || typeof qsFields[qsField].id == 'undefined') {
@@ -64,14 +64,14 @@ function enableQS(noReload){
         	}
         	
         	//Create the index we are using to search for the sqs_objects Array
-        	form_id = qsFields[qsField].form.getAttribute('id');
+        	var form_id = qsFields[qsField].form.getAttribute('id');
         	
         	//This is a special case where there is an element with id attribute value of "id"
         	//In this case, we get the real_id attribute (occurs in modules/Import/tpls/step3.tpl only).
         	if(typeof form_id == 'object' && qsFields[qsField].form.getAttribute('real_id')) {
         		form_id = qsFields[qsField].form.getAttribute('real_id');
         	}
-        	qs_index_id = form_id + '_' + qsFields[qsField].name;
+        	var qs_index_id = form_id + '_' + qsFields[qsField].name;
 
         	//Another safety check, if the sqs_objects entry is not defined, we can't do anything useful
         	if(typeof sqs_objects[qs_index_id] == 'undefined') {
@@ -96,7 +96,7 @@ function enableQS(noReload){
         	}
             //Skip quicksearch fields that are readOnly or that are disabled since you can't search on them anyway
             if (!document.forms[qs_obj.form].elements[qsFields[qsField].id].readOnly && qs_obj['disable'] != true) {
-            	combo_id = qs_obj.form + '_' + qsFields[qsField].id;
+            	var combo_id = qs_obj.form + '_' + qsFields[qsField].id;
             	if (Dom.get(combo_id + "_results")) {
             		loaded = true
             	}
@@ -171,14 +171,17 @@ function enableQS(noReload){
 	                	        	   //bug: 30823 - remove the apostrophe
 	                	        	   var displayValue = data[i].replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');
 	                	        	   document.forms[this.qs_obj.form].elements[this.qs_obj.populate_list[key]].value = displayValue;
+                                       SUGAR.util.callOnChangeListers(document.forms[this.qs_obj.form].elements[this.qs_obj.populate_list[key]]);
 	                	           }
 	                	       }
-	                    	}		                    	
+	                    	}
+                            SUGAR.util.callOnChangeListers(this._elTextbox);
 	                    },
 	                    clearFields : function() {
 	                    	for (var key in this.qs_obj.field_list) {
 	                    	    if (document.forms[this.qs_obj.form].elements[this.qs_obj.populate_list[key]]){
                 	        	    document.forms[this.qs_obj.form].elements[this.qs_obj.populate_list[key]].value = "";
+                                    SUGAR.util.callOnChangeListers(document.forms[this.qs_obj.form].elements[this.qs_obj.populate_list[key]]);
                 	            }
 	                    	}
 							this.oldValue = "";
@@ -191,8 +194,19 @@ function enableQS(noReload){
                     if(/^(billing_|shipping_)?account_name$/.exec(qsFields[qsField].name))
                     {
                       
-                       //C.L. Bug 36106 no-op function for clearFields (do not clear out values)
-                       search.clearFields = function() {};
+                       //C.L. Bug 36106 only clear the name and id fields
+                       search.clearFields = function() {
+                           for(var i in {name:0, id:1}) {
+	                    		for (var key in this.qs_obj.field_list) {
+                                    //Check that the field exists
+	                	           if (i == this.qs_obj.field_list[key] &&
+	                	        	   document.forms[this.qs_obj.form].elements[this.qs_obj.populate_list[key]])
+                                   {
+                                       document.forms[this.qs_obj.form].elements[this.qs_obj.populate_list[key]].value = "";
+                                   }
+                                }
+                           }
+                       };
                     	
                        search.setFields = function(data, filter) 
                        {

@@ -193,9 +193,6 @@ class TemplateEnum extends TemplateText{
 		if (!empty($this->default) && is_array($this->default)) {
 			$this->default = $this->default[0];
 		}
-
-		if ( get_class( $this ) == 'TemplateEnum' && isset ( $this->dependency ) )
-			$this->ext4 = serialize ( $this->dependency ) ;
 		parent::save($df);
 	}
 }

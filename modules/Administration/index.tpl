@@ -38,11 +38,11 @@
 
 
 *}
-<div class="dashletPanelMenu">
-<div class="hd"><div class="tl"></div><div class="hd-center"></div><div class="tr"></div></div>
+
+
+<div class="dashletPanelMenu wizard">
 <div class="bd">
-		<div class="ml"></div>
-		<div class="bd-center">
+
 		<div class="screen">
 		
 {$MY_FRAME}
@@ -61,12 +61,12 @@
     {foreach  from=$VALUES_3_TAB[$j] key=link_idx item=admin_option}
     {if isset($COLNUM[$j][$i])}
     <tr> 
-            <td width="20%" scope="row">{$ITEM_HEADER_IMAGE[$j][$i]}&nbsp;<a href='{$ITEM_URL[$j][$i]}' class="tabDetailViewDL2Link">{$ITEM_HEADER_LABEL[$j][$i]}</a></td>
+            <td width="20%" scope="row">{$ITEM_HEADER_IMAGE[$j][$i]}&nbsp;<a href='{$ITEM_URL[$j][$i]}' {if !empty($ITEM_ONCLICK[$j][$i])}onclick='{$ITEM_ONCLICK[$j][$i]}'{/if} class="tabDetailViewDL2Link">{$ITEM_HEADER_LABEL[$j][$i]}</a></td>
             <td width="30%">{$ITEM_DESCRIPTION[$j][$i]}</td>  
               
             {assign var='i' value=$i+1}
             {if $COLNUM[$j][$i] == '0'}                           
-                    <td width="20%" scope="row">{$ITEM_HEADER_IMAGE[$j][$i]}&nbsp;<a href='{$ITEM_URL[$j][$i]}' class="tabDetailViewDL2Link">{$ITEM_HEADER_LABEL[$j][$i]}</a></td>
+                    <td width="20%" scope="row">{$ITEM_HEADER_IMAGE[$j][$i]}&nbsp;<a href='{$ITEM_URL[$j][$i]}' {if !empty($ITEM_ONCLICK[$j][$i])}onclick='{$ITEM_ONCLICK[$j][$i]}'{/if} class="tabDetailViewDL2Link">{$ITEM_HEADER_LABEL[$j][$i]}</a></td>
                     <td width="30%">{$ITEM_DESCRIPTION[$j][$i]}</td>
               
             {else}
@@ -84,7 +84,7 @@
 
 </div>
 </div>
-			<div class="mr"></div>
+
 </div>
-<div class="ft"><div class="bl"></div><div class="ft-center"></div><div class="br"></div></div>
-</div>
+
+	

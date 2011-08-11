@@ -43,7 +43,7 @@ class SugarCacheZend extends SugarCacheAbstract
      * @see SugarCacheAbstract::$_priority
      */
     protected $_priority = 910;
-    
+
     /**
      * @see SugarCacheAbstract::useBackend()
      */
@@ -51,14 +51,14 @@ class SugarCacheZend extends SugarCacheAbstract
     {
         if ( !parent::useBackend() )
             return false;
-        
+
         if ( function_exists("zend_shm_cache_fetch")
                 && empty($GLOBALS['sugar_config']['external_cache_disabled_zend']))
             return true;
-            
+
         return false;
     }
-    
+
     /**
      * @see SugarCacheAbstract::_setExternal()
      */
@@ -69,7 +69,7 @@ class SugarCacheZend extends SugarCacheAbstract
     {
         zend_shm_cache_store($key,serialize($value),$this->expireTimeout);
     }
-    
+
     /**
      * @see SugarCacheAbstract::_getExternal()
      */
@@ -78,11 +78,14 @@ class SugarCacheZend extends SugarCacheAbstract
         )
     {
         $raw_cache_value = zend_shm_cache_fetch($key);
+        if($raw_cache_value === false) {
+            return null;
+        }
         return is_string($raw_cache_value) ?
             unserialize($raw_cache_value) :
             $raw_cache_value;
     }
-    
+
     /**
      * @see SugarCacheAbstract::_clearExternal()
      */
@@ -92,7 +95,7 @@ class SugarCacheZend extends SugarCacheAbstract
     {
         zend_shm_cache_delete($key);
     }
-    
+
     /**
      * @see SugarCacheAbstract::_resetExternal()
      */

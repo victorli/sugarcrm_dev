@@ -520,7 +520,7 @@ function OLgetRef(l){var r=OLgetRefById(l);return (r)?r:OLgetRefByName(l);}
 // Seeks REFerence by id
 function OLgetRefById(l,d){
 var r="",j;l=(l||'overDiv');d=(d||o3_frame.document);
-if(OLie4&&d.all){return d.all[l];}else if(d.getElementById){return d.getElementById(l);
+if(d.getElementById){return d.getElementById(l);
 }else if(d.layers&&d.layers.length>0){if(d.layers[l])return d.layers[l];
 for(j=0;j<d.layers.length;j++){r=OLgetRefById(l,d.layers[j].document);if(r)return r;}}
 return null;

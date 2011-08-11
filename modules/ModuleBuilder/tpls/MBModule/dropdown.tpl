@@ -156,6 +156,7 @@ YAHOO.util.Event.addListener(addListenerFields,"keydown", function(e){
 });
 
 </script>
+<script>// Bug in FF4 where it doesn't run the last script. Remove when the bug is fixed.</script>
 {/literal}
 </div>
 

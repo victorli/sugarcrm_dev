@@ -42,49 +42,11 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * All Rights Reserved.
  ********************************************************************************/
 
-require_once('include/MVC/View/SugarView.php');
+require_once('modules/Import/views/ImportView.php');
         
-class ImportViewUndo extends SugarView 
+class ImportViewUndo extends ImportView 
 {	
- 	/**
-     * @see SugarView::getMenu()
-     */
-    public function getMenu(
-        $module = null
-        )
-    {
-        global $mod_strings, $current_language;
-        
-        if ( empty($module) )
-            $module = $_REQUEST['import_module'];
-        
-        $old_mod_strings = $mod_strings;
-        $mod_strings = return_module_language($current_language, $module);
-        $returnMenu = parent::getMenu($module);
-        $mod_strings = $old_mod_strings;
-        
-        return $returnMenu;
-    }
-    
- 	/**
-     * @see SugarView::_getModuleTab()
-     */
- 	protected function _getModuleTab()
-    {
-        global $app_list_strings, $moduleTabMap;
-        
- 		// Need to figure out what tab this module belongs to, most modules have their own tabs, but there are exceptions.
-        if ( !empty($_REQUEST['module_tab']) )
-            return $_REQUEST['module_tab'];
-        elseif ( isset($moduleTabMap[$_REQUEST['import_module']]) )
-            return $moduleTabMap[$_REQUEST['import_module']];
-        // Default anonymous pages to be under Home
-        elseif ( !isset($app_list_strings['moduleList'][$_REQUEST['import_module']]) )
-            return 'Home';
-        else
-            return $_REQUEST['import_module'];
- 	}
- 	
+
  	/** 
      * @see SugarView::display()
      */
@@ -103,9 +65,20 @@ class ImportViewUndo extends SugarView
         
         $last_import = new UsersLastImport();
         $this->ss->assign('UNDO_SUCCESS',$last_import->undo($_REQUEST['import_module']));
-        $this->ss->assign("JAVASCRIPT", $this->_getJS());
+        $this->ss->assign("JS", json_encode($this->_getJS()));
+        $this->ss->assign("MODULE_TITLE", json_encode($mod_strings['LBL_UNDO_LAST_IMPORT']));
+        $submitContent = "<table width='100%' cellpadding='0' cellspacing='0' border='0'><tr><td align='right'>";
+        $submitContent .= "<input title=\"".$mod_strings['LBL_FINISHED'].$module_mod_strings['LBL_MODULE_NAME']."\" accessKey='' class='button' type='submit' name='finished' id='finished' value=\"".$mod_strings['LBL_IMPORT_COMPLETE']."\">";
+        $submitContent .= "<input title=\"".$mod_strings['LBL_MODULE_NAME']."&nbsp;".$module_mod_strings['LBL_MODULE_NAME']."\" accessKey='' class='button primary' type='submit' name='button' id='importmore' name='importmore' value=\"".$mod_strings['LBL_MODULE_NAME']."&nbsp;".$module_mod_strings['LBL_MODULE_NAME']."\">";
+
+    	$submitContent .= "</td></tr></table>";
+
+        $content = $this->ss->fetch('modules/Import/tpls/undo.tpl');
+        $this->ss->assign("CONTENT", json_encode($content));
+        $this->ss->assign("SUBMITCONTENT", json_encode($submitContent));
         
-        $this->ss->display('modules/Import/tpls/undo.tpl');
+        
+        $this->ss->display('modules/Import/tpls/wizardWrapper.tpl');
     }
     
     /**
@@ -114,15 +87,31 @@ class ImportViewUndo extends SugarView
     private function _getJS()
     {
         return <<<EOJAVASCRIPT
-<script type="text/javascript">
-<!--
+
 document.getElementById('finished').onclick = function(){
     document.getElementById('importundo').module.value = document.getElementById('importundo').import_module.value;
     document.getElementById('importundo').action.value = 'index';
-    return true;
+    SUGAR.importWizard.closeDialog();
 }
--->
-</script>
+
+document.getElementById('importmore').onclick = function(){
+    document.getElementById('importundo').action.value = 'Step1';
+    
+       	var success = function(data) {		
+			var response = YAHOO.lang.JSON.parse(data.responseText);
+			importWizardDialogDiv = document.getElementById('importWizardDialogDiv');
+			importWizardDialogTitle = document.getElementById('importWizardDialogTitle');
+			submitDiv = document.getElementById('submitDiv');
+			importWizardDialogDiv.innerHTML = response['html'];
+			importWizardDialogTitle.innerHTML = response['title'];
+			submitDiv.innerHTML = response['submitContent'];
+			eval(response['script']);
+		} 
+        var formObject = document.getElementById('importundo');
+		YAHOO.util.Connect.setForm(formObject);
+		var cObj = YAHOO.util.Connect.asyncRequest('POST', "index.php", {success: success, failure: success});
+		
+}
 
 EOJAVASCRIPT;
     }

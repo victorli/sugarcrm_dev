@@ -242,7 +242,7 @@ EOQ;
     $GLOBALS['db']->query($sql); 
 
     $rel = new Relationship();
-    $rel->delete_cache();
+    Relationship::delete_cache();
     $rel->build_relationship_cache();
     
     $this->moduleList = $GLOBALS['moduleList'];

@@ -40,7 +40,8 @@ class SubpanelQuickCreate{
 	var $defaultProcess = true;
 	
 	function SubpanelQuickCreate($module, $view='QuickCreate', $proccessOverride = false){
-
+        //treat quickedit and quickcreate views as the same
+        if($view == 'QuickEdit') {$view = 'QuickCreate';}
 
 		// locate the best viewdefs to use: 1. custom/module/quickcreatedefs.php 2. module/quickcreatedefs.php 3. custom/module/editviewdefs.php 4. module/editviewdefs.php
 		$base = 'modules/' . $module . '/metadata/';
@@ -64,8 +65,16 @@ class SubpanelQuickCreate{
 		$this->ev->view = $view;
 		$this->ev->ss = new Sugar_Smarty();
 		//$_REQUEST['return_action'] = 'SubPanelViewer';
-		$this->ev->setup($module, null, $source);
-		
+
+        $class = $GLOBALS['beanList'][$module];
+        $bean = new $class();
+        if(!empty($_REQUEST['record'])) {
+            $bean->retrieve($_REQUEST['record']);
+        }
+		$this->ev->setup($module, $bean, $source);
+		unset($bean);
+
+
 	    $this->ev->defs['templateMeta']['form']['headerTpl'] = 'include/EditView/header.tpl';
 		$this->ev->defs['templateMeta']['form']['footerTpl'] = 'include/EditView/footer.tpl';
 		$this->ev->defs['templateMeta']['form']['buttons'] = array('SUBPANELSAVE', 'SUBPANELCANCEL', 'SUBPANELFULLFORM');

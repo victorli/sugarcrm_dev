@@ -40,7 +40,7 @@
 *}
 <!-- BEGIN: main -->
 {$chartResources}
-
+<script>SUGAR.loadChart = true;</script>
 
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr>

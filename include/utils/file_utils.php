@@ -120,19 +120,9 @@ function write_array_to_file( $the_name, $the_array, $the_file, $mode="w", $head
 	}
     $the_string .=  "\$$the_name = " .
                     var_export_helper( $the_array ) .
-                    ";\n?>\n";
+                    ";";
 
-    if( $fh = @sugar_fopen( $the_file, $mode ) )
-    {
-        fputs( $fh, $the_string);
-        fclose( $fh );
-        return( true );
-    }
-    else
-    {
-        return( false );
-    }
-
+    return sugar_file_put_contents($the_file, $the_string, LOCK_EX) !== false;
 }
 
 function write_encoded_file( $soap_result, $write_to_dir, $write_to_file="" )

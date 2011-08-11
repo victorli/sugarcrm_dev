@@ -538,6 +538,7 @@ $mod_strings = array(
 'LBL_BTN_VIEW_FIELDS'=>'View Fields',
 'LBL_BTN_VIEW_RELATIONSHIPS'=>'View Relationships',
 'LBL_BTN_ADD_RELATIONSHIP'=>'Add Relationship',
+'LBL_BTN_RENAME_MODULE' => 'Change Module Name',
 //TABS
 
 

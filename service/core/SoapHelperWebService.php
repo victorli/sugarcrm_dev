@@ -541,80 +541,37 @@ function validate_user($user_name, $password){
 	function getRelationshipResults($bean, $link_field_name, $link_module_fields, $optional_where = '') {
 		$GLOBALS['log']->info('Begin: SoapHelperWebServices->getRelationshipResults');
 		require_once('include/TimeDate.php');
-		global  $beanList, $beanFiles, $current_user;
-		global $disable_date_format;
+		global $current_user, $disable_date_format,  $timedate;;
 
 		$bean->load_relationship($link_field_name);
 		if (isset($bean->$link_field_name)) {
-			// get the query object for this link field
-			$query_array = $bean->$link_field_name->getQuery(true,array(),0,'',true);
-			if (isset($query_array['where'])) {
-				$query_array['where'] = str_ireplace("where", "", $query_array['where']);
-				if (!empty($optional_where)) {
-					$optional_where = $query_array['where'] . " and " . $optional_where;
-				} else {
-					$optional_where = $query_array['where'];
-				} // else
-			} // if
-
-			$params = array();
-			$params['joined_tables'] = $query_array['join_tables'];
-
-			// get the related module name and instantiate a bean for that.
-			$submodulename = $bean->$link_field_name->getRelatedModuleName();
-			$submoduleclass = $beanList[$submodulename];
-			require_once($beanFiles[$submoduleclass]);
-			$submodule = new $submoduleclass();
+			//First get all the related beans
+            $related_beans = $bean->$link_field_name->getBeans();
 			$filterFields = $this->filter_fields($submodule, $link_module_fields);
-			$relFields = $bean->$link_field_name->getRelatedFields();
-			$roleSelect = '';
-
-			$idSetInSubModule = false;
-			if($submodulename == 'Users' && !in_array('id', $link_module_fields)){
-				$link_module_fields[] = 'id';
-				$idSetInSubModule = true;
-			}
-
-			if(!empty($relFields)){
-				foreach($link_module_fields as $field){
-					if(!empty($relFields[$field])){
-						$roleSelect .= ', ' . $query_array['join_tables'][0] . '.'. $field;
-					}
-				}
-			}
-			// create a query
-			$subquery = $submodule->create_new_list_query('',$optional_where ,$filterFields,$params, 0,'', true,$bean);
-			$query =  $subquery['select'].$roleSelect .   $subquery['from'].$query_array['join']. $subquery['where'];
-			$GLOBALS['log']->info('SoapHelperWebServices->getRelationshipResults query = ' . $query);
-
-			$result = $submodule->db->query($query, true);
+            //Create a list of field/value rows based on $link_module_fields
 			$list = array();
-			while($row = $submodule->db->fetchByAssoc($result)) {
-				if (!$disable_date_format) {
-					foreach ($filterFields as $field) {
-						if (isset($submodule->field_defs[$field]) &&
-							isset($submodule->field_defs[$field]['type']) &&
-							isset($row[$field])) {
-
-								if ($submodule->field_defs[$field]['type'] == 'date') {
-									global $timedate;
-									$row[$field] = $timedate->to_display_date_time($row[$field]);
-								}
-								if ($submodule->field_defs[$field]['type'] == 'currency') {
-									// TODO: convert data from db to user preferred format absed on the community input
-								} // if
-						} // if
-
-					} // foreach
-				}
-				if($submodulename == 'Users' && $current_user->id != $row['id']) {
-					$row['user_hash'] = "";
-				} // if
-				if ($idSetInSubModule) {
-					unset($row['id']);
-				} // if
-				$list[] = $row;
-			}
+            foreach($related_beans as $id => $bean)
+            {
+                $row = array();
+                foreach ($filterFields as $field) {
+                    if (isset($bean->$field))
+                    {
+                        if (isset($bean->field_defs[$field]['type']) && $bean->field_defs[$field]['type'] == 'date') {
+                            $row[$field] = $timedate->to_display_date_time($bean->$field);
+                        }
+                        $row[$field] = $bean->$field;
+                    }
+                    else
+                    {
+                        $row[$field] = "";
+                    }
+                }
+                //Users can't see other user's hashes
+                if(is_a($bean, 'User') && $current_user->id != $bean->id && isset($row['user_hash'])) {
+                    $row['user_hash'] = "";
+                }
+                $list[] = $row;
+            }
 			$GLOBALS['log']->info('End: SoapHelperWebServices->getRelationshipResults');
 			return array('rows' => $list, 'fields_set_on_rows' => $filterFields);
 		} else {
@@ -958,22 +915,29 @@ function validate_user($user_name, $password){
 			$class = get_class($seed);
 			$temp = new $class();
 			$temp->retrieve($seed->id);
-			if ((!isset($account_name) || $account_name == '')) {
+			if ( empty($account_name) && empty($account_id)) {
 				return;
 			} // if
 			if (!isset($seed->accounts)){
 			    $seed->load_relationship('accounts');
 			} // if
 
-			if($seed->account_name = '' && isset($temp->account_id)){
+			if($seed->account_name == '' && isset($temp->account_id)){
 				$seed->accounts->delete($seed->id, $temp->account_id);
 				$GLOBALS['log']->info('End: SoapHelperWebServices->add_create_account');
 				return;
 			}
 		    $arr = array();
 
-		    $query = "select id, deleted from {$focus->table_name} WHERE name='".$seed->db->quote($account_name)."'";
-		    $result = $seed->db->query($query) or sugar_die("Error selecting sugarbean: ".mysql_error());
+            if(!empty($account_id))  // bug # 44280
+            {
+               $query = "select id, deleted from {$focus->table_name} WHERE id='".$seed->db->quote($account_id)."'";
+            }
+            else
+            {
+               $query = "select id, deleted from {$focus->table_name} WHERE name='".$seed->db->quote($account_name)."'";
+            }
+            $result = $seed->db->query($query) or sugar_die("Error selecting sugarbean: ".mysql_error());
 
 		    $row = $seed->db->fetchByAssoc($result, -1, false);
 
@@ -1032,32 +996,25 @@ function validate_user($user_name, $password){
 		$query = '';
 
 		$trimmed_email = trim($seed->email1);
-		$trimmed_last = trim($seed->last_name);
-		$trimmed_first = trim($seed->first_name);
-		if(!empty($trimmed_email)){
+        $trimmed_email2 = trim($seed->email2);
+	    $trimmed_last = trim($seed->last_name);
+	    $trimmed_first = trim($seed->first_name);
+		if(!empty($trimmed_email) || !empty($trimmed_email2)){
 
 			//obtain a list of contacts which contain the same email address
 			$contacts = $seed->emailAddress->getBeansByEmailAddress($trimmed_email);
+            $contacts2 = $seed->emailAddress->getBeansByEmailAddress($trimmed_email2);
+            $contacts = array_merge($contacts, $contacts2);
 			if(count($contacts) == 0){
 				$GLOBALS['log']->info('End: SoapHelperWebServices->check_for_duplicate_contacts - no duplicte found');
 				return null;
 			}else{
 				foreach($contacts as $contact){
 					if(!empty($trimmed_last) && strcmp($trimmed_last, $contact->last_name) == 0){
-						if(!empty($trimmed_email) && strcmp($trimmed_email, $contact->email1) == 0){
-							if(!empty($trimmed_email)){
-								if(strcmp($trimmed_email, $contact->email1) == 0){
-								 	//bug: 39234 - check if the account names are the same
-								 	//if the incoming contact's account_name is empty OR it is not empty and is the same
-								 	//as an existing contact's account name, then find the match.
-									$contact->load_relationship('accounts');
-									if(empty($seed->account_name) || strcmp($seed->account_name, $contact->account_name) == 0){
-										$GLOBALS['log']->info('End: SoapHelperWebServices->check_for_duplicate_contacts - duplicte found ' . $contact->id);
-										return $contact->id;
-									}
-								}
-							}else{
-								$GLOBALS['log']->info('End: SoapHelperWebServices->check_for_duplicate_contacts - duplicte found' . $contact->id);
+						if((!empty($trimmed_email) || !empty($trimmed_email2)) && (strcmp($trimmed_email, $contact->email1) == 0 || strcmp($trimmed_email, $contact->email2) == 0 || strcmp($trimmed_email2, $contact->email) == 0 || strcmp($trimmed_email2, $contact->email2) == 0)){
+							$contact->load_relationship('accounts');
+							if(empty($seed->account_name) || strcmp($seed->account_name, $contact->account_name) == 0){
+                                $GLOBALS['log']->info('End: SoapHelperWebServices->check_for_duplicate_contacts - duplicte found ' . $contact->id);
 								return $contact->id;
 							}
 						}

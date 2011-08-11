@@ -176,6 +176,7 @@ $dictionary['Task'] = array('table' => 'tasks',
         'type'=>'phone',
         'source'=>'non-db',
         'vname'=>'LBL_CONTACT_PHONE',
+        'studio' => array('listview' => false)
     ),
 
  'contact_email'=>
@@ -184,6 +185,7 @@ $dictionary['Task'] = array('table' => 'tasks',
         'type'=>'varchar',
 		'vname' => 'LBL_EMAIL_ADDRESS',
 		'source' => 'non-db',
+        'studio' => array('listview' => false)
     ),
 
   'priority' =>
@@ -290,6 +292,7 @@ $dictionary['Task'] = array('table' => 'tasks',
        array('name' =>'idx_task_con_del', 'type'=>'index', 'fields'=>array('contact_id','deleted')),
        array('name' =>'idx_task_par_del', 'type'=>'index', 'fields'=>array('parent_id','parent_type','deleted')),
        array('name' =>'idx_task_assigned', 'type'=>'index', 'fields'=>array('assigned_user_id')),
+        array('name' =>'idx_task_status', 'type'=>'index', 'fields'=>array('status')),
              )
 
         //This enables optimistic locking for Saves From EditView

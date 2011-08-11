@@ -93,37 +93,35 @@ var primary_checked=document.forms[this.form].elements[this.field+"_allowed_to_c
 if(/EditView/.test(this.form)&&!checked&&typeof radio_els[0]!='undefined'&&allowed_to_check){radio_els[0].checked=true;this.changePrimary(true);this.js_more();this.js_more();}
 if(radio_els.length==1){this.more_status=false;if(document.getElementById('more_'+this.field_element_name)&&document.getElementById('more_'+this.field_element_name).style.display!='none'){document.getElementById('more_'+this.field_element_name).style.display='none';}
 this.show_arrow_label(false);this.js_more();}else{this.js_more();this.js_more();}}},get_radios:function(){return YAHOO.util.Selector.query('input[name^=primary]',document.getElementById(this.field_element_name+'_table'));},add:function(values){this.fields_count++;var Field0=this.init_clone(values);this.cloneField[1].appendChild(Field0);enableQS(true);this.changePrimary(false);if(document.getElementById('more_'+this.field_element_name)&&document.getElementById('more_'+this.field_element_name).style.display=='none'){document.getElementById('more_'+this.field_element_name).style.display='';}
-if(!this.is_expanded()){this.js_more();this.show_arrow_label(true);}},add_secondaries:function(){clone_id=this.form+'_'+this.field+'_collection_0';if(typeof sqs_objects=='undefined'||typeof sqs_objects[clone_id]=='undefined'){setTimeout('collection["'+this.field_element_name+'"].add_secondaries();',1000);}else if(typeof document.getElementById(this.form+'_'+this.field+'_collection_0')=='undefined'){setTimeout('collection["'+this.field_element_name+'"].add_secondaries();',1000);}else{this.create_clone();enableQS();this.changePrimary(true);for(key in this.secondaries_values){if(isInteger(key)){this.add(this.secondaries_values[key]);}}
-this.js_more();this.js_more();}
-initEditView(document.forms[this.form]);},init_clone:function(values){if(typeof this.cloneField[0]=='undefined'){return;}
+if(!this.is_expanded()){this.js_more();this.show_arrow_label(true);}},add_secondaries:function(){var clone_id=this.form+'_'+this.field+'_collection_0';YAHOO.util.Event.onContentReady(clone_id,function(c){c.create_clone();enableQS();c.changePrimary(true);for(key in c.secondaries_values){if(isInteger(key)){c.add(c.secondaries_values[key]);}}
+c.js_more();initEditView(document.forms[c.form]);},this);},init_clone:function(values){if(typeof this.cloneField[0]=='undefined'){return;}
 if(typeof values=="undefined"){values=new Array();values['name']="";values['id']="";}
-var count=this.fields_count;Field0=SUGAR.isIE?SUGAR.collection.safe_clone(this.cloneField[0],true):this.cloneField[0].cloneNode(true);Field0.id="lineFields_"+this.field_element_name+"_"+count;for(var ii=0;ii<Field0.childNodes.length;ii++){if(typeof(Field0.childNodes[ii].tagName)!='undefined'&&Field0.childNodes[ii].tagName=="TD"){for(var jj=0;jj<Field0.childNodes[ii].childNodes.length;jj++){currentNode=Field0.childNodes[ii].childNodes[jj];this.process_node(Field0.childNodes[ii],currentNode,values);}}}
+var count=this.fields_count;var Field0=SUGAR.isIE?SUGAR.collection.safe_clone(this.cloneField[0],true):this.cloneField[0].cloneNode(true);Field0.id="lineFields_"+this.field_element_name+"_"+count;for(var ii=0;ii<Field0.childNodes.length;ii++){if(typeof(Field0.childNodes[ii].tagName)!='undefined'&&Field0.childNodes[ii].tagName=="TD"){for(var jj=0;jj<Field0.childNodes[ii].childNodes.length;jj++){currentNode=Field0.childNodes[ii].childNodes[jj];this.process_node(Field0.childNodes[ii],currentNode,values);}}}
 return Field0;},process_node:function(parentNode,currentNode,values){if(parentNode.className=='td_extra_field'){if(parentNode.id){parentNode.id='';}
 var toreplace=this.field+"_collection_extra_0";var re=new RegExp(toreplace,'g');parentNode.innerHTML=parentNode.innerHTML.replace(re,this.field+"_collection_extra_"+this.fields_count);}else if(currentNode.tagName&&currentNode.tagName=='SPAN'){currentNode.id=/_input/.test(currentNode.id)?this.field_element_name+'_input_div_'+this.fields_count:this.field_element_name+'_radio_div_'+this.fields_count;if(/_input/.test(currentNode.id)){currentNode.name='teamset_div';}
-var input_els=currentNode.getElementsByTagName('input');for(var x=0;x<input_els.length;x++){if(input_els[x].tagName&&input_els[x].tagName=='INPUT'){this.process_node(parentNode,input_els[x],values);}}}else if(currentNode.name){var toreplace=this.field+"_collection_0";var re=new RegExp(toreplace,'g');var name=currentNode.name;var new_name=name.replace(re,this.field+"_collection_"+this.fields_count);switch(name){case toreplace:var sqs_id=this.form+'_'+new_name;if(typeof this.sqs_clone!='undefined'){var sqs_clone=YAHOO.lang.JSON.stringify(this.sqs_clone);eval('sqs_objects[sqs_id]='+sqs_clone);for(var pop_field in sqs_objects[sqs_id]['populate_list']){if(typeof sqs_objects[sqs_id]['populate_list'][pop_field]=='string'){sqs_objects[sqs_id]['populate_list'][pop_field]=sqs_objects[sqs_id]['populate_list'][pop_field].replace(RegExp('_0','g'),"_"+this.fields_count);}}
+var input_els=currentNode.getElementsByTagName('input');for(var x=0;x<input_els.length;x++){if(input_els[x].tagName&&input_els[x].tagName=='INPUT'){this.process_node(parentNode,input_els[x],values);}}}else if(currentNode.name){var toreplace=this.field+"_collection_0";var re=new RegExp(toreplace,'g');var name=currentNode.name;var new_name=name.replace(re,this.field+"_collection_"+this.fields_count);var new_id=currentNode.id.replace(re,this.field+"_collection_"+this.fields_count);switch(name){case toreplace:var sqs_id=this.form+'_'+new_name;if(typeof this.sqs_clone!='undefined'){var sqs_clone=YAHOO.lang.JSON.stringify(this.sqs_clone);eval('sqs_objects[sqs_id]='+sqs_clone);for(var pop_field in sqs_objects[sqs_id]['populate_list']){if(typeof sqs_objects[sqs_id]['populate_list'][pop_field]=='string'){sqs_objects[sqs_id]['populate_list'][pop_field]=sqs_objects[sqs_id]['populate_list'][pop_field].replace(RegExp('_0','g'),"_"+this.fields_count);}}
 for(var req_field in sqs_objects[sqs_id]['required_list']){if(typeof sqs_objects[sqs_id]['required_list'][req_field]=='string'){sqs_objects[sqs_id]['required_list'][req_field]=sqs_objects[sqs_id]['required_list'][req_field].replace(RegExp('_0','g'),"_"+this.fields_count);}}}
-currentNode.name=new_name;currentNode.id=new_name;currentNode.value=values['name'];break;case"id_"+toreplace:currentNode.name=new_name.replace(RegExp('_0','g'),"_"+this.fields_count);currentNode.id=new_name.replace(RegExp('_0','g'),"_"+this.fields_count);currentNode.value=values['id'];break;case"btn_"+toreplace:currentNode.name=new_name;currentNode.attributes['onclick'].value=currentNode.attributes['onclick'].value.replace(re,this.field+"_collection_"+this.fields_count);currentNode.attributes['onclick'].value=currentNode.attributes['onclick'].value.replace(RegExp(this.field+"_collection_extra_0",'g'),this.field+"_collection_extra_"+this.fields_count);break;case"allow_new_value_"+toreplace:currentNode.name=new_name;currentNode.id=new_name;break;case"remove_"+toreplace:currentNode.name=new_name;currentNode.id=new_name;currentNode.setAttribute('collection_id',this.field_element_name);currentNode.setAttribute('remove_id',this.fields_count);currentNode.onclick=function(){collection[this.getAttribute('collection_id')].remove(this.getAttribute('remove_id'));};break;case"primary_"+this.field+"_collection":currentNode.id=new_name;currentNode.value=this.fields_count;currentNode.checked=false;currentNode.setAttribute('defaultChecked','');break;default:alert(toreplace+'|'+currentNode.name+'|'+name+'|'+new_name);break;}}},js_more:function(val){if(this.show_more_image){var more_=document.getElementById('more_img_'+this.field_element_name);var arrow=document.getElementById('arrow_'+this.field);var radios=this.get_radios();if(this.more_status==false){more_.src="index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=advanced_search.gif";this.more_status=true;var hidden_count=0;for(var k=0;k<radios.length;k++){if(radios[k].type&&radios[k].type=='radio'){if(radios[k].checked){radios[k].parentNode.parentNode.parentNode.style.display='';}else{radios[k].parentNode.parentNode.parentNode.style.display='none';hidden_count++;}}}
+currentNode.name=new_name;currentNode.id=new_id;currentNode.value=values['name'];break;case"id_"+toreplace:currentNode.name=new_name.replace(RegExp('_0','g'),"_"+this.fields_count);currentNode.id=new_id.replace(RegExp('_0','g'),"_"+this.fields_count);currentNode.value=values['id'];break;case"btn_"+toreplace:currentNode.name=new_name;currentNode.attributes['onclick'].value=currentNode.attributes['onclick'].value.replace(re,this.field+"_collection_"+this.fields_count);currentNode.attributes['onclick'].value=currentNode.attributes['onclick'].value.replace(RegExp(this.field+"_collection_extra_0",'g'),this.field+"_collection_extra_"+this.fields_count);break;case"allow_new_value_"+toreplace:currentNode.name=new_name;currentNode.id=new_id;break;case"remove_"+toreplace:currentNode.name=new_name;currentNode.id=new_id;currentNode.setAttribute('collection_id',this.field_element_name);currentNode.setAttribute('remove_id',this.fields_count);currentNode.onclick=function(){collection[this.getAttribute('collection_id')].remove(this.getAttribute('remove_id'));};break;case"primary_"+this.field+"_collection":currentNode.id=new_id;currentNode.value=this.fields_count;currentNode.checked=false;currentNode.setAttribute('defaultChecked','');break;default:alert(toreplace+'|'+currentNode.name+'|'+name+'|'+new_name);break;}}},js_more:function(val){if(this.show_more_image){var more_=document.getElementById('more_img_'+this.field_element_name);var arrow=document.getElementById('arrow_'+this.field);var radios=this.get_radios();if(this.more_status==false){more_.src="index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=advanced_search.gif";this.more_status=true;var hidden_count=0;for(var k=0;k<radios.length;k++){if(radios[k].type&&radios[k].type=='radio'){if(radios[k].checked){radios[k].parentNode.parentNode.parentNode.style.display='';}else{radios[k].parentNode.parentNode.parentNode.style.display='none';hidden_count++;}}}
 if(hidden_count==radios.length){radios[0].parentNode.parentNode.parentNode.style.display='';}
 arrow.value='hide';}else{more_.src="index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=basic_search.gif";this.more_status=false;for(var k=0;k<radios.length;k++){if(isInteger(k)){radios[k].parentNode.parentNode.parentNode.style.display='';}}
 arrow.value='show';}
-var more_div=document.getElementById('more_div_'+this.field_element_name);if(more_div){more_div.innerHTML=arrow.value=='show'?SUGAR.language.get('app_strings','LBL_HIDE'):SUGAR.language.get('app_strings','LBL_SHOW');}}},create_clone:function(){var oneField=document.getElementById('lineFields_'+this.field_element_name+'_0');this.cloneField[0]=SUGAR.isIE?SUGAR.collection.safe_clone(oneField,true):oneField.cloneNode(true);this.cloneField[1]=oneField.parentNode;this.more_status=true;var clone_id=this.form+'_'+this.field+'_collection_0';if(typeof sqs_objects[clone_id]!='undefined'){var clone=YAHOO.lang.JSON.stringify(sqs_objects[clone_id]);eval('this.sqs_clone='+clone);}},validateTemSet:function(formname,fieldname){var table_element_id=formname+'_'+fieldname+'_table';if(document.getElementById(table_element_id)){var input_elements=YAHOO.util.Selector.query('input[type=radio]',document.getElementById(table_element_id));var has_primary=false;var primary_field_id=fieldname+'_collection_0';for(t in input_elements){primary_field_id=fieldname+'_collection_'+input_elements[t].value;if(input_elements[t].type&&input_elements[t].type=='radio'&&input_elements[t].checked==true){if(document.forms[formname].elements[primary_field_id].value!=''){has_primary=true;}
+var more_div=document.getElementById('more_div_'+this.field_element_name);if(more_div){more_div.innerHTML=arrow.value=='show'?SUGAR.language.get('app_strings','LBL_HIDE'):SUGAR.language.get('app_strings','LBL_SHOW');}}},create_clone:function(){var oneField=document.getElementById('lineFields_'+this.field_element_name+'_0');this.cloneField[0]=SUGAR.isIE?SUGAR.collection.safe_clone(oneField,true):oneField.cloneNode(true);this.cloneField[1]=oneField.parentNode;this.more_status=true;var clone_id=this.form+'_'+this.field+'_collection_0';if(typeof sqs_objects!='undefined'&&typeof sqs_objects[clone_id]!='undefined'){var clone=YAHOO.lang.JSON.stringify(sqs_objects[clone_id]);eval('this.sqs_clone='+clone);}},validateTemSet:function(formname,fieldname){var table_element_id=formname+'_'+fieldname+'_table';if(document.getElementById(table_element_id)){var input_elements=YAHOO.util.Selector.query('input[type=radio]',document.getElementById(table_element_id));var has_primary=false;var primary_field_id=fieldname+'_collection_0';for(t in input_elements){primary_field_id=fieldname+'_collection_'+input_elements[t].value;if(input_elements[t].type&&input_elements[t].type=='radio'&&input_elements[t].checked==true){if(document.forms[formname].elements[primary_field_id].value!=''){has_primary=true;}
 break;}}
 if(!has_primary){return false;}
 return true;}
 return true;},getTeamIdsfromUI:function(formname,fieldname){var team_ids=new Array();var table_element_id=formname+'_'+fieldname+'_table';if(document.getElementById(table_element_id)){input_elements=YAHOO.util.Selector.query('input[type=hidden]',document.getElementById(table_element_id));for(t=0;t<input_elements.length;t++){if(input_elements[t].id.match("id_"+fieldname+"_collection_")!=null){team_ids.push(input_elements[t].value);}}}
 return team_ids;},getPrimaryTeamidsFromUI:function(formname,fieldname){var table_element_id=formname+'_'+fieldname+'_table';if(document.getElementById(table_element_id)){var input_elements=YAHOO.util.Selector.query('input[type=radio]',document.getElementById(table_element_id));for(t in input_elements){var primary_field_id='id_'+document.forms[formname][fieldname].name+'_collection_'+input_elements[t].value;if(input_elements[t].type&&input_elements[t].type=='radio'&&input_elements[t].checked==true){if(document.forms[formname].elements[primary_field_id].value!=''){return document.forms[formname].elements[primary_field_id].value;}}}}
 return'';},changePrimary:function(noAdd){var old_primary=this.primary_field;var radios=this.get_radios();for(var k=0;k<radios.length;k++){var qs_id=radios[k].id.replace('primary_','');if(radios[k].checked){this.primary_field=qs_id;}else{qs_id=qs_id+'_'+k;}
-qs_id=this.form+'_'+qs_id;if(typeof sqs_objects[qs_id]!='undefined'&&sqs_objects[qs_id]['primary_field_list']){for(var ii=0;ii<sqs_objects[qs_id]['primary_field_list'].length;ii++){if(radios[k].checked&&qs_id!=old_primary){sqs_objects[qs_id]['field_list'].push(sqs_objects[qs_id]['primary_field_list'][ii]);sqs_objects[qs_id]['populate_list'].push(sqs_objects[qs_id]['primary_populate_list'][ii]);}else if(old_primary==qs_id&&!radios[k].checked){sqs_objects[qs_id]['field_list'].pop();sqs_objects[qs_id]['populate_list'].pop();}}}}
+qs_id=this.form+'_'+qs_id;if(typeof sqs_objects!='undefined'&&typeof sqs_objects[qs_id]!='undefined'&&sqs_objects[qs_id]['primary_field_list']){for(var ii=0;ii<sqs_objects[qs_id]['primary_field_list'].length;ii++){if(radios[k].checked&&qs_id!=old_primary){sqs_objects[qs_id]['field_list'].push(sqs_objects[qs_id]['primary_field_list'][ii]);sqs_objects[qs_id]['populate_list'].push(sqs_objects[qs_id]['primary_populate_list'][ii]);}else if(old_primary==qs_id&&!radios[k].checked){sqs_objects[qs_id]['field_list'].pop();sqs_objects[qs_id]['populate_list'].pop();}}}}
 if(noAdd){enableQS(false);}
-this.first=false;},js_more_detail:function(id){var more_img=document.getElementById('more_img_'+id);if(more_img.style.display=='inline'){more_img.src="index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=advanced_search.gif";}else{more_img.src="index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=basic_search.gif";}},replace_first:function(values){for(var i=0;i<=this.fields_count;i++){var div_el=document.getElementById(this.field_element_name+'_input_div_'+i);if(div_el){var name_field=document.getElementById(this.field+"_collection_"+i);var id_field=document.getElementById("id_"+this.field+"_collection_"+i);name_field.value=values['name'];id_field.value=values['id'];break;}}},clean_up:function(){var divsToClean=new Array();var isFirstFieldEmpty=false;var divCount=0;for(var i=0;i<=this.fields_count;i++){var div_el=document.getElementById(this.field_element_name+'_input_div_'+i);if(div_el){input_els=div_el.getElementsByTagName('input');for(var x=0;x<input_els.length;x++){if(input_els[x].id&&input_els[x].id==(this.field+'_collection_'+i)&&trim(input_els[x].value)==''){if(divCount==0){isFirstFieldEmpty=true;}else{divsToClean.push(i);}}}
+this.first=false;},js_more_detail:function(id){var more_img=document.getElementById('more_img_'+id);if(more_img.style.display=='inline'){more_img.src="index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=advanced_search.gif";}else{more_img.src="index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=basic_search.gif";}},replace_first:function(values){for(var i=0;i<=this.fields_count;i++){var div_el=document.getElementById(this.field_element_name+'_input_div_'+i);if(div_el){var name_field=document.getElementById(this.field_element_name+"_collection_"+i);var id_field=document.getElementById("id_"+this.field_element_name+"_collection_"+i);name_field.value=values['name'];id_field.value=values['id'];break;}}},clean_up:function(){var divsToClean=new Array();var isFirstFieldEmpty=false;var divCount=0;for(var i=0;i<=this.fields_count;i++){var div_el=document.getElementById(this.field_element_name+'_input_div_'+i);if(div_el){input_els=div_el.getElementsByTagName('input');for(var x=0;x<input_els.length;x++){if(input_els[x].id&&input_els[x].name==(this.field+'_collection_'+i)&&trim(input_els[x].value)==''){if(divCount==0){isFirstFieldEmpty=true;}else{divsToClean.push(i);}}}
 divCount++;}}
 for(var j=0;j<divsToClean.length;j++){this.remove(divsToClean[j]);}
 return isFirstFieldEmpty;},show_arrow_label:function(show){var more_div=document.getElementById('more_div_'+this.field_element_name);if(more_div){more_div.style.display=show?'':'none';}},is_expanded:function(){var more_div=document.getElementById('more_div_'+this.field_element_name);if(more_div){return more_div.style.display=='';}
-return false;}}
-SUGAR.collection.safe_clone=function(e,recursive)
+return false;}};SUGAR.collection.safe_clone=function(e,recursive)
 {if(e.nodeName=="#text")
 {return document.createTextNode(e.data);}
-if(!e.tagName)return false;var newNode=document.createElement(e.tagName);if(!newNode)return false;if(SUGAR.isIE7&&e.tagName.toLowerCase()=='input')
+if(!e.tagName)return false;var newNode=document.createElement(e.tagName);if(!newNode)return false;var properties=['class','style','name','type','valign','border','width','height','top','bottom','left','right','scope','row','columns','src','href','className','align','nowrap'];if(SUGAR.isIE7&&e.tagName.toLowerCase()=='input')
 {var properties=['class','style','name','type','valign','border','width','top','bottom','left','right','scope','row','columns','src','href','className','align','nowrap'];}else{var properties=['class','style','name','type','valign','border','width','height','top','bottom','left','right','scope','row','columns','src','href','className','align','nowrap'];}
 for(var i in properties)
 {if(e[properties[i]])
@@ -133,7 +131,8 @@ if(recursive)
 {for(var i in e.childNodes)
 {if(e.childNodes[i].nodeName&&(!e.className||e.className!="yui-ac-container"))
 {var child=SUGAR.collection.safe_clone(e.childNodes[i],true);if(child)newNode.appendChild(child);}}}
-return newNode;}}// End of File include/SugarFields/Fields/Collection/SugarFieldCollection.js
+return newNode;}}
+// End of File include/SugarFields/Fields/Collection/SugarFieldCollection.js
                                 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
@@ -205,13 +204,18 @@ SUGAR.email2 = {
     }
 };
 
+
 /**
  * Shows overlay progress message
  */
-function overlayModal(title, body) {
-    overlay(title, body);
+
+//overlayModal
+SUGAR.showMessageBoxModal = function(title, body) {
+    SUGAR.showMessageBox(title, body);
 }
-function overlay(reqtitle, body, type, additconfig) {
+
+//overlay
+SUGAR.showMessageBox = function(reqtitle, body, type, additconfig) {
     var config = { };
     if (typeof(additconfig) == "object") {
         var config = additconfig;
@@ -220,9 +224,10 @@ function overlay(reqtitle, body, type, additconfig) {
     config.title = reqtitle;
     config.msg = body;
     YAHOO.SUGAR.MessageBox.show(config);
-};
+}
 
-function hideOverlay() {
+//hideOverlay
+SUGAR.hideMessageBox = function() {
 	YAHOO.SUGAR.MessageBox.hide();
 };
 // End of File modules/Emails/javascript/EmailUIShared.js
@@ -295,7 +300,7 @@ var AjaxObject = {
 	composeCache : function(o) {
 		var idx = SUGAR.email2.composeLayout.currentInstanceId; // post instance increment
 		// get email templates and user signatures
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 
 		SUGAR.email2.composeLayout.emailTemplates = ret.emailTemplates;
 		SUGAR.email2.composeLayout.signatures = ret.signatures;
@@ -312,11 +317,11 @@ var AjaxObject = {
 		if (typeof(ret.errorArray)=='object' && ret.errorArray instanceof Array && ret.errorArray.length > 0){
 			//add error messages for display
 			for(i in ret.errorArray)
-				overlay(app_strings.LBL_EMAIL_ERROR_DESC, ret.errorArray[i], 'alert');
+				SUGAR.showMessageBox(app_strings.LBL_EMAIL_ERROR_DESC, ret.errorArray[i], 'alert');
 		}else if (typeof(ret.errorArray)=='object' && ret.errorArray!=null && ret.errorArray!='' ) {
 			//if error element is returning an object, and the object value is not empty or null, then display error message
 			for(i in ret.errorArray)
-				overlay(app_strings.LBL_EMAIL_ERROR_DESC, ret.errorArray[i], 'alert');
+				SUGAR.showMessageBox(app_strings.LBL_EMAIL_ERROR_DESC, ret.errorArray[i], 'alert');
 		}
 
 		//YUI bug with IE6 - Wont restore visibility property for nested select elements.
@@ -330,8 +335,8 @@ var AjaxObject = {
 
 
 	handleDeleteSignature : function(o) {
-		hideOverlay();
-		var ret = JSON.parse(o.responseText);
+		SUGAR.hideMessageBox();
+        var ret = YAHOO.lang.JSON.parse(o.responseText);
 		SUGAR.email2.composeLayout.signatures = ret.signatures;
     	var field = document.getElementById('signature_id');
 		SUGAR.email2.util.emptySelectOptions(field);
@@ -347,7 +352,7 @@ var AjaxObject = {
 	 */
 	handleDeleteReturn : function(o) {
 		// force refresh ListView
-		hideOverlay();
+		SUGAR.hideMessageBox();
 		if(document.getElementById('focusEmailMbox')) {
 			YAHOO.namespace('frameFolders').selectednode = SUGAR.email2.folders.getNodeFromMboxPath(document.getElementById('focusEmailMbox').innerHTML);
 		}
@@ -360,14 +365,14 @@ var AjaxObject = {
 	 */
     handleFailure : function(o) {
 		// Failure handler
-		overlay('Exception occurred...', o.statusText, 'alert');
+		SUGAR.showMessageBox('Exception occurred...', o.statusText, 'alert');
 		if(document.getElementById('saveButton')) {
 			document.getElementById('saveButton').disabled = false;
 		}
 	},
 
 	handleReplyForward : function(o) {
-		var a = JSON.parse(o.responseText);
+		var a = YAHOO.lang.JSON.parse(o.responseText);
 		globalA = a;
 		var idx = SUGAR.email2.composeLayout.currentInstanceId;
 
@@ -391,7 +396,7 @@ var AjaxObject = {
 	},
 
 	handleReplyForwardForDraft : function(o) {
-		var a = JSON.parse(o.responseText);
+		var a = YAHOO.lang.JSON.parse(o.responseText);
 		globalA = a;
 		var idx = SUGAR.email2.composeLayout.currentInstanceId;
 
@@ -425,41 +430,37 @@ var AjaxObject = {
 	 */
 	handleSuccess : function(o) {
 		document.getElementById(this.target).innerHTML = o.responseText;
-		hideOverlay();
+		SUGAR.hideMessageBox();
 	},
 
 	/**
 	 */
 	ieDeleteSuccess : function(o) {
-		hideOverlay();
-
-		var ret = JSON.parse(o.responseText);
-
+		SUGAR.hideMessageBox();
 		SUGAR.email2.accounts.refreshInboundAccountTable();
 		alert(app_strings.LBL_EMAIL_IE_DELETE_SUCCESSFUL);
 		SUGAR.email2.accounts.rebuildFolderList();
-
 	},
 
 	/**
 	 */
 	ieSaveSuccess : function(o) {
 		document.getElementById('saveButton').disabled = false;
-		var a = JSON.parse(o.responseText);
+		var a = YAHOO.lang.JSON.parse(o.responseText);
 		if (a) {
 			if(a.error) {
-				overlay(app_strings.LBL_EMAIL_ERROR_DESC, app_strings.LBL_EMAIL_ERROR_CHECK_IE_SETTINGS, 'alert');
+				SUGAR.showMessageBox(app_strings.LBL_EMAIL_ERROR_DESC, app_strings.LBL_EMAIL_ERROR_CHECK_IE_SETTINGS, 'alert');
 				SUGAR.email2.accounts.ieAccountError(SUGAR.email2.accounts.errorStyle);
 			} else {
-				resp = JSON.parse(o.responseText);
+				resp = YAHOO.lang.JSON.parse(o.responseText);
 				SUGAR.email2.accounts.refreshInboundAccountTable();
 				SUGAR.email2.accounts.refreshOuboundAccountTable();
 				SUGAR.email2.folders.startEmailCheckOneAccount(resp.id, true);
 				SUGAR.email2.accounts.inboundAccountEditDialog.hide();
 			}
 		} else {
-		     hideOverlay();
-		     overlay(app_strings.LBL_EMAIL_ERROR_DESC, app_strings.LBL_EMAIL_ERROR_SAVE_ACCOUNT, 'alert');
+		     SUGAR.hideMessageBox();
+		     SUGAR.showMessageBox(app_strings.LBL_EMAIL_ERROR_DESC, app_strings.LBL_EMAIL_ERROR_SAVE_ACCOUNT, 'alert');
 		}
 
 	},
@@ -467,7 +468,7 @@ var AjaxObject = {
 	/**
 	 */
 	loadAttachments : function(o) {
-		var result = JSON.parse(o.responseText);
+		var result = YAHOO.lang.JSON.parse(o.responseText);
 
 		SUGAR.email2.composeLayout.loadAttachments(result);
 	},
@@ -475,7 +476,7 @@ var AjaxObject = {
 	/**
 	 */
 	loadSignature : function(o) {
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 		SUGAR.email2.signatures[ret.id] = ret.signature_html;
 		SUGAR.email2.composeLayout.setSignature(SUGAR.email2.signatures.targetInstance);
 	},
@@ -484,10 +485,10 @@ var AjaxObject = {
 	 * Follow up to mark email read|unread|flagged
 	 */
 	markEmailCleanup : function(o) {
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 		if (!ret['status']) {
-        	hideOverlay();
-			overlay(app_strings.LBL_EMAIL_ERROR_DESC, ret['message'], 'alert');
+        	SUGAR.hideMessageBox();
+			SUGAR.showMessageBox(app_strings.LBL_EMAIL_ERROR_DESC, ret['message'], 'alert');
 		} else {
 			SUGAR.email2.contextMenus.markEmailCleanup();
 		} // else
@@ -496,7 +497,7 @@ var AjaxObject = {
 	/**
 	 */
 	rebuildShowFolders : function(o) {
-		var t = JSON.parse(o.responseText);
+		var t = YAHOO.lang.JSON.parse(o.responseText);
 		var show = document.getElementById('ieAccountListShow');
 
 		SUGAR.email2.util.emptySelectOptions(show);
@@ -532,14 +533,19 @@ var AjaxObject = {
 	 *
 	 */
 	sendEmailCleanUp : function(o) {
-		hideOverlay();
-		var ret = JSON.parse(o.responseText);
-		if (ret) {
-		  SUGAR.email2.composeLayout.forceCloseCompose(ret.composeLayoutId);
-		  //SUGAR.email2.addressBook.showContactMatches(ret.possibleMatches);
-		} else if (o.responseText) {
-		  overlay(mod_strings.LBL_SEND_EMAIL_FAIL_TITLE, o.responseText, 'alert');
-		}
+        var ret;
+        SUGAR.hideMessageBox();
+
+        try {
+            ret = YAHOO.lang.JSON.parse(o.responseText);
+            SUGAR.email2.composeLayout.forceCloseCompose(ret.composeLayoutId);
+            //SUGAR.email2.addressBook.showContactMatches(ret.possibleMatches);
+        } catch(err) {
+            if (o.responseText) {
+                SUGAR.showMessageBox(mod_strings.LBL_SEND_EMAIL_FAIL_TITLE, o.responseText, 'alert');
+		    }
+            // Else we have an error here.
+        }        
 
 		if (typeof(SE.grid) != 'undefined')
 			SE.listView.refreshGrid();
@@ -559,15 +565,15 @@ var AjaxObject = {
 	},
 
 	ieSendSuccess : function(o) {
-		hideOverlay();
-		overlay(app_strings.LBL_EMAIL_TEST_OUTBOUND_SETTINGS_SENT, app_strings.LBL_EMAIL_TEST_NOTIFICATION_SENT, 'plain');
+		SUGAR.hideMessageBox();
+		SUGAR.showMessageBox(app_strings.LBL_EMAIL_TEST_OUTBOUND_SETTINGS_SENT, app_strings.LBL_EMAIL_TEST_NOTIFICATION_SENT, 'plain');
 	},
 
 	/**
 	 */
 	settingsFolderRefresh : function(o) {
 		//SUGAR.email2.accounts.rebuildFolderList(); // refresh frameFolder
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 		var user = document.getElementById('userFolders');
 
 		SUGAR.email2.util.emptySelectOptions(user);
@@ -603,7 +609,7 @@ var AjaxObject = {
 	updateFolderSubscriptions : function() {
 		SUGAR.email2.folders.lazyLoadSettings(); // refresh view in Settings overlay
 		SUGAR.email2.folders.setSugarFolders(1000);// refresh view in TreeView
-		hideOverlay();
+		SUGAR.hideMessageBox();
 	},
 
 	/**
@@ -615,7 +621,7 @@ var AjaxObject = {
 	/**
 	 */
 	updateUserPrefs : function(o) {
-		SUGAR.email2.userPrefs = JSON.parse(o.responseText);
+		SUGAR.email2.userPrefs = YAHOO.lang.JSON.parse(o.responseText);
 		SUGAR.email2.folders.startCheckTimer(); // starts the auto-check interval
 	},
 
@@ -624,8 +630,8 @@ var AjaxObject = {
 	uploadAttachmentSuccessful : function(o) {
 		// clear out field
 		document.getElementById('email_attachment').value = '';
-
-		var ret = JSON.parse(o.responseText);
+		
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 		var idx = SUGAR.email2.composeLayout.currentInstanceId;
 		var overall = document.getElementById('addedFiles' + idx);
 		var index = overall.childNodes.length;
@@ -672,7 +678,7 @@ AjaxObject.accounts = {
 	callbackEditOutbound : {
 		success	: function(o)
 		{
-			var ret = JSON.parse(o.responseText);
+			var ret = YAHOO.lang.JSON.parse(o.responseText);
 			// show overlay
 			SUGAR.email2.accounts.showAddSmtp();
 
@@ -706,20 +712,20 @@ AjaxObject.accounts = {
 	},
 	callbackDeleteOutbound : {
 		success	: function(o) {
-		    var ret = JSON.parse(o.responseText);
+		    var ret = YAHOO.lang.JSON.parse(o.responseText);
 		    if(ret.is_error)
 		    {
 		        if(confirm(ret.error_message))
                 {
-                    overlay(app_strings.LBL_EMAIL_IE_DELETE, app_strings.LBL_EMAIL_ONE_MOMENT);
+                    SUGAR.showMessageBox(app_strings.LBL_EMAIL_IE_DELETE, app_strings.LBL_EMAIL_ONE_MOMENT);
                     AjaxObject.startRequest(AjaxObject.accounts.callbackDeleteOutbound, urlStandard + "&emailUIAction=deleteOutbound&confirm=true&outbound_email=" + ret.outbound_email);
                 }
                 else
-                    hideOverlay();
+                    SUGAR.hideMessageBox();
 		    }
 		    else
 		    {
-			     hideOverlay();
+			     SUGAR.hideMessageBox();
 			     SUGAR.email2.accounts.refreshOuboundAccountTable();
 		    }
 		},
@@ -736,12 +742,12 @@ AjaxObject.accounts = {
 	       }
 
 	       //Check for server timeout / errors
-	       var ret = JSON.parse(o.responseText);
+	       var ret = YAHOO.lang.JSON.parse(o.responseText);
 	       var done = false;
 
 	       if (typeof(o.responseText) == 'undefined' || o.responseText == "" || ret == false) {
-	           hideOverlay();
-	           overlay(app_strings.LBL_EMAIL_ERROR_DESC, app_strings.LBL_EMAIL_ERROR_TIMEOUT, 'alert');
+	           SUGAR.hideMessageBox();
+	           SUGAR.showMessageBox(app_strings.LBL_EMAIL_ERROR_DESC, app_strings.LBL_EMAIL_ERROR_TIMEOUT, 'alert');
 	           SUGAR.email2.accounts.totalMsgCount = -1;
                //SUGAR.email2.folders.rebuildFolders();
                done = true;
@@ -775,15 +781,15 @@ AjaxObject.accounts = {
 	       } else if (SUGAR.email2.accounts.totalMsgCount < 0 && ret.totalcount) {
 	           SUGAR.email2.accounts.totalMsgCount = ret.totalcount;
 	       } else {
-		       hideOverlay();
-               overlay(app_strings.LBL_EMAIL_ERROR_DESC, app_strings.LBL_EMAIL_ERROR_TIMEOUT, 'alert');
+		       SUGAR.hideMessageBox();
+               SUGAR.showMessageBox(app_strings.LBL_EMAIL_ERROR_DESC, app_strings.LBL_EMAIL_ERROR_TIMEOUT, 'alert');
                SUGAR.email2.accounts.totalMsgCount = -1;
                done = true;
 		   }
 
 	       if (done) {
 	           SUGAR.email2.accounts.totalMsgCount = -1;
-	           hideOverlay();
+	           SUGAR.hideMessageBox();
 	           SUGAR.email2.folders.rebuildFolders();
 	           SE.listView.refreshGrid();
 	       } else if (SUGAR.email2.accounts.totalMsgCount < 0) {
@@ -810,14 +816,19 @@ AjaxObject.composeLayout = {
 	/**
 	 * Populates the record id
 	 */
-	saveDraftCleanup : function(o) {
-		hideOverlay();
-		var ret = JSON.parse(o.responseText);
-		if(ret)
-		  SUGAR.email2.composeLayout.forceCloseCompose(ret.composeLayoutId);
-		else if (o.responseText)
-		  overlay(mod_strings.LBL_ERROR_SAVING_DRAFT, o.responseText, 'alert');
-	}
+    saveDraftCleanup : function(o) {
+        var ret;
+        SUGAR.hideMessageBox();
+
+        try {
+            ret = YAHOO.lang.JSON.parse(o.responseText);
+            SUGAR.email2.composeLayout.forceCloseCompose(ret.composeLayoutId);
+        } catch(err) {
+            if (o.responseText) {
+                SUGAR.showMessageBox(mod_strings.LBL_ERROR_SAVING_DRAFT, o.responseText, 'alert');
+            }
+        }
+    }
 };
 
 AjaxObject.composeLayout.callback = {
@@ -834,7 +845,7 @@ AjaxObject.detailView = {
 	 * Pops-up a printable view of an email
 	 */
 	displayPrintable : function(o) {
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 		var displayTemplate = new YAHOO.SUGAR.Template(SUGAR.email2.templates['viewPrintable']);
 		// 2 below must be in global context
 		meta = ret.meta;
@@ -865,7 +876,7 @@ AjaxObject.detailView = {
 	 */
 	displayView : function(o) {
 		var SED = SUGAR.email2.detailView;
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 
 		if(!SED.viewDialog) {
 			SED.viewDialog = new YAHOO.widget.Dialog("viewDialog", {
@@ -896,7 +907,7 @@ AjaxObject.detailView = {
 	 */
 	showQuickCreateForm : function(o) {
 		var SED = SUGAR.email2.detailView;
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 
 		if(!SED.quickCreateDialog) {
 			SED.quickCreateDialog = new YAHOO.widget.Dialog("quickCreate", {
@@ -965,14 +976,14 @@ AjaxObject.detailView = {
 	},
 
 	saveQuickCreateForm : function(o) {
-	    hideOverlay();
+	    SUGAR.hideMessageBox();
 		SUGAR.email2.detailView.quickCreateDialog.hide();
 		validate['EditView'] = [ ];
 	},
 
 	saveQuickCreateFormAndReply : function(o) {
-	    hideOverlay();
-	    var ret = JSON.parse(o.responseText);
+        SUGAR.hideMessageBox();
+        var ret = YAHOO.lang.JSON.parse(o.responseText);
         SUGAR.email2.detailView.quickCreateDialog.hide();
         var qcd = SUGAR.email2.detailView.quickCreateDialog;
         var type = (qcd.qcmodule == 'Cases') ? 'replyCase' : 'reply';
@@ -987,7 +998,7 @@ AjaxObject.detailView = {
     },
 
 	saveQuickCreateFormAndAddToAddressBook : function(o) {
-	   hideOverlay();
+	   SUGAR.hideMessageBox();
 		SUGAR.email2.detailView.quickCreateDialog.hide();
 		SUGAR.email2.complexLayout.findPanel('contactsTab').show();
 		validate['EditView'] = [ ];
@@ -1025,7 +1036,7 @@ AjaxObject.detailView = {
 	    var mbox = data.mbox;
 	    AjaxObject.startRequest(callbackAssignmentAction, urlStandard + '&emailUIAction=' + "doAssignmentAssign&uids=" + uids + "&ieId=" + ieid + "&folder=" + mbox + "&distribute_method=" + dist + "&users=" +assign_user_id + get);
 	    SUGAR.email2.contextMenus.assignToDialogue.hide();
-	    overlay('Assignment', app_strings.LBL_EMAIL_ONE_MOMENT);
+	    SUGAR.showMessageBox('Assignment', app_strings.LBL_EMAIL_ONE_MOMENT);
 
 	},
 
@@ -1037,16 +1048,16 @@ AjaxObject.detailView = {
 	    var mbox = row.data.mbox;
         AjaxObject.startRequest(callbackAssignmentAction, urlStandard + '&emailUIAction=' + "doAssignmentDelete&uids=" + uids + "&ieId=" + ieId + "&folder=" + mbox);
         SUGAR.email2.contextMenus.assignmentDialog.hide();
-		overlay(app_strings.LBL_EMAIL_PERFORMING_TASK, app_strings.LBL_EMAIL_ONE_MOMENT);
+		SUGAR.showMessageBox(app_strings.LBL_EMAIL_PERFORMING_TASK, app_strings.LBL_EMAIL_ONE_MOMENT);
 
 		// AJAX Call
 
 	},
 
 	showEmailDetailView : function(o) {
-        hideOverlay();
+        SUGAR.hideMessageBox();
         var SED = SUGAR.email2.detailView;
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 
 		if(!SED.quickCreateDialog) {
 			SED.quickCreateDialog = new YAHOO.widget.Dialog("emailDetailDialog", {
@@ -1080,8 +1091,8 @@ AjaxObject.detailView = {
 
 	showAssignmentDialogWithData : function(o) {
         var SEC = SUGAR.email2.contextMenus;
-		hideOverlay();
-        var ret = JSON.parse(o.responseText);
+		SUGAR.hideMessageBox();
+        var ret = YAHOO.lang.JSON.parse(o.responseText);
         if (!SEC.assignmentDialog) {
 	        SEC.assignmentDialog = new YAHOO.widget.Dialog("assignmentDialog", {
 	        	visible:false,
@@ -1108,10 +1119,10 @@ AjaxObject.detailView = {
 
 	showImportForm : function(o) {
 		var SED = SUGAR.email2.detailView;
-		var ret = JSON.parse(o.responseText);
-
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
+        
         document.getElementById('quickCreateContent').innerHTML = "";
-        hideOverlay();
+        SUGAR.hideMessageBox();
         if (!ret) {
             return false;
         }
@@ -1197,9 +1208,9 @@ AjaxObject.detailView = {
             action = action + '&emailUids=';
         }
         if (action.search(/importEmail/) != -1) {
-            overlay(app_strings.LBL_EMAIL_IMPORTING_EMAIL, app_strings.LBL_EMAIL_ONE_MOMENT);
+            SUGAR.showMessageBox(app_strings.LBL_EMAIL_IMPORTING_EMAIL, app_strings.LBL_EMAIL_ONE_MOMENT);
         } else {
-            overlay("Moving Email(s)", app_strings.LBL_EMAIL_ONE_MOMENT);
+            SUGAR.showMessageBox("Moving Email(s)", app_strings.LBL_EMAIL_ONE_MOMENT);
         }
 
         AjaxObject.startRequest(callbackStatusForImport, urlStandard + '&emailUIAction=' + action + uids + "&ieId=" + ieId + "&mbox=" + mbox +
@@ -1210,9 +1221,9 @@ AjaxObject.detailView = {
     },
     showRelateForm : function(o) {
         var SED = SUGAR.email2.detailView;
-    	var ret = JSON.parse(o.responseText);
+    	var ret = YAHOO.lang.JSON.parse(o.responseText);
         document.getElementById('quickCreateContent').innerHTML = "";
-        hideOverlay();
+        SUGAR.hideMessageBox();
         if (!ret) {
             return false;
         }
@@ -1244,7 +1255,7 @@ AjaxObject.detailView = {
     	                    }
     	                    uids += emailUids[i];
     	                }
-    	                overlay(app_strings.LBL_EMAIL_PERFORMING_TASK, app_strings.LBL_EMAIL_ONE_MOMENT);
+    	                SUGAR.showMessageBox(app_strings.LBL_EMAIL_PERFORMING_TASK, app_strings.LBL_EMAIL_ONE_MOMENT);
     	                AjaxObject.startRequest(callbackStatusForImport, urlStandard + '&emailUIAction=relateEmails&uid=' + uids
     	                    + "&ieId=" + ieId + "&mbox=" + mbox + "&parent_id=" + parent_id + "&parent_type=" + parent_type);
     	                SED.relateDialog.hide();
@@ -1287,7 +1298,7 @@ AjaxObject.detailView.callback = {
 	emailDetail : {
 		success	: function(o) {
 			SUGAR.email2.o = o;
-			var ret = JSON.parse(o.responseText);
+			var ret = YAHOO.lang.JSON.parse(o.responseText);
 			SUGAR.email2.detailView.consumeMetaDetail(ret);
 		},
 		argument: [targetDiv],
@@ -1298,7 +1309,7 @@ AjaxObject.detailView.callback = {
 	emailPreview : {
 		success	: function(o) {
 			SUGAR.email2.o = o;
-			var ret = JSON.parse(o.responseText);
+			var ret = YAHOO.lang.JSON.parse(o.responseText);
 			SUGAR.email2.detailView.consumeMetaPreview(ret);
 		},
 		failure	: AjaxObject.handleFailure,
@@ -1328,7 +1339,7 @@ AjaxObject.folders = {
 	 * check-mail post actions
 	 */
 	checkMailCleanup : function(o) {
-		hideOverlay();
+		SUGAR.hideMessageBox();
 		AjaxObject.folders.rebuildFolders(o); // rebuild TreeView
 
 		// refresh focus ListView
@@ -1339,9 +1350,9 @@ AjaxObject.folders = {
 	/**
 	 */
 	rebuildFolders : function(o) {
-		hideOverlay();
+		SUGAR.hideMessageBox();
 
-		var data = JSON.parse(o.responseText);
+		var data = YAHOO.lang.JSON.parse(o.responseText);
 
 		email2treeinit(SUGAR.email2.tree, data.tree_data, 'frameFolders', data.param);
 		SUGAR.email2.folders.setSugarFolders();
@@ -1397,7 +1408,7 @@ var callbackOutboundTest = {
 
 var callbackTeamInfoForSettings = {
 success : function (o) {
-	var data = JSON.parse(o.responseText);
+	var data = YAHOO.lang.JSON.parse(o.responseText);
 	document.getElementById('EditViewGroupFolderTeamTD').innerHTML = data.defaultgroupfolder;
 },
 failure	: AjaxObject.handleFailure,
@@ -1408,14 +1419,14 @@ scope	: AjaxObject
 
 var callbackStatusForImport = {
 success : function (o) {
-	hideOverlay();
+	SUGAR.hideMessageBox();
 	if (o.responseText != "")  {
 		var statusString = "";
-		var data = JSON.parse(o.responseText);
+		var data = YAHOO.lang.JSON.parse(o.responseText);
 		for(i=0; i<data.length; i++) {
 			statusString = statusString + data[i] + '<br/>';
 		}
-		overlay(SUGAR.language.get('Emails','LBL_IMPORT_STATUS_TITLE'), statusString, 'alert');
+		SUGAR.showMessageBox(SUGAR.language.get('Emails','LBL_IMPORT_STATUS_TITLE'), statusString, 'alert');
 	}
 	SE.listView.refreshGrid();
 
@@ -1439,8 +1450,8 @@ var callbackDelete = {
 };
 var callbackEmailDetailMultiple = {
 	success	: function(o) {
-		hideOverlay();
-		var retMulti = JSON.parse(o.responseText);
+		SUGAR.hideMessageBox();
+        var retMulti = YAHOO.lang.JSON.parse(o.responseText);
 		var ret = new Object();
 
 		for(var i=0; i<retMulti.length; i++) {
@@ -1463,7 +1474,7 @@ var callbackListViewSortOrderChange = {
 };
 var callbackEmptyTrash = {
 	success	: function(o) {
-		hideOverlay();
+		SUGAR.hideMessageBox();
 		AjaxObject.folderRenameCleanup;
 	},
 	failure	: AjaxObject.handleFailure,
@@ -1472,21 +1483,21 @@ var callbackEmptyTrash = {
 };
 var callbackClearCacheFiles = {
 	success	: function(o) {
-		hideOverlay();
+		SUGAR.hideMessageBox();
 	},
 	failure	: AjaxObject.handleFailure,
 	timeout	: AjaxObject.timeout,
 	scope	: AjaxObject
 };
 var callbackFolderRename = {
-	success	: function(o) {hideOverlay();SUGAR.email2.folders.rebuildFolders();},
+	success	: function(o) {SUGAR.hideMessageBox();SUGAR.email2.folders.rebuildFolders();},
 	failure	: AjaxObject.handleFailure,
 	timeout	: AjaxObject.timeout,
 	scope	: AjaxObject
 };
 var callbackFolderDelete = {
 	success	: function(o) {
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 		if (ret.status) {
 		    if (ret.folder_id) {
 		        var node = SUGAR.email2.folders.getNodeFromId(ret.folder_id);
@@ -1497,11 +1508,11 @@ var callbackFolderDelete = {
 		        if(node)
 		        	SUGAR.email2.tree.removeNode(node, true);
 		    }
-			hideOverlay();
+			SUGAR.hideMessageBox();
 			//SUGAR.email2.folders.loadSettingFolder();
 		} else {
-			hideOverlay();
-			overlay(app_strings.LBL_EMAIL_ERROR_DESC, ret.errorMessage, 'alert');
+			SUGAR.hideMessageBox();
+			SUGAR.showMessageBox(app_strings.LBL_EMAIL_ERROR_DESC, ret.errorMessage, 'alert');
 		} // else
 	},
 	failure	: AjaxObject.handleFailure,
@@ -1510,7 +1521,7 @@ var callbackFolderDelete = {
 };
 var callbackFolderSave = {
 	success	: function(o) {
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 
 		switch(ret.action) {
 			case 'newFolderSave':
@@ -1549,7 +1560,7 @@ var callbackFullSync = {
 };
 var callbackGeneric = {
 	success	: function() {
-		hideOverlay();
+		SUGAR.hideMessageBox();
 	},
 	failure	: AjaxObject.handleFailure,
 	timeout	: AjaxObject.timeout,
@@ -1558,7 +1569,7 @@ var callbackGeneric = {
 var callbackIeAccountRetrieve = {
 	success	: function(o) {
 		// return JSON encoding
-		hideOverlay();
+		SUGAR.hideMessageBox();
 		SUGAR.email2.accounts.fillIeAccount(o.responseText);
 		SUGAR.email2.accounts.showEditInboundAccountDialogue(false);
 	},
@@ -1593,9 +1604,9 @@ var callbackAssignmentDialog = {
 var callbackAssignmentAction = {
 	success :  function(o) {
 		SE.listView.refreshGrid();
-		hideOverlay();
+		SUGAR.hideMessageBox();
 		if(o.responseText != '') {
-	       overlay('Assignment action result', o.responseText, 'alert');
+	       SUGAR.showMessageBox('Assignment action result', o.responseText, 'alert');
 	    } // if
 	} ,
 	failure	: AjaxObject.handleFailure,
@@ -1605,9 +1616,9 @@ var callbackAssignmentAction = {
 var callbackMoveEmails = {
 	success :  function(o) {
 	    SE.listView.refreshGrid();
-		hideOverlay();
+		SUGAR.hideMessageBox();
 		if(o.responseText != '') {
-	       overlay(app_strings.LBL_EMAIL_ERROR_DESC, o.responseText, 'alert');
+	       SUGAR.showMessageBox(app_strings.LBL_EMAIL_ERROR_DESC, o.responseText, 'alert');
 	    } // if
 	} ,
 	failure	: AjaxObject.handleFailure,
@@ -1695,7 +1706,7 @@ var callbackRebuildShowAccountList = {
 
 var callbackRefreshSugarFolders = {
 	success	: function(o) {
-		var t = JSON.parse(o.responseText);
+		var t = YAHOO.lang.JSON.parse(o.responseText);
 		SUGAR.email2.folders.setSugarFoldersEnd(t);
 	},
 	failure	: AjaxObject.handleFailure,
@@ -1715,17 +1726,14 @@ var callbackReplyForward = {
         try {
 			var html = t.getContent();
 
-            if (a.type != 'draft') {
-    			if(SUGAR.email2.userPrefs.signatures.signature_prepend == 'true') {
-    				html += "&nbsp;<div><hr></div>" + a.description;
-    			} else {
-    				html =  "&nbsp;<div><hr></div>" + a.description + html;
-    			}
-            }else {
-                html = a.description;
-            }
+            html = "&nbsp;<div><hr></div>" + a.description;
 
 			t.setContent(html);//
+
+            if (a.type != 'draft') {
+                // Next step, attach signature
+                SUGAR.email2.composeLayout.resizeEditorSetSignature(idx,true);
+            }
 
 		} catch(e) {
 			if (retryCount < 5) {
@@ -1772,7 +1780,7 @@ var callbackReplyForward = {
 	              addressFrom.options.add(opt);
 	        }
 		} // if
-		hideOverlay();
+		SUGAR.hideMessageBox();
 
 	},
 	failure	: AjaxObject.handleFailure,
@@ -1817,7 +1825,7 @@ var callbackUploadAttachment = {
 };
 var callbackUserPrefs = {
 	success	: function(o) {
-		SUGAR.email2.userPrefs = JSON.parse(o.responseText);
+		SUGAR.email2.userPrefs = YAHOO.lang.JSON.parse(o.responseText);
 	},
 	failure	: AjaxObject.handleFailure,
 	timeout	: AjaxObject.timeout,
@@ -1835,8 +1843,8 @@ var callbackContextmenus = {
 
 var callbackCheckEmail2 = {
 	success : function(o) {
-		var ret = JSON.parse(o.responseText);
-		overlay(app_strings.LBL_EMAIL_CHECKING_NEW, ret.text);
+        var ret = YAHOO.lang.JSON.parse(o.responseText);
+		SUGAR.showMessageBox(app_strings.LBL_EMAIL_CHECKING_NEW, ret.text);
 
 
 	},
@@ -3401,7 +3409,7 @@ SE.composeLayout = {
      		SE.composeLayout[idx].getUnitByPosition("right").collapse();
      		//Initialize tinyMCE
      		if (!SUGAR.util.isTouchScreen())
-     		    SE.composeLayout._1_tiny();
+     		    SE.composeLayout._1_tiny(false);
      		//Init templates and address book
      		SE.composeLayout._2_final();
 
@@ -3465,7 +3473,6 @@ SE.composeLayout = {
 	                	SE.composeLayout.composeTemplate.exec({
 	                        'app_strings':app_strings,
 	                        'mod_strings':mod_strings,
-	                        'theme': theme,
 	                        'linkbeans_options' : linkBeans,
 	                        'idx' : SE.composeLayout.currentInstanceId
 	                	})
@@ -3594,7 +3601,7 @@ SE.composeLayout = {
     /**
      * Prepare TinyMCE
      */
-    _1_tiny : function() {
+    _1_tiny : function(isReplyForward) {
         var idx = SE.composeLayout.currentInstanceId;
         var elId = SE.tinyInstances.currentHtmleditor = 'htmleditor' + idx;
         SE.tinyInstances[elId] = { };
@@ -3604,10 +3611,25 @@ SE.composeLayout = {
         if(typeof(t) == 'undefined')  {
             tinyMCE.execCommand('mceAddControl', false, elId);
             YAHOO.util.Event.onAvailable(elId + "_parent", function() {
-            	SE.composeLayout.resizeEditor(idx);
-                setTimeout("SUGAR.email2.composeLayout.setSignature('" + idx + "')", 1000);
+                SE.composeLayout.resizeEditorSetSignature(idx,!isReplyForward);
             }, this);
         }
+    },
+
+    resizeEditorSetSignature : function(idx,setSignature)
+    {
+    	var instance = SE.util.getTiny(SE.tinyInstances.currentHtmleditor);
+
+        if(typeof(instance) == 'undefined' || (typeof(SE.composeLayout.loadedTinyInstances[idx]) != 'undefined' && SE.composeLayout.loadedTinyInstances[idx] == false)) {
+            setTimeout("SE.composeLayout.resizeEditorSetSignature(" + idx + ",'"+isReplyForward+"');",500);
+		    return;
+		}
+
+        SE.composeLayout.resizeEditor(idx);
+        if(setSignature) {
+            setTimeout("SUGAR.email2.composeLayout.setSignature("+idx+");",250);
+        }
+
     },
 
     resizeEditor : function(idx)
@@ -3615,14 +3637,19 @@ SE.composeLayout = {
     	var cof = Dom.get('composeOverFrame' + idx);
         var head = Dom.get('composeHeaderTable' + idx);
         var targetHeight = cof.clientHeight - head.clientHeight;
-    	var instance =  tinyMCE.get(SE.tinyInstances.currentHtmleditor);
+    	var instance = SE.util.getTiny('htmleditor' + idx);
 
+        try {
     	var parentEl = Dom.get(instance.editorId + '_parent');
     	var toolbar = Dom.getElementsByClassName("mceFirst", "tr", parentEl)[0];
     	var contentEl  = instance.contentAreaContainer;
         var iFrame = contentEl.firstChild;
         var tinMceToolbarOffset = 18;
         iFrame.style.height = (targetHeight - toolbar.offsetHeight - tinMceToolbarOffset)  + "px";
+
+        } catch(e) {
+            setTimeout("SE.composeLayout.resizeEditor("+idx+");",1000);
+        }
     },
 
     /**
@@ -3670,7 +3697,7 @@ SE.composeLayout = {
         if (typeof(tinyMCE) == 'undefined' || typeof(tinyMCE.settings) == 'undefined'){
             setTimeout("SE.composeLayout.c1_composeEmail(" + isReplyForward + ", true);", 500);
         } else {
-	        this._1_tiny();
+	        this._1_tiny(isReplyForward);
 	        this._2_final();
 
 	        if(isReplyForward) {
@@ -3696,7 +3723,7 @@ SE.composeLayout = {
         SE.tinyInstances[SE.tinyInstances.currentHtmleditor].ready = false;
 
         SE.composeLayout._0_yui();
-        SE.composeLayout._1_tiny();
+        SE.composeLayout._1_tiny(true);
 
         // final touches
         SE.composeLayout._2_final();
@@ -3830,9 +3857,9 @@ SE.composeLayout = {
         var start = htmllow.indexOf(openTag);
 		if (start > -1) {
 	        tinyHTML = tinyHTML.substr(start);
-	        tiny.setContent(tinyHTML);
-		} else {
-        	tiny.setContent('');
+            tiny.setContent(tinyHTML);
+		} else { 
+       	    tiny.setContent('');
 		}
     },
 
@@ -3912,7 +3939,7 @@ SE.composeLayout = {
 
         var openTag = '<div><span><span>';
         var closeTag = '</span></span></div>';
-        var t = SE.util.getTiny('htmleditor' + idx);
+        var t = tinyMCE.getInstanceById('htmleditor' + idx);
         //IE 6 Hack
         if(typeof(t) != 'undefined')
         {
@@ -3920,7 +3947,9 @@ SE.composeLayout = {
             var html = t.getContent();
         }
         else
+        {
             var html = '';
+        }
 
         var htmllow = html.toLowerCase();
         var start = htmllow.indexOf(openTag);
@@ -4219,7 +4248,7 @@ SE.composeLayout = {
 
         if( typeof(SUGAR.email2.composeLayout.outboundAccountErrors[obAccountID]) != 'undefined' )
         {
-            overlay(app_strings.LBL_EMAIL_ERROR_DESC, SUGAR.email2.composeLayout.outboundAccountErrors[obAccountID], 'alert');
+            SUGAR.showMessageBox(app_strings.LBL_EMAIL_ERROR_DESC, SUGAR.email2.composeLayout.outboundAccountErrors[obAccountID], 'alert');
             return false;
         }
 
@@ -4280,7 +4309,7 @@ SE.composeLayout = {
         SE.util.clearHiddenFieldValues('emailCompose' + idx);
 		document.getElementById('data_parent_id' + idx).value = parentIdValue;
 		var title = (isDraft) ? app_strings.LBL_EMAIL_SAVE_DRAFT : app_strings.LBL_EMAIL_SENDING_EMAIL;
-        overlay(title, app_strings.LBL_EMAIL_ONE_MOMENT);
+        SUGAR.showMessageBox(title, app_strings.LBL_EMAIL_ONE_MOMENT);
         html = html.replace(/&lt;/ig, "sugarLessThan");
         html = html.replace(/&gt;/ig, "sugarGreaterThan");
 
@@ -4664,7 +4693,7 @@ SE.composeLayout = {
      */
     replyForwardEmailStage2 : function() {
         SE.util.clearHiddenFieldValues('emailUIForm');
-        overlay(app_strings.LBL_EMAIL_RETRIEVING_MESSAGE, app_strings.LBL_EMAIL_ONE_MOMENT);
+        SUGAR.showMessageBox(app_strings.LBL_EMAIL_RETRIEVING_MESSAGE, app_strings.LBL_EMAIL_ONE_MOMENT);
 
         var ieId = SE.composeLayout.replyForwardObj.ieId;
         var uid = SE.composeLayout.replyForwardObj.uid;
@@ -4706,7 +4735,7 @@ SE.composeLayout = {
 			   && ( this['ccHidden'+idx]  == false && this['bccHidden'+idx] == false) )
 			Dom.addClass("add_addr_options_tr"+idx, "yui-hidden");
 
-		SE.composeLayout.resizeEditor(idx);
+		// SE.composeLayout.resizeEditor(idx);
     },
     /**
     *  Hide the cc and bcc fields if they were shown.
@@ -5337,7 +5366,7 @@ function complexLayoutInit() {
 			var listV =  this.getInnerLayout2Rows();
 			listV.set("height", tp.get("element").clientHeight - 25);
 			listV.render();
-                
+            
             se.leftTabs = new YAHOO.widget.TabView("lefttabs");
             var folderTab = new YAHOO.widget.Tab({ 
 				label: app_strings.LBL_EMAIL_FOLDERS_SHORT,

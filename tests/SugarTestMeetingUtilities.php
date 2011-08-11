@@ -69,7 +69,23 @@ class SugarTestMeetingUtilities
         $GLOBALS['db']->query('DELETE FROM meetings_contacts WHERE meeting_id IN (\'' . implode("', '", $meeting_ids) . '\')');
     }
     
-    public static function getCreatedMeetingIds() 
+    public static function addMeetingLeadRelation($meeting_id, $lead_id) {
+        $id = create_guid();
+        $GLOBALS['db']->query("INSERT INTO meetings_leads (id, meeting_id, lead_id) values ('{$id}', '{$meeting_id}', '{$lead_id}')");
+        return $id;
+    }
+
+    public static function deleteMeetingLeadRelation($id) {
+        $GLOBALS['db']->query("delete from meetings_leads where id='{$id}'");
+    }
+
+
+    public static function addMeetingParent($meeting_id, $lead_id) {
+        $sql = "update meetings set parent_type='Leads', parent_id='{$lead_id}' where id='{$meeting_id}'";
+        $GLOBALS['db']->query($sql);
+    }
+
+    public static function getCreatedMeetingIds()
     {
         $meeting_ids = array();
         foreach (self::$_createdMeetings as $meeting) {

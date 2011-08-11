@@ -159,6 +159,7 @@ abstract class ExternalAPIBase implements ExternalAPIPlugin
 	    if(isset($this->connector)) {
 	        if(empty($this->connector_source)) {
 	            $this->connector_source = SourceFactory::getSource($this->connector, false);
+                $this->connector_source->setEAPM($this);
 	        }
 	        return $this->connector_source;
 	    }

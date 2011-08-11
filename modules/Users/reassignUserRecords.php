@@ -52,9 +52,9 @@ $return_action = isset($_REQUEST['return_action']) ? $_REQUEST['return_action'] 
 $return_id = isset($_REQUEST['return_id']) ? $_REQUEST['return_id'] : '';
 if(!empty($return_module))
     $cancel_location = "index.php?module=".$return_module."&action=".$return_action."&record=".$return_id;
-else 
+else
     $cancel_location = "index.php?module=Users&action=index";
-		
+
 echo "<h2 class='moduleTitle' style=\"margin-bottom:0px;\">{$mod_strings_users['LBL_REASS_SCRIPT_TITLE']}</h2>";
 
 // Include Metadata for processing
@@ -77,6 +77,8 @@ if(!isset($_POST['fromuser']) && !isset($_GET['execute'])){
 		"SavedSearch",
 		"UserPreference",
 	    "SugarFavorites",
+	    'OAuthKey',
+	    'OAuthToken',
 	);
 
 	if(isset($_GET['clear']) && $_GET['clear'] == 'true'){
@@ -159,7 +161,7 @@ if(!isset($_SESSION['reassignRecords']['assignedModuleListCache'])){
 		}
 	}
 	$beanListDup = array_diff($beanListDup, $exclude_modules);
-	
+
 	//Leon bug 20739
 	$beanListDupDisp=array() ;
 	foreach($beanListDup as $m => $p){
@@ -205,7 +207,7 @@ foreach($moduleFilters as $modFilter => $fieldArray){
 				$multi = "multiple=\"true\"";
 				$name .= "[]";
 				// NO BREAK - Continue into select
-			case "select": 
+			case "select":
 				$tag = "select";
 				$sel = '';
 				if(!empty($_SESSION['reassignRecords']['filters'][$meta['name']])){
@@ -249,12 +251,12 @@ else if(!isset($_GET['execute'])){
 	if($_POST['fromuser'] == $_POST['touser']){
 		sugar_die($mod_strings_users['ERR_REASS_DIFF_USERS']);
 	}
-	
+
 	global $current_user;
 	// Set the from and to user names so that we can display them in the results
 	$fromusername = $_POST['fromuser'];
 	$tousername = $_POST['touser'];
-	
+
 	$query = "select user_name, id from users where id in ('{$_POST['fromuser']}', '{$_POST['touser']}')";
 	$res = $GLOBALS['db']->query($query);
 	while($row = $GLOBALS['db']->fetchByAssoc($res)){
@@ -281,20 +283,20 @@ else if(!isset($_GET['execute'])){
 			continue;
 		}
 		$p_module = $beanListFlip[$module];
-		
+
 		require_once($beanFiles[$module]);
 		$object = new $module();
 		if(empty($object->table_name)){
 //			echo "<h5>Could not find the database table for $p_module.</h5>";
 			continue;
 		}
-		
+
 		echo "<h5>{$mod_strings_users['LBL_REASS_ASSESSING']} {$app_list_strings['moduleList'][$p_module]}</h5>";
-		
+
 		echo "<table border='0' cellspacing='0' cellpadding='0'  class='detail view'>\n";
 		echo "<tr>\n";
 		echo "<td>\n";
-		
+
 		$q_select = "select id";
 		$q_update = "update ";
 		$q_set = " set assigned_user_id = '{$_POST['touser']}', ".
@@ -344,28 +346,28 @@ else if(!isset($_GET['execute'])){
 		$query = "$q_select from $q_tables $q_where";
 		$countquery = "select count(*) AS count from $q_tables $q_where";
 		$updatequery = "$q_update $q_tables $q_set $q_where";
-		
+
 		$_SESSION['reassignRecords']['fromuser'] = $_POST['fromuser'];
 		$_SESSION['reassignRecords']['touser'] = $_POST['touser'];
 		$_SESSION['reassignRecords']['fromusername'] = $fromusername;
 		$_SESSION['reassignRecords']['tousername'] = $tousername;
 		$_SESSION['reassignRecords']['modules'][$module]['query'] = $query;
 		$_SESSION['reassignRecords']['modules'][$module]['update'] = $updatequery;
-		
+
 		$res = $GLOBALS['db']->query($countquery);
 		$row = $GLOBALS['db']->fetchByAssoc($res);
-		
+
 		echo "{$row['count']} {$mod_strings_users['LBL_REASS_RECORDS_FROM']} {$app_list_strings['moduleList'][$p_module]} {$mod_strings_users['LBL_REASS_WILL_BE_UPDATED']}\n<BR>\n";
 		echo "<input type=checkbox name={$module}_workflow> {$mod_strings_users['LBL_REASS_WORK_NOTIF_AUDIT']}<BR>\n";
 		echo "</td></tr></table>\n";
 	}
-	
+
 	echo "<BR><input type=button class=\"button\" value=\"{$mod_strings_users['LBL_REASS_BUTTON_GO_BACK']}\" onclick='document.location=\"index.php?module=Users&action=reassignUserRecords\"'>\n";
 	echo "&nbsp;<input type=submit class=\"button\" value=\"{$mod_strings_users['LBL_REASS_BUTTON_CONTINUE']}\">\n";
 	echo "&nbsp;<input type=button class=\"button\" value=\"{$mod_strings_users['LBL_REASS_BUTTON_RESTART']}\" onclick='document.location=\"index.php?module=Users&action=reassignUserRecords&clear=true\"'>\n";
-	
+
 	echo "</form>\n";
-	
+
 	// debug
 	//print_r($_SESSION['reassignRecords']);
 ///////////////////// END STEP 2 - Confirm Selections /////////////////////////
@@ -376,7 +378,7 @@ else if(isset($_GET['execute']) && $_GET['execute'] == true){
 	$touser = $_SESSION['reassignRecords']['touser'];
 	$fromusername = $_SESSION['reassignRecords']['fromusername'];
 	$tousername = $_SESSION['reassignRecords']['tousername'];
-	
+
 	$beanListFlip = array_flip($_SESSION['reassignRecords']['assignedModuleListCache']);
 
 	foreach($_SESSION['reassignRecords']['modules'] as $module => $queries){
@@ -384,13 +386,13 @@ else if(isset($_GET['execute']) && $_GET['execute'] == true){
 		$workflow = false;
 		if(isset($_POST[$module."_workflow"]) && $_POST[$module."_workflow"] = "on")
 			$workflow = true;
-		
+
 		$query = $workflow ? $queries['query'] : $queries['update'];
-		
+
 		echo "<h5>{$mod_strings_users['LBL_PROCESSING']} {$app_list_strings['moduleList'][$p_module]}</h5>";
-		
+
 		$res = $GLOBALS['db']->query($query, true);
-		
+
 		//echo "<i>Workflow and Notifications <b>".($workflow ? "enabled" : "disabled")."</b> for this module record reassignment</i>\n<BR>\n";
 		echo "<table border='0' cellspacing='0' cellpadding='0'  class='detail view'>\n";
 		echo "<tr>\n";
@@ -402,7 +404,7 @@ else if(isset($_GET['execute']) && $_GET['execute'] == true){
 		else{
 			$successarr = array();
 			$failarr = array();
-			
+
 			require_once($beanFiles[$module]);
 			while($row = $GLOBALS['db']->fetchByAssoc($res)){
 				$bean = new $module();
@@ -410,13 +412,13 @@ else if(isset($_GET['execute']) && $_GET['execute'] == true){
 					continue;
 				}
 				$bean->retrieve($row['id']);
-				
+
 				// So that we don't create new blank records.
 				if(!isset($bean->id)){
 					continue;
-				}				
+				}
 				$bean->assigned_user_id = $touser;
-				
+
 				if($bean->save()){
 					$linkname = "record with id {$bean->id}";
 					if(!empty($bean->name)){
@@ -435,7 +437,7 @@ else if(isset($_GET['execute']) && $_GET['execute'] == true){
 					$failarr[] = "{$mod_strings_users['LBL_REASS_FAILED_SAVE']} \"<i><a href=\"index.php?module={$bean->module_dir}&action=DetailView&record={$bean->id}\">$linkname</a></i>\".";
 				}
 			}
-			
+
 			if(isset($_POST['verbose']) && $_POST['verbose'] == "on"){
 				echo "<h5>{$mod_strings_users['LBL_REASS_THE_FOLLOWING']} {$app_list_strings['moduleList'][$p_module]} {$mod_strings_users['LBL_REASS_HAVE_BEEN_UPDATED']}</h5>\n";
 				foreach($successarr as $ord){
@@ -443,7 +445,7 @@ else if(isset($_GET['execute']) && $_GET['execute'] == true){
 				}
 				if(empty($successarr))
 					echo "{$mod_strings_users['LBL_REASS_NONE']}\n<BR>\n";
-				
+
 				echo "<h5>{$mod_strings_users['LBL_REASS_THE_FOLLOWING']} {$app_list_strings['moduleList'][$p_module]} {$mod_strings_users['LBL_REASS_CANNOT_PROCESS']}</h5>\n";
 				foreach($failarr as $failure){
 					echo $failure."\n<BR>\n";
@@ -479,7 +481,7 @@ function clearCurrentRecords()
                     updateDivDisplay(document.getElementById('modulemultiselect'));
                 }
             };
-            
+
     YAHOO.util.Connect.asyncRequest('POST', 'index.php?module=Users&action=clearreassignrecords&to_pdf=1', callback, null);
 }
 
@@ -488,7 +490,7 @@ function updateDivDisplay(multiSelectObj){
     for(var i = 0; i < multiSelectObj.options.length; i++){
         if(multiSelectObj.options[i].selected != allselected[i]){
             allselected[i] = multiSelectObj.options[i].selected;
-            
+
             if(allselected[i]){
                 theElement = document.getElementById('reassign_'+multiSelectObj.options[i].value);
                 if(theElement != null){
@@ -502,7 +504,7 @@ function updateDivDisplay(multiSelectObj){
                 }
             }
         }
-    } 
+    }
 }
 <?php
 if(!isset($_POST['fromuser']) && !isset($_GET['execute'])){

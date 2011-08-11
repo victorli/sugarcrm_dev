@@ -53,7 +53,13 @@ abstract class source{
 	protected $_has_testing_enabled = false;
 	protected $_required_config_fields = array();
 	protected $_required_config_fields_for_button = array();	
-	
+
+    /**
+     * The ExternalAPI Base that instantiated this connector.
+     * @var _eapm
+     */
+    protected $_eapm = null;
+
 	public function __construct(){
 		$this->loadConfig();
 		$this->loadMapping();
@@ -208,7 +214,14 @@ abstract class source{
  	public function setConfig($config){
  		$this->_config = $config;
  	}
- 	
+
+    public function setEAPM(ExternalAPIBase $eapm){
+        $this->_eapm = $eapm;
+    }
+
+    public function getEAPM(){
+        return $this->_eapm;
+    }
  	public function setProperties($properties=array()) {
  	 	if(!empty($this->_config) && isset($this->_config['properties'])) {
  		   $this->_config['properties'] = $properties;

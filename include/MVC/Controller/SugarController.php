@@ -260,6 +260,16 @@ class SugarController{
 				require('custom/include/MVC/Controller/'. $var . '.php');
 			}
 
+            // entry_point_registry -> EntryPointRegistry
+
+			$varname = str_replace(" ","",ucwords(str_replace("_"," ", $var)));
+            if(file_exists("custom/application/Ext/$varname/$var.ext.php")){
+				require("custom/application/Ext/$varname/$var.ext.php");
+	        }
+			if(file_exists("custom/modules/{$this->module}/Ext/$varname/$var.ext.php")){
+				require("custom/modules/{$this->module}/Ext/$varname/$var.ext.php");
+			}
+
 			sugar_cache_put("CONTROLLER_". $var . "_".$this->module, $$var);
 		}
 		$this->$var = $$var;

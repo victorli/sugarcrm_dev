@@ -258,6 +258,16 @@ $dictionary['Meeting'] = array('table' => 'meetings',
     'reportable' => false,
     'comment' => 'When the Sugar Plug-in for Microsoft Outlook syncs an Outlook appointment, this is the Outlook appointment item ID'
   ),
+   'sequence' =>
+  array (
+    'name' => 'sequence',
+    'vname' => 'LBL_SEQUENCE',
+    'type' => 'int',
+    'len' => '11',
+    'reportable' => false,
+    'default'=>0,
+    'comment' => 'Meeting update sequence for meetings as per iCalendar standards'
+  ),
 
   'contact_name' =>
   array (
@@ -381,6 +391,7 @@ $dictionary['Meeting'] = array('table' => 'meetings',
        array('name' =>'idx_mtg_name', 'type'=>'index', 'fields'=>array('name')),
        array('name' =>'idx_meet_par_del', 'type'=>'index', 'fields'=>array('parent_id','parent_type','deleted')),
        array('name' => 'idx_meet_stat_del', 'type' => 'index', 'fields'=> array('assigned_user_id', 'status', 'deleted')),
+       array('name' => 'idx_meet_date_start', 'type' => 'index', 'fields'=> array('date_start')),
 
                                                    )
 //This enables optimistic locking for Saves From EditView

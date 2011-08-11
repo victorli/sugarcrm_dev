@@ -35,7 +35,7 @@
  ********************************************************************************/
 
  
-require_once 'modules/Import/ImportMap.php';
+require_once 'modules/Import/maps/ImportMap.php';
 
 class ImportMapTest extends Sugar_PHPUnit_Framework_TestCase
 {

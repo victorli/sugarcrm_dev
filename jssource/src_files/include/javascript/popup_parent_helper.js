@@ -41,7 +41,7 @@ var close_popup;
 
 function get_popup_request_data()
 {
-	return window.document.popup_request_data;
+	return YAHOO.lang.JSON.stringify(window.document.popup_request_data);
 }
 
 function get_close_popup()
@@ -130,7 +130,10 @@ function set_return(popup_reply_data)
 		{
 			var displayValue=name_to_value_array[the_key].replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');;
 			if(window.document.forms[form_name] && window.document.forms[form_name].elements[the_key])
+            {
 				window.document.forms[form_name].elements[the_key].value = displayValue;
+                SUGAR.util.callOnChangeListers(window.document.forms[form_name].elements[the_key]);
+            }
 		}
 	}
 }
@@ -149,6 +152,7 @@ function set_return_and_save(popup_reply_data)
 		else
 		{
 			window.document.forms[form_name].elements[the_key].value = name_to_value_array[the_key];
+            SUGAR.util.callOnChangeListers(window.document.forms[form_name].elements[the_key]);
 		}
 	}
 	
@@ -189,6 +193,7 @@ function set_return_and_save_targetlist(popup_reply_data)
 				}
 			}
 			window.document.forms[form_index].elements[get_element_index(form_index,the_key)].value = name_to_value_array[the_key];
+            SUGAR.util.callOnChangeListers(window.document.forms[form_index].elements[get_element_index(form_index,the_key)]);
 		}
 	}
 	window.document.forms[form_index].elements[get_element_index(form_index,"return_module")].value = window.document.forms[form_index].elements[get_element_index(form_index,"module")].value;

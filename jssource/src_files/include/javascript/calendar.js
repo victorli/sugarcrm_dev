@@ -89,7 +89,7 @@ Calendar.setup = function (params) {
                 });
                 
                 dialog.setHeader(SUGAR.language.get('app_strings', 'LBL_MASSUPDATE_DATE'));
-                var dialogBody = '<p class="callnav_today"><a href="#"  id="callnav_today">' + SUGAR.language.get('app_strings', 'LBL_EMAIL_DATE_TODAY') + '</a></p><div id="' + showButton + '_div"></div>';
+                var dialogBody = '<p class="callnav_today"><a href="javascript:void(0)"  id="callnav_today">' + SUGAR.language.get('app_strings', 'LBL_EMAIL_DATE_TODAY') + '</a></p><div id="' + showButton + '_div"></div>';
                 dialog.setBody(dialogBody);
                 dialog.render(document.body);
 
@@ -132,15 +132,12 @@ Calendar.setup = function (params) {
                     var dialogEl = dialog.element;
                     if (el != dialogEl && !Dom.isAncestor(dialogEl, el) && el != Dom.get(showButton) && !Dom.isAncestor(Dom.get(showButton), el)) {
                         dialog.hide();
-                        calendar = null;
-                        dialog = null;
                     }
                 });                
             }
 
             // Lazy Calendar Creation - Wait to create the Calendar until the first time the button is clicked.
             if (!calendar) {
-            
                 var navConfig = {
                     strings : {
                         month: SUGAR.language.get('app_strings', 'LBL_CHOOSE_MONTH'),
@@ -256,6 +253,13 @@ Calendar.setup = function (params) {
                     } else {
                         input.value = "";
                     }
+					
+					//bug 44147 fix
+                    //does not trigger onchange event
+                    if(input.onchange)
+                    	input.onchange();
+                    //end bugfix
+                    
 
                     dialog.hide();
 					//Fire any on-change events for this input field

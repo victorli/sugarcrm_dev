@@ -312,18 +312,48 @@ function pruneDatabase() {
 				if(empty($colName)) {
 					$GLOBALS['log']->fatal('pruneDatabase() could not get the columns for table ('.$table.')');
 				}
+				
+				if(array_search($table.'_cstm', $tables) !== FALSE && array_search('id', $colName) !== FALSE && array_key_exists('id', $aDel)) {
+                    // build custom column names
+                    $rColsCstm = $db->query('SHOW COLUMNS FROM '.$table.'_cstm');
+                    $colNameCstm = array();
+
+                    while($aColsCstm = $db->fetchByAssoc($rColsCstm)) {
+                        $colNameCstm[] = $aColsCstm['Field'];
+                    }
+
+                    $qDelCstm = 'SELECT * FROM '.$table.'_cstm WHERE id_c = "'.$db->quote($aDel['id']).'"';
+                    $rDelCstm = $db->query($qDelCstm);// OR continue; // continue if no 'deleted' column
+
+                    // make a backup INSERT query if we are deleting.
+                    while($aDelCstm = $db->fetchByAssoc($rDelCstm)) {
+
+                        $query = 'INSERT INTO '.$table.'_cstm (';
+                        $values = '';
+
+                        foreach($colNameCstm as $kC => $column) {
+                            $query .= $column.', ';
+                            $values .= '"'.$aDelCstm[$column].'", ';
+                        }
+
+                        $query  = substr($query, 0, (strlen($query) - 2));
+                        $values = substr($values, 0, (strlen($values) - 2));
+                        $query .= ') VALUES ('.str_replace("'", "&#039;", $values).');';
+
+                        $queryString[] = $query;
+
+                        if(empty($colNameCstm)) {
+                            $GLOBALS['log']->fatal('pruneDatabase() could not get the columns for table ('.$table.'_cstm)');
+                        }
+                    } // end aDel while()                
+
+                    $db->query('DELETE FROM '.$table.'_cstm WHERE id_c = "'.$db->quote($aDel['id']).'"');
+                }
 			} // end aDel while()
 			// now do the actual delete
 			$db->query('DELETE FROM '.$table.' WHERE deleted = 1');
 		} // foreach() tables
 
-		// now output file with SQL
-		if(!function_exists('mkdir_recursive')) {
-			
-		}
-		if(!function_exists('write_array_to_file')) {
-			
-		}
 		if(!file_exists($backupDir) || !file_exists($backupDir.'/'.$backupFile)) {
 			// create directory if not existent
 			mkdir_recursive($backupDir, false);
@@ -428,5 +458,10 @@ function pollMonitoredInboxesForBouncedCampaignEmails() {
 
 if (file_exists('custom/modules/Schedulers/_AddJobsHere.php')) {
 	require('custom/modules/Schedulers/_AddJobsHere.php');
+}
+
+if (file_exists('custom/modules/Schedulers/Ext/ScheduledTasks/scheduledtasks.ext.php'))
+{
+	require('custom/modules/Schedulers/Ext/ScheduledTasks/scheduledtasks.ext.php');
 }
 ?>

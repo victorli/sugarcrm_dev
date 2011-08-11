@@ -939,30 +939,27 @@ function check_for_duplicate_contacts($seed){
 	$query = '';
 
 	$trimmed_email = trim($seed->email1);
+    $trimmed_email2 = trim($seed->email2);
 	$trimmed_last = trim($seed->last_name);
 	$trimmed_first = trim($seed->first_name);
-	if(!empty($trimmed_email)){
+	if(!empty($trimmed_email) || !empty($trimmed_email2)){
 
 		//obtain a list of contacts which contain the same email address
 		$contacts = $seed->emailAddress->getBeansByEmailAddress($trimmed_email);
+        $contacts2 = $seed->emailAddress->getBeansByEmailAddress($trimmed_email2);
+        $contacts = array_merge($contacts, $contacts2);
 		if(count($contacts) == 0){
 			return null;
 		}else{
-			foreach($contacts as $contact){
+            foreach($contacts as $contact){
 				if(!empty($trimmed_last) && strcmp($trimmed_last, $contact->last_name) == 0){
-					if(!empty($trimmed_email) && strcmp($trimmed_email, $contact->email1) == 0){
-						if(!empty($trimmed_email)){
-							if(strcmp($trimmed_email, $contact->email1) == 0){
-								//bug: 39234 - check if the account names are the same
-								//if the incoming contact's account_name is empty OR it is not empty and is the same
-								//as an existing contact's account name, then find the match.
-								$contact->load_relationship('accounts');
-								if(empty($seed->account_name) || strcmp($seed->account_name, $contact->account_name) == 0){
-									$GLOBALS['log']->info('End: SoapHelperWebServices->check_for_duplicate_contacts - duplicte found ' . $contact->id);
-									return $contact->id;
-								}
-							}
-						}else{
+                    if((!empty($trimmed_email) || !empty($trimmed_email2)) && (strcmp($trimmed_email, $contact->email1) == 0 || strcmp($trimmed_email, $contact->email2) == 0 || strcmp($trimmed_email2, $contact->email) == 0 || strcmp($trimmed_email2, $contact->email2) == 0)){
+						//bug: 39234 - check if the account names are the same
+						//if the incoming contact's account_name is empty OR it is not empty and is the same
+						//as an existing contact's account name, then find the match.
+                        $contact->load_relationship('accounts');
+						if(empty($seed->account_name) || strcmp($seed->account_name, $contact->account_name) == 0){
+						    $GLOBALS['log']->info('End: SoapHelperWebServices->check_for_duplicate_contacts - duplicte found ' . $contact->id);
 							return $contact->id;
 						}
 					}
@@ -970,20 +967,6 @@ function check_for_duplicate_contacts($seed){
 			}
 			return null;
 		}
-	}else{
-	    $query = "contacts.last_name = '".$seed->db->quote($trimmed_last,false)."'";
-        $query .= " AND contacts.first_name = '".$seed->db->quote($trimmed_first,false)."'";
-        $contacts = $seed->get_list('', $query);
-        if (count($contacts) == 0){
-            return null;
-        }else{
-            foreach($contacts['list'] as $contact){
-            	if (empty($contact->email1)){
-                    return $contact->id;
-                }
-            }
-            return null;
-        }
 	}
 }
 

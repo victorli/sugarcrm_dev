@@ -332,8 +332,8 @@ class ListViewDisplayTest extends Sugar_PHPUnit_Framework_TestCase
     public function testBuildMassUpdateLink()
     {
         $output = $this->_lvd->buildMassUpdateLink();
-
-        $this->assertContains("<a href='#massupdate_form'",$output);
+        
+        $this->assertRegExp("/.*document\.getElementById\(['\"]massupdate_form['\"]\)\.style\.display\s*=\s*['\"]['\"].*/", $output);
     }
 
     public function testComposeEmailIfFieldDefsNotAnArray()
@@ -391,6 +391,7 @@ class ListViewDisplayTest extends Sugar_PHPUnit_Framework_TestCase
         $this->_lvd->seed = new stdClass;
         $this->_lvd->seed->object_name = 'foobar';
         $this->_lvd->seed->module_dir = 'foobarfoobar';
+        $_REQUEST['module'] = 'foobarfoobar';
         $this->_lvd->seed->field_defs = array(
             'field1' => array(
                 'type' => 'link',

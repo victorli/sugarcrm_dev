@@ -85,7 +85,11 @@ function smarty_function_sugar_field($params, &$smarty)
         $params['vardef']['name'] = $params['field'];
     }
    
-    $_contents = $sfh->displaySmarty($params['parentFieldArray'], $params['vardef'], $params['displayType'], $displayParams, $params['tabindex']);   
+    if (isset($params['call_back_function'])) {
+        $displayParams['call_back_function'] = $params['call_back_function'];
+    }
+
+    $_contents = $sfh->displaySmarty($params['parentFieldArray'], $params['vardef'], $params['displayType'], $displayParams, $params['tabindex']);
     
     return $_contents;
 }

@@ -114,7 +114,7 @@ $dictionary['Opportunity'] = array('table' => 'opportunities','audited'=>true, '
 		'id_name'=>'campaign_id',
 		'vname'=>'LBL_CAMPAIGN',
 		'type'=>'relate',
-		'link' => 'campaign_opportunities',   	      	   
+		'link' => 'campaign_opportunities',
 		'isnull'=>'true',
 		'table' => 'campaigns',
 		'module'=>'Campaigns',
@@ -248,7 +248,7 @@ $dictionary['Opportunity'] = array('table' => 'opportunities','audited'=>true, '
     'audited'=>true,
     'comment' => 'The probability of closure',
     'validation' => array('type' => 'range', 'min' => 0, 'max' => 100),
-    'merge_filter' => 'enabled', 
+    'merge_filter' => 'enabled',
   ),
   'accounts' =>
   array (
@@ -337,7 +337,7 @@ $dictionary['Opportunity'] = array('table' => 'opportunities','audited'=>true, '
     'source'=>'non-db',
 		'vname'=>'LBL_LEADS',
   ),
-  
+
   'campaigns' =>
 		array (
   			'name' => 'campaigns',
@@ -379,6 +379,11 @@ $dictionary['Opportunity'] = array('table' => 'opportunities','audited'=>true, '
 				'name' => 'idx_opp_assigned',
 				'type' => 'index',
 				'fields' => array('assigned_user_id'),
+			),
+			array(
+				'name' => 'idx_opp_id_deleted',
+				'type' => 'index',
+				'fields' => array('id','deleted'),
 			),
 		),
 
@@ -424,7 +429,7 @@ $dictionary['Opportunity'] = array('table' => 'opportunities','audited'=>true, '
    'rhs_module'=> 'Opportunities', 'rhs_table'=> 'opportunities', 'rhs_key' => 'created_by',
    'relationship_type'=>'one-to-many'),
 'opportunities_campaign' =>
-   array('lhs_module'=> 'campaigns', 'lhs_table'=> 'campaigns', 'lhs_key' => 'id',
+   array('lhs_module'=> 'Campaigns', 'lhs_table'=> 'campaigns', 'lhs_key' => 'id',
    'rhs_module'=> 'Opportunities', 'rhs_table'=> 'opportunities', 'rhs_key' => 'campaign_id',
    'relationship_type'=>'one-to-many'),
 )

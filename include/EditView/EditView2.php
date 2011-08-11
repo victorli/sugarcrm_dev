@@ -371,6 +371,12 @@ class EditView
 		        }
 
 	            if(isset($this->fieldDefs[$name]['options']) && isset($app_list_strings[$this->fieldDefs[$name]['options']])) {
+                    if(isset($GLOBALS['sugar_config']['enable_autocomplete']) && $GLOBALS['sugar_config']['enable_autocomplete'] == true){
+						$this->fieldDefs[$name]['autocomplete'] = true;
+	                	$this->fieldDefs[$name]['autocomplete_options'] = $this->fieldDefs[$name]['options']; // we need the name for autocomplete
+					} else {
+                        $this->fieldDefs[$name]['autocomplete'] = false;
+                   }
 	                $this->fieldDefs[$name]['options'] = $app_list_strings[$this->fieldDefs[$name]['options']]; // fill in enums
 	            } //if
 
@@ -453,10 +459,9 @@ class EditView
 		   }
     	}
     }
-
     /**
      * display
-     * This method makes the Smarty variable assignments and then displays the
+     * This method makes the Smarty variable assignments and theautocomplete_ajax'vars the
      * generated view.
      * @param $showTitle boolean value indicating whether or not to show a title on the resulting page
      * @param $ajaxSave boolean value indicating whether or not the operation is an Ajax save request
@@ -465,10 +470,9 @@ class EditView
     function display(
         $showTitle = true,
         $ajaxSave = false
-        )
+        ) 
     {
         global $mod_strings, $sugar_config, $app_strings, $app_list_strings, $theme, $current_user;
-
 
         if(isset($this->defs['templateMeta']['javascript'])) {
            if(is_array($this->defs['templateMeta']['javascript'])) {
@@ -484,6 +488,7 @@ class EditView
         $this->th->ss->assign('MOD', $mod_strings);
         $this->th->ss->assign('fields', $this->fieldDefs);
         $this->th->ss->assign('sectionPanels', $this->sectionPanels);
+        $this->th->ss->assign('config', $sugar_config);
         $this->th->ss->assign('returnModule', $this->returnModule);
         $this->th->ss->assign('returnAction', $this->returnAction);
         $this->th->ss->assign('returnId', $this->returnId);

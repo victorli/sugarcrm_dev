@@ -373,9 +373,9 @@ for($i=0; $i<$number_contacts; $i++) {
 	$email->type = 'out';
 	$email->save();
 	$email->load_relationship('contacts');
-	$email->contacts->add($contact->id);
+	$email->contacts->add($contact);
 	$email->load_relationship('accounts');
-	$email->contacts->add($account_id);
+	$email->accounts->add($contacts_account);
 }
 
 for($i=0; $i<$number_leads; $i++)

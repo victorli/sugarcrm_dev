@@ -74,12 +74,11 @@ if(isset($_POST['return_id']) && $_POST['return_id'] != "") $return_id = $_POST[
 if($return_action == "SaveCampaignProspectListRelationshipNew")
 {
 	$prospect_list_id = $focus->id;
-	
-	header("Location: index.php?action=$return_action&module=$return_module&record=$return_id&prospect_list_id=$prospect_list_id");
+    handleRedirect($return_id, $return_module, array("prospect_list_id" => $prospect_list_id));
 }
 else
 {
 	$GLOBALS['log']->debug("Saved record with id of ".$return_id);
-	header("Location: index.php?action=$return_action&module=$return_module&record=$return_id");
+	handleRedirect($return_id, $return_module);
 }
 ?>

@@ -71,7 +71,7 @@
             <input type="text" name="{$vardef.name}_collection_0" class="sqsEnabled {$displayParams.class}" tabindex="{$tabindex}" id="{$vardef.name}_collection_0" size="{$displayParams.size}" value="" title='{$vardef.help}' autocomplete="off" {$displayParams.readOnly} {$displayParams.field}>
             <input type="hidden" name="id_{$vardef.name}_collection_0" id="id_{$vardef.name}_collection_0" value="">
             {if $showSelectButton}
-           		<input type="button" name="btn_{$vardef.name}_collection_0" tabindex="{$tabindex}" title="{$APP.LBL_SELECT_BUTTON_TITLE}" accessKey="{$APP.LBL_SELECT_BUTTON_KEY}" class="button" value="{ldelim}sugar_translate label='LBL_SELECT_BUTTON_LABEL'{rdelim}" onclick='open_popup("{$module}", 600, 400, "", true, false, {$displayParams.popupData}, "single", true);'>
+           		<input type="button" name="btn_{$vardef.name}_collection_0" tabindex="{$tabindex}" title="{sugar_translate label="{{$displayParams.accessKeySelectTitle}}" accessKey="{sugar_translate label="{{$displayParams.accessKeySelect}}" class="button" value="{sugar_translate label="{{$displayParams.accessKeySelectLabel}}" onclick='open_popup("{$module}", 600, 400, "", true, false, {$displayParams.popupData}, "single", true);'>
             {/if}
         </td>
         {foreach item=extra_field from=$displayParams.collection_field_list key=key_extra}

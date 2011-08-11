@@ -63,7 +63,8 @@ if(!function_exists('get_form_header')) {
 
 // set up data for subpanels
 global $currentModule;
-$currentModule = $_REQUEST['loadModule'];
+if (!empty($_REQUEST['loadModule']))
+    $currentModule = $_REQUEST['loadModule'];
 $_REQUEST['action'] = 'DetailView';
 
 echo $subpanel->display(false);

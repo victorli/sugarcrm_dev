@@ -115,6 +115,14 @@ class SugarView
         //trackView has to be here in order to track for breadcrumbs
         $this->_trackView();
 
+        //For the ajaxUI, we need to use output buffering to return the page in an ajax friendly format
+        if ($this->_getOption('json_output')){
+			ob_start();
+			if(!empty($_REQUEST['ajax_load']) && !empty($_REQUEST['loadLanguageJS'])){
+				echo $this->_getModLanguageJS();
+			}
+		}
+
         if ($this->_getOption('show_header')) {
             $this->displayHeader();
         } else {
@@ -129,13 +137,38 @@ class SugarView
             $GLOBALS['logic_hook']->call_custom_logic($this->module, 'after_ui_frame');
         }
         $GLOBALS['logic_hook']->call_custom_logic('', 'after_ui_frame');
-        if ($this->_getOption('show_subpanels')) $this->_displaySubPanels();
+
+
+        if ($this->_getOption('show_subpanels') && !empty($_REQUEST['record'])) $this->_displaySubPanels();
+
         if ($this->action === 'Login') {
             //this is needed for a faster loading login page ie won't render unless the tables are closed
             ob_flush();
         }
         if ($this->_getOption('show_footer')) $this->displayFooter();
         $GLOBALS['logic_hook']->call_custom_logic('', 'after_ui_footer');
+        if ($this->_getOption('json_output'))
+        {
+            $content = ob_get_clean();
+            $module = $this->module;
+            $ajax_ret = array(
+                 'content' => utf8_encode($content),
+                 'menu' => array(
+                     'module' => $module,
+                     'label' => translate($module),
+                     $this->getMenu($module),
+                 ),
+                'moduleList' => $this->displayHeader(true),
+                'title' => $this->getBrowserTitle(),
+                'action' => isset($_REQUEST['action']) ? $_REQUEST['action'] : "",
+            );
+            if(empty($this->responseTime)) $this->_calculateFooterMetrics();
+            $ajax_ret['responseTime'] = $this->responseTime;
+            $json = getJSONobj();
+            echo $json->encode($ajax_ret);
+            $GLOBALS['app']->headerDisplayed = false;
+            ob_flush();
+        }
         //Do not track if there is no module or if module is not a String
         $this->_track();
     }
@@ -222,7 +255,7 @@ class SugarView
     /**
      * Displays the header on section of the page; basically everything before the content
      */
-    public function displayHeader()
+    public function displayHeader($retModTabs=false)
     {
         global $theme;
         global $max_tabs;
@@ -361,7 +394,7 @@ class SugarView
                         );
                    if(substr($gcls[$key]["URL"], 0, 11) == "javascript:") {
                        $gcls[$key]["ONCLICK"] = substr($gcls[$key]["URL"],11);
-                       $gcls[$key]["URL"] = "#";
+                       $gcls[$key]["URL"] = "javascript:void(0)";
                    }
                 }
                 // and now the sublinks
@@ -373,7 +406,7 @@ class SugarView
                         );
                        if(substr($gcls[$key]['SUBMENU'][$submenulinkkey]["URL"], 0, 11) == "javascript:") {
                            $gcls[$key]['SUBMENU'][$submenulinkkey]["ONCLICK"] = substr($gcls[$key]['SUBMENU'][$submenulinkkey]["URL"],11);
-                           $gcls[$key]['SUBMENU'][$submenulinkkey]["URL"] = "#";
+                           $gcls[$key]['SUBMENU'][$submenulinkkey]["URL"] = "javascript:void(0)";
                        }
                 }
             }
@@ -584,18 +617,30 @@ class SugarView
         $headerTpl = $themeObject->getTemplate('header.tpl');
         if ( isset($GLOBALS['sugar_config']['developerMode']) && $GLOBALS['sugar_config']['developerMode'] )
             $ss->clear_compiled_tpl($headerTpl);
-        $ss->display($headerTpl);
 
-        $this->includeClassicFile('modules/Administration/DisplayWarnings.php');
+        if ($retModTabs)
+        {
+            return $ss->fetch($themeObject->getTemplate('_headerModuleList.tpl'));
+        } else {
+            $ss->display($headerTpl);
 
-        $errorMessages = SugarApplication::getErrorMessages();
-        if ( !empty($errorMessages)) {
-            foreach ( $errorMessages as $error_message ) {
-                echo('<p class="error">' . $error_message.'</p>');
+            $this->includeClassicFile('modules/Administration/DisplayWarnings.php');
+
+            $errorMessages = SugarApplication::getErrorMessages();
+            if ( !empty($errorMessages)) {
+                foreach ( $errorMessages as $error_message ) {
+                    echo('<p class="error">' . $error_message.'</p>');
+                }
             }
         }
 
     }
+
+    function getModuleMenuHTML()
+    {
+
+    }
+
     /**
      * If the view is classic then this method will include the file and
      * setup any global variables.
@@ -610,7 +655,8 @@ class SugarView
         global $gridline, $request_string, $modListHeader, $dashletData, $authController, $locale, $currentModule, $import_bean_map, $image_path, $license;
         global $user_unique_key, $server_unique_key, $barChartColors, $modules_exempt_from_availability_check, $dictionary, $current_language, $beanList, $beanFiles, $sugar_build, $sugar_codename;
         global $timedate, $login_error; // cn: bug 13855 - timedate not available to classic views.
-        $currentModule = $this->module;
+        if (!empty($this->module))
+            $currentModule = $this->module;
         require_once ($file);
     }
 
@@ -624,7 +670,7 @@ class SugarView
         if(isset($_REQUEST['action'])){
             echo "<script>var action_sugar_grp1 = '{$_REQUEST['action']}';</script>";
         }
-        echo '<script>jscal_today = ' . (1000*$timedate->asUserTs($timedate->getNow())) . '; if(typeof app_strings == "undefined") app_strings = new Array();</script>';
+        echo '<script>jscal_today = 1000*' . $timedate->asUserTs($timedate->getNow()) . '; if(typeof app_strings == "undefined") app_strings = new Array();</script>';
         if (!is_file("include/javascript/sugar_grp1.js")) {
             $_REQUEST['root_directory'] = ".";
             require_once("jssource/minify_utils.php");
@@ -704,7 +750,7 @@ EOHTML;
             if(isset($_REQUEST['action'])){
                 echo "<script>var action_sugar_grp1 = '{$_REQUEST['action']}';</script>";
             }
-            echo '<script>jscal_today = ' . (1000*$timedate->asUserTs($timedate->getNow())) . '; if(typeof app_strings == "undefined") app_strings = new Array();</script>';
+            echo '<script>jscal_today = 1000*' . $timedate->asUserTs($timedate->getNow()) . '; if(typeof app_strings == "undefined") app_strings = new Array();</script>';
             if (!is_file("include/javascript/sugar_grp1.js") || !is_file("include/javascript/sugar_grp1_yui.js")) {
                 $_REQUEST['root_directory'] = ".";
                 require_once("jssource/minify_utils.php");
@@ -714,37 +760,37 @@ EOHTML;
             echo '<script type="text/javascript" src="' . getJSPath('include/javascript/sugar_grp1.js') . '"></script>';
             echo '<script type="text/javascript" src="' . getJSPath('include/javascript/calendar.js') . '"></script>';
 
-            if ( isset($sugar_config['quicksearch_querydelay']) ) {
-                echo "<script>SUGAR.config.quicksearch_querydelay = {$GLOBALS['sugar_config']['quicksearch_querydelay']};</script>";
+            // output necessary config js in the top of the page
+            $config_js = $this->getSugarConfigJS();
+            if(!empty($config_js)){
+                echo "<script>\n".implode("\n", $config_js)."</script>\n";
             }
-            // cn: bug 12274 - prepare secret guid for asynchronous calls
-            if (!isset($_SESSION['asynchronous_key']) || empty($_SESSION['asynchronous_key'])) {
-                $_SESSION['asynchronous_key'] = create_guid();
-            }
+
             $image_server = (defined('TEMPLATE_URL'))?TEMPLATE_URL . '/':'';
-            echo '<script type="text/javascript">var asynchronous_key = "' . $_SESSION['asynchronous_key'] . '";SUGAR.themes.image_server="' . $image_server . '";</script>'; // cn: bug 12274 - create session-stored key to defend against CSRF
-            echo '<script type="text/javascript"> var name_format = "' . $locale->getLocaleFormatMacro() . '";</script>';
+            echo '<script type="text/javascript">SUGAR.themes.image_server="' . $image_server . '";</script>'; // cn: bug 12274 - create session-stored key to defend against CSRF
+            echo '<script type="text/javascript">var name_format = "' . $locale->getLocaleFormatMacro() . '";</script>';
             echo self::getJavascriptValidation();
             if (!is_file($GLOBALS['sugar_config']['cache_dir'] . 'jsLanguage/' . $GLOBALS['current_language'] . '.js')) {
                 require_once ('include/language/jsLanguage.php');
                 jsLanguage::createAppStringsCache($GLOBALS['current_language']);
             }
             echo '<script type="text/javascript" src="' . $GLOBALS['sugar_config']['cache_dir'] . 'jsLanguage/' . $GLOBALS['current_language'] . '.js?s=' . $GLOBALS['js_version_key'] . '&c=' . $GLOBALS['sugar_config']['js_custom_version'] . '&j=' . $GLOBALS['sugar_config']['js_lang_version'] . '"></script>';
-            if (!is_file($GLOBALS['sugar_config']['cache_dir'] . 'jsLanguage/' . $this->module . '/' . $GLOBALS['current_language'] . '.js')) {
-                require_once ('include/language/jsLanguage.php');
-                jsLanguage::createModuleStringsCache($this->module, $GLOBALS['current_language']);
-            }
-            echo '<script type="text/javascript" src="' . $GLOBALS['sugar_config']['cache_dir'] . 'jsLanguage/' . $this->module . '/' . $GLOBALS['current_language'] . '.js?s=' . $GLOBALS['js_version_key'] . '&c=' . $GLOBALS['sugar_config']['js_custom_version'] . '&j=' . $GLOBALS['sugar_config']['js_lang_version'] . '"></script>';
+
+			echo $this->_getModLanguageJS();
+
             if(isset( $sugar_config['disc_client']) && $sugar_config['disc_client'])
                 echo '<script type="text/javascript" src="' . getJSPath('modules/Sync/headersync.js') . '"></script>';
-            echo '<script src="' . getJSPath('include/javascript/yui3/build/yui/yui-min.js') . '" type="text/javascript"></script>';
-        }
 
-        if (isset($_REQUEST['popup']) && !empty($_REQUEST['popup'])) {
-            // cn: bug 12274 - add security metadata envelope for async calls in popups
-            echo '<script type="text/javascript">var asynchronous_key = "' . $_SESSION['asynchronous_key'] . '";</script>'; // cn: bug 12274 - create session-stored key to defend against CSRF
         }
     }
+
+	protected function _getModLanguageJS(){
+		if (!is_file($GLOBALS['sugar_config']['cache_dir'] . 'jsLanguage/' . $this->module . '/' . $GLOBALS['current_language'] . '.js')) {
+			require_once ('include/language/jsLanguage.php');
+			jsLanguage::createModuleStringsCache($this->module, $GLOBALS['current_language']);
+		}
+		return '<script type="text/javascript" src="' . $GLOBALS['sugar_config']['cache_dir'] . 'jsLanguage/' . $this->module . '/' . $GLOBALS['current_language'] . '.js?s=' . $GLOBALS['js_version_key'] . '&c=' . $GLOBALS['sugar_config']['js_custom_version'] . '&j=' . $GLOBALS['sugar_config']['js_lang_version'] . '"></script>';
+	}
 
     /**
      * Called from process(). This method will display the footer on the page.
@@ -774,11 +820,9 @@ EOHTML;
 
 		$bottomLinkList = array();
 		 if (isset($this->action) && $this->action != "EditView") {
-			 $bottomLinkList['print'] =
-			array($app_strings['LNK_PRINT'] => 'javascript:void window.open(\'index.php?'.$GLOBALS['request_string'].'\',\'printwin\',\'menubar=1,status=0,resizable=1,scrollbars=1,toolbar=0,location=1\')');
-
+			 $bottomLinkList['print'] = array($app_strings['LNK_PRINT'] => getPrintLink());
 		}
-		$bottomLinkList['backtotop'] = array($app_strings['LNK_BACKTOTOP'] => '#top');
+		$bottomLinkList['backtotop'] = array($app_strings['LNK_BACKTOTOP'] => 'javascript:SUGAR.util.top();');
 
 		$bottomLinksStr = "";
 		foreach($bottomLinkList as $key => $value) {
@@ -786,7 +830,7 @@ EOHTML;
 				   $href = $link;
 				   if(substr($link, 0, 11) == "javascript:") {
                        $onclick = " onclick=\"".substr($link,11)."\"";
-                       $href = "#";
+                       $href = "javascript:void(0)";
                    } else {
                    		$onclick = "";
                    	}
@@ -936,7 +980,7 @@ EOHTML;
     {
         $endTime = microtime(true);
         $deltaTime = $endTime - $GLOBALS['startTime'];
-        $response_time_string = $GLOBALS['app_strings']['LBL_SERVER_RESPONSE_TIME'] . " " . number_format(round($deltaTime, 2), 2) . " " . $GLOBALS['app_strings']['LBL_SERVER_RESPONSE_TIME_SECONDS'];
+        $response_time_string = $GLOBALS['app_strings']['LBL_SERVER_RESPONSE_TIME'] . ' <span id="responseTime">' . number_format(round($deltaTime, 2), 2) . '</span> ' . $GLOBALS['app_strings']['LBL_SERVER_RESPONSE_TIME_SECONDS'];
         $return = $response_time_string;
         $return .= '<br />';
         if (!empty($GLOBALS['sugar_config']['show_page_resources'])) {
@@ -977,6 +1021,11 @@ EOHTML;
         if ( empty($module) )
             $module = $this->module;
 
+        //Need to make sure the mod_strings match the requested module or Menus may fail
+        $curr_mod_strings = $mod_strings;
+        $mod_strings = return_module_language ( $current_language, $module ) ;
+
+
         $final_module_menu = array();
 
         if (file_exists('modules/' . $module . '/Menu.php')) {
@@ -1010,6 +1059,8 @@ EOHTML;
             $final_module_menu = array_merge($final_module_menu,$GLOBALS['module_menu'],$module_menu);
         }
         $module_menu = $final_module_menu;
+
+        $mod_strings = $curr_mod_strings;
 
         return $module_menu;
     }
@@ -1070,16 +1121,16 @@ EOHTML;
             }
         }
         $theTitle .= "</h2>\n";
-
         if ($show_help) {
             $theTitle .= "<span class='utils'>";
 
             $createImageURL = SugarThemeRegistry::current()->getImageURL('create-record.gif');
+            $url = ajaxLink("index.php?module=$module&action=EditView&return_module=$module&return_action=DetailView");
             $theTitle .= <<<EOHTML
 &nbsp;
-<a href="index.php?module={$module}&action=EditView&return_module={$module}&return_action=DetailView" class="utilsLink">
+<a href="{$url}" class="utilsLink">
 <img src='{$createImageURL}' alt='{$GLOBALS['app_strings']['LNK_CREATE']}'></a>
-<a href="index.php?module={$module}&action=EditView&return_module={$module}&return_action=DetailView" class="utilsLink">
+<a href="{$url}" class="utilsLink">
 {$GLOBALS['app_strings']['LNK_CREATE']}
 </a>
 EOHTML;
@@ -1191,7 +1242,7 @@ EOHTML;
 			} else {
 				return $firstParam;
 			}
-    	} 
+    	}
     	else {
 		    if (!empty($iconPath) && !$browserTitle) {
 				return "<a href='index.php?module={$this->module}&action=index'>"
@@ -1202,12 +1253,12 @@ EOHTML;
     	}
     }
 
-    protected function getModuleTitleIconPath($module) 
+    protected function getModuleTitleIconPath($module)
     {
     	$iconPath = "";
     	if(is_file(SugarThemeRegistry::current()->getImageURL('icon_'.$module.'_32.png',false))) {
     		$iconPath = SugarThemeRegistry::current()->getImageURL('icon_'.$module.'_32.png');
-    	} 
+    	}
     	else if (is_file(SugarThemeRegistry::current()->getImageURL('icon_'.ucfirst($module).'_32.png',false))) {
     		$iconPath = SugarThemeRegistry::current()->getImageURL('icon_'.ucfirst($module).'_32.png');
     	}
@@ -1247,5 +1298,31 @@ EOHTML;
         else {
         	return "<span class='pointer'>&laquo;</span>";
         }
+    }
+
+    protected function getSugarConfigJS(){
+        global $sugar_config;
+
+        // Set all the config parameters in the JS config as necessary
+        $config_js = array();
+        // AjaxUI stock banned modules
+        $config_js[] = "SUGAR.config.stockAjaxBannedModules = ".json_encode(ajaxBannedModules()).";";
+        if ( isset($sugar_config['quicksearch_querydelay']) ) {
+            $config_js[] = "SUGAR.config.quicksearch_querydelay = {$GLOBALS['sugar_config']['quicksearch_querydelay']};";
+        }
+        if ( empty($sugar_config['disableAjaxUI']) ) {
+            $config_js[] = "SUGAR.config.disableAjaxUI = false;";
+        }
+        else{
+            $config_js[] = "SUGAR.config.disableAjaxUI = true;";
+        }
+        if ( !empty($sugar_config['addAjaxBannedModules']) ){
+            $config_js[] = "SUGAR.config.addAjaxBannedModules = ".json_encode($sugar_config['addAjaxBannedModules']).";";
+        }
+        if ( !empty($sugar_config['overrideAjaxBannedModules']) ){
+            $config_js[] = "SUGAR.config.overrideAjaxBannedModules = ".json_encode($sugar_config['overrideAjaxBannedModules']).";";
+        }
+
+        return $config_js;
     }
 }

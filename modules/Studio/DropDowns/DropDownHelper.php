@@ -111,8 +111,8 @@ class DropDownHelper{
        while(isset($params['slot_' . $count])){
            
            $index = $params['slot_' . $count];
-           $key = (isset($params['key_' . $index]))?$params['key_' . $index]: 'BLANK';
-           $value = (isset($params['value_' . $index]))?$params['value_' . $index]: '';
+           $key = (isset($params['key_' . $index]))?remove_xss(from_html($params['key_' . $index])): 'BLANK';
+           $value = (isset($params['value_' . $index]))?remove_xss(from_html($params['value_' . $index])): '';
            if($key == 'BLANK'){
                $key = '';
                

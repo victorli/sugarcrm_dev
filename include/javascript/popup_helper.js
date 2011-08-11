@@ -67,3 +67,6 @@ if(typeof SUGAR.util.additionalDetailsCache[spanId]!='undefined')
 return oReturn(SUGAR.util.additionalDetailsCache[spanId]['body'],SUGAR.util.additionalDetailsCache[spanId]['caption'],SUGAR.util.additionalDetailsCache[spanId]['width'],SUGAR.util.additionalDetailsCache[spanId]['theme']);if(typeof SUGAR.util.additionalDetailsCalls[spanId]!='undefined')
 return;ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_LOADING'));url='index.php?module='+module+'&action='+action+'&'+params;SUGAR.util.additionalDetailsCalls[spanId]=YAHOO.util.Connect.asyncRequest('GET',url,{success:success,failure:success});return false;}
 SUGAR.util.additionalDetailsRpcCall=window.setTimeout('toggle_more_go()',250);}
+SUGAR.util.doWhen("window.document.forms['popup_query_form'] != null "
++"&& typeof(window.document.forms['popup_query_form'].request_data) != 'undefined'",function(){if(window.document.forms['popup_query_form'].request_data.value=="")
+{window.document.forms['popup_query_form'].request_data.value=window.opener.get_popup_request_data();}});

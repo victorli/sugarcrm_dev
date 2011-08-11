@@ -160,13 +160,16 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  		}
  	}
 
- 	function display($title = '', $section = 'main'){
+ 	function display($title = '', $section = 'main', $return = FALSE){
  		if($this->type == 1){
  			$this->lv->setHeaderTitle($title);
  			$this->lv->processListView($this->focus, $section, $this->prefix);
  		}else{
- 			echo get_form_header($title, '', false);
-			echo $this->lv->display();
+             $output = get_form_header($title, '', false) . $this->lv->display();
+             if($return)
+                 return $output;
+             else
+                 echo $output;
  		}
  	}
 

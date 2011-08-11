@@ -43,17 +43,17 @@ class SugarCacheFile extends SugarCacheAbstract
      * @var path and file which will store the cache used for this backend
      */
     protected $_cacheFileName = 'externalCache.php';
-    
+
     /**
      * @var bool true if the cache has changed and needs written to disk
      */
     protected $_cacheChanged = false;
-    
+
     /**
      * @see SugarCacheAbstract::$_priority
      */
     protected $_priority = 990;
-    
+
     /**
      * @see SugarCacheAbstract::useBackend()
      */
@@ -61,27 +61,27 @@ class SugarCacheFile extends SugarCacheAbstract
     {
         if ( !parent::useBackend() )
             return false;
-        
+
         if ( !empty($GLOBALS['sugar_config']['external_cache_enabled_file']) )
             return true;
-            
+
         return false;
     }
-    
+
     /**
      * @see SugarCacheAbstract::__construct()
      *
-     * For this backend, we'll read from the SugarCacheFile::_cacheFileName file into 
+     * For this backend, we'll read from the SugarCacheFile::_cacheFileName file into
      * the SugarCacheFile::$localCache array.
      */
     public function __construct()
     {
         parent::__construct();
-        
+
         if ( isset($GLOBALS['sugar_config']['external_cache_filename']) )
             $this->_cacheFileName = $GLOBALS['sugar_config']['external_cache_filename'];
     }
-    
+
     /**
      * @see SugarCacheAbstract::__destruct()
      *
@@ -90,12 +90,12 @@ class SugarCacheFile extends SugarCacheAbstract
     public function __destruct()
     {
         parent::__destruct();
-        
+
         if ( $this->_cacheChanged )
             sugar_file_put_contents($GLOBALS['sugar_config']['cache_dir'].'/'.$this->_cacheFileName,
                 serialize($this->_localStore));
     }
-    
+
     /**
      * @see SugarCacheAbstract::_setExternal()
      *
@@ -108,7 +108,7 @@ class SugarCacheFile extends SugarCacheAbstract
     {
         $this->_cacheChanged = true;
     }
-    
+
     /**
      * @see SugarCacheAbstract::_getExternal()
      */
@@ -120,11 +120,13 @@ class SugarCacheFile extends SugarCacheAbstract
         if ( sugar_is_file($GLOBALS['sugar_config']['cache_dir'].'/'.$this->_cacheFileName) )
             $this->localCache = unserialize(
                 file_get_contents($GLOBALS['sugar_config']['cache_dir'].'/'.$this->_cacheFileName));
-        
+
         if ( isset($this->_localStore[$key]) )
             return $this->_localStore[$key];
+
+        return null;
     }
-    
+
     /**
      * @see SugarCacheAbstract::_clearExternal()
      *
@@ -136,7 +138,7 @@ class SugarCacheFile extends SugarCacheAbstract
     {
         $this->_cacheChanged = true;
     }
-    
+
     /**
      * @see SugarCacheAbstract::_resetExternal()
      *

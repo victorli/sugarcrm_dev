@@ -63,19 +63,19 @@
 {literal}
 var GlobalSearchOnDrag = function()
 {
-console.log('dragging');
+//console.log('dragging');
 }
 
 var GlobalSearchOnDrop = function()
 {
-console.log('dropping');
+//console.log('dropping');
 }
 
 {/literal}
 
 var GlobalSearchInit = function()
 {ldelim}
-console.log('loading...');
+//console.log('loading...');
 subpanel_dd = new Array();
 
 {foreach from=$MODULE_RESULTS name=m key=module item=info}

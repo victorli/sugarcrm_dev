@@ -58,6 +58,7 @@ $mod_strings = array (
 'LBL_ACTION_IMPORT'=>'Import',
 'LBL_ACTION_EXPORT'=>'Export',
 'LBL_ACTION_LIST'=>'List',
+'LBL_ACTION_MASSUPDATE' => 'Mass Update',
 'LBL_ACTION_ACCESS'=>'Access',
 'LBL_ACTION_ADMIN'=>'Access Type',
 'LBL_ACCESS_DEFAULT'=>'Not Set',

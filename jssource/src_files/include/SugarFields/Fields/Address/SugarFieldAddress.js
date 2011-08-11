@@ -33,73 +33,83 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-	var elems = new Array("address_street", "address_city", "address_state", "address_postalcode", "address_country");
-    var tHasText = false;
-    var syncAddressCheckbox = true;
-    var originalBgColor = '#FFFFFF';  
-    var Dom = YAHOO.util.Dom;
-	
-	function TestCheckboxReady(id) { 
-	   YAHOO.util.Event.onAvailable(id, this.handleOnAvailable, this);  
-	} 
-	 
-	TestCheckboxReady.prototype.handleOnAvailable = function(me) { 
-	    for(x in elems) {
-		    f = fromKey + "_" + elems[x];
-		    t = toKey + "_" + elems[x];
-	
-		    e1 = document.getElementById(t);
-		    e2 = document.getElementById(f);
-            
-		    if(e1 != null && typeof e1 != "undefined" && e2 != null && typeof e2 != "undefined") {
-	
-		        if(!tHasText && trim(e1.value) != "") {
-		           tHasText = true;
-		        }
-		        
-		        if(e1.value != e2.value) 
-		        {
-		           syncAddressCheckbox = false;
-		           break;
-		        }
-		        originalBgColor = e1.style.backgroundColor;
-		    }
-	    }
-	    
-	    if(tHasText && syncAddressCheckbox) 
-        {
-           document.getElementById(this.id).checked = true;
-	       syncFields(fromKey, toKey);
-	    }	  
-	} 
-	
-    function writeToSyncField(e) {
-         fromEl = YAHOO.util.Event.getTarget(e, true);
-         if(typeof fromEl != "undefined") {
-            toEl = document.getElementById(fromEl.id.replace(fromKey, toKey));
-            toEl.value = fromEl.value;
-         }
-    }
-    
-    function syncFields(fromKey, toKey) {
-         for(x in elems) {
-             f = fromKey + "_" + elems[x];
-             e2 = document.getElementById(f);
-             t = toKey + "_" + elems[x];
-             e1 = document.getElementById(t);
-             if(e1 != null && typeof e1 != "undefined" && e2 != null && typeof e2 != "undefined") {
-                  if(!document.getElementById(toKey + '_checkbox').checked) {
-		             Dom.setStyle(e1,'backgroundColor',originalBgColor);
-		             e1.removeAttribute('readOnly');
-		             YAHOO.util.Event.removeListener(e2, 'keyup'); 
-		          } else {
-		             e1.value = e2.value;
-                     Dom.setStyle(e1,'backgroundColor','#DCDCDC');
-                     e1.setAttribute('readOnly', true);
-                     YAHOO.util.Event.addListener(e2, 'keyup', writeToSyncField);
-                  }
-             }
-         } //for
+(function(){
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event;
+
+    SUGAR.AddressField = function(checkId, fromKey, toKey){
+        this.fromKey = fromKey;
+        this.toKey = toKey;
+        Event.onAvailable(checkId, this.testCheckboxReady, this);
     }
 
+    SUGAR.AddressField.prototype = {
+        elems  : ["address_street", "address_city", "address_state", "address_postalcode", "address_country"],
+        tHasText : false,
+        syncAddressCheckbox : true,
+        originalBgColor : '#FFFFFF',
+        testCheckboxReady : function () {
+            for(var x in this.elems) {
+                var f = this.fromKey + "_" +this.elems[x];
+                var t = this.toKey + "_" + this.elems[x];
+
+                var e1 = Dom.get(t);
+                var e2 = Dom.get(f);
+
+                if(e1 != null && typeof e1 != "undefined" && e2 != null && typeof e2 != "undefined") {
+
+                    if(!this.tHasText && YAHOO.lang.trim(e1.value) != "") {
+                       this.tHasText = true;
+                    }
+
+                    if(e1.value != e2.value)
+                    {
+                       this.syncAddressCheckbox = false;
+                       break;
+                    }
+                    this.originalBgColor = e1.style.backgroundColor;
+                }
+            }
+
+            if(this.tHasText && this.syncAddressCheckbox)
+            {
+               Dom.get(this.id).checked = true;
+               this.syncFields();
+            }
+        },
+        writeToSyncField : function(e) {
+            var fromEl = Event.getTarget(e, true);
+            if(typeof fromEl != "undefined") {
+                var toEl = Dom.get(fromEl.id.replace(this.fromKey, this.toKey));
+                var update = toEl.value != fromEl.value;
+                toEl.value = fromEl.value;
+                if (update) SUGAR.util.callOnChangeListers(toEl);
+            }
+        },
+        syncFields : function (fromKey, toKey) {
+            var fk = this.fromKey, tk = this.toKey;
+            for(var x in this.elems) {
+                var f = fk + "_" + this.elems[x];
+                var e2 = Dom.get(f);
+                var t = tk + "_" + this.elems[x];
+                var e1 = Dom.get(t);
+                if(e1 != null && typeof e1 != "undefined" && e2 != null && typeof e2 != "undefined") {
+                    if(!Dom.get(tk + '_checkbox').checked) {
+                        Dom.setStyle(e1,'backgroundColor',this.originalBgColor);
+                        e1.removeAttribute('readOnly');
+                        Event.removeListener(e2, 'change', this.writeToSyncField);
+                    } else {
+                        var update = e1.value != e2.value;
+                        e1.value = e2.value;
+                        if (update) SUGAR.util.callOnChangeListers(e1);
+                        Dom.setStyle(e1,'backgroundColor','#DCDCDC');
+                        e1.setAttribute('readOnly', true);
+                        
+                        Event.addListener(e2, 'change', this.writeToSyncField, this, true);
+                    }
+                }
+            }
+        }
+    };
+})();
 

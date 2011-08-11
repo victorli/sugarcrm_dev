@@ -408,18 +408,22 @@ $xtpl->assign('PRINT_URL', 'index.php?'.$GLOBALS['request_string']);
 	$quicksearch_js = <<<EOQ
 		<script type="text/javascript" language="javascript">sqs_objects = $sqs_objects_encoded; var dialog_loaded;
 			function parent_typechangeQS() {
-				//new_module = document.getElementById('parent_type').value;
-				new_module = document.EditView.parent_type.value;
+				var new_module = document.EditView.parent_type.value;
+				var sqsId = 'EditView_parent_name';
 				if(new_module == 'Contacts' || new_module == 'Leads' || typeof(disabledModules[new_module]) != 'undefined') {
-					sqs_objects['EditView_parent_name']['disable'] = true;
+					sqs_objects[sqsId]['disable'] = true;
 					document.getElementById('parent_name').readOnly = true;
 				}
 				else {
-					sqs_objects['EditView_parent_name']['disable'] = false;
+					sqs_objects[sqsId]['disable'] = false;
 					document.getElementById('parent_name').readOnly = false;
 				}
 
-				sqs_objects['EditView_parent_name']['modules'] = new Array(new_module);
+				sqs_objects[sqsId]['modules'] = new Array(new_module);
+				if (typeof(QSFieldsArray[sqsId]) != 'undefined')
+                {
+                    QSFieldsArray[sqsId].sqs.modules = new Array(new_module);
+                }
 				enableQS(false);
 			}
 			parent_typechangeQS();

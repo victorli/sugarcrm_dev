@@ -48,6 +48,6 @@ global $mod_strings, $app_strings, $sugar_config;
 
 	if(ACLController::checkAccess('Contacts', 'import', true))$module_menu[] =Array("index.php?module=Contacts&action=ImportVCard", $mod_strings['LNK_IMPORT_VCARD'],"CreateContacts", 'Contacts');
 	if(ACLController::checkAccess('Contacts', 'list', true))$module_menu[] =Array("index.php?module=Contacts&action=index&return_module=Contacts&return_action=DetailView", $mod_strings['LNK_CONTACT_LIST'],"Contacts", 'Contacts');
-	if(ACLController::checkAccess('Contacts', 'import', true))$module_menu[] =Array("index.php?module=Import&action=Step1&import_module=Contacts&return_module=Contacts&return_action=index", $mod_strings['LNK_IMPORT_CONTACTS'],"Import", 'Contacts');
+	if(ACLController::checkAccess('Contacts', 'import', true))$module_menu[] =Array("javascript:void(SUGAR.importWizard.renderDialog('Contacts','step1',''));", $mod_strings['LNK_IMPORT_CONTACTS'],"Import", 'Contacts');
 
 ?>

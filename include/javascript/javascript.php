@@ -73,7 +73,8 @@ class javascript{
     }
 
 	function addField($field,$required, $prefix='', $displayField='', $translate = false){
-		if(isset($this->sugarbean->field_name_map[$field]['vname'])){
+		if ($field == "id") return;
+        if(isset($this->sugarbean->field_name_map[$field]['vname'])){
             $vname = $this->sugarbean->field_name_map[$field]['vname'];
             if ( $translate )
                 $vname = $this->buildStringToTranslateInSmarty($this->sugarbean->field_name_map[$field]['vname']);
@@ -240,13 +241,17 @@ class javascript{
 		}
 	}
 
-	function getScript($showScriptTag = true){
+	function getScript($showScriptTag = true, $clearValidateFields = true){
 		$tempScript = $this->script;
 		$this->script = "";
 		if($showScriptTag){
 			$this->script = "<script type=\"text/javascript\">\n";
 		}
 
+        if($clearValidateFields){
+            $this->script .= "addForm('{$this->formname}');";
+        }
+  
 		$this->script .= $tempScript;
 
 		if($showScriptTag){

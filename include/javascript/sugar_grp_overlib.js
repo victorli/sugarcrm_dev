@@ -164,7 +164,7 @@ function OLfd(f){var fd=((f)?f:o3_frame).document,fdc=fd.compatMode,fdd=fd.docum
 function OLgetRefXY(r){var o=OLgetRef(r),ob=o,rXY=[o3_refx,o3_refy],of;if(!o)return[null,null];if(OLns4){if(typeof o.length!='undefined'&&o.length>1){ob=o[0];rXY[0]+=o[0].x+o[1].pageX;rXY[1]+=o[0].y+o[1].pageY;}else{if((o.toString().indexOf('Image')!=-1)||(o.toString().indexOf('Anchor')!=-1)){rXY[0]+=o.x;rXY[1]+=o.y;}else{rXY[0]+=o.pageX;rXY[1]+=o.pageY;}}}else{rXY[0]+=OLpageLoc(o,'Left');rXY[1]+=OLpageLoc(o,'Top');}
 of=OLgetRefOffsets(ob);rXY[0]+=of[0];rXY[1]+=of[1];return rXY;}
 function OLgetRef(l){var r=OLgetRefById(l);return(r)?r:OLgetRefByName(l);}
-function OLgetRefById(l,d){var r="",j;l=(l||'overDiv');d=(d||o3_frame.document);if(OLie4&&d.all){return d.all[l];}else if(d.getElementById){return d.getElementById(l);}else if(d.layers&&d.layers.length>0){if(d.layers[l])return d.layers[l];for(j=0;j<d.layers.length;j++){r=OLgetRefById(l,d.layers[j].document);if(r)return r;}}
+function OLgetRefById(l,d){var r="",j;l=(l||'overDiv');d=(d||o3_frame.document);if(d.getElementById){return d.getElementById(l);}else if(d.layers&&d.layers.length>0){if(d.layers[l])return d.layers[l];for(j=0;j<d.layers.length;j++){r=OLgetRefById(l,d.layers[j].document);if(r)return r;}}
 return null;}
 function OLgetRefByName(l,d){var r=null,j;d=(d||o3_frame.document);if(typeof d.images[l]!='undefined'&&d.images[l]){return d.images[l];}else if(typeof d.anchors[l]!='undefined'&&d.anchors[l]){return d.anchors[l];}else if(d.layers&&d.layers.length>0){for(j=0;j<d.layers.length;j++){r=OLgetRefByName(l,d.layers[j].document);if(r&&r.length>0)return r;else if(r)return[r,d.layers[j]];}}
 return null;}
@@ -262,7 +262,7 @@ function OLpar(a,v){eval(v+'='+a);}
 function OLparQuo(a,v){eval(v+"='"+OLescSglQt(a)+"'");}
 function OLescSglQt(s){return s.toString().replace(/'/g,"\\'");}
 function OLtoggle(a,v){eval(v+'=('+v+'==0&&'+a+'>=0)?1:0');}
-function OLhasDims(s){return/[%\-a-z]+$/.test(s);}
+function OLhasDims(s){return /[%\-a-z]+$/.test(s);}
 function OLfontSize(){var i;if(OLhasDims(o3_textsize)){if(OLns4)o3_textsize="2";}else
 if(!OLns4){i=parseInt(o3_textsize);o3_textsize=(i>0&&i<8)?OLpct[i]:OLpct[0];}
 if(OLhasDims(o3_captionsize)){if(OLns4)o3_captionsize="2";}else
@@ -286,7 +286,8 @@ return i;}
 function OLregCmds(c){if(typeof c!='string')return;var pM=c.split(',');pMtr=pMtr.concat(pM);for(var i=0;i<pM.length;i++)eval(pM[i].toUpperCase()+'='+pmCnt++);}
 function OLregRunTimeFunc(f){if(typeof f=='object')OLrunTime=OLrunTime.concat(f);else OLrunTime[OLrunTime.length++]=f;}
 function OLregCmdLineFunc(f){if(typeof f=='object')OLcmdLine=OLcmdLine.concat(f);else OLcmdLine[OLcmdLine.length++]=f;}
-OLloaded=1;// End of File include/javascript/overlibmws.js
+OLloaded=1;
+// End of File include/javascript/overlibmws.js
                                 
 /*
  Artistic License 2.0
@@ -380,5 +381,6 @@ function OLhideIfs(o){if(!OLie55||o!=over)return;if(OLifsP1)OLifsP1.style.visibi
 function OLrepositionIfs(X,Y){if(OLie55){if((OLovertwoPI)&&over2&&over==over2){if(OLifsP2)OLrepositionTo(OLifsP2,X,Y);}
 else{if(OLifsP1){OLrepositionTo(OLifsP1,X,Y);if((OLshadowPI)&&o3_shadow&&OLifsSh)
 OLrepositionTo(OLifsSh,X+o3_shadowx,Y+o3_shadowy);}}}}
-OLiframePI=1;OLloaded=1;// End of File include/javascript/overlibmws_iframe.js
+OLiframePI=1;OLloaded=1;
+// End of File include/javascript/overlibmws_iframe.js
                                 

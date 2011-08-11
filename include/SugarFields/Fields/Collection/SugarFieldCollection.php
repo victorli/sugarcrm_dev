@@ -69,6 +69,15 @@ class SugarFieldCollection extends SugarFieldBase {
         $this->ss->assign('required', !empty($vardef['required']));
         $this->ss->assign('displayParamsJSON', '{literal}'.$displayParamsJSON.'{/literal}');
         $this->ss->assign('vardefJSON', '{literal}'.$vardefJSON.'{/literal}');
+
+        $keys = $this->getAccessKey($vardef,'COLLECTION',$vardef['module']);
+        $displayParams['accessKeySelect'] = $keys['accessKeySelect'];
+        $displayParams['accessKeySelectLabel'] = $keys['accessKeySelectLabel'];
+        $displayParams['accessKeySelectTitle'] = $keys['accessKeySelectTitle'];
+        $displayParams['accessKeyClear'] = $keys['accessKeyClear'];
+        $displayParams['accessKeyClearLabel'] = $keys['accessKeyClearLabel'];
+        $displayParams['accessKeyClearTitle'] = $keys['accessKeyClearTitle'];
+
         $this->setup($parentFieldArray, $vardef, $displayParams, $tabindex);
 	    if(!$searchView) {
 	    	if(empty($this->tpl_path)){

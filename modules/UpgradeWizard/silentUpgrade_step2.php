@@ -330,6 +330,10 @@ copy($argv[1], $install_file);
 ////	END UPGRADE PREP
 ///////////////////////////////////////////////////////////////////////////////
 
+if(function_exists('repairTableDictionaryExtFile'))
+{
+    repairTableDictionaryExtFile();
+}
 
 if(function_exists('set_upgrade_vars')){
 	set_upgrade_vars();

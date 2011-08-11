@@ -50,7 +50,7 @@ class="yui-navset"
     <ul class="yui-nav">
     {{foreach name=section from=$sectionPanels key=label item=panel}}
         {{counter name="tabCount" print=false}}
-        <li class="selected"><a id="tab{{$tabCount}}" href="#tab{{$tabCount}}"><em>{sugar_translate label='{{$label}}' module='{{$module}}'}</em></a></li>
+        <li class="selected"><a id="tab{{$tabCount}}" href="javascript:void({{$tabCount}})"><em>{sugar_translate label='{{$label}}' module='{{$module}}'}</em></a></li>
     {{/foreach}}
     </ul>
     {{/if}}
@@ -75,7 +75,7 @@ class="yui-navset"
     {sugar_include type='php' file='{{$panel}}'}
 {{else}}
 
-<table width="100%" border="0" cellspacing="1" cellpadding="0"  class="{$def.templateMeta.panelClass|default:'edit view'}">
+<table width="100%" border="0" cellspacing="1" cellpadding="0"  class="yui3-skin-sam {$def.templateMeta.panelClass|default:'edit view dcQuickEdit'}">
 {{* Only show header if it is not default or an int value *}}
 {{if !empty($label) && !is_int($label) && $label != 'DEFAULT' && !$useTabs && $showSectionPanelsTitles}}
 <tr>

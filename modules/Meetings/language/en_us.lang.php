@@ -94,6 +94,7 @@ $mod_strings = array (
 	'LBL_NAME' => 'Name',
 	'LBL_NEW_FORM_TITLE' => 'Create Appointment',
 	'LBL_OUTLOOK_ID' => 'Outlook ID',
+	'LBL_SEQUENCE' => 'Meeting update sequence',
 	'LBL_PHONE' => 'Phone Office:',
 	'LBL_REMINDER_TIME'=>'Reminder Time',
 	'LBL_REMINDER' => 'Reminder:',
@@ -124,7 +125,7 @@ $mod_strings = array (
     'LBL_CREATED_USER' => 'Created User',
     'LBL_MODIFIED_USER' => 'Modified User',
     'NOTICE_DURATION_TIME' => 'Duration time must be greater than 0',
-    'LBL_MEETING_INFORMATION' => 'Meeting Overview',
+    'LBL_MEETING_INFORMATION' => 'Overview',
 	'LBL_LIST_JOIN_MEETING' => 'Join Meeting',
 	'LBL_JOIN_EXT_MEETING' => 'Join Meeting',
 	'LBL_HOST_EXT_MEETING' => 'Start Meeting',
@@ -139,5 +140,20 @@ $mod_strings = array (
     'LBL_EXTNOSTART_HEADER' => 'Error: Cannot Start Meeting',
     'LBL_EXTNOSTART_MAIN' => 'You cannot start this meeting because you are not an Administrator or the owner of the meeting.',
 
+  //For export labels
+    'LBL_EXPORT_JOIN_URL' => 'Join Url',
+    'LBL_EXPORT_HOST_URL' => 'Host Url',
+    'LBL_EXPORT_DISPLAYED_URL' => 'Displayed Url',
+    'LBL_EXPORT_ASSIGNED_USER_ID' => 'Assigned User ID',
+    'LBL_EXPORT_EXTERNAL_ID' => 'External ID',
+    'LBL_EXPORT_ASSIGNED_USER_NAME' => 'Assigned User Name',
+    'LBL_EXPORT_MODIFIED_USER_ID' => 'Modified By ID',
+    'LBL_EXPORT_CREATED_BY' => 'Created By ID',
+
+    'LBL_EXPORT_DATE_START' => 'Start Date and Time',
+    'LBL_EXPORT_DATE_END' => 'End Date and Time',
+    'LBL_EXPORT_PARENT_TYPE' => 'Related Type',
+    'LBL_EXPORT_PARENT_ID' => 'Parent ID',
+    'LBL_EXPORT_REMINDER_TIME' =>'Reminder Time (in minutes)',
 );
 ?>

@@ -68,13 +68,18 @@ SUGAR.email2 = {
     }
 };
 
+
 /**
  * Shows overlay progress message
  */
-function overlayModal(title, body) {
-    overlay(title, body);
+
+//overlayModal
+SUGAR.showMessageBoxModal = function(title, body) {
+    SUGAR.showMessageBox(title, body);
 }
-function overlay(reqtitle, body, type, additconfig) {
+
+//overlay
+SUGAR.showMessageBox = function(reqtitle, body, type, additconfig) {
     var config = { };
     if (typeof(additconfig) == "object") {
         var config = additconfig;
@@ -83,8 +88,9 @@ function overlay(reqtitle, body, type, additconfig) {
     config.title = reqtitle;
     config.msg = body;
     YAHOO.SUGAR.MessageBox.show(config);
-};
+}
 
-function hideOverlay() {
+//hideOverlay
+SUGAR.hideMessageBox = function() {
 	YAHOO.SUGAR.MessageBox.hide();
 };

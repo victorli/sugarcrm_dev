@@ -71,7 +71,7 @@
 		{if $rowCounter % 2 == 0}
 		<tr>
 		{/if}
-			<td width="50%" align="left"><a href="#" onclick="{$module.onclick}">{$module.icon}</a>&nbsp;<a class="mbLBLL" href="#" onclick="{$module.onclick}">{$module.title}</a><br /></td>
+			<td width="50%" align="left"><a id="{$module.id}_icon" href="javascript:void(0)" onclick="{$module.onclick}">{$module.icon}</a>&nbsp;<a class="mbLBLL" href="#" onclick="{$module.onclick}" id="{$module.id}">{$module.title}</a><br /></td>
 		{if $rowCounter % 2 == 1}
 		</tr>
 		{/if}
@@ -83,12 +83,12 @@
 {/if}
 <div id="chartDashlets" style="{if $moduleName == 'Home'}height:400px;display:none;{else}height:425px;display:;{/if}">
 	{if $charts != false}
-	<h3><span id="basicChartDashletsExpCol"><a href="#" onClick="javascript:SUGAR.mySugar.collapseList('basicChartDashlets');"><img border="0" src="{sugar_getimagepath file='basic_search.gif'}" align="absmiddle" /></span></a>&nbsp;{sugar_translate label='LBL_BASIC_CHARTS' module='Home'}</h3>
+	<h3><span id="basicChartDashletsExpCol"><a href="javascript:void(0)" onClick="javascript:SUGAR.mySugar.collapseList('basicChartDashlets');"><img border="0" src="{sugar_getimagepath file='basic_search.gif'}" align="absmiddle" /></span></a>&nbsp;{sugar_translate label='LBL_BASIC_CHARTS' module='Home'}</h3>
 	<div id="basicChartDashletsList">
 	<table width="100%">
 		{foreach from=$charts item=chart}
 		<tr>
-			<td align="left"><a href="#" onclick="{$chart.onclick}">{$chart.icon}</a>&nbsp;<a class="mbLBLL" href="#" onclick="{$chart.onclick}">{$chart.title}</a><br /></td>
+			<td align="left"><a href="javascript:void(0)" onclick="{$chart.onclick}">{$chart.icon}</a>&nbsp;<a class="mbLBLL" href="#" onclick="{$chart.onclick}">{$chart.title}</a><br /></td>
 		</tr>
 		{/foreach}
 	</table>
@@ -106,7 +106,7 @@
 		{if $rowCounter % 2 == 0}
 		<tr>
 		{/if}
-			<td align="left"><a href="#" onclick="{$tool.onclick}">{$tool.icon}</a>&nbsp;<a class="mbLBLL" href="#" onclick="{$tool.onclick}">{$tool.title}</a><br /></td>
+			<td align="left"><a href="javascript:void(0)" onclick="{$tool.onclick}">{$tool.icon}</a>&nbsp;<a class="mbLBLL" href="#" onclick="{$tool.onclick}">{$tool.title}</a><br /></td>
 		{if $rowCounter % 2 == 1}
 		</tr>
 		{/if}

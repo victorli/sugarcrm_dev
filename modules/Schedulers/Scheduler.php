@@ -183,10 +183,13 @@ class Scheduler extends SugarBean {
 				$r2 = $this->db->query($q2);
 				if($r2 != null) {
 					$a2 = $this->db->fetchByAssoc($r2); // we only care about the newest
+                    $a2['execute_time'] = $this->db->fromConvert($a2['execute_time'],'datetime');
 					if($a2 != null) {
 						$GLOBALS['log']->debug("-----> Scheduler found [ {$a['name']} ] 'In Progress' with most recent Execute Time at [ {$a2['execute_time']} GMT-0 ]");
 
 						$execTime = TimeDate::getInstance()->fromDB($a2['execute_time'])->ts;
+                        
+                        $GLOBALS['log']->debug("-----> Checking if Scheduler execTime ($execTime) is higher than lowerLimit ($lowerLimit)");
 
 						if($execTime > $lowerLimit) {
 							if(($now - $execTime) >= (60 * $this->timeOutMins)) {
@@ -220,7 +223,7 @@ class Scheduler extends SugarBean {
 		}
 
 		$now = TimeDate::getInstance()->getNow();
-		$now = $now->setTime($now->hour, $now->min)->asDb();
+		$now = $now->setTime($now->hour, $now->min, "00")->asDb();
 		$validTimes = $this->deriveDBDateTimes($this);
 
 		if(is_array($validTimes) && in_array($now, $validTimes)) {
@@ -581,15 +584,17 @@ class Scheduler extends SugarBean {
 		/**
 		 * If "Execute If Missed bit is set
 		 */
+        $now = TimeDate::getInstance()->getNow();
+		$now = $now->setTime($now->hour, $now->min, "00")->asDb();
+        
 		if($focus->catch_up == 1) {
 			if($focus->last_run == null) {
 				// always "catch-up"
-				$validJobTime[] = $timedate->nowDb();
+				$validJobTime[] = $now;
 			} else {
 				// determine what the interval in min/hours is
 				// see if last_run is in it
 				// if not, add NOW
-                $now = $timedate->nowDb();
                 if(!empty($validJobTime) && ($focus->last_run < $validJobTime[0]) && ($now > $validJobTime[0])) {
 				// cn: empty() bug 5914;
 				//if(!empty) should be checked, becasue if a scheduler is defined to run every day 4pm, then after 4pm, and it runs as 4pm, the $validJobTime will be empty, and it should not catch up

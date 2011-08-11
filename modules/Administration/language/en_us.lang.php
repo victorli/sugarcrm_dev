@@ -180,7 +180,7 @@ $mod_strings = array (
     'LBL_BUG_DESC' => 'Maintain a list of releases for your product. Active releases are displayed in the Releases drop-down menus in bug records created within the Bug Tracker module.',
     'LBL_CANCEL_BUTTON_TITLE' => 'Cancel',
     'LBL_CAT_VIEW'            => 'Categories',
-    'LBL_CHANGE_NAME_TABS'=>'Change the names of the navigation tabs',
+    'LBL_CHANGE_NAME_MODULES'=>'Change the names of the modules appearing within the application',
     'LBL_CHECK_FOR_UPDATES'  => 'Check for Updates',
     'LBL_CHECK_NOW_LABEL' =>'Check Now',
     'LBL_CHECK_NOW_TITLE' =>'Check Now',
@@ -338,6 +338,8 @@ $mod_strings = array (
     'LBL_IMPORT_CUSTOM_FIELDS_TITLE' => 'Import Custom Fields Structure',
     'LBL_IMPORT_CUSTOM_FIELDS'=> 'Import custom field definitions from a .sugar file',
     'LBL_IMPORT_VALIDATION_KEY' =>'Import Validation Key',
+    'LBL_IMPORT_WIZARD' => 'Import Wizard',
+    'LBL_IMPORT_WIZARD_DESC' => 'Use the import wizard to easily import records into the system',
     'LBL_INBOUND_EMAIL_TITLE' => 'Inbound Email',
     'LBL_LANGUAGES' => 'Manage which languages are available for users',
     'LBL_LAYOUT' => 'Add, remove, change fields, and layout fields and panels across the application',
@@ -440,7 +442,7 @@ $mod_strings = array (
     'LBL_MANUAL_VALIDATION_TXT' => 'Manual Validation',
     'LBL_MANUAL_VALIDATION'=>'
 	If you experience persistent problems with automatic validation, please check your Proxy configuration in the <a href="index.php?module=Configurator&action=EditView">System Settings</a> admin panel.
-	If your system environment prohibits your system from communicating to the license validation server through the internet, you should proceed with the <a href="#" onclick="toggleDisplay(\'mainbody\');toggleDisplay(\'manualbody\');">Manual Validation</a> steps. ',
+	If your system environment prohibits your system from communicating to the license validation server through the internet, you should proceed with the <a href="javascript:void(0)" onclick="toggleDisplay(\'mainbody\');toggleDisplay(\'manualbody\');">Manual Validation</a> steps. ',
     'LBL_MANUAL_VALIDATION1'=> 'Step 1: Generate a license key information file by clicking the following button. ',
     'LBL_MANUAL_VALIDATION2'=> 'Then save the file (sugarkey.lic) on your local file system.',
     'LBL_MANUAL_VALIDATION3'=> 'Step 2: Transfer the sugarkey.lic file to a system where you can access the internet with a web browser.   <br<br>Go to <a href="http://updates.sugarcrm.com/license">http://updates.sugarcrm.com/license</a>  and submit the sugarkey.lic file.  <br><br>The license validation web site will perform the validation immediately and return you the validation key file (sugarvalidationkey.lic) if the validation is successful.  Your browser should prompt you to save the file.  ',
@@ -461,7 +463,9 @@ $mod_strings = array (
     //ModuleInstaller
     'LBL_MI_REBUILDING' => 'Rebuilding',
     'LBL_MI_SECTION' => 'Section...',
-    'LBL_MI_UN_CUSTOMFIELD' => 'Uninstalling Custom Fields...',
+    'LBL_MI_IN_EXT' => 'Installing %s extension',
+    'LBL_MI_UN_EXT' => 'Uninstalling %s extension',
+	'LBL_MI_UN_CUSTOMFIELD' => 'Uninstalling Custom Fields...',
     'LBL_MI_IN_CUSTOMFIELD' => 'Installing Custom Fields...',
     'LBL_MI_COMPLETE' => 'Complete',
     'LBL_MI_UN_BEAN' => 'Uninstalling Bean :',
@@ -487,7 +491,10 @@ $mod_strings = array (
     'LBL_MI_REPAIR_INDICES' => 'Repairing indexes',
 	'LBL_MI_IN_CONNECTORS' => 'Installing Connectors',
 	'LBL_MI_UN_CONNECTORS' => 'UnInstalling Connectors',
-
+    'LBL_MI_IN_HOOKS' => 'Installing Logic Hooks',
+    'LBL_MI_UN_HOOKS' => 'Uninstalling Logic Hooks',
+    'LBL_MI_IN_SCHEDULEDTASKS' => 'Installing Scheduled Tasks',
+    'LBL_MI_UN_SCHEDULEDTASKS' => 'Uninstalling Scheduled Tasks',
     'LBL_ML_ACTION' => 'Action',
     'LBL_ML_CANCEL'             => 'Cancel',
     'LBL_ML_COMMIT'=>'Commit',
@@ -656,7 +663,7 @@ $mod_strings = array (
     'LBL_REGEX_HELP_TEXT'		=>'<b>Regular Expressions </b> provide a concise and flexible means for identifying strings of the password, such as particular characters or patterns of characters. You can create custom password rules by providing a regex that will be used in a NOT MATCH condition; the password must not contain a match to any expressions in the regex.',
     'LBL_REGEX_DESC_HELP_TEXT'	=>'This description should explain the Regex Requirement and will be displayed in the list of requirements for users when they provide new passwords.',
 	'LBL_RELEASE' => 'Manage releases and versions',
-    'LBL_RENAME_TABS'=>'Rename Tabs',
+    'LBL_RENAME_TABS'=>'Rename Modules',
     'LBL_REPAIR_ACTION' => 'What action would you like to take?',
     'LBL_REPAIR_DATABASE_DESC' =>  'Repairs database based on values defined in vardefs',
     'LBL_REPAIR_DATABASE_PROCESSING' => 'Processing database and vardef comparison...',
@@ -1089,5 +1096,9 @@ $mod_strings = array (
    'LBL_SELECT_MODULES_TITLE' => 'Drag and drop to select modules and to change the display order. Perform a search to apply the changes.',
    'LBL_EAPM_SETTINGS' => 'External Accounts',
    'LBL_EAPM_SETTINGS_DESC' => 'Select external applications for which users can provide their account information in order to access from within Sugar.',
-
-	);
+   'LBL_MI_IN_ACTIONVIEWMAP' => 'Installing Action View Map',
+   'LBL_MI_UN_ACTIONVIEWMAP' => 'Unninstalling Action View Map',
+// OAuth
+    'LBL_OAUTH_TITLE' => "OAuth Keys",
+    'LBL_OAUTH' => "OAuth key management",
+);

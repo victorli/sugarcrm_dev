@@ -35,6 +35,7 @@
 
 
 
+initMySugar = function(){
 SUGAR.mySugar = function() {
 	var originalLayout = null;
 	var configureDashletId = null;
@@ -43,6 +44,8 @@ SUGAR.mySugar = function() {
 	var leftColObj = null;
 	var maxCount;
 	var warningLang;
+
+    var closeDashletsDialogTimer = null;
 	
 	var activeTab = activePage;
 	var current_user = current_user_id;
@@ -368,7 +371,11 @@ SUGAR.mySugar = function() {
 		
 		showDashletsDialog: function() {                                             
 			columns = SUGAR.mySugar.getLayout();
-			
+
+            if (this.closeDashletsDialogTimer != null) {
+                window.clearTimeout(this.closeDashletsDialogTimer);
+            }
+
 			var num_dashlets = 0;
             var i = 0;
             for ( i = 0 ; i < 3; i++ ) {
@@ -389,7 +396,7 @@ SUGAR.mySugar = function() {
 				dashletsListDiv.innerHTML = response['html'];
 				
 				document.getElementById('dashletsDialog_c').style.display = '';
-				SUGAR.mySugar.dashletsDialog.show();
+                SUGAR.mySugar.dashletsDialog.show();
 
 				eval(response['script']);
 				ajaxStatus.hideStatus();
@@ -401,7 +408,10 @@ SUGAR.mySugar = function() {
 		
 		closeDashletsDialog: function(){
 			SUGAR.mySugar.dashletsDialog.hide();
-			window.setTimeout("document.getElementById('dashletsDialog_c').style.display = 'none';", 2000);
+			if (this.closeDashletsDialogTimer != null) {
+                window.clearTimeout(this.closeDashletsDialogTimer);
+            }
+            this.closeDashletsDialogTimer = window.setTimeout("document.getElementById('dashletsDialog_c').style.display = 'none';", 2000);
 		},
 
 		toggleDashletCategories: function(category){
@@ -544,22 +554,22 @@ SUGAR.mySugar = function() {
 		
 		collapseList: function(chartList){
 			document.getElementById(chartList+'List').style.display='none';
-			document.getElementById(chartList+'ExpCol').innerHTML = '<a href="#" onClick="javascript:SUGAR.mySugar.expandList(\''+chartList+'\');"><img border="0" src="' + SUGAR.themes.image_server + 'index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=advanced_search.gif" align="absmiddle" />';
+			document.getElementById(chartList+'ExpCol').innerHTML = '<a href="javascript:void(0)" onClick="javascript:SUGAR.mySugar.expandList(\''+chartList+'\');"><img border="0" src="' + SUGAR.themes.image_server + 'index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=advanced_search.gif" align="absmiddle" />';
 		},
 		
 		expandList: function(chartList){
 			document.getElementById(chartList+'List').style.display='';		
-			document.getElementById(chartList+'ExpCol').innerHTML = '<a href="#" onClick="javascript:SUGAR.mySugar.collapseList(\''+chartList+'\');"><img border="0" src="' + SUGAR.themes.image_server + 'index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=basic_search.gif" align="absmiddle" />';			
+			document.getElementById(chartList+'ExpCol').innerHTML = '<a href="javascript:void(0)" onClick="javascript:SUGAR.mySugar.collapseList(\''+chartList+'\');"><img border="0" src="' + SUGAR.themes.image_server + 'index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=basic_search.gif" align="absmiddle" />';
 		},
 		
 		collapseReportList: function(reportChartList){
 			document.getElementById(reportChartList+'ReportsChartDashletsList').style.display='none';
-			document.getElementById(reportChartList+'ExpCol').innerHTML = '<a href="#" onClick="javascript:SUGAR.mySugar.expandReportList(\''+reportChartList+'\');"><img border="0" src="' + SUGAR.themes.image_server + 'index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=ProjectPlus.gif" align="absmiddle" />';
+			document.getElementById(reportChartList+'ExpCol').innerHTML = '<a href="javascript:void(0)" onClick="javascript:SUGAR.mySugar.expandReportList(\''+reportChartList+'\');"><img border="0" src="' + SUGAR.themes.image_server + 'index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=ProjectPlus.gif" align="absmiddle" />';
 		},
 		
 		expandReportList: function(reportChartList){
 			document.getElementById(reportChartList+'ReportsChartDashletsList').style.display='';
-			document.getElementById(reportChartList+'ExpCol').innerHTML = '<a href="#" onClick="javascript:SUGAR.mySugar.collapseReportList(\''+reportChartList+'\');"><img border="0" src="' + SUGAR.themes.image_server + 'index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=ProjectMinus.gif" align="absmiddle" />';
+			document.getElementById(reportChartList+'ExpCol').innerHTML = '<a href="javascript:void(0)" onClick="javascript:SUGAR.mySugar.collapseReportList(\''+reportChartList+'\');"><img border="0" src="' + SUGAR.themes.image_server + 'index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=ProjectMinus.gif" align="absmiddle" />';
 		},
 		
 		clearSearch: function(){
@@ -608,3 +618,4 @@ SUGAR.mySugar = function() {
 		}	
 	 }; 
 }();
+};

@@ -366,7 +366,8 @@ class ConnectorsController extends SugarController {
 				$display_values = explode(',', $_REQUEST['display_values']);
 			    foreach($display_values as $value) {
 			    	    $entry = explode(':', $value);
-			      	    $new_modules_sources[$entry[1]][$entry[0]] = $entry[0];
+                                    $mod = get_module_from_singular($entry[1]); // get the internal module name
+                                    $new_modules_sources[$mod][$entry[0]] = $entry[0];
 			    }
 			}
 

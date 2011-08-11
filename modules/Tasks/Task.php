@@ -122,7 +122,7 @@ class Task extends SugarBean {
                 $contact_required = stristr($where,"contacts");
                 if($contact_required)
                 {
-                        $query = "SELECT tasks.*, contacts.first_name, contacts.last_name";
+                        $query = "SELECT tasks.*, contacts.first_name, contacts.last_name, users.user_name as assigned_user_name ";
                         if($custom_join){
    							$query .= $custom_join['select'];
  						}
@@ -131,7 +131,7 @@ class Task extends SugarBean {
                 }
                 else
                 {
-                        $query = 'SELECT tasks.*';
+                        $query = 'SELECT tasks.*, users.user_name as assigned_user_name ';
                         if($custom_join){
    							$query .= $custom_join['select'];
  						}
@@ -143,6 +143,7 @@ class Task extends SugarBean {
 				if($custom_join){
    					$query .= $custom_join['join'];
  				}
+		$query .= "  LEFT JOIN users ON tasks.assigned_user_id=users.id ";
 
                 if($where != "")
                         $query .= "where $where AND ".$where_auto;

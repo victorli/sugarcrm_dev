@@ -35,6 +35,110 @@
  ********************************************************************************/
 
 *}
+<script type='text/javascript' src='{sugar_getjspath file='include/javascript/sugar_grp_overlib.js'}'></script>
+{literal}
+<script type="text/javascript">
+    var accountText = document.getElementById('account_name');
+
+    function addRemoveDropdownElement(module) {
+        var checkbox = document.getElementById('new'+module);
+        var dropdown = document.getElementById('lead_conv_ac_op_sel');
+        if (!checkbox || !dropdown) {
+            return;
+        }
+        var found = false;
+        var i;
+        for (i=dropdown.options.length-1; i>=0; i--) {
+            if (dropdown.options[i].value == module) {
+                found = true;
+                if (!checkbox.checked) {
+                    // if this is Accounts and the text of account name is not empty, do not remove
+                    if (module != 'Accounts' || !accountText || accountText.value == '') {
+                        dropdown.remove(i);
+                    }
+                }
+                break;
+            }
+        }
+        if (!found && checkbox.checked) {
+            var opt = document.createElement("option");
+            opt.text = SUGAR.language.get('app_list_strings', "moduleListSingular")[module];
+            opt.value = module;
+            opt.label = opt.text;
+            dropdown.options.add(opt);
+        }
+    }
+
+    // add focus() to the onclick event handler of the clear account name button
+    // because we need onblur to be triggered after account name is cleared
+    var clearButton = document.getElementById('btn_clr_account_name');
+    if (clearButton && accountText) {
+        clearButton.attributes['onclick'].value = "accountText.focus();" + clearButton.attributes['onclick'].value + "clearButton.focus();";
+    }
+
+    // add onblur event handler to the account name text to update the module dropdown
+    var account_name = document.getElementById('account_name');
+
+    function onBlurKeyUpHandler() {
+        var dropdown = document.getElementById('lead_conv_ac_op_sel');
+        if (!dropdown || !account_name) {
+            return;
+        }
+        var found = false;
+        var i;
+        var module = 'Accounts';
+        for (i=dropdown.options.length-1; i>=0; i--) {
+            if (dropdown.options[i].value == module) {
+                found = true;
+                if (account_name.value == '') {
+                    dropdown.remove(i);
+                }
+                break;
+            }
+        }
+        if (!found && account_name.value != '') {
+            var opt = document.createElement("option");
+            opt.text = SUGAR.language.get('app_list_strings', "moduleListSingular")[module];
+            opt.value = module;
+            opt.label = opt.text;
+            dropdown.options.add(opt);
+        }
+    }
+    if (account_name) {
+        account_name.onblur = onBlurKeyUpHandler;
+        account_name.onkeyup = onBlurKeyUpHandler;
+    }
+</script>
+{/literal}
+
+{if $lead_conv_activity_opt == 'move'}
+<table width="100%" border="0" cellspacing="1" cellpadding="0"  class="{$def.templateMeta.panelClass|default:'edit view'}" id ="lead_conv_ac_op">
+<tr>
+    <td width="15%" class="rssItemDate">
+        {sugar_translate label='LBL_ACTIVITIES_MOVE' module='Leads'}:&nbsp;{sugar_help text=$MOD.LBL_ACTIVITIES_MOVE_HELP}
+    </td>
+    <td>
+        <select id="lead_conv_ac_op_sel" name="lead_conv_ac_op_sel">
+            <option selected="selected" value="Contacts" label="{sugar_translate label='LBL_CONTACT' module='Contacts'}"><script>document.write(SUGAR.language.get('app_list_strings', "moduleListSingular")['Contacts']);</script></option>
+        </select>
+    </td>
+</tr>
+</table>
+{elseif $lead_conv_activity_opt == 'copy' || $lead_conv_activity_opt == ''}
+<table width="100%" border="0" cellspacing="1" cellpadding="0"  class="{$def.templateMeta.panelClass|default:'edit view'}" id ="lead_conv_ac_op">
+<tr>
+    <td width="15%" class="rssItemDate">
+        {sugar_translate label='LBL_ACTIVITIES_COPY' module='Leads'}:&nbsp;{sugar_help text=$MOD.LBL_ACTIVITIES_COPY_HELP}
+    </td>
+    <td>
+        <select id="lead_conv_ac_op_sel" name="lead_conv_ac_op_sel[]" size="5" multiple="">
+            <option selected="selected" value="Contacts" label="{sugar_translate label='LBL_CONTACT' module='Contacts'}"><script>document.write(SUGAR.language.get('app_list_strings', "moduleListSingular")['Contacts']);</script></option>
+        </select>
+    </td>
+</tr>
+</table>
+{/if}
+
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr>
 <td class="buttons">

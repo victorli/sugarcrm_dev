@@ -190,7 +190,7 @@ $vardefs =array(
 			'source'	=> 'non-db',
 			'group'=>'email1',
             'merge_filter' => 'enabled',
-		    'studio' => array('editField' => true),
+		    'studio' => array('editField' => true, 'searchview' => false),
 		),
 	'email2' => 
 		array(

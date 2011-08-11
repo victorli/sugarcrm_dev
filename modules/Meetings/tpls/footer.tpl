@@ -54,24 +54,35 @@
   
 <script type="text/javascript">
 {literal}
-function fill_invitees() { 
-	if (typeof(GLOBAL_REGISTRY) != 'undefined')  {    
-		SugarWidgetScheduler.fill_invitees(document.EditView);
-	} 
-}
-{/literal}
-
-var root_div = document.getElementById('scheduler');
-var sugarContainer_instance = new SugarContainer(document.getElementById('scheduler'));
-sugarContainer_instance.start(SugarWidgetScheduler);
-{literal}
-if ( document.getElementById('save_and_continue') ) {
-    var oldclick = document.getElementById('save_and_continue').attributes['onclick'].nodeValue;
-    document.getElementById('save_and_continue').onclick = function(){
-        fill_invitees();
-        eval(oldclick);
-    }
-}
+SUGAR.meetings = {};
+var meetingsLoader = new YAHOO.util.YUILoader({
+    require : ["sugar_grp_jsolait"],
+    onSuccess: function(){
+		SUGAR.meetings.fill_invitees = function() {
+			if (typeof(GLOBAL_REGISTRY) != 'undefined')  {
+				SugarWidgetScheduler.fill_invitees(document.EditView);
+			}
+		}
+		var root_div = document.getElementById('scheduler');
+		var sugarContainer_instance = new SugarContainer(document.getElementById('scheduler'));
+		sugarContainer_instance.start(SugarWidgetScheduler);
+		if ( document.getElementById('save_and_continue') ) {
+			var oldclick = document.getElementById('save_and_continue').attributes['onclick'].nodeValue;
+			document.getElementById('save_and_continue').onclick = function(){
+				SUGAR.meetings.fill_invitees();
+				eval(oldclick);
+			}
+		}
+	}
+});
+meetingsLoader.addModule({
+    name :"sugar_grp_jsolait",
+    type : "js",
+    fullpath: "include/javascript/sugar_grp_jsolait.js",
+    varName: "global_rpcClient",
+    requires: []
+});
+meetingsLoader.insert();
 {/literal}
 </script>
 </form>

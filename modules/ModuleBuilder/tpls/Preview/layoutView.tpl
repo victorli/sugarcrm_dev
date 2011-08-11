@@ -44,7 +44,7 @@
 </table>
 <div id='layoutEditor' style="width:675px;">
 
-<div id='toolbox' style='display:none';>
+<div id='toolbox' style='display:none;'>
 </div>
 
 <div id='panels' style='float:left; overflow-y:auto; overflow-x:hidden'>

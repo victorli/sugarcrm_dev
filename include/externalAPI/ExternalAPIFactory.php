@@ -277,10 +277,14 @@ class ExternalAPIFactory
         }
 
         foreach ( $apiList as $apiName => $ignore ) {
-
-            if ( !empty($app_list_strings['eapm_list'][$apiName]) ) {
+            $appStringTranslKey = 'eapm_list_' .strtolower($moduleName);
+            if ( isset($app_list_strings[$appStringTranslKey]) && !empty($app_list_strings[$appStringTranslKey][$apiName]) ) {
+                $apiDropdown[$apiName] = $app_list_strings[$appStringTranslKey][$apiName];
+            }
+            else if ( !empty($app_list_strings['eapm_list'][$apiName]) ) {
                 $apiDropdown[$apiName] = $app_list_strings['eapm_list'][$apiName];
-            } else {
+            }
+            else {
                 $apiDropdown[$apiName] = $apiName;
             }
         }

@@ -121,6 +121,13 @@ class Sugar_PHPUnit_Framework_TestCase extends PHPUnit_Framework_TestCase
 
     protected $useOutputBuffering = true;
 
+    protected function assertPreConditions()
+    {
+        if(isset($GLOBALS['log'])) {
+            $GLOBALS['log']->info("START TEST: {$this->getName(false)}");
+        }
+    }
+
     protected function assertPostConditions() {
         if(!empty($_REQUEST)) {
             foreach(array_keys($_REQUEST) as $k) {
@@ -139,11 +146,16 @@ class Sugar_PHPUnit_Framework_TestCase extends PHPUnit_Framework_TestCase
 		        unset($_GET[$k]);
 		    }
         }
+        if(isset($GLOBALS['log'])) {
+            $GLOBALS['log']->info("DONE TEST: {$this->getName(false)}");
+        }
     }
 
     public static function tearDownAfterClass()
     {
         unset($GLOBALS['disable_date_format']);
+        unset($GLOBALS['saving_relationships']);
+        unset($GLOBALS['updating_relationships']);
         $GLOBALS['timedate']->clearCache();
     }
 }

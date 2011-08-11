@@ -137,7 +137,7 @@ class ListViewSmarty extends ListViewDisplay{
 		//{ 
 		//	$this->ss->assign('selectedObjectsSpan', $this->buildSelectedObjectsSpan(true, $this->data['pageData']['offsets']['current']));
 		//} else {
-			$this->ss->assign('selectedObjectsSpan', $this->buildSelectedObjectsSpan(true, $this->data['pageData']['offsets']['total']));
+			$this->ss->assign('selectedObjectsSpan', $this->buildSelectedObjectsSpan(true, $this->data['pageData']['offsets']['current']));
 		//}
 		
 		$this->ss->assign('multiSelectData', $this->getMultiSelectData());

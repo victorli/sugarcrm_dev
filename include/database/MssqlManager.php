@@ -421,7 +421,7 @@ class MssqlManager extends DBManager
             $GLOBALS['log']->debug(print_r(func_get_args(),true));
             $this->lastsql = $sql;
             $matches = array();
-            preg_match('/^(.*SELECT )(.*?FROM.*WHERE)(.*)$/isU',$sql, $matches);
+            preg_match('/^(.*SELECT )(.*?FROM.*WHERE)(.*)$/isxU',$sql, $matches);
             if (!empty($matches[3])) {
                 if ($start == 0) {
                     $match_two = strtolower($matches[2]);
@@ -844,8 +844,11 @@ class MssqlManager extends DBManager
             $alias_beg_pos = 0;
             if(strpos($psql, " as "))
                 $alias_beg_pos = strpos($psql, " as ");
-            else if (strncasecmp($psql, 'isnull', 6) != 0)
-                $alias_beg_pos = strpos($psql, " ");
+
+            // Bug # 44923 - This breaks the query and does not properly filter isnull
+            // as there are other functions such as ltrim and rtrim.
+            /* else if (strncasecmp($psql, 'isnull', 6) != 0)
+                $alias_beg_pos = strpos($psql, " "); */
 
             if ($alias_beg_pos > 0) {
                 $col_name = substr($psql,0, $alias_beg_pos );

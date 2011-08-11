@@ -111,6 +111,7 @@ class Email extends SugarBean {
 	var $new_schema = true;
 	var $table_name = 'emails';
 	var $module_dir = 'Emails';
+    var $module_name = 'Emails';
 	var $object_name = 'Email';
 	var $db;
 
@@ -1053,6 +1054,7 @@ class Email extends SugarBean {
                 }
 			}
 		}
+		$GLOBALS['log']->debug('-------------------------------> Email save() done');
 	}
 
 	/**

@@ -55,6 +55,9 @@ $vardefs = array(
         'unified_search' => true,
         'required'=>true,
 		'importable' => 'required',
+        'duplicate_merge' => 'enabled',
+        //'duplicate_merge_dom_value' => '3',
+        'merge_filter' => 'selected',
 	    ),
 	  'date_entered' =>
 	  array (

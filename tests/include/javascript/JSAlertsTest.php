@@ -43,6 +43,10 @@ class JSAlertsTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        require('include/modules.php');
+        $GLOBALS['beanList'] = $beanList;
+        $GLOBALS['beanFiles'] = $beanFiles;
+
         global $current_user;
         $this->beans = array();
         $this->old_user = $current_user;
@@ -61,6 +65,8 @@ class JSAlertsTest extends Sugar_PHPUnit_Framework_TestCase
 		unset($GLOBALS['app_list_strings']);
 		unset($GLOBALS['current_user']);
 		unset($GLOBALS['app_strings']);
+        unset($GLOBALS['beanList']);
+        unset($GLOBALS['beanFiles']);
     }
 
     protected function createNewMeeting()

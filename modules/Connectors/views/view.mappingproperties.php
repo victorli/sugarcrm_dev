@@ -139,7 +139,9 @@ class ViewMappingProperties extends ViewList
 	    		$display_data[$module] = array('field_keys' => $field_keys,
 	    		                               'field_values' => $field_values,
 	    		                               'available_fields' => $available_fields,
-	    		                               'field_mapping' => $field_mapping);
+	    		                               'field_mapping' => $field_mapping,
+                                               'module_name' => isset($GLOBALS['app_list_strings']['moduleList'][$module]) ? $GLOBALS['app_list_strings']['moduleList'][$module] : $module
+                                                );
 	    	}
 		}
 

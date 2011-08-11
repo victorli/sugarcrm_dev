@@ -103,7 +103,32 @@ $mod_strings = array (
     'LBL_CREATED_USER' => 'Created User',
     'LBL_MODIFIED_USER' => 'Modified User',
     'LBL_PROJECT_SUBPANEL_TITLE' => 'Projects',
-    'LBL_CASE_INFORMATION' => 'Case Overview',
+    'LBL_CASE_INFORMATION' => 'Overview',
+
+    //For export labels
+    'LBL_MODIFIED_BY_NAME_OWNER' => 'Modified By Name Owner',
+    'LBL_MODIFIED_BY_NAME_MOD' => 'Modified By Name Mod',
+    'LBL_CREATED_BY_NAME_OWNER' => 'Created By Name Owner',
+    'LBL_CREATED_BY_NAME_MOD' => 'Created By Name Mod',
+    'LBL_ASSIGNED_USER_NAME_OWNER' => 'Assigned User Name Owner',
+    'LBL_ASSIGNED_USER_NAME_MOD' => 'Assigned User Name Mod',
+    'LBL_TEAM_COUNT_OWNER' => 'Team Count Owner',
+    'LBL_TEAM_COUNT_MOD' => 'Team Count Mod',
+    'LBL_TEAM_NAME_OWNER' => 'Team Name Owner',
+    'LBL_TEAM_NAME_MOD' => 'Team Name Mod',
+    'LBL_ACCOUNT_NAME_OWNER' => 'Account Name Owner',
+    'LBL_ACCOUNT_NAME_MOD' => 'Account Name Mod',
+    'LBL_MODIFIED_USER_NAME' => 'Modified User Name',
+    'LBL_MODIFIED_USER_NAME_OWNER' => 'Modified User Name Owner',
+    'LBL_MODIFIED_USER_NAME_MOD' => 'Modified User Name Mod',
+    'LBL_PORTAL_VIEWABLE' => 'Portal Viewable',
+    'LBL_EXPORT_ASSIGNED_USER_ID' => 'Assigned User ID',
+    'LBL_EXPORT_MODIFIED_USER_ID' => 'Modified By ID',
+    'LBL_EXPORT_CREATED_BY' => 'Created By ID',
+    'LBL_EXPORT_CREATED_BY_NAME' => 'Created By User Name',
+    'LBL_EXPORT_ASSIGNED_USER_NAME' => 'Assigned User Name',
+    'LBL_EXPORT_TEAM_COUNT' => 'Team Count',
+
 );
 
 

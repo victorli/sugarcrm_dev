@@ -241,6 +241,9 @@ eoq;
             }
         }
        
+        $isAdmin = is_admin($current_user);
+        $this->ss->assign('IS_ADMIN', $isAdmin);
+
         $this->ss->assign("mail_smtpdisplay", $mail_smtpdisplay);
         $this->ss->assign("mail_smtpuser", $mail_smtpuser);
         $this->ss->assign("mail_smtppass", $mail_smtppass);

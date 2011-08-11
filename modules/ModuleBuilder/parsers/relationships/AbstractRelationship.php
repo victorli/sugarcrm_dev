@@ -287,7 +287,8 @@ class AbstractRelationship
 		);
         
         return array ( $subpanelDefinition );
-    }   
+    }
+
     
 
     /*

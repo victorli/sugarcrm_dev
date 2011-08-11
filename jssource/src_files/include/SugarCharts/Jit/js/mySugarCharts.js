@@ -35,6 +35,7 @@
 
 
 
+initmySugarCharts = function(){
 
 SUGAR.mySugar.sugarCharts = function() {
 
@@ -94,3 +95,4 @@ var activeTab = activePage,
 		}
 	}
 }();
+};

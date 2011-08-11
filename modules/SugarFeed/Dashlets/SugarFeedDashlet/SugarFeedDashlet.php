@@ -214,7 +214,7 @@ var $selectedCategories = array();
                                     'description',
                                     'date_entered',
                                     'created_by',
-
+                                    'related_module',
                                     'link_url',
                                     'link_type'));
 
@@ -222,6 +222,19 @@ var $selectedCategories = array();
 
                 $this->lvs->data['data'][$row]['NAME'] = str_replace("{this.CREATED_BY}",get_assigned_user_name($this->lvs->data['data'][$row]['ASSIGNED_USER_ID']),$data['NAME']);
 
+                //Translate the SugarFeeds labels if necessary.
+                preg_match('/\{([^\^ }]+)\.([^\}]+)\}/', $this->lvs->data['data'][$row]['NAME'] ,$modStringMatches );
+                if(count($modStringMatches) == 3 && $modStringMatches[1] == 'SugarFeed' && !empty($data['RELATED_MODULE']) )
+                {
+                    $modKey = $modStringMatches[2];
+                    $modString = translate($modKey, $modStringMatches[1]);
+                    if( strpos($modString, '{0}') === FALSE || !isset($GLOBALS['app_list_strings']['moduleListSingular'][$data['RELATED_MODULE']]) )
+                        continue;
+                    
+                    $modStringSingular = $GLOBALS['app_list_strings']['moduleListSingular'][$data['RELATED_MODULE']];
+                    $modString = string_format($modString, array($modStringSingular) );
+                    $this->lvs->data['data'][$row]['NAME'] = preg_replace('/' . $modStringMatches[0] . '/', strtolower($modString), $this->lvs->data['data'][$row]['NAME']);
+                }
             }
 
             // assign a baseURL w/ the action set as DisplayDashlet
@@ -330,6 +343,7 @@ var $selectedCategories = array();
 		$ss->assign('autenticationPendingLBL', translate('LBL_AUTHENTICATION_PENDING', 'SugarFeed'));
         $ss->assign('rowsLBL', translate('LBL_ROWS', 'SugarFeed'));
         $ss->assign('saveLBL', $app_strings['LBL_SAVE_BUTTON_LABEL']);
+        $ss->assign('clearLBL', $app_strings['LBL_CLEAR_BUTTON_LABEL']);
         $ss->assign('title', $this->title);
 		$ss->assign('categories', $this->categories);
         if ( empty($this->selectedCategories) ) {

@@ -119,14 +119,11 @@ class SugarWidgetSubPanelDetailViewLink extends SugarWidgetField
 		if(  !empty($record) &&
 			($layout_def['DetailView'] && !$layout_def['owner_module'] 
 			||  $layout_def['DetailView'] && !ACLController::moduleSupportsACL($layout_def['owner_module']) 
-			|| ACLController::checkAccess($layout_def['owner_module'], 'view', $layout_def['owner_id'] == $current_user->id))){
-                if(!empty($parent)){
-            return '<a href="index.php?module='.$module.'&action='.$action.'&record='.$record.$parent.'" >'."$value</a>";
-                    }
-                
-                return "<a href='#' "
-    			. " onMouseOver=\"javascript:subp_nav('".$module.$parent."', '".$record."', 'd', this);\" " 
-                ." onFocus=\"javascript:subp_nav('".$module."', '".$record."', 'd', this);\">$value</a>";
+			|| ACLController::checkAccess($layout_def['owner_module'], 'view', $layout_def['owner_id'] == $current_user->id)))
+        {
+            $link = ajaxLink("index.php?module=$module&action=$action&record={$record}{$parent}");
+            return '<a href="' . $link . '" >'."$value</a>";
+
 		}else{
 			return $value;
 		}

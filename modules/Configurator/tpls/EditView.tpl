@@ -153,6 +153,10 @@
             <div id="container_upload"></div>
             <input type='text' id='company_logo' name='company_logo' style="display:none">
     </tr>
+    <tr>
+            <td scope="row">{$MOD.LBL_LEAD_CONV_OPTION}:&nbsp;{sugar_help text=$MOD.LEAD_CONV_OPT_HELP}</td>
+            <td> <select name="lead_conv_activity_opt">{$lead_conv_activities}</select></td>
+    </tr>
 </table>
 
 <table width="100%" border="0" cellspacing="1" cellpadding="0" class="edit view">
@@ -302,6 +306,11 @@
 		<td >
 			<input type='text' size='4' name='vcal_time' value='{$config.vcal_time}'>
 		</td>
+        <td scope="row">{$MOD.LBL_IMPORT_MAX_RECORDS} {sugar_help text=$MOD.LBL_IMPORT_MAX_RECORDS_HELP}</td>
+		<td >
+			<input type='text' size='4' name='import_max_records_total_limit' value='{$config.import_max_records_total_limit}'>
+		</td>
+
 	</tr>
 
 

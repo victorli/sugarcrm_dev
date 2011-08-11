@@ -83,7 +83,7 @@ $mod_strings = array (
   'LBL_NAME' => 'Name:',
   'LBL_FULL_NAME' => 'Name',
   'LBL_PROSPECT_NAME' => 'Target Name:',
-  'LBL_PROSPECT_INFORMATION' => 'Target Overview',
+  'LBL_PROSPECT_INFORMATION' => 'Overview',
   'LBL_MORE_INFORMATION' => 'More Information',
   'LBL_FIRST_NAME' => 'First Name:',
   'LBL_OFFICE_PHONE' => 'Office Phone:',
@@ -183,5 +183,17 @@ $mod_strings = array (
   'LBL_MODIFIED_USER' => 'Modified User',
   'LBL_CAMPAIGNS_SUBPANEL_TITLE' => 'Campaigns',
   'LBL_HISTORY_SUBPANEL_TITLE'=>'History',
+  //For export labels
+  'LBL_PHONE_HOME' => 'Phone Home',
+  'LBL_PHONE_MOBILE' => 'Phone Mobile',
+  'LBL_PHONE_WORK' => 'Phone Work',
+  'LBL_PHONE_OTHER' => 'Phone Other',
+  'LBL_PHONE_FAX' => 'Phone Fax',
+  'LBL_CAMPAIGN_ID' => 'Campaign ID',
+  'LBL_EXPORT_ASSIGNED_USER_NAME' => 'Assigned User Name',
+  'LBL_EXPORT_ASSIGNED_USER_ID' => 'Assigned User ID',
+  'LBL_EXPORT_MODIFIED_USER_ID' => 'Modified By ID',
+  'LBL_EXPORT_CREATED_BY' => 'Created By ID',
+  'LBL_EXPORT_EMAIL2'=>'Other Email Address',
 );
 ?>

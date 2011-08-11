@@ -43,6 +43,7 @@ require_once('include/generic/SugarWidgets/SugarWidgetSubPanelTopButton.php');
 class SugarWidgetSubPanelTopButtonQuickCreate extends SugarWidgetSubPanelTopButton
 {
 
+
 	function &_get_form($defines, $additionalFormFields = null)
 	{
 		global $app_strings;
@@ -74,6 +75,7 @@ class SugarWidgetSubPanelTopButtonQuickCreate extends SugarWidgetSubPanelTopButt
 		}
 
 		$defines['parent_bean_name'] = get_class( $defines['focus']);
+
 		$relationship_name = $this->get_subpanel_relationship_name($defines);
 
 		$form = 'form' . $relationship_name;
@@ -94,7 +96,11 @@ class SugarWidgetSubPanelTopButtonQuickCreate extends SugarWidgetSubPanelTopButt
             		$button .= "<input type='hidden' name='". $GLOBALS['dictionary'][ $childFocusName ]["fields"][$relationship_name .'_name']['id_name'] ."' value='".$defines['focus']->id."'>";
             	}
             }
+            
+            //Set the return_name form variable that will allow EditView2.php 
+            $additionalFormFields['return_name'] = $defines['focus']->name;
 		}
+		
 		if(!empty($defines['view']))
 		$button .= '<input type="hidden" name="target_view" value="'. $defines['view'] . '" />';
 		$button .= '<input type="hidden" name="to_pdf" value="true" />';
@@ -102,7 +108,9 @@ class SugarWidgetSubPanelTopButtonQuickCreate extends SugarWidgetSubPanelTopButt
 		$button .= '<input type="hidden" name="return_module" value="' . $currentModule . "\" />\n";
 		$button .= '<input type="hidden" name="return_action" value="' . $defines['action'] . "\" />\n";
 		$button .= '<input type="hidden" name="return_id" value="' . $defines['focus']->id . "\" />\n";
-		$button .= '<input type="hidden" name="return_relationship" value="' . $relationship_name . "\" />\n";   
+		$button .= '<input type="hidden" name="return_relationship" value="' . $relationship_name . "\" />\n";
+		$button .= '<input type="hidden" name="record" value="" />';
+
 		// TODO: move this out and get $additionalFormFields working properly
 		if(empty($additionalFormFields['parent_type']))
 		{
@@ -165,7 +173,7 @@ class SugarWidgetSubPanelTopButtonQuickCreate extends SugarWidgetSubPanelTopButt
 
 		return $button;
 	}
-	
+
 	/**
 	 * get_subpanel_relationship_name
 	 * Get the relationship name based on the subapnel definition

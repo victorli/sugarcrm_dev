@@ -273,36 +273,6 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
     }
 
     /*
-     * Translate a set of subpanelDefinitions into files for the Module Loader
-     * @param string $basepath              Basepath location for this module
-     * @param $installDefPrefix             Pathname prefix for the installdefs, for example for ModuleBuilder use "<basepath>/SugarModules"
-     * @param array $subpanelDefinitions    Set of subpanel definitions in the form $subpanelDefinitions[$for_module][]
-     * @param string $relationshipName      The name of the relationship for this subpanel definition
-     * @return array $installDefs           Set of new installDefs
-     */
-    protected function saveSubpanelDefinitions ($basepath , $installDefPrefix , $relationshipName , $subpanelDefinitions)
-    {
-        mkdir_recursive ( "$basepath/layoutdefs/" ) ;
-        
-        foreach ( $subpanelDefinitions as $moduleName => $definitions )
-        {
-            $filename = "$basepath/layoutdefs/{$relationshipName}_{$moduleName}.php" ;
-            
-            foreach ( $definitions as $definition )
-            {
-                $GLOBALS [ 'log' ]->debug ( get_class ( $this ) . "->saveSubpanelDefinitions(): saving the following to {$filename}" . print_r ( $definition, true ) ) ;
-                if (empty($definition ['get_subpanel_data']) || $definition ['subpanel_name'] == 'history' || $definition ['subpanel_name'] == 'activities') {
-                    $definition ['get_subpanel_data'] = $definition ['subpanel_name'];
-                }
-                write_array_to_file ( 'layout_defs["' . $moduleName . '"]["subpanel_setup"]["' . strtolower ( $definition [ 'get_subpanel_data' ] ) . '"]', $definition, $filename, "a" ) ;
-            }
-            
-            $installDefs [ $moduleName ] = array ( 'from' => "{$installDefPrefix}/relationships/layoutdefs/{$relationshipName}_{$moduleName}.php" , 'to_module' => $moduleName ) ;
-        }
-        return $installDefs ;
-    }    
-
-    /*
      * Add the installDefs for this relationship to the definitions in the parameter
      * Required by MBModule
      * @param reference installDef  Reference to the set of installDefs to which this relationship's installDefs should be added

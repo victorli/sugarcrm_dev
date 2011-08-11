@@ -205,7 +205,7 @@ class SubPanel
 		//function returns the query that was used to populate sub-panel data.
 
 		$query=$ListView->process_dynamic_listview($this->parent_module, $this->parent_bean,$this->subpanel_defs);
-		$this->subpanel_query=$query; 
+        $this->subpanel_query=$query;
 		$ob_contents = ob_get_contents();
 		ob_end_clean();
 		return $ob_contents;
@@ -298,7 +298,9 @@ class SubPanel
   		write_array_to_file( $name, $override,$path.'/' . $filename .'.php');
   		
   		//save the override for the layoutdef
-  		$name = "layout_defs['".  $panel->parent_bean->module_dir. "']['subpanel_setup']['" .strtolower($panel->name). "']"; // tyoung 10.12.07 pushed panel->name to lowercase to match case in subpaneldefs.php files - gave error on bad index 'module' as this override key didn't match the key in the subpaneldefs
+        //tyoung 10.12.07 pushed panel->name to lowercase to match case in subpaneldefs.php files -
+        //gave error on bad index 'module' as this override key didn't match the key in the subpaneldefs
+  		$name = "layout_defs['".  $panel->parent_bean->module_dir. "']['subpanel_setup']['" .strtolower($panel->name). "']";
 //  	$GLOBALS['log']->debug('SubPanel.php->saveSubPanelDefOverride(): '.$name);
   		$newValue = override_value_to_string($name, 'override_subpanel_name', $filename);
   		mkdir_recursive('custom/Extension/modules/'. $panel->parent_bean->module_dir . '/Ext/Layoutdefs', true);

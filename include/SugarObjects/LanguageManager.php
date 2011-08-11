@@ -268,6 +268,28 @@ class LanguageManager{
 	{
          return "LanguageManager.$module.$lang";
 	}
+
+    /**
+     * Remove any cached js language strings.
+     *
+     * @static
+     * @return void
+     */
+    public static function removeJSLanguageFiles()
+    {
+        $jsFiles = array();
+        getFiles($jsFiles, $GLOBALS['sugar_config']['cache_dir'] . 'jsLanguage');
+        foreach($jsFiles as $file) {
+            unlink($file);
+        }
+
+        if( empty($GLOBALS['sugar_config']['js_lang_version']) )
+            $GLOBALS['sugar_config']['js_lang_version'] = 1;
+        else
+            $GLOBALS['sugar_config']['js_lang_version'] += 1;
+
+        write_array_to_file( "sugar_config", $GLOBALS['sugar_config'], "config.php");
+    }
 }
 
 function translated_prefix($key){

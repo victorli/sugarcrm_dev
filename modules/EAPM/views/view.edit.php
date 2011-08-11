@@ -51,6 +51,21 @@ class EAPMViewEdit extends ViewEdit {
 
     private $_returnId;
 
+    public function __construct()
+    {
+        $this->setReturnId();
+        parent::__construct();
+    }
+
+    protected function setReturnId()
+    {
+        $returnId = $GLOBALS['current_user']->id;
+        if(!empty($_REQUEST['user_id']) && !empty($_REQUEST['return_module']) && 'Users' == $_REQUEST['return_module']){
+            $returnId = $_REQUEST['user_id'];
+        }
+        $this->_returnId = $returnId;
+    }
+
     protected function _getModuleTab()
     {
         return 'Users';
@@ -106,6 +121,13 @@ class EAPMViewEdit extends ViewEdit {
 
  	function display() {
         $this->ss->assign('return_id', $this->_returnId);
+
+        $cancelUrl = "index.php?action=EditView&module=Users&record={$this->_returnId}#tab5";
+
+        if(isset($_REQUEST['return_module']) && $_REQUEST['return_module'] == 'Import') {
+            $cancelUrl = "index.php?module=Import&action=Step1&import_module=". $_REQUEST['return_action'] . "&application=" . $_REQUEST['application'];
+        }
+         $this->ss->assign('cancelUrl', $cancelUrl);
 
         if($GLOBALS['current_user']->is_admin || empty($this->bean) || empty($this->bean->id) || $this->bean->isOwner($GLOBALS['current_user']->id)){
             if(!empty($this->bean) && empty($this->bean->id) && $this->_returnId != $GLOBALS['current_user']->id){

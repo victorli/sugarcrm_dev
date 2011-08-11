@@ -197,6 +197,9 @@ $dictionary['Prospect'] = array(
 										'deleted'
 										)
 				),
+               array('name' =>'idx_prospects_id_del', 'type'=>'index', 'fields'=>array('id','deleted')),
+               array('name' =>'idx_prospects_assigned', 'type'=>'index', 'fields'=>array('assigned_user_id')),
+
     		),
 
 	'relationships' => array (

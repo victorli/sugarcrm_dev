@@ -53,6 +53,16 @@ include_once('include/database/DBHelper.php');
 class MssqlHelper extends DBHelper
 {
     /**
+     * Maximum length of identifiers
+     */
+    protected static $maxNameLengths = array(
+        'table' => 128,
+        'column' => 128,
+        'index' => 128,
+        'alias' => 128
+    );
+    
+    /**
      * @see DBHelper::getColumnType()
      */
     public function getColumnType(
@@ -214,7 +224,7 @@ class MssqlHelper extends DBHelper
         $fieldDefs
         )
     {
-        if ($this->isFieldArray($fieldDefs)) 
+        if ($this->isFieldArray($fieldDefs))
             foreach ($fieldDefs as $fieldDef) 
                 $columns[] = $fieldDef['name'];
         else 
@@ -334,8 +344,8 @@ class MssqlHelper extends DBHelper
         $field_name
         )
     {
-        
-        
+
+
 		$result = $this->db->query("select IDENT_CURRENT('$table') + IDENT_INCR ( '$table' ) as 'Auto_increment'");
         $row = $this->db->fetchByAssoc($result);
 		if (!empty($row['Auto_increment']))

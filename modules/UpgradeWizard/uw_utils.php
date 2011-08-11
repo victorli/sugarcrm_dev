@@ -592,14 +592,13 @@ function deleteCache(){
 	//Clean modules from cache
 	if(is_dir($GLOBALS['sugar_config']['cache_dir'].'modules')){
 		$allModFiles = array();
-		$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'modules',$allModFiles);
+		$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'modules',$allModFiles,true);
 		foreach($allModFiles as $file)
 		{
-	       	if(file_exists($file))
-	       	{
-	       	   unlink($file);
-	       	}
-		}
+            if(file_exists($file)) {
+	       		  unlink($file);
+               }
+	    }
 	}
 	
 	//Clean jsLanguage from cache
@@ -5188,12 +5187,12 @@ if (!function_exists("getValidDBName"))
         if ($ensureUnique)
         {
             $md5str = md5($name);
-            $tail = substr ( $name, -11) ;
+            $tail = substr ( $name, -8) ;
             $temp = substr($md5str , strlen($md5str)-4 );
-            $result = substr ( $name, 0, 10) . $temp . $tail ;
+            $result = substr ( $name, 0, 7) . $temp . $tail ;
         }else if ($len > ($maxLen - 5))
         {
-            $result = substr ( $name, 0, 11) . substr ( $name, 11 - $maxLen + 5);
+            $result = substr ( $name, 0, 8) . substr ( $name, 8 - $maxLen + 5);
         }
         return strtolower ( $result ) ;
     }

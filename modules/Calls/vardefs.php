@@ -218,15 +218,6 @@ $dictionary['Call'] = array('table' => 'calls', 'comment' => 'A Call is an activ
     'importable' => 'false',
     'studio' => array('required' => false, 'listview'=>true, 'visible' => false),
   ),
-  'account' =>
-  array (
-  	'name' => 'account',
-    'type' => 'link',
-    'relationship' => 'account_calls',
-		'link_type'=>'one',
-    'source'=>'non-db',
-		'vname'=>'LBL_OLD_ACCOUNT_LINK',
-  ),
   'opportunity' =>
   array (
   	'name' => 'opportunity',
@@ -349,7 +340,11 @@ $dictionary['Call'] = array('table' => 'calls', 'comment' => 'A Call is an activ
     	'name' => 'idx_calls_par_del',
     	'type' => 'index',
     	'fields' => array('parent_id','parent_type','deleted')
-    )
+    ),
+    array(
+        'name' =>'idx_calls_assigned_del',
+        'type' =>'index',
+        'fields'=>array( 'deleted', 'assigned_user_id')),
 ),
 'relationships' => array (
 		'calls_assigned_user' => array(

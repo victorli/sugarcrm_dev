@@ -37,7 +37,7 @@
 *}
 <select name='{{$vardef.type_name}}' tabindex="{{$tabindex}}" id='{{$vardef.type_name}}' title='{{$vardef.help}}' 
 onchange='document.{{$form_name}}.{{sugarvar key='name'}}.value="";document.{{$form_name}}.parent_id.value=""; 
-	{{$vardef.type_name}}changeQS(); checkParentType(document.{{$form_name}}.parent_type.value, document.{{$form_name}}.btn_{{sugarvar key='name'}});'>
+	changeParentQS("{{sugarvar key='name'}}"); checkParentType(document.{{$form_name}}.parent_type.value, document.{{$form_name}}.btn_{{sugarvar key='name'}});'>
 {html_options options={{sugarvar key='options' string=true}} selected=$fields.parent_type.value}
 </select>
 {{if $displayParams.split}}
@@ -57,20 +57,34 @@ onchange='document.{{$form_name}}.{{sugarvar key='name'}}.value="";document.{{$f
 <button type="button" name="btn_clr_{{sugarvar key='name'}}" tabindex="{{$tabindex}}" title="{$APP.LBL_CLEAR_BUTTON_TITLE}" accessKey="{$APP.LBL_CLEAR_BUTTON_KEY}" class="button lastChild" onclick="this.form.{{sugarvar key='name'}}.value = ''; this.form.{{sugarvar key='id_name'}}.value = '';" value="{$APP.LBL_CLEAR_BUTTON_LABEL}"><img src="{sugar_getimagepath file="id-ff-clear.png"}"></button>
 {{/if}}
 </span>
-<script type="text/javascript">
-function {{$vardef.type_name}}changeQS() {ldelim}
-	new_module = document.forms["{{$form_name}}"].elements["parent_type"].value;
-	if(typeof(disabledModules[new_module]) != 'undefined') {ldelim}
-		sqs_objects["{{$form_name}}_{{sugarvar key='name'}}"]["disable"] = true;
-		document.forms["{{$form_name}}"].elements["{{sugarvar key='name'}}"].readOnly = true;
-	{rdelim} else {ldelim}
-		sqs_objects["{{$form_name}}_{{sugarvar key='name'}}"]["disable"] = false;
-		document.forms["{{$form_name}}"].elements["{{sugarvar key='name'}}"].readOnly = false;
-	{rdelim}	
-	sqs_objects["{{$form_name}}_{{sugarvar key='name'}}"]["modules"] = new Array(new_module);
-    enableQS(false);
-{rdelim}
-</script>
 {literal}
+<script type="text/javascript">
+if (typeof(changeParentQS) == 'undefined'){
+function changeParentQS(field) {
+	field = YAHOO.util.Dom.get(field);
+    var form = field.form;
+    var sqsId = form.id + "_" + field.id;
+    var typeField =  form.elements.parent_type;
+    var new_module = typeField.value;
+    if(typeof(disabledModules[new_module]) != 'undefined') {
+		sqs_objects[sqsId]["disable"] = true;
+		field.readOnly = true;
+	} else {
+		sqs_objects[sqsId]["disable"] = false;
+		field.readOnly = false;
+    }
+	//Update the SQS globals to reflect the new module choice
+    sqs_objects[sqsId]["modules"] = new Array(new_module);
+    if (typeof(QSFieldsArray[sqsId]) != 'undefined')
+    {
+        QSFieldsArray[sqsId].sqs.modules = new Array(new_module);
+    }
+	if(typeof QSProcessedFieldsArray != 'undefined')
+    {
+	   QSProcessedFieldsArray[sqsId] = false;
+    }
+    enableQS(false);
+}}
+</script>
 {{$displayParams.disabled_parent_types}}
 {/literal}

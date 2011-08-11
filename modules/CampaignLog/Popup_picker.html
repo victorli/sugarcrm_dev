@@ -40,7 +40,6 @@
 -->
 <!-- BEGIN: main -->
 <!-- BEGIN: SearchHeader -->
-<script type="text/javascript" src="include/JSON.js?s={SUGAR_VERSION}&c={JS_CUSTOM_VERSION}"></script>
 <script type="text/javascript" src="include/javascript/popup_helper.js?s={SUGAR_VERSION}&c={JS_CUSTOM_VERSION}"></script>
 
 <table cellpadding="0" cellspacing="0" border="0" width="100%" >
@@ -62,17 +61,7 @@
   </td>
  </tr>
 </table>
-<script type="text/javascript">
-<!--
-/* initialize the popup request from the parent */
 
-if(window.document.forms['popup_query_form'].request_data.value == "")
-{
-	window.document.forms['popup_query_form'].request_data.value
-		= JSON.stringify(window.opener.get_popup_request_data());
-}
--->
-</script>
 <!-- END: SearchHeader -->
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="list view">
@@ -88,7 +77,7 @@ if(window.document.forms['popup_query_form'].request_data.value == "")
 <!-- BEGIN: row -->
  <tr height="20" class="{ROW_COLOR}S1">
 	<td valign="top">{PREROW}</td>
-	<td scope='row' valign=TOP><slot><{TAG_TYPE} href="#"  onclick="send_back('CampaignLog','{CAMPAIGNLOG.ID}');">{CAMPAIGNLOG.ID}</{TAG_TYPE}></slot></td>
+	<td scope='row' valign=TOP><slot><{TAG_TYPE} href="javascript:void(0)"  onclick="send_back('CampaignLog','{CAMPAIGNLOG.ID}');">{CAMPAIGNLOG.ID}</{TAG_TYPE}></slot></td>
 	<td valign=TOP><slot>{CAMPAIGNLOG.ACTIVITY_DATE}</slot></td>
 	<td nowrap="nowrap" valign="top"><slot>{CAMPAIGNLOG.CAMPAIGN_NAME1}</slot></td>
  </tr>

@@ -190,7 +190,7 @@ function getAnyToForm($ignore='', $usePostAsAuthority = false)
 
 }
 
-function handleRedirect($return_id='', $return_module='')
+function handleRedirect($return_id='', $return_module='', $additionalFlags = false)
 {
 	if(isset($_REQUEST['return_url']) && $_REQUEST['return_url'] != "")
 	{
@@ -252,26 +252,50 @@ function handleRedirect($return_id='', $return_module='')
 	{
 		$return_id = $_REQUEST['return_id'];
 	}
+
+    $add = "";
+    if(isset($additionalFlags) && !empty($additionalFlags)) {
+        foreach($additionalFlags as $k => $v) {
+            $add .= "&{$k}={$v}";
+        }
+    }
     
     if (!isset($isDuplicate) || !$isDuplicate)
     {
-        header("Location: index.php?action=$return_action&module=$return_module&record=$return_id&return_module=$return_module&return_action=$return_action");
+        $url="index.php?action=$return_action&module=$return_module&record=$return_id&return_module=$return_module&return_action=$return_action{$add}";
+        if(!empty($_REQUEST['ajax_load']))
+        {
+            $ajax_ret = array(
+                'content' => "<script>SUGAR.ajaxUI.loadContent('$url');</script>\n",
+                'menu' => array(
+                    'module' => $return_module,
+                    'label' => translate($return_module),
+                ),
+            );
+            $json = getJSONobj();
+            echo $json->encode($ajax_ret);
+        } else {
+            header("Location: $url");
+            exit;
+        }
     } else {
     	$standard = "action=$return_action&module=$return_module&record=$return_id&isDuplicate=true&return_module=$return_module&return_action=$return_action&status=$status";
-   		$add = '';
-
-    	if(isset($additionalFlags) && !empty($additionalFlags)) {
-    		foreach($additionalFlags as $k => $v) {
-    			if(!empty($add)) {
-    				$add .= "&";
-    			}
-    			$add .= "{$k}={$v}";
-    		}
-    	}
-    	if(!empty($add)) {
-    		$add = "&" . $add;
-    	}
-        header("Location: index.php?{$standard}{$add}");
+        $url="index.php?{$standard}{$add}";
+        if(!empty($_REQUEST['ajax_load']))
+        {
+            $ajax_ret = array(
+                 'content' => "<script>SUGAR.ajaxUI.loadContent('$url');</script>\n",
+                 'menu' => array(
+                     'module' => $return_module,
+                     'label' => translate($return_module),
+                 ),
+            );
+            $json = getJSONobj();
+            echo $json->encode($ajax_ret);
+        } else {
+            header("Location: $url");
+            exit;
+        }
     }
 	exit;
 }

@@ -476,7 +476,8 @@ function handleSave($prefix,$redirect=true,$useRequired=false) {
 	    }
     }
 	if (isset($_REQUEST['return_module']) && $_REQUEST['return_module'] == 'Home'){
-		header("Location: index.php?module=Home&action=index");
+		$_REQUEST['return_action'] = 'index';
+        handleRedirect('', 'Home');
 	}
 	else if($redirect) {
 		handleRedirect($return_id, 'Calls');

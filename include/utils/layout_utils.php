@@ -208,11 +208,12 @@ function get_module_title(
     if ($show_create) {
         $the_title .= "<span class='utils'>";
         $createRecordURL = SugarThemeRegistry::current()->getImageURL('create-record.gif');
+        $url = ajaxLink("index.php?module=$module&action=EditView&return_module=$module&return_action=DetailView");
         $the_title .= <<<EOHTML
 &nbsp;
-<a href="index.php?module={$module}&action=EditView&return_module={$module}&return_action=DetailView" class="utilsLink">
+<a href="{$url}" class="utilsLink">
 <img src='{$createRecordURL}' alt='{$GLOBALS['app_strings']['LNK_CREATE']}'></a>
-<a href="index.php?module={$module}&action=EditView&return_module={$module}&return_action=DetailView" class="utilsLink">
+<a href="{$url}" class="utilsLink">
 {$GLOBALS['app_strings']['LNK_CREATE']}
 </a>
 EOHTML;
@@ -299,11 +300,12 @@ function getClassicModuleTitle(
     if ($show_create) {
         $the_title .= "<span class='utils'>";
         $createRecordURL = SugarThemeRegistry::current()->getImageURL('create-record.gif');
+        $url = ajaxLink("index.php?module=$module&action=EditView&return_module=$module&return_action=DetailView");
         $the_title .= <<<EOHTML
 &nbsp;
-<a href="index.php?module={$module}&action=EditView&return_module={$module}&return_action=DetailView" class="utilsLink">
+<a href="{$url}" class="utilsLink">
 <img src='{$createRecordURL}' alt='{$GLOBALS['app_strings']['LNK_CREATE']}'></a>
-<a href="index.php?module={$module}&action=EditView&return_module={$module}&return_action=DetailView" class="utilsLink">
+<a href="{$url}" class="utilsLink">
 {$GLOBALS['app_strings']['LNK_CREATE']}
 </a>
 EOHTML;

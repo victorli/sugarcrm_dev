@@ -43,7 +43,7 @@ class SugarCacheAPC extends SugarCacheAbstract
      * @see SugarCacheAbstract::$_priority
      */
     protected $_priority = 940;
-    
+
     /**
      * @see SugarCacheAbstract::useBackend()
      */
@@ -51,14 +51,14 @@ class SugarCacheAPC extends SugarCacheAbstract
     {
         if ( !parent::useBackend() )
             return false;
-        
+
         if ( function_exists("apc_store")
                 && empty($GLOBALS['sugar_config']['external_cache_disabled_apc']))
             return true;
-            
+
         return false;
     }
-    
+
     /**
      * @see SugarCacheAbstract::_setExternal()
      */
@@ -69,7 +69,7 @@ class SugarCacheAPC extends SugarCacheAbstract
     {
         apc_store($key,$value,$this->expireTimeout);
     }
-    
+
     /**
      * @see SugarCacheAbstract::_getExternal()
      */
@@ -77,13 +77,14 @@ class SugarCacheAPC extends SugarCacheAbstract
         $key
         )
     {
-        if ( apc_fetch($key) === false ) {
+        $res = apc_fetch($key);
+        if($res === false) {
             return null;
         }
-        
-        return apc_fetch($key);
+
+        return $res;
     }
-    
+
     /**
      * @see SugarCacheAbstract::_clearExternal()
      */
@@ -93,7 +94,7 @@ class SugarCacheAPC extends SugarCacheAbstract
     {
         apc_delete($key);
     }
-    
+
     /**
      * @see SugarCacheAbstract::_resetExternal()
      */

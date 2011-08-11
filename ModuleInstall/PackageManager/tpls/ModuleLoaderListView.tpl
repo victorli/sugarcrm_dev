@@ -43,8 +43,8 @@
 		<th scope='col' width='5' nowrap="nowrap">view/hide</th>
 		{foreach from=$displayColumns key=colHeader item=params}
 			{if $params.show}
-			<th scope='col' width='{$params.width}%' nowrap="nowrap">
-				<span sugar="sugar{$colCounter}"><div style='white-space: nowrap;'width='100%' align='{$params.align|default:'left'}'>
+			<th scope='col' width='{$params.width}%'>
+				<span sugar="sugar{$colCounter}"><div style='white-space: normal;'width='100%' align='{$params.align|default:'left'}'>
 					{sugar_translate label=$params.label module='Administration'}
 				</div></span sugar='sugar{$colCounter}'>
 			</th>

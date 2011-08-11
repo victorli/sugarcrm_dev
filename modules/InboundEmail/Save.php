@@ -68,6 +68,7 @@ foreach($focus->required_fields as $field) {
 		$focus->$field = $value;
 	}
 }
+
 if(!empty($_REQUEST['email_password'])) {
     $focus->email_password = $_REQUEST['email_password'];
 }

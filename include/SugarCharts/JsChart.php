@@ -613,7 +613,6 @@ class JsChart extends SugarChart {
 	}
 
 	function saveJsonFile($jsonContents) {
-
 		$this->jsonFilename = str_replace(".xml",".js",$this->xmlFile);
 		//$jsonContents = mb_convert_encoding($jsonContents, 'UTF-16LE', 'UTF-8');
 

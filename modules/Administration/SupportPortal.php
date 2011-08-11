@@ -228,7 +228,7 @@ function getHelpBar($moduleName)
 	$helpBar = "<table width='100%'><tr><td align='right'>" .
 			"<a href='javascript:window.print()'>" . $mod_strings['LBL_HELP_PRINT'] . "</a> - " .
 			"<a href='mailto:?subject=" . $mod_strings['LBL_SUGARCRM_HELP'] . "&body=" . rawurlencode(getCurrentURL()) . "'>" . $mod_strings['LBL_HELP_EMAIL'] . "</a> - " .
-			"<a href='#' onmousedown=\"createBookmarkLink('" . $mod_strings['LBL_SUGARCRM_HELP'] . " - " . $moduleName . "', '" . getCurrentURL() . "'" .")\">" . $mod_strings['LBL_HELP_BOOKMARK'] . "</a>" .
+			"<a href='javascript:void(0)' onmousedown=\"createBookmarkLink('" . $mod_strings['LBL_SUGARCRM_HELP'] . " - " . $moduleName . "', '" . getCurrentURL() . "'" .")\">" . $mod_strings['LBL_HELP_BOOKMARK'] . "</a>" .
 			"</td></tr></table>";
 
 	return $helpBar;

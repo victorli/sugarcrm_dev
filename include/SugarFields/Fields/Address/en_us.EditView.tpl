@@ -120,7 +120,7 @@
 {sugar_translate label='LBL_COPY_ADDRESS_FROM_LEFT' module=''}:
 </td>
 <td>
-<input id="{{$displayParams.key}}_checkbox" name="{{$displayParams.key}}_checkbox" type="checkbox" onclick="syncFields('{{$displayParams.copy}}', '{{$displayParams.key}}');">
+<input id="{{$displayParams.key}}_checkbox" name="{{$displayParams.key}}_checkbox" type="checkbox" onclick="{{$displayParams.key}}_address.syncFields();">
 </td>
 </tr>
 {{else}}
@@ -131,8 +131,7 @@
 </table>
 </fieldset>
 <script type="text/javascript">
-    var fromKey = '{{$displayParams.copy}}';
-    var toKey = '{{$displayParams.key}}';
-    var checkbox = toKey + "_checkbox";
-    var obj = new TestCheckboxReady(checkbox);
+    SUGAR.util.doWhen("typeof(SUGAR.AddressField) != 'undefined'", function(){ldelim}
+		{{$displayParams.key}}_address = new SUGAR.AddressField("{{$displayParams.key}}_checkbox",'{{$displayParams.copy}}', '{{$displayParams.key}}');
+	{rdelim});
 </script>

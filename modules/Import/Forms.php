@@ -67,8 +67,8 @@ function getControl(
  	// set the filename for this control
     $file = create_cache_directory('modules/Import/') . $module . $fieldname . '.tpl';
 
-    if ( !is_file($file) 
-            || !empty($GLOBALS['sugar_config']['developerMode']) 
+    if ( !is_file($file)
+            || !empty($GLOBALS['sugar_config']['developerMode'])
             || !empty($_SESSION['developerMode']) ) {
         
         if ( !isset($vardef) ) {
@@ -113,7 +113,7 @@ function getControl(
                 && ( $vardef['function'] == 'getCurrencyDropDown' 
                     || $vardef['function']['name'] == 'getCurrencyDropDown' ) )
         $contents .= "{literal}<script>function CurrencyConvertAll() { return; }</script>{/literal}";
-        
+
         // Save it to the cache file
         if($fh = @sugar_fopen($file, 'w')) {
             fputs($fh, $contents);
@@ -166,8 +166,11 @@ function getControl(
             $fieldlist[$name]['options'][''] = '';
     }
     // fill in function return values
-    if ( !in_array($fieldname,array('email1','email2')) ) {
-        if (!empty($fieldlist[$fieldname]['function']['returns']) && $fieldlist[$fieldname]['function']['returns'] == 'html'){
+    if ( !in_array($fieldname,array('email1','email2')) )
+    {
+        if (!empty($fieldlist[$fieldname]['function']['returns']) && $fieldlist[$fieldname]['function']['returns'] == 'html')
+        {
+
             $function = $fieldlist[$fieldname]['function']['name'];
             // include various functions required in the various vardefs
             if ( isset($fieldlist[$fieldname]['function']['include']) && is_file($fieldlist[$fieldname]['function']['include']))
@@ -176,6 +179,15 @@ function getControl(
             // Bug 22730 - add a hack for the currency type dropdown, since it's built by a function.
             if ( preg_match('/getCurrency.*DropDown/s',$function)  )
                 $value = str_ireplace('</select>','<option value="">'.$app_strings['LBL_NONE'].'</option></select>',$value);
+        }
+        elseif($fieldname == 'assigned_user_name' && empty($value))
+        {
+            $fieldlist['assigned_user_id']['value'] = $GLOBALS['current_user']->id;
+            $value = get_assigned_user_name($GLOBALS['current_user']->id);
+        }
+        elseif($fieldname == 'team_name' && empty($value))
+        {
+            $value = json_encode(array());
         }
     }
     $fieldlist[$fieldname]['value'] = $value;

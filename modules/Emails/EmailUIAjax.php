@@ -1215,15 +1215,17 @@ eoq;
         $GLOBALS['log']->debug("********** EMAIL 2.0 - Asynchronous - at: deleteIeAccount");
         if(isset($_REQUEST['group_id']) && $_REQUEST['group_id'] == $current_user->id) {
             $ret = array();
+            $updateFolders = array();
         	$ret['id'] = $_REQUEST['ie_id'];
             $out = $json->encode($ret);
             $ie->hardDelete($_REQUEST['ie_id']);
             $out = $json->encode(array('id' => $_REQUEST['ie_id']));
             echo $out;
 
-            foreach($showFolders as $id) {
-                if($id != $_REQUEST['ie_id'])
-                $updateFolders[] = $id;
+            foreach ($showFolders as $id) {
+                if ($id != $_REQUEST['ie_id']) {
+                    $updateFolders[] = $id;
+                }
             }
 
             $showStore = base64_encode(serialize($updateFolders));

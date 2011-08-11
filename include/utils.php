@@ -149,6 +149,7 @@ function make_sugar_config(&$sugar_config)
 	'host_name' => empty($host_name) ? 'localhost' : $host_name,
 	'import_dir' => $import_dir,  // this must be set!!
 	'import_max_records_per_file' => 100,
+    'import_max_records_total_limit' => '',
 	'languages' => empty($languages) ? array('en_us' => 'English (US)') : $languages,
 	'list_max_entries_per_page' => empty($list_max_entries_per_page) ? 20 : $list_max_entries_per_page,
 	'list_max_entries_per_subpanel' => empty($list_max_entries_per_subpanel) ? 10 : $list_max_entries_per_subpanel,
@@ -271,6 +272,7 @@ function get_sugar_config_defaults() {
 	'history_max_viewed' => 50,
 	'installer_locked' => true,
 	'import_max_records_per_file' => 100,
+    'import_max_records_total_limit' => '',
 	'languages' => array('en_us' => 'English (US)'),
 	'large_scale_test' => false,
 	'list_max_entries_per_page' => 20,
@@ -292,8 +294,8 @@ function get_sugar_config_defaults() {
 	'slow_query_time_msec' => '100',
     'sugarbeet' => true,
     'time_formats' => array (
-	'H:i'=>'23:00', 'h:ia'=>'11:00pm', 'h:iA'=>'11:00PM',
-	'H.i'=>'23.00', 'h.ia'=>'11.00pm', 'h.iA'=>'11.00PM' ),
+        'H:i'=>'23:00', 'h:ia'=>'11:00pm', 'h:iA'=>'11:00PM', 'h:i a'=>'11:00 pm', 'h:i A'=>'11:00 PM',
+        'H.i'=>'23.00', 'h.ia'=>'11.00pm', 'h.iA'=>'11.00PM', 'h.i a'=>'11.00 pm', 'h.i A'=>'11.00 PM' ),
     'tracker_max_display_length' => 15,
 	'translation_string_prefix' =>
 	return_session_value_or_default('translation_string_prefix', false),
@@ -306,6 +308,7 @@ function get_sugar_config_defaults() {
 	'verify_client_ip' => true,
 	'js_custom_version' => '',
 	'js_lang_version' => 1,
+        'lead_conv_activity_opt' => 'move',
 	'default_number_grouping_seperator' => ',',
 	'default_decimal_seperator' => '.',
 	'lock_homepage' => false,
@@ -925,14 +928,16 @@ function return_module_language($language, $module, $refresh=false)
 		return array();
 	}
 
-	$cache_key = LanguageManager::getLanguageCacheKey($module, $language);
-	// Check for cached value
-	$cache_entry = sugar_cache_retrieve($cache_key);
-	if(!empty($cache_entry))
-	{
-		return $cache_entry;
-	}
-
+    if( !$refresh )
+    {
+        $cache_key = LanguageManager::getLanguageCacheKey($module, $language);
+        // Check for cached value
+        $cache_entry = sugar_cache_retrieve($cache_key);
+        if(!empty($cache_entry))
+        {
+            return $cache_entry;
+        }
+    }
 	// Store the current mod strings for later
 	$temp_mod_strings = $mod_strings;
 	$loaded_mod_strings = array();
@@ -984,6 +989,7 @@ function return_module_language($language, $module, $refresh=false)
 	else
 		$mod_strings = $temp_mod_strings;
 
+    $cache_key = LanguageManager::getLanguageCacheKey($module, $language);
     sugar_cache_put($cache_key, $return_value);
 	return $return_value;
 }
@@ -1733,7 +1739,7 @@ function clean_xss($str, $cleanImg=true) {
 	$jsEvents .= "onmouseup|onmouseover|onmousedown|onmouseenter|onmouseleave|onmousemove|onload|onchange|";
 	$jsEvents .= "onreset|onselect|onsubmit|onkeydown|onkeypress|onkeyup|onabort|onerror|ondragdrop";
 
-	$attribute_regex	= "#<[^/>][^>]+({$jsEvents})[^=>]*=[^>]*>#sim";
+	$attribute_regex	= "#<.+({$jsEvents})[^=>]*=[^>]*>#sim";
 	$javascript_regex	= '@<[^/>][^>]+(expression\(|j\W*a\W*v\W*a|v\W*b\W*s\W*c\W*r|&#|/\*|\*/)[^>]*>@sim';
 	$imgsrc_regex		= '#<[^>]+src[^=]*=([^>]*?http://[^>]*)>#sim';
 	$css_url			= '#url\(.*\.\w+\)#';
@@ -2243,18 +2249,18 @@ function get_bean_select_array($add_blank=true, $bean_name, $display_columns, $w
 
 		$db = DBManagerFactory::getInstance();
 		$temp_result = Array();
-		$query = "SELECT id, {$display_columns} as display from {$focus->table_name} ";
+		$query = "SELECT {$focus->table_name}.id, {$display_columns} as display from {$focus->table_name} ";
 		$query .= "where ";
 		if ( $where != '')
 		{
 			$query .= $where." AND ";
 		}
-
-		$query .=  " deleted=0";
+		
+		$query .=  " {$focus->table_name}.deleted=0";
 
 		if ( $order_by != '')
 		{
-			$query .= ' order by '.$order_by;
+			$query .= " order by {$focus->table_name}.{$order_by}";
 		}
 
 		$GLOBALS['log']->debug("get_user_array query: $query");
@@ -2450,6 +2456,15 @@ function _ppf($bean, $die=false) {
  */
 function _pp($mixed)
 {
+	echo "\n<pre>\n";
+	print_r($mixed);
+
+	echo "";
+	$stack  = debug_backtrace();
+	if (!empty($stack) && isset($stack[0]['file']) && $stack[0]['line']) {
+		echo "\n\n _pp caller, file: " . $stack[0]['file']. ' line#: ' .$stack[0]['line'];
+	}
+	echo "\n</pre>\n";
 }
 
 /**
@@ -3056,6 +3071,40 @@ function get_singular_bean_name($bean_name){
 	}
 }
 
+/*
+ * Given the potential module name (singular name, renamed module name)
+ * Return the real internal module name.
+ */
+function get_module_from_singular($singular) {
+
+    // find the internal module name for a singular name
+    if (isset($GLOBALS['app_list_strings']['moduleListSingular'])) {
+
+        $singular_modules = $GLOBALS['app_list_strings']['moduleListSingular'];
+
+        foreach ($singular_modules as $mod_name=>$sin_name) {
+            if ($singular == $sin_name and $mod_name != $sin_name) {
+                return $mod_name;
+            }
+        }
+    }
+
+    // find the internal module name for a renamed module
+    if (isset($GLOBALS['app_list_strings']['moduleList'])) {
+
+        $moduleList = $GLOBALS['app_list_strings']['moduleList'];
+
+        foreach ($moduleList as $mod_name=>$name) {
+            if ($singular == $name and $mod_name != $name) {
+                return $mod_name;
+            }
+        }
+    }
+
+    // if it's not a singular name, nor a renamed name, return the original value
+    return $singular;
+}
+
 function get_label($label_tag, $temp_module_strings){
 	global $app_strings;
 	if(!empty($temp_module_strings[$label_tag])){
@@ -3330,11 +3379,6 @@ function getJSONobj() {
 }
 
 require_once('include/utils/db_utils.php');
-//check to see if custom utils exists
-if(file_exists('custom/include/custom_utils.php')){
-	include_once('custom/include/custom_utils.php');
-}
-
 
 /**
  * Set default php.ini settings for entry points
@@ -3949,7 +3993,7 @@ function can_start_session(){
 }
 
 function load_link_class($properties){
-	$class = 'Link';
+	$class = 'Link2';
 	if(!empty($properties['link_class']) && !empty($properties['link_file'])){
     	require_once($properties['link_file']);
     	$class = $properties['link_class'];
@@ -4282,4 +4326,43 @@ function verify_uploaded_image($path, $jpeg_only = false)
 	        return false;
 	}
     return verify_image_file($path, $jpeg_only);
+}
+
+function cmp_beans($a, $b)
+{
+    global $sugar_web_service_order_by;
+    //If the order_by field is not valid, return 0;
+    if (empty($sugar_web_service_order_by) || !isset($a->$sugar_web_service_order_by) || !isset($b->$sugar_web_service_order_by)){
+        return 0;
+    }
+    if (is_object($a->$sugar_web_service_order_by) || is_object($b->$sugar_web_service_order_by)
+        || is_array($a->$sugar_web_service_order_by) || is_array($b->$sugar_web_service_order_by))
+    {
+        return 0;
+    }
+    if ($a->$sugar_web_service_order_by < $b->$sugar_web_service_order_by)
+    {
+        return -1;
+    } else {
+        return 1;
+    }
+}
+
+function order_beans($beans, $field_name)
+{
+    //Since php 5.2 doesn't include closures, we must use a global to pass the order field to cmp_beans.
+    global $sugar_web_service_order_by;
+    $sugar_web_service_order_by = $field_name;
+    usort($beans, "cmp_beans");
+    return $beans;
+}
+
+//check to see if custom utils exists
+if(file_exists('custom/include/custom_utils.php')){
+	include_once('custom/include/custom_utils.php');
+}
+
+//check to see if custom utils exists in Extension framework
+if(file_exists('custom/application/Ext/Utils/custom_utils.ext.php')) {
+    include_once('custom/application/Ext/Utils/custom_utils.ext.php');
 }

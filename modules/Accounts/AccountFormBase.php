@@ -169,12 +169,12 @@ function buildTableForm($rows, $mod='Accounts'){
 		$form .= "<tr class='$rowColor'>";
 		if ($action != 'ShowDuplicates')
 		{
-		$form .= "<td width='1%' nowrap><a href='#' onclick='document.dupAccounts.selectedAccount.value=\"${row['id']}\"; document.dupAccounts.submit(); '>[${app_strings['LBL_SELECT_BUTTON_LABEL']}]</a>&nbsp;&nbsp;</td>\n";
+		$form .= "<td width='1%' nowrap><a href='javascript:void(0)' onclick='document.dupAccounts.selectedAccount.value=\"${row['id']}\"; document.dupAccounts.submit(); '>[${app_strings['LBL_SELECT_BUTTON_LABEL']}]</a>&nbsp;&nbsp;</td>\n";
 		}
 		foreach ($row as $key=>$value){
 				if($key != 'id'){
                     if(isset($_POST['popup']) && $_POST['popup']==true){
-                        $form .= "<td scope='row'><a  href='#' onclick=\"window.opener.location='index.php?module=Accounts&action=DetailView&record=${row['id']}'\">$value</a></td>\n";
+                        $form .= "<td scope='row'><a  href='javascript:void(0)' onclick=\"window.opener.location='index.php?module=Accounts&action=DetailView&record=${row['id']}'\">$value</a></td>\n";
                     }   
                     else
 					    $form .= "<td><a target='_blank' href='index.php?module=Accounts&action=DetailView&record=${row['id']}'>$value</a></td>\n";
@@ -475,16 +475,21 @@ function handleSave($prefix,$redirect=true, $useRequired=false){
 			if(!empty($_POST['popup'])) $get .= '&popup='.$_POST['popup'];
 			if(!empty($_POST['create'])) $get .= '&create='.$_POST['create'];
 			
+			$_SESSION['SHOW_DUPLICATES'] = $get;
 			//now redirect the post to modules/Accounts/ShowDuplicates.php
             if (!empty($_POST['is_ajax_call']) && $_POST['is_ajax_call'] == '1')
             {
             	ob_clean();
                 $json = getJSONobj();
-                $_SESSION['SHOW_DUPLICATES'] = $get;
                 echo $json->encode(array('status' => 'dupe', 'get' => $location));
-            } else {
-                if(!empty($_POST['to_pdf'])) $location .= '&to_pdf='.$_POST['to_pdf'];
-                $_SESSION['SHOW_DUPLICATES'] = $get;
+            }
+            else if(!empty($_REQUEST['ajax_load']))
+            {
+                echo "<script>SUGAR.ajaxUI.loadContent('index.php?$location');</script>";
+            }
+            else {
+                if(!empty($_POST['to_pdf']))
+                    $location .= '&to_pdf='.$_POST['to_pdf'];
                 header("Location: index.php?$location");
             }
 			return null;

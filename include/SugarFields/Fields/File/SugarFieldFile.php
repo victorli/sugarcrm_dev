@@ -77,6 +77,15 @@ class SugarFieldFile extends SugarFieldBase {
     
 	function getEditViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex) {
         $this->fillInOptions($vardef,$displayParams);
+
+        $keys = $this->getAccessKey($vardef,'FILE',$vardef['module']);
+        $displayParams['accessKeySelect'] = $keys['accessKeySelect'];
+        $displayParams['accessKeySelectLabel'] = $keys['accessKeySelectLabel'];
+        $displayParams['accessKeySelectTitle'] = $keys['accessKeySelectTitle'];
+        $displayParams['accessKeyClear'] = $keys['accessKeyClear'];
+        $displayParams['accessKeyClearLabel'] = $keys['accessKeyClearLabel'];
+        $displayParams['accessKeyClearTitle'] = $keys['accessKeyClearTitle'];
+        
         return parent::getEditViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex);
     }
     

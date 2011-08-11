@@ -66,6 +66,13 @@ height: 10px;
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000"></div>
 <!-- end includes for overlib -->
 
+
+<script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_yui_widgets.js'}"></script>
+<script type="text/javascript" src="{sugar_getjspath file='include/javascript/dashlets.js'}"></script>
+<link rel='stylesheet' href='{sugar_getjspath file='include/ytree/TreeView/css/folders/tree.css'}'>
+{$chartResources}
+{$mySugarChartResources}
+
 <script type="text/javascript">
 var activePage = {$activePage};
 var theme = '{$theme}';
@@ -73,17 +80,61 @@ current_user_id = '{$current_user}';
 jsChartsArray = new Array();
 var moduleName = '{$module}';
 document.body.setAttribute("class", "yui-skin-sam");
+{literal}
+var mySugarLoader = new YAHOO.util.YUILoader({
+	require : ["my_sugar", "sugar_charts"],
+	onSuccess: function(){
+		initMySugar();
+		initmySugarCharts();
+		SUGAR.mySugar.maxCount = 	{/literal}{$maxCount}{literal};
+		SUGAR.mySugar.homepage_dd = new Array();
+		var j = 0;
+
+		{/literal}
+		var dashletIds = {$dashletIds};
+
+		{if !$lock_homepage}
+		{literal}
+		for(i in dashletIds) {
+			SUGAR.mySugar.homepage_dd[j] = new ygDDList('dashlet_' + dashletIds[i]);
+			SUGAR.mySugar.homepage_dd[j].setHandleElId('dashlet_header_' + dashletIds[i]);
+			SUGAR.mySugar.homepage_dd[j].onMouseDown = SUGAR.mySugar.onDrag;
+			SUGAR.mySugar.homepage_dd[j].afterEndDrag = SUGAR.mySugar.onDrop;
+			j++;
+		}
+		for(var wp = 0; wp <= {/literal}{$hiddenCounter}{literal}; wp++) {
+			SUGAR.mySugar.homepage_dd[j++] = new ygDDListBoundary('page_'+activePage+'_hidden' + wp);
+		}
+
+		YAHOO.util.DDM.mode = 1;
+		{/literal}
+		{/if}
+		{literal}
+		SUGAR.mySugar.renderDashletsDialog();
+		SUGAR.mySugar.sugarCharts.loadSugarCharts(activePage);
+		{/literal}
+		{literal}
+	}
+});
+mySugarLoader.addModule({
+	name :"my_sugar",
+	type : "js",
+	fullpath: {/literal}"{sugar_getjspath file='include/MySugar/javascript/MySugar.js'}"{literal},
+	varName: "initMySugar",
+	requires: []
+});
+mySugarLoader.addModule({
+	name :"sugar_charts",
+	type : "js",
+	fullpath: {/literal}"{sugar_getjspath file="include/SugarCharts/Jit/js/mySugarCharts.js"}"{literal},
+	varName: "initmySugarCharts",
+	requires: []
+});
+mySugarLoader.insert();
+{/literal}
 </script>
 
-<script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_yui_widgets.js'}"></script>
-<script type="text/javascript" src="{sugar_getjspath file='include/javascript/dashlets.js'}"></script>
-<script type="text/javascript" src='{sugar_getjspath file='include/JSON.js'}'></script>
-<script type='text/javascript' src='{sugar_getjspath file='include/MySugar/javascript/MySugar.js'}'></script>
-<link rel='stylesheet' href='{sugar_getjspath file='include/ytree/TreeView/css/folders/tree.css'}'>
 
-
-{$chartResources}
-{$mySugarChartResources}
 
 
 <div class="clear"></div>
@@ -108,14 +159,14 @@ document.body.setAttribute("class", "yui-skin-sam");
 		<td valign='top' width='{$data.width}'>
 			<ul class='noBullet' id='col_{$activePage}_{$colNum}'>
 				<li id='page_{$activePage}_hidden{$hiddenCounter}b' style='height: 5px; margin-top: 12px\9;' class='noBullet'>&nbsp;&nbsp;&nbsp;</li>
-		        {foreach from=$data.dashlets key=id item=dashlet}		
+				{foreach from=$data.dashlets key=id item=dashlet}		
 				<li class='noBullet' id='dashlet_{$id}'>
 					<div id='dashlet_entire_{$id}' class='dashletPanel'>
 						{$dashlet.script}
-                        {$dashlet.displayHeader}
+					{$dashlet.displayHeader}
 						{$dashlet.display}
-                        {$dashlet.displayFooter}
-                  </div> 
+						{$dashlet.displayFooter}
+				  </div> 
 				</li>
 				{/foreach}
 				<li id='page_{$activePage}_hidden{$hiddenCounter}' style='height: 5px' class='noBullet'>&nbsp;&nbsp;&nbsp;</li>
@@ -146,41 +197,3 @@ document.body.setAttribute("class", "yui-skin-sam");
 				
 	
 </div>
-
-{literal}
-<script type="text/javascript">
-SUGAR.mySugar.maxCount = 	{/literal}{$maxCount}{literal};
-SUGAR.mySugar.homepage_dd = new Array();
-SUGAR.mySugar.init = function () {
-	j = 0;
-	
-	{/literal}
-	dashletIds = {$dashletIds};
-	
-	{if !$lock_homepage}
-	{literal}
-	for(i in dashletIds) {
-		SUGAR.mySugar.homepage_dd[j] = new ygDDList('dashlet_' + dashletIds[i]);
-		SUGAR.mySugar.homepage_dd[j].setHandleElId('dashlet_header_' + dashletIds[i]);
-		SUGAR.mySugar.homepage_dd[j].onMouseDown = SUGAR.mySugar.onDrag;  
-		SUGAR.mySugar.homepage_dd[j].afterEndDrag = SUGAR.mySugar.onDrop;
-		j++;
-	}
-	for(var wp = 0; wp <= {/literal}{$hiddenCounter}{literal}; wp++) {
-	    SUGAR.mySugar.homepage_dd[j++] = new ygDDListBoundary('page_'+activePage+'_hidden' + wp);
-	}
-
-	YAHOO.util.DDM.mode = 1;
-	{/literal}
-	{/if}
-	{literal}
-	SUGAR.mySugar.renderDashletsDialog();
-	SUGAR.mySugar.sugarCharts.loadSugarCharts(activePage);
-}
-
-</script>
-{/literal}
-
-<script type="text/javascript">
-	YAHOO.util.Event.addListener(window, 'load', SUGAR.mySugar.init); 
-</script>

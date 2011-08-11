@@ -471,20 +471,23 @@
 		
 		forceSubmit : function () {
 		    var theForm = Dom.get(this.emailView);
-		    if(theForm) {
-		       theForm.action.value = 'Save';
-		       
-		       if(!check_form(this.emailView)) {
-		          return false;
-		       }
-		       
-		       if(this.emailView == 'EditView') {
-		          theForm.submit();
-		       } else if(this.emailView == 'QuickCreate') {
-		          SUGAR.subpanelUtils.inlineSave(theForm.id, theForm.module.value.toLowerCase());
-		       }
-		    } 
-		} //forceSubmit
-	};
-	emailAddressWidgetLoaded = true;
+            if(theForm) {
+               theForm.action.value = 'Save';
+               if(!check_form(this.emailView)) {
+                  return false;
+               }
+               if(this.emailView == 'EditView') {
+                   //this is coming from regular edit view form
+                  theForm.submit();
+               } else if (this.emailView.indexOf('DCQuickCreate')>0){
+                   //this is coming from the DC Quick Create Tool Bar, so call save on form
+                  DCMenu.save(theForm.id);
+               } else if(this.emailView.indexOf('QuickCreate')>=0) {
+                   //this is a subpanel create or edit form
+                  SUGAR.subpanelUtils.inlineSave(theForm.id, theForm.module.value+'_subpanel_save_button');
+               }
+            }
+        } //forceSubmit
+    };
+    emailAddressWidgetLoaded = true;
 })();

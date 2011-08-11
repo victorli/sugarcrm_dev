@@ -94,7 +94,7 @@ function smarty_function_sugar_link($params, &$smarty)
 	
 	if (isset($params['link_only']) && $params['link_only'] == 1 ) {
         // Let them just get the url, they want to put it someplace
-        return $link_url;
+        return ajaxLink($link_url);
     }
 	
 	$id = (!empty($params['id']))?' id="'.$params['id'].'"':'';
@@ -110,6 +110,6 @@ function smarty_function_sugar_link($params, &$smarty)
 	else
 	    $label = (!empty($GLOBALS['app_list_strings']['moduleList'][$params['module']]))?$GLOBALS['app_list_strings']['moduleList'][$params['module']]:$params['module'];
 
-    $link = '<a href="'.$link_url.'"'.$id.$class.$style.$options.'>'.$label.'</a>';
+    $link = '<a href="'.ajaxLink($link_url).'"'.$id.$class.$style.$options.'>'.$label.'</a>';
     return $link;
 }

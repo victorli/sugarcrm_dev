@@ -116,7 +116,12 @@ $GLOBALS['ACLActions'] = array(
 									'label'=>'LBL_ACTION_EXPORT',
 									'default'=>ACL_ALLOW_ALL,
 								),
-
+                        'massupdate'=>
+							array(
+									'aclaccess'=>array(ACL_ALLOW_ALL,ACL_ALLOW_DEFAULT, ACL_ALLOW_NONE),
+									'label'=>'LBL_ACTION_MASSUPDATE',
+									'default'=>ACL_ALLOW_ALL,
+								),
 						
 					
 				),),

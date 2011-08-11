@@ -69,7 +69,6 @@ var moduleName = 'Home';
 
 <script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_yui_widgets.js'}"></script>
 <script type="text/javascript" src="{sugar_getjspath file='include/javascript/dashlets.js'}"></script>
-<script type="text/javascript" src='{sugar_getjspath file='include/JSON.js'}'></script>
 <script type='text/javascript' src='{sugar_getjspath file='include/MySugar/javascript/MySugar.js'}'></script>
 <link rel='stylesheet' href='{sugar_getjspath file='include/javascript/yui/build/assets/skins/sam/skin.css'}'>
 
@@ -213,7 +212,7 @@ SUGAR.mySugar.init = function () {
 	SUGAR.mySugar.renderChangeLayoutDialog();
 }
 
-YAHOO.util.Event.addListener(window, 'load', SUGAR.mySugar.init);  
+YAHOO.util.Event.addListener(window, 'load', SUGAR.mySugar.init);
 
 </script>
 {/literal}

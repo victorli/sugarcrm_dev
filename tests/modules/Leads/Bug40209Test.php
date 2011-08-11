@@ -34,8 +34,8 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
-class Bug40209Test extends Sugar_PHPUnit_Framework_TestCase
+
+class Bug40209Test extends Sugar_PHPUnit_Framework_OutputTestCase
 {
     var $user;
     var $account;
@@ -44,6 +44,8 @@ class Bug40209Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        global $_POST;
+        $_POST = array();
         //create user
         $this->user = $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
 
@@ -57,7 +59,7 @@ class Bug40209Test extends Sugar_PHPUnit_Framework_TestCase
         $this->lead = SugarTestLeadUtilities::createLead();
 
     }
-    
+
     public function tearDown()
     {
         //delete records created from db
@@ -72,17 +74,14 @@ class Bug40209Test extends Sugar_PHPUnit_Framework_TestCase
         unset($this->account);
         unset($this->contact);
     }
-    
+
 
 
     //run test to make sure accounts related to leads record are copied over to contact recor during conversion (bug 40209)
     public function testConvertAccountCopied()
     {
-        //there will be output from display function, so call ob_start to trap it
-        ob_start();
-
         $_POST = array();
-        
+
         //set the request parameters and convert the lead
         $_REQUEST['module'] = 'Leads';
         $_REQUEST['action'] = 'ConvertLead';
@@ -102,14 +101,10 @@ class Bug40209Test extends Sugar_PHPUnit_Framework_TestCase
         $contact_id = $this->lead->contact_id;
 
         //throw error if contact id was not retrieved and exit test
-        $this->assertTrue(!empty($contact_id), "contact id was not created during conversion process.  An error has ocurred, aborting rest of test.");
-        if (empty($contact_id)){
-            return;
-        }
+        $this->assertNotEmpty($contact_id, "contact id was not created during conversion process.  An error has ocurred, aborting rest of test.");
 
         //make sure the new contact has the account related and that it matches the lead account
         $this->contact->retrieve($contact_id);
-        $this->assertTrue($this->contact->account_id == $this->lead->account_id, "Account id from converted lead does not match the new contact account id, there was an error during conversion.");
-        $output = ob_get_clean();
+        $this->assertEquals($this->lead->account_id, $this->contact->account_id, "Account id from converted lead does not match the new contact account id, there was an error during conversion.");
     }
 }

@@ -449,6 +449,7 @@ $dictionary['Note'] = array(
        array('name' =>'idx_note_name', 'type'=>'index', 'fields'=>array('name')),
        array('name' =>'idx_notes_parent', 'type'=>'index', 'fields'=>array('parent_id', 'parent_type')),
        array('name' =>'idx_note_contact', 'type'=>'index', 'fields'=>array('contact_id')),
+       array('name' =>'idx_notes_assigned_del', 'type' =>'index', 'fields'=>array( 'deleted', 'assigned_user_id')),
                                                       )
 
 

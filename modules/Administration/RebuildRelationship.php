@@ -140,6 +140,10 @@ $query = 'INSERT INTO versions (id, deleted, date_entered, date_modified, modifi
 $log->info ( $query ) ;
 $db->query ( $query ) ;
 
+$rel = new Relationship();
+Relationship::delete_cache();
+$rel->build_relationship_cache();
+
 // unset the session variable so it is not picked up in DisplayWarnings.php
 if (isset ( $_SESSION [ 'rebuild_relationships' ] ))
 {

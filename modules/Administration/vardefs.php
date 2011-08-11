@@ -101,7 +101,7 @@ $dictionary['UpgradeHistory'] = array(
         'version' => array (
                 'name' => 'version',
                 'type' => 'varchar',
-                'len' => '10',
+                'len' => '64',
     		    'comment' => 'Version as contained in manifest file'
         ),
 		'name' => array (

@@ -47,7 +47,13 @@ if (! defined ( 'sugarEntry' ) || ! sugarEntry)
 class AbstractRelationships
 {
     
-    static $methods = array ( 'Labels' => 'language' , 'RelationshipMetaData' => 'relationships' , 'SubpanelDefinitions' => 'layoutdefs' , 'Vardefs' => 'vardefs' , 'FieldsToLayouts' => 'layoutfields' ) ;
+    static $methods = array (
+        'Labels' => 'language' ,
+        'RelationshipMetaData' => 'relationships' ,
+        'SubpanelDefinitions' => 'layoutdefs' ,
+        'Vardefs' => 'vardefs' ,
+        'FieldsToLayouts' => 'layoutfields',
+    ) ;
     static $activities = array ( 'calls' => 'Calls' , 'meetings' => 'Meetings' , 'notes' => 'Notes' , 'tasks' => 'Tasks' , 'emails' => 'Emails' ) ;
     
     protected $relationships = array ( ) ; // array containing all the AbstractRelationship objects that are in this set of relationships
@@ -435,21 +441,26 @@ class AbstractRelationships
         foreach ( $subpanelDefinitions as $moduleName => $definitions )
         {
             $filename = "$basepath/layoutdefs/{$relationshipName}_{$moduleName}.php" ;
-            $out =  "<?php\n// created: " . date('Y-m-d H:i:s') . "\n";
+            $subpanelVarname = 'layout_defs["' . $moduleName . '"]["subpanel_setup"]';
+            $out = "";
             foreach ( $definitions as $definition )
             {
                 $GLOBALS [ 'log' ]->debug ( get_class ( $this ) . "->saveSubpanelDefinitions(): saving the following to {$filename}" . print_r ( $definition, true ) ) ;
-            	if (empty($definition ['get_subpanel_data']) || $definition ['subpanel_name'] == 'history' ||  $definition ['subpanel_name'] == 'activities') {
-               		$definition ['get_subpanel_data'] = $definition ['subpanel_name'];
-               	}
-               	$out .= '$layout_defs["' . $moduleName . '"]["subpanel_setup"]["' . $definition ['get_subpanel_data'] . '"] = ' 
-               	      . var_export_helper($definition) . ";\n";
+                if (empty($definition ['get_subpanel_data']) || $definition ['subpanel_name'] == 'history' || $definition ['subpanel_name'] == 'activities') {
+                    $definition ['get_subpanel_data'] = $definition ['subpanel_name'];
+                }
+                $out .= override_value_to_string($subpanelVarname, strtolower ( $definition [ 'get_subpanel_data' ] ), $definition) . "\n";
             }
-            file_put_contents($filename, $out);
+            if (!empty($out)) {
+                $out = "<?php\n // created: " . date('Y-m-d H:i:s') . "\n" . $out;
+                sugar_file_put_contents($filename, $out);
+            }
+
             $installDefs [ $moduleName ] = array ( 'from' => "{$installDefPrefix}/relationships/layoutdefs/{$relationshipName}_{$moduleName}.php" , 'to_module' => $moduleName ) ;
         }
         return $installDefs ;
     }
+
 
     /*
      * Translate a set of linkFieldDefinitions into files for the Module Loader

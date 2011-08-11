@@ -95,6 +95,7 @@ class ManyToOneRelationship extends AbstractRelationship
         return $this->one_to_many->buildSubpanelDefinitions();
     }
 
+
     /*
      * @return array    An array of field definitions, ready for the vardefs, keyed by module
      */
