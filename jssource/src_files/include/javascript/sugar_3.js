@@ -637,9 +637,9 @@ function add_error_style(formname, input, txt, flash) {
     matchTxt = txt.replace(requiredTxt,'').replace(invalidTxt,'').replace(nomatchTxt,'');
 
 	if(inputHandle.parentNode.innerHTML.search(matchTxt) == -1) {
-        errorTextNode = document.createElement('span');
+        errorTextNode = document.createElement('div');
         errorTextNode.className = 'required';
-        errorTextNode.innerHTML = '<br />' + txt;
+        errorTextNode.innerHTML = txt;
         if ( inputHandle.parentNode.className.indexOf('x-form-field-wrap') != -1 ) {
             inputHandle.parentNode.parentNode.appendChild(errorTextNode);
         }
@@ -1648,7 +1648,7 @@ function initEditView(theForm) {
     }
 
     // we don't need to check if the data is changed in the search popup
-    if (theForm.id == 'popup_query_form') {
+    if (theForm.id == 'popup_query_form' || theForm.id == 'MassUpdate') {
     	return;
     }
 	if ( typeof editViewSnapshots == 'undefined' || editViewSnapshots == null ) {
@@ -1660,7 +1660,6 @@ function initEditView(theForm) {
 
     editViewSnapshots[theForm.id] = snapshotForm(theForm);
     SUGAR.loadedForms[theForm.id] = true;
-
 }
 
 function onUnloadEditView(theForm) {
@@ -2521,7 +2520,7 @@ SUGAR.ajaxStatusClass.prototype.shown = false; // state of the status window
 
 // reposition the status div, top and centered
 SUGAR.ajaxStatusClass.prototype.positionStatus = function() {
-	this.statusDiv.style.top = document.body.scrollTop + 8 + 'px';
+	//this.statusDiv.style.top = document.body.scrollTop + 8 + 'px';
 	statusDivRegion = YAHOO.util.Dom.getRegion(this.statusDiv);
 	statusDivWidth = statusDivRegion.right - statusDivRegion.left;
 	this.statusDiv.style.left = YAHOO.util.Dom.getViewportWidth() / 2 - statusDivWidth / 2 + 'px';
@@ -2531,11 +2530,6 @@ SUGAR.ajaxStatusClass.prototype.positionStatus = function() {
 SUGAR.ajaxStatusClass.prototype.createStatus = function(text) {
 	statusDiv = document.createElement('div');
 	statusDiv.className = 'dataLabel';
-	statusDiv.style.background = '#ffffff';
-	statusDiv.style.color = '#c60c30';
-	statusDiv.style.position = 'absolute';
-	statusDiv.style.opacity = .8;
-	statusDiv.style.filter = 'alpha(opacity=80)';
 	statusDiv.id = 'ajaxStatusDiv';
 	document.body.appendChild(statusDiv);
 	this.statusDiv = document.getElementById('ajaxStatusDiv');
@@ -2549,7 +2543,6 @@ SUGAR.ajaxStatusClass.prototype.showStatus = function(text) {
 	else {
 		this.statusDiv.style.display = '';
 	}
-	this.statusDiv.style.zIndex = 20;
 	this.statusDiv.innerHTML = '&nbsp;<b>' + text + '</b>&nbsp;';
 	this.positionStatus();
 	if(!this.shown) {
@@ -4310,25 +4303,10 @@ closeActivityPanel: {
                         //var args = "action=save&id=" + id + "&status=" + new_status + "&module=" + module;
                         var callback = {
                             success:function(o)
-                            {	//refresh window to show updated changes
-								window.location.reload(true);
-								/*
-                                if(viewType == 'dashlet')
-                                {
-                                    SUGAR.mySugar.retrieveDashlet(o.argument['parentContainerId']);
-                                    ajaxStatus.hideStatus();
-                                }
-                                else if(viewType == 'subpanel'){
-                                    showSubPanel(o.argument['parentContainerId'],null,true);
-									if(o.argument['parentContainerId'] == 'activities'){
-										showSubPanel('history',null,true);
-									}
-									ajaxStatus.hideStatus();
-
-                                }else if(viewType == 'listview'){
-                                    document.location = 'index.php?module=' + module +'&action=index';
-									}
-								*/
+                            {
+                                // Bug 45792: Firefox seems to believe reloading a page after an ajax request means you are re-submitting a form and gives you the warning for it.
+                                // So instead, we reload from a timeout
+								window.setTimeout("window.location.reload(true);",0);
                             },
                             argument:{'parentContainerId':parentContainerId}
                         };

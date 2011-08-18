@@ -201,9 +201,13 @@ SUGAR.mySugar.init = function () {
 		SUGAR.mySugar.homepage_dd[j].afterEndDrag = SUGAR.mySugar.onDrop;
 		j++;
 	}
-	for(var wp = 0; wp <= {/literal}{$hiddenCounter}{literal}; wp++) {
+	{/literal}
+	{if $hiddenCounter > 0}
+	for(var wp = 0; wp <= {$hiddenCounter}; wp++) {ldelim}
 	    SUGAR.mySugar.homepage_dd[j++] = new ygDDListBoundary('page_'+activePage+'_hidden' + wp);
-	}
+	{rdelim}
+	{/if}
+	{literal}
 
 	YAHOO.util.DDM.mode = 1;
 

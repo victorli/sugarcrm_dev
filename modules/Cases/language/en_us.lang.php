@@ -129,7 +129,8 @@ $mod_strings = array (
     'LBL_EXPORT_ASSIGNED_USER_NAME' => 'Assigned User Name',
     'LBL_EXPORT_TEAM_COUNT' => 'Team Count',
 
+    // SNIP
+	'LBL_CONTACT_HISTORY_SUBPANEL_TITLE' => 'Related Contacts\' Emails',
 );
-
 
 ?>

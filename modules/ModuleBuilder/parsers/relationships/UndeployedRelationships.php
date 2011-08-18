@@ -301,6 +301,27 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
         return $this->updateUndeployedLayout ( $relationship, false ) ;
     }
 
+    /**
+     * @param AbstractRelationship $relationship
+     * @return void
+     */
+    private function removeAppLangStrings($relationship) {
+        $def = $relationship->getDefinition();
+        if (strtolower ( $def [ 'rhs_module' ] ) == 'activities' && !empty($_REQUEST [ 'view_package' ]) && !empty($_REQUEST [ 'view_module' ] ))
+        {
+            $mb = new ModuleBuilder ( ) ;
+            $module = $mb->getPackageModule ( $_REQUEST [ 'view_package' ], $_REQUEST [ 'view_module' ] ) ;
+            $appStrings = $module->getAppListStrings () ;
+            foreach(array('parent_type_display', 'record_type_display', 'record_type_display_notes') as $key)
+            {
+                if (isset($appStrings[$key][ $module->key_name ]))
+                    unset($appStrings[$key][ $module->key_name ]);
+            }
+            $module->setAppListStrings ( 'en_us', $appStrings ) ;
+            $module->save () ;
+        }
+    }
+
     /*
      * Add any relate fields to the DetailView and EditView of the appropriate module immediately (don't wait for a build)
      * @param AbstractRelationship $relationship The relationship whose fields we are to add or remove

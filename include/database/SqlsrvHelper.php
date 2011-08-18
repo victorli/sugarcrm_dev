@@ -333,5 +333,16 @@ EOSQL;
         if ($fieldDef['type'] == 'bit')
             $fieldDef['len'] = '1';
     }
+
+    protected function getDefault($fieldDef, $type) {
+        if (isset($fieldDef['default']) && strlen($fieldDef['default']) > 0) {
+            $default = " DEFAULT '".$fieldDef['default']."'";
+        }
+        else {
+            $default = '';
+        }
+
+        return $default;
+    }
 }
 ?>

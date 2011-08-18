@@ -376,7 +376,7 @@ $dictionary['User'] = array(
             'vname' => 'LBL_MEETINGS'
         ) ,
         'contacts_sync' => array(
-            'name' => 'contacts',
+            'name' => 'contacts_sync',
             'type' => 'link',
             'relationship' => 'contacts_users',
             'source' => 'non-db',
@@ -530,6 +530,14 @@ $dictionary['User'] = array(
         'source'=>'non-db',
         'side' => 'left',
       ),
+        'project_resource'=>
+		array (
+			'name' => 'project_resource',
+			'type' => 'link',
+			'relationship' => 'projects_users_resources',
+			'source' => 'non-db',
+			'vname' => 'LBL_PROJECTS',
+		),
     ) ,
     'indices' => array(
         array(

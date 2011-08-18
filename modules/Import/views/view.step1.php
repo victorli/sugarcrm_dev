@@ -44,6 +44,8 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 require_once('modules/Import/views/ImportView.php');
 require_once('include/externalAPI/ExternalAPIFactory.php');
 require_once ('include/language/jsLanguage.php');
+require_once('modules/Import/Importer.php');
+
 
 class ImportViewStep1 extends ImportView
 {
@@ -80,7 +82,7 @@ class ImportViewStep1 extends ImportView
         //If we are coming from the admin link, get the module list.
         if($showModuleSelection)
         {
-            $tmpImportable = $this->getImportableModules();
+            $tmpImportable = Importer::getImportableModules();
             $importableModulesOptions = get_select_options_with_id($tmpImportable, '');
             $importablePersonModules = $this->getImportablePersonModulesJS();
             $this->ss->assign("IMPORT_MODULE", key($tmpImportable));
@@ -113,27 +115,6 @@ class ImportViewStep1 extends ImportView
             'title'         => $this->getModuleTitle(false),
             'script'        => $jsLang . $this->_getJS(),
          ));
-    }
-
-    private function getImportableModules()
-    {
-        global $beanList;
-        $importableModules = array();
-        foreach ($beanList as $moduleName => $beanName)
-        {
-            if( class_exists($beanName) )
-            {
-                $tmp = new $beanName();
-                if( isset($tmp->importable) && $tmp->importable )
-                {
-                    $label = isset($GLOBALS['app_list_strings']['moduleList'][$moduleName]) ? $GLOBALS['app_list_strings']['moduleList'][$moduleName] : $moduleName;
-                    $importableModules[$moduleName] = $label;
-                }
-            }
-        }
-
-        asort($importableModules);
-        return $importableModules;
     }
 
     private function getImportablePersonModulesJS()

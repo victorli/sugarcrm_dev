@@ -82,3 +82,46 @@ YAHOO.widget.Panel.prototype.configClose = function (type, args, obj) {
         }
     }
 }
+
+// Override for bug45669
+// The fix is moving the code into this file 'as is'
+YAHOO.widget.Overlay.prototype.center = function() {
+	var scrollX = document.documentElement.scrollLeft || document.body.scrollLeft;
+	var scrollY = document.documentElement.scrollTop || document.body.scrollTop;
+
+	var viewPortWidth = YAHOO.util.Dom.getClientWidth();
+	var viewPortHeight = YAHOO.util.Dom.getClientHeight();
+
+	var elementWidth = this.element.offsetWidth;
+	var elementHeight = this.element.offsetHeight;
+
+	var x = (viewPortWidth / 2) - (elementWidth / 2) + scrollX;
+	var y = (viewPortHeight / 2) - (elementHeight / 2) + scrollY;
+
+	this.element.style.left = parseInt(x, 10) + "px";
+	this.element.style.top = parseInt(y, 10) + "px";
+	this.syncPosition();
+
+	this.cfg.refireEvent("iframe");
+}
+
+// Override for bug45837
+YAHOO.SUGAR.DragDropTable.prototype._deleteTrEl = function(row) {
+    var rowIndex;
+
+    // Get page row index for the element
+    if(!YAHOO.lang.isNumber(row)) {
+        rowIndex = Dom.get(row).sectionRowIndex;
+    }
+    else {
+        rowIndex = row;
+    }
+    if(YAHOO.lang.isNumber(rowIndex) && (rowIndex > -1) && (rowIndex < this._elTbody.rows.length)) {
+        // Cannot use tbody.deleteRow due to IE6 instability
+        //return this._elTbody.deleteRow(rowIndex);
+        return this._elTbody.removeChild(this._elTbody.rows[row]);
+    }
+    else {
+        return null;
+    }
+}

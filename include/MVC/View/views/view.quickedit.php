@@ -156,9 +156,43 @@ class ViewQuickedit extends ViewAjax
 		$this->ev->defs['templateMeta']['form']['hidden'] = '<input type="hidden" name="is_ajax_call" value="1" />';
 		$this->ev->defs['templateMeta']['form']['hidden'] .= '<input type="hidden" name="from_dcmenu" value="1" />';
         $this->ev->defs['templateMeta']['form']['hideAudit']=true;
-		$defaultProcess = true;
 
-		if($defaultProcess) {
+        //use module level view if available
+        $editFileName = 'modules/'.$module.'/views/view.edit.php';
+        if(file_exists('custom/modules/'.$module.'/views/view.edit.php')) {
+            $editFileName = 'custom/modules/'.$module.'/views/view.edit.php';
+        }
+
+        if(file_exists($editFileName)) {
+           include($editFileName);
+           $c = $module . 'ViewEdit';
+
+           if(class_exists($c)) {
+               $view = new $c;
+               if($view->useForSubpanel) {
+
+                   //Check if we should use the module's QuickCreate.tpl file
+                   if($view->useModuleQuickCreateTemplate && file_exists('modules/'.$module.'/tpls/QuickCreate.tpl')) {
+                      $this->ev->defs['templateMeta']['form']['headerTpl'] = 'modules/'.$module.'/tpls/QuickCreate.tpl';
+                   }
+
+                   $view->ev = & $this->ev;
+                   $view->ss = & $this->ev->ss;
+                   $class = $GLOBALS['beanList'][$module];
+                   if(!empty($GLOBALS['beanFiles'][$class])){
+                       require_once($GLOBALS['beanFiles'][$class]);
+                       $bean = new $class();
+                       $view->bean = $bean;
+                   }
+                   $view->ev->formName = 'form_DC'.$view->ev->view .'_'.$module;
+                   $view->showTitle = false; // Do not show title since this is for subpanel
+                   ob_start();
+                   $view->display();
+                   $captured =  ob_get_clean();
+                   echo json_encode(array('title'=> $this->bean->name, 'url'=>'index.php?module=' . $this->bean->module_dir . '&action=DetailView&record=' . $this->bean->id ,'html'=> $captured, 'eval'=>true));
+               }
+           }
+       }else {
 		   $form_name = 'form_DC'.$this->ev->view .'_'.$module;
 		   $this->ev->formName = $form_name;
 		   $this->ev->process(true, $form_name);

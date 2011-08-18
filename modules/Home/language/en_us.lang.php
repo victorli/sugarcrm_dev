@@ -231,6 +231,7 @@ $mod_strings = array (
   'LBL_SOURCE_JIT' => 'JavaScript InfoVis Toolkit - The JavaScript InfoVis Toolkit provides tools for creating Interactive Data Visualizations for the Web.',
   'LBL_SOURCE_ZEND' => 'Zend Framework - An open source, object oriented web application framework for PHP5.',
   'LBL_SOURCE_PARSECSV' => 'parseCSV - CSV data parser for PHP',
+  'LBL_SOURCE_PHPJS' => 'php.js - Use PHP functions in JavaScript',
 
   'LBL_DASHLET_TITLE' => 'My Sites',
   'LBL_DASHLET_OPT_TITLE' => 'Title',

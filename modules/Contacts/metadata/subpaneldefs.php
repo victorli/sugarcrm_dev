@@ -136,7 +136,7 @@ $layout_defs['Contacts'] = array(
 	    		),
 			)
 		),
-        'documents' => array(
+		'documents' => array(
             'order' => 25,
             'module' => 'Documents',
             'subpanel_name' => 'default',
@@ -144,13 +144,13 @@ $layout_defs['Contacts'] = array(
             'sort_by' => 'id',
             'title_key' => 'LBL_DOCUMENTS_SUBPANEL_TITLE',
             'get_subpanel_data' => 'documents',
-            'top_buttons' => 
+            'top_buttons' =>
             array (
-                0 => 
+                0 =>
                 array (
                     'widget_class' => 'SubPanelTopButtonQuickCreate',
                     ),
-                1 => 
+                1 =>
                 array (
                     'widget_class' => 'SubPanelTopSelectButton',
                     'mode' => 'MultiSelect',

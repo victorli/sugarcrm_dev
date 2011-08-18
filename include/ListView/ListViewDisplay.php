@@ -286,7 +286,7 @@ class ListViewDisplay {
 			. "CGCLASS, 'olOptionsCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olOptionsCapFontClass', CLOSEFONTCLASS, 'olOptionsCloseFontClass',TIMEOUT,1000);
 			}
 			</script>";
-            $script .= "<a id='$id' onclick='return select_overlib();' href=\"javascript:void(0)\"><img src='".SugarThemeRegistry::current()->getImageURL('MoreDetail.png')."' border='0''>"."</a>";
+		$script .= "<a id='$id' onclick='return select_overlib();' href=\"javascript:void(0)\"><img src='".SugarThemeRegistry::current()->getImageURL('MoreDetail.png')."' border='0'>"."</a>";
 
 		return $script;
 	}

@@ -43,7 +43,9 @@ class Group extends User {
 	var $status			= 'Group';
 	var $password		= ''; // to disallow logins
 	var $default_team;
-	
+	var $importable = false;
+
+    
 	function Group() {
 		parent::User();
 	}

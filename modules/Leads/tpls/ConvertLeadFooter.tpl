@@ -40,35 +40,6 @@
 <script type="text/javascript">
     var accountText = document.getElementById('account_name');
 
-    function addRemoveDropdownElement(module) {
-        var checkbox = document.getElementById('new'+module);
-        var dropdown = document.getElementById('lead_conv_ac_op_sel');
-        if (!checkbox || !dropdown) {
-            return;
-        }
-        var found = false;
-        var i;
-        for (i=dropdown.options.length-1; i>=0; i--) {
-            if (dropdown.options[i].value == module) {
-                found = true;
-                if (!checkbox.checked) {
-                    // if this is Accounts and the text of account name is not empty, do not remove
-                    if (module != 'Accounts' || !accountText || accountText.value == '') {
-                        dropdown.remove(i);
-                    }
-                }
-                break;
-            }
-        }
-        if (!found && checkbox.checked) {
-            var opt = document.createElement("option");
-            opt.text = SUGAR.language.get('app_list_strings', "moduleListSingular")[module];
-            opt.value = module;
-            opt.label = opt.text;
-            dropdown.options.add(opt);
-        }
-    }
-
     // add focus() to the onclick event handler of the clear account name button
     // because we need onblur to be triggered after account name is cleared
     var clearButton = document.getElementById('btn_clr_account_name');

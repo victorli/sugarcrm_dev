@@ -297,7 +297,7 @@ class AbstractRelationship
      * @param string $sourceModule      Name of the source module for this field
      * @param string $relationshipName  Name of the relationship
      */
-    protected function getLinkFieldDefinition ($sourceModule , $relationshipName, $right_side = false, $vname = "")
+    protected function getLinkFieldDefinition ($sourceModule , $relationshipName, $right_side = false, $vname = "", $id_name = false)
     {
         $vardef = array ( ) ;
 
@@ -309,6 +309,8 @@ class AbstractRelationship
         	$vardef [ 'side' ] = 'right' ;
         if (!empty($vname))
             $vardef [ 'vname' ] = $vname;
+        if (!empty($id_name))
+            $vardef['id_name'] = $id_name;
 
         return $vardef ;
     }

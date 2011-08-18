@@ -107,7 +107,8 @@ class ImportViewConfirm extends ImportView
         $mimeTypeOk = true;
 
         //check to see if the file mime type is not a form of text or application octed streramand fire error if not
-        if(isset($_FILES['userfile']['type']) && strpos($_FILES['userfile']['type'],'octet-stream') === false && strpos($_FILES['userfile']['type'],'text') === false){
+        if(isset($_FILES['userfile']['type']) && strpos($_FILES['userfile']['type'],'octet-stream') === false && strpos($_FILES['userfile']['type'],'text') === false
+            && strpos($_FILES['userfile']['type'],'application/vnd.ms-excel') === false) {
             //this file does not have a known text or application type of mime type, issue the warning
             $error_msgs[] = $mod_strings['LBL_MIME_TYPE_ERROR_1'];
             $error_msgs[] = $mod_strings['LBL_MIME_TYPE_ERROR_2'];
@@ -156,9 +157,11 @@ class ImportViewConfirm extends ImportView
         $enclosure = $importFile->getFieldEnclosure();
         $hasHeader = $importFile->hasHeaderRow();
 
+        $encodeOutput = TRUE;
         //Handle users navigating back through the wizard.
         if( !empty($_REQUEST['previous_action']) && $_REQUEST['previous_action'] == 'Confirm')
         {
+            $encodeOutput = FALSE;
             $importFileMap = $this->overloadImportFileMapFromRequest($importFileMap);
             $delimeter = !empty($_REQUEST['custom_delimiter']) ? $_REQUEST['custom_delimiter'] : $delimeter;
             $enclosure = isset($_REQUEST['custom_enclosure']) ? $_REQUEST['custom_enclosure'] : $enclosure;
@@ -215,12 +218,7 @@ class ImportViewConfirm extends ImportView
         $submitContent .= "<input title=\"".$mod_strings['LBL_BACK']."\" accessKey=\"\" class=\"button\" type=\"submit\" name=\"button\" value=\"  ".$mod_strings['LBL_BACK']."  \" id=\"goback\">";
 	    $submitContent .= "<input title=\"".$mod_strings['LBL_NEXT']."\" accessKey=\"\" class=\"button primary\" type=\"submit\" name=\"button\" value=\"  ".$mod_strings['LBL_NEXT']."  \" id=\"gonext\"></td></tr></table></form>";
 
-        echo json_encode(array(
-            'html'          => htmlspecialchars($content, ENT_NOQUOTES),
-            'submitContent' => htmlspecialchars($submitContent, ENT_NOQUOTES),
-            'title'         => htmlspecialchars($this->getModuleTitle(false), ENT_NOQUOTES),
-            'script'        => htmlspecialchars($JS ,ENT_NOQUOTES) . $this->errorScript,
-         ));
+        $this->sendJsonOutput($content, $submitContent,$JS, $encodeOutput);
     }
 
     private function getEnclosureOptions($enclosure)

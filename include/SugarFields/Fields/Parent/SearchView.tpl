@@ -85,6 +85,17 @@ function changeParentQS(field) {
     }
     enableQS(false);
 }}
+YAHOO.util.Event.onContentReady(
+{/literal}
+"{{sugarvar key='name'}}"
+{literal}
+, function() {
+    changeParentQS(
+{/literal}
+"{{sugarvar key='name'}}"
+{literal}
+    );
+});
 </script>
 {{$displayParams.disabled_parent_types}}
 {/literal}

@@ -94,20 +94,19 @@ var mySugarLoader = new YAHOO.util.YUILoader({
 		var dashletIds = {$dashletIds};
 
 		{if !$lock_homepage}
-		{literal}
-		for(i in dashletIds) {
-			SUGAR.mySugar.homepage_dd[j] = new ygDDList('dashlet_' + dashletIds[i]);
-			SUGAR.mySugar.homepage_dd[j].setHandleElId('dashlet_header_' + dashletIds[i]);
-			SUGAR.mySugar.homepage_dd[j].onMouseDown = SUGAR.mySugar.onDrag;
-			SUGAR.mySugar.homepage_dd[j].afterEndDrag = SUGAR.mySugar.onDrop;
-			j++;
-		}
-		for(var wp = 0; wp <= {/literal}{$hiddenCounter}{literal}; wp++) {
-			SUGAR.mySugar.homepage_dd[j++] = new ygDDListBoundary('page_'+activePage+'_hidden' + wp);
-		}
-
-		YAHOO.util.DDM.mode = 1;
-		{/literal}
+			for(i in dashletIds) {ldelim}
+				SUGAR.mySugar.homepage_dd[j] = new ygDDList('dashlet_' + dashletIds[i]);
+				SUGAR.mySugar.homepage_dd[j].setHandleElId('dashlet_header_' + dashletIds[i]);
+				SUGAR.mySugar.homepage_dd[j].onMouseDown = SUGAR.mySugar.onDrag;
+				SUGAR.mySugar.homepage_dd[j].afterEndDrag = SUGAR.mySugar.onDrop;
+				j++;
+			{rdelim}
+			{if $hiddenCounter > 0}
+			for(var wp = 0; wp <= {$hiddenCounter}; wp++) {ldelim}
+				SUGAR.mySugar.homepage_dd[j++] = new ygDDListBoundary('page_'+activePage+'_hidden' + wp);
+			{rdelim}
+			{/if}
+			YAHOO.util.DDM.mode = 1;
 		{/if}
 		{literal}
 		SUGAR.mySugar.renderDashletsDialog();

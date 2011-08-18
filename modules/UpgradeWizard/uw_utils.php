@@ -595,7 +595,7 @@ function deleteCache(){
 		$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'modules',$allModFiles,true);
 		foreach($allModFiles as $file)
 		{
-            if(file_exists($file)) {
+            if(is_file($file)) {
 	       		  unlink($file);
                }
 	    }

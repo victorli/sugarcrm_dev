@@ -67,7 +67,7 @@ abstract class DBHelper
     /**
      * Maximum length of identifiers
      */
-    protected static $maxNameLengths;
+    protected $maxNameLengths;
 
     /**
 	 * Generates sql for create table statement for a bean.
@@ -558,6 +558,20 @@ abstract class DBHelper
         return null;
     }
 
+    protected function getDefault($fieldDef, $type) {
+        if (isset($fieldDef['default']) && strlen($fieldDef['default']) > 0) {
+            $default = " DEFAULT '".$fieldDef['default']."'";
+        }
+        elseif (!isset($default) && $type == 'bool') {
+            $default = " DEFAULT 0 ";
+        }
+        else {
+            $default = '';
+        }
+
+        return $default;
+    }
+
     /**
      * Returns the defintion for a single column
      *
@@ -603,12 +617,7 @@ abstract class DBHelper
        }
 
 
-        if (isset($fieldDef['default']) && strlen($fieldDef['default']) > 0)
-            $default = " DEFAULT '".$fieldDef['default']."'";
-        elseif (!isset($default) && $type == 'bool')
-            $default = " DEFAULT 0 ";
-        elseif (!isset($default))
-            $default = '';
+       $default = $this->getDefault($fieldDef, $type);
 
         $auto_increment = '';
         if(!empty($fieldDef['auto_increment']) && $fieldDef['auto_increment'])
@@ -987,14 +996,14 @@ abstract class DBHelper
      * @param string $ensureUnique
      * @return string Valid column name trimmed to right length and with invalid characters removed
      */
-     public static function getValidDBName ($name, $ensureUnique = false, $type = 'column')
+     public function getValidDBName ($name, $ensureUnique = false, $type = 'column', $force = false)
     {
         if(is_array($name))
         {
             $result = array();
             foreach($name as $field)
             {
-                $result[] = self::getValidDBName($field, $ensureUnique, $type);
+                $result[] = $this->getValidDBName($field, $ensureUnique, $type);
             }
         }else
         {
@@ -1002,8 +1011,8 @@ abstract class DBHelper
             $name = preg_replace ( '/[^\w-]+/i', '', $name ) ;
             $len = strlen ( $name ) ;
             $result = $name;
-            $maxLen = empty(self::$maxNameLengths[$type]) ? self::$maxNameLengths[$type]['column'] : self::$maxNameLengths[$type];
-            if ($len <= $maxLen)
+            $maxLen = empty($this->maxNameLengths[$type]) ? $this->maxNameLengths[$type]['column'] : $this->maxNameLengths[$type];
+            if ($len <= $maxLen && !$force)
             {
                 return strtolower($name);
             }

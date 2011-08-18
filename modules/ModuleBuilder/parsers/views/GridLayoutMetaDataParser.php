@@ -806,6 +806,13 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
         
         return $ret;
     }
+
+    /**
+     * @return Array fields in the given panel
+     */
+    public function getFieldsInPanel($targetPanel) {
+        return iterator_to_array(new RecursiveIteratorIterator(new RecursiveArrayIterator($this->_viewdefs['panels'][$targetPanel])));
+    }
 }
 
 ?>

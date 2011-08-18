@@ -206,7 +206,7 @@ $mod_strings = array (
 
 	'LBL_CASES_SUBPANEL_TITLE' => 'Cases',
 	'LBL_BUGS_SUBPANEL_TITLE' => 'Bugs',
-	'LBL_PROJECTS_SUBPANEL_TITLE' => 'Projects',	
+	'LBL_PROJECTS_SUBPANEL_TITLE' => 'Projects',
 	'LBL_TARGET_OF_CAMPAIGNS' => 'Campaigns (Target of) :',
 	'LBL_CAMPAIGNS'	=>	'Campaigns',
 	'LBL_CAMPAIGN_LIST_SUBPANEL_TITLE'=>'Campaigns',
@@ -233,6 +233,7 @@ $mod_strings = array (
     'LBL_EXPORT_ASSIGNED_USER_ID' => 'Assigned User ID',
     'LBL_EXPORT_MODIFIED_USER_ID' => 'Modified By ID',
     'LBL_EXPORT_CREATED_BY' => 'Created By ID',
-
+    // SNIP
+    'LBL_CONTACT_HISTORY_SUBPANEL_TITLE' => 'Related Contacts\' Emails',
 )
 ?>

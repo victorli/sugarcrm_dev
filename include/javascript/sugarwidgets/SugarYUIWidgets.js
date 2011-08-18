@@ -59,7 +59,9 @@ return false;var target=Event.getTarget(e);return(this.isValidHandleChild(target
 continue;if(targetTable.getContainerEl().id==id){if(targetTable!=this.newTable){this.newIndex=targetTable.getRecordSet().getLength()-1;var destEl=Dom.get(targetTable.getLastTrEl());destEl.parentNode.insertBefore(this.getEl(),destEl);}
 this.newTable=targetTable
 return true;}}
-if(this.newTable&&this.newTable.getRecord(id)){var targetRow=this.newTable.getRecord(id);var destEl=Dom.get(id);destEl.parentNode.insertBefore(this.getEl(),destEl);this.newIndex=this.newTable.getRecordIndex(targetRow);}},endDrag:function(){if(this.newTable!=null&&this.newIndex!=null){this.getEl().style.display="none";this.table.appendChild(this.getEl());this.newTable.addRow(this.row.getData(),this.newIndex);this.ddtable.deleteRow(this.row);this.ddtable.render();}
+if(this.newTable&&this.newTable.getRecord(id)){var targetRow=this.newTable.getRecord(id);var destEl=Dom.get(id);destEl.parentNode.insertBefore(this.getEl(),destEl);this.newIndex=this.newTable.getRecordIndex(targetRow);}},endDrag:function(){if(this.newTable!=null&&this.newIndex!=null){this.getEl().style.display="none";this.table.appendChild(this.getEl());this.newTable.addRow(this.row.getData(),this.newIndex);try{this.ddtable.deleteRow(this.row);}catch(e){if(typeof(console)!="undefined"&&console.log)
+{console.log(e);}}
+this.ddtable.render();}
 this.newTable=this.newIndex=null
 var clickEl=this.getEl();Dom.setStyle(clickEl,"opacity","");}});sw.AsyncPanel=function(el,params){if(params)
 sw.AsyncPanel.superclass.constructor.call(this,el,params);else

@@ -490,9 +490,9 @@ SUGAR.subpanelUtils = function() {
 		sendAndRetrieve: function(theForm, theDiv, loadingStr) {
 			function success(data) {
 				var theDivObj = document.getElementById(theDiv),
-                    dataToDOMAvail = false,
                     divName = theDiv + '_newDiv',
                     form_el;
+                SUGAR.subpanelUtils.dataToDOMAvail = false;
 
                 // Check if preview subpanel form exists, remove if it does.
                 SUGAR.subpanelUtils.removeSubPanel();
@@ -500,7 +500,7 @@ SUGAR.subpanelUtils = function() {
 				subpanelContents[theDiv] = {};
 				subpanelContents[theDiv]['list'] = theDivObj;
 				subpanelContents[theDiv]['newDiv'] = document.createElement('div');
-				subpanelContents[theDiv]['newDiv'].innerHTML = '<script type="text/javascript">dataToDOMAvail=true;</script>' + data.responseText;
+				subpanelContents[theDiv]['newDiv'].innerHTML = '<script type="text/javascript">SUGAR.subpanelUtils.dataToDOMAvail=true;</script>' + data.responseText;
 				subpanelContents[theDiv]['newDiv'].id = divName;
 				subpanelContents[theDiv]['newDiv'].className = 'quickcreate';
 
@@ -512,7 +512,7 @@ SUGAR.subpanelUtils = function() {
 				theDivObj.parentNode.insertBefore(subpanelContents[theDiv]['newDiv'], theDivObj);
                 currentPanelDiv = divName;
 
-                if (!dataToDOMAvail) {
+                if (!SUGAR.subpanelUtils.dataToDOMAvail) {
 					SUGAR.util.evalScript(data.responseText);
 				}
 

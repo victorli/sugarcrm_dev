@@ -101,6 +101,30 @@ class ImportView extends SugarView
  	}
 
     /**
+     * Send our output to the importer controller.
+     * 
+     * @param string $html
+     * @param string $submitContent
+     * @param string $script
+     * @param bool $encode
+     * @return void
+     */
+    protected function sendJsonOutput($html = "", $submitContent = "", $script = "", $encode = FALSE)
+    {
+        $title = $this->getModuleTitle(false);
+        $out = array(
+            'html'          => $html,
+            'submitContent' => $submitContent,
+            'title'         => $title,
+            'script'        => $script);
+
+        if($encode){
+            array_walk($out, create_function('&$val', '$val = htmlspecialchars($val,ENT_NOQUOTES);'));
+        }
+        echo json_encode($out);
+    }
+
+    /**
 	 * @see SugarView::_getModuleTitleParams()
 	 */
 	protected function _getModuleTitleParams($browserTitle = false)

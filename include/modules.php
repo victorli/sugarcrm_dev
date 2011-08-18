@@ -65,8 +65,6 @@ $moduleList[] = 'Project';
 $moduleList[] = 'Bugs';
 
 
-
-
 // this list defines all of the module names and bean names in the app
 // to create a new module's bean class, add the bean definition here
 $beanList = array();

@@ -55,7 +55,7 @@ class MssqlHelper extends DBHelper
     /**
      * Maximum length of identifiers
      */
-    protected static $maxNameLengths = array(
+    protected $maxNameLengths = array(
         'table' => 128,
         'column' => 128,
         'index' => 128,

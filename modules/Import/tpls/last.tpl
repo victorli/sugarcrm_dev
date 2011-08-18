@@ -41,7 +41,7 @@
 <style>
 div.resultsTable {
     overflow: auto;
-    width: 820px;
+    width: 1056px;
     padding-top: 20px;
     position: relative;
 }
@@ -87,8 +87,8 @@ div.resultsTable {
                 </div>
                 <div class="yui-bd">
                     <ul class="subpanelTablist" id="tabList">
-                        <li id="pageNum_0" class="active" >
-                            <a id="pageNum_0_anchor" class="current" href="javascript:SUGAR.IV.togglePages('0');">
+                        <li id="pageNumIW_0" class="active" >
+                            <a id="pageNumIW_0_anchor" class="current" href="javascript:SUGAR.IV.togglePages('0');">
                             <span id="pageNum_0_input_span" style="display:none;">
                             <input type="hidden" id="pageNum_0_name_hidden_input" value="{$pageData.pageTitle}"/>
                             <input type="text" id="pageNum_0_name_input" value="Testing" size="10"/>
@@ -98,8 +98,8 @@ div.resultsTable {
                             </span>
                             </a>
                         </li>
-                        <li id="pageNum_1" >
-                            <a id="pageNum_1_anchor" class="" href="javascript:SUGAR.IV.togglePages('1');">
+                        <li id="pageNumIW_1" >
+                            <a id="pageNumIW_1_anchor" class="" href="javascript:SUGAR.IV.togglePages('1');">
                             <span id="pageNum_1_input_span" style="display:none;">
                             <input type="hidden" id="pageNum_1_name_hidden_input" value="{$pageData.pageTitle}"/>
                             <input type="text" id="pageNum_1_name_input" value="Testing" size="10"/>
@@ -109,8 +109,8 @@ div.resultsTable {
                             </span>
                             </a>
                         </li>
-                        <li id="pageNum_2" >
-                            <a id="pageNum_2_anchor" class="" href="javascript:SUGAR.IV.togglePages('2');">
+                        <li id="pageNumIW_2" >
+                            <a id="pageNumIW_2_anchor" class="" href="javascript:SUGAR.IV.togglePages('2');">
                             <span id="pageNum_2_input_span" style="display:none;">
                             <input type="hidden" id="pageNum_2_name_hidden_input" value="{$pageData.pageTitle}"/>
                             <input type="text" id="pageNum_2_name_input" value="Testing" size="10" />
@@ -134,8 +134,8 @@ div.resultsTable {
 </table>
 
 <div style='width:100%'>
-    <div id="pageNum_0_div">{$RESULTS_TABLE}</div>
-    <div id="pageNum_1_div" style="display:none;" ><br/>
+    <div id="pageNumIW_0_div">{$RESULTS_TABLE}</div>
+    <div id="pageNumIW_1_div" style="display:none;" ><br/>
         {if $dupeCount > 0}
             <a href ="{$dupeFile}" target='_blank'>{$MOD.LNK_DUPLICATE_LIST}</a><br />
         {/if}
@@ -145,7 +145,7 @@ div.resultsTable {
             {$DUP_TABLE}
         </div>
     </div>
-    <div id="pageNum_2_div" style="display: none;" ><br/>
+    <div id="pageNumIW_2_div" style="display: none;" ><br/>
         {$MOD.LBL_ERROR_HELP}
         {if $errorCount > 0}
             <br/><br/>

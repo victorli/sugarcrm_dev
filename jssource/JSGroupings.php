@@ -56,6 +56,10 @@
                 'include/javascript/quickCompose.js'    => 'include/javascript/sugar_grp1.js',
                 'include/javascript/importWizard.js'    => 'include/javascript/sugar_grp1.js',
                 'include/javascript/yui/build/yuiloader/yuiloader-min.js' => 'include/javascript/sugar_grp1.js',
+                //HTML decode
+                'include/javascript/phpjs/license.js' => 'include/javascript/sugar_grp1.js',
+                'include/javascript/phpjs/get_html_translation_table.js' => 'include/javascript/sugar_grp1.js',
+                'include/javascript/phpjs/html_entity_decode.js' => 'include/javascript/sugar_grp1.js',
             ),
 
             $sugar_grp1_yui = array(
@@ -96,6 +100,8 @@
 			'include/javascript/yui/build/button/button-min.js'         => 'include/javascript/sugar_grp_yui_widgets.js',
             'include/javascript/yui/build/calendar/calendar-min.js'     => 'include/javascript/sugar_grp_yui_widgets.js',
 			'include/javascript/sugarwidgets/SugarYUIWidgets.js'        => 'include/javascript/sugar_grp_yui_widgets.js',
+            // Include any Sugar overrides done to YUI libs for bugfixes
+            'include/javascript/sugar_yui_overrides.js'   => 'include/javascript/sugar_grp_yui_widgets.js',
             ),
 
 			$sugar_grp_yui_widgets_css = array(

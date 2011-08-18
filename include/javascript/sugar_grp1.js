@@ -145,7 +145,7 @@ return false;return validate_form(formname,'');}
 function add_error_style(formname,input,txt,flash){if(typeof flash=="undefined")
 flash=true;try{inputHandle=typeof input=="object"?input:document.forms[formname][input];style=get_current_bgcolor(inputHandle);if(txt.substring(txt.length-1)==':')
 txt=txt.substring(0,txt.length-1)
-requiredTxt=SUGAR.language.get('app_strings','ERR_MISSING_REQUIRED_FIELDS');invalidTxt=SUGAR.language.get('app_strings','ERR_INVALID_VALUE');nomatchTxt=SUGAR.language.get('app_strings','ERR_SQS_NO_MATCH_FIELD');matchTxt=txt.replace(requiredTxt,'').replace(invalidTxt,'').replace(nomatchTxt,'');if(inputHandle.parentNode.innerHTML.search(matchTxt)==-1){errorTextNode=document.createElement('span');errorTextNode.className='required';errorTextNode.innerHTML='<br />'+txt;if(inputHandle.parentNode.className.indexOf('x-form-field-wrap')!=-1){inputHandle.parentNode.parentNode.appendChild(errorTextNode);}
+requiredTxt=SUGAR.language.get('app_strings','ERR_MISSING_REQUIRED_FIELDS');invalidTxt=SUGAR.language.get('app_strings','ERR_INVALID_VALUE');nomatchTxt=SUGAR.language.get('app_strings','ERR_SQS_NO_MATCH_FIELD');matchTxt=txt.replace(requiredTxt,'').replace(invalidTxt,'').replace(nomatchTxt,'');if(inputHandle.parentNode.innerHTML.search(matchTxt)==-1){errorTextNode=document.createElement('div');errorTextNode.className='required';errorTextNode.innerHTML=txt;if(inputHandle.parentNode.className.indexOf('x-form-field-wrap')!=-1){inputHandle.parentNode.parentNode.appendChild(errorTextNode);}
 else{inputHandle.parentNode.appendChild(errorTextNode);}
 if(flash)
 inputHandle.style.backgroundColor="#FF0000";inputsWithErrors.push(inputHandle);}
@@ -302,7 +302,7 @@ else if(elemType=='hidden'){snapshotTxt=snapshotTxt+elem.value;}}
 return snapshotTxt;}
 function initEditView(theForm){if(SUGAR.util.ajaxCallInProgress()){window.setTimeout(function(){initEditView(theForm);},100);return;}
 if(theForm==null||theForm.id==null){return;}
-if(theForm.id=='popup_query_form'){return;}
+if(theForm.id=='popup_query_form'||theForm.id=='MassUpdate'){return;}
 if(typeof editViewSnapshots=='undefined'||editViewSnapshots==null){editViewSnapshots=new Object();}
 if(typeof SUGAR.loadedForms=='undefined'||SUGAR.loadedForms==null){SUGAR.loadedForms=new Object();}
 editViewSnapshots[theForm.id]=snapshotForm(theForm);SUGAR.loadedForms[theForm.id]=true;}
@@ -419,11 +419,11 @@ function formatNumber(n,num_grp_sep,dec_sep,round,precision){if(typeof num_grp_s
 if(round<=0){n[0]=Math.round(parseInt(n[0],10)*Math.pow(10,round))/ Math.pow(10,round);n[1]='';}}
 if(typeof precision!='undefined'&&precision>=0){if(n.length>1&&typeof n[1]!='undefined')n[1]=n[1].substring(0,precision);else n[1]='';if(n[1].length<precision){for(var wp=n[1].length;wp<precision;wp++)n[1]+='0';}}
 regex=/(\d+)(\d{3})/;while(num_grp_sep!=''&&regex.test(n[0]))n[0]=n[0].toString().replace(regex,'$1'+num_grp_sep+'$2');return n[0]+(n.length>1&&n[1]!=''?dec_sep+n[1]:'');}
-SUGAR.ajaxStatusClass=function(){};SUGAR.ajaxStatusClass.prototype.statusDiv=null;SUGAR.ajaxStatusClass.prototype.oldOnScroll=null;SUGAR.ajaxStatusClass.prototype.shown=false;SUGAR.ajaxStatusClass.prototype.positionStatus=function(){this.statusDiv.style.top=document.body.scrollTop+8+'px';statusDivRegion=YAHOO.util.Dom.getRegion(this.statusDiv);statusDivWidth=statusDivRegion.right-statusDivRegion.left;this.statusDiv.style.left=YAHOO.util.Dom.getViewportWidth()/ 2-statusDivWidth / 2+'px';}
-SUGAR.ajaxStatusClass.prototype.createStatus=function(text){statusDiv=document.createElement('div');statusDiv.className='dataLabel';statusDiv.style.background='#ffffff';statusDiv.style.color='#c60c30';statusDiv.style.position='absolute';statusDiv.style.opacity=.8;statusDiv.style.filter='alpha(opacity=80)';statusDiv.id='ajaxStatusDiv';document.body.appendChild(statusDiv);this.statusDiv=document.getElementById('ajaxStatusDiv');}
+SUGAR.ajaxStatusClass=function(){};SUGAR.ajaxStatusClass.prototype.statusDiv=null;SUGAR.ajaxStatusClass.prototype.oldOnScroll=null;SUGAR.ajaxStatusClass.prototype.shown=false;SUGAR.ajaxStatusClass.prototype.positionStatus=function(){statusDivRegion=YAHOO.util.Dom.getRegion(this.statusDiv);statusDivWidth=statusDivRegion.right-statusDivRegion.left;this.statusDiv.style.left=YAHOO.util.Dom.getViewportWidth()/ 2-statusDivWidth / 2+'px';}
+SUGAR.ajaxStatusClass.prototype.createStatus=function(text){statusDiv=document.createElement('div');statusDiv.className='dataLabel';statusDiv.id='ajaxStatusDiv';document.body.appendChild(statusDiv);this.statusDiv=document.getElementById('ajaxStatusDiv');}
 SUGAR.ajaxStatusClass.prototype.showStatus=function(text){if(!this.statusDiv){this.createStatus(text);}
 else{this.statusDiv.style.display='';}
-this.statusDiv.style.zIndex=20;this.statusDiv.innerHTML='&nbsp;<b>'+text+'</b>&nbsp;';this.positionStatus();if(!this.shown){this.shown=true;this.statusDiv.style.display='';if(window.onscroll)this.oldOnScroll=window.onscroll;window.onscroll=this.positionStatus;}}
+this.statusDiv.innerHTML='&nbsp;<b>'+text+'</b>&nbsp;';this.positionStatus();if(!this.shown){this.shown=true;this.statusDiv.style.display='';if(window.onscroll)this.oldOnScroll=window.onscroll;window.onscroll=this.positionStatus;}}
 SUGAR.ajaxStatusClass.prototype.hideStatus=function(text){if(!this.shown)return;this.shown=false;if(this.oldOnScroll)window.onscroll=this.oldOnScroll;else window.onscroll='';this.statusDiv.style.display='none';}
 SUGAR.ajaxStatusClass.prototype.flashStatus=function(text,time){this.showStatus(text);window.setTimeout('ajaxStatus.hideStatus();',time);}
 var ajaxStatus=new SUGAR.ajaxStatusClass();SUGAR.unifiedSearchAdvanced=function(){var usa_div;var usa_img;var usa_open;var usa_content;var anim_open;var anim_close;return{init:function(){SUGAR.unifiedSearchAdvanced.usa_div=document.getElementById('unified_search_advanced_div');SUGAR.unifiedSearchAdvanced.usa_img=document.getElementById('unified_search_advanced_img');if(!SUGAR.unifiedSearchAdvanced.usa_div||!SUGAR.unifiedSearchAdvanced.usa_img)return;var attributes={height:{to:300}};SUGAR.unifiedSearchAdvanced.anim_open=new YAHOO.util.Anim('unified_search_advanced_div',attributes);SUGAR.unifiedSearchAdvanced.anim_open.duration=0.75;SUGAR.unifiedSearchAdvanced.anim_close=new YAHOO.util.Anim('unified_search_advanced_div',{height:{to:0}});SUGAR.unifiedSearchAdvanced.anim_close.duration=0.75;SUGAR.unifiedSearchAdvanced.usa_img._x=YAHOO.util.Dom.getX(SUGAR.unifiedSearchAdvanced.usa_img);SUGAR.unifiedSearchAdvanced.usa_img._y=YAHOO.util.Dom.getY(SUGAR.unifiedSearchAdvanced.usa_img);SUGAR.unifiedSearchAdvanced.usa_open=false;SUGAR.unifiedSearchAdvanced.usa_content=null;YAHOO.util.Event.addListener('unified_search_advanced_img','click',SUGAR.unifiedSearchAdvanced.get_content);},get_content:function(e)
@@ -617,7 +617,7 @@ return false;},isLoginPage:function(content){if(SUGAR.util.isPackageManager()){r
 var loginPageStart="<!DOCTYPE";if(content.substr(0,loginPageStart.length)==loginPageStart&&content.indexOf("<html>")!=-1&&content.indexOf("login_module")!=-1){window.location.href=window.location.protocol+window.location.pathname;return true;}},isPackageManager:function(){if(typeof(document.the_form)!='undefined'&&typeof(document.the_form.language_pack_escaped)!='undefined'){return true;}else{return false;}},ajaxCallInProgress:function(){return SUGAR_callsInProgress!=0;},callOnChangeListers:function(field){var listeners=YAHOO.util.Event.getListeners(field,'change');if(listeners!=null){for(var i=0;i<listeners.length;i++){var l=listeners[i];l.fn.call(l.scope?l.scope:this,l.obj);}}},closeActivityPanel:{show:function(module,id,new_status,viewType,parentContainerId){if(SUGAR.util.closeActivityPanel.panel)
 SUGAR.util.closeActivityPanel.panel.destroy();var singleModule=SUGAR.language.get("app_list_strings","moduleListSingular")[module];singleModule=typeof(singleModule!='undefined')?singleModule.toLowerCase():'';var closeText=SUGAR.language.get("app_strings","LBL_CLOSE_ACTIVITY_CONFIRM").replace("#module#",singleModule);SUGAR.util.closeActivityPanel.panel=new YAHOO.widget.SimpleDialog("closeActivityDialog",{width:"300px",fixedcenter:true,visible:false,draggable:false,close:true,text:closeText,constraintoviewport:true,buttons:[{text:SUGAR.language.get("app_strings","LBL_EMAIL_OK"),handler:function(){if(SUGAR.util.closeActivityPanel.panel)
 SUGAR.util.closeActivityPanel.panel.hide();ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_SAVING'));var args="action=save&id="+id+"&record="+id+"&status="+new_status+"&module="+module;var callback={success:function(o)
-{window.location.reload(true);},argument:{'parentContainerId':parentContainerId}};YAHOO.util.Connect.asyncRequest('POST','index.php',callback,args);},isDefault:true},{text:SUGAR.language.get("app_strings","LBL_EMAIL_CANCEL"),handler:function(){SUGAR.util.closeActivityPanel.panel.hide();}}]});SUGAR.util.closeActivityPanel.panel.setHeader(SUGAR.language.get("app_strings","LBL_CLOSE_ACTIVITY_HEADER"));SUGAR.util.closeActivityPanel.panel.render(document.body);SUGAR.util.closeActivityPanel.panel.show();}},setEmailPasswordDisplay:function(id,exists){link=document.getElementById(id+'_link');pwd=document.getElementById(id);if(!pwd||!link)return;if(exists){pwd.style.display='none';link.style.display='';}else{pwd.style.display='';link.style.display='none';}},setEmailPasswordEdit:function(id){link=document.getElementById(id+'_link');pwd=document.getElementById(id);if(!pwd||!link)return;pwd.style.display='';link.style.display='none';},validateFileExt:function(fileName,allowedTypes){var ext=fileName.split('.').pop();for(var i=allowedTypes.length;i>0;i--){if(ext===allowedTypes[i]){return true;}}
+{window.setTimeout("window.location.reload(true);",0);},argument:{'parentContainerId':parentContainerId}};YAHOO.util.Connect.asyncRequest('POST','index.php',callback,args);},isDefault:true},{text:SUGAR.language.get("app_strings","LBL_EMAIL_CANCEL"),handler:function(){SUGAR.util.closeActivityPanel.panel.hide();}}]});SUGAR.util.closeActivityPanel.panel.setHeader(SUGAR.language.get("app_strings","LBL_CLOSE_ACTIVITY_HEADER"));SUGAR.util.closeActivityPanel.panel.render(document.body);SUGAR.util.closeActivityPanel.panel.show();}},setEmailPasswordDisplay:function(id,exists){link=document.getElementById(id+'_link');pwd=document.getElementById(id);if(!pwd||!link)return;if(exists){pwd.style.display='none';link.style.display='';}else{pwd.style.display='';link.style.display='none';}},setEmailPasswordEdit:function(id){link=document.getElementById(id+'_link');pwd=document.getElementById(id);if(!pwd||!link)return;pwd.style.display='';link.style.display='none';},validateFileExt:function(fileName,allowedTypes){var ext=fileName.split('.').pop();for(var i=allowedTypes.length;i>0;i--){if(ext===allowedTypes[i]){return true;}}
 return false;},arrayIndexOf:function(arr,val,start){if(typeof arr.indexOf=="function")
 return arr.indexOf(val,start);for(var i=(start||0),j=arr.length;i<j;i++){if(arr[i]===val){return i;}}
 return-1;}});SUGAR.clearRelateField=function(form,name,id)
@@ -667,12 +667,12 @@ return final_arr;}
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by SugarCRM".
  ********************************************************************************/
-SUGAR.ajaxUI={callback:function(o)
+SUGAR.ajaxUI={loadingWindow:false,callback:function(o)
 {var cont;if(typeof window.onbeforeunload=="function")
-window.onbeforeunload=null;scroll(0,0);try{var r=YAHOO.lang.JSON.parse(o.responseText);cont=r.content;if(r.moduleList)
+window.onbeforeunload=null;scroll(0,0);ajaxStatus.hideStatus();try{var r=YAHOO.lang.JSON.parse(o.responseText);cont=r.content;if(r.moduleList)
 {SUGAR.themes.setModuleTabs(r.moduleList);}
 if(r.title)
-{document.title=r.title.replace(/&raquo;/g,'>').replace(/&nbsp;/g,' ');}
+{document.title=html_entity_decode(r.title);}
 if(r.action)
 {action_sugar_grp1=r.action;}
 var c=document.getElementById("content");c.innerHTML=cont;SUGAR.util.evalScript(cont);if(typeof(r.responseTime)!='undefined'){var rt=document.getElementById('responseTime');if(rt!=null){rt.innerHTML=r.responseTime;}}}catch(e){if(!SUGAR.ajaxUI.errorPanel){SUGAR.ajaxUI.errorPanel=new YAHOO.widget.Panel("ajaxUIErrorPanel",{modal:false,visible:true,constraintoviewport:true,width:"800px",height:"600px",close:true});}
@@ -693,10 +693,10 @@ if(ui.lastCall&&con.isCallInProgress(ui.lastCall)){con.abort(ui.lastCall);}
 var mRegex=/module=([^&]*)/.exec(url);var module=mRegex?mRegex[1]:false;if(!ui.canAjaxLoadModule(module)){window.location=url;return;}
 ui.lastURL=url;ui.cleanGlobals();var loadLanguageJS='';if(module&&typeof(SUGAR.language.languages[module])=='undefined'){loadLanguageJS='&loadLanguageJS=1';}
 if(!inAjaxUI)
-window.location="index.php?action=ajaxui#ajaxUILoc="+encodeURIComponent(url);else{ui.lastCall=YAHOO.util.Connect.asyncRequest('GET',url+'&ajax_load=1'+loadLanguageJS,{success:SUGAR.ajaxUI.callback});}}},submitForm:function(formname,params)
+window.location="index.php?action=ajaxui#ajaxUILoc="+encodeURIComponent(url);else{ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_LOADING'));ui.lastCall=YAHOO.util.Connect.asyncRequest('GET',url+'&ajax_load=1'+loadLanguageJS,{success:SUGAR.ajaxUI.callback});}}},submitForm:function(formname,params)
 {var con=YAHOO.util.Connect,SA=SUGAR.ajaxUI;if(SA.lastCall&&con.isCallInProgress(SA.lastCall)){con.abort(SA.lastCall);}
 SA.cleanGlobals();var form=YAHOO.util.Dom.get(formname)||document.forms[formname];if(SA.canAjaxLoadModule(form.module.value)&&typeof(YAHOO.util.Selector.query("input[type=file]",form)[0])=="undefined"&&/action=ajaxui/.exec(window.location))
-{var string=con.setForm(form);var baseUrl="index.php?action=ajaxui#ajaxUILoc=";SA.lastURL="";if(string.length>200)
+{var string=con.setForm(form);var baseUrl="index.php?action=ajaxui#ajaxUILoc=";SA.lastURL="";ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_LOADING'));if(string.length>200)
 {con.asyncRequest('POST','index.php?ajax_load=1',{success:SA.callback});window.location=baseUrl;}else{con.resetFormState();window.location=baseUrl+encodeURIComponent("index.php?"+string);}
 return true;}else{form.submit();return false;}},cleanGlobals:function()
 {sqs_objects={};QSProcessedFieldsArray={};collection={};if(SUGAR.EmailAddressWidget){SUGAR.EmailAddressWidget.instances={};SUGAR.EmailAddressWidget.count={};}
@@ -995,7 +995,7 @@ this.initUI(o);},loadResources:function(o)
  ********************************************************************************/
 SUGAR.importWizard={};SUGAR.importWizard=function(){return{renderDialog:function(importModuleVAR,actionVar,sourceVar){var oBody=document.getElementsByTagName('BODY').item(0);if(!document.getElementById("importWizardDialog")){var importWizardDialogDiv=document.createElement("div");importWizardDialogDiv.id="importWizardDialog";importWizardDialogDiv.style.display="none";importWizardDialogDiv.className="dashletPanelMenu wizard import";importWizardDialogDiv.innerHTML='<div class="hd"><a href="javascript:void(0)" onClick="javascript:SUGAR.importWizard.closeDialog();"><div class="container-close">&nbsp;</div></a><div class="title" id="importWizardDialogTitle"></div></div><div class="bd"><div class="screen" id="importWizardDialogDiv"></div><div id="submitDiv"></div></div>';oBody.appendChild(importWizardDialogDiv);}
 YAHOO.util.Event.onContentReady("importWizardDialog",function()
-{SUGAR.importWizard.dialog=new YAHOO.widget.Dialog("importWizardDialog",{width:"950px",height:"600px",fixedcenter:true,draggable:false,visible:false,modal:true,close:false});var oHead=document.getElementsByTagName('HEAD').item(0);if(!document.getElementById("sugar_grp_yui_widgets")){var oScript=document.createElement("script");oScript.type="text/javascript";oScript.id="sugar_grp_yui_widgets";oScript.src="include/javascript/sugar_grp_yui_widgets.js";oHead.appendChild(oScript);}
+{SUGAR.importWizard.dialog=new YAHOO.widget.Dialog("importWizardDialog",{width:"950px",height:"565px",fixedcenter:true,draggable:false,visible:false,modal:true,close:false});var oHead=document.getElementsByTagName('HEAD').item(0);if(!document.getElementById("sugar_grp_yui_widgets")){var oScript=document.createElement("script");oScript.type="text/javascript";oScript.id="sugar_grp_yui_widgets";oScript.src="include/javascript/sugar_grp_yui_widgets.js";oHead.appendChild(oScript);}
 if(!document.getElementById("sugar_grp_overlib")){var oScriptOverLib=document.createElement("script");oScriptOverLib.type="text/javascript";oScriptOverLib.id="sugar_grp_overlib";oScriptOverLib.src="include/javascript/sugar_grp_overlib.js";oHead.appendChild(oScriptOverLib);var overDiv=document.createElement("div");overDiv.id="overDiv";overDiv.style.position="absolute"
 overDiv.style.visibility="hidden";overDiv.style.zIndex="1000";overDiv.style.maxWidth="400px";var parentEl=oBody.firstChild;parentEl.parentNode.insertBefore(overDiv,parentEl);}
 var success=function(data){var response=YAHOO.lang.JSON.parse(data.responseText);importWizardDialogDiv=document.getElementById('importWizardDialogDiv');var submitDiv=document.getElementById('submitDiv');var importWizardDialogTitle=document.getElementById('importWizardDialogTitle');importWizardDialogDiv.innerHTML=response['html'];importWizardDialogTitle.innerHTML=response['title'];submitDiv.innerHTML=response['submitContent'];document.getElementById('importWizardDialog').style.display='';SUGAR.importWizard.dialog.render();SUGAR.importWizard.dialog.show();eval(response['script']);}
@@ -1014,4 +1014,386 @@ if(typeof YAHOO=="undefined"||!YAHOO){var YAHOO={};}YAHOO.namespace=function(){v
 i<a.length;i=i+1){o[a[i]]=true;}}},keys:function(o,ordered){var a=[],i;for(i in o){if(lang.hasOwnProperty(o,i)){a.push(i);}}return a;}},ArrayUtil:{appendArray:function(a1,a2){Array.prototype.push.apply(a1,a2);},indexOf:function(a,val){for(var i=0;i<a.length;i=i+1){if(a[i]===val){return i;}}return -1;},toObject:function(a){var o={};for(var i=0;i<a.length;i=i+1){o[a[i]]=true;}return o;},uniq:function(a){return YUI.ObjectUtil.keys(YUI.ArrayUtil.toObject(a));}}};YAHOO.util.YUILoader=function(o){this._internalCallback=null;this._useYahooListener=false;this.onSuccess=null;this.onFailure=Y.log;this.onProgress=null;this.onTimeout=null;this.scope=this;this.data=null;this.insertBefore=null;this.charset=null;this.varName=null;this.base=YUI.info.base;this.comboBase=YUI.info.comboBase;this.combine=false;this.root=YUI.info.root;this.timeout=0;this.ignore=null;this.force=null;this.allowRollup=true;this.filter=null;this.required={};this.moduleInfo=lang.merge(YUI.info.moduleInfo);this.rollups=null;this.loadOptional=false;this.sorted=[];this.loaded={};this.dirty=true;this.inserted={};var self=this;env.listeners.push(function(m){if(self._useYahooListener){self.loadNext(m.name);}});this.skin=lang.merge(YUI.info.skin);this._config(o);};Y.util.YUILoader.prototype={FILTERS:{RAW:{"searchExp":"-min\\.js","replaceStr":".js"},DEBUG:{"searchExp":"-min\\.js","replaceStr":"-debug.js"}},SKIN_PREFIX:"skin-",_config:function(o){if(o){for(var i in o){if(lang.hasOwnProperty(o,i)){if(i=="require"){this.require(o[i]);}else{this[i]=o[i];}}}}var f=this.filter;if(lang.isString(f)){f=f.toUpperCase();if(f==="DEBUG"){this.require("logger");}if(!Y.widget.LogWriter){Y.widget.LogWriter=function(){return Y;};}this.filter=this.FILTERS[f];}},addModule:function(o){if(!o||!o.name||!o.type||(!o.path&&!o.fullpath)){return false;}o.ext=("ext" in o)?o.ext:true;o.requires=o.requires||[];this.moduleInfo[o.name]=o;this.dirty=true;return true;},require:function(what){var a=(typeof what==="string")?arguments:what;this.dirty=true;YUI.ObjectUtil.appendArray(this.required,a);},_addSkin:function(skin,mod){var name=this.formatSkin(skin),info=this.moduleInfo,sinf=this.skin,ext=info[mod]&&info[mod].ext;if(!info[name]){this.addModule({"name":name,"type":"css","path":sinf.base+skin+"/"+sinf.path,"after":sinf.after,"rollup":sinf.rollup,"ext":ext});}if(mod){name=this.formatSkin(skin,mod);if(!info[name]){var mdef=info[mod],pkg=mdef.pkg||mod;this.addModule({"name":name,"type":"css","after":sinf.after,"path":pkg+"/"+sinf.base+skin+"/"+mod+".css","ext":ext});}}return name;},getRequires:function(mod){if(!mod){return[];}if(!this.dirty&&mod.expanded){return mod.expanded;}mod.requires=mod.requires||[];var i,d=[],r=mod.requires,o=mod.optional,info=this.moduleInfo,m;for(i=0;i<r.length;i=i+1){d.push(r[i]);m=info[r[i]];YUI.ArrayUtil.appendArray(d,this.getRequires(m));}if(o&&this.loadOptional){for(i=0;i<o.length;i=i+1){d.push(o[i]);YUI.ArrayUtil.appendArray(d,this.getRequires(info[o[i]]));}}mod.expanded=YUI.ArrayUtil.uniq(d);return mod.expanded;},getProvides:function(name,notMe){var addMe=!(notMe),ckey=(addMe)?PROV:SUPER,m=this.moduleInfo[name],o={};if(!m){return o;}if(m[ckey]){return m[ckey];}var s=m.supersedes,done={},me=this;var add=function(mm){if(!done[mm]){done[mm]=true;lang.augmentObject(o,me.getProvides(mm));}};if(s){for(var i=0;i<s.length;i=i+1){add(s[i]);}}m[SUPER]=o;m[PROV]=lang.merge(o);m[PROV][name]=true;return m[ckey];},calculate:function(o){if(o||this.dirty){this._config(o);this._setup();this._explode();if(this.allowRollup){this._rollup();}this._reduce();this._sort();this.dirty=false;}},_setup:function(){var info=this.moduleInfo,name,i,j;for(name in info){if(lang.hasOwnProperty(info,name)){var m=info[name];if(m&&m.skinnable){var o=this.skin.overrides,smod;if(o&&o[name]){for(i=0;i<o[name].length;i=i+1){smod=this._addSkin(o[name][i],name);}}else{smod=this._addSkin(this.skin.defaultSkin,name);}if(YUI.ArrayUtil.indexOf(m.requires,smod)==-1){m.requires.push(smod);}}}}var l=lang.merge(this.inserted);if(!this._sandbox){l=lang.merge(l,env.modules);}if(this.ignore){YUI.ObjectUtil.appendArray(l,this.ignore);}if(this.force){for(i=0;i<this.force.length;i=i+1){if(this.force[i] in l){delete l[this.force[i]];}}}for(j in l){if(lang.hasOwnProperty(l,j)){lang.augmentObject(l,this.getProvides(j));}}this.loaded=l;},_explode:function(){var r=this.required,i,mod;for(i in r){if(lang.hasOwnProperty(r,i)){mod=this.moduleInfo[i];if(mod){var req=this.getRequires(mod);if(req){YUI.ObjectUtil.appendArray(r,req);}}}}},_skin:function(){},formatSkin:function(skin,mod){var s=this.SKIN_PREFIX+skin;if(mod){s=s+"-"+mod;}return s;},parseSkin:function(mod){if(mod.indexOf(this.SKIN_PREFIX)===0){var a=mod.split("-");return{skin:a[1],module:a[2]};}return null;},_rollup:function(){var i,j,m,s,rollups={},r=this.required,roll,info=this.moduleInfo;if(this.dirty||!this.rollups){for(i in info){if(lang.hasOwnProperty(info,i)){m=info[i];if(m&&m.rollup){rollups[i]=m;}}}this.rollups=rollups;}for(;;){var rolled=false;for(i in rollups){if(!r[i]&&!this.loaded[i]){m=info[i];s=m.supersedes;roll=false;if(!m.rollup){continue;}var skin=(m.ext)?false:this.parseSkin(i),c=0;if(skin){for(j in r){if(lang.hasOwnProperty(r,j)){if(i!==j&&this.parseSkin(j)){c++;roll=(c>=m.rollup);if(roll){break;}}}}}else{for(j=0;j<s.length;j=j+1){if(this.loaded[s[j]]&&(!YUI.dupsAllowed[s[j]])){roll=false;break;}else{if(r[s[j]]){c++;roll=(c>=m.rollup);if(roll){break;}}}}}if(roll){r[i]=true;rolled=true;this.getRequires(m);}}}if(!rolled){break;}}},_reduce:function(){var i,j,s,m,r=this.required;for(i in r){if(i in this.loaded){delete r[i];}else{var skinDef=this.parseSkin(i);if(skinDef){if(!skinDef.module){var skin_pre=this.SKIN_PREFIX+skinDef.skin;for(j in r){if(lang.hasOwnProperty(r,j)){m=this.moduleInfo[j];var ext=m&&m.ext;if(!ext&&j!==i&&j.indexOf(skin_pre)>-1){delete r[j];}}}}}else{m=this.moduleInfo[i];s=m&&m.supersedes;if(s){for(j=0;j<s.length;j=j+1){if(s[j] in r){delete r[s[j]];}}}}}}},_onFailure:function(msg){YAHOO.log("Failure","info","loader");
 var f=this.onFailure;if(f){f.call(this.scope,{msg:"failure: "+msg,data:this.data,success:false});}},_onTimeout:function(){YAHOO.log("Timeout","info","loader");var f=this.onTimeout;if(f){f.call(this.scope,{msg:"timeout",data:this.data,success:false});}},_sort:function(){var s=[],info=this.moduleInfo,loaded=this.loaded,checkOptional=!this.loadOptional,me=this;var requires=function(aa,bb){var mm=info[aa];if(loaded[bb]||!mm){return false;}var ii,rr=mm.expanded,after=mm.after,other=info[bb],optional=mm.optional;if(rr&&YUI.ArrayUtil.indexOf(rr,bb)>-1){return true;}if(after&&YUI.ArrayUtil.indexOf(after,bb)>-1){return true;}if(checkOptional&&optional&&YUI.ArrayUtil.indexOf(optional,bb)>-1){return true;}var ss=info[bb]&&info[bb].supersedes;if(ss){for(ii=0;ii<ss.length;ii=ii+1){if(requires(aa,ss[ii])){return true;}}}if(mm.ext&&mm.type=="css"&&!other.ext&&other.type=="css"){return true;}return false;};for(var i in this.required){if(lang.hasOwnProperty(this.required,i)){s.push(i);}}var p=0;for(;;){var l=s.length,a,b,j,k,moved=false;for(j=p;j<l;j=j+1){a=s[j];for(k=j+1;k<l;k=k+1){if(requires(a,s[k])){b=s.splice(k,1);s.splice(j,0,b[0]);moved=true;break;}}if(moved){break;}else{p=p+1;}}if(!moved){break;}}this.sorted=s;},toString:function(){var o={type:"YUILoader",base:this.base,filter:this.filter,required:this.required,loaded:this.loaded,inserted:this.inserted};lang.dump(o,1);},_combine:function(){this._combining=[];var self=this,s=this.sorted,len=s.length,js=this.comboBase,css=this.comboBase,target,startLen=js.length,i,m,type=this.loadType;YAHOO.log("type "+type);for(i=0;i<len;i=i+1){m=this.moduleInfo[s[i]];if(m&&!m.ext&&(!type||type===m.type)){target=this.root+m.path;target+="&";if(m.type=="js"){js+=target;}else{css+=target;}this._combining.push(s[i]);}}if(this._combining.length){YAHOO.log("Attempting to combine: "+this._combining,"info","loader");var callback=function(o){var c=this._combining,len=c.length,i,m;for(i=0;i<len;i=i+1){this.inserted[c[i]]=true;}this.loadNext(o.data);},loadScript=function(){if(js.length>startLen){YAHOO.util.Get.script(self._filter(js),{data:self._loading,onSuccess:callback,onFailure:self._onFailure,onTimeout:self._onTimeout,insertBefore:self.insertBefore,charset:self.charset,timeout:self.timeout,scope:self});}else{this.loadNext();}};if(css.length>startLen){YAHOO.util.Get.css(this._filter(css),{data:this._loading,onSuccess:loadScript,onFailure:this._onFailure,onTimeout:this._onTimeout,insertBefore:this.insertBefore,charset:this.charset,timeout:this.timeout,scope:self});}else{loadScript();}return;}else{this.loadNext(this._loading);}},insert:function(o,type){this.calculate(o);this._loading=true;this.loadType=type;if(this.combine){return this._combine();}if(!type){var self=this;this._internalCallback=function(){self._internalCallback=null;self.insert(null,"js");};this.insert(null,"css");return;}this.loadNext();},sandbox:function(o,type){var self=this,success=function(o){var idx=o.argument[0],name=o.argument[2];self._scriptText[idx]=o.responseText;if(self.onProgress){self.onProgress.call(self.scope,{name:name,scriptText:o.responseText,xhrResponse:o,data:self.data});}self._loadCount++;if(self._loadCount>=self._stopCount){var v=self.varName||"YAHOO";var t="(function() {\n";var b="\nreturn "+v+";\n})();";var ref=eval(t+self._scriptText.join("\n")+b);self._pushEvents(ref);if(ref){self.onSuccess.call(self.scope,{reference:ref,data:self.data});}else{self._onFailure.call(self.varName+" reference failure");}}},failure=function(o){self.onFailure.call(self.scope,{msg:"XHR failure",xhrResponse:o,data:self.data});};self._config(o);if(!self.onSuccess){throw new Error("You must supply an onSuccess handler for your sandbox");}self._sandbox=true;if(!type||type!=="js"){self._internalCallback=function(){self._internalCallback=null;self.sandbox(null,"js");};self.insert(null,"css");return;}if(!util.Connect){var ld=new YAHOO.util.YUILoader();ld.insert({base:self.base,filter:self.filter,require:"connection",insertBefore:self.insertBefore,charset:self.charset,onSuccess:function(){self.sandbox(null,"js");},scope:self},"js");return;}self._scriptText=[];self._loadCount=0;self._stopCount=self.sorted.length;self._xhr=[];self.calculate();var s=self.sorted,l=s.length,i,m,url;for(i=0;i<l;i=i+1){m=self.moduleInfo[s[i]];if(!m){self._onFailure("undefined module "+m);for(var j=0;j<self._xhr.length;j=j+1){self._xhr[j].abort();}return;}if(m.type!=="js"){self._loadCount++;continue;}url=m.fullpath;url=(url)?self._filter(url):self._url(m.path);var xhrData={success:success,failure:failure,scope:self,argument:[i,url,s[i]]};self._xhr.push(util.Connect.asyncRequest("GET",url,xhrData));}},loadNext:function(mname){if(!this._loading){return;}var self=this,donext=function(o){self.loadNext(o.data);},successfn,s=this.sorted,len=s.length,i,fn,m,url;if(mname){if(mname!==this._loading){return;}this.inserted[mname]=true;if(this.onProgress){this.onProgress.call(this.scope,{name:mname,data:this.data});}}for(i=0;i<len;i=i+1){if(s[i] in this.inserted){continue;}if(s[i]===this._loading){return;}m=this.moduleInfo[s[i]];if(!m){this.onFailure.call(this.scope,{msg:"undefined module "+m,data:this.data});return;}if(!this.loadType||this.loadType===m.type){successfn=donext;this._loading=s[i];fn=(m.type==="css")?util.Get.css:util.Get.script;url=m.fullpath;url=(url)?this._filter(url):this._url(m.path);if(env.ua.webkit&&env.ua.webkit<420&&m.type==="js"&&!m.varName){successfn=null;this._useYahooListener=true;}fn(url,{data:s[i],onSuccess:successfn,onFailure:this._onFailure,onTimeout:this._onTimeout,insertBefore:this.insertBefore,charset:this.charset,timeout:this.timeout,varName:m.varName,scope:self});return;}}this._loading=null;if(this._internalCallback){var f=this._internalCallback;this._internalCallback=null;f.call(this);}else{if(this.onSuccess){this._pushEvents();this.onSuccess.call(this.scope,{data:this.data});}}},_pushEvents:function(ref){var r=ref||YAHOO;if(r.util&&r.util.Event){r.util.Event._load();}},_filter:function(str){var f=this.filter;return(f)?str.replace(new RegExp(f.searchExp,"g"),f.replaceStr):str;
 },_url:function(path){return this._filter((this.base||"")+path);}};})();YAHOO.register("yuiloader",YAHOO.util.YUILoader,{version:"2.9.0",build:"2800"});// End of File include/javascript/yui/build/yuiloader/yuiloader-min.js
+                                
+/*
+ * More info at: http://phpjs.org
+ *
+ * This is version: 3.25
+ * php.js is copyright 2011 Kevin van Zonneveld.
+ *
+ * Portions copyright Brett Zamir (http://brett-zamir.me), Kevin van Zonneveld
+ * (http://kevin.vanzonneveld.net), Onno Marsman, Theriault, Michael White
+ * (http://getsprink.com), Waldo Malqui Silva, Paulo Freitas, Jonas Raoni
+ * Soares Silva (http://www.jsfromhell.com), Jack, Philip Peterson, Legaev
+ * Andrey, Ates Goral (http://magnetiq.com), Ratheous, Alex, Rafa? Kukawski
+ * (http://blog.kukawski.pl), Martijn Wieringa, lmeyrick
+ * (https://sourceforge.net/projects/bcmath-js/), Nate, Enrique Gonzalez,
+ * Philippe Baumann, Webtoolkit.info (http://www.webtoolkit.info/), Jani
+ * Hartikainen, Ole Vrijenhoek, Ash Searle (http://hexmen.com/blog/), Carlos
+ * R. L. Rodrigues (http://www.jsfromhell.com), travc, Michael Grier,
+ * Erkekjetter, Johnny Mast (http://www.phpvrouwen.nl), Rafa? Kukawski
+ * (http://blog.kukawski.pl/), GeekFG (http://geekfg.blogspot.com), Andrea
+ * Giammarchi (http://webreflection.blogspot.com), WebDevHobo
+ * (http://webdevhobo.blogspot.com/), d3x, marrtins,
+ * http://stackoverflow.com/questions/57803/how-to-convert-decimal-to-hex-in-javascript,
+ * pilus, stag019, T.Wild, Martin (http://www.erlenwiese.de/), majak, Marc
+ * Palau, Mirek Slugen, Chris, Diplom@t (http://difane.com/), Breaking Par
+ * Consulting Inc
+ * (http://www.breakingpar.com/bkp/home.nsf/0/87256B280015193F87256CFB006C45F7),
+ * gettimeofday, Arpad Ray (mailto:arpad@php.net), Oleg Eremeev, Josh Fraser
+ * (http://onlineaspect.com/2007/06/08/auto-detect-a-time-zone-with-javascript/),
+ * Steve Hilder, mdsjack (http://www.mdsjack.bo.it), Kevin van Zonneveld
+ * (http://kevin.vanzonneveld.net/), gorthaur, Aman Gupta, Sakimori, Joris,
+ * Robin, Kankrelune (http://www.webfaktory.info/), Alfonso Jimenez
+ * (http://www.alfonsojimenez.com), David, Felix Geisendoerfer
+ * (http://www.debuggable.com/felix), Lars Fischer, Karol Kowalski, Imgen Tata
+ * (http://www.myipdf.com/), Steven Levithan (http://blog.stevenlevithan.com),
+ * Tim de Koning (http://www.kingsquare.nl), Dreamer, AJ, Paul Smith, KELAN,
+ * Pellentesque Malesuada, felix, Michael White, Mailfaker
+ * (http://www.weedem.fr/), Thunder.m, Tyler Akins (http://rumkin.com),
+ * saulius, Public Domain (http://www.json.org/json2.js), Caio Ariede
+ * (http://caioariede.com), Steve Clay, David James, madipta, Marco, Ole
+ * Vrijenhoek (http://www.nervous.nl/), class_exists, T. Wild, noname, Arno,
+ * Frank Forte, Francois, Scott Cariss, Slawomir Kaniecki, date, Itsacon
+ * (http://www.itsacon.net/), Billy, vlado houba, Jalal Berrami,
+ * ReverseSyntax, Mateusz "loonquawl" Zalega, john (http://www.jd-tech.net),
+ * mktime, Douglas Crockford (http://javascript.crockford.com), ger, Nick
+ * Kolosov (http://sammy.ru), Nathan, nobbler, Fox, marc andreu, Alex Wilson,
+ * Raphael (Ao RUDLER), Bayron Guevara, Adam Wallner
+ * (http://web2.bitbaro.hu/), paulo kuong, jmweb, Lincoln Ramsay, djmix,
+ * Pyerre, Jon Hohle, Thiago Mata (http://thiagomata.blog.com), lmeyrick
+ * (https://sourceforge.net/projects/bcmath-js/this.), Linuxworld, duncan,
+ * Gilbert, Sanjoy Roy, Shingo, sankai, Oskar Larsson Hšgfeldt
+ * (http://oskar-lh.name/), Denny Wardhana, 0m3r, Everlasto, Subhasis Deb,
+ * josh, jd, Pier Paolo Ramon (http://www.mastersoup.com/), P, merabi, Soren
+ * Hansen, EdorFaus, Eugene Bulkin (http://doubleaw.com/), Der Simon
+ * (http://innerdom.sourceforge.net/), echo is bad, JB, LH, kenneth, J A R,
+ * Marc Jansen, Stoyan Kyosev (http://www.svest.org/), Francesco, XoraX
+ * (http://www.xorax.info), Ozh, Brad Touesnard, MeEtc
+ * (http://yass.meetcweb.com), Peter-Paul Koch
+ * (http://www.quirksmode.org/js/beat.html), Olivier Louvignes
+ * (http://mg-crea.com/), T0bsn, Tim Wiel, Bryan Elliott, nord_ua, Martin, JT,
+ * David Randall, Thomas Beaucourt (http://www.webapp.fr), Tim de Koning,
+ * stensi, Pierre-Luc Paour, Kristof Coomans (SCK-CEN Belgian Nucleair
+ * Research Centre), Martin Pool, Kirk Strobeck, Rick Waldron, Brant Messenger
+ * (http://www.brantmessenger.com/), Devan Penner-Woelk, Saulo Vallory, Wagner
+ * B. Soares, Artur Tchernychev, Valentina De Rosa, Jason Wong
+ * (http://carrot.org/), Christoph, Daniel Esteban, strftime, Mick@el, rezna,
+ * Simon Willison (http://simonwillison.net), Anton Ongson, Gabriel Paderni,
+ * Marco van Oort, penutbutterjelly, Philipp Lenssen, Bjorn Roesbeke
+ * (http://www.bjornroesbeke.be/), Bug?, Eric Nagel, Tomasz Wesolowski,
+ * Evertjan Garretsen, Bobby Drake, Blues (http://tech.bluesmoon.info/), Luke
+ * Godfrey, Pul, uestla, Alan C, Ulrich, Rafal Kukawski, Yves Sucaet,
+ * sowberry, Norman "zEh" Fuchs, hitwork, Zahlii, johnrembo, Nick Callen,
+ * Steven Levithan (stevenlevithan.com), ejsanders, Scott Baker, Brian Tafoya
+ * (http://www.premasolutions.com/), Philippe Jausions
+ * (http://pear.php.net/user/jausions), Aidan Lister
+ * (http://aidanlister.com/), Rob, e-mike, HKM, ChaosNo1, metjay, strcasecmp,
+ * strcmp, Taras Bogach, jpfle, Alexander Ermolaev
+ * (http://snippets.dzone.com/user/AlexanderErmolaev), DxGx, kilops, Orlando,
+ * dptr1988, Le Torbi, James (http://www.james-bell.co.uk/), Pedro Tainha
+ * (http://www.pedrotainha.com), James, Arnout Kazemier
+ * (http://www.3rd-Eden.com), Chris McMacken, Yannoo, jakes, gabriel paderni,
+ * FGFEmperor, Greg Frazier, baris ozdil, 3D-GRAF, daniel airton wermann
+ * (http://wermann.com.br), Howard Yeend, Diogo Resende, Allan Jensen
+ * (http://www.winternet.no), Benjamin Lupton, Atli ?—r, Maximusya, davook,
+ * Tod Gentille, Ryan W Tenney (http://ryan.10e.us), Nathan Sepulveda, Cord,
+ * fearphage (http://http/my.opera.com/fearphage/), Victor, Rafa? Kukawski
+ * (http://kukawski.pl), Matteo, Manish, Matt Bradley, Riddler
+ * (http://www.frontierwebdev.com/), Alexander M Beedie, T.J. Leahy, Rafa?
+ * Kukawski, taith, Luis Salazar (http://www.freaky-media.com/), FremyCompany,
+ * Rival, Luke Smith (http://lucassmith.name), Andrej Pavlovic, Garagoth, Le
+ * Torbi (http://www.letorbi.de/), Dino, Josep Sanz (http://www.ws3.es/), rem,
+ * Russell Walker (http://www.nbill.co.uk/), Jamie Beck
+ * (http://www.terabit.ca/), setcookie, Michael, YUI Library:
+ * http://developer.yahoo.com/yui/docs/YAHOO.util.DateLocale.html, Blues at
+ * http://hacks.bluesmoon.info/strftime/strftime.js, Ben
+ * (http://benblume.co.uk/), DtTvB
+ * (http://dt.in.th/2008-09-16.string-length-in-bytes.html), Andreas, William,
+ * meo, incidence, Cagri Ekin, Amirouche, Amir Habibi
+ * (http://www.residence-mixte.com/), Kheang Hok Chin
+ * (http://www.distantia.ca/), Jay Klehr, Lorenzo Pisani, Tony, Yen-Wei Liu,
+ * Greenseed, mk.keck, Leslie Hoare, dude, booeyOH, Ben Bryan
+ *
+ * Dual licensed under the MIT (MIT-LICENSE.txt)
+ * and GPL (GPL-LICENSE.txt) licenses.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL KEVIN VAN ZONNEVELD BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+// End of File include/javascript/phpjs/license.js
+                                
+/*
+ * More info at: http://phpjs.org
+ *
+ * This is version: 3.25
+ * php.js is copyright 2011 Kevin van Zonneveld.
+ *
+ * Portions copyright Brett Zamir (http://brett-zamir.me), Kevin van Zonneveld
+ * (http://kevin.vanzonneveld.net), Onno Marsman, Theriault, Michael White
+ * (http://getsprink.com), Waldo Malqui Silva, Paulo Freitas, Jonas Raoni
+ * Soares Silva (http://www.jsfromhell.com), Jack, Philip Peterson, Legaev
+ * Andrey, Ates Goral (http://magnetiq.com), Ratheous, Alex, Rafa? Kukawski
+ * (http://blog.kukawski.pl), Martijn Wieringa, lmeyrick
+ * (https://sourceforge.net/projects/bcmath-js/), Nate, Enrique Gonzalez,
+ * Philippe Baumann, Webtoolkit.info (http://www.webtoolkit.info/), Jani
+ * Hartikainen, Ole Vrijenhoek, Ash Searle (http://hexmen.com/blog/), Carlos
+ * R. L. Rodrigues (http://www.jsfromhell.com), travc, Michael Grier,
+ * Erkekjetter, Johnny Mast (http://www.phpvrouwen.nl), Rafa? Kukawski
+ * (http://blog.kukawski.pl/), GeekFG (http://geekfg.blogspot.com), Andrea
+ * Giammarchi (http://webreflection.blogspot.com), WebDevHobo
+ * (http://webdevhobo.blogspot.com/), d3x, marrtins,
+ * http://stackoverflow.com/questions/57803/how-to-convert-decimal-to-hex-in-javascript,
+ * pilus, stag019, T.Wild, Martin (http://www.erlenwiese.de/), majak, Marc
+ * Palau, Mirek Slugen, Chris, Diplom@t (http://difane.com/), Breaking Par
+ * Consulting Inc
+ * (http://www.breakingpar.com/bkp/home.nsf/0/87256B280015193F87256CFB006C45F7),
+ * gettimeofday, Arpad Ray (mailto:arpad@php.net), Oleg Eremeev, Josh Fraser
+ * (http://onlineaspect.com/2007/06/08/auto-detect-a-time-zone-with-javascript/),
+ * Steve Hilder, mdsjack (http://www.mdsjack.bo.it), Kevin van Zonneveld
+ * (http://kevin.vanzonneveld.net/), gorthaur, Aman Gupta, Sakimori, Joris,
+ * Robin, Kankrelune (http://www.webfaktory.info/), Alfonso Jimenez
+ * (http://www.alfonsojimenez.com), David, Felix Geisendoerfer
+ * (http://www.debuggable.com/felix), Lars Fischer, Karol Kowalski, Imgen Tata
+ * (http://www.myipdf.com/), Steven Levithan (http://blog.stevenlevithan.com),
+ * Tim de Koning (http://www.kingsquare.nl), Dreamer, AJ, Paul Smith, KELAN,
+ * Pellentesque Malesuada, felix, Michael White, Mailfaker
+ * (http://www.weedem.fr/), Thunder.m, Tyler Akins (http://rumkin.com),
+ * saulius, Public Domain (http://www.json.org/json2.js), Caio Ariede
+ * (http://caioariede.com), Steve Clay, David James, madipta, Marco, Ole
+ * Vrijenhoek (http://www.nervous.nl/), class_exists, T. Wild, noname, Arno,
+ * Frank Forte, Francois, Scott Cariss, Slawomir Kaniecki, date, Itsacon
+ * (http://www.itsacon.net/), Billy, vlado houba, Jalal Berrami,
+ * ReverseSyntax, Mateusz "loonquawl" Zalega, john (http://www.jd-tech.net),
+ * mktime, Douglas Crockford (http://javascript.crockford.com), ger, Nick
+ * Kolosov (http://sammy.ru), Nathan, nobbler, Fox, marc andreu, Alex Wilson,
+ * Raphael (Ao RUDLER), Bayron Guevara, Adam Wallner
+ * (http://web2.bitbaro.hu/), paulo kuong, jmweb, Lincoln Ramsay, djmix,
+ * Pyerre, Jon Hohle, Thiago Mata (http://thiagomata.blog.com), lmeyrick
+ * (https://sourceforge.net/projects/bcmath-js/this.), Linuxworld, duncan,
+ * Gilbert, Sanjoy Roy, Shingo, sankai, Oskar Larsson Hï¿½gfeldt
+ * (http://oskar-lh.name/), Denny Wardhana, 0m3r, Everlasto, Subhasis Deb,
+ * josh, jd, Pier Paolo Ramon (http://www.mastersoup.com/), P, merabi, Soren
+ * Hansen, EdorFaus, Eugene Bulkin (http://doubleaw.com/), Der Simon
+ * (http://innerdom.sourceforge.net/), echo is bad, JB, LH, kenneth, J A R,
+ * Marc Jansen, Stoyan Kyosev (http://www.svest.org/), Francesco, XoraX
+ * (http://www.xorax.info), Ozh, Brad Touesnard, MeEtc
+ * (http://yass.meetcweb.com), Peter-Paul Koch
+ * (http://www.quirksmode.org/js/beat.html), Olivier Louvignes
+ * (http://mg-crea.com/), T0bsn, Tim Wiel, Bryan Elliott, nord_ua, Martin, JT,
+ * David Randall, Thomas Beaucourt (http://www.webapp.fr), Tim de Koning,
+ * stensi, Pierre-Luc Paour, Kristof Coomans (SCK-CEN Belgian Nucleair
+ * Research Centre), Martin Pool, Kirk Strobeck, Rick Waldron, Brant Messenger
+ * (http://www.brantmessenger.com/), Devan Penner-Woelk, Saulo Vallory, Wagner
+ * B. Soares, Artur Tchernychev, Valentina De Rosa, Jason Wong
+ * (http://carrot.org/), Christoph, Daniel Esteban, strftime, Mick@el, rezna,
+ * Simon Willison (http://simonwillison.net), Anton Ongson, Gabriel Paderni,
+ * Marco van Oort, penutbutterjelly, Philipp Lenssen, Bjorn Roesbeke
+ * (http://www.bjornroesbeke.be/), Bug?, Eric Nagel, Tomasz Wesolowski,
+ * Evertjan Garretsen, Bobby Drake, Blues (http://tech.bluesmoon.info/), Luke
+ * Godfrey, Pul, uestla, Alan C, Ulrich, Rafal Kukawski, Yves Sucaet,
+ * sowberry, Norman "zEh" Fuchs, hitwork, Zahlii, johnrembo, Nick Callen,
+ * Steven Levithan (stevenlevithan.com), ejsanders, Scott Baker, Brian Tafoya
+ * (http://www.premasolutions.com/), Philippe Jausions
+ * (http://pear.php.net/user/jausions), Aidan Lister
+ * (http://aidanlister.com/), Rob, e-mike, HKM, ChaosNo1, metjay, strcasecmp,
+ * strcmp, Taras Bogach, jpfle, Alexander Ermolaev
+ * (http://snippets.dzone.com/user/AlexanderErmolaev), DxGx, kilops, Orlando,
+ * dptr1988, Le Torbi, James (http://www.james-bell.co.uk/), Pedro Tainha
+ * (http://www.pedrotainha.com), James, Arnout Kazemier
+ * (http://www.3rd-Eden.com), Chris McMacken, Yannoo, jakes, gabriel paderni,
+ * FGFEmperor, Greg Frazier, baris ozdil, 3D-GRAF, daniel airton wermann
+ * (http://wermann.com.br), Howard Yeend, Diogo Resende, Allan Jensen
+ * (http://www.winternet.no), Benjamin Lupton, Atli ?ï¿½r, Maximusya, davook,
+ * Tod Gentille, Ryan W Tenney (http://ryan.10e.us), Nathan Sepulveda, Cord,
+ * fearphage (http://http/my.opera.com/fearphage/), Victor, Rafa? Kukawski
+ * (http://kukawski.pl), Matteo, Manish, Matt Bradley, Riddler
+ * (http://www.frontierwebdev.com/), Alexander M Beedie, T.J. Leahy, Rafa?
+ * Kukawski, taith, Luis Salazar (http://www.freaky-media.com/), FremyCompany,
+ * Rival, Luke Smith (http://lucassmith.name), Andrej Pavlovic, Garagoth, Le
+ * Torbi (http://www.letorbi.de/), Dino, Josep Sanz (http://www.ws3.es/), rem,
+ * Russell Walker (http://www.nbill.co.uk/), Jamie Beck
+ * (http://www.terabit.ca/), setcookie, Michael, YUI Library:
+ * http://developer.yahoo.com/yui/docs/YAHOO.util.DateLocale.html, Blues at
+ * http://hacks.bluesmoon.info/strftime/strftime.js, Ben
+ * (http://benblume.co.uk/), DtTvB
+ * (http://dt.in.th/2008-09-16.string-length-in-bytes.html), Andreas, William,
+ * meo, incidence, Cagri Ekin, Amirouche, Amir Habibi
+ * (http://www.residence-mixte.com/), Kheang Hok Chin
+ * (http://www.distantia.ca/), Jay Klehr, Lorenzo Pisani, Tony, Yen-Wei Liu,
+ * Greenseed, mk.keck, Leslie Hoare, dude, booeyOH, Ben Bryan
+ *
+ * Dual licensed under the MIT (MIT-LICENSE.txt)
+ * and GPL (GPL-LICENSE.txt) licenses.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL KEVIN VAN ZONNEVELD BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+function get_html_translation_table(table,quote_style){var entities={},hash_map={},decimal=0,symbol='';var constMappingTable={},constMappingQuoteStyle={};var useTable={},useQuoteStyle={};constMappingTable[0]='HTML_SPECIALCHARS';constMappingTable[1]='HTML_ENTITIES';constMappingQuoteStyle[0]='ENT_NOQUOTES';constMappingQuoteStyle[2]='ENT_COMPAT';constMappingQuoteStyle[3]='ENT_QUOTES';useTable=!isNaN(table)?constMappingTable[table]:table?table.toUpperCase():'HTML_SPECIALCHARS';useQuoteStyle=!isNaN(quote_style)?constMappingQuoteStyle[quote_style]:quote_style?quote_style.toUpperCase():'ENT_COMPAT';if(useTable!=='HTML_SPECIALCHARS'&&useTable!=='HTML_ENTITIES'){throw new Error("Table: "+useTable+' not supported');}
+entities['38']='&amp;';if(useTable==='HTML_ENTITIES'){entities['160']='&nbsp;';entities['161']='&iexcl;';entities['162']='&cent;';entities['163']='&pound;';entities['164']='&curren;';entities['165']='&yen;';entities['166']='&brvbar;';entities['167']='&sect;';entities['168']='&uml;';entities['169']='&copy;';entities['170']='&ordf;';entities['171']='&laquo;';entities['172']='&not;';entities['173']='&shy;';entities['174']='&reg;';entities['175']='&macr;';entities['176']='&deg;';entities['177']='&plusmn;';entities['178']='&sup2;';entities['179']='&sup3;';entities['180']='&acute;';entities['181']='&micro;';entities['182']='&para;';entities['183']='&middot;';entities['184']='&cedil;';entities['185']='&sup1;';entities['186']='&ordm;';entities['187']='&raquo;';entities['188']='&frac14;';entities['189']='&frac12;';entities['190']='&frac34;';entities['191']='&iquest;';entities['192']='&Agrave;';entities['193']='&Aacute;';entities['194']='&Acirc;';entities['195']='&Atilde;';entities['196']='&Auml;';entities['197']='&Aring;';entities['198']='&AElig;';entities['199']='&Ccedil;';entities['200']='&Egrave;';entities['201']='&Eacute;';entities['202']='&Ecirc;';entities['203']='&Euml;';entities['204']='&Igrave;';entities['205']='&Iacute;';entities['206']='&Icirc;';entities['207']='&Iuml;';entities['208']='&ETH;';entities['209']='&Ntilde;';entities['210']='&Ograve;';entities['211']='&Oacute;';entities['212']='&Ocirc;';entities['213']='&Otilde;';entities['214']='&Ouml;';entities['215']='&times;';entities['216']='&Oslash;';entities['217']='&Ugrave;';entities['218']='&Uacute;';entities['219']='&Ucirc;';entities['220']='&Uuml;';entities['221']='&Yacute;';entities['222']='&THORN;';entities['223']='&szlig;';entities['224']='&agrave;';entities['225']='&aacute;';entities['226']='&acirc;';entities['227']='&atilde;';entities['228']='&auml;';entities['229']='&aring;';entities['230']='&aelig;';entities['231']='&ccedil;';entities['232']='&egrave;';entities['233']='&eacute;';entities['234']='&ecirc;';entities['235']='&euml;';entities['236']='&igrave;';entities['237']='&iacute;';entities['238']='&icirc;';entities['239']='&iuml;';entities['240']='&eth;';entities['241']='&ntilde;';entities['242']='&ograve;';entities['243']='&oacute;';entities['244']='&ocirc;';entities['245']='&otilde;';entities['246']='&ouml;';entities['247']='&divide;';entities['248']='&oslash;';entities['249']='&ugrave;';entities['250']='&uacute;';entities['251']='&ucirc;';entities['252']='&uuml;';entities['253']='&yacute;';entities['254']='&thorn;';entities['255']='&yuml;';}
+if(useQuoteStyle!=='ENT_NOQUOTES'){entities['34']='&quot;';}
+if(useQuoteStyle==='ENT_QUOTES'){entities['39']='&#39;';}
+entities['60']='&lt;';entities['62']='&gt;';for(decimal in entities){symbol=String.fromCharCode(decimal);hash_map[symbol]=entities[decimal];}
+return hash_map;}
+// End of File include/javascript/phpjs/get_html_translation_table.js
+                                
+/*
+ * More info at: http://phpjs.org
+ *
+ * This is version: 3.25
+ * php.js is copyright 2011 Kevin van Zonneveld.
+ *
+ * Portions copyright Brett Zamir (http://brett-zamir.me), Kevin van Zonneveld
+ * (http://kevin.vanzonneveld.net), Onno Marsman, Theriault, Michael White
+ * (http://getsprink.com), Waldo Malqui Silva, Paulo Freitas, Jonas Raoni
+ * Soares Silva (http://www.jsfromhell.com), Jack, Philip Peterson, Legaev
+ * Andrey, Ates Goral (http://magnetiq.com), Ratheous, Alex, Rafa? Kukawski
+ * (http://blog.kukawski.pl), Martijn Wieringa, lmeyrick
+ * (https://sourceforge.net/projects/bcmath-js/), Nate, Enrique Gonzalez,
+ * Philippe Baumann, Webtoolkit.info (http://www.webtoolkit.info/), Jani
+ * Hartikainen, Ole Vrijenhoek, Ash Searle (http://hexmen.com/blog/), Carlos
+ * R. L. Rodrigues (http://www.jsfromhell.com), travc, Michael Grier,
+ * Erkekjetter, Johnny Mast (http://www.phpvrouwen.nl), Rafa? Kukawski
+ * (http://blog.kukawski.pl/), GeekFG (http://geekfg.blogspot.com), Andrea
+ * Giammarchi (http://webreflection.blogspot.com), WebDevHobo
+ * (http://webdevhobo.blogspot.com/), d3x, marrtins,
+ * http://stackoverflow.com/questions/57803/how-to-convert-decimal-to-hex-in-javascript,
+ * pilus, stag019, T.Wild, Martin (http://www.erlenwiese.de/), majak, Marc
+ * Palau, Mirek Slugen, Chris, Diplom@t (http://difane.com/), Breaking Par
+ * Consulting Inc
+ * (http://www.breakingpar.com/bkp/home.nsf/0/87256B280015193F87256CFB006C45F7),
+ * gettimeofday, Arpad Ray (mailto:arpad@php.net), Oleg Eremeev, Josh Fraser
+ * (http://onlineaspect.com/2007/06/08/auto-detect-a-time-zone-with-javascript/),
+ * Steve Hilder, mdsjack (http://www.mdsjack.bo.it), Kevin van Zonneveld
+ * (http://kevin.vanzonneveld.net/), gorthaur, Aman Gupta, Sakimori, Joris,
+ * Robin, Kankrelune (http://www.webfaktory.info/), Alfonso Jimenez
+ * (http://www.alfonsojimenez.com), David, Felix Geisendoerfer
+ * (http://www.debuggable.com/felix), Lars Fischer, Karol Kowalski, Imgen Tata
+ * (http://www.myipdf.com/), Steven Levithan (http://blog.stevenlevithan.com),
+ * Tim de Koning (http://www.kingsquare.nl), Dreamer, AJ, Paul Smith, KELAN,
+ * Pellentesque Malesuada, felix, Michael White, Mailfaker
+ * (http://www.weedem.fr/), Thunder.m, Tyler Akins (http://rumkin.com),
+ * saulius, Public Domain (http://www.json.org/json2.js), Caio Ariede
+ * (http://caioariede.com), Steve Clay, David James, madipta, Marco, Ole
+ * Vrijenhoek (http://www.nervous.nl/), class_exists, T. Wild, noname, Arno,
+ * Frank Forte, Francois, Scott Cariss, Slawomir Kaniecki, date, Itsacon
+ * (http://www.itsacon.net/), Billy, vlado houba, Jalal Berrami,
+ * ReverseSyntax, Mateusz "loonquawl" Zalega, john (http://www.jd-tech.net),
+ * mktime, Douglas Crockford (http://javascript.crockford.com), ger, Nick
+ * Kolosov (http://sammy.ru), Nathan, nobbler, Fox, marc andreu, Alex Wilson,
+ * Raphael (Ao RUDLER), Bayron Guevara, Adam Wallner
+ * (http://web2.bitbaro.hu/), paulo kuong, jmweb, Lincoln Ramsay, djmix,
+ * Pyerre, Jon Hohle, Thiago Mata (http://thiagomata.blog.com), lmeyrick
+ * (https://sourceforge.net/projects/bcmath-js/this.), Linuxworld, duncan,
+ * Gilbert, Sanjoy Roy, Shingo, sankai, Oskar Larsson Hï¿½gfeldt
+ * (http://oskar-lh.name/), Denny Wardhana, 0m3r, Everlasto, Subhasis Deb,
+ * josh, jd, Pier Paolo Ramon (http://www.mastersoup.com/), P, merabi, Soren
+ * Hansen, EdorFaus, Eugene Bulkin (http://doubleaw.com/), Der Simon
+ * (http://innerdom.sourceforge.net/), echo is bad, JB, LH, kenneth, J A R,
+ * Marc Jansen, Stoyan Kyosev (http://www.svest.org/), Francesco, XoraX
+ * (http://www.xorax.info), Ozh, Brad Touesnard, MeEtc
+ * (http://yass.meetcweb.com), Peter-Paul Koch
+ * (http://www.quirksmode.org/js/beat.html), Olivier Louvignes
+ * (http://mg-crea.com/), T0bsn, Tim Wiel, Bryan Elliott, nord_ua, Martin, JT,
+ * David Randall, Thomas Beaucourt (http://www.webapp.fr), Tim de Koning,
+ * stensi, Pierre-Luc Paour, Kristof Coomans (SCK-CEN Belgian Nucleair
+ * Research Centre), Martin Pool, Kirk Strobeck, Rick Waldron, Brant Messenger
+ * (http://www.brantmessenger.com/), Devan Penner-Woelk, Saulo Vallory, Wagner
+ * B. Soares, Artur Tchernychev, Valentina De Rosa, Jason Wong
+ * (http://carrot.org/), Christoph, Daniel Esteban, strftime, Mick@el, rezna,
+ * Simon Willison (http://simonwillison.net), Anton Ongson, Gabriel Paderni,
+ * Marco van Oort, penutbutterjelly, Philipp Lenssen, Bjorn Roesbeke
+ * (http://www.bjornroesbeke.be/), Bug?, Eric Nagel, Tomasz Wesolowski,
+ * Evertjan Garretsen, Bobby Drake, Blues (http://tech.bluesmoon.info/), Luke
+ * Godfrey, Pul, uestla, Alan C, Ulrich, Rafal Kukawski, Yves Sucaet,
+ * sowberry, Norman "zEh" Fuchs, hitwork, Zahlii, johnrembo, Nick Callen,
+ * Steven Levithan (stevenlevithan.com), ejsanders, Scott Baker, Brian Tafoya
+ * (http://www.premasolutions.com/), Philippe Jausions
+ * (http://pear.php.net/user/jausions), Aidan Lister
+ * (http://aidanlister.com/), Rob, e-mike, HKM, ChaosNo1, metjay, strcasecmp,
+ * strcmp, Taras Bogach, jpfle, Alexander Ermolaev
+ * (http://snippets.dzone.com/user/AlexanderErmolaev), DxGx, kilops, Orlando,
+ * dptr1988, Le Torbi, James (http://www.james-bell.co.uk/), Pedro Tainha
+ * (http://www.pedrotainha.com), James, Arnout Kazemier
+ * (http://www.3rd-Eden.com), Chris McMacken, Yannoo, jakes, gabriel paderni,
+ * FGFEmperor, Greg Frazier, baris ozdil, 3D-GRAF, daniel airton wermann
+ * (http://wermann.com.br), Howard Yeend, Diogo Resende, Allan Jensen
+ * (http://www.winternet.no), Benjamin Lupton, Atli ?ï¿½r, Maximusya, davook,
+ * Tod Gentille, Ryan W Tenney (http://ryan.10e.us), Nathan Sepulveda, Cord,
+ * fearphage (http://http/my.opera.com/fearphage/), Victor, Rafa? Kukawski
+ * (http://kukawski.pl), Matteo, Manish, Matt Bradley, Riddler
+ * (http://www.frontierwebdev.com/), Alexander M Beedie, T.J. Leahy, Rafa?
+ * Kukawski, taith, Luis Salazar (http://www.freaky-media.com/), FremyCompany,
+ * Rival, Luke Smith (http://lucassmith.name), Andrej Pavlovic, Garagoth, Le
+ * Torbi (http://www.letorbi.de/), Dino, Josep Sanz (http://www.ws3.es/), rem,
+ * Russell Walker (http://www.nbill.co.uk/), Jamie Beck
+ * (http://www.terabit.ca/), setcookie, Michael, YUI Library:
+ * http://developer.yahoo.com/yui/docs/YAHOO.util.DateLocale.html, Blues at
+ * http://hacks.bluesmoon.info/strftime/strftime.js, Ben
+ * (http://benblume.co.uk/), DtTvB
+ * (http://dt.in.th/2008-09-16.string-length-in-bytes.html), Andreas, William,
+ * meo, incidence, Cagri Ekin, Amirouche, Amir Habibi
+ * (http://www.residence-mixte.com/), Kheang Hok Chin
+ * (http://www.distantia.ca/), Jay Klehr, Lorenzo Pisani, Tony, Yen-Wei Liu,
+ * Greenseed, mk.keck, Leslie Hoare, dude, booeyOH, Ben Bryan
+ *
+ * Dual licensed under the MIT (MIT-LICENSE.txt)
+ * and GPL (GPL-LICENSE.txt) licenses.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL KEVIN VAN ZONNEVELD BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+function html_entity_decode(string,quote_style){var hash_map={},symbol='',tmp_str='',entity='';tmp_str=string.toString();if(false===(hash_map=this.get_html_translation_table('HTML_ENTITIES',quote_style))){return false;}
+delete(hash_map['&']);hash_map['&']='&amp;';for(symbol in hash_map){entity=hash_map[symbol];tmp_str=tmp_str.split(entity).join(symbol);}
+tmp_str=tmp_str.split('&#039;').join("'");return tmp_str;}
+// End of File include/javascript/phpjs/html_entity_decode.js
                                 

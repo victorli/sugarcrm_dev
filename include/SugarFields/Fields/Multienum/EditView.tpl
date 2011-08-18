@@ -300,6 +300,10 @@
 				//create a string ret_string as a comma-delimited list of text from selectElem options.
 				var selectElem = document.getElementById("{/literal}{{if empty($displayParams.idName)}}{{sugarvar key='name'}}{{else}}{{$displayParams.idName}}{{/if}}{literal}");
 				var ret_array = [];
+
+                if (selectElem==null || selectElem.options == null)
+					return;
+
 				for (i=0;i<selectElem.options.length;i++){
 					if (selectElem.options[i].selected && selectElem.options[i].innerHTML!=''){
 						ret_array.push(selectElem.options[i].innerHTML);

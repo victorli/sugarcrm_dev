@@ -68,7 +68,6 @@
 <input type="hidden" name="primary_address_state" value="{$smarty.request.primary_address_state}">
 <input type="hidden" name="primary_address_country" value="{$smarty.request.primary_address_country}">
 <input type="hidden" name="primary_address_postalcode" value="{$smarty.request.primary_address_postalcode}">
-<input type="hidden" name="phone_work" value="{$smarty.request.phone_work}">
 <input type="hidden" name="is_ajax_call" value="1">
 <input type="hidden" name="to_pdf" value="1">
 {* -- End QuickCreate Specific -- *}

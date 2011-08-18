@@ -261,6 +261,9 @@ resetUwSession();
 // flag to say upgrade has completed
 $_SESSION['upgrade_complete'] = true;
 
+//Clear any third party caches
+sugar_cache_reset_full();
+
 //add the clean vardefs here
 if(!class_exists('VardefManager')){
 

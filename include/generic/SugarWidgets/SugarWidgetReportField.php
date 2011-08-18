@@ -212,7 +212,7 @@ class SugarWidgetReportField extends SugarWidgetField
             $header_cell = "<a class=\"listViewThLinkS1\" href=\"".$start.$sort_by.$end."\">";
             $header_cell .= $this->displayHeaderCellPlain($layout_def);
             $header_cell .= ListView::getArrowUpDownStart(isset($layout_def['sort']) ? $layout_def['sort'] : '');
-            $header_cell .= ListView::getArrowEnd();
+            $header_cell .= ListView::getArrowUpDownEnd(isset($layout_def['sort']) ? $layout_def['sort'] : '');
             $header_cell .= "</a>";
                 
             return $header_cell;

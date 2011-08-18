@@ -759,7 +759,29 @@ class Importer
         return $advancedMappingSettings;
     }
 
-        /**
+    public static function getImportableModules()
+    {
+        global $beanList;
+        $importableModules = array();
+        foreach ($beanList as $moduleName => $beanName)
+        {
+            if( class_exists($beanName) )
+            {
+                $tmp = new $beanName();
+                if( isset($tmp->importable) && $tmp->importable )
+                {
+                    $label = isset($GLOBALS['app_list_strings']['moduleList'][$moduleName]) ? $GLOBALS['app_list_strings']['moduleList'][$moduleName] : $moduleName;
+                    $importableModules[$moduleName] = $label;
+                }
+            }
+        }
+
+        asort($importableModules);
+        return $importableModules;
+    }
+
+
+    /**
      * Replaces PHP error handler in Step4
      *
      * @param int    $errno

@@ -32,12 +32,12 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by SugarCRM".
  ********************************************************************************/
-SUGAR.ajaxUI={callback:function(o)
+SUGAR.ajaxUI={loadingWindow:false,callback:function(o)
 {var cont;if(typeof window.onbeforeunload=="function")
-window.onbeforeunload=null;scroll(0,0);try{var r=YAHOO.lang.JSON.parse(o.responseText);cont=r.content;if(r.moduleList)
+window.onbeforeunload=null;scroll(0,0);ajaxStatus.hideStatus();try{var r=YAHOO.lang.JSON.parse(o.responseText);cont=r.content;if(r.moduleList)
 {SUGAR.themes.setModuleTabs(r.moduleList);}
 if(r.title)
-{document.title=r.title.replace(/&raquo;/g,'>').replace(/&nbsp;/g,' ');}
+{document.title=html_entity_decode(r.title);}
 if(r.action)
 {action_sugar_grp1=r.action;}
 var c=document.getElementById("content");c.innerHTML=cont;SUGAR.util.evalScript(cont);if(typeof(r.responseTime)!='undefined'){var rt=document.getElementById('responseTime');if(rt!=null){rt.innerHTML=r.responseTime;}}}catch(e){if(!SUGAR.ajaxUI.errorPanel){SUGAR.ajaxUI.errorPanel=new YAHOO.widget.Panel("ajaxUIErrorPanel",{modal:false,visible:true,constraintoviewport:true,width:"800px",height:"600px",close:true});}
@@ -58,10 +58,10 @@ if(ui.lastCall&&con.isCallInProgress(ui.lastCall)){con.abort(ui.lastCall);}
 var mRegex=/module=([^&]*)/.exec(url);var module=mRegex?mRegex[1]:false;if(!ui.canAjaxLoadModule(module)){window.location=url;return;}
 ui.lastURL=url;ui.cleanGlobals();var loadLanguageJS='';if(module&&typeof(SUGAR.language.languages[module])=='undefined'){loadLanguageJS='&loadLanguageJS=1';}
 if(!inAjaxUI)
-window.location="index.php?action=ajaxui#ajaxUILoc="+encodeURIComponent(url);else{ui.lastCall=YAHOO.util.Connect.asyncRequest('GET',url+'&ajax_load=1'+loadLanguageJS,{success:SUGAR.ajaxUI.callback});}}},submitForm:function(formname,params)
+window.location="index.php?action=ajaxui#ajaxUILoc="+encodeURIComponent(url);else{ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_LOADING'));ui.lastCall=YAHOO.util.Connect.asyncRequest('GET',url+'&ajax_load=1'+loadLanguageJS,{success:SUGAR.ajaxUI.callback});}}},submitForm:function(formname,params)
 {var con=YAHOO.util.Connect,SA=SUGAR.ajaxUI;if(SA.lastCall&&con.isCallInProgress(SA.lastCall)){con.abort(SA.lastCall);}
 SA.cleanGlobals();var form=YAHOO.util.Dom.get(formname)||document.forms[formname];if(SA.canAjaxLoadModule(form.module.value)&&typeof(YAHOO.util.Selector.query("input[type=file]",form)[0])=="undefined"&&/action=ajaxui/.exec(window.location))
-{var string=con.setForm(form);var baseUrl="index.php?action=ajaxui#ajaxUILoc=";SA.lastURL="";if(string.length>200)
+{var string=con.setForm(form);var baseUrl="index.php?action=ajaxui#ajaxUILoc=";SA.lastURL="";ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_LOADING'));if(string.length>200)
 {con.asyncRequest('POST','index.php?ajax_load=1',{success:SA.callback});window.location=baseUrl;}else{con.resetFormState();window.location=baseUrl+encodeURIComponent("index.php?"+string);}
 return true;}else{form.submit();return false;}},cleanGlobals:function()
 {sqs_objects={};QSProcessedFieldsArray={};collection={};if(SUGAR.EmailAddressWidget){SUGAR.EmailAddressWidget.instances={};SUGAR.EmailAddressWidget.count={};}

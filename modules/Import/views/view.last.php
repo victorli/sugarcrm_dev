@@ -277,23 +277,23 @@ SUGAR.IV = {
     togglePages : function(activePage)
     {
         var num_tabs = 3;
-        var pageId = 'pageNum_' + activePage;
+        var pageId = 'pageNumIW_' + activePage;
         activeDashboardPage = activePage;
         activeTab = activePage;
 
         //hide all pages first for display purposes
         for(var i=0; i < num_tabs; i++)
         {
-            var pageDivId = 'pageNum_'+i+'_div';
+            var pageDivId = 'pageNumIW_'+i+'_div';
             var pageDivElem = document.getElementById(pageDivId);
             pageDivElem.style.display = 'none';
         }
 
         for(var i=0; i < num_tabs; i++)
         {
-            var tabId = 'pageNum_'+i;
-            var anchorId = 'pageNum_'+i+'_anchor';
-            var pageDivId = 'pageNum_'+i+'_div';
+            var tabId = 'pageNumIW_'+i;
+            var anchorId = 'pageNumIW_'+i+'_anchor';
+            var pageDivId = 'pageNumIW_'+i+'_div';
 
             var tabElem = document.getElementById(tabId);
             var anchorElem = document.getElementById(anchorId);

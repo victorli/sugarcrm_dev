@@ -37,39 +37,40 @@
 *}
 <script type="text/javascript">
 function allowInsideView() {ldelim}
-document.getElementById('insideViewFrame').src = '{$AJAX_URL}';
+
+document.getElementById('insideViewFrame').src = "{$AJAX_URL}";
 document.getElementById('insideViewConfirm').style.display = 'none';
 document.getElementById('insideViewFrame').style.display = 'block';
 document.getElementById('insideViewDiv').style.height='430px';
 YAHOO.util.Connect.asyncRequest('GET', 'index.php?module=Connectors&action=CallConnectorFunc&source_id=ext_rest_insideview&source_func=allowInsideView', {ldelim}{rdelim}, null);
 {rdelim}
-    YAHOO.util.Event.onDOMReady(function(){ldelim}
-        markSubPanelLoaded('insideview');
-        var insideViewSubPanel = document.getElementById("subpanel_insideview" );
-        insideViewSubPanel.cookie_name="insideview_v";
-        if(div_cookies['insideview_v']){ldelim}
-            if(div_cookies['insideview_v'] == 'none')
-            {ldelim}
-                hideSubPanel('insideview');
-                document.getElementById('hide_link_insideview').style.display='none';
-                document.getElementById('show_link_insideview').style.display='';
-            {rdelim}
-        {rdelim}
-        toggleGettingStartedButton();
-    {rdelim});
+SUGAR.util.doWhen("typeof(markSubPanelLoaded) != 'undefined' && document.getElementById('subpanel_insideview')", function() {ldelim}
+	markSubPanelLoaded('insideview');
+	var insideViewSubPanel = document.getElementById("subpanel_insideview" );
+	insideViewSubPanel.cookie_name="insideview_v";
+	if(div_cookies['insideview_v']){ldelim}
+		if(div_cookies['insideview_v'] == 'none')
+		{ldelim}
+			hideSubPanel('insideview');
+			document.getElementById('hide_link_insideview').style.display='none';
+			document.getElementById('show_link_insideview').style.display='';
+		{rdelim}
+	{rdelim}
+	toggleGettingStartedButton();
+{rdelim});
 
-    function toggleGettingStartedButton(){ldelim}
-        var acceptBox  = document.getElementById( "insideview_accept_box" );
-        var gettingStartedButton  = document.getElementById( "insideview_accept_button" );
+function toggleGettingStartedButton(){ldelim}
+	var acceptBox  = document.getElementById( "insideview_accept_box" );
+	var gettingStartedButton  = document.getElementById( "insideview_accept_button" );
 
-        if( acceptBox.checked ){ldelim}
-            gettingStartedButton.disabled = '';
-            gettingStartedButton.focus();
-        {rdelim}
-        else {ldelim}
-            gettingStartedButton.disabled = "disabled";
-        {rdelim}
-    {rdelim}
+	if( acceptBox.checked ){ldelim}
+		gettingStartedButton.disabled = '';
+		gettingStartedButton.focus();
+	{rdelim}
+	else {ldelim}
+		gettingStartedButton.disabled = "disabled";
+	{rdelim}
+{rdelim}
 </script>
 <div id='insideViewDiv' style='width:100%' class="doNotPrint">
     <table width="100%" cellpadding="0" cellspacing="0" border="0" class="formHeader h3Row">

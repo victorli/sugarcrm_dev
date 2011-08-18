@@ -183,7 +183,7 @@
 				var selectElem = document.getElementById("{/literal}{{if empty($displayParams.idName)}}{{sugarvar key='name'}}{{else}}{{$displayParams.idName}}{{/if}}{literal}");
 
 				//if select no longer on page, kill timer
-				if (selectElem==null)
+				if (selectElem==null || selectElem.options == null)
 					return;
 
 				var currentvalue = SUGAR.AutoComplete.{/literal}{$ac_key}{literal}.inputNode.get('value');

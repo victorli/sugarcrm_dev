@@ -646,6 +646,61 @@ class SugarWebServiceImplv4 extends SugarWebServiceImplv3_1 {
         $GLOBALS['log']->info('End: SugarWebServiceImpl->oauth_access');
         return $result;
     }
+
+    /**
+     * Import emails from the SNIP service.
+     *
+     * @param String $session -- Session ID returned by a previous call to login.
+     * @exception 'SoapFault' -- The SOAP error, if any
+     */
+    public function snip_import_emails($session, $email)
+    {
+        $GLOBALS['log']->info('Begin: SugarWebServiceImpl->import_emails');
+        $error = new SoapError();
+        // TODO: permissions?
+        if (! self::$helperObject->checkSessionAndModuleAccess($session, 'invalid_session', '', '', '',  $error)) {
+            $GLOBALS['log']->info('End: SugarWebServiceImpl->snip_import_emails denied.');
+            return;
+        } // if
+        require_once 'modules/SNIP/SugarSNIP.php';
+        $snip = SugarSNIP::getInstance();
+        $snip->importEmail($email);
+        $GLOBALS['log']->info('End: SugarWebServiceImpl->snip_import_emails');
+        return array('results' => TRUE, 'count' => 1, 'message' => '');
+    }
+
+    /**
+     * Return new contact emails since $timestamp for current user
+     * @param string $session
+     * @param int $timestamp
+     */
+    public function snip_update_contacts($session, $timestamp)
+    {
+        $GLOBALS['log']->info('Begin: SugarWebServiceImpl->snip_update_contacts');
+        $error = new SoapError();
+        if (! self::$helperObject->checkSessionAndModuleAccess($session, 'invalid_session', '', 'read', 'no_access',  $error)) {
+            $GLOBALS['log']->info('End: SugarWebServiceImpl->snip_update_contacts denied.');
+            return;
+        } // if
+
+        $query = "SELECT DISTINCT ea.email_address as email  FROM email_addresses ea
+        JOIN email_addr_bean_rel eabr ON ea.id=eabr.email_address_id
+        WHERE ea.deleted=0 AND eabr.deleted=0 AND eabr.bean_module <> 'Users' AND eabr.bean_module <> 'Employees'
+        ";
+        if($timestamp) {
+            $dbdate = gmdate($GLOBALS['timedate']->get_db_date_time_format(), $timestamp);
+            $query .= " AND ea.date_modified >= '$dbdate'";
+
+        }
+
+        $seed = new User();
+        $res = $seed->db->query($query);
+        $emails = array();
+        while($row = $seed->db->fetchByAssoc($res)) {
+                $emails[] = $row['email'];
+        }
+        return array('results' => $emails, 'count' => count($emails), 'message' => '');
+    }
 }
 
 SugarWebServiceImplv4::$helperObject = new SugarWebServiceUtilv4();

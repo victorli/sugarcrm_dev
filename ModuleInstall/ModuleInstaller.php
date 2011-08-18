@@ -187,6 +187,11 @@ class ModuleInstaller{
 				$rac->repairAndClearAll($selectedActions, $this->installed_modules,true, false);
 				$this->rebuild_relationships();
 				UpdateSystemTabs('Add',$this->tab_modules);
+                //Clear out all the langauge cache files.
+                clearAllJsAndJsLangFilesWithoutOutput();
+                $cache_key = 'app_list_strings.'.$GLOBALS['current_language'];
+                sugar_cache_clear($cache_key );
+                sugar_cache_reset();
 
 				//clear the unified_search_module.php file
 	            require_once('modules/Home/UnifiedSearchAdvanced.php');
