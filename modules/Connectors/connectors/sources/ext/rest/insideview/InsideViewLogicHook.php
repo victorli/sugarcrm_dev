@@ -180,13 +180,11 @@ class InsideViewLogicHook {
         if ( $url != '' ) {
             // Check if the user should be shown the frame or not
             $smarty = new Sugar_Smarty();
-             $tplName = 'modules/Connectors/connectors/sources/ext/rest/insideview/InsideView.';
-             if ( ! file_exists($tplName.$GLOBALS['current_language'].'.tpl') ) {
-                $tplName = $tplName.'en_us.tpl';
-             } else {
-                $tplName = $tplName.$GLOBALS['current_language'].'.tpl';
-             }
-             $smarty->assign('logo',getWebPath('modules/Connectors/connectors/sources/ext/rest/insideview/images/insideview.png'));
+            $tplName = 'modules/Connectors/connectors/sources/ext/rest/insideview/tpls/InsideView.tpl';
+            require_once('include/connectors/utils/ConnectorUtils.php');
+            $connector_language = ConnectorUtils::getConnectorStrings('ext_rest_insideview');
+            $smarty->assign('connector_language', $connector_language);
+            $smarty->assign('logo',getWebPath('modules/Connectors/connectors/sources/ext/rest/insideview/images/insideview.png'));
             $smarty->assign('video',getWebPath('modules/Connectors/connectors/sources/ext/rest/insideview/images/video.png'));
 
             $smarty->assign('close',getWebPath('modules/Connectors/connectors/sources/ext/rest/insideview/images/close.png'));
@@ -194,15 +192,15 @@ class InsideViewLogicHook {
             $smarty->assign('logo_collapsed',getWebPath('modules/Connectors/connectors/sources/ext/rest/insideview/images/insideview_collapsed.png'));
 
             $smarty->assign('AJAX_URL',$url);
-             if ( $GLOBALS['current_user']->getPreference('allowInsideView','Connectors') != 1 )
-             {
+            if ( $GLOBALS['current_user']->getPreference('allowInsideView','Connectors') != 1 )
+            {
                 $smarty->assign('showInsideView',false);
 
-             }else {
+            }else {
                 $smarty->assign('showInsideView',true);
                 $smarty->assign('URL',$url);
                 //echo "<div id='insideViewDiv' style='width:100%;height:400px;overflow:hidden'><iframe id='insideViewFrame' src='$url' style='border:0px; width:100%;height:480px;overflow:hidden'></iframe></div>";
-             }
+            }
             echo $smarty->fetch($tplName);
         }
     }

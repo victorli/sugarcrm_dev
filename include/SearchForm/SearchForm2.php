@@ -447,8 +447,8 @@ require_once('include/EditView/EditView2.php');
                         }
                     }else if(!empty($array[$name]) && !$fromMergeRecords && !$this->isEmptyDropdownField($name, $array[$name])) { //basic        	
                     	$this->searchFields[$name]['value'] = $array[$name];
-                        if(empty($this->fieldDefs[$name]['value'])) {
-                        	$this->fieldDefs[$name]['value'] = $array[$name];
+                        if(empty($this->fieldDefs[$long_name]['value'])) {
+                        	$this->fieldDefs[$long_name]['value'] = $array[$name];
                         }
                     }
                     

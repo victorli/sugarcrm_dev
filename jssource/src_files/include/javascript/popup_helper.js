@@ -236,3 +236,13 @@ function toggleMore(spanId, img_id, module, action, params){
 	}
 	SUGAR.util.additionalDetailsRpcCall = window.setTimeout('toggle_more_go()', 250);
 }
+
+// The following line of code was copy / pasted in a whole bunch of modules.
+
+YAHOO.util.Event.onDOMReady(function() {
+    /* initialize the popup request from the parent */
+    if(window.document.forms['popup_query_form'].request_data.value == "") {
+    	window.document.forms['popup_query_form'].request_data.value
+    		= YAHOO.lang.JSON.stringify(window.opener.get_popup_request_data());
+    }
+});

@@ -99,9 +99,8 @@ class SavedSearch extends SugarBean {
 		
 		$savedSearchArray['_none'] = $app_strings['LBL_NONE'];
 	    while ($row = $db->fetchByAssoc($result)) {
-	        $savedSearchArray[$row['id']] = $row['name'];
+	        $savedSearchArray[$row['id']] = htmlspecialchars($row['name'], ENT_QUOTES);
 	    }
-
 		$sugarSmarty = new Sugar_Smarty();
 		$sugarSmarty->assign('SEARCH_MODULE', $module);
 		$sugarSmarty->assign('MOD', $saved_search_mod_strings);
@@ -189,7 +188,7 @@ class SavedSearch extends SugarBean {
         
         $savedSearchArray['_none'] = $app_strings['LBL_NONE'];
         while ($row = $db->fetchByAssoc($result)) {
-            $savedSearchArray[$row['id']] = $row['name'];
+            $savedSearchArray[$row['id']] = htmlspecialchars($row['name']);
         }
 
         $sugarSmarty = new Sugar_Smarty();

@@ -1733,9 +1733,9 @@ function clean_xss($str, $cleanImg=true) {
 	$jsEvents .= "onmouseup|onmouseover|onmousedown|onmouseenter|onmouseleave|onmousemove|onload|onchange|";
 	$jsEvents .= "onreset|onselect|onsubmit|onkeydown|onkeypress|onkeyup|onabort|onerror|ondragdrop";
 
-	$attribute_regex	= "#<[^/>][^>]+({$jsEvents})[^=>]*=[^>]*>#sim";
+	$attribute_regex	= "#<.+({$jsEvents})[^=>]*=[^>]*>#sim";
 	$javascript_regex	= '@<[^/>][^>]+(expression\(|j\W*a\W*v\W*a|v\W*b\W*s\W*c\W*r|&#|/\*|\*/)[^>]*>@sim';
-	$imgsrc_regex		= '#<[^>]+src[^=]*=([^>]*?http://[^>]*)>#sim';
+	$imgsrc_regex		= '#<[^>]+src[^=]*=([^>]*?http(s)?://[^>]*)>#sim';
 	$css_url			= '#url\(.*\.\w+\)#';
 
 
@@ -1743,9 +1743,18 @@ function clean_xss($str, $cleanImg=true) {
 
 	$matches = array_merge(
 	xss_check_pattern($tag_regex, $str),
-	xss_check_pattern($javascript_regex, $str),
-	xss_check_pattern($attribute_regex, $str)
+	xss_check_pattern($javascript_regex, $str)
 	);
+
+
+    $jsMatches = xss_check_pattern($attribute_regex, $str);
+    if(!empty($jsMatches)){
+        preg_match_all($attribute_regex, $str, $newMatches, PREG_PATTERN_ORDER);
+        if(!empty($newMatches[0][0])){
+            $matches2 = array_merge(xss_check_pattern("#({$jsEvents})#sim", $newMatches[0][0]));
+            $matches = array_merge($matches, $matches2);
+        }
+    }
 
 	if($cleanImg) {
 		$matches = array_merge($matches,
@@ -2243,18 +2252,18 @@ function get_bean_select_array($add_blank=true, $bean_name, $display_columns, $w
 
 		$db = DBManagerFactory::getInstance();
 		$temp_result = Array();
-		$query = "SELECT id, {$display_columns} as display from {$focus->table_name} ";
+		$query = "SELECT {$focus->table_name}.id, {$display_columns} as display from {$focus->table_name} ";
 		$query .= "where ";
 		if ( $where != '')
 		{
 			$query .= $where." AND ";
 		}
-
-		$query .=  " deleted=0";
+		
+		$query .=  " {$focus->table_name}.deleted=0";
 
 		if ( $order_by != '')
 		{
-			$query .= ' order by '.$order_by;
+			$query .= " order by {$focus->table_name}.{$order_by}";
 		}
 
 		$GLOBALS['log']->debug("get_user_array query: $query");
@@ -4282,4 +4291,16 @@ function verify_uploaded_image($path, $jpeg_only = false)
 	        return false;
 	}
     return verify_image_file($path, $jpeg_only);
+}
+
+/**
+ * @param $input - the input string to sanitize
+ * @param int $quotes - use quotes
+ * @param string $charset - the default charset
+ * @param bool $remove - strip tags or not
+ * @return string - the sanitized string
+ */
+function sanitize($input, $quotes = ENT_QUOTES, $charset = 'UTF-8', $remove = false)
+{
+    return htmlentities($input, $quotes, $charset);
 }

@@ -222,7 +222,8 @@ if(!primaryFound){Dom.get(this.id+'emailAddressPrimaryFlag0').checked=true;Dom.g
 {var form=document.forms[this.emailView];if(!form){form=document.forms['editContactForm'];}
 if(SUGAR.isIE){for(i=0;i<form.elements.length;i++){var id=new String(form.elements[i].id);if(id.match(/emailAddressInvalidFlag/gim)&&form.elements[i].type=='checkbox'&&id!=el.id){form.elements[i].checked=false;}}
 el.checked=true;}},forceSubmit:function(){var theForm=Dom.get(this.emailView);if(theForm){theForm.action.value='Save';if(!check_form(this.emailView)){return false;}
-if(this.emailView=='EditView'){theForm.submit();}else if(this.emailView=='QuickCreate'){SUGAR.subpanelUtils.inlineSave(theForm.id,theForm.module.value.toLowerCase());}}}};emailAddressWidgetLoaded=true;})();// End of File include/SugarEmailAddress/SugarEmailAddress.js
+if(this.emailView=='EditView'){theForm.submit();}else if(this.emailView=='QuickCreate'){SUGAR.subpanelUtils.inlineSave(theForm.id,theForm.module.value.toLowerCase());}}}};emailAddressWidgetLoaded=true;})();
+// End of File include/SugarEmailAddress/SugarEmailAddress.js
                                 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
@@ -265,7 +266,7 @@ var primary_checked=document.forms[this.form].elements[this.field+"_allowed_to_c
 if(/EditView/.test(this.form)&&!checked&&typeof radio_els[0]!='undefined'&&allowed_to_check){radio_els[0].checked=true;this.changePrimary(true);this.js_more();this.js_more();}
 if(radio_els.length==1){this.more_status=false;if(document.getElementById('more_'+this.field_element_name)&&document.getElementById('more_'+this.field_element_name).style.display!='none'){document.getElementById('more_'+this.field_element_name).style.display='none';}
 this.show_arrow_label(false);this.js_more();}else{this.js_more();this.js_more();}}},get_radios:function(){return YAHOO.util.Selector.query('input[name^=primary]',document.getElementById(this.field_element_name+'_table'));},add:function(values){this.fields_count++;var Field0=this.init_clone(values);this.cloneField[1].appendChild(Field0);enableQS(true);this.changePrimary(false);if(document.getElementById('more_'+this.field_element_name)&&document.getElementById('more_'+this.field_element_name).style.display=='none'){document.getElementById('more_'+this.field_element_name).style.display='';}
-if(!this.is_expanded()){this.js_more();this.show_arrow_label(true);}},add_secondaries:function(){clone_id=this.form+'_'+this.field+'_collection_0';if(typeof sqs_objects=='undefined'||typeof sqs_objects[clone_id]=='undefined'){setTimeout('collection["'+this.field_element_name+'"].add_secondaries();',1000);}else if(typeof document.getElementById(this.form+'_'+this.field+'_collection_0')=='undefined'){setTimeout('collection["'+this.field_element_name+'"].add_secondaries();',1000);}else{this.create_clone();enableQS();this.changePrimary(true);for(key in this.secondaries_values){if(isInteger(key)){this.add(this.secondaries_values[key]);}}
+if(!this.is_expanded()){this.js_more();this.show_arrow_label(true);}},add_secondaries:function(){clone_id=this.form+'_'+this.field+'_collection_0';if(typeof sqs_objects=='undefined'||typeof sqs_objects[clone_id]=='undefined'){setTimeout('collection["'+this.field_element_name+'"].add_secondaries();',100);}else if(typeof document.getElementById(this.form+'_'+this.field+'_collection_0')=='undefined'){setTimeout('collection["'+this.field_element_name+'"].add_secondaries();',100);}else{this.create_clone();enableQS();this.changePrimary(true);for(key in this.secondaries_values){if(isInteger(key)){this.add(this.secondaries_values[key]);}}
 this.js_more();this.js_more();}
 initEditView(document.forms[this.form]);},init_clone:function(values){if(typeof this.cloneField[0]=='undefined'){return;}
 if(typeof values=="undefined"){values=new Array();values['name']="";values['id']="";}
@@ -295,7 +296,7 @@ return false;}}
 SUGAR.collection.safe_clone=function(e,recursive)
 {if(e.nodeName=="#text")
 {return document.createTextNode(e.data);}
-if(!e.tagName)return false;var newNode=document.createElement(e.tagName);if(!newNode)return false;if(SUGAR.isIE7&&e.tagName.toLowerCase()=='input')
+if(!e.tagName)return false;var newNode=document.createElement(e.tagName);if(!newNode)return false;var properties=['class','style','name','type','valign','border','width','height','top','bottom','left','right','scope','row','columns','src','href','className','align','nowrap'];if(SUGAR.isIE7&&e.tagName.toLowerCase()=='input')
 {var properties=['class','style','name','type','valign','border','width','top','bottom','left','right','scope','row','columns','src','href','className','align','nowrap'];}else{var properties=['class','style','name','type','valign','border','width','height','top','bottom','left','right','scope','row','columns','src','href','className','align','nowrap'];}
 for(var i in properties)
 {if(e[properties[i]])
@@ -305,7 +306,8 @@ if(recursive)
 {for(var i in e.childNodes)
 {if(e.childNodes[i].nodeName&&(!e.className||e.className!="yui-ac-container"))
 {var child=SUGAR.collection.safe_clone(e.childNodes[i],true);if(child)newNode.appendChild(child);}}}
-return newNode;}}// End of File include/SugarFields/Fields/Collection/SugarFieldCollection.js
+return newNode;}}
+// End of File include/SugarFields/Fields/Collection/SugarFieldCollection.js
                                 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
@@ -399,7 +401,8 @@ SI.listDlg.setHeader(SUGAR.language.get("app_strings","LBL_EMAIL_LOADING"));SI.l
 function setPortDefault(){var prot=document.getElementById('protocol');var ssl=document.getElementById('ssl');var port=document.getElementById('port');var stdPorts=new Array("110","143","993","995");var stdBool=new Boolean(false);if(port.value==''){stdBool.value=true;}else{for(i=0;i<stdPorts.length;i++){if(stdPorts[i]==port.value){stdBool.value=true;}}}
 if(stdBool.value==true){if(prot.value=='imap'&&ssl.checked==false){port.value="143";}else if(prot.value=='imap'&&ssl.checked==true){port.value='993';}else if(prot.value=='pop3'&&ssl.checked==false){port.value='110';}else if(prot.value=='pop3'&&ssl.checked==true){port.value='995';}}}
 function toggle_monitored_folder(field){var field1=document.getElementById('protocol');var mailbox=document.getElementById('mailbox');var label_inbox=document.getElementById('label_inbox');var subscribeFolderButton=document.getElementById('subscribeFolderButton');var trashFolderRow=document.getElementById('trashFolderRow');var trashFolderRow1=document.getElementById('trashFolderRow1');var sentFolderRow=document.getElementById('sentFolderRow');if(field1.value=='imap'){mailbox.disabled=false;try{mailbox.style.display='';trashFolderRow.style.display='';sentFolderRow.style.display='';trashFolderRow1.style.display='';subscribeFolderButton.style.display='';}catch(e){};label_inbox.style.display='';}
-else{mailbox.value="INBOX";mailbox.disabled=false;try{mailbox.style.display="none";trashFolderRow.style.display="none";sentFolderRow.style.display="none";trashFolderRow1.style.display="none";subscribeFolderButton.style.display="none";}catch(e){};label_inbox.style.display="none";}}// End of File modules/InboundEmail/InboundEmail.js
+else{mailbox.value="INBOX";mailbox.disabled=false;try{mailbox.style.display="none";trashFolderRow.style.display="none";sentFolderRow.style.display="none";trashFolderRow1.style.display="none";subscribeFolderButton.style.display="none";}catch(e){};label_inbox.style.display="none";}}
+// End of File modules/InboundEmail/InboundEmail.js
                                 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
@@ -1194,7 +1197,7 @@ SE.accounts = {
      * Populates an account's fields in Settings->Accounts
      */
     fillIeAccount:function(jsonstr) {
-        var o = JSON.parse(jsonstr);
+        var o = YAHOO.lang.JSON.parse(jsonstr);
 
         document.getElementById('ie_id').value = o.id;
         document.getElementById('ie_name').value = o.name;
@@ -1418,7 +1421,11 @@ SE.accounts = {
         var protocol = Dom.get('protocol').value;
         var port = Dom.get('port').value;
         var oe = Dom.get('outbound_email');
-        var oe_value = typeof(oe.options[oe.selectedIndex]) == 'undefined' ? "" : oe.options[oe.selectedIndex].value;
+
+        // Bug 44392: IE9 and possibly previous versions have a quirk where selectedIndex is -1 if you have nothing selected vs 0 for
+        // other browsers. And if you check options[-1] it returns "unknown" instead of undefined. Also other options out of index
+        // return null instead of undefined for other browsers, thus we need to check for all the possible outcomes.
+        var oe_value = (typeof(oe.options[oe.selectedIndex]) === 'undefined' || typeof(oe.options[oe.selectedIndex]) === 'unknown' || typeof(oe.options[oe.selectedIndex]) === null) ? "" : oe.options[oe.selectedIndex].value;
 
         var outboundUserName = Dom.get('inbound_mail_smtpuser').value;
         var outboundPass = Dom.get('inbound_mail_smtppass').value;
@@ -1527,13 +1534,15 @@ SE.accounts = {
     	//Set unread
     	if (typeof(node.data.unseen) != 'undefined') {
     		if (node.data.unseen > 0) {
-				node.setUpLabel('<b>' + node.data.origText + '(' + node.data.unseen + ')<b>');
+				node.setUpLabel(node.data.origText + '(' + node.data.unseen + ')');
+                // Add bold style to label, kinda hacky
+                node.labelStyle += " ygtvlabelbold";
 			}
 			else {
 				node.setUpLabel(node.data.origText);
 			}
     	} else {
-    		node.setUpLabel('<span>' + node.data.origText + '</span>');
+    		node.setUpLabel(node.data.origText);
     	}
     	SE.accounts.setupDDTarget(node);
     },
@@ -1801,8 +1810,8 @@ SE.contextMenus = {
         for(var i=0; i<rows.length; i++) {
             uids[i] = SE.grid.getRecord(rows[i]).getData().uid;
         }
-        var ser = JSON.stringifyNoSecurity(uids);
-
+        var ser = YAHOO.lang.JSON.stringify(uids);
+        
         AjaxObject.startRequest(callbackRelateEmail, urlStandard + '&emailUIAction=getRelateForm&uid=' + ser + "&ieId=" + ieId + "&mbox=" + folder);
     },
 
@@ -2074,7 +2083,7 @@ SE.detailView = {
             document.getElementById('_blank').innerHTML = "";
 	        var ser = [ ];
 			ser.push(uid);
-	        uid = JSON.stringifyNoSecurity(ser);
+	        uid = YAHOO.lang.JSON.stringify(ser);
             this.emailDelete(ieId, uid, mbox);
         }
     },
@@ -2730,7 +2739,7 @@ SE.folders = {
 
     getNodeFromMboxPath : function(path) {
         var tree = YAHOO.widget.TreeView.getTree('frameFolders');
-        var a = JSON.parse(path);
+        var a = YAHOO.lang.JSON.parse(path);
 
         var node = tree.getRoot();
 
@@ -4941,7 +4950,7 @@ SE.composeLayout = {
      		SE.composeLayout[idx].getUnitByPosition("right").collapse();
      		//Initialize tinyMCE
      		if (!SUGAR.util.isTouchScreen())
-     		    SE.composeLayout._1_tiny();
+     		    SE.composeLayout._1_tiny(false);
      		//Init templates and address book
      		SE.composeLayout._2_final();
 
@@ -5134,7 +5143,7 @@ SE.composeLayout = {
     /**
      * Prepare TinyMCE
      */
-    _1_tiny : function() {
+    _1_tiny : function(isReplyForward) {
         var idx = SE.composeLayout.currentInstanceId;
         var elId = SE.tinyInstances.currentHtmleditor = 'htmleditor' + idx;
         SE.tinyInstances[elId] = { };
@@ -5144,10 +5153,25 @@ SE.composeLayout = {
         if(typeof(t) == 'undefined')  {
             tinyMCE.execCommand('mceAddControl', false, elId);
             YAHOO.util.Event.onAvailable(elId + "_parent", function() {
-            	SE.composeLayout.resizeEditor(idx);
-                setTimeout("SUGAR.email2.composeLayout.setSignature('" + idx + "')", 1000);
+                SE.composeLayout.resizeEditorSetSignature(idx,!isReplyForward);
             }, this);
         }
+    },
+
+    resizeEditorSetSignature : function(idx,setSignature)
+    {
+    	var instance = SE.util.getTiny(SE.tinyInstances.currentHtmleditor);
+
+        if(typeof(instance) == 'undefined' || (typeof(SE.composeLayout.loadedTinyInstances[idx]) != 'undefined' && SE.composeLayout.loadedTinyInstances[idx] == false)) {
+            setTimeout("SE.composeLayout.resizeEditorSetSignature(" + idx + ",'"+isReplyForward+"');",500);
+		    return;
+		}
+
+        SE.composeLayout.resizeEditor(idx);
+        if(setSignature) {
+            setTimeout("SUGAR.email2.composeLayout.setSignature("+idx+");",250);
+        }
+
     },
 
     resizeEditor : function(idx)
@@ -5155,14 +5179,19 @@ SE.composeLayout = {
     	var cof = Dom.get('composeOverFrame' + idx);
         var head = Dom.get('composeHeaderTable' + idx);
         var targetHeight = cof.clientHeight - head.clientHeight;
-    	var instance =  tinyMCE.get(SE.tinyInstances.currentHtmleditor);
+    	var instance = SE.util.getTiny('htmleditor' + idx);
 
+        try {
     	var parentEl = Dom.get(instance.editorId + '_parent');
     	var toolbar = Dom.getElementsByClassName("mceFirst", "tr", parentEl)[0];
     	var contentEl  = instance.contentAreaContainer;
         var iFrame = contentEl.firstChild;
         var tinMceToolbarOffset = 18;
         iFrame.style.height = (targetHeight - toolbar.offsetHeight - tinMceToolbarOffset)  + "px";
+
+        } catch(e) {
+            setTimeout("SE.composeLayout.resizeEditor("+idx+");",1000);
+        }
     },
 
     /**
@@ -5210,7 +5239,7 @@ SE.composeLayout = {
         if (typeof(tinyMCE) == 'undefined' || typeof(tinyMCE.settings) == 'undefined'){
             setTimeout("SE.composeLayout.c1_composeEmail(" + isReplyForward + ", true);", 500);
         } else {
-	        this._1_tiny();
+	        this._1_tiny(isReplyForward);
 	        this._2_final();
 
 	        if(isReplyForward) {
@@ -5236,7 +5265,7 @@ SE.composeLayout = {
         SE.tinyInstances[SE.tinyInstances.currentHtmleditor].ready = false;
 
         SE.composeLayout._0_yui();
-        SE.composeLayout._1_tiny();
+        SE.composeLayout._1_tiny(true);
 
         // final touches
         SE.composeLayout._2_final();
@@ -5370,9 +5399,9 @@ SE.composeLayout = {
         var start = htmllow.indexOf(openTag);
 		if (start > -1) {
 	        tinyHTML = tinyHTML.substr(start);
-	        tiny.setContent(tinyHTML);
-		} else {
-        	tiny.setContent('');
+            tiny.setContent(tinyHTML);
+		} else { 
+       	    tiny.setContent('');
 		}
     },
 
@@ -5452,7 +5481,7 @@ SE.composeLayout = {
 
         var openTag = '<div><span><span>';
         var closeTag = '</span></span></div>';
-        var t = SE.util.getTiny('htmleditor' + idx);
+        var t = tinyMCE.getInstanceById('htmleditor' + idx);
         //IE 6 Hack
         if(typeof(t) != 'undefined')
         {
@@ -5460,7 +5489,9 @@ SE.composeLayout = {
             var html = t.getContent();
         }
         else
+        {
             var html = '';
+        }
 
         var htmllow = html.toLowerCase();
         var start = htmllow.indexOf(openTag);
@@ -5706,7 +5737,7 @@ SE.composeLayout = {
 
         // make async call to delete cached file
         AjaxObject.target = '';
-        AjaxObject.startRequest(null, urlStandard + "&emailUIAction=removeUploadedAttachment&file="+file);
+        AjaxObject.startRequest('', urlStandard + "&emailUIAction=removeUploadedAttachment&file="+file);
     },
 
     /**
@@ -6246,7 +6277,7 @@ SE.composeLayout = {
 			   && ( this['ccHidden'+idx]  == false && this['bccHidden'+idx] == false) )
 			Dom.addClass("add_addr_options_tr"+idx, "yui-hidden");
 
-		SE.composeLayout.resizeEditor(idx);
+		// SE.composeLayout.resizeEditor(idx);
     },
     /**
     *  Hide the cc and bcc fields if they were shown.
@@ -6544,7 +6575,7 @@ var AjaxObject = {
 	composeCache : function(o) {
 		var idx = SUGAR.email2.composeLayout.currentInstanceId; // post instance increment
 		// get email templates and user signatures
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 
 		SUGAR.email2.composeLayout.emailTemplates = ret.emailTemplates;
 		SUGAR.email2.composeLayout.signatures = ret.signatures;
@@ -6580,7 +6611,7 @@ var AjaxObject = {
 
 	handleDeleteSignature : function(o) {
 		hideOverlay();
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 		SUGAR.email2.composeLayout.signatures = ret.signatures;
     	var field = document.getElementById('signature_id');
 		SUGAR.email2.util.emptySelectOptions(field);
@@ -6616,7 +6647,7 @@ var AjaxObject = {
 	},
 
 	handleReplyForward : function(o) {
-		var a = JSON.parse(o.responseText);
+		var a = YAHOO.lang.JSON.parse(o.responseText);
 		globalA = a;
 		var idx = SUGAR.email2.composeLayout.currentInstanceId;
 
@@ -6640,7 +6671,7 @@ var AjaxObject = {
 	},
 
 	handleReplyForwardForDraft : function(o) {
-		var a = JSON.parse(o.responseText);
+		var a = YAHOO.lang.JSON.parse(o.responseText);
 		globalA = a;
 		var idx = SUGAR.email2.composeLayout.currentInstanceId;
 
@@ -6681,26 +6712,23 @@ var AjaxObject = {
 	 */
 	ieDeleteSuccess : function(o) {
 		hideOverlay();
-
-		var ret = JSON.parse(o.responseText);
-
+		
 		SUGAR.email2.accounts.refreshInboundAccountTable();
 		alert(app_strings.LBL_EMAIL_IE_DELETE_SUCCESSFUL);
 		SUGAR.email2.accounts.rebuildFolderList();
-
 	},
 
 	/**
 	 */
 	ieSaveSuccess : function(o) {
 		document.getElementById('saveButton').disabled = false;
-		var a = JSON.parse(o.responseText);
+		var a = YAHOO.lang.JSON.parse(o.responseText);
 		if (a) {
 			if(a.error) {
 				overlay(app_strings.LBL_EMAIL_ERROR_DESC, app_strings.LBL_EMAIL_ERROR_CHECK_IE_SETTINGS, 'alert');
 				SUGAR.email2.accounts.ieAccountError(SUGAR.email2.accounts.errorStyle);
 			} else {
-				resp = JSON.parse(o.responseText);
+				resp = YAHOO.lang.JSON.parse(o.responseText);
 				SUGAR.email2.accounts.refreshInboundAccountTable();
 				SUGAR.email2.accounts.refreshOuboundAccountTable();
 				SUGAR.email2.folders.startEmailCheckOneAccount(resp.id, true);
@@ -6716,7 +6744,7 @@ var AjaxObject = {
 	/**
 	 */
 	loadAttachments : function(o) {
-		var result = JSON.parse(o.responseText);
+		var result = YAHOO.lang.JSON.parse(o.responseText);
 
 		SUGAR.email2.composeLayout.loadAttachments(result);
 	},
@@ -6724,7 +6752,7 @@ var AjaxObject = {
 	/**
 	 */
 	loadSignature : function(o) {
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 		SUGAR.email2.signatures[ret.id] = ret.signature_html;
 		SUGAR.email2.composeLayout.setSignature(SUGAR.email2.signatures.targetInstance);
 	},
@@ -6733,7 +6761,7 @@ var AjaxObject = {
 	 * Follow up to mark email read|unread|flagged
 	 */
 	markEmailCleanup : function(o) {
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 		if (!ret['status']) {
         	hideOverlay();
 			overlay(app_strings.LBL_EMAIL_ERROR_DESC, ret['message'], 'alert');
@@ -6745,7 +6773,7 @@ var AjaxObject = {
 	/**
 	 */
 	rebuildShowFolders : function(o) {
-		var t = JSON.parse(o.responseText);
+		var t = YAHOO.lang.JSON.parse(o.responseText);
 		var show = document.getElementById('ieAccountListShow');
 
 		SUGAR.email2.util.emptySelectOptions(show);
@@ -6781,15 +6809,20 @@ var AjaxObject = {
 	 *
 	 */
 	sendEmailCleanUp : function(o) {
+        var ret;
 		hideOverlay();
-		var ret = JSON.parse(o.responseText);
-		if (ret) {
-		  SUGAR.email2.composeLayout.forceCloseCompose(ret.composeLayoutId);
-		  //SUGAR.email2.addressBook.showContactMatches(ret.possibleMatches);
-		} else if (o.responseText) {
-		  overlay(mod_strings.LBL_SEND_EMAIL_FAIL_TITLE, o.responseText, 'alert');
-		}
 
+        try {
+            ret = YAHOO.lang.JSON.parse(o.responseText);
+            SUGAR.email2.composeLayout.forceCloseCompose(ret.composeLayoutId);
+            //SUGAR.email2.addressBook.showContactMatches(ret.possibleMatches);
+        } catch(err) {
+            if (o.responseText) {
+		        overlay(mod_strings.LBL_SEND_EMAIL_FAIL_TITLE, o.responseText, 'alert');
+		    }
+            // Else we have an error here.
+        }
+        
 		if (typeof(SE.grid) != 'undefined')
 			SE.listView.refreshGrid();
 		//Disabled while address book is disabled
@@ -6816,7 +6849,7 @@ var AjaxObject = {
 	 */
 	settingsFolderRefresh : function(o) {
 		//SUGAR.email2.accounts.rebuildFolderList(); // refresh frameFolder
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 		var user = document.getElementById('userFolders');
 
 		SUGAR.email2.util.emptySelectOptions(user);
@@ -6864,7 +6897,7 @@ var AjaxObject = {
 	/**
 	 */
 	updateUserPrefs : function(o) {
-		SUGAR.email2.userPrefs = JSON.parse(o.responseText);
+		SUGAR.email2.userPrefs = YAHOO.lang.JSON.parse(o.responseText);
 		SUGAR.email2.folders.startCheckTimer(); // starts the auto-check interval
 	},
 
@@ -6873,8 +6906,8 @@ var AjaxObject = {
 	uploadAttachmentSuccessful : function(o) {
 		// clear out field
 		document.getElementById('email_attachment').value = '';
-
-		var ret = JSON.parse(o.responseText);
+		
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 		var idx = SUGAR.email2.composeLayout.currentInstanceId;
 		var overall = document.getElementById('addedFiles' + idx);
 		var index = overall.childNodes.length;
@@ -6921,7 +6954,7 @@ AjaxObject.accounts = {
 	callbackEditOutbound : {
 		success	: function(o)
 		{
-			var ret = JSON.parse(o.responseText);
+			var ret = YAHOO.lang.JSON.parse(o.responseText);
 			// show overlay
 			SUGAR.email2.accounts.showAddSmtp();
 
@@ -6955,7 +6988,7 @@ AjaxObject.accounts = {
 	},
 	callbackDeleteOutbound : {
 		success	: function(o) {
-		    var ret = JSON.parse(o.responseText);
+		    var ret = YAHOO.lang.JSON.parse(o.responseText);
 		    if(ret.is_error)
 		    {
 		        if(confirm(ret.error_message))
@@ -6985,7 +7018,7 @@ AjaxObject.accounts = {
 	       }
 
 	       //Check for server timeout / errors
-	       var ret = JSON.parse(o.responseText);
+	       var ret = YAHOO.lang.JSON.parse(o.responseText);
 	       var done = false;
 
 	       if (typeof(o.responseText) == 'undefined' || o.responseText == "" || ret == false) {
@@ -7056,17 +7089,22 @@ AjaxObject.accounts = {
 ///////////////////////////////////////////////////////////////////////////////
 ////	COMPOSE LAYOUT
 AjaxObject.composeLayout = {
-	/**
-	 * Populates the record id
-	 */
-	saveDraftCleanup : function(o) {
-		hideOverlay();
-		var ret = JSON.parse(o.responseText);
-		if(ret)
-		  SUGAR.email2.composeLayout.forceCloseCompose(ret.composeLayoutId);
-		else if (o.responseText)
-		  overlay(mod_strings.LBL_ERROR_SAVING_DRAFT, o.responseText, 'alert');
-	}
+    /**
+     * Populates the record id
+     */
+    saveDraftCleanup : function(o) {
+        var ret;
+        hideOverlay();
+
+        try {
+            ret = YAHOO.lang.JSON.parse(o.responseText);
+            SUGAR.email2.composeLayout.forceCloseCompose(ret.composeLayoutId);
+        } catch(err) {
+            if (o.responseText) {
+                overlay(mod_strings.LBL_ERROR_SAVING_DRAFT, o.responseText, 'alert');
+            }
+        }
+    }
 };
 
 AjaxObject.composeLayout.callback = {
@@ -7083,7 +7121,7 @@ AjaxObject.detailView = {
 	 * Pops-up a printable view of an email
 	 */
 	displayPrintable : function(o) {
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 		var displayTemplate = new YAHOO.SUGAR.Template(SUGAR.email2.templates['viewPrintable']);
 		// 2 below must be in global context
 		meta = ret.meta;
@@ -7114,7 +7152,7 @@ AjaxObject.detailView = {
 	 */
 	displayView : function(o) {
 		var SED = SUGAR.email2.detailView;
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 
 		if(!SED.viewDialog) {
 			SED.viewDialog = new YAHOO.widget.Dialog("viewDialog", {
@@ -7145,7 +7183,7 @@ AjaxObject.detailView = {
 	 */
 	showQuickCreateForm : function(o) {
 		var SED = SUGAR.email2.detailView;
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 
 		if(!SED.quickCreateDialog) {
 			SED.quickCreateDialog = new YAHOO.widget.Dialog("quickCreate", {
@@ -7221,7 +7259,7 @@ AjaxObject.detailView = {
 
 	saveQuickCreateFormAndReply : function(o) {
 	    hideOverlay();
-	    var ret = JSON.parse(o.responseText);
+	    var ret = YAHOO.lang.JSON.parse(o.responseText);
         SUGAR.email2.detailView.quickCreateDialog.hide();
         var qcd = SUGAR.email2.detailView.quickCreateDialog;
         var type = (qcd.qcmodule == 'Cases') ? 'replyCase' : 'reply';
@@ -7295,7 +7333,7 @@ AjaxObject.detailView = {
 	showEmailDetailView : function(o) {
         hideOverlay();
         var SED = SUGAR.email2.detailView;
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 
 		if(!SED.quickCreateDialog) {
 			SED.quickCreateDialog = new YAHOO.widget.Dialog("emailDetailDialog", {
@@ -7330,7 +7368,7 @@ AjaxObject.detailView = {
 	showAssignmentDialogWithData : function(o) {
         var SEC = SUGAR.email2.contextMenus;
 		hideOverlay();
-        var ret = JSON.parse(o.responseText);
+        var ret = YAHOO.lang.JSON.parse(o.responseText);
         if (!SEC.assignmentDialog) {
 	        SEC.assignmentDialog = new YAHOO.widget.Dialog("assignmentDialog", {
 	        	visible:false,
@@ -7357,8 +7395,8 @@ AjaxObject.detailView = {
 
 	showImportForm : function(o) {
 		var SED = SUGAR.email2.detailView;
-		var ret = JSON.parse(o.responseText);
-
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
+        
         document.getElementById('quickCreateContent').innerHTML = "";
         hideOverlay();
         if (!ret) {
@@ -7459,7 +7497,7 @@ AjaxObject.detailView = {
     },
     showRelateForm : function(o) {
         var SED = SUGAR.email2.detailView;
-    	var ret = JSON.parse(o.responseText);
+    	var ret = YAHOO.lang.JSON.parse(o.responseText);
         document.getElementById('quickCreateContent').innerHTML = "";
         hideOverlay();
         if (!ret) {
@@ -7536,7 +7574,7 @@ AjaxObject.detailView.callback = {
 	emailDetail : {
 		success	: function(o) {
 			SUGAR.email2.o = o;
-			var ret = JSON.parse(o.responseText);
+			var ret = YAHOO.lang.JSON.parse(o.responseText);
 			SUGAR.email2.detailView.consumeMetaDetail(ret);
 		},
 		argument: [targetDiv],
@@ -7547,7 +7585,7 @@ AjaxObject.detailView.callback = {
 	emailPreview : {
 		success	: function(o) {
 			SUGAR.email2.o = o;
-			var ret = JSON.parse(o.responseText);
+			var ret = YAHOO.lang.JSON.parse(o.responseText);
 			SUGAR.email2.detailView.consumeMetaPreview(ret);
 		},
 		failure	: AjaxObject.handleFailure,
@@ -7590,7 +7628,7 @@ AjaxObject.folders = {
 	rebuildFolders : function(o) {
 		hideOverlay();
 
-		var data = JSON.parse(o.responseText);
+		var data = YAHOO.lang.JSON.parse(o.responseText);
 
 		email2treeinit(SUGAR.email2.tree, data.tree_data, 'frameFolders', data.param);
 		SUGAR.email2.folders.setSugarFolders();
@@ -7646,7 +7684,7 @@ var callbackOutboundTest = {
 
 var callbackTeamInfoForSettings = {
 success : function (o) {
-	var data = JSON.parse(o.responseText);
+	var data = YAHOO.lang.JSON.parse(o.responseText);
 	document.getElementById('EditViewGroupFolderTeamTD').innerHTML = data.defaultgroupfolder;
 },
 failure	: AjaxObject.handleFailure,
@@ -7660,7 +7698,7 @@ success : function (o) {
 	hideOverlay();
 	if (o.responseText != "")  {
 		var statusString = "";
-		var data = JSON.parse(o.responseText);
+		var data = YAHOO.lang.JSON.parse(o.responseText);
 		for(i=0; i<data.length; i++) {
 			statusString = statusString + data[i] + '<br/>';
 		}
@@ -7689,7 +7727,7 @@ var callbackDelete = {
 var callbackEmailDetailMultiple = {
 	success	: function(o) {
 		hideOverlay();
-		var retMulti = JSON.parse(o.responseText);
+		var retMulti = YAHOO.lang.JSON.parse(o.responseText);
 		var ret = new Object();
 
 		for(var i=0; i<retMulti.length; i++) {
@@ -7735,7 +7773,7 @@ var callbackFolderRename = {
 };
 var callbackFolderDelete = {
 	success	: function(o) {
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 		if (ret.status) {
 		    if (ret.folder_id) {
 		        var node = SUGAR.email2.folders.getNodeFromId(ret.folder_id);
@@ -7759,7 +7797,7 @@ var callbackFolderDelete = {
 };
 var callbackFolderSave = {
 	success	: function(o) {
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 
 		switch(ret.action) {
 			case 'newFolderSave':
@@ -7944,7 +7982,7 @@ var callbackRebuildShowAccountList = {
 
 var callbackRefreshSugarFolders = {
 	success	: function(o) {
-		var t = JSON.parse(o.responseText);
+		var t = YAHOO.lang.JSON.parse(o.responseText);
 		SUGAR.email2.folders.setSugarFoldersEnd(t);
 	},
 	failure	: AjaxObject.handleFailure,
@@ -7964,17 +8002,14 @@ var callbackReplyForward = {
         try {
 			var html = t.getContent();
 
-            if (a.type != 'draft') {
-    			if(SUGAR.email2.userPrefs.signatures.signature_prepend == 'true') {
-    				html += "&nbsp;<div><hr></div>" + a.description;
-    			} else {
-    				html =  "&nbsp;<div><hr></div>" + a.description + html;
-    			}
-            }else {
-                html = a.description;
-            }
+            html = "&nbsp;<div><hr></div>" + a.description;
 
 			t.setContent(html);//
+
+            if (a.type != 'draft') {
+                // Next step, attach signature
+                SUGAR.email2.composeLayout.resizeEditorSetSignature(idx,true);
+            }
 
 		} catch(e) {
 			if (retryCount < 5) {
@@ -8066,7 +8101,7 @@ var callbackUploadAttachment = {
 };
 var callbackUserPrefs = {
 	success	: function(o) {
-		SUGAR.email2.userPrefs = JSON.parse(o.responseText);
+		SUGAR.email2.userPrefs = YAHOO.lang.JSON.parse(o.responseText);
 	},
 	failure	: AjaxObject.handleFailure,
 	timeout	: AjaxObject.timeout,
@@ -8084,7 +8119,7 @@ var callbackContextmenus = {
 
 var callbackCheckEmail2 = {
 	success : function(o) {
-		var ret = JSON.parse(o.responseText);
+		var ret = YAHOO.lang.JSON.parse(o.responseText);
 		overlay(app_strings.LBL_EMAIL_CHECKING_NEW, ret.text);
 
 
@@ -8781,281 +8816,6 @@ function AddressSearchResultsGridInit()
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/**
-  Complex layout init
- */
-function complexLayoutInit() {
-	var se = SUGAR.email2;
-	var Dom = YAHOO.util.Dom;
-	se.e2Layout = {
-    	getInnerLayout : function(rows) {
-        	se.listViewLayout = new YAHOO.widget.Layout('listViewDiv', {
-            	parent: se.complexLayout,  
-	    		border:true,
-	            hideOnLayout: true,
-	            height: 400,
-				units: [{
-					position: "center",
-				    scroll:false, // grid should autoScroll itself
-				    split:true,
-				    body: "<div id='emailGrid'></div><div id='dt-pag-nav'></div> "
-				},{
-					position: "bottom",
-				    scroll:true,
-				    collapse: false,
-				    resize: true,
-				    useShim:true,
-				    height:'250',
-				    body: "<div id='listBottom' />"
-				},{
-				    position: "right",
-				    scroll:true,
-				    collapse: false,
-				    resize: true,
-				    useShim:true,
-				    width:'250',
-				    body: "<div id='listRight' />",
-				    titlebar: false //,header: "right"
-				}]
-            });
-        	se.complexLayout.on("render", function(){
-        		var height = SUGAR.email2.innerLayout.get("element").clientHeight - 30;
-				SUGAR.email2.innerLayout.get("activeTab").get("contentEl").parentNode.style.height = height + "px";
-				SUGAR.email2.listViewLayout.set("height", height);
-				SUGAR.email2.listViewLayout.render();
-        	});
-            se.listViewLayout.render();
-            //CSS hack for now
-            se.listViewLayout.get("element").parentNode.parentNode.style.padding = "0px"
-            var rp = se.listViewLayout.resizePreview = function() {
-            	var pre = Dom.get("displayEmailFramePreview");
-            	if (pre) {
-            		var parent = Dom.getAncestorByClassName(pre, "yui-layout-bd");
-            		pre.style.height = (parent.clientHeight - pre.offsetTop) + "px";
-            	}
-            };
-            se.listViewLayout.getUnitByPosition("bottom").on("heightChange", se.autoSetLayout);
-            se.listViewLayout.getUnitByPosition("right").on("endResize", se.autoSetLayout);
-            se.e2Layout.setPreviewPanel(rows);
-            se.previewLayout = se.listViewLayout;
-            return se.listViewLayout;
-        },
-        
-        getInnerLayout2Rows : function() {
-            return this.getInnerLayout(true);
-        },
-        getInnerLayout2Columns : function() {
-            return this.getInnerLayout(false);
-        },
-        
-        init : function(){
-            // initialize state manager, we will use cookies
-//                Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
-        	var viewHeight = document.documentElement ? document.documentElement.clientHeight : self.innerHeight;
-        	se.complexLayout = new YAHOO.widget.Layout("container", {
-        		border:true,
-                hideOnLayout: true,
-                height: Dom.getViewportHeight() - (document.getElementById('header').clientHeight ) - 65,
-                width: Dom.getViewportWidth() - 40,
-                units: [{
-                	position: "center",
-                    scroll:false,
-                    body: "<div id='emailtabs'></div>"
-                },
-                {
-                	position: "left",
-                	scroll: true,
-                	body: "<div id='lefttabs'></div>",
-                    collapse: true,
-                    width: 210,
-                    minWidth: 100,
-                    resize:true,
-                    useShim:true,
-                    titlebar: true,
-                    header: "&nbsp;"
-                },
-                {
-                    header: Dom.get('footerLinks').innerHTML,
-					position: 'bottom',
-					id: 'mbfooter',
-					height: 22,
-					border: false
-                }]
-            });
-        	se.complexLayout.render();
-        	var tp = se.innerLayout = new YAHOO.widget.TabView("emailtabs");
-			tp.addTab(new YAHOO.widget.Tab({ 
-				label: "Inbox",
-				scroll : true,
-				content : "<div id='listViewDiv'/>",
-				id : "center",
-				active : true
-			}));
-        	var centerEl = se.complexLayout.getUnitByPosition('center').get('wrap');
-			tp.appendTo(centerEl);
-			//CSS hack for now
-			tp.get("element").style.borderRight = "1px solid #666"
-			
-			var listV =  this.getInnerLayout2Rows();
-			listV.set("height", tp.get("element").clientHeight - 25);
-			listV.render();
-                
-            se.leftTabs = new YAHOO.widget.TabView("lefttabs");
-            var folderTab = new YAHOO.widget.Tab({ 
-				label: app_strings.LBL_EMAIL_FOLDERS_SHORT,
-				scroll : true,
-				content : "<div id='emailtree'/>",
-				id : "tree",
-				active : true
-			});
-            folderTab.on("activeChange", function(o){ 
-            	if (o.newValue) {
-            		se.complexLayout.getUnitByPosition("left").set("header", app_strings.LBL_EMAIL_FOLDERS);
-            	}
-            });
-            se.leftTabs.addTab(folderTab);
-            
-            var tabContent = SUGAR.util.getAndRemove("searchTab");
-            var searchTab = new YAHOO.widget.Tab({ 
-				label: app_strings.LBL_EMAIL_SEARCH_SHORT,
-				scroll : true,
-				content : tabContent.innerHTML,
-				id : tabContent.id
-			});
-            searchTab.on("activeChange", function(o){ 
-            	if (o.newValue) 
-            	{
-            		se.complexLayout.getUnitByPosition("left").set("header", app_strings.LBL_EMAIL_SEARCH);
-            	   //Setup the calendars if needed
-	               Calendar.setup ({inputField : "searchDateFrom", ifFormat : calFormat, showsTime : false, button : "searchDateFrom_trigger", singleClick : true, step : 1, weekNumbers:false});
-	               Calendar.setup ({inputField : "searchDateTo", ifFormat : calFormat, showsTime : false, button : "searchDateTo_trigger", singleClick : true, step : 1, weekNumbers:false});
-                   
-	               //Initalize sqs object for assigned user name 
-	               se.e2Layout.initSQSObject('advancedSearchForm','assigned_user_name');  
-	               
-	               //Attach event handler for when the relate module option is selected for the correct sqs object
-	               var parentSearchArgs = {'formName':'advancedSearchForm','fieldName':'data_parent_name_search',
-	                                        'moduleSelectField':'data_parent_type_search','fieldId':'data_parent_id_search'};
-	               YAHOO.util.Event.addListener('data_parent_type_search', 'change',function(){ 
-	                   SUGAR.email2.composeLayout.enableQuickSearchRelate(null,parentSearchArgs) });
-	               
-	               //If enter key is pressed, perform search
-	               var  addKeyPressFields = ['searchSubject','searchFrom','searchTo','data_parent_name_search','searchDateTo','searchDateFrom','attachmentsSearch','assigned_user_name'];
-	               for(var i=0; i < addKeyPressFields.length;i++)
-	               {
-    	               YAHOO.util.Event.addListener(window.document.forms['advancedSearchForm'].elements[addKeyPressFields[i]],"keydown", function(e){
-                    		if (e.keyCode == 13) {
-                    			YAHOO.util.Event.stopEvent(e);
-                    			SUGAR.email2.search.searchAdvanced();
-                    		}
-            	       });
-	               }
-				   //Initiate quick search for the search tab.  Do this only when the tab is selected rather than onDomLoad for perf. gains.
-	               enableQS(true);
-	               //Clear parent values if selecting another parent type.
-	               YAHOO.util.Event.addListener('data_parent_type_search','change', 
-	                   function(){ 
-	                       document.getElementById('data_parent_id_search').value =''; 
-	                       document.getElementById('data_parent_name_search').value =''; 
-	                   });
-            	
-            	}
-            });
-            se.leftTabs.addTab(searchTab);
-            
-            var resizeTabBody = function() {
-            	var height = SUGAR.email2.leftTabs.get("element").clientHeight - 30;
-				SUGAR.email2.leftTabs.get("activeTab").get("contentEl").parentNode.style.height = height + "px";
-            }
-            resizeTabBody();
-            se.complexLayout.on("render", resizeTabBody);
-            se.leftTabs.on("activeTabChange", resizeTabBody);
-			//hack to allow left pane scroll bar to fully show
-          	var lefttabsDiv = document.getElementById('lefttabs');
-			var lefttabsDivParent = Dom.getAncestorBy(lefttabsDiv);
-			var lefttabsDivGParent = Dom.getAncestorBy(lefttabsDivParent);
-			lefttabsDivParent.style.width = lefttabsDivGParent.offsetWidth - 10 + "px";
-          
-        },
-        initSQSObject: function(formName,fieldName)
-        {
-            var fullFieldName = formName + '_' + fieldName; //SQS Convention
-            var resultName = fullFieldName + '_' + 'results';
-            
-            if (QSFieldsArray[fullFieldName] != null) 
-            {
-                QSFieldsArray[fullFieldName].destroy();
-                delete QSFieldsArray[fullFieldName];
-            }
-            if (QSProcessedFieldsArray[fullFieldName])
-            QSProcessedFieldsArray[fullFieldName] = false;
-
-            if( Dom.get(resultName) )
-            {
-                var obj = document.getElementById(resultName);
-                obj.parentNode.removeChild(obj);
-            }
-        },
-        setPreviewPanel: function(rows) {
-        	if (rows) {
-            	SUGAR.email2.listViewLayout.getUnitByPosition("right").set("width", 0);
-            	SUGAR.email2.listViewLayout.getUnitByPosition("bottom").set("height", 250);
-            	Dom.get("listRight").innerHTML = "";
-            	Dom.get("listBottom").innerHTML = "<div id='_blank' />";
-            } else {
-            	SUGAR.email2.listViewLayout.getUnitByPosition("bottom").set("height", 0);
-            	SUGAR.email2.listViewLayout.getUnitByPosition("right").set("width", 250);
-            	Dom.get("listBottom").innerHTML = "";
-            	Dom.get("listRight").innerHTML = "<div id='_blank' />";
-            }
-        }
-    };
-	se.e2Layout.init();
-}
-
-var myBufferedListenerObject = new Object();
-myBufferedListenerObject.refit = function() {
-    if(SUGAR.email2.grid) {
-        SUGAR.email2.grid.autoSize();
-    }
-}
-// End of File modules/Emails/javascript/complexLayout.js
-                                
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
 
 /******************************************************************************
  * Initialize Email 2.0 Application
@@ -9343,9 +9103,6 @@ function createTreePanel(treeData, params) {
 	
 	//if (treeData.nodes && treeData[0].id == "Home")
 	//	treeData = treeData[0];
-
-	addChildNodes(root, treeData);
-	
 	return tree;
 }
 
@@ -9356,8 +9113,9 @@ function addChildNodes(parentNode, parentData) {
 	for (i in nodes) {
 		if (typeof(nodes[i]) == 'object') {
 			if (nodes[i].data) {
-				nodes[i].data.href = '#';
-				var node = new YAHOO.widget.TextNode(nodes[i].data, parentNode)
+                // See comment about href below.
+				// nodes[i].data.href = '#';
+				var node = new YAHOO.widget.TextNode(nodes[i].data, parentNode);
 				node.action = nodes[i].data.action;
 			} else {
 				if (nodes[i].id == SUGAR.language.get('app_strings','LBL_EMAIL_HOME_FOLDER')) {
@@ -9369,7 +9127,10 @@ function addChildNodes(parentNode, parentData) {
 				if (nodes[i].cls) {
 					nodes[i].className = nodes[i].cls;
 				}
-				nodes[i].href = "#";
+                // Previously, span was added in the label so it was rendering in the tree.
+                // Default behavior is to wrap in span if no href property, and since this href
+                // doesn't do anything, remove it so that it will be wrapped in spans.
+                // nodes[i].href = "#";
 				if (nodes[i].text) nodes[i].label = nodes[i].text;
 				//Override YUI child node creation
 				if (nodes[i].children) {
@@ -9482,6 +9243,281 @@ YAHOO.extend(SUGAR.email2.folders.folderDD, YAHOO.util.DDProxy, {
     	}
     }
 });// End of File modules/Emails/javascript/init.js
+                                
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
+/**
+  Complex layout init
+ */
+function complexLayoutInit() {
+	var se = SUGAR.email2;
+	var Dom = YAHOO.util.Dom;
+	se.e2Layout = {
+    	getInnerLayout : function(rows) {
+        	se.listViewLayout = new YAHOO.widget.Layout('listViewDiv', {
+            	parent: se.complexLayout,  
+	    		border:true,
+	            hideOnLayout: true,
+	            height: 400,
+				units: [{
+					position: "center",
+				    scroll:false, // grid should autoScroll itself
+				    split:true,
+				    body: "<div id='emailGrid'></div><div id='dt-pag-nav'></div> "
+				},{
+					position: "bottom",
+				    scroll:true,
+				    collapse: false,
+				    resize: true,
+				    useShim:true,
+				    height:'250',
+				    body: "<div id='listBottom' />"
+				},{
+				    position: "right",
+				    scroll:true,
+				    collapse: false,
+				    resize: true,
+				    useShim:true,
+				    width:'250',
+				    body: "<div id='listRight' />",
+				    titlebar: false //,header: "right"
+				}]
+            });
+        	se.complexLayout.on("render", function(){
+        		var height = SUGAR.email2.innerLayout.get("element").clientHeight - 30;
+				SUGAR.email2.innerLayout.get("activeTab").get("contentEl").parentNode.style.height = height + "px";
+				SUGAR.email2.listViewLayout.set("height", height);
+				SUGAR.email2.listViewLayout.render();
+        	});
+            se.listViewLayout.render();
+            //CSS hack for now
+            se.listViewLayout.get("element").parentNode.parentNode.style.padding = "0px"
+            var rp = se.listViewLayout.resizePreview = function() {
+            	var pre = Dom.get("displayEmailFramePreview");
+            	if (pre) {
+            		var parent = Dom.getAncestorByClassName(pre, "yui-layout-bd");
+            		pre.style.height = (parent.clientHeight - pre.offsetTop) + "px";
+            	}
+            };
+            se.listViewLayout.getUnitByPosition("bottom").on("heightChange", se.autoSetLayout);
+            se.listViewLayout.getUnitByPosition("right").on("endResize", se.autoSetLayout);
+            se.e2Layout.setPreviewPanel(rows);
+            se.previewLayout = se.listViewLayout;
+            return se.listViewLayout;
+        },
+        
+        getInnerLayout2Rows : function() {
+            return this.getInnerLayout(true);
+        },
+        getInnerLayout2Columns : function() {
+            return this.getInnerLayout(false);
+        },
+        
+        init : function(){
+            // initialize state manager, we will use cookies
+//                Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+        	var viewHeight = document.documentElement ? document.documentElement.clientHeight : self.innerHeight;
+        	se.complexLayout = new YAHOO.widget.Layout("container", {
+        		border:true,
+                hideOnLayout: true,
+                height: Dom.getViewportHeight() - (document.getElementById('header').clientHeight ) - 65,
+                width: Dom.getViewportWidth() - 40,
+                units: [{
+                	position: "center",
+                    scroll:false,
+                    body: "<div id='emailtabs'></div>"
+                },
+                {
+                	position: "left",
+                	scroll: true,
+                	body: "<div id='lefttabs'></div>",
+                    collapse: true,
+                    width: 210,
+                    minWidth: 100,
+                    resize:true,
+                    useShim:true,
+                    titlebar: true,
+                    header: "&nbsp;"
+                },
+                {
+                    header: Dom.get('footerLinks').innerHTML,
+					position: 'bottom',
+					id: 'mbfooter',
+					height: 22,
+					border: false
+                }]
+            });
+        	se.complexLayout.render();
+        	var tp = se.innerLayout = new YAHOO.widget.TabView("emailtabs");
+			tp.addTab(new YAHOO.widget.Tab({ 
+				label: "Inbox",
+				scroll : true,
+				content : "<div id='listViewDiv'/>",
+				id : "center",
+				active : true
+			}));
+        	var centerEl = se.complexLayout.getUnitByPosition('center').get('wrap');
+			tp.appendTo(centerEl);
+			//CSS hack for now
+			tp.get("element").style.borderRight = "1px solid #666"
+			
+			var listV =  this.getInnerLayout2Rows();
+			listV.set("height", tp.get("element").clientHeight - 25);
+			listV.render();
+            
+            se.leftTabs = new YAHOO.widget.TabView("lefttabs");
+            var folderTab = new YAHOO.widget.Tab({ 
+				label: app_strings.LBL_EMAIL_FOLDERS_SHORT,
+				scroll : true,
+				content : "<div id='emailtree'/>",
+				id : "tree",
+				active : true
+			});
+            folderTab.on("activeChange", function(o){ 
+            	if (o.newValue) {
+            		se.complexLayout.getUnitByPosition("left").set("header", app_strings.LBL_EMAIL_FOLDERS);
+            	}
+            });
+            se.leftTabs.addTab(folderTab);
+            
+            var tabContent = SUGAR.util.getAndRemove("searchTab");
+            var searchTab = new YAHOO.widget.Tab({ 
+				label: app_strings.LBL_EMAIL_SEARCH_SHORT,
+				scroll : true,
+				content : tabContent.innerHTML,
+				id : tabContent.id
+			});
+            searchTab.on("activeChange", function(o){ 
+            	if (o.newValue) 
+            	{
+            		se.complexLayout.getUnitByPosition("left").set("header", app_strings.LBL_EMAIL_SEARCH);
+            	   //Setup the calendars if needed
+	               Calendar.setup ({inputField : "searchDateFrom", ifFormat : calFormat, showsTime : false, button : "searchDateFrom_trigger", singleClick : true, step : 1, weekNumbers:false});
+	               Calendar.setup ({inputField : "searchDateTo", ifFormat : calFormat, showsTime : false, button : "searchDateTo_trigger", singleClick : true, step : 1, weekNumbers:false});
+                   
+	               //Initalize sqs object for assigned user name 
+	               se.e2Layout.initSQSObject('advancedSearchForm','assigned_user_name');  
+	               
+	               //Attach event handler for when the relate module option is selected for the correct sqs object
+	               var parentSearchArgs = {'formName':'advancedSearchForm','fieldName':'data_parent_name_search',
+	                                        'moduleSelectField':'data_parent_type_search','fieldId':'data_parent_id_search'};
+	               YAHOO.util.Event.addListener('data_parent_type_search', 'change',function(){ 
+	                   SUGAR.email2.composeLayout.enableQuickSearchRelate(null,parentSearchArgs) });
+	               
+	               //If enter key is pressed, perform search
+	               var  addKeyPressFields = ['searchSubject','searchFrom','searchTo','data_parent_name_search','searchDateTo','searchDateFrom','attachmentsSearch','assigned_user_name'];
+	               for(var i=0; i < addKeyPressFields.length;i++)
+	               {
+    	               YAHOO.util.Event.addListener(window.document.forms['advancedSearchForm'].elements[addKeyPressFields[i]],"keydown", function(e){
+                    		if (e.keyCode == 13) {
+                    			YAHOO.util.Event.stopEvent(e);
+                    			SUGAR.email2.search.searchAdvanced();
+                    		}
+            	       });
+	               }
+				   //Initiate quick search for the search tab.  Do this only when the tab is selected rather than onDomLoad for perf. gains.
+	               enableQS(true);
+	               //Clear parent values if selecting another parent type.
+	               YAHOO.util.Event.addListener('data_parent_type_search','change', 
+	                   function(){ 
+	                       document.getElementById('data_parent_id_search').value =''; 
+	                       document.getElementById('data_parent_name_search').value =''; 
+	                   });
+            	
+            	}
+            });
+            se.leftTabs.addTab(searchTab);
+            
+            var resizeTabBody = function() {
+            	var height = SUGAR.email2.leftTabs.get("element").clientHeight - 30;
+				SUGAR.email2.leftTabs.get("activeTab").get("contentEl").parentNode.style.height = height + "px";
+            }
+            resizeTabBody();
+            se.complexLayout.on("render", resizeTabBody);
+            se.leftTabs.on("activeTabChange", resizeTabBody);
+			//hack to allow left pane scroll bar to fully show
+          	var lefttabsDiv = document.getElementById('lefttabs');
+			var lefttabsDivParent = Dom.getAncestorBy(lefttabsDiv);
+			var lefttabsDivGParent = Dom.getAncestorBy(lefttabsDivParent);
+			lefttabsDivParent.style.width = lefttabsDivGParent.offsetWidth - 10 + "px";
+          
+        },
+        initSQSObject: function(formName,fieldName)
+        {
+            var fullFieldName = formName + '_' + fieldName; //SQS Convention
+            var resultName = fullFieldName + '_' + 'results';
+            
+            if (QSFieldsArray[fullFieldName] != null) 
+            {
+                QSFieldsArray[fullFieldName].destroy();
+                delete QSFieldsArray[fullFieldName];
+            }
+            if (QSProcessedFieldsArray[fullFieldName])
+            QSProcessedFieldsArray[fullFieldName] = false;
+
+            if( Dom.get(resultName) )
+            {
+                var obj = document.getElementById(resultName);
+                obj.parentNode.removeChild(obj);
+            }
+        },
+        setPreviewPanel: function(rows) {
+        	if (rows) {
+            	SUGAR.email2.listViewLayout.getUnitByPosition("right").set("width", 0);
+            	SUGAR.email2.listViewLayout.getUnitByPosition("bottom").set("height", 250);
+            	Dom.get("listRight").innerHTML = "";
+            	Dom.get("listBottom").innerHTML = "<div id='_blank' />";
+            } else {
+            	SUGAR.email2.listViewLayout.getUnitByPosition("bottom").set("height", 0);
+            	SUGAR.email2.listViewLayout.getUnitByPosition("right").set("width", 250);
+            	Dom.get("listBottom").innerHTML = "";
+            	Dom.get("listRight").innerHTML = "<div id='_blank' />";
+            }
+        }
+    };
+	se.e2Layout.init();
+}
+
+var myBufferedListenerObject = new Object();
+myBufferedListenerObject.refit = function() {
+    if(SUGAR.email2.grid) {
+        SUGAR.email2.grid.autoSize();
+    }
+}
+// End of File modules/Emails/javascript/complexLayout.js
                                 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
@@ -9984,5 +10020,6 @@ search.itemSelectEvent.subscribe(function(e,args){var data=args[2];var fields=th
 eval(this.qs_obj['post_onblur_function']+'(collection_extended, this.qs_obj.id)');}});search.textboxFocusEvent.subscribe(function(){this.oldValue=this.getInputEl().value;});search.selectionEnforceEvent.subscribe(function(e,args){if(this.oldValue!=args[1]){this.clearFields();}else{this.getInputEl().value=this.oldValue;}});search.dataReturnEvent.subscribe(function(e,args){if(this.getInputEl().value.length==0&&args[2].length>0){var data=[];for(var key in this.qs_obj.field_list){data[data.length]=args[2][0][this.qs_obj.field_list[key]];}
 this.getInputEl().value=data[this.key];this.itemSelectEvent.fire(this,"",data);}});search.typeAheadEvent.subscribe(function(e,args){this.getInputEl().value=this.getInputEl().value.replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');});if(typeof QSFieldsArray[combo_id]=='undefined'&&qsFields[qsField].id){QSFieldsArray[combo_id]=search;}}}}});}
 function registerSingleSmartInputListener(input){if((c=input.className)&&(c.indexOf("sqsEnabled")!=-1)){enableQS(true);}}
-if(typeof QSFieldsArray=='undefined'){QSFieldsArray=new Array();QSProcessedFieldsArray=new Array();}// End of File include/javascript/quicksearch.js
+if(typeof QSFieldsArray=='undefined'){QSFieldsArray=new Array();QSProcessedFieldsArray=new Array();}
+// End of File include/javascript/quicksearch.js
                                 

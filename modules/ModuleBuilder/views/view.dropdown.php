@@ -87,18 +87,18 @@ class ViewDropdown extends SugarView
 		if(!empty($_REQUEST['view_package']) && $_REQUEST['view_package'] != 'studio'){
 			require_once('modules/ModuleBuilder/MB/ModuleBuilder.php');
 			$mb = new ModuleBuilder();
-			$this->module = $mb->getPackageModule($_REQUEST['view_package'], $_REQUEST['view_module']);
+			$module = $mb->getPackageModule($_REQUEST['view_package'], $_REQUEST['view_module']);
 			$package = $mb->packages[$_REQUEST['view_package']];
 			$package_name = $package->name;
-			$this->module->getVardefs();
+			$module->getVardefs();
 			if(empty($_REQUEST['dropdown_name']) && !empty($_REQUEST['field'])){
 				$new = true;
 				$_REQUEST['dropdown_name'] = $_REQUEST['field']. '_list';
 			}
 			
-			$vardef = (!empty($this->module->mbvardefs->fields[$_REQUEST['dropdown_name']]))? $this->module->mbvardefs->fields[$_REQUEST['dropdown_name']]: array();
-			$this->module->mblanguage->generateAppStrings(false) ; 
-            $my_list_strings = array_merge( $my_list_strings, $this->module->mblanguage->appListStrings[$selected_lang.'.lang.php'] );
+			$vardef = (!empty($module->mbvardefs->fields[$_REQUEST['dropdown_name']]))? $module->mbvardefs->fields[$_REQUEST['dropdown_name']]: array();
+			$module->mblanguage->generateAppStrings(false) ;
+            $my_list_strings = array_merge( $my_list_strings, $module->mblanguage->appListStrings[$selected_lang.'.lang.php'] );
 		}
 
 		foreach($my_list_strings as $key=>$value){

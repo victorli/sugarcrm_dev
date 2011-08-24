@@ -122,6 +122,9 @@ class Meeting extends SugarBean {
 			$this->field_name_map[$field['name']] = $field;
 		}
 //		$this->fill_in_additional_detail_fields();
+        if(!empty($GLOBALS['app_list_strings']['duration_intervals'])) {
+            $this->minutes_values = $GLOBALS['app_list_strings']['duration_intervals'];
+        }
 	}
 
 	/**

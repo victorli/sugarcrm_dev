@@ -74,7 +74,7 @@ if ( typeof(SUGAR.field.file) == 'undefined' ) {
             }
         },
         checkEapiLogin: function(res) {
-            var failedLogins = JSON.parse(res.responseText);
+            var failedLogins = YAHOO.lang.JSON.parse(res.responseText);
             if ( failedLogins.length == 0 ) { return; }
 
             for ( var idx in failedLogins ) {

@@ -222,6 +222,11 @@ class Document extends SugarBean {
             $result = $this->db->query($query);
             $row = $this->db->fetchByAssoc($result);
 
+            //populate name
+            if(isset($this->document_name))
+            {
+            	$this->name = $this->document_name;
+            }
             //popuplate filename
             if(isset($row['filename']))$this->filename = $row['filename'];
             //$this->latest_revision = $row['revision'];

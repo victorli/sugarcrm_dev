@@ -220,7 +220,7 @@ class Scheduler extends SugarBean {
 		}
 
 		$now = TimeDate::getInstance()->getNow();
-		$now = $now->setTime($now->hour, $now->min)->asDb();
+		$now = $now->setTime($now->hour, $now->min, "00")->asDb();
 		$validTimes = $this->deriveDBDateTimes($this);
 
 		if(is_array($validTimes) && in_array($now, $validTimes)) {
@@ -581,15 +581,17 @@ class Scheduler extends SugarBean {
 		/**
 		 * If "Execute If Missed bit is set
 		 */
+        $now = TimeDate::getInstance()->getNow();
+		$now = $now->setTime($now->hour, $now->min, "00")->asDb();
+        
 		if($focus->catch_up == 1) {
 			if($focus->last_run == null) {
 				// always "catch-up"
-				$validJobTime[] = $timedate->nowDb();
+				$validJobTime[] = $now;
 			} else {
 				// determine what the interval in min/hours is
 				// see if last_run is in it
 				// if not, add NOW
-                $now = $timedate->nowDb();
                 if(!empty($validJobTime) && ($focus->last_run < $validJobTime[0]) && ($now > $validJobTime[0])) {
 				// cn: empty() bug 5914;
 				//if(!empty) should be checked, becasue if a scheduler is defined to run every day 4pm, then after 4pm, and it runs as 4pm, the $validJobTime will be empty, and it should not catch up

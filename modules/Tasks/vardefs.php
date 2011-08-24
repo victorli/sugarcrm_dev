@@ -176,6 +176,7 @@ $dictionary['Task'] = array('table' => 'tasks',
         'type'=>'phone',
         'source'=>'non-db',
         'vname'=>'LBL_CONTACT_PHONE',
+        'studio' => array('listview' => false)
     ),
 
  'contact_email'=>
@@ -184,6 +185,7 @@ $dictionary['Task'] = array('table' => 'tasks',
         'type'=>'varchar',
 		'vname' => 'LBL_EMAIL_ADDRESS',
 		'source' => 'non-db',
+        'studio' => array('listview' => false)
     ),
 
   'priority' =>

@@ -117,6 +117,35 @@ class QuickSearchDefaults {
         return $qsParent;
     }
 
+    /**
+     * getQSContact
+     * This is a customized method to handle returning in JSON notation the QuickSearch formats
+     * for searching the Contacts module for a contact name.  The method takes into account
+     * the locale settings (s = salutation, f = first name, l = last name) that are permissible.
+     * It should be noted though that any other characters present in the formatting will render
+     * this widget non-functional.
+     * @return The JSON format of a QuickSearch definition for the Contacts module
+     */
+    function getQSContact($name, $idName) {
+        global $app_strings, $locale;
+
+        $qsContact = array('form' => $this->form_name,
+        				   'method'=>'get_contact_array',
+                           'modules'=>array('Contacts'),
+                           'field_list' => array('salutation', 'first_name', 'last_name', 'id'),
+                           'populate_list' => array($name, $idName, $idName, $idName),
+                           'required_list' => array($idName),
+                           'group' => 'or',
+                           'conditions' => array(
+                                                 array('name'=>'first_name', 'op'=>'like_custom','end'=>'%','value'=>''),
+                                                 array('name'=>'last_name', 'op'=>'like_custom','end'=>'%','value'=>'')
+                                           ),
+                           'order'=>'last_name',
+                           'limit'=>'30',
+                           'no_match_text'=> $app_strings['ERR_SQS_NO_MATCH']);
+        return $qsContact;
+    }    
+    
     function getQSUser($p_name = 'assigned_user_name', $p_id ='assigned_user_id') {
         global $app_strings;
 
@@ -150,8 +179,7 @@ class QuickSearchDefaults {
     // BEGIN QuickSearch functions for 4.5.x backwards compatibility support
     function getQSScripts() {
 		global $sugar_version, $sugar_config, $theme;
-		$qsScripts = '<script type="text/javascript" src="' . getJSPath('include/JSON.js') .'"></script>
-		<script type="text/javascript">sqsWaitGif = "' . SugarThemeRegistry::current()->getImageURL('sqsWait.gif') . '";</script>
+		$qsScripts = '<script type="text/javascript">sqsWaitGif = "' . SugarThemeRegistry::current()->getImageURL('sqsWait.gif') . '";</script>
 		<script type="text/javascript" src="'. getJSPath('include/javascript/quicksearch.js') . '"></script>';
 		return $qsScripts;
 	}

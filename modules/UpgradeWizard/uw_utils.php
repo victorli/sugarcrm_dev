@@ -595,11 +595,14 @@ function deleteCache(){
 		$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'modules',$allModFiles);
 		foreach($allModFiles as $file)
 		{
-	       	if(file_exists($file))
-	       	{
-	       	   unlink($file);
-	       	}
-		}
+            if(file_exists($file)) {
+	       		if(is_dir($file)) {
+				  rmdir_recursive($file);
+	       		} else {
+	       		  unlink($file);
+	       		}
+               }
+	    }
 	}
 	
 	//Clean jsLanguage from cache
@@ -2874,7 +2877,9 @@ function uwFindAllFiles($dir, $the_array, $include_dirs=false, $skip_dirs=array(
 		}
 	}
 
+    if (!is_dir($dir)) { return $the_array; }   // Bug # 46035, just checking for valid dir 
 	$d = dir($dir);
+    if ($d === false)  { return $the_array; }   // Bug # 46035, more checking
 
 	while($f = $d->read()) {
 	    if($f == "." || $f == "..") { // skip *nix self/parent
@@ -5027,6 +5032,9 @@ function upgradeSugarCache($file)
 	}
 
 	$allFiles = array();
+	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/database"))) {
+		$allFiles = findAllFiles(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/database"), $allFiles);
+	}	
 	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/SugarCache"))) {
 		$allFiles = findAllFiles(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/SugarCache"), $allFiles);
 	}
@@ -5168,6 +5176,75 @@ function unlinkUpgradeFiles($version)
 		
 		logThis('end upgrade for DocumentRevisions classic files');
 	}	
+
+    //First check if we even have the scripts_for_patch/files_to_remove directory
+    require_once('modules/UpgradeWizard/UpgradeRemoval.php');
+    
+    if(file_exists($_SESSION['unzip_dir'].'/scripts/files_to_remove'))
+    {
+       $files_to_remove = glob($_SESSION['unzip_dir'].'/scripts/files_to_remove/*.php');
+      
+       foreach($files_to_remove as $script)
+       {
+       		if(preg_match('/UpgradeRemoval(\d+)x\.php/', $script, $matches))
+       		{
+       	   	   $checkVersion = $matches[1] + 1; //Increment by one to check everything equal or below the target version
+       	   	   $upgradeClass = 'UpgradeRemoval' . $matches[1] . 'x';
+       	   	   require_once($_SESSION['unzip_dir'].'/scripts/files_to_remove/' . $upgradeClass . '.php');    	   	   
+
+       	   	   //Check to make sure we should load and run this UpgradeRemoval instance
+       	   	   if($checkVersion <= $version && class_exists($upgradeClass))
+       	   	   {
+       	   	   	  $upgradeInstance = new $upgradeClass();
+       	   	   	  if($upgradeInstance instanceof UpgradeRemoval)
+       	   	   	  {
+       	   	   	  	  logThis('Running UpgradeRemoval instance ' . $upgradeClass);
+       	   	   	  	  logThis('Files will be backed up to custom/backup');
+	       	   	   	  $files = $upgradeInstance->getFilesToRemove($version);
+	       	   	   	  foreach($files as $file)
+	       	   	   	  {
+	       	   	   	  	 logThis($file);
+	       	   	   	  }
+	       	   	   	  $upgradeInstance->processFilesToRemove($files);
+       	   	   	  }
+       	   	   }
+       	    }
+       }
+    }  	
+    
+    //Check if we have a custom directory
+    if(file_exists('custom/scripts/files_to_remove'))
+    {
+       //Now find
+       $files_to_remove = glob('custom/scripts/files_to_remove/*.php');
+       
+       foreach($files_to_remove as $script)
+       {
+       	   if(preg_match('/\/files_to_remove\/(.*?)\.php$/', $script, $matches))
+       	   {
+       	   	   require_once($script);
+       	   	   $upgradeClass  = $matches[1];
+       	   	          	   	   
+       	   	   if(!class_exists($upgradeClass))
+       	   	   {
+       	   	   	  continue;
+       	   	   }
+
+       	   	   $upgradeInstance = new $upgradeClass();
+       	   	   if($upgradeInstance instanceof UpgradeRemoval)
+       	   	   {
+       	   	   	  	  logThis('Running Custom UpgradeRemoval instance ' . $upgradeClass);
+	       	   	   	  $files = $upgradeInstance->getFilesToRemove($version);
+	       	   	   	  foreach($files as $file)
+	       	   	   	  {
+	       	   	   	  	 logThis($file);
+	       	   	   	  }
+	       	   	   	  $upgradeInstance->processFilesToRemove($files);
+       	   	   }     	   	
+       	   }
+       }
+    } 	
+	
 }
 
 if (!function_exists("getValidDBName"))
@@ -5188,13 +5265,15 @@ if (!function_exists("getValidDBName"))
         if ($ensureUnique)
         {
             $md5str = md5($name);
-            $tail = substr ( $name, -11) ;
+            $tail = substr ( $name, -8) ;
             $temp = substr($md5str , strlen($md5str)-4 );
-            $result = substr ( $name, 0, 10) . $temp . $tail ;
+            $result = substr ( $name, 0, 7) . $temp . $tail ;
         }else if ($len > ($maxLen - 5))
         {
-            $result = substr ( $name, 0, 11) . substr ( $name, 11 - $maxLen + 5);
+            $result = substr ( $name, 0, 8) . substr ( $name, 8 - $maxLen + 5);
         }
         return strtolower ( $result ) ;
     }
+    
+
 }

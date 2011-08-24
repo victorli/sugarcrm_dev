@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @return SamlSettings object
  */
-function saml_get_settings() 
+function get_saml_settings()
 {
     // this function should be modified to return the SAML settings for the current user
 

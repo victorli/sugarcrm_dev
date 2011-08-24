@@ -124,6 +124,8 @@ class Call extends SugarBean
 			$this->field_name_map[$field['name']] = $field;
 		}
 
+		
+		
 
          if(!empty($GLOBALS['app_list_strings']['duration_intervals']))
         	$this->minutes_values = $GLOBALS['app_list_strings']['duration_intervals'];

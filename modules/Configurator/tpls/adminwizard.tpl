@@ -96,10 +96,10 @@ function disableReturnSubmission(e) {
     <div class="nav-buttons">
         <input title="{$MOD.LBL_WIZARD_SKIP_BUTTON}"  
             onclick="document.location.href='{$SKIP_URL}';" class="button"  
-            type="button" name="cancel" value="  {$MOD.LBL_WIZARD_SKIP_BUTTON}  " />&nbsp;
+            type="button" name="cancel" value="  {$MOD.LBL_WIZARD_SKIP_BUTTON}  " id="skip_tab" />&nbsp;
         <input title="{$MOD.LBL_WIZARD_NEXT_BUTTON}"
             class="button primary" type="button" name="next_tab1" value="  {$MOD.LBL_WIZARD_NEXT_BUTTON}  "
-            onclick="SugarWizard.changeScreen('system',false);" />
+            onclick="SugarWizard.changeScreen('system',false);" id="next_tab_system" />
     </div>
 </div>
 
@@ -143,10 +143,10 @@ function disableReturnSubmission(e) {
     <div class="nav-buttons">
             <input title="{$MOD.LBL_WIZARD_BACK_BUTTON}"
                 class="button" type="button" name="next_tab1" value="  {$MOD.LBL_WIZARD_BACK_BUTTON}  "
-                onclick="SugarWizard.changeScreen('welcome',true);" />&nbsp;
+                onclick="SugarWizard.changeScreen('welcome',true);" id="previous_tab_welcome" />&nbsp;
             <input title="{$MOD.LBL_WIZARD_NEXT_BUTTON}"
                 class="button primary" type="button" name="next_tab1" value="  {$MOD.LBL_WIZARD_NEXT_BUTTON}  "
-                onclick="SugarWizard.changeScreen('locale',false);" />
+                onclick="SugarWizard.changeScreen('locale',false);" id="next_tab_locale" />
     </div>
 </div>
 
@@ -230,10 +230,10 @@ function disableReturnSubmission(e) {
     <div class="nav-buttons">
         <input title="{$MOD.LBL_WIZARD_BACK_BUTTON}"
             class="button" type="button" name="next_tab1" value="  {$MOD.LBL_WIZARD_BACK_BUTTON}  "
-            onclick="SugarWizard.changeScreen('system',true);" />&nbsp;
+            onclick="SugarWizard.changeScreen('system',true);" id="previous_tab_system" />&nbsp;
         <input title="{$MOD.LBL_WIZARD_NEXT_BUTTON}"
             class="button primary" type="button" name="next_tab1" value="  {$MOD.LBL_WIZARD_NEXT_BUTTON}  "
-            onclick="SugarWizard.changeScreen('smtp',false); changeEmailScreenDisplay('{$mail_smtptype}'); document.getElementById('AdminWizard').mail_smtptype.value = 'gmail';" />
+            onclick="SugarWizard.changeScreen('smtp',false); changeEmailScreenDisplay('{$mail_smtptype}'); document.getElementById('AdminWizard').mail_smtptype.value = 'gmail';" id="next_tab_smtp" />
     </div>
 </div>
 
@@ -360,9 +360,9 @@ function disableReturnSubmission(e) {
     <div class="nav-buttons">
         <input title="{$MOD.LBL_WIZARD_BACK_BUTTON}"
             class="button" type="button" name="next_tab1" value="  {$MOD.LBL_WIZARD_BACK_BUTTON}  "
-            onclick="SugarWizard.changeScreen('locale',true);" />&nbsp;
+            onclick="SugarWizard.changeScreen('locale',true);" id="previous_tab_locale" />&nbsp;
         <input title="{$MOD.LBL_WIZARD_CONTINUE_BUTTON}" class="button primary"
-            onclick="if(adjustEmailSettings())this.form.submit();" type="button" name="continue" value="{$MOD.LBL_WIZARD_CONTINUE_BUTTON}" />&nbsp;
+            onclick="if(adjustEmailSettings())this.form.submit();" type="button" name="continue" value="{$MOD.LBL_WIZARD_CONTINUE_BUTTON}" id="next_tab_continue" />&nbsp;
     </div>
 </div>
 			</div>

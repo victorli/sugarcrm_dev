@@ -320,7 +320,7 @@ class DynamicField {
         $relID = $field_def['id_name'];
         $ret_array['rel_table'] = $rel_table;
         $ret_array['name_field'] = $name_field;
-        $ret_array['select'] = ", $name_field {$field_def['name']} ";
+        $ret_array['select'] = ", {$tableName}.{$relID}, {$name_field} {$field_def['name']} ";
         $ret_array['from'] = " LEFT JOIN $rel_table $joinTableAlias ON $tableName.$relID = $joinTableAlias.id"
                             . " AND $joinTableAlias.deleted=0 ";
         return $ret_array;
@@ -890,16 +890,18 @@ class DynamicField {
 
     }
 
-   function populateXTPL(&$xtpl, $view){
+   function populateXTPL(&$xtpl, $view) {
+
         if($this->bean->hasCustomFields()){
             $results = $this->getAllFieldsView($view, 'xtpl');
             foreach($results as $name=>$value){
-                if(is_array($value['xtpl'])){
-                    foreach($value['xtpl'] as $xName=>$xValue){
+                if(is_array($value['xtpl']))
+                {
+                    foreach($value['xtpl'] as $xName=>$xValue)
+                    {
                         $xtpl->assign(strtoupper($xName), $xValue);
-
                     }
-                }else{
+                } else {
                     $xtpl->assign(strtoupper($name), $value['xtpl']);
                 }
             }
@@ -915,20 +917,23 @@ class DynamicField {
     function getAllFieldsView($view, $type){
         $results = array();
          foreach($this->bean->field_defs as $name=>$data){
-            if(empty($data['source']) || $data['source'] != 'custom_fields')continue;
+            if(empty($data['source']) || $data['source'] != 'custom_fields')
+            {
+            	continue;
+            }
             require_once ('modules/DynamicFields/FieldCases.php');
             $field = get_widget ( $data ['type'] );
             $field->populateFromRow($data);
             $field->view = $view;
             $field->bean =& $this->bean;
-            switch(strtolower($type)){
+            switch(strtolower($type))
+            {
                 case 'xtpl':
                     $results[$name] = array('xtpl'=>$field->get_xtpl());
                     break;
                 case 'html':
                     $results[$name] = array('html'=> $field->get_html(), 'label'=> $field->get_html_label(), 'fieldType'=>$field->data_type, 'isCustom' =>true);
                     break;
-
             }
 
         }

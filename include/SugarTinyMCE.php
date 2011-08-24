@@ -115,11 +115,18 @@ class SugarTinyMCE {
 		}
 		
 		$config = $this->defaultConfig;
+		//include tinymce lang file
+        $lang = substr($GLOBALS['current_language'], 0, 2);
+        if(file_exists('include/javascript/tiny_mce/langs/'.$lang.'.js'))
+        {
+			$config['language'] = $lang;
+        }
 		$config['directionality'] = SugarThemeRegistry::current()->directionality;
 		$config['elements'] = $targets;
 		$config['theme_advanced_buttons1'] = $this->buttonConfigs['default']['buttonConfig']; 
 		$config['theme_advanced_buttons2'] = $this->buttonConfigs['default']['buttonConfig2']; 
-		$config['theme_advanced_buttons3'] = $this->buttonConfigs['default']['buttonConfig3']; 
+		$config['theme_advanced_buttons3'] = $this->buttonConfigs['default']['buttonConfig3'];
+
 		$jsConfig = $json->encode($config);
 		
 		$instantiateCall = '';

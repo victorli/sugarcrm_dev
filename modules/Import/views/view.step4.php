@@ -459,6 +459,7 @@ class ImportViewStep4 extends SugarView
                                     $existing_focus->$focus_key = $focus_value;
                                                    
                             $focus = $existing_focus;
+                            $focus->update_date_entered = true;
                         }
                         unset($existing_focus);
                     }

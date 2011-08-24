@@ -62,10 +62,9 @@ class ParserLabel extends ModuleBuilderParser
         {
             if (preg_match ( '/^label_/', $key ) && strcmp ( $value, 'no_change' ) != 0)
             {
-                $labels [ strtoupper(substr ( $key, 6 )) ] = $value ;
+                $labels [ strtoupper(substr ( $key, 6 )) ] = remove_xss(from_html($value),false);
             }
         }
-
         if (!empty($this->packageName)) //we are in Module builder
         {
             return self::addLabels ( $language, $labels, $this->moduleName, "custom/modulebuilder/packages/{$this->packageName}/modules/{$this->moduleName}/language" ) ;
