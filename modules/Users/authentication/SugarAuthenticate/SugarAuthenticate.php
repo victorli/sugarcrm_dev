@@ -159,7 +159,7 @@ class SugarAuthenticate{
 		if (isset ($sugar_config['unique_key']))$_SESSION['unique_key'] = $sugar_config['unique_key'];
 
 		//set user language
-		if (isset ($reset_language_on_default_user) && $reset_language_on_default_user && $$GLOBALS['current_user']->user_name == $sugar_config['default_user_name']) {
+		if (isset ($reset_language_on_default_user) && $reset_language_on_default_user && $GLOBALS['current_user']->user_name == $sugar_config['default_user_name']) {
 			$authenticated_user_language = $sugar_config['default_language'];
 		} else {
 			$authenticated_user_language = isset($_REQUEST['login_language']) ? $_REQUEST['login_language'] : (isset ($_REQUEST['ck_login_language_20']) ? $_REQUEST['ck_login_language_20'] : $sugar_config['default_language']);

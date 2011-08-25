@@ -36,7 +36,7 @@
 
  
 require_once('modules/Import/ImportFieldSanitize.php');
-require_once('modules/Import/sources/ImportFile.php');
+require_once("modules/Import/ImportFile.php");
 require_once('tests/SugarTestLangPackCreator.php');
 
 class ImportFieldSanitizeTest extends Sugar_PHPUnit_Framework_TestCase

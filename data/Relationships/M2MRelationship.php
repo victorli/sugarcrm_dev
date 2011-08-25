@@ -53,20 +53,62 @@ class M2MRelationship extends SugarRelationship
         $this->name = $def['name'];
 
         $lhsModule = $def['lhs_module'];
-        $this->lhsLinkDef = VardefManager::getLinkFieldForRelationship(
-            $lhsModule, BeanFactory::getBeanName($lhsModule), $this->name
-        );
+        $this->lhsLinkDef = $this->getLinkedDefForModuleByRelationship($lhsModule);
         $this->lhsLink = $this->lhsLinkDef['name'];
 
         $rhsModule = $def['rhs_module'];
-        $this->rhsLinkDef = VardefManager::getLinkFieldForRelationship(
-            $rhsModule, BeanFactory::getBeanName($rhsModule), $this->name
-        );
+        $this->rhsLinkDef = $this->getLinkedDefForModuleByRelationship($rhsModule);
         $this->rhsLink = $this->rhsLinkDef['name'];
 
         $this->self_referencing = $lhsModule == $rhsModule;
     }
 
+    /**
+     * Find the link entry for a particular relationship and module.
+     *
+     * @param $module
+     * @return array|bool
+     */
+    public function getLinkedDefForModuleByRelationship($module)
+    {
+        $results = VardefManager::getLinkFieldForRelationship( $module, BeanFactory::getBeanName($module), $this->name);
+        //Only a single link was found
+        if( isset($results['name']) )
+        {
+            return $results;
+        }
+        //Multiple links with same relationship name
+        else if( is_array($results) )
+        {
+            $GLOBALS['log']->error("Warning: Multiple links found for relationship {$this->name} within module {$module}");
+            return $this->getMostAppropriateLinkedDefinition($results);
+        }
+        else
+        {
+            return FALSE;
+        }
+    }
+
+    /**
+     * Find the most 'appropriate' link entry for a relationship/module in which there are multiple link entries with the
+     * same relationship name.
+     *
+     * @param $links
+     * @return bool
+     */
+    protected function getMostAppropriateLinkedDefinition($links)
+    {
+        foreach($links as $link)
+        {
+            if( isset($link['name']) && $link['name'] == $this->name )
+            {
+                return $link;
+            }
+        }
+        //Unable to find an appropriate link, return nothing rather an invalid link.
+        $GLOBALS['log']->error("Unable to determine best appropriate link for relationship {$this->name}");
+        return FALSE;
+    }
     /**
      * @param  $lhs SugarBean left side bean to add to the relationship.
      * @param  $rhs SugarBean right side bean to add to the relationship.
@@ -238,7 +280,12 @@ class M2MRelationship extends SugarRelationship
     public function getJoin($link, $params = array(), $return_array = false)
     {
         $linkIsLHS = $link->getSide() == REL_LHS;
-        $startingTable = $link->getFocus()->table_name;
+        if ($linkIsLHS) {
+            $startingTable = (empty($params['left_join_table_alias']) ? $link->getFocus()->table_name : $params['left_join_table_alias']);
+        } else {
+            $startingTable = (empty($params['right_join_table_alias']) ? $link->getFocus()->table_name : $params['right_join_table_alias']);
+        }
+
         $startingKey = $linkIsLHS ? $this->def['lhs_key'] : $this->def['rhs_key'];
         $startingJoinKey = $linkIsLHS ? $this->def['join_key_lhs'] : $this->def['join_key_rhs'];
         $joinTable = $this->getRelationshipTable();

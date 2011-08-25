@@ -479,7 +479,7 @@ function dropdownChanged(value){
     select.length = 0;
 
     var count = 0;
-    for(var key  in app_list_strings[value]){
+    for(var key in app_list_strings[value]){
         select[count] = new Option(app_list_strings[value][key], key);
         count++;
     }

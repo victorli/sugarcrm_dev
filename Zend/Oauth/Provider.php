@@ -9,6 +9,9 @@ require_once 'Zend/Uri/Http.php';
  */
 class Zend_Oauth_Provider
 {
+    /**
+     * OAuth result statuses
+     */
     const OK = 0;
     const BAD_NONCE = 1;
     const BAD_TIMESTAMP = 2;
@@ -23,6 +26,10 @@ class Zend_Oauth_Provider
     const SIGNATURE_METHOD_REJECTED = 11;
     const OAUTH_VERIFIER_INVALID = 12;
 
+    /**
+     * Error names for error reporting
+     * @var array
+     */
     protected $errnames = array(
      self::BAD_NONCE => "nonce_used",
      self::BAD_TIMESTAMP => "timestamp_refused",

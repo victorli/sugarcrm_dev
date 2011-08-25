@@ -104,7 +104,7 @@ class ImportDuplicateCheckTest extends Sugar_PHPUnit_Framework_TestCase
         
         $idc = new ImportDuplicateCheck($focus);
         
-        $this->assertTrue($idc->isADuplicateRecord(array('idx_contacts_del_last::last_name')));
+        $this->assertTrue($idc->isADuplicateRecord(array('idx_contacts_del_last')));
         
         $focus->mark_deleted($id);
     }
@@ -136,7 +136,7 @@ class ImportDuplicateCheckTest extends Sugar_PHPUnit_Framework_TestCase
         
         $idc = new ImportDuplicateCheck($focus);
         
-        $this->assertFalse($idc->isADuplicateRecord(array('idx_contacts_del_last::'.$last_name)));
+        $this->assertFalse($idc->isADuplicateRecord(array('idx_contacts_del_last')));
     }
     
     public function testIsADuplicateRecordEmailNotFound()

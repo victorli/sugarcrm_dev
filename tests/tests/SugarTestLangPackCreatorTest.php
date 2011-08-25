@@ -37,14 +37,6 @@
  
 class SugarTestLangPackCreatorTest extends Sugar_PHPUnit_Framework_TestCase
 {
-    public function setUp()
-    {
-        SugarCache::$isCacheReset = false;
-
-        if( empty($GLOBALS['current_language']) )
-            $GLOBALS['current_language'] = $GLOBALS['sugar_config']['default_language'];
-    }
-    
     public function testSetAnyLanguageStrings() 
     {
         $langpack = new SugarTestLangPackCreator();

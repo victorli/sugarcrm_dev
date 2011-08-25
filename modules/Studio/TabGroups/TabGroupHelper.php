@@ -118,7 +118,10 @@ class TabGroupHelper{
         	$completedIndexes[$index] = true;
         	
     	} 
+
         // Force a rebuild of the app language
+        global $current_user;
+        include('modules/Administration/RebuildJSLang.php');
     	sugar_cache_clear('app_strings.'.$grouptab_lang);
      	$newFile = create_custom_directory('include/tabConfig.php');
      	write_array_to_file("GLOBALS['tabStructure']", $tabGroups, $newFile);

@@ -55,16 +55,7 @@ class SugarFoldersTest extends Sugar_PHPUnit_Framework_TestCase
 		$this->folder = new SugarFolder(); 
 		$this->additionalFolders = array();
 		$this->emails = array();
-        $beanList = array();
-        $beanFiles = array();
-        require('include/modules.php');
-        $GLOBALS['beanList'] = $beanList;
-        $GLOBALS['beanFiles'] = $beanFiles;
-        if (empty($GLOBALS['current_language'])) {
-            $GLOBALS['current_language'] = 'en_us';
-        }
-        $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
-    }
+	}
 
     public function tearDown()
     {

@@ -163,6 +163,7 @@ class ViewQuickedit extends ViewAjax
             $editFileName = 'custom/modules/'.$module.'/views/view.edit.php';
         }
 
+        $defaultProcess = true;
         if(file_exists($editFileName)) {
            include($editFileName);
            $c = $module . 'ViewEdit';
@@ -170,6 +171,7 @@ class ViewQuickedit extends ViewAjax
            if(class_exists($c)) {
                $view = new $c;
                if($view->useForSubpanel) {
+	            	$defaultProcess = false;
 
                    //Check if we should use the module's QuickCreate.tpl file
                    if($view->useModuleQuickCreateTemplate && file_exists('modules/'.$module.'/tpls/QuickCreate.tpl')) {
@@ -192,7 +194,10 @@ class ViewQuickedit extends ViewAjax
                    echo json_encode(array('title'=> $this->bean->name, 'url'=>'index.php?module=' . $this->bean->module_dir . '&action=DetailView&record=' . $this->bean->id ,'html'=> $captured, 'eval'=>true));
                }
            }
-       }else {
+       }
+
+        //if defaultProcess is still true, then the default edit view was not used.  Finish processing.
+        if($defaultProcess){
 		   $form_name = 'form_DC'.$this->ev->view .'_'.$module;
 		   $this->ev->formName = $form_name;
 		   $this->ev->process(true, $form_name);

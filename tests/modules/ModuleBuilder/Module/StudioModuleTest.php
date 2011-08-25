@@ -46,7 +46,6 @@ class StudioModuleTest extends Sugar_PHPUnit_Framework_TestCase
         require('include/modules.php');
         $GLOBALS['beanList'] = $beanList;
         $GLOBALS['beanFiles'] = $beanFiles;
-        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
         $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
 
     }
@@ -55,7 +54,6 @@ class StudioModuleTest extends Sugar_PHPUnit_Framework_TestCase
     {
         unset($GLOBALS['beanFiles']);
         unset($GLOBALS['beanList']);
-        unset($GLOBALS['current_user']);
         unset($GLOBALS['app_list_strings']);
     }
 

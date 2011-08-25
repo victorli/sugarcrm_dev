@@ -152,7 +152,7 @@ class SugarView
             $content = ob_get_clean();
             $module = $this->module;
             $ajax_ret = array(
-                 'content' => utf8_encode($content),
+                'content' => mb_detect_encoding($content) == "UTF-8" ? $content : utf8_encode($content),
                  'menu' => array(
                      'module' => $module,
                      'label' => translate($module),

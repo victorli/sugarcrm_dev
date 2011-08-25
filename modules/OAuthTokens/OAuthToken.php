@@ -218,17 +218,17 @@ class OAuthToken extends SugarBean
 	    $res = $db->query(sprintf("SELECT * FROM oauth_nonce WHERE conskey='%s' AND nonce_ts > %d", $db->quote($key), $ts));
 	    if($res && $db->fetchByAssoc($res)) {
 	        // we have later ts
-	        return OAUTH_BAD_TIMESTAMP;
+	        return Zend_Oauth_Provider::BAD_TIMESTAMP;
 	    }
 
 	    $res = $db->query(sprintf("SELECT * FROM oauth_nonce WHERE conskey='%s' AND nonce='%s' AND nonce_ts = %d", $db->quote($key), $db->quote($nonce), $ts));
 	    if($res && $db->fetchByAssoc($res)) {
 	        // Already seen this one
-	        return OAUTH_BAD_NONCE;
+	        return Zend_Oauth_Provider::BAD_NONCE;
         }
         $db->query(sprintf("DELETE FROM oauth_nonce WHERE conskey='%s' AND nonce_ts < %d", $db->quote($key), $ts));
         $db->query(sprintf("INSERT INTO oauth_nonce(conskey, nonce, nonce_ts) VALUES('%s', '%s', %d)", $db->quote($key), $db->quote($nonce), $ts));
-	    return OAUTH_OK;
+	    return Zend_Oauth_Provider::OK;
 	}
 
 	public function mark_deleted($id)

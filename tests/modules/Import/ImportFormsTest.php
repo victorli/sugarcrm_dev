@@ -40,7 +40,6 @@ require_once 'include/Sugar_Smarty.php';
 require_once 'modules/Import/controller.php';
 require_once 'modules/Import/views/view.step3.php';
 require_once 'modules/Import/views/view.step4.php';
-require_once 'modules/Import/Importer.php';
 
 class ImportFormsTest extends Sugar_PHPUnit_Framework_OutputTestCase
 {
@@ -118,7 +117,7 @@ class ImportFormsTest extends Sugar_PHPUnit_Framework_OutputTestCase
     {
         $old_error_reporting = error_reporting(E_ALL);
 
-        Importer::handleImportErrors($errno, $errstr, $errfile, $errline);
+        ImportViewStep4::handleImportErrors($errno, $errstr, $errfile, $errline);
 
         switch ($errno) {
             case E_USER_WARNING:

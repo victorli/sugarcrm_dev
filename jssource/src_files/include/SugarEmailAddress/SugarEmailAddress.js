@@ -122,9 +122,20 @@
 		        if(event) {
 		           var elm = document.activeElement || event.explicitOriginalTarget;
 		           if(typeof elm.type != 'undefined' && /submit|button/.test(elm.type.toLowerCase())) {
-			          savePressed = true;
-		           }
+                        //if we are in here, then the element has been recognized as a button or submit type, so check the id
+                        //to make sure it is related to a submit button that should lead to a form submit
+
+                        //note that the document.activeElement and explicitOriginalTarget calls do not work consistantly across
+                        // all browsers, so we have to include this check after we are sure that the calls returned something as opposed to in the coindition above.
+                        // Also, since this function is called on blur of the email widget, we can't rely on a third object as a flag (a var or hidden form input)
+                        // since this function will fire off before the click event from a button is executed, which means the 3rd object will not get updated prior to this function running.
+                        if(/save|full|cancel|change/.test(elm.value.toLowerCase())){
+                           //this is coming from either a save, full form, cancel, or view change log button, we should set savePressed = true;
+                            savePressed = true;
+                        }
+                   }
 		        }
+
 		        
 		        if(savePressed || this.enterPressed) {
 		           setTimeout("SUGAR.EmailAddressWidget.instances." + this.id + ".forceSubmit()", 2100);
@@ -137,7 +148,13 @@
 		    var targetEl = this.getEventElement(event);
 		    var index = /[a-z]*\d?emailAddress(\d+)/i.exec(targetEl.id)[1];
 			var verifyElementFlag = Dom.get(this.id + 'emailAddressVerifiedFlag' + index);
-		    this.verifyElementValue = Dom.get(this.id + 'emailAddressVerifiedValue' + index);
+
+            if(this.verifyElementValue == null || typeof(this.verifyElementValue)=='undefined'){
+                //we can't do anything without this value, so just return
+                return false;
+            }
+
+            this.verifyElementValue = Dom.get(this.id + 'emailAddressVerifiedValue' + index);
 		    verifyElementFlag.value = (trim(targetEl.value) == '' || targetEl.value == this.verifyElementValue.value) ? "true" : "false"
 		    
 		    //Remove the span element if it is present

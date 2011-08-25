@@ -48,33 +48,33 @@
         tHasText : false,
         syncAddressCheckbox : true,
         originalBgColor : '#FFFFFF',
-        testCheckboxReady : function () {
-            for(var x in this.elems) {
-                var f = this.fromKey + "_" +this.elems[x];
-                var t = this.toKey + "_" + this.elems[x];
+        testCheckboxReady : function (obj) {
+            for(var x in obj.elems) {
+                var f = obj.fromKey + "_" +obj.elems[x];
+                var t = obj.toKey + "_" + obj.elems[x];
 
                 var e1 = Dom.get(t);
                 var e2 = Dom.get(f);
 
                 if(e1 != null && typeof e1 != "undefined" && e2 != null && typeof e2 != "undefined") {
 
-                    if(!this.tHasText && YAHOO.lang.trim(e1.value) != "") {
-                       this.tHasText = true;
+                    if(!obj.tHasText && YAHOO.lang.trim(e1.value) != "") {
+                       obj.tHasText = true;
                     }
 
                     if(e1.value != e2.value)
                     {
-                       this.syncAddressCheckbox = false;
+                       obj.syncAddressCheckbox = false;
                        break;
                     }
-                    this.originalBgColor = e1.style.backgroundColor;
+                    obj.originalBgColor = e1.style.backgroundColor;
                 }
             }
 
-            if(this.tHasText && this.syncAddressCheckbox)
+            if(obj.tHasText && obj.syncAddressCheckbox)
             {
                Dom.get(this.id).checked = true;
-               this.syncFields();
+               obj.syncFields();
             }
         },
         writeToSyncField : function(e) {

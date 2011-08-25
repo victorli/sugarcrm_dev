@@ -5167,6 +5167,75 @@ function unlinkUpgradeFiles($version)
 		
 		logThis('end upgrade for DocumentRevisions classic files');
 	}	
+
+    //First check if we even have the scripts_for_patch/files_to_remove directory
+    require_once('modules/UpgradeWizard/UpgradeRemoval.php');
+    
+    if(file_exists($_SESSION['unzip_dir'].'/scripts/files_to_remove'))
+    {
+       $files_to_remove = glob($_SESSION['unzip_dir'].'/scripts/files_to_remove/*.php');
+      
+       foreach($files_to_remove as $script)
+       {
+       		if(preg_match('/UpgradeRemoval(\d+)x\.php/', $script, $matches))
+       		{
+       	   	   $checkVersion = $matches[1] + 1; //Increment by one to check everything equal or below the target version
+       	   	   $upgradeClass = 'UpgradeRemoval' . $matches[1] . 'x';
+       	   	   require_once($_SESSION['unzip_dir'].'/scripts/files_to_remove/' . $upgradeClass . '.php');    	   	   
+
+       	   	   //Check to make sure we should load and run this UpgradeRemoval instance
+       	   	   if($checkVersion <= $version && class_exists($upgradeClass))
+       	   	   {
+       	   	   	  $upgradeInstance = new $upgradeClass();
+       	   	   	  if($upgradeInstance instanceof UpgradeRemoval)
+       	   	   	  {
+       	   	   	  	  logThis('Running UpgradeRemoval instance ' . $upgradeClass);
+       	   	   	  	  logThis('Files will be backed up to custom/backup');
+	       	   	   	  $files = $upgradeInstance->getFilesToRemove($version);
+	       	   	   	  foreach($files as $file)
+	       	   	   	  {
+	       	   	   	  	 logThis($file);
+	       	   	   	  }
+	       	   	   	  $upgradeInstance->processFilesToRemove($files);
+       	   	   	  }
+       	   	   }
+       	    }
+       }
+    }  	
+    
+    //Check if we have a custom directory
+    if(file_exists('custom/scripts/files_to_remove'))
+    {
+       //Now find
+       $files_to_remove = glob('custom/scripts/files_to_remove/*.php');
+       
+       foreach($files_to_remove as $script)
+       {
+       	   if(preg_match('/\/files_to_remove\/(.*?)\.php$/', $script, $matches))
+       	   {
+       	   	   require_once($script);
+       	   	   $upgradeClass  = $matches[1];
+       	   	          	   	   
+       	   	   if(!class_exists($upgradeClass))
+       	   	   {
+       	   	   	  continue;
+       	   	   }
+
+       	   	   $upgradeInstance = new $upgradeClass();
+       	   	   if($upgradeInstance instanceof UpgradeRemoval)
+       	   	   {
+       	   	   	  	  logThis('Running Custom UpgradeRemoval instance ' . $upgradeClass);
+	       	   	   	  $files = $upgradeInstance->getFilesToRemove($version);
+	       	   	   	  foreach($files as $file)
+	       	   	   	  {
+	       	   	   	  	 logThis($file);
+	       	   	   	  }
+	       	   	   	  $upgradeInstance->processFilesToRemove($files);
+       	   	   }     	   	
+       	   }
+       }
+    } 	
+	
 }
 
 if (!function_exists("getValidDBName"))
@@ -5196,4 +5265,6 @@ if (!function_exists("getValidDBName"))
         }
         return strtolower ( $result ) ;
     }
+    
+
 }

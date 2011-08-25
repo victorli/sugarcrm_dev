@@ -55,8 +55,8 @@ class ImportMapGoogle extends ImportMapOther
 	public function getMapping()
     {
          $return_array = array(
-             'first_name' => array('sugar_key' => 'first_name', 'sugar_label' => '', 'default_label' => 'Family Name'),
-             'last_name' => array('sugar_key' => 'last_name', 'sugar_label' => '', 'default_label' => 'Full Name'),
+             'first_name' => array('sugar_key' => 'first_name', 'sugar_label' => '', 'default_label' => 'Given Name'),
+             'last_name' => array('sugar_key' => 'last_name', 'sugar_label' => '', 'default_label' => 'Family Name'),
              'birthday' => array('sugar_key' => 'birthdate', 'sugar_label' => '', 'default_label' => 'Birthday'),
              'title' => array('sugar_key' => 'title', 'sugar_label' => '', 'default_label' => 'Title'),
              'notes' => array('sugar_key' => 'description', 'sugar_label' => '', 'default_label' => 'Notes'),
@@ -73,7 +73,7 @@ class ImportMapGoogle extends ImportMapOther
              'primary_address_state' => array('sugar_key' => 'primary_address_state', 'sugar_label' => '', 'default_label' => 'Work State'),
              'primary_address_country' => array('sugar_key' => 'primary_address_country', 'sugar_label' => '', 'default_label' => 'Work Country'),
 
-             'phone_main' => array('sugar_key' => '', 'sugar_label' => '', 'default_label' => 'Other Phone'),
+             'phone_main' => array('sugar_key' => 'phone_other', 'sugar_label' => '', 'default_label' => 'Main Phone'),
              'phone_mobile' => array('sugar_key' => 'phone_mobile', 'sugar_label' => '', 'default_label' => 'Mobile Phone'),
              'phone_home' => array('sugar_key' => 'phone_home', 'sugar_label' => '', 'default_label' => 'Home phone'),
              'phone_work' => array('sugar_key' => 'phone_work', 'sugar_label' => '', 'default_label' => 'Work phone'),
