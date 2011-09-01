@@ -115,8 +115,8 @@
 			{foreach from=$displayColumns key=colHeader item=params}
 				<th scope='col' width='{$params.width}%' nowrap="nowrap">
 					<div style='white-space: normal;'width='100%' align='{$params.align|default:'left'}'>
-	                {if $params.sortable|default:true}              
-                        <a href='javascript:sListView.order_checks("{$pageData.ordering.sortOrder|default:ASC}", "{$params.orderBy|default:$colHeader|lower}" , "{$pageData.bean.moduleDir}{"2_"}{$pageData.bean.objectName|upper}{"_ORDER_BY"}")' class='listViewThLinkS1'>{sugar_translate label=$params.label module=$pageData.bean.moduleDir}&nbsp;&nbsp;
+	                {if $params.sortable|default:true}
+		                <a href='#' onclick='location.href="{$pageData.urls.orderBy}{$params.orderBy|default:$colHeader|lower}"; return sListView.save_checks(0, "{$moduleString}");' class='listViewThLinkS1'>{sugar_translate label=$params.label module=$pageData.bean.moduleDir}&nbsp;&nbsp;
 						{if $params.orderBy|default:$colHeader|lower == $pageData.ordering.orderBy}
 							{if $pageData.ordering.sortOrder == 'ASC'}
 								{capture assign="imageName"}arrow_down.{$arrowExt}{/capture}

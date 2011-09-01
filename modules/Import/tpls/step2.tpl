@@ -159,3 +159,20 @@
 </td>
 </tr>
 </table>
+
+<br>
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+  <td align="left">
+        {if $displayBackBttn}
+            <input title="{$MOD.LBL_BACK}" accessKey="" class="button" type="submit" name="button" value="  {$MOD.LBL_BACK}  " id="goback">&nbsp;
+        {/if}
+      <input title="{$MOD.LBL_NEXT}" accessKey="" class="button" type="submit" name="button" value="  {$MOD.LBL_NEXT}  " id="gonext">
+    </td>
+</tr>
+</table>
+<script>
+{$JAVASCRIPT}
+</script>  
+</form>

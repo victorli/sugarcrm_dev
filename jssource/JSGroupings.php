@@ -54,7 +54,6 @@
                 'include/javascript/menu.js'            => 'include/javascript/sugar_grp1.js',
                 'include/javascript/calendar.js'        => 'include/javascript/sugar_grp1.js',
                 'include/javascript/quickCompose.js'    => 'include/javascript/sugar_grp1.js',
-                'include/javascript/importWizard.js'    => 'include/javascript/sugar_grp1.js',
                 'include/javascript/yui/build/yuiloader/yuiloader-min.js' => 'include/javascript/sugar_grp1.js',
                 //HTML decode
                 'include/javascript/phpjs/license.js' => 'include/javascript/sugar_grp1.js',

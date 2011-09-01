@@ -179,6 +179,8 @@ function dragDropInit(){
 
 resizeDDLists = function() {
 	var Dom = YAHOO.util.Dom;
+	if (!Dom.get('ul0'))
+            return;
     var body = document.getElementById('mbtabs');
     for(var msi = 0; msi < studiotabs.slotCount ; msi++){
         var targetHeight =  body.offsetHeight - (Dom.getY("ul" + msi) - Dom.getY(body)) - 20;
@@ -189,6 +191,10 @@ resizeDDLists = function() {
         if (targetHeight > 0 )
         	Dom.setStyle("ul" + msi, "height", targetHeight + "px");
     }
+	Studio2.scrollZones = {}
+	for (var i = 0; Dom.get("ul" + i); i++){
+		Studio2.scrollZones["ul" + i] = Studio2.getScrollZones("ul" + i);
+	}
 };
 
 function countListFields() {

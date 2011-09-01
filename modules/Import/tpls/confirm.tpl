@@ -173,7 +173,7 @@
             <td colspan="2"><h3>{$MOD.LBL_THIRD_PARTY_CSV_SOURCES}&nbsp;{sugar_help text=$MOD.LBL_THIRD_PARTY_CSV_SOURCES_HELP}</h3></td>
         </tr>
         <tr>
-            <td colspan="2" scope="row"><input class="radio" type="radio" name="external_source" value="" id='none'/>&nbsp;{$MOD.LBL_NONE}</td>
+            <td colspan="2" scope="row"><input class="radio" type="radio" name="external_source" value="" id='none' checked='checked'/>&nbsp;{$MOD.LBL_NONE}</td>
         </tr>
         <tr>
             <td colspan="2" scope="row"><input class="radio" type="radio" name="external_source" value="salesforce" id='sf_map'/>&nbsp;{$MOD.LBL_SALESFORCE}</td>
@@ -185,3 +185,13 @@
             <td colspan="2">&nbsp;</td>
         </tr>
     </table>
+
+    <table width="100%" cellpadding="2" cellspacing="0" border="0">
+        <tr>
+            <td align="left">
+                <input title="{$MOD.LBL_BACK}" accessKey="" id="goback" class="button" type="submit" name="button" value="  {$MOD.LBL_BACK}  ">&nbsp;
+                <input title="{$MOD.LBL_NEXT}" accessKey="" class="button" type="submit" name="button" value="  {$MOD.LBL_NEXT}  " id="gonext">
+            </td>
+        </tr>
+    </table>
+</form>

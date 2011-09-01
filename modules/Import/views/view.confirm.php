@@ -62,7 +62,6 @@ class ImportViewConfirm extends ImportView
         global $mod_strings, $app_strings, $current_user;
         global $sugar_config, $locale;
         
-        //echo "<pre>";print_r($_REQUEST);die();
         $this->ss->assign("IMPORT_MODULE", $_REQUEST['import_module']);
         $this->ss->assign("TYPE",( !empty($_REQUEST['type']) ? $_REQUEST['type'] : "import" ));
         $this->ss->assign("SOURCE_ID", $_REQUEST['source_id']);
@@ -70,7 +69,7 @@ class ImportViewConfirm extends ImportView
         $this->instruction = 'LBL_SELECT_PROPERTY_INSTRUCTION';
         $this->ss->assign('INSTRUCTION', $this->getInstruction());
 
-        $this->ss->assign("MODULE_TITLE", json_encode(htmlentities($this->getModuleTitle(false), ENT_NOQUOTES)));
+        $this->ss->assign("MODULE_TITLE", $this->getModuleTitle(false), ENT_NOQUOTES);
         $this->ss->assign("CURRENT_STEP", $this->currentStep);
         $sugar_config['import_max_records_per_file'] = ( empty($sugar_config['import_max_records_per_file']) ? 1000 : $sugar_config['import_max_records_per_file'] );
         $importSource = isset($_REQUEST['source']) ? $_REQUEST['source'] : 'csv' ;
@@ -211,14 +210,11 @@ class ImportViewConfirm extends ImportView
 
         $this->ss->assign("SAMPLE_ROWS",$rows);
         $JS = $this->_getJS($maxRecordsExceeded, $maxRecordsWarningMessg, $importMappingJS, $importFileMap );
+        $this->ss->assign("JAVASCRIPT", $JS);
         $content = $this->ss->fetch('modules/Import/tpls/confirm.tpl');
-
-        $submitContent = "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td align=\"right\">";
-        $submitContent .= "<input title=\"".$mod_strings['LBL_IMPORT_COMPLETE']."\" onclick=\"SUGAR.importWizard.closeDialog();\" accessKey=\"\" class=\"button\" type=\"submit\" name=\"finished\" value=\"  ".$mod_strings['LBL_IMPORT_COMPLETE']."  \" id=\"finished\">";
-        $submitContent .= "<input title=\"".$mod_strings['LBL_BACK']."\" accessKey=\"\" class=\"button\" type=\"submit\" name=\"button\" value=\"  ".$mod_strings['LBL_BACK']."  \" id=\"goback\">";
-	    $submitContent .= "<input title=\"".$mod_strings['LBL_NEXT']."\" accessKey=\"\" class=\"button primary\" type=\"submit\" name=\"button\" value=\"  ".$mod_strings['LBL_NEXT']."  \" id=\"gonext\"></td></tr></table></form>";
-
-        $this->sendJsonOutput($content, $submitContent,$JS, $encodeOutput);
+        $this->ss->assign("CONTENT",$content);
+        $this->ss->display('modules/Import/tpls/wizardWrapper.tpl');
+        
     }
 
     private function getEnclosureOptions($enclosure)
@@ -458,44 +454,16 @@ eoq;
 
 
 var import_mapping_js = $importMappingJS;
-document.getElementById('goback').onclick = function(){
+document.getElementById('goback').onclick = function()
+{
     document.getElementById('importconfirm').action.value = 'Step2';
-       	var success = function(data) {		
-			var response = YAHOO.lang.JSON.parse(data.responseText);
-			importWizardDialogDiv = document.getElementById('importWizardDialogDiv');
-			importWizardDialogTitle = document.getElementById('importWizardDialogTitle');
-			submitDiv = document.getElementById('submitDiv');
-			importWizardDialogDiv.innerHTML = response['html'];
-			importWizardDialogTitle.innerHTML = response['title'];
-			submitDiv.innerHTML = response['submitContent'];
-			eval(response['script']);
-		} 
-        var formObject = document.getElementById('importconfirm');
-		YAHOO.util.Connect.setForm(formObject);
-		var cObj = YAHOO.util.Connect.asyncRequest('POST', "index.php", {success: success, failure: success});
+    return true;
 }
 
-document.getElementById('gonext').onclick = function(){
+document.getElementById('gonext').onclick = function()
+{
     document.getElementById('importconfirm').action.value = 'Step3';
-    
-       	var success = function(data) {
-			var response = YAHOO.lang.JSON.parse(data.responseText);
-			importWizardDialogDiv = document.getElementById('importWizardDialogDiv');
-			importWizardDialogTitle = document.getElementById('importWizardDialogTitle');
-			submitDiv = document.getElementById('submitDiv');
-			importWizardDialogDiv.innerHTML = response['html'];
-			importWizardDialogTitle.innerHTML = response['title'];
-			
-			submitDiv.innerHTML = response['submitContent'];
-			SUGAR.util.evalScript(response['submitContent']);
-			eval(response['script']);
-
-		}
-    
-        var formObject = document.getElementById('importconfirm');
-		YAHOO.util.Connect.setForm(formObject);
-		var cObj = YAHOO.util.Connect.asyncRequest('POST', "index.php", {success: success, failure: success});
-
+    return true;
 }
 
 document.getElementById('custom_enclosure').onchange = function()
@@ -647,22 +615,8 @@ EOJAVASCRIPT;
         }
 
         $content = $ss->fetch('modules/Import/tpls/error.tpl');
-        $nothing ="";
-        $ss->assign("CONTENT",json_encode($nothing));
-        $ss->assign("SUBMITCONTENT",json_encode($nothing));
-        $ss->assign("JS",json_encode($content));
 
-        $this->errorScript .= htmlspecialchars($content, ENT_NOQUOTES);
-
-
-        if ($display){
-            echo json_encode(array(
-                'html'          => $nothing,
-                'submitContent' => $nothing,
-                'title'         => $this->getModuleTitle(false),
-                'script'        => $this->errorScript,
-            ));
-        }
+        echo $ss->fetch('modules/Import/tpls/error.tpl');
     }
 }
 

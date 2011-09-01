@@ -109,6 +109,8 @@ Calendar.setup = function (params) {
                         var cell = calendar.cells[cellIndex];
                         Dom.addClass(cell, calendar.Style.CSS_CELL_SELECTED);
                     }
+                    //Must return false to prevent onbeforeunload from firing in IE8
+                    return false;
                 });
                 
                 dialog.showEvent.subscribe(function() {

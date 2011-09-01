@@ -90,6 +90,8 @@ MBLoader.insert();
     <input type="button" class="button" value="{$mod.LBL_MODULEBUILDER}" onclick="ModuleBuilder.main('mb');">
     {/if}
     <input type="button" class="button" value="{$mod.LBL_DROPDOWNEDITOR}" onclick="ModuleBuilder.main('dropdowns');">
-    </td></tr></table>
+    </td><td align="left">
+        <img height="18" width="83" class="img" src="include/images/poweredby_sugarcrm.png" border="0" align="absmiddle"/>
+     </td></tr></table>
 </div>
 {include file='modules/ModuleBuilder/tpls/assistantJavascript.tpl'}

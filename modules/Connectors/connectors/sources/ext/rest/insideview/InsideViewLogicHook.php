@@ -182,6 +182,7 @@ class InsideViewLogicHook {
             // Check if the user should be shown the frame or not
             $smarty = new Sugar_Smarty();
             $tplName = 'modules/Connectors/connectors/sources/ext/rest/insideview/tpls/InsideView.tpl';
+            require_once('include/connectors/utils/ConnectorUtils.php');
             $connector_language = ConnectorUtils::getConnectorStrings('ext_rest_insideview');
             $smarty->assign('connector_language', $connector_language);
             $smarty->assign('logo',getWebPath('modules/Connectors/connectors/sources/ext/rest/insideview/images/insideview.png'));

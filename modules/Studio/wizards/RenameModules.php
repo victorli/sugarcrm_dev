@@ -65,6 +65,181 @@ class RenameModules
 
 
     /**
+     * An array containing the modules and their labels to be changed when module is renamed.
+     */
+    private static $labelMap = array(
+        'Accounts' => array(
+            array('name' => 'LBL_CAMPAIGNS', 'type' => 'plural'),
+            array('name' => 'LBL_CAMPAIGN_ID', 'type' => 'singular'),
+            array('name' => 'LBL_PARENT_ACCOUNT_ID', 'type' => 'singular'),
+            array('name' => 'LBL_PROSPECT_LIST', 'type' => 'singular'),
+        ),
+        'Bugs' => array(
+            array('name' => 'LBL_LIST_FORM_TITLE', 'type' => 'singular'),
+            array('name' => 'LBL_LIST_MY_BUGS', 'type' => 'plural'),
+            array('name' => 'LBL_SEARCH_FORM_TITLE', 'type' => 'singular'),
+            array('name' => 'LNK_BUG_LIST', 'type' => 'plural'),
+            array('name' => 'LNK_BUG_REPORTS', 'type' => 'singular'),
+            array('name' => 'LNK_IMPORT_BUGS', 'type' => 'plural'),
+            array('name' => 'LNK_NEW_BUG', 'type' => 'singular'),
+        ),
+        'Calls' => array(
+            array('name' => 'LBL_LIST_CONTACT', 'type' => 'singular'),
+        ),
+        'Campaigns' => array(
+            array('name' => 'LBL_ACCOUNTS', 'type' => 'plural'),
+            array('name' => 'LBL_CONTACTS', 'type' => 'plural'),
+            array('name' => 'LBL_LIST_CAMPAIGN_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_LOG_ENTRIES_CONTACT_TITLE', 'type' => 'plural'),
+            array('name' => 'LBL_LOG_ENTRIES_LEAD_TITLE', 'type' => 'plural'),
+            array('name' => 'LBL_OPPORTUNITIES', 'type' => 'plural'),
+            array('name' => 'LBL_PROSPECT_LIST_SUBPANEL_TITLE', 'type' => 'singular'),
+        ),
+        'Cases' => array(
+            array('name' => 'LBL_BUGS_SUBPANEL_TITLE', 'type' => 'plural'),
+            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular'),
+        ),
+        'Contacts' => array(
+            array('name' => 'LBL_BUGS_SUBPANEL_TITLE', 'type' => 'plural'),
+            array('name' => 'LBL_CAMPAIGN_LIST_SUBPANEL_TITLE', 'type' => 'plural'),
+            array('name' => 'LBL_CONTRACTS', 'type' => 'plural'),
+            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_LEAD_SOURCE', 'type' => 'singular'),
+            array('name' => 'LBL_OPPORTUNITIES', 'type' => 'singular'),
+            array('name' => 'LBL_OPPORTUNITY_ROLE', 'type' => 'singular'),
+            array('name' => 'LBL_OPPORTUNITY_ROLE_ID', 'type' => 'singular'),
+            array('name' => 'LBL_PRODUCTS_TITLE', 'type' => 'plural'),
+            array('name' => 'LBL_PROSPECT_LIST', 'type' => 'singular'),
+        ),
+        'Contracts' => array(
+            array('name' => 'LBL_CONTRACT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_CONTRACT_TERM', 'type' => 'singular'),
+            array('name' => 'LBL_DOCUMENTS', 'type' => 'plural'),
+            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_LIST_CONTRACT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_OPPORTUNITY', 'type' => 'singular'),
+            array('name' => 'LBL_SEARCH_FORM_TITLE', 'type' => 'singular'),
+            array('name' => 'LBL_TOTAL_CONTRACT_VALUE', 'type' => 'singular'),
+            array('name' => 'LBL_TOTAL_CONTRACT_VALUE_USDOLLAR', 'type' => 'singular'),
+            array('name' => 'LNK_NEW_CONTRACT', 'type' => 'singular'),
+        ),
+        'Documents' => array(
+            array('name' => 'LBL_BUGS_SUBPANEL_TITLE', 'type' => 'plural'),
+            array('name' => 'LBL_CONTRACTS', 'type' => 'plural'),
+            array('name' => 'LBL_CONTRACT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_CONTRACT_STATUS', 'type' => 'singular'),
+            array('name' => 'LBL_DET_RELATED_DOCUMENT_VERSION', 'type' => 'singular'),
+            array('name' => 'LBL_DET_TEMPLATE_TYPE', 'type' => 'singular'),
+            array('name' => 'LBL_DOC_ID', 'type' => 'singular'),
+            array('name' => 'LBL_DOC_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_DOC_REV_HEADER', 'type' => 'singular'),
+            array('name' => 'LBL_DOC_URL', 'type' => 'singular'),
+            array('name' => 'LBL_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_TEMPLATE_TYPE', 'type' => 'singular'),
+        ),
+        'KBDocuments' => array(
+            array('name' => 'LBL_CASES', 'type' => 'plural'),
+            array('name' => 'LBL_CONTRACTS', 'type' => 'plural'),
+            array('name' => 'LBL_CONTRACT_NAME', 'type' => 'plural'),
+        ),
+        'Leads' => array(
+            array('name' => 'LNK_NEW_###MODULE_SINGULAR###', 'type' => 'singular'),
+            array('name' => 'LNK_SELECT_###MODULE_PLURAL###', 'type' => 'singular'),
+            array('name' => 'LNK_SELECT_###MODULE_SINGULAR###', 'type' => 'singular'),
+            array('name' => 'LBL_ACCOUNT_DESCRIPTION', 'type' => 'singular'),
+            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular'),
+            array('name' => 'LBL_ACCOUNT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_CAMPAIGN_ID', 'type' => 'singular'),
+            array('name' => 'LBL_CAMPAIGN_LEAD', 'type' => 'plural'),
+            array('name' => 'LBL_CAMPAIGN_LIST_SUBPANEL_TITLE', 'type' => 'plural'),
+            array('name' => 'LBL_CONTACT_ID', 'type' => 'singular'),
+            array('name' => 'LBL_LEAD_SOURCE', 'type' => 'singular'),
+            array('name' => 'LBL_LEAD_SOURCE_DESCRIPTION', 'type' => 'singular'),
+            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_OPPORTUNITY_AMOUNT', 'type' => 'singular'),
+            array('name' => 'LBL_OPPORTUNITY_ID', 'type' => 'singular'),
+            array('name' => 'LBL_OPPORTUNITY_NAME', 'type' => 'singular'),
+        ),
+        'Meetings' => array(
+            array('name' => 'LBL_LIST_CONTACT', 'type' => 'singular'),
+            array('name' => 'LBL_LIST_JOIN_MEETING', 'type' => 'singular'),
+            array('name' => 'LBL_PASSWORD', 'type' => 'singular'),
+            array('name' => 'LBL_TYPE', 'type' => 'singular'),
+            array('name' => 'LBL_URL', 'type' => 'singular'),
+        ),
+        'Notes' => array(
+            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular'),
+            array('name' => 'LBL_CASE_ID', 'type' => 'singular'),
+            array('name' => 'LBL_CONTACT_ID', 'type' => 'singular'),
+            array('name' => 'LBL_LIST_CONTACT', 'type' => 'singular'),
+            array('name' => 'LBL_LIST_CONTACT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_NOTE_STATUS', 'type' => 'singular'),
+            array('name' => 'LBL_OPPORTUNITY_ID', 'type' => 'singular'),
+            array('name' => 'LBL_PRODUCT_ID', 'type' => 'singular'),
+            array('name' => 'LBL_QUOTE_ID', 'type' => 'singular'),
+        ),
+        'Opportunities' => array(
+            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular'),
+            array('name' => 'LBL_AMOUNT', 'type' => 'singular'),
+            array('name' => 'LBL_CAMPAIGN_OPPORTUNITY', 'type' => 'plural'),
+            array('name' => 'LBL_CONTRACTS', 'type' => 'plural'),
+            array('name' => 'LBL_LEAD_SOURCE', 'type' => 'singular'),
+            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_OPPORTUNITY_NAME', 'type' => 'singular'),
+        ),
+        'ProductTemplates' => array(
+            array('name' => 'LBL_PRODUCT_ID', 'type' => 'singular'),
+        ),
+        'Products' => array(
+            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular'),
+            array('name' => 'LBL_CONTACT', 'type' => 'singular'),
+            array('name' => 'LBL_CONTACT_ID', 'type' => 'singular'),
+            array('name' => 'LBL_CONTRACTS', 'type' => 'plural'),
+            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_LIST_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_QUOTE_ID', 'type' => 'singular'),
+            array('name' => 'LBL_RELATED_PRODUCTS', 'type' => 'plural'),
+            array('name' => 'LBL_URL', 'type' => 'singular'),
+        ),
+        'ProjectTask' => array(
+            array('name' => 'LBL_PARENT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_PROJECT_ID', 'type' => 'singular'),
+            array('name' => 'LBL_PROJECT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_PROJECT_TASK_ID', 'type' => 'singular'),
+        ),
+        'Project' => array(
+            array('name' => 'LBL_BUGS_SUBPANEL_TITLE', 'type' => 'plural'),
+            array('name' => 'LBL_CONTACTS_RESOURCE', 'type' => 'singular'),
+            array('name' => 'LBL_LIST_FORM_TITLE', 'type' => 'singular'),
+            array('name' => 'LBL_OPPORTUNITIES', 'type' => 'plural'),
+            array('name' => 'LBL_PROJECT_HOLIDAYS_TITLE', 'type' => 'singular'),
+            array('name' => 'LBL_PROJECT_TASKS_SUBPANEL_TITLE', 'type' => 'singular'),
+            array('name' => 'LBL_SEARCH_FORM_TITLE', 'type' => 'singular'),
+            array('name' => 'LNK_NEW_PROJECT', 'type' => 'singular'),
+            array('name' => 'LNK_PROJECT_LIST', 'type' => 'singular'),
+        ),
+        'Quotes' => array(
+            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular'),
+            array('name' => 'LBL_CONTRACTS', 'type' => 'plural'),
+            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_QUOTE_NUM', 'type' => 'singular'),
+        ),
+        'Targets' => array(
+            array('name' => 'LBL_ACCOUNT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_CAMPAIGN_ID', 'type' => 'plural'),
+            array('name' => 'LBL_CAMPAIGN_LIST_SUBPANEL_TITLE', 'type' => 'singular'),
+            array('name' => 'LBL_PROSPECT_LIST', 'type' => 'singular'),
+        ),
+        'Tasks' => array(
+            array('name' => 'LBL_CONTACT', 'type' => 'singular'),
+            array('name' => 'LBL_CONTACT_ID', 'type' => 'singular'),
+            array('name' => 'LBL_CONTACT_PHONE', 'type' => 'singular'),
+        ),
+    );
+
+
+    /**
      *
      * @param string $options
      * @return void
@@ -165,7 +340,11 @@ class RenameModules
         $this->changedModules = $this->getChangedModules();
 
         //Change module, appStrings, subpanels, and related links.
-        $this->changeAppStringEntries()->changeAllModuleModStrings()->renameAllRelatedLinks()->renameAllSubpanels()->renameAllDashlets()->renameLeadsModuleModStrings();
+        $this->changeAppStringEntries()->changeAllModuleModStrings()->renameAllRelatedLinks()->renameAllSubpanels()->renameAllDashlets();
+
+        foreach (self::$labelMap as $module=>$labelsArr) {
+            $this->renameCertainModuleModStrings($module, $labelsArr);
+        }
 
         //Refresh the page again so module tabs are changed as the save process happens after module tabs are already generated.
         if($redirect)
@@ -445,38 +624,37 @@ class RenameModules
         return $this;
     }
 
-   /**
-     * Rename all module strings within the leads module.
-     *
-     * @return RenameModules
-     */
-    private function renameLeadsModuleModStrings()
-    {
-        $GLOBALS['log']->debug("Begining to rename leads module");
-        foreach($this->changedModules as $moduleName => $replacementLabels)
-        {
-            $this->changeLeadsModuleModStrings($moduleName, $replacementLabels);
-        }
+    /**
+      * Rename all module strings within the leads module.
+      *
+      * @param  string $targetModule The name of the module that owns the labels to be changed.
+      * @param  array $labelKeysToReplace The labels to be changed.
+      * @return RenameModules
+      */
+     private function renameCertainModuleModStrings($targetModule, $labelKeysToReplace)
+     {
+         $GLOBALS['log']->debug("Beginning to rename labels for $targetModule module");
+         foreach($this->changedModules as $moduleName => $replacementLabels)
+         {
+             $this->changeCertainModuleModStrings($moduleName, $replacementLabels, $targetModule, $labelKeysToReplace);
+         }
 
-        return $this;
-    }
+         return $this;
+     }
 
-      /**
+    /**
      * For a particular module, rename any relevant module strings that need to be replaced.
      *
      * @param  string $moduleName The name of the module to be renamed.
      * @param  $replacementLabels
+     * @param  string $targetModule The name of the module that owns the labels to be changed.
+     * @param  array $labelKeysToReplace The labels to be changed.
      * @return void
      */
-    private function changeLeadsModuleModStrings($moduleName, $replacementLabels)
+    private function changeCertainModuleModStrings($moduleName, $replacementLabels, $targetModule, $labelKeysToReplace)
     {
-        $GLOBALS['log']->debug("Begining to change module labels for Leads: $moduleName");
-        $currentModuleStrings = return_module_language($this->selectedLanguage, 'Leads');
-        $labelKeysToReplace = array(
-            array('name' => 'LNK_NEW_###MODULE_SINGULAR###', 'type' => 'singular'),
-            array('name' => 'LNK_SELECT_###MODULE_PLURAL###', 'type' => 'singular'),
-            array('name' => 'LNK_SELECT_###MODULE_SINGULAR###', 'type' => 'singular'),
-        );
+        $GLOBALS['log']->debug("Beginning to change module labels for : $moduleName");
+        $currentModuleStrings = return_module_language($this->selectedLanguage, $targetModule);
 
         $replacedLabels = array();
         foreach($labelKeysToReplace as $entry)
@@ -487,13 +665,16 @@ class RenameModules
             if( isset($currentModuleStrings[$formattedLanguageKey]) )
             {
                 $oldStringValue = $currentModuleStrings[$formattedLanguageKey];
-                $replacedLabels[$formattedLanguageKey] = $this->replaceSingleLabel($oldStringValue, $replacementLabels, $entry);
+                $newStringValue = $this->replaceSingleLabel($oldStringValue, $replacementLabels, $entry);
+                if ($oldStringValue != $newStringValue) {
+                    $replacedLabels[$formattedLanguageKey] = $newStringValue;
+                }
             }
         }
 
         //Save all entries
-        ParserLabel::addLabels($this->selectedLanguage, $replacedLabels, 'Leads');
-        $this->renamedModules['Leads'] = true;
+        ParserLabel::addLabels($this->selectedLanguage, $replacedLabels, $targetModule);
+        $this->renamedModules[$targetModule] = true;
     }
 
 

@@ -66,26 +66,16 @@ class ImportViewDupcheck extends ImportView
         $this->instruction = 'LBL_SELECT_DUPLICATE_INSTRUCTION';
         $this->ss->assign('INSTRUCTION', $this->getInstruction());
 
-        $this->ss->assign("MODULE_TITLE", json_encode($this->getModuleTitle(false)));
+        $this->ss->assign("MODULE_TITLE", $this->getModuleTitle(false));
         $this->ss->assign("DELETE_INLINE_PNG",  SugarThemeRegistry::current()->getImage('delete_inline','align="absmiddle" alt="'.$app_strings['LNK_DELETE'].'" border="0"'));
         $this->ss->assign("PUBLISH_INLINE_PNG",  SugarThemeRegistry::current()->getImage('publish_inline','align="absmiddle" alt="'.$mod_strings['LBL_PUBLISH'].'" border="0"'));
         $this->ss->assign("UNPUBLISH_INLINE_PNG",  SugarThemeRegistry::current()->getImage('unpublish_inline','align="absmiddle" alt="'.$mod_strings['LBL_UNPUBLISH'].'" border="0"'));
         $this->ss->assign("IMPORT_MODULE", $_REQUEST['import_module']);
         $this->ss->assign("CURRENT_STEP", $this->currentStep);
-        $this->ss->assign("JS", json_encode($this->_getJS()));
-
+        $this->ss->assign("JAVASCRIPT", $this->_getJS());
 
         $content = $this->ss->fetch('modules/Import/tpls/dupcheck.tpl');
-        $this->ss->assign("CONTENT",json_encode($content));
-        
-        
-        $submitContent = "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td align=\"right\">";
-        $submitContent .= "<input title=\"".$mod_strings['LBL_IMPORT_COMPLETE']."\" onclick=\"SUGAR.importWizard.closeDialog();\" accessKey=\"\" class=\"button\" type=\"submit\" name=\"finished\" value=\"  ".$mod_strings['LBL_IMPORT_COMPLETE']."  \" id=\"finished\">";
-        $submitContent .= "<input title=\"".$mod_strings['LBL_BACK']."\" accessKey=\"\" class=\"button\" type=\"submit\" name=\"button\" value=\"  ".$mod_strings['LBL_BACK']."  \" id=\"goback\">";
-	    $submitContent .= "<input title=\"".$mod_strings['LBL_IMPORT_NOW']."\" accessKey=\"\" class=\"button primary\" type=\"submit\" name=\"button\" value=\"  ".$mod_strings['LBL_IMPORT_NOW']."  \" id=\"importnow\"></td></tr></table>";
-        $this->ss->assign("SUBMITCONTENT",json_encode($submitContent));
-       
-        
+        $this->ss->assign("CONTENT", $content);
         $this->ss->display('modules/Import/tpls/wizardWrapper.tpl');
     }
 
@@ -163,12 +153,8 @@ class ImportViewDupcheck extends ImportView
         $enabled_dupes = json_encode($dupe_enabled);
         $disabled_dupes = json_encode($dupe_disabled);
 
-        $stepTitle4 = strip_tags(str_replace("\n","",getClassicModuleTitle(
-                $mod_strings['LBL_MODULE_NAME'],
-                array($mod_strings['LBL_MODULE_NAME'],$mod_strings['LBL_STEP_4_TITLE']),
-                false
-                )));
-                
+        $stepTitle4 = $mod_strings['LBL_IMPORT_RECORDS'];
+
         $dateTimeFormat = $GLOBALS['timedate']->get_cal_date_time_format();
         $type = (isset($_REQUEST['type'])) ? $_REQUEST['type'] : '';
         $lblUsed = str_replace(":","",$mod_strings['LBL_INDEX_USED']);
@@ -226,25 +212,7 @@ ProcessImport = new function()
                             + "&has_header=" +  document.getElementById("importstepdup").has_header.value ;
                         if ( ProcessImport.fileCount >= ProcessImport.fileTotal ) {
                         	YAHOO.SUGAR.MessageBox.updateProgress(1,'{$mod_strings['LBL_IMPORT_COMPLETED']}');
-                        	//SUGAR.util.hrefURL(locationStr);
-                        	var handleSuccess = {
-	                        	success : function(data) {		
-									var response = YAHOO.lang.JSON.parse(data.responseText);
-									importWizardDialogDiv = document.getElementById('importWizardDialogDiv');
-									importWizardDialogTitle = document.getElementById('importWizardDialogTitle');
-									submitDiv = document.getElementById('submitDiv');
-									importWizardDialogDiv.innerHTML = response['html'];
-									importWizardDialogTitle.innerHTML = response['title'];
-									submitDiv.innerHTML = response['submitContent'];
-									SUGAR.util.evalScript(response['html']);
-									eval(response['script']);
-					
-								}
-                        	};
-							
-							var cObj = YAHOO.util.Connect.asyncRequest('GET', locationStr, handleSuccess);
-							YAHOO.SUGAR.MessageBox.hide();
-							return false;
+                        	SUGAR.util.hrefURL(locationStr);
                         }
                         else {
                             document.getElementById("importstepdup").save_map_as.value = '';

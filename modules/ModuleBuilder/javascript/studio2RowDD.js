@@ -66,9 +66,11 @@ YAHOO.extend(Studio2.RowDD, YAHOO.util.DDProxy, {
 		}
 		
 		YAHOO.util.Dom.setStyle(clickEl,'visibility','hidden');
+        Studio2.setScrollObj(this);
     },
 
     endDrag: function(e) {
+        Studio2.clearScrollObj();
 		ModuleBuilder.state.isDirty=true;
  //   	alert("endDrag");
      
@@ -80,6 +82,12 @@ YAHOO.extend(Studio2.RowDD, YAHOO.util.DDProxy, {
         if (this.deleteRow) {
 			Studio2.removeElement(srcEl);
 			proxy.innerHTML = '';
+            //Check if this is the new row el,  which must be re-activitated
+            if (Studio2.isSpecial(srcEl)) {
+				Studio2.setSpecial(Studio2.copy());
+                Studio2.activateCopy();
+                YAHOO.util.Dom.setStyle(Studio2.copy(), "display","block");
+            }
         } else {
        		// Show the proxy element and animate it to the src element's location
         	YAHOO.util.Dom.setStyle(proxy, 'visibility','');
@@ -133,6 +141,7 @@ YAHOO.extend(Studio2.RowDD, YAHOO.util.DDProxy, {
     },
 
 	onInvalidDrop: function(e) {
+        Studio2.clearScrollObj();
 		this.getDragEl().innerHTML = '';
 	},
 	
@@ -148,26 +157,15 @@ YAHOO.extend(Studio2.RowDD, YAHOO.util.DDProxy, {
 		}
     },
 
-    onDrag: function(e) {
-       // Keep track of the direction of the drag for use during onDragOver
-        var y = e.pageY;
-
-        if (y < this.lastY) {
-            this.goingUp = true;
-        } else if (y > this.lastY) {
-            this.goingUp = false;
-        }
-
-        this.lastY = y;
-    },
+    onDrag: Studio2.onDrag,
 
     onDragOver: function(e, id) {
         var srcEl = this.getEl();
         var destEl = document.getElementById(id);
         var srcLoc = Studio2.establishLocation(srcEl);
 		var dstLoc = Studio2.establishLocation(destEl);
-		if ((Studio2.establishLocation(destEl) == 'panels') && (destEl.className.indexOf('le_row') != -1)) {
-        	
+		
+        if ((Studio2.establishLocation(destEl) == 'panels') && (destEl.className.indexOf('le_row') != -1)) {
         	YAHOO.util.Dom.setStyle(srcEl, "visibility","hidden");
         	YAHOO.util.Dom.setStyle(srcEl, "display"   ,"block");
         	var orig_p = srcEl.parentNode;

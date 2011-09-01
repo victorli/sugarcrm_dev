@@ -83,7 +83,12 @@ function enableQS(noReload){
         	//Track if this field has already been processed.  The way the enableQS function is called
         	//is a bit problematic in that it lends itself to a lot of duplicate processing
         	if(QSProcessedFieldsArray[qs_index_id]) {
-        	   continue;
+                skipSTR = 'collection_0';
+                //the 'collection_0' id is not loaded dynamically, so the first item in the collection will not have an incremental value added to the base id
+                //only skip the additional fields so that cases where a form is closed and reopened without refreshing the screen will still work
+                if (qs_index_id.lastIndexOf(skipSTR) != (qs_index_id.length - skipSTR.length)){
+        	        continue;
+                }
         	}      	        	
         	
         	//Store sqs_objects entry as a reference for convenience

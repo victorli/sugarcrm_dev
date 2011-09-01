@@ -125,7 +125,7 @@ installLog("Begin DB Check Process *************");
                         $error = mysql_error();
                     }
 
-                    $errors['ERR_DB_LOGIN_FAILURE'] = $mod_strings['ERR_DB_LOGIN_FAILURE_MYSQL']." $errno: $error).";
+                    $errors['ERR_DB_LOGIN_FAILURE'] = $mod_strings['ERR_DB_LOGIN_FAILURE_MYSQL'];
                     installLog("ERROR::  {$errors['ERR_DB_LOGIN_FAILURE']}");
                 }
                 else{

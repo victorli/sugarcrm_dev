@@ -550,7 +550,16 @@ class DynamicField {
             	//We do this so that the existing entries in the custom table don't have the default value set
             	$field->default = '';
             	$field->default_value = '';
+                // resetting default and default_value does not work for multienum and causes trouble for mssql
+                // so using a temporary variable here to indicate that we don't want default for this query
+                if ($GLOBALS['db']->dbType == 'mssql') {
+                    $field->no_default = 1;
+                }
                 $query = $field->get_db_add_alter_table($this->bean->table_name . '_cstm');
+                // unsetting temporary member variable
+                if ($GLOBALS['db']->dbType == 'mssql') {
+                    unset($field->no_default);
+                }
                 if(!empty($query)){
                 	$GLOBALS['db']->query($query);
 	                $field->default = $fmd->default_value;

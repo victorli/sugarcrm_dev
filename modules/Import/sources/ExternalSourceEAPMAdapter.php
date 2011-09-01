@@ -99,24 +99,16 @@ class ExternalSourceEAPMAdapter extends ImportDataSource
         $api->loadEAPM($eapmBean);
         $conn = $api->getConnector();
 
-        $rows = array();
-
         $feed = $conn->getList(array('maxResults' => $maxResults, 'startIndex' => $this->_offset));
         if($feed !== FALSE)
         {
-            $this->_totalRecordCount = $feed->totalResults->getText();
-
-            foreach ($feed->entries as $entry)
-            {
-                $rows[] = $entry->toArray();
-            }
+            $this->_totalRecordCount = $feed['totalResults'];
+            $this->_recordSet = $feed['records'];
         }
         else
         {
-            throw new Exception('Unable to retrieve google contact feed.');
+            throw new Exception("Unable to retrieve {$this->_eapmName} feed.");
         }
-
-        $this->_recordSet = $rows;
     }
 
     public function getHeaderColumns()

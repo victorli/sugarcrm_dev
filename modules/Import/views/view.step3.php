@@ -173,7 +173,7 @@ class ImportViewStep3 extends ImportView
         $this->instruction = 'LBL_SELECT_MAPPING_INSTRUCTION';
         $this->ss->assign('INSTRUCTION', $this->getInstruction());
 
-        $this->ss->assign("MODULE_TITLE", json_encode($this->getModuleTitle(false)));
+        $this->ss->assign("MODULE_TITLE", $this->getModuleTitle(false));
         $this->ss->assign("STEP4_TITLE",
             strip_tags(str_replace("\n","",getClassicModuleTitle(
                 $mod_strings['LBL_MODULE_NAME'],
@@ -379,24 +379,15 @@ class ImportViewStep3 extends ImportView
         // include anything needed for quicksearch to work
         require_once("include/TemplateHandler/TemplateHandler.php");
         $quicksearch_js = TemplateHandler::createQuickSearchCode($fields,$fields,'importstep3');
-        $this->ss->assign("JS", json_encode($this->_getJS($required)));
+
+        $this->ss->assign("QS_JS", $quicksearch_js);
+        $this->ss->assign("JAVASCRIPT", $this->_getJS($required));
 
         $this->ss->assign('required_fields',implode(', ',$required));
         $this->ss->assign('CSS', $this->_getCSS());
 
         $content = $this->ss->fetch('modules/Import/tpls/step3.tpl');
-        $this->ss->assign("CONTENT",json_encode($content));
-        
-        $submitContent = "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td align=\"right\">";
-        $submitContent .= "<input title=\"".$mod_strings['LBL_IMPORT_COMPLETE']."\" onclick=\"SUGAR.importWizard.closeDialog();\" accessKey=\"\" class=\"button\" type=\"submit\" name=\"finished\" value=\"  ".$mod_strings['LBL_IMPORT_COMPLETE']."  \" id=\"finished\">";
-        $submitContent .= "<input title=\"".$mod_strings['LBL_BACK']."\" accessKey=\"\" class=\"button\" type=\"submit\" name=\"button\" value=\"  ".$mod_strings['LBL_BACK']."  \" id=\"goback\">";
-	    $submitContent .= "<input title=\"".$mod_strings['LBL_NEXT']."\" accessKey=\"\" class=\"button primary\" type=\"submit\" name=\"button\" value=\"  ".$mod_strings['LBL_NEXT']."  \" id=\"gonext\"></td></tr></table></form>";
-		$submitContent .= $quicksearch_js;
-        $this->ss->assign("SUBMITCONTENT",json_encode($submitContent));
-        
-        
-
-        
+        $this->ss->assign("CONTENT",$content);
         $this->ss->display('modules/Import/tpls/wizardWrapper.tpl');
 
     }
@@ -454,25 +445,9 @@ EOCSS;
         $sqsWaitImage = SugarThemeRegistry::current()->getImageURL('sqsWait.gif');
 
         return <<<EOJAVASCRIPT
-
-
 document.getElementById('goback').onclick = function(){
     document.getElementById('{$this->currentFormID}').action.value = '{$this->previousAction}';
-        var success = function(data) {		
-			var response = YAHOO.lang.JSON.parse(data.responseText);
-			importWizardDialogDiv = document.getElementById('importWizardDialogDiv');
-			importWizardDialogTitle = document.getElementById('importWizardDialogTitle');
-			submitDiv = document.getElementById('submitDiv');
-			importWizardDialogDiv.innerHTML = response['html'];
-			importWizardDialogTitle.innerHTML = response['title'];
-			submitDiv.innerHTML = response['submitContent'];
-			eval(response['script']);
-
-		}
-    
-        var formObject = document.getElementById('importstep3');
-		YAHOO.util.Connect.setForm(formObject);
-		var cObj = YAHOO.util.Connect.asyncRequest('POST', "index.php", {success: success, failure: success});
+    return true;
 }
 
 
@@ -534,21 +509,7 @@ if( document.getElementById('gonext') )
         {
             // Move on to next step
             document.getElementById('{$this->currentFormID}').action.value = '{$this->nextAction}';
-         var success = function(data) {		
-			var response = YAHOO.lang.JSON.parse(data.responseText);
-			importWizardDialogDiv = document.getElementById('importWizardDialogDiv');
-			importWizardDialogTitle = document.getElementById('importWizardDialogTitle');
-			submitDiv = document.getElementById('submitDiv');
-			importWizardDialogDiv.innerHTML = response['html'];
-			importWizardDialogTitle.innerHTML = response['title'];
-			submitDiv.innerHTML = response['submitContent'];
-			eval(response['script']);
-
-		}
-    
-        var formObject = document.getElementById('importstep3');
-		YAHOO.util.Connect.setForm(formObject);
-		var cObj = YAHOO.util.Connect.asyncRequest('POST', "index.php", {success: success, failure: success});
+            return true;
         }
         else
             return false;

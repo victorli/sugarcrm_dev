@@ -58,9 +58,11 @@ YAHOO.extend(Studio2.FieldDD, YAHOO.util.DDProxy, {
 		} else {
 			YAHOO.util.Dom.setStyle(clickEl, "visibility", "hidden"); // want a empty space as we're dragging it away from this place
 		}
+        Studio2.setScrollObj(this);
     },
 
     endDrag: function(e) {
+        Studio2.clearScrollObj();
      	ModuleBuilder.state.isDirty=true;
         var srcEl = this.getEl();
         var proxy = this.getDragEl();
@@ -85,12 +87,15 @@ YAHOO.extend(Studio2.FieldDD, YAHOO.util.DDProxy, {
     },
 
 	onInvalidDrop: function(e) {
+        Studio2.clearScrollObj();
 		var dragEl = this.getDragEl();
 		dragEl.innerHTML = '';
 		Studio2.removeCopy();
 		YAHOO.util.Dom.setStyle(this.getEl(), "display", "block");
 	},
 
+    onDrag: Studio2.onDrag,
+    
     onDragDrop: function(e, id) {
 		var srcEl = this.getEl();
 		var destEl = YAHOO.util.Dom.get(id); // where this element is being dropped

@@ -58,9 +58,6 @@ class ImportView extends SugarView
         }
         $this->importModule = isset($_REQUEST['import_module']) ? $_REQUEST['import_module'] : '';
         
-        $this->options['show_header'] = false;
-        $this->options['show_footer'] = false;
-        $this->options['show_javascript'] = false;
     }
 
     /**

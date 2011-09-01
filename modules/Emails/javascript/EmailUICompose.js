@@ -1114,7 +1114,7 @@ SE.composeLayout = {
     	var instance = SE.util.getTiny(SE.tinyInstances.currentHtmleditor);
 
         if(typeof(instance) == 'undefined' || (typeof(SE.composeLayout.loadedTinyInstances[idx]) != 'undefined' && SE.composeLayout.loadedTinyInstances[idx] == false)) {
-            setTimeout("SE.composeLayout.resizeEditorSetSignature(" + idx + ",'"+isReplyForward+"');",500);
+            setTimeout("SE.composeLayout.resizeEditorSetSignature(" + idx + ",'"+setSignature+"');",500);
 		    return;
 		}
 
@@ -1688,7 +1688,7 @@ SE.composeLayout = {
 
         // make async call to delete cached file
         AjaxObject.target = '';
-        AjaxObject.startRequest(null, urlStandard + "&emailUIAction=removeUploadedAttachment&file="+file);
+        AjaxObject.startRequest('', urlStandard + "&emailUIAction=removeUploadedAttachment&file="+file);
     },
 
     /**

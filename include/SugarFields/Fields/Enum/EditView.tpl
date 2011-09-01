@@ -321,7 +321,7 @@
 	{{/if}}
 
 	// when they click on the arrow image, toggle the visibility of the options
-	SUGAR.AutoComplete.{/literal}{$ac_key}{literal}.inputImage.on('click', function () {
+	SUGAR.AutoComplete.{/literal}{$ac_key}{literal}.inputImage.ancestor().on('click', function () {
 		if (SUGAR.AutoComplete.{/literal}{$ac_key}{literal}.optionsVisible) {
 			SUGAR.AutoComplete.{/literal}{$ac_key}{literal}.inputNode.blur();
 		} else {

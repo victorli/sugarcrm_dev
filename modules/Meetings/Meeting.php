@@ -199,7 +199,7 @@ class Meeting extends SugarBean {
 			$this->type = 'Sugar';
 		}
 
-        if ( isset($api) && is_a($api,'WebMeeting') ) {
+        if ( isset($api) && is_a($api,'WebMeeting') && empty($this->in_relationship_update) ) {
             // Make sure the API initialized and it supports Web Meetings
             // Also make suer we have an ID, the external site needs something to reference
             if ( !isset($this->id) || empty($this->id) ) {

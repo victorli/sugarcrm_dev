@@ -88,6 +88,7 @@ YAHOO.extend(Studio2.ListDD, YAHOO.util.DDProxy, {
 		Dom.setStyle(clickEl, "opacity", 0.5);
 		Dom.setStyle(clickEl, "filter", "alpha(opacity=10)");
 		Dom.setStyle(clickEl, "border", '2px dashed #cccccc');
+        Studio2.setScrollObj(this);
 	},
 	
 	updateTabs: function(){
@@ -110,6 +111,7 @@ YAHOO.extend(Studio2.ListDD, YAHOO.util.DDProxy, {
 	},
 	
 	endDrag: function(e){
+        Studio2.clearScrollObj();
 		ModuleBuilder.state.isDirty=true;
 		var clickEl = this.getEl();
 		var clickExEl = new YAHOO.util.Element(clickEl);
@@ -147,7 +149,9 @@ YAHOO.extend(Studio2.ListDD, YAHOO.util.DDProxy, {
 		
 		dragEl.innerHTML = "";
 	},
-	
+
+    onDrag: Studio2.onDrag,
+    
 	onDragOver: function(e, id){
 		var el;
 		if (this.lastNode) {

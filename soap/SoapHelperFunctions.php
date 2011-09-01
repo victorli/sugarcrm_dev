@@ -327,11 +327,14 @@ function check_modules_access($user, $module_name, $action='write'){
 	if(!isset($_SESSION['avail_modules'])){
 		$_SESSION['avail_modules'] = get_user_module_list($user);
 	}
-	if(isset($_SESSION['avail_modules'][$module_name])){
+    if(isset($_SESSION['avail_modules'][$module_name])){
 		if($action == 'write' && $_SESSION['avail_modules'][$module_name] == 'read_only'){
 			if(is_admin($user))return true;
 			return false;
-		}
+		}elseif($action == 'write' && strcmp(strtolower($module_name), 'users') == 0 && !$user->isAdminForModule($module_name)){
+            //rrs bug: 46000 - If the client is trying to write to the Users module and is not an admin then we need to stop them
+            return false;
+        }
 		return true;
 	}
 	return false;

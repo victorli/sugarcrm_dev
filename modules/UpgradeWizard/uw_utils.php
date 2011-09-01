@@ -592,7 +592,7 @@ function deleteCache(){
 	//Clean modules from cache
 	if(is_dir($GLOBALS['sugar_config']['cache_dir'].'modules')){
 		$allModFiles = array();
-		$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'modules',$allModFiles,true);
+		$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'modules',$allModFiles);
 		foreach($allModFiles as $file)
 		{
             if(is_file($file)) {
@@ -2873,7 +2873,9 @@ function uwFindAllFiles($dir, $the_array, $include_dirs=false, $skip_dirs=array(
 		}
 	}
 
+    if (!is_dir($dir)) { return $the_array; }   // Bug # 46035, just checking for valid dir 
 	$d = dir($dir);
+    if ($d === false)  { return $the_array; }   // Bug # 46035, more checking
 
 	while($f = $d->read()) {
 	    if($f == "." || $f == "..") { // skip *nix self/parent
@@ -5026,6 +5028,9 @@ function upgradeSugarCache($file)
 	}
 
 	$allFiles = array();
+	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/database"))) {
+		$allFiles = findAllFiles(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/database"), $allFiles);
+	}	
 	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/SugarCache"))) {
 		$allFiles = findAllFiles(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/SugarCache"), $allFiles);
 	}

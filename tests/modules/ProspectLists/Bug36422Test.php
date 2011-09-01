@@ -104,7 +104,11 @@ class Bug36422Test extends Sugar_PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        global $current_user;
+        global $current_user, $beanList, $beanFiles;
+        $beanList = array();
+		$beanFiles = array();
+		require('include/modules.php');
+
         $current_user = SugarTestUserUtilities::createAnonymousUser();;
         $this->_contacts[] = self::createContact();
         $this->_contacts[] = self::createContact();

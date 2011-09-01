@@ -256,6 +256,19 @@ $modInvisList[] = 'SavedSearch';
 $modInvisList[] = 'Studio';
 $modInvisList[] = 'Connectors';
 
+$report_include_modules = array();
+$report_include_modules['Currencies']='Currency';
+//add prospects
+$report_include_modules['Prospects']='Prospect';
+$report_include_modules['DocumentRevisions'] = 'DocumentRevision';
+$report_include_modules['ProductCategories'] = 'ProductCategory';
+$report_include_modules['ProductTypes'] = 'ProductType';
+//add Tracker modules
+
+$report_include_modules['Trackers']         = 'Tracker';
+
+
+
 $beanList['SugarFeed'] = 'SugarFeed';
 $beanFiles['SugarFeed'] = 'modules/SugarFeed/SugarFeed.php';
 $modInvisList[] = 'SugarFeed';

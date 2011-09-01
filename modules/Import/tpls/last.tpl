@@ -71,6 +71,22 @@ div.resultsTable {
 <input type="hidden" name="action" value="Undo">
 <input type="hidden" name="has_header" value="{$smarty.request.has_header}">
 <input type="hidden" name="import_module" value="{$IMPORT_MODULE}">
+
+<br />
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+        <td align="left" style="padding-bottom: 2px;">
+        {if $showUndoButton}
+            <input title="{$MOD.LBL_UNDO_LAST_IMPORT}" accessKey="" class="button"
+                type="submit" name="undo" id="undo" value="  {$MOD.LBL_UNDO_LAST_IMPORT}  ">
+        {/if}
+        <input title="{$MOD.LBL_IMPORT_MORE}" accessKey="" class="button" type="submit" name="importmore" id="importmore" value="  {$MOD.LBL_IMPORT_MORE}  ">
+        <input title="{$MOD.LBL_FINISHED}{$MODULENAME}" accessKey="" class="button" type="submit" name="finished" id="finished" value="  {$MOD.LBL_IMPORT_COMPLETE}  ">
+            {$PROSPECTLISTBUTTON}
+        </td>
+    </tr>
+</table>
 </form>
 
 <br/>

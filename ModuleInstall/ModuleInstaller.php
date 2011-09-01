@@ -1574,6 +1574,7 @@ class ModuleInstaller{
 						$this->tab_modules[] = $module;
 					}else{
 						$str .= "\$modules_exempt_from_availability_check['$module'] = '$module';\n";
+						$str .= "\$report_include_modules['$module'] = '$module';\n";
 						$str .= "\$modInvisList[] = '$module';\n";
 					}
 				    $this->installed_modules[] = $module;
@@ -1607,7 +1608,7 @@ class ModuleInstaller{
 					if(is_subclass_of($mod, 'SugarBean')  && $mod->disable_vardefs == false ){
 						$GLOBALS['log']->debug( "Creating Tables Bean : $bean");
 						$mod->create_tables();
-						SugarBean::createRelationshipMeta($mod->getObjectName(), $mod->db,$mod->table_name,'',$mod->module_dir);
+						SugarBean::createRelationshipMeta($mod->getObjectName(), $mod->db,$mod->table_name,'',$mod->module_dir);    
 					}
 				}else{
 					$GLOBALS['log']->debug( "File Does Not Exist:" . $beanFiles[$class] );

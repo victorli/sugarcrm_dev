@@ -64,7 +64,7 @@ class ImportViewLast extends ImportView
         $this->ss->assign("IMPORT_MODULE", $_REQUEST['import_module']);
         $this->ss->assign("TYPE", $_REQUEST['type']);
         $this->ss->assign("HEADER", $app_strings['LBL_IMPORT']." ". $mod_strings['LBL_MODULE_NAME']);
-        $this->ss->assign("MODULE_TITLE", json_encode($this->getModuleTitle(false)));
+        $this->ss->assign("MODULE_TITLE", $this->getModuleTitle(false));
         // lookup this module's $mod_strings to get the correct module name
         $module_mod_strings = 
             return_module_language($current_language, $_REQUEST['import_module']);
@@ -87,10 +87,10 @@ class ImportViewLast extends ImportView
         }
         fclose($fp);
     
-        $showUndoButton = false;
+        $this->ss->assign("showUndoButton",FALSE);
         if($createdCount > 0)
         {
-        	$showUndoButton = true;
+        	$this->ss->assign("showUndoButton",TRUE);
         }
 
         if ($errorCount > 0 &&  ($createdCount <= 0 && $updatedCount <= 0))
@@ -100,7 +100,7 @@ class ImportViewLast extends ImportView
         else
             $activeTab = 0;
         
-        $this->ss->assign("JS", json_encode($this->_getJS($activeTab)));
+        $this->ss->assign("JAVASCRIPT", $this->_getJS($activeTab));
         $this->ss->assign("errorCount",$errorCount);
         $this->ss->assign("dupeCount",$dupeCount);
         $this->ss->assign("createdCount",$createdCount);
@@ -111,10 +111,10 @@ class ImportViewLast extends ImportView
         
         if ( $this->bean->object_name == "Prospect" )
         {
-        	$prospectlistbutton = $this->_addToProspectListButton();
+        	$this->ss->assign("PROSPECTLISTBUTTON", $this->_addToProspectListButton());
         }
         else {
-            $prospectlistbutton = "";
+            $this->ss->assign("PROSPECTLISTBUTTON","");
         }
 
         $resultsTable = "";
@@ -135,21 +135,8 @@ class ImportViewLast extends ImportView
         $this->ss->assign("RESULTS_TABLE", $resultsTable);
         $this->ss->assign("ERROR_TABLE", $this->getListViewTableFromFile(ImportCacheFiles::getErrorRecordsFileName(), 'errors') );
         $this->ss->assign("DUP_TABLE", $this->getListViewTableFromFile(ImportCacheFiles::getDuplicateFileDisplayName(), 'dup'));
-
-        
         $content = $this->ss->fetch('modules/Import/tpls/last.tpl');
-        $this->ss->assign("CONTENT",json_encode($content));
-        $submitContent = "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td align=\"right\">";
-	    $submitContent .= "<input title=\"".$mod_strings['LBL_IMPORT_COMPLETE']."\" accessKey=\"\" class=\"button\" type=\"submit\" name=\"finished\" value=\"  ".$mod_strings['LBL_IMPORT_COMPLETE']."  \" id=\"finished\">";
-        $submitContent .= "<input title=\"".$mod_strings['LBL_UNDO_LAST_IMPORT']."\" accessKey=\"\" class=\"button\" type=\"submit\" name=\"undo\" value=\"  ".$mod_strings['LBL_UNDO_LAST_IMPORT']."  \" id=\"undo\">";
-	    $submitContent .= "<input title=\"".$mod_strings['LBL_IMPORT_MORE']."\" accessKey=\"\" class=\"button primary\" type=\"submit\" name=\"importmore\" value=\"  ".$mod_strings['LBL_IMPORT_MORE']."  \" id=\"importmore\">";
-
-
-
-	    $submitContent .= "&nbsp;".$prospectlistbutton;
-	    
-	    $submitContent .= "</td></tr></table>";
-        $this->ss->assign("SUBMITCONTENT",json_encode($submitContent));
+        $this->ss->assign("CONTENT",$content);
         $this->ss->display('modules/Import/tpls/wizardWrapper.tpl');
     }
 
@@ -209,48 +196,15 @@ class ImportViewLast extends ImportView
     {
         return <<<EOJAVASCRIPT
 
-document.getElementById('undo').onclick = function(){
-    
-       	var success = function(data) {		
-			var response = YAHOO.lang.JSON.parse(data.responseText);
-			importWizardDialogDiv = document.getElementById('importWizardDialogDiv');
-			importWizardDialogTitle = document.getElementById('importWizardDialogTitle');
-			submitDiv = document.getElementById('submitDiv');
-			importWizardDialogDiv.innerHTML = response['html'];
-			importWizardDialogTitle.innerHTML = response['title'];
-			submitDiv.innerHTML = response['submitContent'];
-			eval(response['script']);
-		} 
-        var formObject = document.getElementById('importlast');
-		YAHOO.util.Connect.setForm(formObject);
-		var cObj = YAHOO.util.Connect.asyncRequest('POST', "index.php", {success: success, failure: success});
-		
-}
-
-
 document.getElementById('importmore').onclick = function(){
     document.getElementById('importlast').action.value = 'Step1';
-    
-       	var success = function(data) {		
-			var response = YAHOO.lang.JSON.parse(data.responseText);
-			importWizardDialogDiv = document.getElementById('importWizardDialogDiv');
-			importWizardDialogTitle = document.getElementById('importWizardDialogTitle');
-			submitDiv = document.getElementById('submitDiv');
-			importWizardDialogDiv.innerHTML = response['html'];
-			importWizardDialogTitle.innerHTML = response['title'];
-			submitDiv.innerHTML = response['submitContent'];
-			eval(response['script']);
-		} 
-        var formObject = document.getElementById('importlast');
-		YAHOO.util.Connect.setForm(formObject);
-		var cObj = YAHOO.util.Connect.asyncRequest('POST', "index.php", {success: success, failure: success});
-		
+    return true;
 }
 
 document.getElementById('finished').onclick = function(){
     document.getElementById('importlast').module.value = document.getElementById('importlast').import_module.value;
     document.getElementById('importlast').action.value = 'index';
-	SUGAR.importWizard.closeDialog();
+	return true;
 		
 }
 

@@ -34,7 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 require_once 'include/TimeDate.php';
 
 class TimeDateTest extends Sugar_PHPUnit_Framework_TestCase
@@ -898,5 +898,36 @@ class TimeDateTest extends Sugar_PHPUnit_Framework_TestCase
 
 	    $f = $this->time_date->get_date_time_format($current_user);
 	    $this->assertEquals("Y-m-d H:i", $f);
+	}
+
+	public function dateRanges()
+	{
+	    return array(
+	        array("yesterday", "2011-08-29 00:00:00", "2011-08-29 23:59:59"),
+	        array("today", "2011-08-30 00:00:00", "2011-08-30 23:59:59"),
+	        array("tomorrow", "2011-08-31 00:00:00", "2011-08-31 23:59:59"),
+	        array("last_7_days", "2011-08-24 00:00:00", "2011-08-30 23:59:59"),
+	        array("next_7_days", "2011-08-30 00:00:00", "2011-09-05 23:59:59"),
+	        array("last_30_days", "2011-08-01 00:00:00", "2011-08-30 23:59:59"),
+	        array("next_30_days", "2011-08-30 00:00:00", "2011-09-28 23:59:59"),
+	        array("next_month", "2011-09-01 00:00:00", "2011-09-30 23:59:59"),
+	        array("last_month", "2011-07-01 00:00:00", "2011-07-31 23:59:59"),
+	        array("this_month", "2011-08-01 00:00:00", "2011-08-31 23:59:59"),
+	        array("next_year", "2012-01-01 00:00:00", "2012-12-31 23:59:59"),
+	        array("last_year", "2010-01-01 00:00:00", "2010-12-31 23:59:59"),
+	        array("this_year", "2011-01-01 00:00:00", "2011-12-31 23:59:59"),
+	        );
+	}
+
+	/**
+	 * @dataProvider dateRanges
+	 */
+	public function testparseDateRange($range, $start, $end)
+	{
+        $this->time_date->setNow(SugarDateTime::createFromFormat(TimeDate::DB_DATETIME_FORMAT, "2011-08-30 12:01:02", new DateTimeZone($this->time_date->userTimezone())));
+        $this->time_date->allow_cache = true;
+	    $daterage = $this->time_date->parseDateRange($range);
+        $this->assertEquals($start, $daterage[0]->format(TimeDate::DB_DATETIME_FORMAT), 'Start date is wrong');
+        $this->assertEquals($end, $daterage[1]->format(TimeDate::DB_DATETIME_FORMAT), 'End date is wrong');
 	}
 }

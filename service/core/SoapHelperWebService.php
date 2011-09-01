@@ -353,7 +353,10 @@ function validate_user($user_name, $password){
 				} // if
 				$GLOBALS['log']->info('End: SoapHelperWebServices->check_modules_access');
 				return false;
-			}
+			}elseif($action == 'write' && strcmp(strtolower($module_name), 'users') == 0 && !$user->isAdminForModule($module_name)){
+                 //rrs bug: 46000 - If the client is trying to write to the Users module and is not an admin then we need to stop them
+                return false;
+            }
 			$GLOBALS['log']->info('End: SoapHelperWebServices->check_modules_access');
 			return true;
 		}

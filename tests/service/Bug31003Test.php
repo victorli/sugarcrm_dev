@@ -65,7 +65,7 @@ class Bug31003Test extends SOAPTestCase
     public function tearDown()
     {
         parent::tearDown();
-        $GLOBALS['db']->query(sprintf("DELETE FROM prospects WHERE id = '%d'", $this->contact->id));
+        $GLOBALS['db']->query("DELETE FROM prospects WHERE id = '{$this->contact->id}'");
         SugarTestContactUtilities::removeAllCreatedContacts();
     }
 

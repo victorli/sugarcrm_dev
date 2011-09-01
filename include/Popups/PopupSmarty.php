@@ -237,14 +237,6 @@ class PopupSmarty extends ListViewSmarty{
 		}
 		$this->th->ss->assign('LIST_HEADER', get_form_header($GLOBALS['mod_strings']['LBL_LIST_FORM_TITLE'], '', false));
 		$this->th->ss->assign('SEARCH_FORM_HEADER', get_form_header($GLOBALS['mod_strings']['LBL_SEARCH_FORM_TITLE'], '', false));
-
-		//Bug-45288
-		//Set the order_by_name and request_order_by_name variables
-		$order_by_name = $this->seed->module_dir.'2_'.strtoupper($this->seed->object_name).'_ORDER_BY' ;
-		$request_order_by_name = isset($_REQUEST[$order_by_name]) ? $_REQUEST[$order_by_name] : "";
-		$this->th->ss->assign('order_by_name', $order_by_name);
-		$this->th->ss->assign('request_order_by_name', $request_order_by_name);	
-		
 		$str = $this->th->displayTemplate($this->seed->module_dir, $this->view, $this->tpl);
 		return $str;
 	}

@@ -120,8 +120,6 @@ function clearAll() {
 	{$MODE}
 <input type="hidden" name="mu" value="false" />
 <input type='hidden' name='massupdate' value='true' />
-<input type='hidden' name='lvso' value='asc' />
-<input type='hidden' name='{$order_by_name}' id="{$order_by_name}" value="{$request_order_by_name}"/>
 {$massUpdateData}
 <input type='hidden' name='Leads_LEAD_offset' value=''><input type='hidden' name='saved_associated_data' value=''><input type='hidden' name='module' value='{$module}'><input type='hidden' name='action' value='Popup'><input type='hidden' name='return_module' value='{$module}'><input type='hidden' name='return_action' value='Popup'><input type='hidden' name='hide_clear_button' value='true'><input type='hidden' name='current_query_by_page' value='{$current_query}'>
 	

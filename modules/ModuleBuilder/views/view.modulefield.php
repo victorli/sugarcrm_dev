@@ -126,11 +126,22 @@ class ViewModulefield extends SugarView
 			'ID', 'ID_C',
 			);
 
+
+        //C.L. - Add support to mark related module id columns as reserved keywords
+        require_once 'modules/ModuleBuilder/parsers/relationships/DeployedRelationships.php';
+        $relatedModules = array_keys(DeployedRelationships::findRelatableModules()) ;
+        global $beanList;
+        foreach($relatedModules as $relModule)
+        {
+            if(isset($beanList[$relModule]))
+            {
+                $field_name_exceptions[] = strtoupper($beanList[$relModule]) . '_ID';
+            }
+        }
+
         if(! isset($_REQUEST['view_package']) || $_REQUEST['view_package'] == 'studio' || empty ( $_REQUEST [ 'view_package' ] ) ) {
             $module = new stdClass;
             $moduleName = $_REQUEST['view_module'];
-
-            global $beanList;
 
             $objectName = $beanList[$moduleName];
             $className = $objectName;

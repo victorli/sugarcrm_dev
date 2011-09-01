@@ -284,6 +284,12 @@ if(typeof(SUGAR.collection) == "undefined") {
             	
             	var input_els = currentNode.getElementsByTagName('input');
             	for ( var x = 0; x < input_els.length; x++ ){
+
+                    //if the input tag id is blank (IE bug), then set it equal to that of the parent span id
+                    if(typeof(input_els[x].id) == 'undefined' || input_els[x].id == '') {
+                        input_els[x].id = currentNode.id;
+                    }
+
                 	if(input_els[x].tagName && input_els[x].tagName == 'INPUT') {
                 	   this.process_node(parentNode, input_els[x], values);
                 	}
