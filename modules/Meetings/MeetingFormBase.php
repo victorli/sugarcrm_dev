@@ -374,7 +374,9 @@ function handleSave($prefix,$redirect=true, $useRequired=false) {
 	    	if(!empty($_POST['existing_invitees'])) {
 	    	   $existing_users =  explode(",", trim($_POST['existing_invitees'], ','));
 	    	}
-
+			
+	    	$focus->load_relationship('users'); //bug 43960 fix
+	    	
 	    	foreach($focus->users_arr as $user_id) {
 	    	    if(empty($user_id) || isset($existing_users[$user_id]) || isset($deleteUsers[$user_id])) {
 	    			continue;
@@ -396,7 +398,9 @@ function handleSave($prefix,$redirect=true, $useRequired=false) {
 	    	if(!empty($_POST['existing_contact_invitees'])) {
 	    	   $existing_contacts =  explode(",", trim($_POST['existing_contact_invitees'], ','));
 	    	}
-
+			
+	    	$focus->load_relationship('contacts');
+	    	
 	    	foreach($focus->contacts_arr as $contact_id) {
 	    		if(empty($contact_id) || isset($existing_contacts[$contact_id]) || isset($deleteContacts[$contact_id])) {
 	    			continue;
@@ -418,6 +422,8 @@ function handleSave($prefix,$redirect=true, $useRequired=false) {
 	    	   $existing_leads =  explode(",", trim($_POST['existing_lead_invitees'], ','));
 	    	}
 
+	    	$focus->load_relationship('leads');
+	    	
 	    	foreach($focus->leads_arr as $lead_id) {
 	    		if(empty($lead_id) || isset($existing_leads[$lead_id]) || isset($deleteLeads[$lead_id])) {
 	    			continue;

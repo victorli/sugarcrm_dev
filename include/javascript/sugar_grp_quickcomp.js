@@ -110,7 +110,7 @@ var more_div=document.getElementById('more_div_'+this.field_element_name);if(mor
 break;}}
 if(!has_primary){return false;}
 return true;}
-return true;},getTeamIdsfromUI:function(formname,fieldname){var team_ids=new Array();var table_element_id=formname+'_'+fieldname+'_table';if(document.getElementById(table_element_id)){input_elements=YAHOO.util.Selector.query('input[type=hidden]',document.getElementById(table_element_id));for(t=0;t<input_elements.length;t++){if(input_elements[t].id.match("id_"+fieldname+"_collection_")!=null){team_ids.push(input_elements[t].value);}}}
+return true;},getTeamIdsfromUI:function(formname,fieldname){var team_ids=new Array();var table_element_id=formname+'_'+fieldname+'_table';if(document.getElementById(table_element_id)){input_elements=YAHOO.util.Selector.query('input[type=hidden]',document.getElementById(table_element_id));for(t=0;t<input_elements.length;t++){if(input_elements[t].id.match(fieldname+"_collection_")!=null){team_ids.push(input_elements[t].value);}}}
 return team_ids;},getPrimaryTeamidsFromUI:function(formname,fieldname){var table_element_id=formname+'_'+fieldname+'_table';if(document.getElementById(table_element_id)){var input_elements=YAHOO.util.Selector.query('input[type=radio]',document.getElementById(table_element_id));for(t in input_elements){var primary_field_id='id_'+document.forms[formname][fieldname].name+'_collection_'+input_elements[t].value;if(input_elements[t].type&&input_elements[t].type=='radio'&&input_elements[t].checked==true){if(document.forms[formname].elements[primary_field_id].value!=''){return document.forms[formname].elements[primary_field_id].value;}}}}
 return'';},changePrimary:function(noAdd){var old_primary=this.primary_field;var radios=this.get_radios();for(var k=0;k<radios.length;k++){var qs_id=radios[k].id.replace('primary_','');if(radios[k].checked){this.primary_field=qs_id;}else{qs_id=qs_id+'_'+k;}
 qs_id=this.form+'_'+qs_id;if(typeof sqs_objects!='undefined'&&typeof sqs_objects[qs_id]!='undefined'&&sqs_objects[qs_id]['primary_field_list']){for(var ii=0;ii<sqs_objects[qs_id]['primary_field_list'].length;ii++){if(radios[k].checked&&qs_id!=old_primary){sqs_objects[qs_id]['field_list'].push(sqs_objects[qs_id]['primary_field_list'][ii]);sqs_objects[qs_id]['populate_list'].push(sqs_objects[qs_id]['primary_populate_list'][ii]);}else if(old_primary==qs_id&&!radios[k].checked){sqs_objects[qs_id]['field_list'].pop();sqs_objects[qs_id]['populate_list'].pop();}}}}
@@ -3409,8 +3409,8 @@ SE.composeLayout = {
      		SE.composeLayout._initComposeOptionTabs(idx);
      		SE.composeLayout[idx].getUnitByPosition("right").collapse();
      		//Initialize tinyMCE
-     		if (!SUGAR.util.isTouchScreen())
-     		    SE.composeLayout._1_tiny(false);
+            SE.composeLayout._1_tiny(false);
+            
      		//Init templates and address book
      		SE.composeLayout._2_final();
 
@@ -3607,13 +3607,17 @@ SE.composeLayout = {
         var elId = SE.tinyInstances.currentHtmleditor = 'htmleditor' + idx;
         SE.tinyInstances[elId] = { };
         SE.tinyInstances[elId].ready = false;
-        var t = tinyMCE.getInstanceById(elId);
 
+        if (!SUGAR.util.isTouchScreen()) {
+            var t = tinyMCE.getInstanceById(elId);
+        }
         if(typeof(t) == 'undefined')  {
-            tinyMCE.execCommand('mceAddControl', false, elId);
+            if (!SUGAR.util.isTouchScreen()) {
+                tinyMCE.execCommand('mceAddControl', false, elId);
+            }
             YAHOO.util.Event.onAvailable(elId + "_parent", function() {
                 SE.composeLayout.resizeEditorSetSignature(idx,!isReplyForward);
-            }, this);
+                }, this);
         }
     },
 
@@ -3695,7 +3699,7 @@ SE.composeLayout = {
         if (!retry) {
             this._0_yui();
         }
-        if (typeof(tinyMCE) == 'undefined' || typeof(tinyMCE.settings) == 'undefined'){
+        if  (!SUGAR.util.isTouchScreen() && (typeof(tinyMCE) == 'undefined' || typeof(tinyMCE.settings) == 'undefined')){
             setTimeout("SE.composeLayout.c1_composeEmail(" + isReplyForward + ", true);", 500);
         } else {
 	        this._1_tiny(isReplyForward);
@@ -4256,9 +4260,16 @@ SE.composeLayout = {
 
         var form = document.getElementById('emailCompose' + idx);
         var composeOptionsFormName = "composeOptionsForm" + idx;
+
+        
         var t = SE.util.getTiny(SE.tinyInstances.currentHtmleditor);
-        var html = t.getContent();
-        var subj = document.getElementById('emailSubject' + idx).value;
+        if (t != null || typeof(t) != "undefined") {
+            var html = t.getContent();
+        } else {
+            var html = "<p>" + document.getElementById('htmleditor' + idx).value + "</p>";
+        }
+
+ 	    var subj = document.getElementById('emailSubject' + idx).value;
         var to = trim(document.getElementById('addressTO' + idx).value);
         var cc = trim(document.getElementById('addressCC' + idx).value);
         var bcc = trim(document.getElementById('addressBCC' + idx).value);

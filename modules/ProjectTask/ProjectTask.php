@@ -350,7 +350,8 @@ class ProjectTask extends SugarBean {
 	        }           
         }
         return $query;
-    }	
+    }
+
 
 	
 }

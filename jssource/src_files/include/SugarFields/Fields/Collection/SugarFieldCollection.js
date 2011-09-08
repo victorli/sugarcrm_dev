@@ -463,7 +463,7 @@ if(typeof(SUGAR.collection) == "undefined") {
 			if(document.getElementById(table_element_id)) {
 			   input_elements = YAHOO.util.Selector.query('input[type=hidden]', document.getElementById(table_element_id));
 			   for(t = 0; t < input_elements.length; t++) {
-			     if (input_elements[t].id.match("id_" + fieldname + "_collection_") != null) {
+			     if (input_elements[t].id.match( fieldname + "_collection_") != null) {
 			     	team_ids.push(input_elements[t].value);
 			     } // if
 			   } // for	   	   

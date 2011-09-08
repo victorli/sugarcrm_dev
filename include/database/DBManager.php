@@ -679,16 +679,25 @@ abstract class DBManager
         // do index comparisions
         $sql .=	"/* INDEXES */\n";
         $correctedIndexs = array();
+
+		// do indicies comparisons case-insensitive
+		foreach($compareIndices as $k => $value){
+			$value['name'] = strtolower($value['name']);
+			$compareIndices_case_insensitive[strtolower($k)] = $value;
+		}
+		$compareIndices = $compareIndices_case_insensitive;
+		unset($compareIndices_case_insensitive);				
+		
         foreach ($indices as $value) {
             if (isset($value['source']) && $value['source'] != 'db')
                 continue;
-
 
             $validDBName = $this->helper->getValidDBName($name, true, 'index', true);
             if (isset($compareIndices[$validDBName])) {
                    $value['name'] = $validDBName;
             }
-            $name = $value['name'];
+
+            $name = strtolower($value['name']);
 
 			//Don't attempt to fix the same index twice in one pass;
 			if (isset($correctedIndexs[$name]))

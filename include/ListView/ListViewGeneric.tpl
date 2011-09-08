@@ -46,9 +46,9 @@
 	<script type='text/javascript' src='{sugar_getjspath file='include/javascript/sugar_grp_overlib.js'}'></script>
 	<div id='overDiv' style='position:absolute; visibility:hidden; z-index:1000;'></div>
 {/if}
-{if $prerow}
-	{$multiSelectData}
-{/if}
+
+{$multiSelectData}
+
 <table cellpadding='0' cellspacing='0' width='100%' border='0' class='list view'>
 {include file='include/ListView/ListViewPagination.tpl'}
 <tr height='20'>

@@ -52,6 +52,9 @@ function sort_func_by_act_date($act0,$act1)
 	return ($act0->start_time->ts < $act1->start_time->ts) ? -1 : 1;
 }
 
+// Defined to 99 because of maximum input value 2 chars.
+define("SINGLE_ACTIVITY_HOURS", 99);
+
 class Calendar
 {
     var $view = 'month';
@@ -478,23 +481,41 @@ class CalendarActivity
         $timedate->tzGMT($this->end_time);
 	}
 
+	public static function initMaximumSingleActivityDuration() {
+		$maximumHours = SINGLE_ACTIVITY_HOURS;
+		$countedDays = ceil($maximumHours / 24);
+	
+		$daysString = "{$countedDays} days";
+	
+		$return = new stdClass();
+	
+		$return->before = "-{$daysString}";
+		$return->after = "+{$daysString}";
+		return $return;
+	}
+
 	function get_occurs_within_where_clause($table_name, $rel_table, $start_ts_obj, $end_ts_obj, $field_name='date_start', $view)
 	{
 		global $timedate;
         // ensure we're working with user TZ
 		$start_ts_obj = $timedate->tzUser($start_ts_obj);
 		$end_ts_obj = $timedate->tzUser($end_ts_obj);
+		
+
+		$maximumSingleActivityDuration = self::initMaximumSingleActivityDuration();
+		
 		switch ($view) {
+			case 'freebusy':    //bug: 44586, for freebusy, don't modify the start/end dates
+				$start = $start_ts_obj;
+				$end = $end_ts_obj;
+				break;
 			case 'month':
-				$start = $start_ts_obj->get_day_begin(1);
-				$end = $end_ts_obj->get("first day of next month")->get_day_begin();
-				break;
 			default:
-				// Date for the past 5 days as that is the maximum duration of a single activity
-				$start = $start_ts_obj->get("-5 days")->get_day_begin();
-				$end =  $start_ts_obj->get("+5 days")->get_day_end();
+				$start = $start_ts_obj->get("{$maximumSingleActivityDuration->before}")->get_day_begin();
+				$end =  $start_ts_obj->get("{$maximumSingleActivityDuration->after}")->get_day_end();
 				break;
-		}
+		} 
+
 
 		$field_date = $table_name.'.'.$field_name;
         $start_day = $GLOBALS['db']->convert("'{$start->asDb()}'",'datetime');

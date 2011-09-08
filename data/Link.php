@@ -95,6 +95,12 @@ class Link {
 
 		$this->_db = DBManagerFactory::getInstance();
 
+	    // Bug38669 - we set true relationship type if exists
+	    $this->_get_link_table_definition($_table_name,$_rel_name);
+	    if(isset($GLOBALS['dictionary'][$this->_relationship_name]['true_relationship_type'])){
+	      $this->_relationship->relationship_type = $GLOBALS['dictionary'][$this->_relationship_name]['true_relationship_type'];
+	    }    
+	
 		//Following behavior is tied to a property(ignore_role) value in the vardef. It alters the values of 2 properties, ignore_role_filter and add_distinct.
 		//the property values can be altered again before any requests are made.
 		if (!empty($fieldDef) && is_array($fieldDef)) {

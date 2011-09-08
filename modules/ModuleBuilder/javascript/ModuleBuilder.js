@@ -72,7 +72,13 @@ function addChildNodes(parentNode, parentData) {
 if (typeof(ModuleBuilder) == 'undefined') {
 	ModuleBuilder = {
 	    init: function(){
-			
+            //Check if we shoudln't be in studio and need to load the normal ajaxUI
+            var aRegex = /#.*ajaxUILoc=([^&]*)/.exec(window.location);
+            var ajaxLoc = aRegex ? aRegex[1] : false;
+            if (ajaxLoc) {
+                window.location = "index.php?action=ajaxui#ajaxUILoc=" + ajaxLoc;
+                return;
+            }
 			//Setup the basic ajax request settings
 			Connect.extraParams = {
 				to_pdf: true
@@ -167,6 +173,7 @@ if (typeof(ModuleBuilder) == 'undefined') {
 			mp.getUnitByPosition('right').on("resize", correctW); 
 			mp.getUnitByPosition('right').on("collapse", function(){
 				Ck.setSub("ModuleBuilder", "helpHidden", "true");
+                mp.get("element").querySelector(".yui-layout-clip-right .collapse").id = "expand_help";
 			});
 			mp.getUnitByPosition('right').on("expand", function(){
 				Ck.setSub("ModuleBuilder", "helpHidden", "false");
@@ -174,6 +181,7 @@ if (typeof(ModuleBuilder) == 'undefined') {
 			mp.getUnitByPosition('left').on("resize", correctW);
 			mp.getUnitByPosition('left').on("collapse", function(){
 				Ck.setSub("ModuleBuilder", "treeHidden", "true");
+                mp.get("element").querySelector(".yui-layout-clip-left .collapse").id = "expand_tree";
 			});
 			mp.getUnitByPosition('left').on("expand", function(){
 				Ck.setSub("ModuleBuilder", "treeHidden", "false");
@@ -212,7 +220,7 @@ if (typeof(ModuleBuilder) == 'undefined') {
 			}
 
 			YAHOO.util.History.register('mbContent', mbContent, ModuleBuilder.navigate);
-			YAHOO.util.History.initialize("yui-history-field", "yui-history-iframe");
+            YAHOO.util.History.initialize("yui-history-field", "yui-history-iframe");
 			ModuleBuilder.getContent(mbContent);
 			
 			if (SUGAR.themes.tempHideLeftCol) SUGAR.themes.tempHideLeftCol();
@@ -1046,6 +1054,7 @@ if (typeof(ModuleBuilder) == 'undefined') {
 				select[count] = new Option(ajaxResponse[key], key);
 				count++;
 			}
+			ajaxStatus.flashStatus(SUGAR.language.get('app_strings', 'LBL_REQUEST_PROCESSED'), 2000);
 		},
 		setSelectedOption : function (sel, option)
 		{

@@ -86,11 +86,11 @@ class CampaignLog extends SugarBean {
         }
         if ( ( $this->db->dbType == 'mysql' ) or ( $this->db->dbType == 'oci8' ) )
         {
-            $query="select first_name, last_name, CONCAT(CONCAT(first_name, ' '), last_name) name from ".strtolower($temp_array['TARGET_TYPE']) .  " where id ='{$temp_array['TARGET_ID']}'";
+            $query="select first_name, last_name, CONCAT(CONCAT(first_name, ' '), last_name) name, date_modified from ".strtolower($temp_array['TARGET_TYPE']) .  " where id ='{$temp_array['TARGET_ID']}'";
         }
         if($this->db->dbType == 'mssql')
         {
-            $query="select first_name, last_name, (first_name + ' ' + last_name) name from ".strtolower($temp_array['TARGET_TYPE']) .  " where id ='{$temp_array['TARGET_ID']}'";
+            $query="select first_name, last_name, (first_name + ' ' + last_name) name, date_modified from ".strtolower($temp_array['TARGET_TYPE']) .  " where id ='{$temp_array['TARGET_ID']}'";
         }
         if($temp_array['TARGET_TYPE']=='Accounts'){
                $query="select name from ".strtolower($temp_array['TARGET_TYPE']) .  " where id ='{$temp_array['TARGET_ID']}'";
@@ -105,10 +105,11 @@ class CampaignLog extends SugarBean {
             }else{
                 $full_name = $locale->getLocaleFormattedName($row['first_name'], $row['last_name'], '');
                 $temp_array['RECIPIENT_NAME']=$full_name;
+                $temp_array['ACTIVITY_DATE'] = $row['date_modified'];
             }
         }
         $temp_array['RECIPIENT_EMAIL']=$this->retrieve_email_address($temp_array['TARGET_ID']);
-
+        
         $query = 'select name from email_marketing where id = \'' . $temp_array['MARKETING_ID'] . '\'';
         $result=$this->db->query($query);
         $row=$this->db->fetchByAssoc($result);

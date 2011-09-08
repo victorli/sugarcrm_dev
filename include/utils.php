@@ -1805,9 +1805,25 @@ function xss_check_pattern($pattern, $str) {
 	return $matches[1];
 }
 
-// Designed to take a string passed in the URL as a parameter and clean all "bad" data from it
-// The second argument is a string, "filter," which corresponds to a regular expression
-function clean_string($str, $filter = "STANDARD") {
+/**
+ * Designed to take a string passed in the URL as a parameter and clean all "bad" data from it
+ *
+ * @param string $str
+ * @param string $filter which corresponds to a regular expression to use; choices are:
+ * 		"STANDARD" ( default )
+ * 		"STANDARDSPACE"
+ * 		"FILE"
+ * 		"NUMBER"
+ * 		"SQL_COLUMN_LIST"
+ * 		"PATH_NO_URL"
+ * 		"SAFED_GET"
+ * 		"UNIFIED_SEARCH"
+ * 		"AUTO_INCREMENT"
+ * 		"ALPHANUM"
+ * @param boolean $dieOnBadData true (default) if you want to die if bad data if found, false if not
+ */
+function clean_string($str, $filter = "STANDARD", $dieOnBadData = true) 
+{
 	global  $sugar_config;
 
 	$filters = Array(
@@ -1815,7 +1831,7 @@ function clean_string($str, $filter = "STANDARD") {
 	"STANDARDSPACE"   => '#[^A-Z0-9\-_\.\@\ ]#i',
 	"FILE"            => '#[^A-Z0-9\-_\.]#i',
 	"NUMBER"          => '#[^0-9\-]#i',
-	"SQL_COLUMN_LIST" => '#[^A-Z0-9,_\.]#i',
+	"SQL_COLUMN_LIST" => '#[^A-Z0-9\(\),_\.]#i',
 	"PATH_NO_URL"     => '#://#i',
 	"SAFED_GET"		  => '#[^A-Z0-9\@\=\&\?\.\/\-_~]#i', /* range of allowed characters in a GET string */
 	"UNIFIED_SEARCH"	=> "#[\\x00]#", /* cn: bug 3356 & 9236 - MBCS search strings */
@@ -1827,7 +1843,10 @@ function clean_string($str, $filter = "STANDARD") {
 		if (isset($GLOBALS['log']) && is_object($GLOBALS['log'])) {
 			$GLOBALS['log']->fatal("SECURITY: bad data passed in; string: {$str}");
 		}
-		die("Bad data passed in; <a href=\"{$sugar_config['site_url']}\">Return to Home</a>");
+		if ( $dieOnBadData ) {
+			die("Bad data passed in; <a href=\"{$sugar_config['site_url']}\">Return to Home</a>");
+		}
+		return false;
 	}
 	else {
 		return $str;

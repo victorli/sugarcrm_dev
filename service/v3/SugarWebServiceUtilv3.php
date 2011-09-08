@@ -37,6 +37,13 @@
 require_once('service/core/SoapHelperWebService.php');
 class SugarWebServiceUtilv3 extends SoapHelperWebServices {
 
+    function get_name_value($field,$value)
+    {
+        if($value instanceof Link2 && !method_exists($value, '__toString'))
+            $value = '';
+		return array('name'=>$field, 'value'=>$value);
+	}
+    
     function filter_fields($value, $fields)
     {
         $GLOBALS['log']->info('Begin: SoapHelperWebServices->filter_fields');

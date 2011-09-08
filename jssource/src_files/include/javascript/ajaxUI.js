@@ -170,9 +170,16 @@ SUGAR.ajaxUI = {
                 loadLanguageJS = '&loadLanguageJS=1';
             }
 
-            if (!inAjaxUI)
+            if (!inAjaxUI) {
                 //If we aren't in the ajaxUI yet, we need to reload the page to get setup properly
-                window.location = "index.php?action=ajaxui#ajaxUILoc=" + encodeURIComponent(url);
+                if (!SUGAR.isIE)
+                    window.location.replace("index.php?action=ajaxui#ajaxUILoc=" + encodeURIComponent(url));
+                else {
+                    //if we use replace under IE, it will cache the page as the replaced version and thus no longer load the previous page.
+                    window.location.hash = "#";
+                    window.location.assign("index.php?action=ajaxui#ajaxUILoc=" + encodeURIComponent(url));
+                }
+            }
             else {
                 ajaxStatus.showStatus( SUGAR.language.get('app_strings','LBL_LOADING')) ;
                 ui.lastCall = YAHOO.util.Connect.asyncRequest('GET', url + '&ajax_load=1' + loadLanguageJS, {
@@ -237,9 +244,9 @@ SUGAR.ajaxUI = {
     {
         //Setup Browser History
         var url = YAHOO.util.History.getBookmarkedState('ajaxUILoc');
-        var aRegex = /action=([^&]*)/.exec(window.location);
+        var aRegex = /action=([^&#]*)/.exec(window.location);
         var action = aRegex ? aRegex[1] : false;
-        var mRegex = /module=([^&]*)/.exec(window.location);
+        var mRegex = /module=([^&#]*)/.exec(window.location);
         var module = mRegex ? mRegex[1] : false;
         if (module != "ModuleBuilder")
         {

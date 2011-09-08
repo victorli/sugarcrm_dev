@@ -152,6 +152,7 @@
         <td  width='35%'>
             <div id="container_upload"></div>
             <input type='text' id='company_logo' name='company_logo' style="display:none">
+        </td>
     </tr>
     <tr>
             <td scope="row">{$MOD.LBL_LEAD_CONV_OPTION}:&nbsp;{sugar_help text=$MOD.LEAD_CONV_OPT_HELP}</td>

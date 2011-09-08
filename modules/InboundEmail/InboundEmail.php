@@ -5724,9 +5724,11 @@ eoq;
 				$meta['is_sugarEmail'] = true;
 			}
 		} else {
-			// mark SugarEmail read
-			$q = "UPDATE emails SET status = 'read' WHERE id = '{$uid}'";
-			$r = $this->db->query($q);
+			if( $this->email->status != 'sent' ){
+				// mark SugarEmail read
+				$q = "UPDATE emails SET status = 'read' WHERE id = '{$uid}'";
+				$r = $this->db->query($q);
+			}
 		}
 
 		$return = array();

@@ -375,6 +375,11 @@ class Sugarpdf extends TCPDF
                         $cellOptions = $this->initOptionsForWriteCellTable($cell['options'], $item);
                     }
                 }
+
+				//Bug45077-replacing single quote entities
+					$value=str_replace("&#039;","'",$value);
+				//Bug45077-replacing double quote entities
+					$value=str_replace("&quot;",'"',$value);
                 
                 if($even && !empty($options['evencolor'])){
                     $this->SetFillColorArray($this->convertHTMLColorToDec($options['evencolor']));

@@ -120,6 +120,7 @@ class AdministrationController extends SugarController
                         if ( isset ( $wireless_module_registry [ $e ] ) )
                         {
                             $updated_enabled_modules [ $e ] = $wireless_module_registry [ $e ] ;
+                            sugar_cache_clear("CONTROLLER_wireless_module_registry_$e");
                         }
 
                     }
@@ -130,7 +131,8 @@ class AdministrationController extends SugarController
 
             mkdir_recursive ( dirname ( $filename ) ) ;
             write_array_to_file ( 'wireless_module_registry', $updated_enabled_modules, $filename );
-
+            sugar_cache_clear("CONTROLLER_wireless_module_registry_Users");
+            sugar_cache_reset();
         }
 
         echo "true";

@@ -89,6 +89,11 @@ class SubpanelQuickCreate{
 		if(file_exists($viewEditSource) && !$proccessOverride) {
             include($viewEditSource); 
             $c = $module . 'ViewEdit';
+
+            $customClass = 'Custom' . $c;
+            if(class_exists($customClass)) {
+                $c = $customClass;
+            }
             
             if(class_exists($c)) {
 	            $view = new $c;

@@ -165,7 +165,8 @@ else {
 		        header("Content-Type: image/png");
 		    }
 		} else {
-		    header("Content-Type: application/force-download");
+            header("Content-Type: application/force-download");
+            header("Content-type: application/octet-stream");
             header("Content-Disposition: attachment; filename=\"".$name."\";");
 		}
 		// disable content type sniffing in MSIE

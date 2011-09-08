@@ -249,13 +249,10 @@ class Campaign extends SugarBean {
 
 	}
 
-    function mark_deleted($id){
-	    //Bug 44870 Deleted Campaign Is Not Removed From campaign_id Column in Accounts & Contacts Tables
-  	    $query = "update accounts set `campaign_id`=null where `campaign_id` = '{$id}' ";
-        $this->db->query($query);
-        $query = "update contacts set `campaign_id`=null where `campaign_id` = '{$id}' ";
-        $this->db->query($query);
 
+	function mark_deleted($id){
+        $query = "update contacts set campaign_id = null where campaign_id = '{$id}' ";
+        $this->db->query($query);
 		return parent::mark_deleted($id);
 	}
 

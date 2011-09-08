@@ -101,7 +101,6 @@ type="file" title='{{$vardef.help}}' size="{{$displayParams.size|default:30}}"
 {{/if}}
 {{$displayParams.field}}>
 
-
 {{if isset($vardef.allowEapm) && $vardef.allowEapm}}
 <span id="{{$idName}}_externalApiSelector" style="display:none;">
 <br><h4 id="{{$idName}}_externalApiLabel">

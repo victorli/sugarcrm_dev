@@ -3972,6 +3972,7 @@ if (!class_exists('TCPDF', false)) {
 			}
 			// remove carriage returns
 			$s = str_replace("\r", '', $txt);
+			
 			// check if string contains arabic text
 			if (preg_match(K_RE_PATTERN_ARABIC, $s)) {
 				$arabic = true;
@@ -4462,6 +4463,9 @@ if (!class_exists('TCPDF', false)) {
                     $favoredRatio = $wratio;
                 } else if ($hratio > 1) {
                     $favoredRatio = $hratio;
+                } else {
+                    $favoredRatio = 1;
+                    $resize = false;
                 }
 
                 // Calculate the new boundaries that also happen to fit the box..

@@ -80,17 +80,21 @@ var formsWithFieldLogic=null;var formWithPrecision=null;function addToValidateFi
 function addToValidatePrecision(formId,valueId,precisionId){this.form=document.getElementById(formId);this.float=document.getElementById(valueId);this.precision=document.getElementById(precisionId);}
 function isValidPrecision(value,precision){value=trim(value.toString());if(precision=='')
 return true;if(value=='')
-return true;if((precision=="0")){if(value.indexOf(".")==-1){return true;}else{return false;}}
-var actualPrecision=value.substr(value.indexOf(".")+1,value.length).length;return actualPrecision==precision;}
+return true;if((precision=="0")){if(value.indexOf(dec_sep)==-1){return true;}else{return false;}}
+if(value.charAt(value.length-precision-1)==num_grp_sep){if(value.substr(value.indexOf(dec_sep),1)==dec_sep){return false;}
+returntrue;}
+var actualPrecision=value.substr(value.indexOf(dec_sep)+1,value.length).length;return actualPrecision==precision;}
 function toDecimal(original,precision){precision=(precision==null)?2:precision;num=Math.pow(10,precision);temp=Math.round(original*num)/num;if((temp*100)%100==0)
 return temp+'.00';if((temp*10)%10==0)
 return temp+'0';return temp}
-function isInteger(s){if(typeof s=="string"&&s=="")
+function isInteger(s){if(typeof num_grp_sep!='undefined'&&typeof dec_sep!='undefined')
+{s=unformatNumberNoParse(s,num_grp_sep,dec_sep).toString();}
+return /^[+-]?[0-9]*$/.test(s);}
+function isDecimal(s){if(typeof s=="string"&&s=="")
 return true;if(typeof num_grp_sep!='undefined'&&typeof dec_sep!='undefined')
 {s=unformatNumberNoParse(s,num_grp_sep,dec_sep).toString();}
-return parseFloat(s)==parseInt(s)&&!isNaN(s);}
-function isNumeric(s){if(!/^-*[0-9\.]+$/.test(s)){return false}
-else{return true;}}
+return/^[+-]?[0-9]+\.?[0-9]*$/.test(s);}
+function isNumeric(s){return isDecimal(s);}
 var date_reg_positions={'Y':1,'m':2,'d':3};var date_reg_format='([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})'
 function isDate(dtStr){if(dtStr.length==0){return true;}
 myregexp=new RegExp(date_reg_format)
@@ -184,6 +188,7 @@ if(!bail){switch(validate[formname][i][typeIndex]){case'email':if(!isValidEmail(
 break;case'time':if(!isTime(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}break;case'date':if(!isDate(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}break;case'alpha':break;case'DBName':if(!isDBName(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
 break;case'alphanumeric':break;case'file':var file_input=form[validate[formname][i][nameIndex]+'_file'];if(file_input&&validate[formname][i][requiredIndex]&&trim(file_input.value)==""&&!file_input.disabled){isError=true;add_error_style(formname,validate[formname][i][nameIndex],requiredTxt+" "+validate[formname][i][msgIndex]);}
 break;case'int':if(!isInteger(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
+break;case'decimal':if(!isDecimal(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
 break;case'currency':case'float':if(!isFloat(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
 break;case'teamset_mass':var div_element_id=formname+'_'+form[validate[formname][i][nameIndex]].name+'_operation_div';var input_elements=YAHOO.util.Selector.query('input',document.getElementById(div_element_id));var primary_field_id='';var validation_passed=false;var replace_selected=false;for(t in input_elements){if(input_elements[t].type&&input_elements[t].type=='radio'&&input_elements[t].checked==true&&input_elements[t].value=='replace'){var radio_elements=YAHOO.util.Selector.query('input[type=radio]',document.getElementById(formname+'_team_name_table'));for(var x=0;x<radio_elements.length;x++){if(radio_elements[x].name!='team_name_type'){primary_field_id='team_name_collection_'+radio_elements[x].value;if(radio_elements[x].checked){replace_selected=true;if(trim(document.forms[formname].elements[primary_field_id].value)!=''){validation_passed=true;break;}}else if(trim(document.forms[formname].elements[primary_field_id].value)!=''){replace_selected=true;}}}}}
 if(replace_selected&&!validation_passed){add_error_style(formname,primary_field_id,SUGAR.language.get('app_strings','ERR_NO_PRIMARY_TEAM_SPECIFIED'));isError=true;}
@@ -337,7 +342,9 @@ YAHOO.util.Connect.asyncRequest("POST","index.php?",{success:this.use_external_m
 sugarListView.prototype.use_external_mail_client_callback=function(o)
 {if(o.responseText)
 location.href='mailto:'+o.responseText;}
-sugarListView.prototype.send_form_for_emails=function(select,currentModule,action,no_record_txt,action_module,totalCount,totalCountError){if(document.MassUpdate.select_entire_list.value==1){if(totalCount>10){alert(totalCountError);return;}
+sugarListView.prototype.send_form_for_emails=function(select,currentModule,action,no_record_txt,action_module,totalCount,totalCountError){if(typeof(SUGAR.config.email_sugarclient_listviewmaxselect)!='undefined'){maxCount=10;}
+else{maxCount=SUGAR.config.email_sugarclient_listviewmaxselect;}
+if(document.MassUpdate.select_entire_list.value==1){if(totalCount>maxCount){alert(totalCountError);return;}
 select=false;}
 else if(document.MassUpdate.massall.checked==true)
 select=false;else
@@ -345,7 +352,7 @@ select=true;sugarListView.get_checks();var newForm=document.createElement('form'
 else{inputs=document.MassUpdate.elements;ar=new Array();for(i=0;i<inputs.length;i++){if(inputs[i].name=='mass[]'&&inputs[i].checked&&typeof(inputs[i].value)!='function'){ar.push(inputs[i].value);}}
 uidTa.value=ar.join(',');}
 if(uidTa.value==''){alert(no_record_txt);return false;}
-var selectedArray=uidTa.value.split(",");if(selectedArray.length>10){alert(totalCountError);return;}
+var selectedArray=uidTa.value.split(",");if(selectedArray.length>maxCount){alert(totalCountError);return;}
 newForm.appendChild(uidTa);var moduleInput=document.createElement('input');moduleInput.name='module';moduleInput.type='hidden';moduleInput.value=currentModule;newForm.appendChild(moduleInput);var actionInput=document.createElement('input');actionInput.name='action';actionInput.type='hidden';actionInput.value='Compose';newForm.appendChild(actionInput);if(typeof action_module!='undefined'&&action_module!=''){var actionModule=document.createElement('input');actionModule.name='action_module';actionModule.type='hidden';actionModule.value=action_module;newForm.appendChild(actionModule);}
 if(typeof return_info!='undefined'&&return_info!=''){var params=return_info.split('&');if(params.length>0){for(var i=0;i<params.length;i++){if(params[i].length>0){var param_nv=params[i].split('=');if(param_nv.length==2){returnModule=document.createElement('input');returnModule.name=param_nv[0];returnModule.type='hidden';returnModule.value=param_nv[1];newForm.appendChild(returnModule);}}}}}
 var isAjaxCall=document.createElement('input');isAjaxCall.name='ajaxCall';isAjaxCall.type='hidden';isAjaxCall.value=true;newForm.appendChild(isAjaxCall);var isListView=document.createElement('input');isListView.name='ListView';isListView.type='hidden';isListView.value=true;newForm.appendChild(isListView);var toPdf=document.createElement('input');toPdf.name='to_pdf';toPdf.type='hidden';toPdf.value=true;newForm.appendChild(toPdf);YAHOO.util.Connect.setForm(newForm);var callback={success:function(o){var resp=YAHOO.lang.JSON.parse(o.responseText);var quickComposePackage=new Object();quickComposePackage.composePackage=resp;quickComposePackage.fullComposeUrl='index.php?module=Emails&action=Compose&ListView=true'+'&uid='+uidTa.value+'&action_module='+action_module;SUGAR.quickCompose.init(quickComposePackage);}}
@@ -699,8 +706,9 @@ return;var inAjaxUI=/action=ajaxui/.exec(window.location);if(inAjaxUI&&typeof(wi
 if(ui.lastCall&&con.isCallInProgress(ui.lastCall)){con.abort(ui.lastCall);}
 var mRegex=/module=([^&]*)/.exec(url);var module=mRegex?mRegex[1]:false;if(!ui.canAjaxLoadModule(module)){window.location=url;return;}
 ui.lastURL=url;ui.cleanGlobals();var loadLanguageJS='';if(module&&typeof(SUGAR.language.languages[module])=='undefined'){loadLanguageJS='&loadLanguageJS=1';}
-if(!inAjaxUI)
-window.location="index.php?action=ajaxui#ajaxUILoc="+encodeURIComponent(url);else{ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_LOADING'));ui.lastCall=YAHOO.util.Connect.asyncRequest('GET',url+'&ajax_load=1'+loadLanguageJS,{success:SUGAR.ajaxUI.callback});}}},submitForm:function(formname,params)
+if(!inAjaxUI){if(!SUGAR.isIE)
+window.location.replace("index.php?action=ajaxui#ajaxUILoc="+encodeURIComponent(url));else{window.location.hash="#";window.location.assign("index.php?action=ajaxui#ajaxUILoc="+encodeURIComponent(url));}}
+else{ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_LOADING'));ui.lastCall=YAHOO.util.Connect.asyncRequest('GET',url+'&ajax_load=1'+loadLanguageJS,{success:SUGAR.ajaxUI.callback});}}},submitForm:function(formname,params)
 {var con=YAHOO.util.Connect,SA=SUGAR.ajaxUI;if(SA.lastCall&&con.isCallInProgress(SA.lastCall)){con.abort(SA.lastCall);}
 SA.cleanGlobals();var form=YAHOO.util.Dom.get(formname)||document.forms[formname];if(SA.canAjaxLoadModule(form.module.value)&&typeof(YAHOO.util.Selector.query("input[type=file]",form)[0])=="undefined"&&/action=ajaxui/.exec(window.location))
 {var string=con.setForm(form);var baseUrl="index.php?action=ajaxui#ajaxUILoc=";SA.lastURL="";ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_LOADING'));if(string.length>200)
@@ -708,7 +716,7 @@ SA.cleanGlobals();var form=YAHOO.util.Dom.get(formname)||document.forms[formname
 return true;}else{form.submit();return false;}},cleanGlobals:function()
 {sqs_objects={};QSProcessedFieldsArray={};collection={};if(SUGAR.EmailAddressWidget){SUGAR.EmailAddressWidget.instances={};SUGAR.EmailAddressWidget.count={};}
 YAHOO.util.Event.removeListener(window,'resize');},firstLoad:function()
-{var url=YAHOO.util.History.getBookmarkedState('ajaxUILoc');var aRegex=/action=([^&]*)/.exec(window.location);var action=aRegex?aRegex[1]:false;var mRegex=/module=([^&]*)/.exec(window.location);var module=mRegex?mRegex[1]:false;if(module!="ModuleBuilder")
+{var url=YAHOO.util.History.getBookmarkedState('ajaxUILoc');var aRegex=/action=([^&#]*)/.exec(window.location);var action=aRegex?aRegex[1]:false;var mRegex=/module=([^&#]*)/.exec(window.location);var module=mRegex?mRegex[1]:false;if(module!="ModuleBuilder")
 {var go=url!=null||action=="ajaxui";url=url?url:'index.php?module=Home&action=index';YAHOO.util.History.register('ajaxUILoc',url,SUGAR.ajaxUI.go);YAHOO.util.History.initialize("ajaxUI-history-field","ajaxUI-history-iframe");SUGAR.ajaxUI.hist_loaded=true;if(go)
 SUGAR.ajaxUI.go(url);}
 SUGAR_callsInProgress--;},print:function()

@@ -575,7 +575,7 @@ $.getPos = function(elem) {
     while (elem && !isBody(elem)) {
       position.x += elem.offsetLeft;
       position.y += elem.offsetTop;
-      elem = elem.offsetParent;
+      try{elem=elem.offsetParent;}catch(e){elem=document.body;}
     }
     return position;
   }

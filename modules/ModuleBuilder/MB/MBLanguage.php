@@ -181,10 +181,20 @@ class MBLanguage{
 			$key_changed = ($this->key_name != $key_name);
 			
 			foreach($this->appListStrings as $lang=>$values){
+				// Load previously created modules data
+				$app_list_strings = array ();
+				$neededFile = $app_save_path . '/'. $lang;
+				if (file_exists($neededFile)) {
+					include $neededFile;
+				}
+
+				
 				if(!$duplicate){
 					unset($values['moduleList'][$this->key_name]);
 				}
 				$values['moduleList'][$key_name]= $this->label;
+				$values = sugarArrayMerge($values, $app_list_strings);
+
 				$appFile = $header. "\n";
 				require_once('include/utils/array_utils.php');
 				$this->getGlobalAppListStringsForMB($values);

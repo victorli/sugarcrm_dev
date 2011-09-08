@@ -154,26 +154,22 @@ SugarVCalClient.prototype.parseResults = function(textResult, adjusted) {
 
         // starting at startdate, create hash of each busy 15 min 
         // timeslot and store as a key
-        for (var i = 0; i < 100; i++) {
-            if (startdate.valueOf() < enddate.valueOf()) {
-                var hash = SugarDateTime.getUTCHash(startdate);
-                if (typeof (timehash[hash]) == 'undefined') {
-                    timehash[hash] = 0;
-                }
-                timehash[hash] += 1;
-                startdate = new Date(startdate.valueOf() + (15 * 60 * 1000));
+		while (startdate.valueOf() < enddate.valueOf()) {
+			var hash = SugarDateTime.getUTCHash(startdate);
+			if (typeof (timehash[hash]) == 'undefined') {
+				timehash[hash] = 0;
+			}
+			timehash[hash] += 1;
+			startdate = new Date(startdate.valueOf() + (15 * 60 * 1000));
 
-            }
-            else {
-                break;
-            }
-        }
+		}
+        return timehash;
     }
-    return timehash;
+
+
 }
 
 SugarVCalClient.parseResults = SugarVCalClient.prototype.parseResults;
-
 //////////////////////////////////////////////////
 // class: SugarRPCClient
 // wrapper around async JSON-RPC client class

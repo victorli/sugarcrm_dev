@@ -100,11 +100,11 @@ class SubpanelMetaDataParser extends ListLayoutMetaDataParser
             	$labelParser->addLabels($selected_lang, array($_REQUEST['subpanel_title_key'] =>  remove_xss(from_html($_REQUEST['subpanel_title']))), $_REQUEST['view_module']);
             }
         }
-
+        
         $defs = $this->restoreInvisibleFields($this->_invisibleFields,$this->_viewdefs); // unlike our parent, do not force the field names back to upper case
         $defs = $this->makeRelateFieldsAsLink($defs);
-        $this->implementation->deploy ($defs); 
-     }
+        $this->implementation->deploy ($defs);         
+    }
 
     /**
      * Return a list of the default fields for a subpanel
@@ -160,7 +160,6 @@ class SubpanelMetaDataParser extends ListLayoutMetaDataParser
         return $listDef;
     }
 
-    
 	/**
      * makeRelateFieldsAsLink
      * This method will go through the subpanel definition entries being saved and then apply formatting to any that are 
@@ -183,7 +182,7 @@ class SubpanelMetaDataParser extends ListLayoutMetaDataParser
         }
 
         return $defs;
-    }        
+    }    
     
 }
 ?>

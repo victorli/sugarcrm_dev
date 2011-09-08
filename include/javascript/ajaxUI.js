@@ -57,8 +57,9 @@ return;var inAjaxUI=/action=ajaxui/.exec(window.location);if(inAjaxUI&&typeof(wi
 if(ui.lastCall&&con.isCallInProgress(ui.lastCall)){con.abort(ui.lastCall);}
 var mRegex=/module=([^&]*)/.exec(url);var module=mRegex?mRegex[1]:false;if(!ui.canAjaxLoadModule(module)){window.location=url;return;}
 ui.lastURL=url;ui.cleanGlobals();var loadLanguageJS='';if(module&&typeof(SUGAR.language.languages[module])=='undefined'){loadLanguageJS='&loadLanguageJS=1';}
-if(!inAjaxUI)
-window.location="index.php?action=ajaxui#ajaxUILoc="+encodeURIComponent(url);else{ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_LOADING'));ui.lastCall=YAHOO.util.Connect.asyncRequest('GET',url+'&ajax_load=1'+loadLanguageJS,{success:SUGAR.ajaxUI.callback});}}},submitForm:function(formname,params)
+if(!inAjaxUI){if(!SUGAR.isIE)
+window.location.replace("index.php?action=ajaxui#ajaxUILoc="+encodeURIComponent(url));else{window.location.hash="#";window.location.assign("index.php?action=ajaxui#ajaxUILoc="+encodeURIComponent(url));}}
+else{ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_LOADING'));ui.lastCall=YAHOO.util.Connect.asyncRequest('GET',url+'&ajax_load=1'+loadLanguageJS,{success:SUGAR.ajaxUI.callback});}}},submitForm:function(formname,params)
 {var con=YAHOO.util.Connect,SA=SUGAR.ajaxUI;if(SA.lastCall&&con.isCallInProgress(SA.lastCall)){con.abort(SA.lastCall);}
 SA.cleanGlobals();var form=YAHOO.util.Dom.get(formname)||document.forms[formname];if(SA.canAjaxLoadModule(form.module.value)&&typeof(YAHOO.util.Selector.query("input[type=file]",form)[0])=="undefined"&&/action=ajaxui/.exec(window.location))
 {var string=con.setForm(form);var baseUrl="index.php?action=ajaxui#ajaxUILoc=";SA.lastURL="";ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_LOADING'));if(string.length>200)
@@ -66,7 +67,7 @@ SA.cleanGlobals();var form=YAHOO.util.Dom.get(formname)||document.forms[formname
 return true;}else{form.submit();return false;}},cleanGlobals:function()
 {sqs_objects={};QSProcessedFieldsArray={};collection={};if(SUGAR.EmailAddressWidget){SUGAR.EmailAddressWidget.instances={};SUGAR.EmailAddressWidget.count={};}
 YAHOO.util.Event.removeListener(window,'resize');},firstLoad:function()
-{var url=YAHOO.util.History.getBookmarkedState('ajaxUILoc');var aRegex=/action=([^&]*)/.exec(window.location);var action=aRegex?aRegex[1]:false;var mRegex=/module=([^&]*)/.exec(window.location);var module=mRegex?mRegex[1]:false;if(module!="ModuleBuilder")
+{var url=YAHOO.util.History.getBookmarkedState('ajaxUILoc');var aRegex=/action=([^&#]*)/.exec(window.location);var action=aRegex?aRegex[1]:false;var mRegex=/module=([^&#]*)/.exec(window.location);var module=mRegex?mRegex[1]:false;if(module!="ModuleBuilder")
 {var go=url!=null||action=="ajaxui";url=url?url:'index.php?module=Home&action=index';YAHOO.util.History.register('ajaxUILoc',url,SUGAR.ajaxUI.go);YAHOO.util.History.initialize("ajaxUI-history-field","ajaxUI-history-iframe");SUGAR.ajaxUI.hist_loaded=true;if(go)
 SUGAR.ajaxUI.go(url);}
 SUGAR_callsInProgress--;},print:function()

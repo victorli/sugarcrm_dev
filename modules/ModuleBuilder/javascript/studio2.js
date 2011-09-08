@@ -946,13 +946,13 @@ Studio2 = {
             for(var i in Studio2.scrollZones)
             {
                 var zone = Studio2.scrollZones[i];
-                if (o.goingUp && Studio2.isWithinBox([o.lastX, o.lastY], zone.up))
+                if (Studio2.isWithinBox([o.lastX, o.lastY], zone.up))
                 {
                     document.getElementById(i).scrollTop -= 5;
                     YAHOO.util.DragDropMgr.refreshCache();
                     return;
                 }
-                else if (!o.goingUp && Studio2.isWithinBox([o.lastX, o.lastY], zone.down))
+                else if (Studio2.isWithinBox([o.lastX, o.lastY], zone.down))
                 {
                     document.getElementById(i).scrollTop += 5;
                     YAHOO.util.DragDropMgr.refreshCache();
@@ -979,8 +979,8 @@ Studio2 = {
             this.goingUp = false;
         }
 
-        this.lastY = y;
-        this.lastX = e.pageX;
+        this.lastY = e.pageY || e.clientY;
+        this.lastX = e.pageX || e.clientX;
     }
 };
 

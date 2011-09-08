@@ -59,7 +59,7 @@ elem.parentNode.removeChild(elem);if(elem.clearAttributes)
 elem.clearAttributes();};$.clean=function(elem){for(var ch=elem.childNodes,i=0,l=ch.length;i<l;i++){$.destroy(ch[i]);}};$.addEvent=function(obj,type,fn){if(obj.addEventListener)
 obj.addEventListener(type,fn,false);else
 obj.attachEvent('on'+type,fn);};$.addEvents=function(obj,typeObj){for(var type in typeObj){$.addEvent(obj,type,typeObj[type]);}};$.hasClass=function(obj,klass){return(' '+obj.className+' ').indexOf(' '+klass+' ')>-1;};$.addClass=function(obj,klass){if(!$.hasClass(obj,klass))
-obj.className=(obj.className+" "+klass);};$.removeClass=function(obj,klass){obj.className=obj.className.replace(new RegExp('(^|\\s)'+klass+'(?:\\s|$)'),'$1');};$.getPos=function(elem){var offset=getOffsets(elem);var scroll=getScrolls(elem);return{x:offset.x-scroll.x,y:offset.y-scroll.y};function getOffsets(elem){var position={x:0,y:0};while(elem&&!isBody(elem)){position.x+=elem.offsetLeft;position.y+=elem.offsetTop;elem=elem.offsetParent;}
+obj.className=(obj.className+" "+klass);};$.removeClass=function(obj,klass){obj.className=obj.className.replace(new RegExp('(^|\\s)'+klass+'(?:\\s|$)'),'$1');};$.getPos=function(elem){var offset=getOffsets(elem);var scroll=getScrolls(elem);return{x:offset.x-scroll.x,y:offset.y-scroll.y};function getOffsets(elem){var position={x:0,y:0};while(elem&&!isBody(elem)){position.x+=elem.offsetLeft;position.y+=elem.offsetTop;try{elem=elem.offsetParent;}catch(e){elem=document.body;}}
 return position;}
 function getScrolls(elem){var position={x:0,y:0};while(elem&&!isBody(elem)){position.x+=elem.scrollLeft;position.y+=elem.scrollTop;elem=elem.parentNode;}
 return position;}

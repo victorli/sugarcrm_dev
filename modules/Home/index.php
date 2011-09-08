@@ -292,7 +292,7 @@ $sugar_smarty->assign('lblAdd', $GLOBALS['app_strings']['LBL_ADD_BUTTON']);
 $sugar_smarty->assign('lblAddDashlets', $GLOBALS['app_strings']['LBL_ADD_DASHLETS']);
 $sugar_smarty->assign('lblLnkHelp', $GLOBALS['app_strings']['LNK_HELP']);
 
-$sugar_smarty->assign('mod', return_module_language($sugar_config['default_language'], 'Home'));
+$sugar_smarty->assign('mod', return_module_language($GLOBALS['current_language'], 'Home'));
 $sugar_smarty->assign('app', $GLOBALS['app_strings']);
 $sugar_smarty->assign('module', 'Home');
 //custom chart code

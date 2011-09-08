@@ -158,10 +158,11 @@ abstract class SugarRelationship
             else
                 $values[$field] = "''";
         }
+        $columns = implode(',', array_keys($values));
         $values = implode(',', $values);
         if (!empty($values))
         {
-            $query = "INSERT INTO {$this->getRelationshipTable()} VALUES ($values)";
+            $query = "INSERT INTO {$this->getRelationshipTable()} ($columns) VALUES ($values)";
             DBManagerFactory::getInstance()->query($query);
         }
     }

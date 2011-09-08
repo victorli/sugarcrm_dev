@@ -679,6 +679,14 @@ class MBModule
                         $this->key_name . 'Dashlet'
                     );
                     $contents = str_replace($search_array, $replace_array, $contents );
+                    
+                    
+                    if ("relationships.php" == $e) 
+                    {
+                        //bug 39598 Relationship Name Is Not Updated If Module Name Is Changed In Module Builder
+                        $contents = str_replace  ( "'{$old_name}'", "'{$this->key_name}'" , $contents ) ;
+                    }
+                    
                     $fp = sugar_fopen ( $new_dir . '/' . $e, 'w' ) ;
                     fwrite ( $fp, $contents ) ;
                     fclose ( $fp ) ;
