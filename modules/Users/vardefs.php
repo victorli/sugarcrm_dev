@@ -380,7 +380,8 @@ $dictionary['User'] = array(
             'type' => 'link',
             'relationship' => 'contacts_users',
             'source' => 'non-db',
-            'vname' => 'LBL_CONTACTS_SYNC'
+            'vname' => 'LBL_CONTACTS_SYNC',
+            'reportable' => false,
         ) ,
         'reports_to_link' => array(
             'name' => 'reports_to_link',
@@ -399,6 +400,7 @@ $dictionary['User'] = array(
             'side' => 'left',
             'source' => 'non-db',
             'vname' => 'LBL_REPORTS_TO',
+            'reportable' => false,
         ) ,
         'email1' => array(
             'name' => 'email1',

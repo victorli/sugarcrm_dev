@@ -127,8 +127,9 @@ class ViewConvertLead extends SugarView
 
         echo "<div class='edit view' style='width:auto;'>";
 
-        global $sugar_config;
+        global $sugar_config, $app_list_strings;
         $smarty->assign('lead_conv_activity_opt', $sugar_config['lead_conv_activity_opt']);
+        $smarty->assign('convertModuleListOptions', get_select_options_with_id(array('Contacts' => $app_list_strings["moduleListSingular"]['Contacts']), ''));
 
         foreach($this->defs as $module => $vdef)
         {

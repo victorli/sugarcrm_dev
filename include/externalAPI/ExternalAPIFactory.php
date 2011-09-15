@@ -58,12 +58,9 @@ class ExternalAPIFactory
                 if(ConnectorUtils::eapmEnabled($data['connector'])) {
                      if(isset($data['authMethod']) && $data['authMethod'] == 'oauth'){
                         $connector = SourceFactory::getSource($data['connector'], false);
-                        if(!empty($connector)) {
-                            $key = $connector->getProperty('oauth_consumer_key');
-                            $secret = $connector->getProperty('oauth_consumer_secret');
-                            if(!empty($key) && !empty($secret)){
+                        if(!empty($connector) && $connector->propertyExists('oauth_consumer_key')
+                            && $connector->propertyExists('oauth_consumer_secret')) {
                                 $filteredList[$name] = $data;
-                            }
                         }
                      }else{
                         $filteredList[$name] = $data;

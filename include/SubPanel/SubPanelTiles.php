@@ -390,7 +390,11 @@ EOQ;
     		YAHOO.util.DDM.mode = 1;
     	}
     	currentModule = '{$this->module}';
-    	YAHOO.util.Event.addListener(window, 'load', SubpanelInit);
+    	SUGAR.util.doWhen(
+    	    "typeof(SUGAR.subpanelUtils) == 'object' && typeof(SUGAR.subpanelUtils.onDrag) == 'function'" +
+    	        " && document.getElementById('subpanel_list')",
+    	    SubpanelInit
+    	);
     </script>
 EOQ;
         }

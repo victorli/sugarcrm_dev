@@ -192,9 +192,12 @@ class MBLanguage{
 				if(!$duplicate){
 					unset($values['moduleList'][$this->key_name]);
 				}
-				$values['moduleList'][$key_name]= $this->label;
+				
+				
 				$values = sugarArrayMerge($values, $app_list_strings);
-
+				$values['moduleList'][$key_name]= $this->label;
+				
+				
 				$appFile = $header. "\n";
 				require_once('include/utils/array_utils.php');
 				$this->getGlobalAppListStringsForMB($values);

@@ -1048,9 +1048,6 @@ class Email extends SugarBean {
                         if($this->load_relationship($rel) ) {
                             $this->$rel->delete($this->id, $this->fetched_row['parent_id']);
                         }
-                    } else {
-                        // we already have this relationship, don't add it
-                        return;
                     }
                 }
                 $mod = strtolower($this->parent_type);

@@ -78,12 +78,17 @@ class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
         $_REQUEST['dropdown_lang'] = $this->language;
         $_REQUEST['dropdown_name'] = 'moduleList';
 
+        global $app_list_strings;
+        if (!isset($app_list_strings['parent_type_display'][$module])) {
+            $app_list_strings['parent_type_display'][$module] = 'Account';
+        }
         $rm->save(FALSE);
 
         //Test app list strings
         $app_list_string = return_app_list_strings_language('en_us');
         $this->assertEquals($newSingular, $app_list_string['moduleListSingular'][$module] );
         $this->assertEquals($newPlural, $app_list_string['moduleList'][$module] );
+        $this->assertEquals($newSingular, $app_list_string['parent_type_display'][$module] );
 
         //Test module strings for account
         $accountStrings = return_module_language('en_us',$module, TRUE);

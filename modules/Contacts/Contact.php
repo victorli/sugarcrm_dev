@@ -369,6 +369,8 @@ class Contact extends Person {
 		    $query .= " and acc.id = '{$this->account_id}'";
 		}
 
+        $query .= " ORDER BY a_c.date_modified DESC";
+
 		$result = $this->db->query($query,true," Error filling in additional detail fields: ");
 
 		// Get the id and the name.

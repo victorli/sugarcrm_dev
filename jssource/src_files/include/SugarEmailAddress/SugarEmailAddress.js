@@ -217,7 +217,7 @@
 		    var newContent = document.createElement("input");
 		    var nav = new String(navigator.appVersion);
 		    var newContentPrimaryFlag;
-		    if(SUGAR.isIE){
+		    if(YAHOO.env.ua.ie){
 		       newContentPrimaryFlag = document.createElement("<input name='emailAddressPrimaryFlag' />");
 		    }else{
 		       newContentPrimaryFlag = document.createElement("input");
@@ -238,7 +238,7 @@
 		    var td6 = document.createElement("td");
 		    var td7 = document.createElement("td");
 		    var td8 = document.createElement("td");
-		
+
 		    // set input field attributes
 		    newContent.setAttribute("type", "text");
 		    newContent.setAttribute("name", this.id + "emailAddress" + this.numberEmailAddresses);
@@ -264,7 +264,7 @@
 		    newContentPrimaryFlag.setAttribute("id", this.id + "emailAddressPrimaryFlag" + this.numberEmailAddresses);
 		    newContentPrimaryFlag.setAttribute("value", this.id + "emailAddress" + this.numberEmailAddresses);
 		    newContentPrimaryFlag.setAttribute("enabled", "true");
-		
+
 		    // set reply-to flag
 		    newContentReplyToFlag.setAttribute("type", "radio");
 		    newContentReplyToFlag.setAttribute("name", this.id + "emailAddressReplyToFlag");
@@ -301,7 +301,7 @@
 		            this.checked = true;
 		        } // else
 		    }
-		
+
 		    // set opt-out flag
 		    newContentOptOutFlag.setAttribute("type", "checkbox");
 		    newContentOptOutFlag.setAttribute("name", this.id + "emailAddressOptOutFlag[]");
@@ -330,7 +330,7 @@
 		    newContentVerifiedValue.setAttribute("name", this.id + "emailAddressVerifiedValue" + this.numberEmailAddresses);
 		    newContentVerifiedValue.setAttribute("id", this.id + "emailAddressVerifiedValue" + this.numberEmailAddresses);
 		    newContentVerifiedValue.setAttribute("value", address);
-		
+
 		    //Add to validation
 		    this.emailView = (this.emailView == '') ? 'EditView' : this.emailView;
 		    addToValidateVerified(this.emailView, this.id + "emailAddressVerifiedFlag" + this.numberEmailAddresses, 'bool', false, SUGAR.language.get('app_strings', 'LBL_VERIFY_EMAIL_ADDRESS'));
@@ -342,7 +342,7 @@
 		    td4.setAttribute("align", "center");
 		    td5.setAttribute("align", "center");
 		    td6.setAttribute("align", "center");
-		    
+
 		    td1.appendChild(newContent);
 		    td1.appendChild(document.createTextNode(" "));
 		    spanNode = document.createElement('span');
@@ -374,7 +374,7 @@
 		    tbody.appendChild(tr);
 		
 		    
-		    
+
 		    insertInto.appendChild(tbody);
 		    
 		    // insert the new div->input into the DOM
@@ -405,6 +405,17 @@
 		    newContent.eaw = this;
 		    newContent.onblur = function(e){this.eaw.retrieveEmailAddress(e)};
 		    newContent.onkeydown = function(e){this.eaw.handleKeyDown(e)};
+            if (YAHOO.env.ua.ie) {
+                // IE doesn't bubble up "change" events through the DOM. So we need to find events that are looking at our parent and manually push them down to here
+                var emailcontainer = Dom.getAncestorByTagName(insertInto,'span');
+                var listeners = YAHOO.util.Event.getListeners(emailcontainer);
+                if (listeners) {
+                    for (var i=0; i<listeners.length; ++i) {
+                        var listener = listeners[i];
+                        YAHOO.util.Event.addListener(newContent, listener.type, listener.fn, listener.obj, listener.adjust);
+                    }
+                }
+            }
 		    
 		    // Add validation to field
             this.EmailAddressValidation(this.emailView, this.id+ 'emailAddress' + this.numberEmailAddresses,this.emailIsRequired, SUGAR.language.get('app_strings', 'LBL_EMAIL_ADDRESS_BOOK_EMAIL_ADDR'));
@@ -479,7 +490,7 @@
                 form = document.forms['editContactForm'];
             }
             
-            if(SUGAR.isIE) {
+            if(YAHOO.env.ua.ie) {
                 for(i=0; i<form.elements.length; i++) {
                    var id = new String(form.elements[i].id);
                     if(id.match(/emailAddressInvalidFlag/gim) && form.elements[i].type == 'checkbox' && id != el.id) {

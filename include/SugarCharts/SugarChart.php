@@ -479,8 +479,9 @@ class SugarChart {
 			if (isset($drill_down) && $drill_down){
 				if ($this->group_by[0] == 'm'){
 					$additional_param = '&date_closed_advanced=' . urlencode($key);					
-				}
-				else{
+				} else if ( $this->group_by[0] == 'sales_stage' ) {
+                    $additional_param = '&sales_stage_advanced[]='.urlencode(array_search($key,$GLOBALS['app_list_strings']['sales_stage_dom']));
+                } else{
 					$additional_param = "&" . $this->group_by[0] . "=" . urlencode($key);	
 				}
 				$url = $this->constructURL() . $additional_param;					

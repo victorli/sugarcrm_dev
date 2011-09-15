@@ -1783,12 +1783,8 @@ function save_relationship_changes($is_update, $exclude=array())
             $new_rel_id = $_REQUEST['relate_id'];
             $new_rel_relname = $_REQUEST['relate_to'];
             if(!empty($this->in_workflow) && !empty($this->not_use_rel_in_req)) {
-                 if(!empty($this->new_rel_id)){
-                    $new_rel_id = $this->new_rel_id;
-                }
-                if(!empty($this->new_rel_relname)){
-                    $new_rel_relname = $this->new_rel_relname;
-                }
+                $new_rel_id = !empty($this->new_rel_id) ? $this->new_rel_id : '';
+                $new_rel_relname = !empty($this->new_rel_relname) ? $this->new_rel_relname : '';
             }
             $new_rel_link = $new_rel_relname;
             //Try to find the link in this bean based on the relationship

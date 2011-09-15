@@ -73,9 +73,47 @@ class SugarAutoLoader{
 			require_once(SugarAutoLoader::$moduleMap[$class]);
 			return true;
 		}
+        $viewPath = self::getFilenameForViewClass($class);
+        if (!empty($viewPath))
+        {
+            require_once($viewPath);
+            return true;
+        }
 
   		return false;
 	}
+
+    protected static function getFilenameForViewClass($class)
+    {
+        $module = false;
+        if (!empty($_REQUEST['module']) && substr($class, 0, strlen($_REQUEST['module'])) == $_REQUEST['module'])
+        {
+            //This is a module view
+            $module = $_REQUEST['module'];
+            $class = substr($class, strlen($module));
+        }
+
+        if (substr($class, 0, 4) == "View")
+        {
+            $view = strtolower(substr($class, 4));
+            if ($module)
+            {
+                $modulepath = "modules/$module/views/view.$view.php";
+                if (file_exists("custom/$modulepath"))
+                    return "custom/$modulepath";
+                if (file_exists($modulepath))
+                    return $modulepath;
+            } else {
+                $basepath = "include/MVC/View/views/view.$view.php";
+                if (file_exists("custom/$basepath")){
+                    return "custom/$basepath";
+                }
+                if (file_exists($basepath)) {
+                    return $basepath;
+                }
+            }
+        }
+    }
 
 	public static function loadAll(){
 		foreach(SugarAutoLoader::$map as $class=>$file){

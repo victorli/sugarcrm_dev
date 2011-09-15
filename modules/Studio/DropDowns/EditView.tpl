@@ -155,7 +155,7 @@
 			<script>
 			var jstransaction = new JSTransaction();
 			</script>
-<script src = "include/javascript/yui/dragdrop.js" ></script>
+<script src = "include/javascript/yui/build/dragdrop/dragdrop.js" ></script>
 				 	
 			<script type="text/javascript" src="modules/Studio/studiodd.js" ></script>	
 			<script type="text/javascript" src="modules/Studio/studio.js" ></script>	

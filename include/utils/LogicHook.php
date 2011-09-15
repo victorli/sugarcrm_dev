@@ -127,13 +127,16 @@ class LogicHook{
 	    if(!empty($module_dir)) {
 	        $custom = "custom/modules/$module_dir";
 	    } else {
-	        $custom = "custom/application";
+	        $custom = "custom/modules";
 	    }
 		if(file_exists("$custom/logic_hooks.php")){
             if(isset($GLOBALS['log'])){
 	    	    $GLOBALS['log']->debug('Including module specific hook file for '.$custom);
             }
 		    include("$custom/logic_hooks.php");
+		}
+		if(empty($module_dir)) {
+		    $custom = "custom/application";
 		}
 		if(file_exists("$custom/Ext/LogicHooks/logichooks.ext.php")) {
             if(isset($GLOBALS['log'])){

@@ -125,6 +125,7 @@ array( 'table' => 'emailman', 'comment' => 'Email campaign queue', 'fields' => a
 		'type' => 'bool',
 		'reportable' =>false,
 		'comment' => 'Record deletion indicator',
+                'default' => '0',
 	),
 	'related_id' => array(
 		'name' => 'related_id',

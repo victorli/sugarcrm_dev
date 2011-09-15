@@ -37,7 +37,7 @@
 *}
 <select name='{{$vardef.type_name}}' tabindex="{{$tabindex}}" id='{{$vardef.type_name}}' title='{{$vardef.help}}' 
 onchange='document.{{$form_name}}.{{sugarvar key='name'}}.value="";document.{{$form_name}}.parent_id.value=""; 
-        changeParentQS("{{sugarvar key='name'}}"); checkParentType(document.{{$form_name}}.{{$vardef.type_name}}.value, document.{{$form_name}}.btn_{{sugarvar key='name'}});'>
+        changeParentQSSearchView("{{sugarvar key='name'}}"); checkParentType(document.{{$form_name}}.{{$vardef.type_name}}.value, document.{{$form_name}}.btn_{{sugarvar key='name'}});'>
 {html_options options={{sugarvar key='options' string=true}} selected=$fields.{{$vardef.type_name}}.value}
 </select>
 {{if $displayParams.split}}
@@ -59,8 +59,8 @@ onchange='document.{{$form_name}}.{{sugarvar key='name'}}.value="";document.{{$f
 </span>
 {literal}
 <script type="text/javascript">
-if (typeof(changeParentQS) == 'undefined'){
-function changeParentQS(field) {
+if (typeof(changeParentQSSearchView) == 'undefined'){
+function changeParentQSSearchView(field) {
 	field = YAHOO.util.Dom.get(field);
     var form = field.form;
     var sqsId = form.id + "_" + field.id;
@@ -90,7 +90,7 @@ YAHOO.util.Event.onContentReady(
 "{{sugarvar key='name'}}"
 {literal}
 , function() {
-    changeParentQS(
+    changeParentQSSearchView(
 {/literal}
 "{{sugarvar key='name'}}"
 {literal}

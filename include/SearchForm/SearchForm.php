@@ -131,7 +131,7 @@ class SearchForm {
     function populateFromArray(&$array, $switchVar = null, $addAllBeanFields = true) {
 
        //CL Bug:33176
-       if(empty($array['searchFormTab']) && empty($switchvar)) {
+       if(empty($array['searchFormTab']) && empty($switchVar)) {
        	  $array['searchFormTab'] = 'advanced_search';
        }
 

@@ -49,7 +49,7 @@ class EmployeesViewList extends ViewList
             $this->lv->multiSelect = false;
         }
  	}
- 	
+
    /**
     * Return the "breadcrumbs" to display at the top of the page
     *
@@ -99,22 +99,26 @@ EOHTML;
 
         $theTitle .= "</span></div>\n";
         return $theTitle;
-    } 	
- 	
+    }
+
 	public function listViewProcess()
 	{
 		$this->processSearchForm();
 		$this->lv->searchColumns = $this->searchForm->searchColumns;
-		
+
 		if(!$this->headers)
 			return;
 		if(empty($_REQUEST['search_form_only']) || $_REQUEST['search_form_only'] == false){
 			$this->lv->ss->assign("SEARCH",true);
-			
+
 			$tplFile = 'include/ListView/ListViewGeneric.tpl';
 			if (!$GLOBALS['current_user']->isAdminForModule('Users')){
 				$tplFile = 'include/ListView/ListViewNoMassUpdate.tpl';
 			}
+			if(!empty($this->where)){
+			    $this->where .= " AND ";
+			}
+			$this->where .= "users.status != 'Reserved' ";
 			$this->lv->setup($this->seed, $tplFile, $this->where, $this->params);
 			$savedSearchName = empty($_REQUEST['saved_search_select_name']) ? '' : (' - ' . $_REQUEST['saved_search_select_name']);
 			echo $this->lv->display();

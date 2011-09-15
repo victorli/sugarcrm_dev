@@ -95,6 +95,33 @@
 			t.isIE6 = t.isIE && /MSIE [56]/.test(ua);
 
 			/**
+			 * Constant that is true if the browser is IE 7.
+			 *
+			 * @property isIE7
+			 * @type Boolean
+			 * @final
+			 */
+			t.isIE7 = t.isIE && /MSIE [7]/.test(ua);
+
+			/**
+			 * Constant that is true if the browser is IE 8.
+			 *
+			 * @property isIE8
+			 * @type Boolean
+			 * @final
+			 */
+			t.isIE8 = t.isIE && /MSIE [8]/.test(ua);
+
+			/**
+			 * Constant that is true if the browser is IE 9.
+			 *
+			 * @property isIE9
+			 * @type Boolean
+			 * @final
+			 */
+			t.isIE9 = t.isIE && /MSIE [9]/.test(ua);
+
+			/**
 			 * Constant that is true if the browser is Gecko.
 			 *
 			 * @property isGecko
@@ -129,6 +156,15 @@
 			 * @final
 			 */
 			t.isIDevice = /(iPad|iPhone)/.test(ua);
+			
+			/**
+			 * Constant that is true if the current browser is running on iOS 5 or greater.
+			 *
+			 * @property isIOS5
+			 * @type Boolean
+			 * @final
+			 */
+			t.isIOS5 = t.isIDevice && ua.match(/AppleWebKit\/(\d*)/)[1]>=534;
 
 			// TinyMCE .NET webcontrol might be setting the values for TinyMCE
 			if (win.tinyMCEPreInit) {

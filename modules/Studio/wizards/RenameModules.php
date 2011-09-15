@@ -766,6 +766,24 @@ class RenameModules
         $newParams['dropdown_lang'] = isset($_REQUEST['dropdown_lang']) ? $_REQUEST['dropdown_lang'] : '';
         $newParams['use_push'] = true;
         DropDownHelper::saveDropDown($this->createModuleListSingularPackage($newParams, $this->changedModules));
+
+        //Save changes to the parent_type_display app_list_strings entry
+        global $app_list_strings;
+        $cur_app_list_strings = $app_list_strings;
+        foreach ($this->changedModules as $moduleName => $package) {
+            $found = false;
+            // only change if it exists
+            foreach ($cur_app_list_strings['parent_type_display'] as $moduleName2 => $parentDispName) {
+                if ($moduleName == $moduleName2) {
+                    $found = true;
+                    break;
+                }
+            }
+            if ($found) {
+                $newParams['dropdown_name'] = 'parent_type_display';
+                DropDownHelper::saveDropDown($this->createModuleListSingularPackage($newParams, array($moduleName => $this->changedModules[$moduleName])));
+            }
+        }
         return $this;
     }
 
@@ -815,9 +833,9 @@ class RenameModules
         while(isset($params['slot_' . $count]))
         {
             $index = $params['slot_' . $count];
-            $key = (isset($params['key_' . $index]))?remove_xss(from_html($params['key_' . $index])): 'BLANK';
-            $value = (isset($params['value_' . $index]))?remove_xss(from_html($params['value_' . $index])): '';
-            $svalue = (isset($params['svalue_' . $index]))?remove_xss(from_html($params['svalue_' . $index])): $value;
+            $key = (isset($params['key_' . $index]))?to_html(remove_xss(from_html($params['key_' . $index]))): 'BLANK';
+            $value = (isset($params['value_' . $index]))?to_html(remove_xss(from_html($params['value_' . $index]))): '';
+            $svalue = (isset($params['svalue_' . $index]))?to_html(remove_xss(from_html($params['svalue_' . $index]))): $value;
             if($key == 'BLANK')
                $key = '';
 

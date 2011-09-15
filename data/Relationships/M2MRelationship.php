@@ -230,13 +230,13 @@ class M2MRelationship extends SugarRelationship
         $db = DBManagerFactory::getInstance();
         $query = $this->getQuery($link);
         $result = $db->query($query);
-        $beans = Array();
         $rows = Array();
-        $relatedModule = $link->getSide() == REL_LHS ? $this->def['rhs_module'] : $this->def['lhs_module'];
         $idField = $link->getSide() == REL_LHS ? $this->def['join_key_rhs'] : $this->def['join_key_lhs'];
         while ($row = $db->fetchByAssoc($result))
         {
-            $id = $row[$idField];
+            if (empty($row['id']) && empty($row[$idField]))
+                continue;
+            $id = empty($row['id']) ? $row[$idField] : $row['id'];
             $rows[$id] = $row;
         }
         return array("rows" => $rows);
@@ -265,7 +265,7 @@ class M2MRelationship extends SugarRelationship
         }
 
         if (empty($params['return_as_array'])) {
-            return "SELECT $targetKey FROM $rel_table WHERE $where AND deleted=0";
+            return "SELECT $targetKey id FROM $rel_table WHERE $where AND deleted=0";
         }
         else
         {

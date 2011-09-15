@@ -90,10 +90,7 @@ class AdministrationController extends SugarController
     {
         require_once('modules/Administration/Forms.php');
 
-        global $mod_strings;
-        global $app_list_strings;
-        global $app_strings;
-        global $current_user;
+        global $app_strings, $current_user, $moduleList;
 
         if (!is_admin($current_user)) sugar_die($app_strings['ERR_NOT_ADMIN']);
         
@@ -120,7 +117,6 @@ class AdministrationController extends SugarController
                         if ( isset ( $wireless_module_registry [ $e ] ) )
                         {
                             $updated_enabled_modules [ $e ] = $wireless_module_registry [ $e ] ;
-                            sugar_cache_clear("CONTROLLER_wireless_module_registry_$e");
                         }
 
                     }
@@ -131,6 +127,10 @@ class AdministrationController extends SugarController
 
             mkdir_recursive ( dirname ( $filename ) ) ;
             write_array_to_file ( 'wireless_module_registry', $updated_enabled_modules, $filename );
+            foreach($moduleList as $mod){
+                sugar_cache_clear("CONTROLLER_wireless_module_registry_$mod");
+            }
+            //Users doesn't appear in the normal module list, but its value is cached on login.
             sugar_cache_clear("CONTROLLER_wireless_module_registry_Users");
             sugar_cache_reset();
         }

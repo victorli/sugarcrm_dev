@@ -69,7 +69,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       $base64_request    = base64_encode($deflated_request);
       $encoded_request   = urlencode($base64_request);
 
-      return $this->settings->idp_sso_target_url."?SAMLRequest=".$encoded_request;
+      if (strpos($this->settings->idp_sso_target_url, '?') !== false) {
+        return $this->settings->idp_sso_target_url."&SAMLRequest=".$encoded_request;
+      }else{
+        return $this->settings->idp_sso_target_url."?SAMLRequest=".$encoded_request;
+      }
     }
 
     private function generateUniqueID($length) {

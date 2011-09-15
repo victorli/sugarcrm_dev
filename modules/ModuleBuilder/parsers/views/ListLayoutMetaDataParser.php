@@ -192,37 +192,40 @@ class ListLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
 
     public function isValidField($key, $def)
     {
-        //Studio invisible fields should always be hidden
-        if (! empty ($def[ 'studio' ] ) )
+        if (isset($def['studio']))
         {
-            if (is_array($def [ 'studio' ]))
+            if (is_array($def['studio']))
             {
-            	//CL - Bug 42085 - if the element is explicitly set to be removed from the view, remove it
-            	$view = !empty($_REQUEST['view']) ? $_REQUEST['view'] : '';
-                if (!empty($view) && isset($def [ 'studio' ][$view]))
+                $view = !empty($_REQUEST['view']) ? $_REQUEST['view'] : $this->view;
+
+            	if (!empty($view) && isset($def['studio'][$view]) && ($def['studio'][$view] !== false && (string)$def['studio'][$view] != 'false' && (string)$def['studio'][$view] != 'hidden'))
+            	{
+            		return true;
+                }
+
+                if (isset($def['studio']['listview']) && ($def['studio']['listview'] !== false && (string)$def['studio']['listview'] != 'false' && (string)$def['studio']['listview'] != 'hidden'))
                 {
-                    return $def [ 'studio' ][$view] !== false && $def [ 'studio' ][$view] != 'false' && $def [ 'studio' ][$view] != 'hidden';
+					return true;
                 }
                 
-                if (isset($def [ 'studio' ]['listview'])) 
+                if (isset($def ['studio']['visible']))
                 {
-                    $lv = $def [ 'studio' ]['listview'];
-                    return $lv !== false && (!is_string($lv) || $lv != 'false');
+                    return $def['studio']['visible'];
                 }
-                
-                if (isset($def [ 'studio' ]['visible']))
-                {
-                    return $def [ 'studio' ]['visible'];
-                }
-            } else {
-            	return ($def [ 'studio' ] != 'false' && $def [ 'studio' ] !== false && $def [ 'studio' ] != 'hidden') ;
+            } else if(is_string($def['studio'])) {
+            	return $def['studio'] != 'false' && $def['studio'] != 'hidden';
+            } else if(is_bool($def['studio'])) {
+                return $def['studio'];
             }
-        }  
-		
+
+        }
+        
     	//Bug 32520. We need to dissalow currency_id fields on list views. 
     	//This should be removed once array based studio definitions are in.
     	if (isset($def['type']) && $def['type'] == "id" && $def['name'] == 'currency_id')
+        {
     	   return false;
+        }
     	
     	//Check fields types
     	if (isset($def['dbType']) && $def['dbType'] == "id")
