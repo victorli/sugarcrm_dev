@@ -255,7 +255,7 @@ class ListViewDisplay {
 		}
 		
 		$str = '';
-		if ($this->multiSelect == true && $this->show_mass_update_form) {
+		if ($this->show_mass_update_form) {
 			$str = $this->mass->getDisplayMassUpdateForm(true, $this->multi_select_popup).$this->mass->getMassUpdateFormHeader($this->multi_select_popup);
 		}
         

@@ -34,7 +34,7 @@
  ********************************************************************************/
 if(typeof(SUGAR)=="undefined")SUGAR={};if(typeof(SUGAR.themes)=="undefined")SUGAR.themes={};SUGAR.sugarHome={};SUGAR.subpanelUtils={};SUGAR.ajaxStatusClass={};SUGAR.tabChooser={};SUGAR.util={};SUGAR.savedViews={};SUGAR.dashlets={};SUGAR.unifiedSearchAdvanced={};SUGAR.searchForm={};SUGAR.language={};SUGAR.Studio={};SUGAR.contextMenu={};SUGAR.config={};var nameIndex=0;var typeIndex=1;var requiredIndex=2;var msgIndex=3;var jstypeIndex=5;var minIndex=10;var maxIndex=11;var altMsgIndex=15;var compareToIndex=7;var arrIndex=12;var operatorIndex=13;var allowblank=8;var validate=new Array();var maxHours=24;var requiredTxt='Missing Required Field:'
 var invalidTxt='Invalid Value:'
-var secondsSinceLoad=0;var inputsWithErrors=new Array();var tabsWithErrors=new Array();var lastSubmitTime=0;var alertList=new Array();var oldStartsWith='';function isSupportedIE(){var userAgent=navigator.userAgent.toLowerCase();if(userAgent.indexOf("msie")!=-1&&userAgent.indexOf("mac")==-1&&userAgent.indexOf("opera")==-1){var version=navigator.appVersion.match(/MSIE (.\..)/)[1];if(version>=5.5&&version<10){return true;}else{return false;}}}
+var secondsSinceLoad=0;var inputsWithErrors=new Array();var tabsWithErrors=new Array();var lastSubmitTime=0;var alertList=new Array();var oldStartsWith='';function isSupportedIE(){var userAgent=navigator.userAgent.toLowerCase();if(userAgent.indexOf("msie")!=-1&&userAgent.indexOf("mac")==-1&&userAgent.indexOf("opera")==-1){var version=navigator.appVersion.match(/MSIE (.\..)/)[1];if(version>=5.5&&version<9){return true;}else{return false;}}}
 SUGAR.isIE=isSupportedIE();SUGAR.isIE7=(navigator.userAgent.toLowerCase().indexOf('msie 7')!=-1);var isSafari=(navigator.userAgent.toLowerCase().indexOf('safari')!=-1);RegExp.escape=function(text){if(!arguments.callee.sRE){var specials=['/','.','*','+','?','|','(',')','[',']','{','}','\\'];arguments.callee.sRE=new RegExp('(\\'+specials.join('|\\')+')','g');}
 return text.replace(arguments.callee.sRE,'\\$1');}
 function addAlert(type,name,subtitle,description,time,redirect){var addIndex=alertList.length;alertList[addIndex]=new Array();alertList[addIndex]['name']=name;alertList[addIndex]['type']=type;alertList[addIndex]['subtitle']=subtitle;alertList[addIndex]['description']=description.replace(/<br>/gi,"\n").replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');alertList[addIndex]['time']=time;alertList[addIndex]['done']=0;alertList[addIndex]['redirect']=redirect;}
@@ -78,17 +78,21 @@ var formsWithFieldLogic=null;var formWithPrecision=null;function addToValidateFi
 function addToValidatePrecision(formId,valueId,precisionId){this.form=document.getElementById(formId);this.float=document.getElementById(valueId);this.precision=document.getElementById(precisionId);}
 function isValidPrecision(value,precision){value=trim(value.toString());if(precision=='')
 return true;if(value=='')
-return true;if((precision=="0")){if(value.indexOf(".")==-1){return true;}else{return false;}}
-var actualPrecision=value.substr(value.indexOf(".")+1,value.length).length;return actualPrecision==precision;}
+return true;if((precision=="0")){if(value.indexOf(dec_sep)==-1){return true;}else{return false;}}
+if(value.charAt(value.length-precision-1)==num_grp_sep){if(value.substr(value.indexOf(dec_sep),1)==dec_sep){return false;}
+returntrue;}
+var actualPrecision=value.substr(value.indexOf(dec_sep)+1,value.length).length;return actualPrecision==precision;}
 function toDecimal(original,precision){precision=(precision==null)?2:precision;num=Math.pow(10,precision);temp=Math.round(original*num)/num;if((temp*100)%100==0)
 return temp+'.00';if((temp*10)%10==0)
 return temp+'0';return temp}
-function isInteger(s){if(typeof s=="string"&&s=="")
+function isInteger(s){if(typeof num_grp_sep!='undefined'&&typeof dec_sep!='undefined')
+{s=unformatNumberNoParse(s,num_grp_sep,dec_sep).toString();}
+return /^[+-]?[0-9]*$/.test(s);}
+function isDecimal(s){if(typeof s=="string"&&s=="")
 return true;if(typeof num_grp_sep!='undefined'&&typeof dec_sep!='undefined')
 {s=unformatNumberNoParse(s,num_grp_sep,dec_sep).toString();}
-return parseFloat(s)==parseInt(s)&&!isNaN(s);}
-function isNumeric(s){if(!/^-*[0-9\.]+$/.test(s)){return false}
-else{return true;}}
+return/^[+-]?[0-9]+\.?[0-9]*$/.test(s);}
+function isNumeric(s){return isDecimal(s);}
 var date_reg_positions={'Y':1,'m':2,'d':3};var date_reg_format='([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})'
 function isDate(dtStr){if(dtStr.length==0){return true;}
 myregexp=new RegExp(date_reg_format)
@@ -181,6 +185,7 @@ if(!bail){switch(validate[formname][i][typeIndex]){case'email':if(!isValidEmail(
 break;case'time':if(!isTime(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}break;case'date':if(!isDate(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}break;case'alpha':break;case'DBName':if(!isDBName(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
 break;case'alphanumeric':break;case'file':if(validate[formname][i][requiredIndex]&&typeof(form[validate[formname][i][nameIndex]+'_file'])!='undefined'&&trim(form[validate[formname][i][nameIndex]+'_file'].value)==""&&!form[validate[formname][i][nameIndex]+'_file'].disabled){isError=true;add_error_style(formname,validate[formname][i][nameIndex],requiredTxt+" "+validate[formname][i][msgIndex]);}
 break;case'int':if(!isInteger(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
+break;case'decimal':if(!isDecimal(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
 break;case'currency':case'float':if(!isFloat(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
 break;case'teamset_mass':div_element_id=formname+'_'+form[validate[formname][i][nameIndex]].name+'_operation_div';input_elements=YAHOO.util.Selector.query('input',document.getElementById(div_element_id));primary_field_id='';validation_passed=false;replace_selected=false;for(t in input_elements){if(input_elements[t].type&&input_elements[t].type=='radio'&&input_elements[t].checked==true&&input_elements[t].value=='replace'){radio_elements=YAHOO.util.Selector.query('input[type=radio]',document.getElementById(formname+'_team_name_table'));for(x in radio_elements){if(radio_elements[x].name!='team_name_type'){primary_field_id='team_name_collection_'+radio_elements[x].value;if(radio_elements[x].checked){replace_selected=true;if(trim(document.forms[formname].elements[primary_field_id].value)!=''){validation_passed=true;break;}}else if(trim(document.forms[formname].elements[primary_field_id].value)!=''){replace_selected=true;}}}}}
 if(replace_selected&&!validation_passed){add_error_style(formname,primary_field_id,SUGAR.language.get('app_strings','ERR_NO_PRIMARY_TEAM_SPECIFIED'));isError=true;}
@@ -334,7 +339,9 @@ YAHOO.util.Connect.asyncRequest("POST","index.php?",{success:this.use_external_m
 sugarListView.prototype.use_external_mail_client_callback=function(o)
 {if(o.responseText)
 location.href='mailto:'+o.responseText;}
-sugarListView.prototype.send_form_for_emails=function(select,currentModule,action,no_record_txt,action_module,totalCount,totalCountError){if(document.MassUpdate.select_entire_list.value==1){if(totalCount>10){alert(totalCountError);return;}
+sugarListView.prototype.send_form_for_emails=function(select,currentModule,action,no_record_txt,action_module,totalCount,totalCountError){if(typeof(SUGAR.config.email_sugarclient_listviewmaxselect)!='undefined'){maxCount=10;}
+else{maxCount=SUGAR.config.email_sugarclient_listviewmaxselect;}
+if(document.MassUpdate.select_entire_list.value==1){if(totalCount>maxCount){alert(totalCountError);return;}
 select=false;}
 else if(document.MassUpdate.massall.checked==true)
 select=false;else
@@ -342,7 +349,7 @@ select=true;sugarListView.get_checks();var newForm=document.createElement('form'
 else{inputs=document.MassUpdate.elements;ar=new Array();for(i=0;i<inputs.length;i++){if(inputs[i].name=='mass[]'&&inputs[i].checked&&typeof(inputs[i].value)!='function'){ar.push(inputs[i].value);}}
 uidTa.value=ar.join(',');}
 if(uidTa.value==''){alert(no_record_txt);return false;}
-var selectedArray=uidTa.value.split(",");if(selectedArray.length>10){alert(totalCountError);return;}
+var selectedArray=uidTa.value.split(",");if(selectedArray.length>maxCount){alert(totalCountError);return;}
 newForm.appendChild(uidTa);var moduleInput=document.createElement('input');moduleInput.name='module';moduleInput.type='hidden';moduleInput.value=currentModule;newForm.appendChild(moduleInput);var actionInput=document.createElement('input');actionInput.name='action';actionInput.type='hidden';actionInput.value='Compose';newForm.appendChild(actionInput);if(typeof action_module!='undefined'&&action_module!=''){var actionModule=document.createElement('input');actionModule.name='action_module';actionModule.type='hidden';actionModule.value=action_module;newForm.appendChild(actionModule);}
 if(typeof return_info!='undefined'&&return_info!=''){var params=return_info.split('&');if(params.length>0){for(var i=0;i<params.length;i++){if(params[i].length>0){var param_nv=params[i].split('=');if(param_nv.length==2){returnModule=document.createElement('input');returnModule.name=param_nv[0];returnModule.type='hidden';returnModule.value=param_nv[1];newForm.appendChild(returnModule);}}}}}
 var isAjaxCall=document.createElement('input');isAjaxCall.name='ajaxCall';isAjaxCall.type='hidden';isAjaxCall.value=true;newForm.appendChild(isAjaxCall);var isListView=document.createElement('input');isListView.name='ListView';isListView.type='hidden';isListView.value=true;newForm.appendChild(isListView);var toPdf=document.createElement('input');toPdf.name='to_pdf';toPdf.type='hidden';toPdf.value=true;newForm.appendChild(toPdf);YAHOO.util.Connect.setForm(newForm);var callback={success:function(o){var resp=YAHOO.lang.JSON.parse(o.responseText);var quickComposePackage=new Object();quickComposePackage.composePackage=resp;quickComposePackage.fullComposeUrl='index.php?module=Emails&action=Compose&ListView=true'+'&uid='+uidTa.value+'&action_module='+action_module;SUGAR.quickCompose.init(quickComposePackage);}}
@@ -418,7 +425,7 @@ if(round<=0){n[0]=Math.round(parseInt(n[0],10)*Math.pow(10,round))/ Math.pow(10,
 if(typeof precision!='undefined'&&precision>=0){if(n.length>1&&typeof n[1]!='undefined')n[1]=n[1].substring(0,precision);else n[1]='';if(n[1].length<precision){for(var wp=n[1].length;wp<precision;wp++)n[1]+='0';}}
 regex=/(\d+)(\d{3})/;while(num_grp_sep!=''&&regex.test(n[0]))n[0]=n[0].toString().replace(regex,'$1'+num_grp_sep+'$2');return n[0]+(n.length>1&&n[1]!=''?dec_sep+n[1]:'');}
 SUGAR.ajaxStatusClass=function(){};SUGAR.ajaxStatusClass.prototype.statusDiv=null;SUGAR.ajaxStatusClass.prototype.oldOnScroll=null;SUGAR.ajaxStatusClass.prototype.shown=false;SUGAR.ajaxStatusClass.prototype.positionStatus=function(){this.statusDiv.style.top=document.body.scrollTop+8+'px';statusDivRegion=YAHOO.util.Dom.getRegion(this.statusDiv);statusDivWidth=statusDivRegion.right-statusDivRegion.left;this.statusDiv.style.left=YAHOO.util.Dom.getViewportWidth()/ 2-statusDivWidth / 2+'px';}
-SUGAR.ajaxStatusClass.prototype.createStatus=function(text){statusDiv=document.createElement('div');statusDiv.className='dataLabel';statusDiv.style.background='#ffffff';statusDiv.style.color='#c60c30';statusDiv.style.position='absolute';statusDiv.style.opacity=.8;statusDiv.style.filter='alpha(opacity=80)';statusDiv.id='ajaxStatusDiv';document.body.appendChild(statusDiv);this.statusDiv=document.getElementById('ajaxStatusDiv');}
+SUGAR.ajaxStatusClass.prototype.createStatus=function(text){statusDiv=document.createElement('div');statusDiv.className='dataLabel';statusDiv.id='ajaxStatusDiv';document.body.appendChild(statusDiv);this.statusDiv=document.getElementById('ajaxStatusDiv');}
 SUGAR.ajaxStatusClass.prototype.showStatus=function(text){if(!this.statusDiv){this.createStatus(text);}
 else{this.statusDiv.style.display='';}
 this.statusDiv.style.zIndex=20;this.statusDiv.innerHTML='&nbsp;<b>'+text+'</b>&nbsp;';this.positionStatus();if(!this.shown){this.shown=true;this.statusDiv.style.display='';if(window.onscroll)this.oldOnScroll=window.onscroll;window.onscroll=this.positionStatus;}}
@@ -439,7 +446,7 @@ var headElem=document.getElementsByTagName('head')[0];var tmpElem=null;SUGAR.eva
 tmpElem.addEventListener('load',waitUntilLoaded);SUGAR.evalScript_waitCount++;headElem.appendChild(tmpElem);}
 SUGAR.evalScript_waitCount++;waitUntilLoaded();return;}
 var objRegex=/<\s*script([^>]*)>((.|\s|\v|\0)*?)<\s*\/script\s*>/igm;var lastIndex=-1;var result=objRegex.exec(text);while(result&&result.index>lastIndex){lastIndex=result.index
-try{var script=document.createElement('script');script.type='text/javascript';if(result[1].indexOf("src=")>-1){var srcRegex=/.*src=['"]([a-zA-Z0-9\&\/\.\?=:]*)['"].*/igm;var srcResult=result[1].replace(srcRegex,'$1');script.src=srcResult;}else{script.text=result[2];}
+try{var script=document.createElement('script');script.type='text/javascript';if(result[1].indexOf("src=")>-1){var srcRegex=/.*src=['"]([a-zA-Z0-9_\&\/\.\?=:]*)['"].*/igm;var srcResult=result[1].replace(srcRegex,'$1');script.src=srcResult;}else{script.text=result[2];}
 document.body.appendChild(script)}
 catch(e){}
 result=objRegex.exec(text);}},getLeftColObj:function(){leftColObj=document.getElementById('leftCol');while(leftColObj.nodeName!='TABLE'){leftColObj=leftColObj.firstChild;}

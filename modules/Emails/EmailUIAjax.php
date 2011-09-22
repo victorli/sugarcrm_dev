@@ -722,7 +722,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
             	$out['meta']['email']['toaddrs'] = $email->et->generateExpandableAddrs($out['meta']['email']['toaddrs']);
         		if(!empty($out['meta']['email']['cc_addrs'])) {
                     $ccs = $email->et->generateExpandableAddrs($out['meta']['email']['cc_addrs']);
-        		    $out['meta']['cc'] = <<<eoq
+        		    $out['meta']['email']['cc'] = <<<eoq
         				<tr>
         					<td NOWRAP valign="top" class="displayEmailLabel">
         						{$app_strings['LBL_EMAIL_CC']}:

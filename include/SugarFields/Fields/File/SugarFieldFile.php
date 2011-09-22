@@ -48,6 +48,7 @@ class SugarFieldFile extends SugarFieldBase {
             if ( empty($vardef['docUrl']) ) {
                 $vardef['docUrl'] = 'doc_url';
             }
+            $displayParams['max_fileupload_size'] = $this->getMaxFileUploadSize();
         } else {
             $vardef['allowEapm'] = false;
         }
@@ -178,5 +179,66 @@ class SugarFieldFile extends SugarFieldBase {
                 $bean->$clearField = '';
             }
         }
+	}
+	
+	/**
+	 * Takes the size from the php.ini and converts it to bytes
+	 *
+	 * @param string $size
+	 * @return int
+	 */
+	protected function convertIniSizeToBytes($size)
+	{		
+		$ret_size = $size;
+		switch (substr (strtolower($size), -1)){
+		case 'k': 
+		    $ret_size = (int)$size * 1024;
+		    break;
+		case 'm': 
+		    $ret_size = (int)$size * 1048576;
+		    break;
+		case 'g': 
+		    $ret_size = (int)$size * 1073741824;
+		    break;
+		}
+		
+		return $ret_size;  
+	}
+	
+	/**
+	 * Converts the size into a more reader friendly format 
+	 *
+	 * @param int $size
+	 * @return string
+	 */
+	protected function getReaderFriendlySize($size) 
+    {
+		if(($size / 1024) < 1024) {
+			$size = number_format(($size / 1024), 2);
+			$size .= ' kb';
+		} 
+		else if(($size / 1048576) < 1024) {
+			$size = number_format(($size / 1048576), 2);
+			$size .= ' mb';
+		} 
+		else if(($size / 1073741824) < 1024) {
+			$size = number_format(($size / 1073741824), 2);
+			$size .= ' gb';
+		}
+		
+		return $size;
+	} 
+
+	/**
+	 * Returns a string that represents the max file size that can be uploaded.
+	 *
+	 * @return string
+	 */
+	protected function getMaxFileUploadSize()
+	{
+		$max_upload_size = min($this->convertIniSizeToBytes(ini_get('post_max_size')), $this->convertIniSizeToBytes(ini_get('upload_max_filesize')));
+		$max_upload_size = min($GLOBALS['sugar_config']['upload_maxsize'],$max_upload_size);
+		
+		return $this->getReaderFriendlySize($max_upload_size);
 	}
 }

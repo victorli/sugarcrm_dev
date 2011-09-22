@@ -42,7 +42,7 @@
 <input type='hidden' name='module' value='ModuleBuilder'>
 <input type='hidden' name='action' value='{$action}'>
 <input type='hidden' name='to_pdf' value='true'>
-<input type='hidden' name='view_module' value='{$module->name}'>
+<input type='hidden' name='view_module' value='{$module_name}'>
 <input type='hidden' name='view_package' value='{$package_name}'>
 <input type='hidden' id='list_value' name='list_value' value=''>
 {if ($refreshTree)}

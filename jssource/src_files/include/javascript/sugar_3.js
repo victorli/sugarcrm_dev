@@ -100,7 +100,17 @@ var lastSubmitTime = 0;
 var alertList = new Array();
 var oldStartsWith = '';
 
-
+/**
+ * @deprecated
+ *
+ * As of Sugar version 6.2.3 (MSIE Version 9) this function is deprecated.  The preferred method is to use the
+ * user agent check supplied by YUI to check for IE:
+ *
+ * for checking if a browser is IE in general :  if(YAHOO.env.ua.ie) {...}
+ *
+ * or for checking specific versions:  if (YAHOO.env.ua.ie >= 5.5 && YAHOO.env.ua.ie < 9) {...}
+ *
+ */
 function isSupportedIE() {
 	var userAgent = navigator.userAgent.toLowerCase() ;
 
@@ -108,7 +118,7 @@ function isSupportedIE() {
 	if (userAgent.indexOf("msie") != -1 && userAgent.indexOf("mac") == -1 && userAgent.indexOf("opera") == -1) {
 		var version = navigator.appVersion.match(/MSIE (.\..)/)[1] ;
 
-		if(version >= 5.5 && version < 10) {
+		if(version >= 5.5 && version < 9) {
 			return true;
 		} else {
 			return false;
@@ -327,14 +337,20 @@ function isValidPrecision(value, precision){
 	    return true;
 	//#27021
 	if( (precision == "0") ){
-		if (value.indexOf(".")== -1){
+		if (value.indexOf(dec_sep)== -1){
 			return true;
 		}else{
 			return false;
 		}
 	}
 	//#27021   end
-	var actualPrecision = value.substr(value.indexOf(".")+1, value.length).length;
+	if(value.charAt(value.length-precision-1) == num_grp_sep){
+		if(value.substr(value.indexOf(dec_sep), 1)==dec_sep){
+			return false;
+		}
+		return 	true;
+	}
+	var actualPrecision = value.substr(value.indexOf(dec_sep)+1, value.length).length;
 	return actualPrecision == precision;
 }
 function toDecimal(original, precision) {
@@ -349,22 +365,25 @@ function toDecimal(original, precision) {
 }
 
 function isInteger(s) {
-	if (typeof s == "string" && s == "")
-        return true;
-    if(typeof num_grp_sep != 'undefined' && typeof dec_sep != 'undefined')
+	if(typeof num_grp_sep != 'undefined' && typeof dec_sep != 'undefined')
 	{
 		s = unformatNumberNoParse(s, num_grp_sep, dec_sep).toString();
 	}
-	return parseFloat(s) == parseInt(s) && !isNaN(s);
+	return /^[+-]?[0-9]*$/.test(s) ;
+}
+
+function isDecimal(s) {
+    if (typeof s == "string" && s == "")    // bug# 46530, this is required in order to
+        return true;                        // not check empty decimal fields 
+	if(typeof num_grp_sep != 'undefined' && typeof dec_sep != 'undefined')
+	{
+		s = unformatNumberNoParse(s, num_grp_sep, dec_sep).toString();
+	}
+	return  /^[+-]?[0-9]+\.?[0-9]*$/.test(s) ;
 }
 
 function isNumeric(s) {
-  if(!/^-*[0-9\.]+$/.test(s)) {
-   		return false
-   }
-   else {
-		return true;
-   }
+	return isDecimal(s);
 }
 
 var date_reg_positions = {'Y': 1,'m': 2,'d': 3};
@@ -603,7 +622,7 @@ function add_error_style(formname, input, txt, flash) {
     invalidTxt = SUGAR.language.get('app_strings', 'ERR_INVALID_VALUE');
     nomatchTxt = SUGAR.language.get('app_strings', 'ERR_SQS_NO_MATCH_FIELD');
     matchTxt = txt.replace(requiredTxt,'').replace(invalidTxt,'').replace(nomatchTxt,'');
-	
+
 	if(inputHandle.parentNode.innerHTML.search(matchTxt) == -1) {
         errorTextNode = document.createElement('div');
         errorTextNode.className = 'required';
@@ -820,6 +839,12 @@ function validate_form(formname, startsWith){
 						  break;	
 						case 'int':
 							if(!isInteger(trim(form[validate[formname][i][nameIndex]].value))){
+								isError = true;
+								add_error_style(formname, validate[formname][i][nameIndex], invalidTxt + " " +	validate[formname][i][msgIndex]);
+							}
+							break;
+						case 'decimal':
+							if(!isDecimal(trim(form[validate[formname][i][nameIndex]].value))){
 								isError = true;
 								add_error_style(formname, validate[formname][i][nameIndex], invalidTxt + " " +	validate[formname][i][msgIndex]);
 							}
@@ -1839,8 +1864,15 @@ sugarListView.prototype.use_external_mail_client_callback = function(o)
 }
 
 sugarListView.prototype.send_form_for_emails = function(select, currentModule, action, no_record_txt,action_module,totalCount, totalCountError) {
-	if (document.MassUpdate.select_entire_list.value == 1) {
-		if (totalCount > 10) {
+	if ( typeof(SUGAR.config.email_sugarclient_listviewmaxselect) != 'undefined' ) {
+	    maxCount = 10;
+	}
+	else {
+	    maxCount = SUGAR.config.email_sugarclient_listviewmaxselect;
+	}
+    
+    if (document.MassUpdate.select_entire_list.value == 1) {
+		if (totalCount > maxCount) {
 			alert(totalCountError);
 			return;
 		} // if
@@ -1882,7 +1914,7 @@ sugarListView.prototype.send_form_for_emails = function(select, currentModule, a
 	}
 
 	var selectedArray = uidTa.value.split(",");
-	if(selectedArray.length > 10) {
+	if(selectedArray.length > maxCount) {
 		alert(totalCountError);
 		return;
 	} // if
@@ -2493,11 +2525,6 @@ SUGAR.ajaxStatusClass.prototype.positionStatus = function() {
 SUGAR.ajaxStatusClass.prototype.createStatus = function(text) {
 	statusDiv = document.createElement('div');
 	statusDiv.className = 'dataLabel';
-	statusDiv.style.background = '#ffffff';
-	statusDiv.style.color = '#c60c30';
-	statusDiv.style.position = 'absolute';
-	statusDiv.style.opacity = .8;
-	statusDiv.style.filter = 'alpha(opacity=80)';
 	statusDiv.id = 'ajaxStatusDiv';
 	document.body.appendChild(statusDiv);
 	this.statusDiv = document.getElementById('ajaxStatusDiv');
@@ -2731,7 +2758,7 @@ SUGAR.util = function () {
 					var script = document.createElement('script');
                   	script.type= 'text/javascript';
                   	if(result[1].indexOf("src=") > -1){
-						var srcRegex = /.*src=['"]([a-zA-Z0-9\&\/\.\?=:]*)['"].*/igm;
+						var srcRegex = /.*src=['"]([a-zA-Z0-9_\&\/\.\?=:]*)['"].*/igm;
 						var srcResult =  result[1].replace(srcRegex, '$1');
 						script.src = srcResult;
                   	}else{

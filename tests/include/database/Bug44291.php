@@ -1,5 +1,4 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
@@ -35,13 +34,44 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
+ 
+require_once 'include/database/MysqlHelper.php';
+require_once 'include/database/MssqlHelper.php';
+require_once 'include/database/FreeTDSHelper.php';
+
+class Bug44291 extends Sugar_PHPUnit_Framework_TestCase
+{
+    public function setUp()
+    {
+    }
+
+    public function tearDown()
+    {
+    }
+
+    public function testGetColumnTypeMySql()
+    {
+        $_helper = new MysqlHelper();
+        $this->assertEquals("decimal(26,6)", $_helper->getColumnType("currency"));
+        $this->assertEquals("Unknown", $_helper->getColumnType("Unknown"));
+        unset($_helper);
+    }
+
+    public function testGetColumnTypeMSSql()
+    {
+        $_helper = new MssqlHelper();
+        $this->assertEquals("decimal(26,6)", $_helper->getColumnType("currency"));
+        $this->assertEquals("Unknown", $_helper->getColumnType("Unknown"));
+        unset($_helper);
+    }
+
+    public function testGetColumnTypeFreeTDS()
+    {
+        $_helper = new FreeTDSHelper();
+        $this->assertEquals("decimal(26,6)", $_helper->getColumnType("currency"));
+        $this->assertEquals("Unknown", $_helper->getColumnType("Unknown"));
+        unset($_helper);
+    }
 
 
-
-require_once('include/Popups/Popup_picker.php');
-
-$popup = new Popup_Picker();
-
-echo $popup->process_page();
-
-?>
+}

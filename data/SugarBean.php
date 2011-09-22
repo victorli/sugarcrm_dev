@@ -1662,7 +1662,7 @@ class SugarBean
             if($sendEmail && !$notify_mail->Send()) {
                 $GLOBALS['log']->fatal("Notifications: error sending e-mail (method: {$notify_mail->Mailer}), (error: {$notify_mail->ErrorInfo})");
             } else {
-                $GLOBALS['log']->fatal("Notifications: e-mail successfully sent");
+                $GLOBALS['log']->info("Notifications: e-mail successfully sent");
             }
 
         }
@@ -2678,6 +2678,8 @@ function save_relationship_changes($is_update, $exclude=array())
                         unset($list_fields[$list_key]);
                     }
                 }
+                
+                
                 if(!$subpanel_def->isCollection() && isset($list_fields[$order_by]) && isset($submodule->field_defs[$order_by])&& (!isset($submodule->field_defs[$order_by]['source']) || $submodule->field_defs[$order_by]['source'] == 'db'))
                 {
                     $order_by = $submodule->table_name .'.'. $order_by;
@@ -2690,7 +2692,7 @@ function save_relationship_changes($is_update, $exclude=array())
                 $params['joined_tables'] = $query_array['join_tables'];
                 $params['include_custom_fields'] = !$subpanel_def->isCollection();
                 $params['collection_list'] = $subpanel_def->get_inst_prop_value('collection_list');
-
+                
                 $subquery = $submodule->create_new_list_query('',$subwhere ,$list_fields,$params, 0,'', true,$parentbean);
 
                 $subquery['select'] = $subquery['select']." , '$panel_name' panel_name ";
@@ -2941,7 +2943,7 @@ function save_relationship_changes($is_update, $exclude=array())
      * @param boolean $singleSelect Optional, default false.
      * @return String select query string, optionally an array value will be returned if $return_array= true.
      */
-    function create_new_list_query($order_by, $where,$filter=array(),$params=array(), $show_deleted = 0,$join_type='', $return_array = false,$parentbean=null, $singleSelect = false)
+	function create_new_list_query($order_by, $where,$filter=array(),$params=array(), $show_deleted = 0,$join_type='', $return_array = false,$parentbean=null, $singleSelect = false, $ifListForExport = false)
     {
         global $beanFiles, $beanList;
         $selectedFields = array();
@@ -3370,6 +3372,14 @@ function save_relationship_changes($is_update, $exclude=array())
             }
 
         }
+		
+	if ($ifListForExport) {
+		if(isset($this->field_defs['email1'])) {
+			$ret_array['select'].= " ,email_addresses.email_address email1";
+			$ret_array['from'].= " LEFT JOIN email_addr_bean_rel on {$this->table_name}.id = email_addr_bean_rel.bean_id and email_addr_bean_rel.bean_module='{$this->module_dir}' and email_addr_bean_rel.deleted=0 and email_addr_bean_rel.primary_address=1 LEFT JOIN email_addresses on email_addresses.id = email_addr_bean_rel.email_address_id ";
+		}
+	}
+		
         $where_auto = '1=1';
         if($show_deleted == 0)
         {
@@ -3955,8 +3965,10 @@ function save_relationship_changes($is_update, $exclude=array())
             }
             if(!empty($sugar_config['disable_count_query']) && !empty($limit))
             {
-                $rows_found = $row_offset + count($list);
-                
+
+            	//C.L. Bug 43535 - Use the $index value to set the $rows_found value here
+                $rows_found = isset($index) ? $index : $row_offset + count($list);
+
                 if(count($list) >= $limit)
                 {
                     array_pop($list);
@@ -4315,9 +4327,8 @@ function save_relationship_changes($is_update, $exclude=array())
                     $this->modified_user_id = 1;
                 }
                 $query = "UPDATE $this->table_name set deleted=1 , date_modified = '$date_modified', modified_user_id = '$this->modified_user_id' where id='$id'";
-            } else {
+            } else
                 $query = "UPDATE $this->table_name set deleted=1 , date_modified = '$date_modified' where id='$id'";
-            }
             $this->db->query($query, true,"Error marking record deleted: ");
             $this->deleted = 1;
             $this->mark_relationships_deleted($id);
@@ -5481,6 +5492,6 @@ function save_relationship_changes($is_update, $exclude=array())
      */
 	public function create_export_query($order_by, $where)
 	{
-		return $this->create_new_list_query($order_by, $where, array(), array(), 0, '', false, $this, true);
+		return $this->create_new_list_query($order_by, $where, array(), array(), 0, '', false, $this, true, true);
 	}
 }

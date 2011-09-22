@@ -70,7 +70,7 @@ $vardef_meta_array = array (
 		'exclusion' =>	array(
 			'type' => array('id', 'link', 'datetime', 'date','datetimecombo'),
 			'custom_type' => array('id', 'link', 'datetime', 'date','datetimecombo'),
-			'name' => array('assigned_user_name', 'parent_type', 'amount_usdollar', 'deleted','filename', 'file_mime_type', 'file_url'),
+			'name' => array('assigned_user_name', 'parent_type', 'deleted','filename', 'file_mime_type', 'file_url'),
 			'reportable' => array('false'),
 			'source' => array('non-db'),
 		//end exclusion
@@ -96,7 +96,7 @@ $vardef_meta_array = array (
 		'exclusion' =>	array(
 			'type' => array('id', 'link'),
 			'custom_type' => array('id', 'link'),
-			'name' => array('assigned_user_name', 'parent_type', 'amount_usdollar', 'deleted','filename', 'file_mime_type', 'file_url'),
+			'name' => array('assigned_user_name', 'parent_type', 'deleted','filename', 'file_mime_type', 'file_url'),
 			'reportable' => array('false'),
 			'source' => array('non-db'),
 		//end exclusion
@@ -122,7 +122,7 @@ $vardef_meta_array = array (
 		'exclusion' =>	array(
 			'type' => array('id', 'link', 'team_list', 'time'),
 			'custom_type' => array('id', 'link', 'team_list', 'time'),
-			'name' => array('parent_type', 'team_name', 'assigned_user_name', 'parent_type', 'amount_usdollar', 'deleted' ,'filename', 'file_mime_type', 'file_url'),
+			'name' => array('parent_type', 'team_name', 'assigned_user_name', 'parent_type', 'deleted' ,'filename', 'file_mime_type', 'file_url'),
 			'source' => array('non-db'),
 		//end exclusion
 		),
@@ -147,7 +147,7 @@ $vardef_meta_array = array (
 			'custom_type' => array('id', 'link', 'datetime', 'time'),
 			'reportable' => array('false'),
 			'source' => array('non-db'),
-			'name' => array('created_by', 'parent_type', 'deleted', 'assigned_user_name', 'amount_usdollar', 'deleted' ,'filename', 'file_mime_type', 'file_url', 'resource_id'),
+			'name' => array('created_by', 'parent_type', 'deleted', 'assigned_user_name', 'deleted' ,'filename', 'file_mime_type', 'file_url', 'resource_id'),
 		//end exclusion
 		),
 
@@ -247,12 +247,12 @@ $vardef_meta_array = array (
 			'custom_type' => array('id', 'link'),
 			'reportable' => array('false'),
 			'source' => array('non-db'),
-			'name' => array('created_by', 'parent_type', 'deleted', 'assigned_user_name','amount_usdollar', 'filename', 'file_mime_type', 'file_url'),
+			'name' => array('created_by', 'parent_type', 'deleted', 'assigned_user_name', 'filename', 'file_mime_type', 'file_url'),
 		//end exclusion
 		),
 
 		'inc_override' => array(
-			'name' => array('assigned_user_id', 'assigned_user_name', 'modified_user_id', 'modified_by_name', 'created_by', 'created_by_name', 'full_name', 'email1', 'email2', 'team_name'),
+			'name' => array('assigned_user_id', 'assigned_user_name', 'modified_user_id', 'modified_by_name', 'created_by', 'created_by_name', 'full_name', 'email1', 'email2', 'team_name', 'shipper_name'),
 		//end inc_override
 		),
 		'ex_override' => array(
@@ -270,7 +270,7 @@ $vardef_meta_array = array (
 		'exclusion' =>	array(
 			'type' => array('id', 'link', 'datetime', 'date'),
 			'custom_type' => array('id', 'link', 'datetime', 'date'),
-			'name' => array('assigned_user_name', 'parent_type',  'amount_usdollar', 'deleted', 'filename', 'file_mime_type', 'file_url'),
+			'name' => array('assigned_user_name', 'parent_type', 'deleted', 'filename', 'file_mime_type', 'file_url'),
 			'reportable' => array('false'),
 			'source' => array('non-db'),
 		//end exclusion

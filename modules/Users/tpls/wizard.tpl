@@ -128,13 +128,13 @@ function disableReturnSubmission(e) {
                         <td scope="row" width="17%">
                         {$MOD.LBL_EMAIL}: {if $REQUIRED_EMAIL_ADDRESS}<span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span>{/if}
                         </td>
-                        <td width="33%"><slot><input name='email1' tabindex='11' size='30' maxlength='100' value='{$EMAIL1}' id='email1' /></slot></td>
+                        <td width="33%"><slot><input name='email1' tabindex='3' size='30' maxlength='100' value='{$EMAIL1}' id='email1' /></slot></td>
                         <td scope="row" nowrap="nowrap"><slot>&nbsp;</slot></td>
                         <td><slot>&nbsp;</slot></td>
                     </tr>
                     <tr>
                         <td width="17%" scope="row" nowrap="nowrap"><slot>{$MOD.LBL_OFFICE_PHONE}:</slot></td>
-                        <td width="33%" ><slot><input name='phone_work' type="text" tabindex='6' size='20' maxlength='25' value='{$PHONE_WORK}'></slot></td>
+                        <td width="33%" ><slot><input name='phone_work' type="text" tabindex='4' size='20' maxlength='25' value='{$PHONE_WORK}'></slot></td>
                         <td scope="row" nowrap="nowrap"><slot>{$MOD.LBL_MESSENGER_TYPE}:</slot></td>
                         <td  ><slot>{$MESSENGER_TYPE_OPTIONS}</slot></td>
                     </tr>

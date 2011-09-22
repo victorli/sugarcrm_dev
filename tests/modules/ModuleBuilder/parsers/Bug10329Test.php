@@ -35,24 +35,40 @@
  ********************************************************************************/
 
 
-class Bug44712Test extends Sugar_PHPUnit_Framework_TestCase
+/**
+ * @ticket 10329
+ *
+ *		Original Bug: Studio Layout Fields should be alphabetical and detail view should remove used fields 
+ *		1. Admin > Studio
+ *		2. Module Name > Layouts > Edit and or Detail View
+ *		3. Note fields in lower left and upper left quadrants.
+ *		Desired behavior: alphabetized fields.  
+ *
+ */
+class Bug10329Test extends Sugar_PHPUnit_Framework_TestCase
 {
+	private $_parser;
+	 
+    public function setUp()
+    {
+		require('include/modules.php');
+		$GLOBALS['beanList'] = $beanList;
+		$GLOBALS['beanFiles'] = $beanFiles;    	
+    	$GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
+    	require_once ('modules/ModuleBuilder/parsers/ParserFactory.php') ;
+		$this->_parser = ParserFactory::getParser('EditView','Accounts');
+    }
+
+    public function tearDown()
+	{
+		//unset($GLOBALS['app_list_strings']);
+		//unset($this->_parser);
+	}
 
     public function testTranslateLabel()
     {
-        $activitiesRelationship = new ActivitiesRelationshipMock(array());
-        $vardef = $activitiesRelationship->getLinkFieldDefinition('Tasks', 'abc_MyCustomBasic_Activities_Tasks');
-        $this->assertEquals('LBL_ABC_MYCUSTOMBASIC_ACTIVITIES_TASKS_FROM_TASKS_TITLE', $vardef['vname'], "Assert that vardef['vname'] is set to LBL_ABC_MYCUSTOMBASIC_ACTIVITIES_FROM_TASKS_TITLE");
+        $avail_fields = $this->_parser->getAvailableFields();
+        //verify that translateLabel exists
+        $this->assertArrayHasKey('translatedLabel', $avail_fields[0]);
     }
 }
-
-require_once('modules/ModuleBuilder/parsers/relationships/ActivitiesRelationship.php');
-class ActivitiesRelationshipMock extends ActivitiesRelationship
-{
-	public function getLinkFieldDefinition($sourceModule, $relationshipName)
-	{
-		return parent:: getLinkFieldDefinition($sourceModule, $relationshipName);
-	}
-}
-
-?>

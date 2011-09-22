@@ -131,17 +131,14 @@ class ListViewSmarty extends ListViewDisplay{
 		$this->ss->assign('quickViewLinks', $this->quickViewLinks);
 
 		// handle save checks and stuff
-		if($this->multiSelect) {
-		
-		//if($this->data['pageData']['bean']['moduleDir']== 'KBDocuments')
-		//{ 
-		//	$this->ss->assign('selectedObjectsSpan', $this->buildSelectedObjectsSpan(true, $this->data['pageData']['offsets']['current']));
-		//} else {
+		if($this->multiSelect)
+        {
 			$this->ss->assign('selectedObjectsSpan', $this->buildSelectedObjectsSpan(true, $this->data['pageData']['offsets']['total']));
-		//}
-		
-		$this->ss->assign('multiSelectData', $this->getMultiSelectData());
-		}
+		    $this->ss->assign('multiSelectData', $this->getMultiSelectData());
+		} else {
+            $this->ss->assign('multiSelectData', '<textarea style="display: none" name="uid"></textarea>');
+        }
+
 		// include button for Adding to Target List if in one of four applicable modules
 		if ( isset ( $_REQUEST['module']) && in_array ( $_REQUEST['module'] , array ( 'Contacts','Prospects','Leads','Accounts' ))
 		&& ACLController::checkAccess('ProspectLists','edit',true)) {

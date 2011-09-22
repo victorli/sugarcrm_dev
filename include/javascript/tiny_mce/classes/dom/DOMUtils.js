@@ -59,7 +59,7 @@
 		 * @param {settings} s Optional settings collection.
 		 */
 		DOMUtils : function(d, s) {
-			var t = this, globalStyle;
+			var t = this, globalStyle, name;
 
 			t.doc = d;
 			t.win = window;
@@ -90,7 +90,7 @@
 				}
 			}
 
-			if (isIE) {
+			if (isIE && s.schema) {
 				// Add missing HTML 4/5 elements to IE
 				('abbr article aside audio canvas ' +
 				'details figcaption figure footer ' +
@@ -99,6 +99,11 @@
 				'time video').replace(/\w+/g, function(name) {
 					d.createElement(name);
 				});
+
+				// Create all custom elements
+				for (name in s.schema.getCustomElements()) {
+					d.createElement(name);
+				}
 			}
 
 			tinymce.addUnload(t.destroy, t);
@@ -732,12 +737,12 @@
 		 * @return {String} Attribute value string, default value or null if the attribute wasn't found.
 		 */
 		getAttrib : function(e, n, dv) {
-			var v, t = this;
+			var v, t = this, undef;
 
 			e = t.get(e);
 
 			if (!e || e.nodeType !== 1)
-				return false;
+				return dv === undef ? false : dv;
 
 			if (!is(dv))
 				dv = '';
@@ -849,7 +854,7 @@
 				}
 			}
 
-			return (v !== undefined && v !== null && v !== '') ? '' + v : dv;
+			return (v !== undef && v !== null && v !== '') ? '' + v : dv;
 		},
 
 		/**
@@ -867,14 +872,17 @@
 			ro = ro || d.body;
 
 			if (n) {
-				// Use getBoundingClientRect on IE, Opera has it but it's not perfect
-				if (isIE && !t.stdMode) {
+				// Use getBoundingClientRect if it exists since it's faster than looping offset nodes
+				if (n.getBoundingClientRect) {
 					n = n.getBoundingClientRect();
 					e = t.boxModel ? d.documentElement : d.body;
-					x = t.getStyle(t.select('html')[0], 'borderWidth'); // Remove border
-					x = (x == 'medium' || t.boxModel && !t.isIE6) && 2 || x;
 
-					return {x : n.left + e.scrollLeft - x, y : n.top + e.scrollTop - x};
+					// Add scroll offsets from documentElement or body since IE with the wrong box model will use d.body and so do WebKit
+					// Also remove the body/documentelement clientTop/clientLeft on IE 6, 7 since they offset the position
+					x = n.left + (d.documentElement.scrollLeft || d.body.scrollLeft) - e.clientTop;
+					y = n.top + (d.documentElement.scrollTop || d.body.scrollTop) - e.clientLeft;
+
+					return {x : x, y : y};
 				}
 
 				r = n;
@@ -1580,12 +1588,12 @@
 						if (elements && elements[node.nodeName.toLowerCase()])
 							return false;
 
-						// Keep elements with data attributes or name attribute like <a name="1"></a>
+						// Keep elements with data-bookmark attributes or name attribute like <a name="1"></a>
 						attributes = self.getAttribs(node);
 						i = node.attributes.length;
 						while (i--) {
 							name = node.attributes[i].nodeName;
-							if (name === "name" || name.indexOf('data-') === 0)
+							if (name === "name" || name === 'data-mce-bookmark')
 								return false;
 						}
 					}
@@ -1641,7 +1649,7 @@
 		 * @return {Number} Index of the specified node.
 		 */
 		nodeIndex : function(node, normalized) {
-			var idx = 0, lastNodeType, lastNode, nodeType, nodeValueExists;
+			var idx = 0, lastNodeType, lastNode, nodeType;
 
 			if (node) {
 				for (lastNodeType = node.nodeType, node = node.previousSibling, lastNode = node; node; node = node.previousSibling) {
@@ -1649,11 +1657,7 @@
 
 					// Normalize text nodes
 					if (normalized && nodeType == 3) {
-						// ensure that text nodes that have been removed are handled correctly in Internet Explorer.
-						// (the nodeValue attribute will not exist, and will error here).
-						nodeValueExists = false;
-						try {nodeValueExists = node.nodeValue.length} catch (c) {}
-						if (nodeType == lastNodeType || !nodeValueExists)
+						if (nodeType == lastNodeType || !node.nodeValue.length)
 							continue;
 					}
 					idx++;

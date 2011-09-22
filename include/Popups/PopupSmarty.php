@@ -422,7 +422,11 @@ class PopupSmarty extends ListViewSmarty{
 	{
 		$where = '';
 		$where_clauses = $this->searchForm->generateSearchWhere(true, $this->seed->module_dir);
-		if (count($where_clauses) > 0 )$where= implode(' and ', $where_clauses);
+		// Bug 43452 - FG - Changed the way generated Where array is imploded into the string.
+		//                  Now it's imploding in the same way view.list.php do.
+		if (count($where_clauses) > 0 ) {
+		    $where = '( ' . implode(' and ', $where_clauses) . ' )';
+        }
         
         // Need to include the default whereStatement
 		if(!empty($this->_popupMeta['whereStatement'])){

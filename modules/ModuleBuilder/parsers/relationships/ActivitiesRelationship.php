@@ -147,7 +147,6 @@ class ActivitiesRelationship extends OneToManyRelationship
         $vardef [ 'type' ] = 'link' ;
         $vardef [ 'relationship' ] = $relationshipName ;
         $vardef [ 'source' ] = 'non-db' ;
-        $vardef [ 'vname' ] = strtoupper("LBL_{$relationshipName}_FROM_{$sourceModule}_TITLE");
         return $vardef ;
     }
 

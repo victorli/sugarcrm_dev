@@ -68,7 +68,6 @@ require_once('modules/ModuleBuilder/parsers/ModuleBuilderParser.php');
                 $dropdown[ remove_xss(from_html($item [ 0 ])) ] = remove_xss(from_html($item [ 1 ])) ;
             }
         }
-
 		if(array_key_exists($emptyMarker, $dropdown)){
             $output=array();
             foreach($dropdown as $key => $value){

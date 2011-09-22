@@ -90,11 +90,11 @@ class Bug43395Test extends Sugar_PHPUnit_Framework_OutputTestCase
 
     	self::$contact->createLocaleFormattedName = true;
     	self::$contact->_create_proper_name_field();
-    	$this->assertEquals(self::$contact->name, 'Mr. Bug43395 Test', 'Assert that _create_proper_name_field with createLocaleFormattedName set to true returns salutation');
+    	$this->assertContains('Mr.',self::$contact->name, 'Assert that _create_proper_name_field with createLocaleFormattedName set to true returns salutation');
 
     	self::$contact->createLocaleFormattedName = false;
     	self::$contact->_create_proper_name_field();
-    	$this->assertEquals(self::$contact->name, 'Bug43395 Test', 'Assert that _create_proper_name_field with createLocaleFormattedName set to false does not return salutation');
+    	$this->assertNotContains('Mr.',self::$contact->name, 'Assert that _create_proper_name_field with createLocaleFormattedName set to false does not return salutation');
     }
     
 }

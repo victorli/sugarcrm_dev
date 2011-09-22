@@ -129,6 +129,10 @@ class ViewQuickcreate extends ViewAjax
 		$this->ev->defs['templateMeta']['form']['hidden'] = '<input type="hidden" name="is_ajax_call" value="1" />';
 		$this->ev->defs['templateMeta']['form']['hidden'] .= '<input type="hidden" name="from_dcmenu" value="1" />';
 		$defaultProcess = true;
+
+        //Load the parent view class if it exists.  Check for custom file first
+        loadParentView('edit');
+
 		if(file_exists('modules/'.$module.'/views/view.edit.php')) {
             include('modules/'.$module.'/views/view.edit.php'); 
             $c = $module . 'ViewEdit';

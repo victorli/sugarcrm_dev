@@ -325,7 +325,7 @@ class TemplateHandler {
                     if(preg_match('/^(Campaigns|Teams|Users|Contacts|Accounts)$/si', $field['module'], $matches)) {
 
                         if($matches[0] == 'Campaigns') {
-                            $sqs_objects[$name.'_'.$parsedView] = $qsd->getQSCampaigns();
+                            $sqs_objects[$name.'_'.$parsedView] = $qsd->loadQSObject('Campaigns', 'Campaign', $field['name'], $field['id_name'], $field['id_name']);
                         } else if($matches[0] == 'Users'){
 
                             if(!empty($f['name']) && !empty($f['id_name'])) {
@@ -335,7 +335,7 @@ class TemplateHandler {
                                 $sqs_objects[$name.'_'.$parsedView] = $qsd->getQSUser();
                             }
                         } else if($matches[0] == 'Campaigns') {
-                            $sqs_objects[$name.'_'.$parsedView] = $qsd->getQSCampaigns();
+                            $sqs_objects[$name.'_'.$parsedView] = $qsd->loadQSObject('Campaigns', 'Campaign', $field['name'], $field['id_name'], $field['id_name']);
                         } else if($matches[0] == 'Accounts') {
                             $nameKey = $name;
                             $idKey = isset($field['id_name']) ? $field['id_name'] : 'account_id';
@@ -390,7 +390,7 @@ class TemplateHandler {
                     if(!preg_match('/_c$/si',$name) && preg_match('/^(Campaigns|Teams|Users|Contacts|Accounts)$/si', $field['module'], $matches)) {
 
                         if($matches[0] == 'Campaigns') {
-                            $sqs_objects[$name] = $qsd->getQSCampaigns();
+                            $sqs_objects[$name] = $qsd->loadQSObject('Campaigns', 'Campaign', $field['name'], $field['id_name'], $field['id_name']);
                         } else if($matches[0] == 'Users'){
                             if($field['name'] == 'reports_to_name')
                                 $sqs_objects[$name] = $qsd->getQSUser('reports_to_name','reports_to_id');
@@ -401,7 +401,7 @@ class TemplateHandler {
 								    $sqs_objects[$name] = $qsd->getQSUser();
 							}
                         } else if($matches[0] == 'Campaigns') {
-                            $sqs_objects[$name] = $qsd->getQSCampaigns();
+                            $sqs_objects[$name] = $qsd->loadQSObject('Campaigns', 'Campaign', $field['name'], $field['id_name'], $field['id_name']);
                         } else if($matches[0] == 'Accounts') {
                             $nameKey = $name;
                             $idKey = isset($field['id_name']) ? $field['id_name'] : 'account_id';

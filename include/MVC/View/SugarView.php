@@ -127,8 +127,9 @@ class SugarView
         $this->display();
         if ( !empty($this->module) ) {
             $GLOBALS['logic_hook']->call_custom_logic($this->module, 'after_ui_frame');
+        } else {
+            $GLOBALS['logic_hook']->call_custom_logic('', 'after_ui_frame');
         }
-        $GLOBALS['logic_hook']->call_custom_logic('', 'after_ui_frame');
         if ($this->_getOption('show_subpanels')) $this->_displaySubPanels();
         if ($this->action === 'Login') {
             //this is needed for a faster loading login page ie won't render unless the tables are closed
@@ -717,6 +718,9 @@ EOHTML;
             if ( isset($sugar_config['quicksearch_querydelay']) ) {
                 echo "<script>SUGAR.config.quicksearch_querydelay = {$GLOBALS['sugar_config']['quicksearch_querydelay']};</script>";
             }
+            if ( isset($sugar_config['email_sugarclient_listviewmaxselect']) ) {
+                echo "<script>SUGAR.config.email_sugarclient_listviewmaxselect = {$GLOBALS['sugar_config']['email_sugarclient_listviewmaxselect']};</script>";
+            }
             
             $image_server = (defined('TEMPLATE_URL'))?TEMPLATE_URL . '/':'';
             echo '<script type="text/javascript">SUGAR.themes.image_server="' . $image_server . '";</script>'; // cn: bug 12274 - create session-stored key to defend against CSRF
@@ -964,46 +968,42 @@ EOHTML;
         $module = null
         )
     {
-        global $current_language, $current_user, $mod_strings, $app_strings;
+        global $current_language, $current_user, $mod_strings, $app_strings, $module_menu;
 
         if ( empty($module) )
             $module = $this->module;
 
-        $final_module_menu = array();
+        $module_menu = array();
 
         if (file_exists('modules/' . $module . '/Menu.php')) {
-            $GLOBALS['module_menu'] = $module_menu = array();
             require('modules/' . $module . '/Menu.php');
-            $final_module_menu = array_merge($final_module_menu,$GLOBALS['module_menu'],$module_menu);
         }
         if (file_exists('custom/modules/' . $module . '/Ext/Menus/menu.ext.php')) {
-            $GLOBALS['module_menu'] = $module_menu = array();
             require('custom/modules/' . $module . '/Ext/Menus/menu.ext.php');
-            $final_module_menu = array_merge($final_module_menu,$GLOBALS['module_menu'],$module_menu);
         }
         if (!file_exists('modules/' . $module . '/Menu.php')
                 && !file_exists('custom/modules/' . $module . '/Ext/Menus/menu.ext.php')
                 && !empty($GLOBALS['mod_strings']['LNK_NEW_RECORD'])) {
-            $final_module_menu[] = array("index.php?module=$module&action=EditView&return_module=$module&return_action=DetailView",
+            $module_menu[] = array("index.php?module=$module&action=EditView&return_module=$module&return_action=DetailView",
                 $GLOBALS['mod_strings']['LNK_NEW_RECORD'],"{$GLOBALS['app_strings']['LBL_CREATE_BUTTON_LABEL']}$module" ,$module );
-            $final_module_menu[] = array("index.php?module=$module&action=index", $GLOBALS['mod_strings']['LNK_LIST'],
+            $module_menu[] = array("index.php?module=$module&action=index", $GLOBALS['mod_strings']['LNK_LIST'],
                 $module, $module);
             if ( ($this->bean instanceOf SugarBean) && !empty($this->bean->importable) )
                 if ( !empty($mod_strings['LNK_IMPORT_'.strtoupper($module)]) )
-                    $final_module_menu[] = array("index.php?module=Import&action=Step1&import_module=$module&return_module=$module&return_action=index",
+                    $module_menu[] = array("index.php?module=Import&action=Step1&import_module=$module&return_module=$module&return_action=index",
                         $mod_strings['LNK_IMPORT_'.strtoupper($module)], "Import", $module);
                 else
-                    $final_module_menu[] = array("index.php?module=Import&action=Step1&import_module=$module&return_module=$module&return_action=index",
+                    $module_menu[] = array("index.php?module=Import&action=Step1&import_module=$module&return_module=$module&return_action=index",
                         $app_strings['LBL_IMPORT'], "Import", $module);
         }
         if (file_exists('custom/application/Ext/Menus/menu.ext.php')) {
-            $GLOBALS['module_menu'] = $module_menu = array();
             require('custom/application/Ext/Menus/menu.ext.php');
-            $final_module_menu = array_merge($final_module_menu,$GLOBALS['module_menu'],$module_menu);
         }
-        $module_menu = $final_module_menu;
+        
+        $builtModuleMenu = $module_menu;
+        unset($module_menu);
 
-        return $module_menu;
+        return $builtModuleMenu;
     }
 
     /**

@@ -44,6 +44,8 @@ class Bug44324Test extends Sugar_PHPUnit_Framework_OutputTestCase
         $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
         $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+        $GLOBALS['app_list_strings'] = return_app_list_strings_language('en_us');
+        $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
         $this->contact = SugarTestContactUtilities::createContact();	
         $this->contact->salutation = 'Ms.';
         $this->contact->first_name = 'Lady';

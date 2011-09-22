@@ -38,10 +38,10 @@
 
 
 
-$sugar_version      = '6.2.2';
-$sugar_db_version   = '6.2.2';
+$sugar_version      = '6.2.3';
+$sugar_db_version   = '6.2.3';
 $sugar_flavor       = 'CE';
-$sugar_build		= '6573';
-$sugar_timestamp    = '2011-08-24 06:01am';
+$sugar_build		= '6658';
+$sugar_timestamp    = '2011-09-21 06:39pm';
 
 ?>

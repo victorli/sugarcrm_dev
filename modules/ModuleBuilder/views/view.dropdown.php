@@ -82,6 +82,8 @@ class ViewDropdown extends SugarView
 		$new =false;
 		$my_list_strings = return_app_list_strings_language( $selected_lang ) ;
 //		$my_list_strings = $GLOBALS['app_list_strings'];
+
+        $smarty = new Sugar_Smarty();
 		      
 		//if we are using ModuleBuilder then process the following
 		if(!empty($_REQUEST['view_package']) && $_REQUEST['view_package'] != 'studio'){
@@ -99,6 +101,7 @@ class ViewDropdown extends SugarView
 			$vardef = (!empty($module->mbvardefs->fields[$_REQUEST['dropdown_name']]))? $module->mbvardefs->fields[$_REQUEST['dropdown_name']]: array();
 			$module->mblanguage->generateAppStrings(false) ;
             $my_list_strings = array_merge( $my_list_strings, $module->mblanguage->appListStrings[$selected_lang.'.lang.php'] );
+            $smarty->assign('module_name', $module->name);
 		}
 
 		foreach($my_list_strings as $key=>$value){
@@ -114,8 +117,7 @@ class ViewDropdown extends SugarView
 
 		$name = '';
 		$selected_dropdown = array();
-		
-		$smarty = new Sugar_Smarty();
+
 		$json = getJSONobj();
 
 		if(!empty($_REQUEST['dropdown_name']) && !$new){
@@ -148,7 +150,6 @@ class ViewDropdown extends SugarView
 			$smarty->assign('prepopulated_name', $use_name);
 		}
 
-		$smarty->assign('module', $this->module);
 		$smarty->assign('APP', $GLOBALS['app_strings']);
 		$smarty->assign('MOD', $GLOBALS['mod_strings']);
 		$smarty->assign('selected_lang', $selected_lang);

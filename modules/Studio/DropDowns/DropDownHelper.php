@@ -83,7 +83,7 @@ class DropDownHelper{
 
                 foreach ($dropdown as $k => $v)
                 {
-                    if( isset($moduleList[$k]) && !$hiddenModList[$k])
+                    if( isset($moduleList[$k]) ) // && !$hiddenModList[$k])
                         $results[$k] = $v;
                 }
                 break;

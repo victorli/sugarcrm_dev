@@ -93,9 +93,7 @@ if(!is_file($cachePath.'/'.$pid)) {
 ///////////////////////////////////////////////////////////////////////////////
 ////	EXECUTE IF VALID TIME (NOT DDOS)
 
-// mjamil | bug # 45229 - schedulers not able to run due to current time being equal to
-// $timestamp[0]
-if($timestamp[0] <= strtotime(date('H:i'))) {
+if($timestamp[0] < strtotime(date('H:i'))) {
 	if(is_writable($cachePath.'/'.$pid)) {
 		write_array_to_file('timestamp', array(strtotime(date('H:i'))) , $cachePath.'/'.$pid);
 		require('modules/Schedulers/Scheduler.php');

@@ -198,7 +198,15 @@ function handleRedirect($return_id='', $return_module='')
 		exit;
 	}
 
-	if(isset($_REQUEST['return_module']) && $_REQUEST['return_module'] != "")
+	$url = buildRedirectURL($return_id, $return_module);
+	header($url);
+	exit;	
+}
+
+//eggsurplus: abstract to simplify unit testing
+function buildRedirectURL($return_id='', $return_module='') 
+{
+    if(isset($_REQUEST['return_module']) && $_REQUEST['return_module'] != "")
 	{
 		$return_module = $_REQUEST['return_module'];
 	}
@@ -255,7 +263,12 @@ function handleRedirect($return_id='', $return_module='')
     
     if (!isset($isDuplicate) || !$isDuplicate)
     {
-        header("Location: index.php?action=$return_action&module=$return_module&record=$return_id&return_module=$return_module&return_action=$return_action");
+        //eggsurplus Bug 23816: maintain VCR after an edit/save. If it is a duplicate then don't worry about it. The offset is now worthless.
+        $redirect_url = "Location: index.php?action=$return_action&module=$return_module&record=$return_id&return_module=$return_module&return_action=$return_action";
+        if(isset($_REQUEST['offset']) && empty($_REQUEST['duplicateSave'])) {
+            $redirect_url .= "&offset=".$_REQUEST['offset'];
+        }
+        return $redirect_url;
     } else {
     	$standard = "action=$return_action&module=$return_module&record=$return_id&isDuplicate=true&return_module=$return_module&return_action=$return_action&status=$status";
    		$add = '';
@@ -271,9 +284,8 @@ function handleRedirect($return_id='', $return_module='')
     	if(!empty($add)) {
     		$add = "&" . $add;
     	}
-        header("Location: index.php?{$standard}{$add}");
+        return "Location: index.php?{$standard}{$add}";
     }
-	exit;
 }
 
 function getLikeForEachWord($fieldname, $value, $minsize=4)

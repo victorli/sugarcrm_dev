@@ -70,13 +70,19 @@ function send_back(module, id)
 
 			if(module != '' && id != '')
 			{
-                if((the_key.toUpperCase() == 'USER_NAME' || the_key.toUpperCase() == 'LAST_NAME' || the_key.toUpperCase() == 'FIRST_NAME') && typeof(is_show_fullname) != 'undefined' && is_show_fullname && form_name != 'search_form') {//if it is from searchform, it will search by assigned_user_name like 'ABC%', then it will return nothing
+				if(associated_row_data['DOCUMENT_NAME'] && the_key.toUpperCase() == "NAME"){
+    				the_value = associated_row_data['DOCUMENT_NAME'];
+    				
+    			}  
+				else if((the_key.toUpperCase() == 'USER_NAME' || the_key.toUpperCase() == 'LAST_NAME' || the_key.toUpperCase() == 'FIRST_NAME') && typeof(is_show_fullname) != 'undefined' && is_show_fullname && form_name != 'search_form') {//if it is from searchform, it will search by assigned_user_name like 'ABC%', then it will return nothing
                     the_value = associated_row_data['FULL_NAME'];
                 }
                 else {
                     the_value = associated_row_data[the_key.toUpperCase()];
                }
 			}
+			
+			
 			
 			if (typeof(the_value) == 'string') {
 				the_value = the_value.replace(/\r\n|\n|\r/g, '\\n');
