@@ -90,10 +90,10 @@ function zip_dir( $zip_dir, $zip_archive )
         // CENT OS and others will fail when deploying module
         $fileName = $fileinfo->getFilename();
         if ($fileName == "." || $fileName == "..")
-            continue; 
-        $localname = substr($fileinfo->getPathname(), $chop);
+            continue;
+        $localname = str_replace("\\", "/",substr($fileinfo->getPathname(), $chop)); // ensure file
         if($fileinfo->isDir()) {
-            $zip->addEmptyDir($localname);
+            $zip->addEmptyDir($localname."/");
         } else {
             $zip->addFile($fileinfo->getPathname(), $localname);
         }

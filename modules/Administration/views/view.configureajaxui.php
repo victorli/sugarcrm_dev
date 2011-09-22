@@ -1,5 +1,7 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
@@ -37,54 +39,68 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 /*********************************************************************************
 
- * Description: view handler for undo step of the import process
+ * Description:  TODO: To be written.
  * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
  * All Rights Reserved.
+ * Contributor(s): ______________________________________..
  ********************************************************************************/
 
-require_once('modules/Import/views/ImportView.php');
-        
-class ImportViewUndo extends ImportView 
-{	
+class ViewConfigureAjaxUI extends SugarView
+{
+    /**
+     * @see SugarView::_getModuleTitleParams()
+     */
+    protected function _getModuleTitleParams($browserTitle = false)
+    {
+        return array(
+            "<a href='index.php?module=Administration&action=index'>" . translate('LBL_MODULE_NAME') . "</a>",
+            translate('LBL_CONFIG_AJAX')
+        );
+    }
 
-    protected $pageTitleKey = 'LBL_UNDO_LAST_IMPORT';
-    
- 	/** 
+    /**
+     * @see SugarView::preDisplay()
+     */
+    public function preDisplay()
+    {
+        global $current_user;
+
+        if (!is_admin($current_user))
+        {
+            sugar_die("Unauthorized access to administration.");
+        }
+    }
+
+    /**
      * @see SugarView::display()
      */
- 	public function display()
+    public function display()
     {
-        global $mod_strings, $current_user, $current_language;
-        
-        $this->ss->assign("IMPORT_MODULE", $_REQUEST['import_module']);
-        // lookup this module's $mod_strings to get the correct module name
-        $old_mod_strings = $mod_strings;
-        $module_mod_strings = 
-            return_module_language($current_language, $_REQUEST['import_module']);
-        $this->ss->assign("MODULENAME",$module_mod_strings['LBL_MODULE_NAME']);
-        $this->ss->assign("MODULE_TITLE", $this->getModuleTitle(false), ENT_NOQUOTES);
-        // reset old ones afterwards
-        $mod_strings = $old_mod_strings;
-        
-        $last_import = new UsersLastImport();
-        $this->ss->assign('UNDO_SUCCESS',$last_import->undo($_REQUEST['import_module']));
-        $this->ss->assign("JAVASCRIPT", $this->_getJS());
-        $content = $this->ss->fetch('modules/Import/tpls/undo.tpl');
-        $this->ss->assign("CONTENT",$content);
-        $this->ss->display('modules/Import/tpls/wizardWrapper.tpl');
-    }
-    
-    /**
-     * Returns JS used in this view
-     */
-    private function _getJS()
-    {
-        return <<<EOJAVASCRIPT
+        global $sugar_config, $moduleList;
+        //create array of subpanels to show, used to create Drag and Drop widget
+        $enabled = array();
+        $disabled = array();
+        $banned = ajaxBannedModules();
 
-document.getElementById('finished').onclick = function(){
-    document.getElementById('importundo').module.value = document.getElementById('importundo').import_module.value;
-    document.getElementById('importundo').action.value = 'index';
-}
-EOJAVASCRIPT;
+        foreach($moduleList as $module)
+        {
+            if (!in_array($module, $banned))
+            {
+                $enabled[] = array("module" => $module, 'label' => translate($module));
+            }
+        }
+        if (!empty($sugar_config['addAjaxBannedModules']))
+        {
+            foreach( $sugar_config['addAjaxBannedModules'] as $module)
+            {
+                $disabled[] = array("module" => $module, 'label' => translate($module));
+            }
+        }
+
+        $this->ss->assign('enabled_mods', json_encode($enabled));
+        $this->ss->assign('disabled_mods', json_encode($disabled));
+        $this->ss->assign('title',$this->getModuleTitle(false));
+
+        echo $this->ss->fetch('modules/Administration/templates/ConfigureAjaxUI.tpl');
     }
 }

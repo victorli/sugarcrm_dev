@@ -1,6 +1,4 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
-
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
@@ -37,43 +35,43 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-class ContactsViewEdit extends ViewEdit 
-{   
- 	public function __construct()
- 	{
- 		parent::ViewEdit();
- 		$this->useForSubpanel = true;
- 		$this->useModuleQuickCreateTemplate = true;
- 	}
- 	
- 	/**
- 	 * @see SugarView::display()
-	 * 
- 	 * We are overridding the display method to manipulate the sectionPanels.
- 	 * If portal is not enabled then don't show the Portal Information panel.
- 	 */
- 	public function display() 
- 	{
-        $this->ev->process();
-		if ( !empty($_REQUEST['contact_name']) && !empty($_REQUEST['contact_id'])
-            && $this->ev->fieldDefs['report_to_name']['value'] == ''
-            && $this->ev->fieldDefs['reports_to_id']['value'] == '') { 
-            $this->ev->fieldDefs['report_to_name']['value'] = $_REQUEST['contact_name'];
-            $this->ev->fieldDefs['reports_to_id']['value'] = $_REQUEST['contact_id'];
-        }
-        $admin = new Administration();
-		$admin->retrieveSettings();
-		if(empty($admin->settings['portal_on']) || !$admin->settings['portal_on']) {
-		   unset($this->ev->sectionPanels[strtoupper('lbl_portal_information')]);
-		} else {
-		   echo '<script src="modules/Contacts/Contact.js"></script>';
-		   echo '<script language="javascript">';
-		   echo 'addToValidateComparison(\'EditView\', \'portal_password\', \'varchar\', false, SUGAR.language.get(\'app_strings\', \'ERR_SQS_NO_MATCH_FIELD\') + SUGAR.language.get(\'Contacts\', \'LBL_PORTAL_PASSWORD\'), \'portal_password1\');';	
-           echo 'addToValidateVerified(\'EditView\', \'portal_name_verified\', \'bool\', false, SUGAR.language.get(\'app_strings\', \'ERR_EXISTING_PORTAL_USERNAME\'));';
-           echo 'YAHOO.util.Event.onDOMReady(function() {YAHOO.util.Event.on(\'portal_name\', \'blur\', validatePortalName);YAHOO.util.Event.on(\'portal_name\', \'keydown\', handleKeyDown);});';
-		   echo '</script>';
-		}
-			
-		echo $this->ev->display($this->showTitle);
- 	}	
+
+class Bug37953Test extends Sugar_PHPUnit_Framework_TestCase
+{
+    var $call;
+
+    public function setUp()
+    {
+        global $current_user;
+        $current_user = SugarTestUserUtilities::createAnonymousUser();
+        $this->call = SugarTestCallUtilities::createCall();
+        $this->useOutputBuffering = false;
+	}
+
+    public function tearDown()
+    {
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        SugarTestCallUtilities::removeAllCreatedCalls();
+    }
+
+    public function testCallAppearsWithinMonthView()
+    {
+        global $timedate,$sugar_config,$DO_USER_TIME_OFFSET , $current_user;
+
+        $DO_USER_TIME_OFFSET = true;
+        $timedate = TimeDate::getInstance();
+        $format = $current_user->getUserDateTimePreferences();
+        $name = 'Bug37953Test' . $timedate->nowDb();
+        $this->call->name = $name;
+        $this->call->date_start = $timedate->swap_formats("2011-09-29 11:00pm" , 'Y-m-d h:ia', $format['date'].' '.$format['time']);
+        $this->call->time_start = "";
+        $this->call->object_name = "Call";
+        $this->call->duration_hours = 99;
+        
+        $ca = new CalendarActivity($this->call);
+        $where = $ca->get_occurs_within_where_clause($this->call->table_name, $this->call->rel_users_table, $ca->start_time, $ca->end_time, 'date_start', 'month');
+
+        $this->assertRegExp('/2011\-09\-23 00:00:00/', $where, 'Assert that we go back 6 days from the date_start value');
+        $this->assertRegExp('/2011\-11\-01 00:00:00/', $where, 'Assert that we go to the end of next month');
+    }
 }

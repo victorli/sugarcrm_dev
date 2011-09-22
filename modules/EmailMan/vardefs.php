@@ -104,6 +104,7 @@ array( 'table' => 'emailman', 'comment' => 'Email campaign queue', 'fields' => a
 		'name' => 'in_queue',
 		'vname' => 'LBL_IN_QUEUE',
 		'type' => 'bool',
+        'default' => '0',
 		'comment' => 'Flag indicating if item still in queue',
 	),
 	'in_queue_date' => array(

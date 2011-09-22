@@ -41,21 +41,34 @@ require_once("modules/ModuleBuilder/views/view.dropdown.php");
 /**
  * @group bug45683
  */
-class Bug45683Test extends Sugar_PHPUnit_Framework_OutputTestCase {
+class Bug45683Test extends Sugar_PHPUnit_Framework_TestCase {
+
+    var $mbmod;
+    var $module_name = 'ThisModule';
 
     public function setUp() {
+        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
         $_SESSION['authenticated_user_language'] = 'en_us';
+        $this->mbmod = new MBModule($this->module_name, 'custom/modulebuilder/packages/testPkg', 'testPkg', 'testPkg');
+        $_REQUEST['view_package'] = 'testPkg';
+        $_REQUEST['view_module'] = $this->module_name;
+        $_REQUEST['dropdown_name'] = 'testDD';
     }
 
     public function tearDown() {
+        unset($_REQUEST['dropdown_name']);
+        unset($_REQUEST['view_module']);
+        unset($_REQUEST['view_package']);
+        $this->mbmod->delete();
         unset($_SESSION['authenticated_user_language']);
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
     }
 
     public function testModuleNameDoesNotGetOverwrittenOnDisplay() {
-        $name = 'ThisModule';
+
         $view = new ViewDropdown();
-        $view->module = $name;
-        $view->display();
-        $this->assertSame($name, $view->module);
+        $smarty = $view->generateSmarty();
+        
+        $this->assertSame($this->module_name, $smarty->get_template_vars('module_name'));
     }
 }

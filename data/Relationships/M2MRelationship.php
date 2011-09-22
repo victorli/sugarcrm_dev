@@ -139,14 +139,13 @@ class M2MRelationship extends SugarRelationship
 
         $this->addRow($dataToInsert);
 
-        if (empty($_SESSION['disable_workflow']) || $_SESSION['disable_workflow'] != "Yes")
-        {
-            $lhs->$lhsLinkName->addBean($rhs);
-            $rhs->$rhsLinkName->addBean($lhs);
+            if ($lhs->$lhsLinkName->beansAreLoaded())
+                $lhs->$lhsLinkName->addBean($rhs);
+            if ($rhs->$rhsLinkName->beansAreLoaded())
+                $rhs->$rhsLinkName->addBean($lhs);
 
             $this->callAfterAdd($lhs, $rhs, $lhsLinkName);
             $this->callAfterAdd($rhs, $lhs, $rhsLinkName);
-        }
     }
 
     protected function getRowToInsert($lhs, $rhs)
@@ -332,8 +331,8 @@ class M2MRelationship extends SugarRelationship
         //Then finally join the related module's table
                . "$join_type $targetTableWithAlias ON $join2 AND $targetTable.deleted=0\n";
 
-		if($return_array){
-			return array(
+        if($return_array){
+            return array(
                 'join' => $join,
                 'type' => $this->type,
                 'rel_key' => $joinKey,
@@ -341,8 +340,8 @@ class M2MRelationship extends SugarRelationship
                 'where' => $where,
                 'select' => "$targetTable.id",
             );
-		}
-		return $join . $where;
+        }
+        return $join . $where;
     }
 
     /**
@@ -389,11 +388,11 @@ class M2MRelationship extends SugarRelationship
         //Next add any role filters
                . $this->getRoleFilterForJoin() . "\n";
         
-		if (!empty($params['return_as_array'])) {
+        if (!empty($params['return_as_array'])) {
             $return_array = true;
         }
         if($return_array){
-			return array(
+            return array(
                 'join' => $query,
                 'type' => $this->type,
                 'rel_key' => $joinKey,
@@ -401,8 +400,8 @@ class M2MRelationship extends SugarRelationship
                 'where' => "",
                 'select' => " ",
             );
-		}
-		return $query;
+        }
+        return $query;
 
     }
 
@@ -439,12 +438,12 @@ class M2MRelationship extends SugarRelationship
         $result = DBManagerFactory::getInstance()->query($query);
         $row = $this->_db->fetchByAssoc($result);
 
-		if ($row == null) {
-			return false;
-		}
-		else {
-			return $row['id'];
-		}
+        if ($row == null) {
+            return false;
+        }
+        else {
+            return $row['id'];
+        }
     }
 
     /**

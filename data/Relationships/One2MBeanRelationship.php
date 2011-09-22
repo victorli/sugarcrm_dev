@@ -126,7 +126,7 @@ class One2MBeanRelationship extends One2MRelationship
         $rhsID = $this->def['rhs_key'];
         $rhs->$rhsID = '';
 
-        if ($save)
+        if ($save && !$rhs->deleted)
         {
             $rhs->in_relationship_update = TRUE;
             $rhs->save();
@@ -237,8 +237,8 @@ class One2MBeanRelationship extends One2MRelationship
         //Next add any role filters
                . $this->getRoleFilterForJoin() . "\n";
 
-		if($return_array){
-			return array(
+        if($return_array){
+            return array(
                 'join' => $join,
                 'type' => $this->type,
                 'rel_key' => $targetKey,
@@ -246,8 +246,8 @@ class One2MBeanRelationship extends One2MRelationship
                 'where' => "",
                 'select' => "$targetTable.id",
             );
-		}
-		return $join;
+        }
+        return $join;
     }
 
     public function getSubpanelQuery($link, $params = array(), $return_array = false)
@@ -272,8 +272,8 @@ class One2MBeanRelationship extends One2MRelationship
         //Next add any role filters
                . $this->getRoleFilterForJoin() . "\n";
 
-		if($return_array){
-			return array(
+        if($return_array){
+            return array(
                 'join' => $query,
                 'type' => $this->type,
                 'rel_key' => $targetKey,
@@ -281,8 +281,8 @@ class One2MBeanRelationship extends One2MRelationship
                 'where' => "WHERE $startingTable.$startingKey='{$link->focus->id}'",
                 'select' => " ",
             );
-		}
-		return $query;
+        }
+        return $query;
 
     }
 

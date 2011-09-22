@@ -143,7 +143,6 @@ class RenameModules
             array('name' => 'LBL_CONTRACT_NAME', 'type' => 'plural'),
         ),
         'Leads' => array(
-            array('name' => 'LNK_NEW_###MODULE_SINGULAR###', 'type' => 'singular'),
             array('name' => 'LNK_SELECT_###MODULE_PLURAL###', 'type' => 'singular'),
             array('name' => 'LNK_SELECT_###MODULE_SINGULAR###', 'type' => 'singular'),
             array('name' => 'LBL_ACCOUNT_DESCRIPTION', 'type' => 'singular'),
@@ -419,8 +418,12 @@ class RenameModules
                     $oldStringValue = $mod_strings[$replaceKey];
                     //At this point we don't know if we should replace the string with the plural or singular version of the new
                     //strings so we'll try both but with the plural version first since it should be longer than the singular.
-                    $replacedString = str_replace($renameFields['prev_plural'], $renameFields['plural'], $oldStringValue);
-                    $replacedString = str_replace($renameFields['prev_singular'], $renameFields['singular'], $replacedString);
+                    // The saved old strings are html decoded, so we need to decode the new string first before str_replace.
+                    $replacedString = str_replace(html_entity_decode_utf8($renameFields['prev_plural'], ENT_QUOTES), $renameFields['plural'], $oldStringValue);
+                    if ($replacedString == $oldStringValue) {
+                        // continue to replace singular only if nothing been replaced yet
+                        $replacedString = str_replace(html_entity_decode_utf8($renameFields['prev_singular'], ENT_QUOTES), $renameFields['singular'], $replacedString);
+                    }
                     $replacementStrings[$replaceKey] = $replacedString;
                 }
             }
@@ -519,8 +522,10 @@ class RenameModules
                     $oldStringValue = $mod_strings[$replaceKey];
                     //At this point we don't know if we should replace the string with the plural or singular version of the new
                     //strings so we'll try both but with the plural version first since it should be longer than the singular.
-                    $replacedString = str_replace($renameFields['prev_plural'], $renameFields['plural'], $oldStringValue);
-                    $replacedString = str_replace($renameFields['prev_singular'], $renameFields['singular'], $replacedString);
+                    $replacedString = str_replace(html_entity_decode_utf8($renameFields['prev_plural'], ENT_QUOTES), $renameFields['plural'], $oldStringValue);
+                    if ($replacedString == $oldStringValue) {
+                        $replacedString = str_replace(html_entity_decode_utf8($renameFields['prev_singular'], ENT_QUOTES), $renameFields['singular'], $replacedString);
+                    }
                     $replacementStrings[$replaceKey] = $replacedString;
                 }
             }
@@ -593,8 +598,10 @@ class RenameModules
                 $modStringKey = array_search($dashletTitle,$currentModuleStrings);
                 if($modStringKey !== FALSE)
                 {
-                    $replacedString = str_replace($replacementLabels['prev_plural'], $replacementLabels['plural'], $dashletTitle);
-                    $replacedString = str_replace($replacementLabels['prev_singular'], $replacementLabels['singular'], $replacedString);
+                    $replacedString = str_replace(html_entity_decode_utf8($replacementLabels['prev_plural'], ENT_QUOTES), $replacementLabels['plural'], $dashletTitle);
+                    if ($replacedString == $dashletTitle) {
+                        $replacedString = str_replace(html_entity_decode_utf8($replacementLabels['prev_singular'], ENT_QUOTES), $replacementLabels['singular'], $replacedString);
+                    }
                     $replacementStrings[$modStringKey] = $replacedString;
                 }
             }
@@ -699,7 +706,6 @@ class RenameModules
             array('name' => 'LNK_IMPORT_###MODULE_PLURAL###', 'type' => 'plural'),
             array('name' => 'LBL_LIST_FORM_TITLE', 'type' => 'singular'), //Popup title
             array('name' => 'LBL_SEARCH_FORM_TITLE', 'type' => 'singular'), //Popup title
-            array('name' => 'LBL_HOMEPAGE_TITLE', 'type' => 'plural'),
         );
 
         $replacedLabels = array();
@@ -745,7 +751,7 @@ class RenameModules
     private function replaceSingleLabel($oldStringValue, $replacementLabels, $replacementMetaData)
     {
         $replaceKey = 'prev_' . $replacementMetaData['type'];
-        return str_replace($replacementLabels[$replaceKey] , $replacementLabels[$replacementMetaData['type']], $oldStringValue);
+        return str_replace(html_entity_decode_utf8($replacementLabels[$replaceKey], ENT_QUOTES) , $replacementLabels[$replacementMetaData['type']], $oldStringValue);
     }
 
 

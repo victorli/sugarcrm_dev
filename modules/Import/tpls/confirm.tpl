@@ -93,8 +93,10 @@
                             <slot>{$MOD.LBL_CUSTOM_DELIMITER}</slot>
                         </td>
                         <td>
-                            <slot><input type="text" id="custom_delimiter" name="custom_delimiter" value="{$CUSTOM_DELIMITER}" style="width: 5em;" maxlength="1" />
-                            {sugar_help text=$MOD.LBL_FIELD_DELIMETED_HELP}
+                            <slot>
+                                <select name="custom_delimiter" id="custom_delimiter"> {$IMPORT_DELIMETER_OPTIONS}</select>
+                                <input type="text" name="custom_delimiter_other" id="custom_delimiter_other" style="display: none; width: 5em;" maxlength="1" />
+                                {sugar_help text=$MOD.LBL_FIELD_DELIMETED_HELP}
                             </slot>
                         </td>
                     </tr>

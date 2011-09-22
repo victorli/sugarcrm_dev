@@ -235,5 +235,6 @@ $mod_strings = array (
     'LBL_EXPORT_CREATED_BY' => 'Created By ID',
     // SNIP
     'LBL_CONTACT_HISTORY_SUBPANEL_TITLE' => 'Related Contacts\' Emails',
+    'LBL_USER_SYNC' => 'User Sync'
 )
 ?>

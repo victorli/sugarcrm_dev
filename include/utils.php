@@ -2470,6 +2470,29 @@ function _ppd($mixed)
  * @param $displayStackTrace also show stack trace
  */
 function _ppl($mixed, $die=false, $displayStackTrace=false, $loglevel="fatal") {
+	if(!isset($GLOBALS['log']) || empty($GLOBALS['log'])) {
+
+		$GLOBALS['log'] = LoggerManager :: getLogger('SugarCRM');
+	}
+
+
+	$mix	= print_r($mixed, true); // send print_r() output to $mix
+	$stack	= debug_backtrace();
+
+	$GLOBALS['log']->$loglevel('------------------------------ _ppLogger() output start -----------------------------');
+	$GLOBALS['log']->$loglevel($mix);
+	if($displayStackTrace) {
+		foreach($stack as $position) {
+			$GLOBALS['log']->$loglevel($position['file']."({$position['line']})");
+		}
+	}
+
+	$GLOBALS['log']->$loglevel('------------------------------ _ppLogger() output end -----------------------------');
+	$GLOBALS['log']->$loglevel('------------------------------ _ppLogger() file: '.$stack[0]['file'].' line#: '.$stack[0]['line'].'-----------------------------');
+
+	if($die) {
+		die();
+	}
 }
 
 /**
@@ -2705,7 +2728,7 @@ function sugar_cleanup($exit = false) {
 	        $GLOBALS['current_user']->savePreferencesToDB();
 	}
 
-	//check to see if this is not an ajax call AND the user preference error flag is set
+	//check to see if this is not an `ajax call AND the user preference error flag is set
 	if(
 		(isset($_SESSION['USER_PREFRENCE_ERRORS']) && $_SESSION['USER_PREFRENCE_ERRORS'])
 		&& ($_REQUEST['action']!='modulelistmenu' && $_REQUEST['action']!='DynamicAction')

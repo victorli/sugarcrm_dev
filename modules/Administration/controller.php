@@ -165,4 +165,14 @@ class AdministrationController extends SugarController
     	 	 echo "false";
     	 }
     }
+
+    public function action_UpdateAjaxUI()
+    {
+        require_once('modules/Configurator/Configurator.php');
+        $cfg = new Configurator();
+        $disabled = html_entity_decode  ($_REQUEST['disabled_modules'], ENT_QUOTES);
+        $cfg->config['addAjaxBannedModules'] = json_decode($disabled);
+        $cfg->handleOverride();
+        $this->view = "configureajaxui";
+    }
 }

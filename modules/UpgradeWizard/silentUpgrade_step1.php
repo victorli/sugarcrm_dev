@@ -805,6 +805,11 @@ if(!didThisStepRunBefore('commit')){
 		set_upgrade_progress('commit','in_progress','commitMakeBackupFiles','done');
 	}
 
+	//Need to make sure we have the matching copy of SetValueAction for static/instance method matching
+    if(file_exists("include/Expressions/Actions/SetValueAction.php")){
+        require_once("include/Expressions/Actions/SetValueAction.php");
+    }
+
 	///////////////////////////////////////////////////////////////////////////////
 	////	HANDLE PREINSTALL SCRIPTS
 	if(empty($errors)) {

@@ -96,8 +96,8 @@ class One2OneBeanRelationship extends One2MBeanRelationship
         //Next add any role filters
                . $this->getRoleFilterForJoin();
 
-		if($return_array){
-			return array(
+        if($return_array){
+            return array(
                 'join' => $join,
                 'type' => $this->type,
                 'rel_key' => $targetKey,
@@ -105,7 +105,7 @@ class One2OneBeanRelationship extends One2MBeanRelationship
                 'where' => "",
                 'select' => "$targetTable.id",
             );
-		}
-		return $join;
+        }
+        return $join;
     }
 }

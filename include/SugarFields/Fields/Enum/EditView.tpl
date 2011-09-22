@@ -180,6 +180,7 @@
 				SyncToHidden();
 			}
 			function syncFromHiddenToWidget(){
+
 				var selectElem = document.getElementById("{/literal}{{if empty($displayParams.idName)}}{{sugarvar key='name'}}{{else}}{{$displayParams.idName}}{{/if}}{literal}");
 
 				//if select no longer on page, kill timer
@@ -195,10 +196,9 @@
 					if (selectElem.options[i].value==selectElem.value && document.activeElement != document.getElementById('{/literal}{{if empty($displayParams.idName)}}{{sugarvar key='name'}}{{else}}{{$displayParams.idName}}{{/if}}-input{literal}'))
 						SUGAR.AutoComplete.{/literal}{$ac_key}{literal}.inputNode.set('value',selectElem.options[i].innerHTML);
 				}
-				setTimeout(syncFromHiddenToWidget,100);
 			}
 
-			syncFromHiddenToWidget();
+            YAHOO.util.Event.onAvailable("{/literal}{{if empty($displayParams.idName)}}{{sugarvar key='name'}}{{else}}{{$displayParams.idName}}{{/if}}{literal}", syncFromHiddenToWidget);
 		{/literal}
 
 		SUGAR.AutoComplete.{$ac_key}.minQLen = 0;

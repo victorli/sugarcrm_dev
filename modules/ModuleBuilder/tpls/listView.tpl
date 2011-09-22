@@ -48,6 +48,7 @@ studiotabs.reset();
 <input type='hidden' name='view' value={$view}>
 <input type='hidden' name='module' value='{$module}'>
 <input type='hidden' name='subpanel' value='{$subpanel}'>
+<input type='hidden' name='subpanelLabel' value='{$subpanelLabel}'>
 <input type='hidden' name='local' value='{$local}'>
 <input type='hidden' name='view_module' value='{$view_module}'>
 {if $fromPortal}

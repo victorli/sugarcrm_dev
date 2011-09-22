@@ -89,6 +89,15 @@ class ModuleInstaller{
 			}
 		}
 
+                // workaround for bug 45812 - refresh vardefs cache before unpacking to avoid partial vardefs in cache
+                global $beanList;
+                foreach ($this->modules as $module_name) {
+                    if (!empty($beanList[$module_name])) {
+                        $objectName = $beanList[$module_name];
+                        VardefManager::loadVardef($module_name, $objectName);
+                    }
+                }
+
 		global $app_strings, $mod_strings;
 		$this->base_dir = $base_dir;
 		$total_steps = 5; //minimum number of steps with no tasks

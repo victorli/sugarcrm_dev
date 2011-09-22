@@ -76,25 +76,46 @@ abstract class SugarRelationship
      */
     public abstract function remove($lhs, $rhs);
 
+    /**
+     * @abstract
+     * @param $link Link2 loads the rows for this relationship that match the given link
+     * @return void
+     */
     public abstract function load($link);
 
     /**
      * Gets the query to load a link.
      * This is currently public, but should prob be made protected later.
+     * See Link2->getQuery
      * @abstract
      * @param  $link Link Object to get query for.
-     * @return void
+     * @return string|array query used to load this relationship
      */
     public abstract function getQuery($link, $params = array());
 
+    /**
+     * @abstract
+     * @param Link2 $link
+     * @return string|array the query to join against the related modules table for the given link.
+     */
     public abstract function getJoin($link);
 
+    /**
+     * @abstract
+     * @param SugarBean $lhs
+     * @param SugarBean $rhs
+     * @return bool
+     */
     public abstract function relationship_exists($lhs, $rhs);
 
+    /**
+     * @abstract
+     * @return string name of the table for this relationship
+     */
     public abstract function getRelationshipTable();
 
     /**
-     * @param  $link Link2 removes this link from the relationship.
+     * @param  $link Link2 removes all the beans associated with this link from the relationship
      * @return void
      */
     public function removeAll($link)
@@ -114,35 +135,58 @@ abstract class SugarRelationship
         }
     }
 
+    /**
+     * @param $rowID id of SugarBean to remove from the relationship
+     * @return void
+     */
     public function removeById($rowID){
         $this->removeRow(array("id" => $rowID));
     }
 
+    /**
+     * @return string name of right hand side module.
+     */
     public function getRHSModule()
     {
         return $this->def['rhs_module'];
     }
 
+    /**
+     * @return string name of left hand side module.
+     */
     public function getLHSModule()
     {
         return $this->def['lhs_module'];
     }
 
+    /**
+     * @return String left link in relationship.
+     */
     public function getLHSLink()
     {
         return $this->lhsLink;
     }
 
+    /**
+     * @return String right link in relationship.
+     */
     public function getRHSLink()
     {
         return $this->rhsLink;
     }
 
+    /**
+     * @return array names of fields stored on the relationship
+     */
     public function getFields()
     {
         return isset($this->def['fields']) ? $this->def['fields'] : array();
     }
 
+    /**
+     * @param array $row values to be inserted into the relationship
+     * @return bool|void null if new row was inserted and true if an exesting row was updated
+     */
     protected function addRow($row)
     {
         $existing = $this->checkExisting($row);
@@ -167,6 +211,11 @@ abstract class SugarRelationship
         }
     }
 
+    /**
+     * @param $id id of row to update
+     * @param $values values to insert into row
+     * @return resource result of update satatement
+     */
     protected function updateRow($id, $values)
     {
         $newVals = array();
@@ -184,6 +233,11 @@ abstract class SugarRelationship
         return DBManagerFactory::getInstance()->query($query);
     }
 
+    /**
+     * Removes one or more rows from the relationship table
+     * @param $where array of field=>value pairs to match
+     * @return bool|resource
+     */
     protected function removeRow($where)
     {
         if (empty($where))
@@ -204,7 +258,7 @@ abstract class SugarRelationship
     }
 
     /**
-     * Checks for an existing row who's keys matche the one passed in.
+     * Checks for an existing row who's keys match the one passed in.
      * @param  $row
      * @return array|bool returns false if now row is found, otherwise the row is returned
      */
@@ -230,6 +284,12 @@ abstract class SugarRelationship
         }
     }
 
+    /**
+     * @param SugarBean $focus base bean the hooks is triggered from
+     * @param SugarBean $related bean being added/removed/updated from relationship
+     * @param string $link_name name of link being triggerd
+     * @return array base arguments to pass to relationship logic hooks
+     */
     protected function getCustomLogicArguments($focus, $related, $link_name)
     {
         $custom_logic_arguments = array();
@@ -244,9 +304,10 @@ abstract class SugarRelationship
     }
 
     /**
-     * @param  SugarBean $focus
-     * @param  SugarBean $related
-     * @param string $link_name
+     * Call the after add logic hook for a given link
+     * @param  SugarBean $focus base bean the hooks is triggered from
+     * @param  SugarBean $related bean being added/removed/updated from relationship
+     * @param string $link_name name of link being triggerd
      * @return void
      */
     protected function callAfterAdd($focus, $related, $link_name="")
@@ -267,29 +328,9 @@ abstract class SugarRelationship
         $focus->call_custom_logic('after_relationship_delete', $custom_logic_arguments);
     }
 
-    protected function add_deleted_clause($deleted=0,$add_and='',$prefix='') {
-
-		if (!empty($prefix)) $prefix.='.';
-		if (!empty($add_and)) $add_and=' '.$add_and.' ';
-
-		if ($deleted==0)  return $add_and.$prefix.'deleted=0';
-		if ($deleted==1) return $add_and.$prefix.'deleted=1';
-		else return '';
-	}
-
-	protected function add_optional_where_clause($optional_array, $add_and='',$prefix='') {
-
-		if (!empty($prefix)) $prefix.='.';
-		if (!empty($add_and)) $add_and=' '.$add_and.' ';
-
-		if(!empty($optional_array)){
-			return $add_and.$prefix."".$optional_array['lhs_field']."".$optional_array['operator']."'".$optional_array['rhs_value']."'";
-		}
-		return '';
-	//end function _add_optional_where_clause
-	}
-
     /**
+     * Adds a realted Bean to the list to be resaved along with the current bean.
+     * @static
      * @param  SugarBean $bean
      * @return void
      */
@@ -302,6 +343,11 @@ abstract class SugarRelationship
         self::$beansToResave[$bean->module_dir][$bean->id] = $bean;
     }
 
+    /**
+     * 
+     * @static
+     * @return void
+     */
     public static function resaveRelatedBeans()
     {
         $GLOBALS['resavingRelatedBeans'] = true;
@@ -324,10 +370,12 @@ abstract class SugarRelationship
         self::$beansToResave = array();
     }
 
-
+    /**
+     * @return bool true if the relationship is a flex / parent relationship
+     */
     public function isParentRelationship()
     {
-        //Update role fields
+        //check role fields to see if this is a parent (flex relate) relationship
         if(!empty($this->def["relationship_role_column"]) && !empty($this->def["relationship_role_column_value"])
            && $this->def["relationship_role_column"] == "parent_type" && $this->def['rhs_key'] == "parent_id")
         {

@@ -369,7 +369,7 @@ class ModuleBuilderController extends SugarController
             {
                 $module = $_REQUEST [ 'view_module' ] ;
 
-                $bean = loadBean($module);
+                $bean = BeanFactory::getBean($module);
                 if(!empty($bean))
                 {
 	                $field_defs = $bean->field_defs;
@@ -393,7 +393,7 @@ class ModuleBuilderController extends SugarController
                 $mod_strings['LBL_ALL_MODULES'] = 'all_modules';
                 $repair = new RepairAndClear();
 		        $repair->repairAndClearAll(array('rebuildExtensions', 'clearVardefs', 'clearTpls'), array($class_name), true, false);
-		        //#28707 ,clear all the js files in cache
+                //#28707 ,clear all the js files in cache
 		        $repair->module_list = array();
 		        $repair->clearJsFiles();
             }
@@ -423,9 +423,8 @@ class ModuleBuilderController extends SugarController
         require_once ('modules/ModuleBuilder/parsers/StandardField.php') ;
         $module = $_REQUEST [ 'view_module' ] ;
         $df = new StandardField ( $module ) ;
+        $mod = BeanFactory::getBean($module);
         $class_name = $GLOBALS [ 'beanList' ] [ $module ] ;
-        require_once ($GLOBALS [ 'beanFiles' ] [ $class_name ]) ;
-        $mod = new $class_name ( ) ;
         $df->setup ( $mod ) ;
 
         $field->module = $mod;
@@ -444,7 +443,6 @@ class ModuleBuilderController extends SugarController
         //#28707 ,clear all the js files in cache
         $repair->module_list = array();
         $repair->clearJsFiles();
-
 
         // now clear the cache so that the results are immediately visible
         include_once ('include/TemplateHandler/TemplateHandler.php') ;

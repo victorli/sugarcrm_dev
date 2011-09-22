@@ -44,7 +44,7 @@ SUGAR.ajaxUI = {
         if (typeof window.onbeforeunload == "function")
             window.onbeforeunload = null;
         scroll(0,0);
-        ajaxStatus.hideStatus();
+        SUGAR.ajaxUI.hideLoadingPanel();
         try{
             var r = YAHOO.lang.JSON.parse(o.responseText);
             cont = r.content;
@@ -60,7 +60,7 @@ SUGAR.ajaxUI = {
             {
                 action_sugar_grp1 = r.action;
             }
-            //SUGAR.themes.setCurrentTab(r.menu);
+            
             var c = document.getElementById("content");
             c.innerHTML = cont;
             SUGAR.util.evalScript(cont);
@@ -83,8 +83,9 @@ SUGAR.ajaxUI = {
                 });
             }
             var panel = SUGAR.ajaxUI.errorPanel;
-            panel.setHeader( SUGAR.language.get('app_strings','ERR_AJAX_LOAD')) ;
+            panel.setHeader(SUGAR.language.get('app_strings','ERR_AJAX_LOAD')) ;
             panel.setBody('<iframe id="ajaxErrorFrame" style="width:780px;height:550px;border:none;marginheight="0" marginwidth="0" frameborder="0""></iframe>');
+            panel.setFooter(SUGAR.language.get('app_strings','ERR_AJAX_LOAD_FOOTER')) ;
             panel.render(document.body);
             SUGAR.util.doWhen(
 				function(){
@@ -181,7 +182,7 @@ SUGAR.ajaxUI = {
                 }
             }
             else {
-                ajaxStatus.showStatus( SUGAR.language.get('app_strings','LBL_LOADING')) ;
+                SUGAR.ajaxUI.showLoadingPanel();
                 ui.lastCall = YAHOO.util.Connect.asyncRequest('GET', url + '&ajax_load=1' + loadLanguageJS, {
                     success: SUGAR.ajaxUI.callback
                 });
@@ -209,7 +210,7 @@ SUGAR.ajaxUI = {
             var baseUrl = "index.php?action=ajaxui#ajaxUILoc=";
             SA.lastURL = "";
             //Use POST for long forms and GET for short forms (GET allow resubmit via reload)
-            ajaxStatus.showStatus( SUGAR.language.get('app_strings','LBL_LOADING')) ;
+            SUGAR.ajaxUI.showLoadingPanel();
             if(string.length > 200)
             {
                 con.asyncRequest('POST', 'index.php?ajax_load=1', {
@@ -268,5 +269,36 @@ SUGAR.ajaxUI = {
             'printwin',
             'menubar=1,status=0,resizable=1,scrollbars=1,toolbar=0,location=1'
         );
+    },
+    showLoadingPanel: function()
+    {
+        if (!SUGAR.ajaxUI.loadingPanel)
+        {
+            SUGAR.ajaxUI.loadingPanel = new YAHOO.widget.Panel("ajaxloading",
+            {
+                width:"240px",
+                fixedcenter:true,
+                close:false,
+                draggable:false,
+                constraintoviewport:false,
+                modal:true,
+                visible:false
+            });
+            SUGAR.ajaxUI.loadingPanel.setBody('<div id="loadingPage" align="center" style="vertical-align:middle;"><img src="' + SUGAR.themes.image_server + 'index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=img_loading.gif" align="absmiddle" /> <b>' + SUGAR.language.get('app_strings', 'LBL_LOADING_PAGE') +'</b></div>');
+            SUGAR.ajaxUI.loadingPanel.render(document.body);
+        }
+
+        if (document.getElementById('ajaxloading_c'))
+            document.getElementById('ajaxloading_c').style.display = '';
+        
+        SUGAR.ajaxUI.loadingPanel.show();
+
+    },
+    hideLoadingPanel: function()
+    {
+        SUGAR.ajaxUI.loadingPanel.hide();
+        
+        if (document.getElementById('ajaxloading_c'))
+            document.getElementById('ajaxloading_c').style.display = 'none';
     }
 };

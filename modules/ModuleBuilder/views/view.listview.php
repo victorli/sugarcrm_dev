@@ -181,6 +181,7 @@ class ViewListView extends ViewEdit
         if (!empty ( $this->subpanel ) )
         {
             $smarty->assign ( 'subpanel', $this->subpanel ) ;
+            $smarty->assign ( 'subpanelLabel', $this->subpanelLabel ) ;
             if (!$this->fromModuleBuilder) {
                 $subList =  SubPanel::getModuleSubpanels ( $this->editModule);
                 $subRef = $subList[strtolower($this->subpanel)];

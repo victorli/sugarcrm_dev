@@ -160,17 +160,6 @@ class ImportView extends SugarView
     protected function _showImportError($message,$module,$action = 'Step1')
     {
         $ss = new Sugar_Smarty();
-        
-        global $mod_strings;
-
-		$themeObject = SugarThemeRegistry::current();
-		$css = $themeObject->getCSS();
-        $favicon = $themeObject->getImageURL('sugar_icon.ico',false);
-        $ss->assign('FAVICON_URL',getJSPath($favicon));
-        $ss->assign('SUGAR_CSS', $css);
-        $ss->assign('PAGETITLE', $mod_strings[$this->pageTitleKey]);
-        
-        
 
         $ss->assign("MESSAGE",$message);
         $ss->assign("ACTION",$action);
@@ -180,22 +169,6 @@ class ImportView extends SugarView
         if ( isset($_REQUEST['source']) )
             $ss->assign("SOURCE", $_REQUEST['source']);
 
-        $content = $this->ss->fetch('modules/Import/tpls/error.tpl');
-        $this->ss->assign("CONTENT",$content);
-        
-        ob_start();
-        $this->options['show_javascript'] = true;
-        $this->renderJavascript();
-        $this->options['show_javascript'] = false;
-        $script = ob_get_contents().$themeObject->getJS();
-        $ss->assign("SUGAR_JS",$script);
-        ob_end_clean();
-
-        echo json_encode(array(
-            'html'          => $content,
-            'submitContent' => "",
-            'title'         => $mod_strings[$this->pageTitleKey],
-            'script'        => $script,
-         ));
+        echo $ss->fetch('modules/Import/tpls/error.tpl');
     }
 }

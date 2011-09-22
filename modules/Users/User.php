@@ -1328,12 +1328,7 @@ EOQ;
                 continue;
             }
 
-            $focus = SugarModule::get($module)->loadBean();
-            if ( $focus instanceOf SugarBean ) {
-                $key = $focus->acltype;
-            } else {
-                $key = 'module';
-            }
+            $key = 'module';
             
             if (($this->isAdmin() && isset($actions[$module][$key]))
                 ) {

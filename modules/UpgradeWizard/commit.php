@@ -279,8 +279,12 @@ $uwMain = $upgrade_directories_not_found;
 		    }
 		}
 
-         //COPY ALL FILES FROM UPLOADED UPGRADE PACKAGE
+        //Bug #47110
+        if(file_exists("include/Expressions/Actions/SetValueAction.php")){
+            require_once("include/Expressions/Actions/SetValueAction.php");
+        }
 
+         //COPY ALL FILES FROM UPLOADED UPGRADE PACKAGE
          if(!didThisStepRunBefore('commit','commitCopyNewFiles')){
 				set_upgrade_progress('commit','in_progress','commitCopyNewFiles','in_progress');
 				$split = commitCopyNewFiles($unzip_dir, $zip_from_dir);
@@ -672,6 +676,11 @@ if( file_exists($styleJSFilePath) )
 }
 SugarThemeRegistry::buildRegistry();
 SugarThemeRegistry::clearAllCaches();
+
+//Clean out the language files
+logThis("Rebuilding language cache");
+sugar_cache_reset_full();
+LanguageManager::clearLanguageCache();
 
 // re-minify the JS source files
 $_REQUEST['root_directory'] = getcwd();
