@@ -35,34 +35,35 @@
  ********************************************************************************/
 
 
-/**
- * Bug 40450 - Extra 'Name' field in a File type module in module builder
- */
-require_once 'modules/ModuleBuilder/MB/MBModule.php';
+require_once("modules/ModuleBuilder/views/view.dropdown.php");
 
-class Bug40450Test extends Sugar_PHPUnit_Framework_TestCase
-{
-    var $MBModule;
-    
-    public function setUp()
-	{
-	    $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-        $this->MBModule = new MBModule('testModule', 'custom/modulebuilder/packages/testPkg', 'testPkg', 'testPkg');
-	}
-	
-	public function tearDown()
-	{
-		SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-		unset($GLOBALS['current_user']);
-        $this->MBModule->delete();
-	}
-    
-    public function testFileModuleNameField()
-    {
-        $this->MBModule->mbvardefs->mergeVardefs();
-        $this->assertArrayHasKey('name', $this->MBModule->mbvardefs->vardefs['fields']);
-        $this->MBModule->mbvardefs->templates['file'] = 1;
-        $this->MBModule->mbvardefs->mergeVardefs();
-        $this->assertArrayNotHasKey('name', $this->MBModule->mbvardefs->vardefs['fields']);
+class Bug47010Test extends Sugar_PHPUnit_Framework_TestCase {
+
+    public function setUp() {
+        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+        $_SESSION['authenticated_user_language'] = 'en_us';
+
+        $_REQUEST['dropdown_name'] = 'testDD';
+    }
+
+    public function tearDown() {
+        unset($_REQUEST['dropdown_name']);
+        unset($_SESSION['authenticated_user_language']);
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+    }
+
+    public function testModuleNameMissingDoesNotThrowExceptionWhenGenereatingSmarty() {
+
+        $view = new ViewDropdown();
+        try {
+            $smarty = $view->generateSmarty();
+        } catch (Exception $e) {
+            $this->fail('An exception has been raised: ' . $e->getMessage());
+        }
+        $this->assertEmpty($smarty->get_template_vars('module_name'));
+        
     }
 }
+ 
+?>
+ 

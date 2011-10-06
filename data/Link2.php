@@ -331,6 +331,8 @@ class Link2 {
      */
     public function getSubpanelQuery($params = array(), $return_array = false)
     {
+        if (!empty($this->def['ignore_role']))
+            $params['ignore_role'] = true;
         return $this->relationship->getSubpanelQuery($this, $params, $return_array);
     }
 

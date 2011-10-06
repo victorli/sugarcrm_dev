@@ -210,13 +210,11 @@ SUGAR.ajaxUI = {
             var baseUrl = "index.php?action=ajaxui#ajaxUILoc=";
             SA.lastURL = "";
             //Use POST for long forms and GET for short forms (GET allow resubmit via reload)
-            SUGAR.ajaxUI.showLoadingPanel();
             if(string.length > 200)
             {
-                con.asyncRequest('POST', 'index.php?ajax_load=1', {
-                    success: SA.callback
-                });
-                window.location=baseUrl;
+                SUGAR.ajaxUI.showLoadingPanel();
+                form.onsubmit = function(){ return true; };
+                form.submit();
             } else {
                 con.resetFormState();
                 window.location = baseUrl + encodeURIComponent("index.php?" + string);

@@ -154,8 +154,7 @@ class vCard
             header("Cache-Control: max-age=0");
             header("Pragma: public");
             //bug45856 IIS Doesn't like this to be set and it causes the vCard to not get saved
-            if (preg_match('iis', $_SERVER['SERVER_SOFTWARE']))
-            {
+            if (preg_match('/iis/i', $_SERVER['SERVER_SOFTWARE']) === 0) {
                 header("Content-Length: ".strlen($content));
             }
         }

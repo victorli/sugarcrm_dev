@@ -184,7 +184,7 @@
 		        
 		        if(this.enterPressed || this.tabPressed) {
 		           this.retrieveEmailAddress(e);
-		           if (this.enterPressed);
+		           if (this.enterPressed)
 		               this.freezeEvent(e);
 		        }
 		    }
@@ -216,12 +216,7 @@
 		    var parentObj = insertInto.parentNode;
 		    var newContent = document.createElement("input");
 		    var nav = new String(navigator.appVersion);
-		    var newContentPrimaryFlag;
-		    if(YAHOO.env.ua.ie){
-		       newContentPrimaryFlag = document.createElement("<input name='emailAddressPrimaryFlag' />");
-		    }else{
-		       newContentPrimaryFlag = document.createElement("input");
-		    }   
+		    var newContentPrimaryFlag = document.createElement("input");
 		    var newContentReplyToFlag = document.createElement("input");
 		    var newContentOptOutFlag = document.createElement("input");
 		    var newContentInvalidFlag = document.createElement("input");
@@ -409,7 +404,7 @@
                 // IE doesn't bubble up "change" events through the DOM. So we need to find events that are looking at our parent and manually push them down to here
                 var emailcontainer = Dom.getAncestorByTagName(insertInto,'span');
                 var listeners = YAHOO.util.Event.getListeners(emailcontainer);
-                if (listeners) {
+                if (typeof listeners != 'undefined' && listeners instanceof Array) {
                     for (var i=0; i<listeners.length; ++i) {
                         var listener = listeners[i];
                         YAHOO.util.Event.addListener(newContent, listener.type, listener.fn, listener.obj, listener.adjust);

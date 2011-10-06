@@ -1230,12 +1230,12 @@ EOHTML;
     	    if (!empty($iconPath) && !$browserTitle) {
     	    	if (SugarThemeRegistry::current()->directionality == "ltr") {
 					return "<a href='index.php?module={$this->module}&action=index'>"
-					     . "<img src='{$iconPath}' alt='".$this->module."' title='".$this->module."' align='absmiddle'></a>"
+					     . "<img src='{$iconPath}' alt='".$firstParam."' title='".$firstParam."' align='absmiddle'></a>"
 					     . $this->getBreadCrumbSymbol().$app_strings['LBL_SEARCH'];
     	    	} else {
     	    		return $app_strings['LBL_SEARCH'].$this->getBreadCrumbSymbol()
     	    			 . "<a href='index.php?module={$this->module}&action=index'>"
-					     . "<img src='{$iconPath}' alt='".$this->module."' title='".$this->module."' align='absmiddle'></a>";
+					     . "<img src='{$iconPath}' alt='".$firstParam."' title='".$firstParam."' align='absmiddle'></a>";
     	    	}
 			} else {
 				return $firstParam;

@@ -170,4 +170,84 @@ class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
 
     }
 
+    /**
+     * @group bug46880
+     * making sure subpanel is not renamed twice by both plural name and singular name
+     */
+    public function testSubpanelRenaming()
+    {
+        $this->markTestSkipped('Because of bug 47239,  Skipping test.');
+
+        $module = 'Accounts';
+        $newSingular = 'Account1';
+        $newPlural = 'Accounts2';
+
+        $rm = new RenameModules();
+
+        $_REQUEST['slot_0'] = 0;
+        $_REQUEST['key_0'] = $module;
+        $_REQUEST['svalue_0'] = $newSingular;
+        $_REQUEST['value_0'] = $newPlural;
+        $_REQUEST['delete_0'] = '';
+        $_REQUEST['dropdown_lang'] = $this->language;
+        $_REQUEST['dropdown_name'] = 'moduleList';
+
+        global $app_list_strings;
+        if (!isset($app_list_strings['parent_type_display'][$module])) {
+            $app_list_strings['parent_type_display'][$module] = 'Account';
+        }
+        $rm->save(FALSE);
+
+        //Test subpanel renames
+        $bugStrings = return_module_language('en_us','Bugs', TRUE);
+        $this->assertEquals('Accounts2', $bugStrings['LBL_ACCOUNTS_SUBPANEL_TITLE'], "Renaming subpanels failed for module.");
+
+        //Ensure we recorded which modules were modified.
+        $renamedModules = $rm->getRenamedModules();
+        $this->assertTrue( count($renamedModules) > 0 );
+
+        //cleanup
+        $this->removeCustomAppStrings();
+        $this->removeModuleStrings( $renamedModules );
+    }
+
+    /**
+     * @group bug45804
+     */
+    public function testDashletsRenaming()
+    {
+        $this->markTestSkipped('Because of bug 47239,  Skipping test.');
+
+        $module = 'Accounts';
+        $newSingular = 'Account1';
+        $newPlural = 'Accounts2';
+
+        $rm = new RenameModules();
+
+        $_REQUEST['slot_0'] = 0;
+        $_REQUEST['key_0'] = $module;
+        $_REQUEST['svalue_0'] = $newSingular;
+        $_REQUEST['value_0'] = $newPlural;
+        $_REQUEST['delete_0'] = '';
+        $_REQUEST['dropdown_lang'] = $this->language;
+        $_REQUEST['dropdown_name'] = 'moduleList';
+
+        global $app_list_strings;
+        if (!isset($app_list_strings['parent_type_display'][$module])) {
+            $app_list_strings['parent_type_display'][$module] = 'Account';
+        }
+        $rm->save(FALSE);
+
+        //Test dashlets renames
+        $callStrings = return_module_language('en_us', 'Accounts', TRUE);
+        $this->assertEquals('My Accounts2', $callStrings['LBL_HOMEPAGE_TITLE'], "Renaming dashlets failed for module.");
+
+        //Ensure we recorded which modules were modified.
+        $renamedModules = $rm->getRenamedModules();
+        $this->assertTrue( count($renamedModules) > 0 );
+
+        //cleanup
+        $this->removeCustomAppStrings();
+        $this->removeModuleStrings( $renamedModules );
+    }
 }

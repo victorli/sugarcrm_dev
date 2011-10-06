@@ -75,7 +75,7 @@
                                     <td><select tabindex='4' name='admin_import_module' id='admin_import_module'>{$IMPORTABLE_MODULES_OPTIONS}</select></td>
                                 </tr>
                                 <tr>
-                                    <td align="left" scope="row" colspan="3"><div class="hr"></div></td>
+                                    <td align="left" scope="row" colspan="3"><div class="hr">&nbsp;</div></td>
                                 </tr>
                             {/if}
                             <tr>

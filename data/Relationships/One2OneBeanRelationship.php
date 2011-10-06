@@ -94,7 +94,7 @@ class One2OneBeanRelationship extends One2MBeanRelationship
         //join the related module's table
         $join .= "$join_type $targetTableWithAlias ON $targetTable.$targetKey=$startingTable.$startingKey AND $targetTable.deleted=0\n"
         //Next add any role filters
-               . $this->getRoleFilterForJoin();
+               . $this->getRoleWhere();
 
         if($return_array){
             return array(

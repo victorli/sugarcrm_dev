@@ -84,7 +84,7 @@ class SugarRelationshipFactory {
     public function getRelationship($relationshipName)
     {
         if (empty($this->relationships[$relationshipName])) {
-            $GLOBALS['log']->fatal("Unable to find relationship $relationshipName");
+            $GLOBALS['log']->error("Unable to find relationship $relationshipName");
             return false;
         }
 
@@ -126,7 +126,7 @@ class SugarRelationshipFactory {
     public function getRelationshipDef($relationshipName)
     {
         if (empty($this->relationships[$relationshipName])) {
-            $GLOBALS['log']->fatal("Unable to find relationship $relationshipName");
+            $GLOBALS['log']->error("Unable to find relationship $relationshipName");
             return false;
         }
 

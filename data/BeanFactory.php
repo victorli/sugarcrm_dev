@@ -43,6 +43,7 @@ class BeanFactory {
     protected static $maxLoaded = 10;
     protected static $total = 0;
     protected static $loadOrder = array();
+    protected static $touched = array();
     public static $hits = 0;
 
     /**
@@ -53,10 +54,12 @@ class BeanFactory {
      * @param String $id
      * @return SugarBean
      */
-    static function getBean($module, $id = null)
+    public static function getBean($module, $id = null)
     {
-        if (!isset(self::$loadedBeans[$module]))
+        if (!isset(self::$loadedBeans[$module])) {
             self::$loadedBeans[$module] = array();
+            self::$touched[$module] = array();
+        }
 
         $beanClass = self::getBeanName($module);
 
@@ -72,6 +75,7 @@ class BeanFactory {
             } else
             {
                 self::$hits++;
+                self::$touched[$module][$id]++;
                 $bean = self::$loadedBeans[$module][$id];
             }
         } else {
@@ -81,12 +85,12 @@ class BeanFactory {
         return $bean;
     }
 
-    static function newBean($module)
+    public static function newBean($module)
     {
         return self::getBean($module);
     }
 
-    static function getBeanName($module)
+    public static function getBeanName($module)
     {
         global $beanList;
         if (empty($beanList[$module]))  return false;
@@ -94,7 +98,16 @@ class BeanFactory {
         return $beanList[$module];
     }
 
-    static function registerBean($module, $bean, $id=false)
+    /**
+     * @static
+     * This function registers a bean with the bean factory so that it can be access from accross the code without doing
+     * multiple retrieves. Beans should be registered as soon as they have an id.
+     * @param String $module
+     * @param SugarBean $bean
+     * @param bool|String $id
+     * @return bool true if the bean registered successfully.
+     */
+    public static function registerBean($module, $bean, $id=false)
     {
         global $beanList;
         if (empty($beanList[$module]))  return false;
@@ -102,12 +115,44 @@ class BeanFactory {
         if (!isset(self::$loadedBeans[$module]))
             self::$loadedBeans[$module] = array();
 
-        if (self::$total > self::$maxLoaded)
+        //Do not double register a bean
+        if (!empty($id) && isset(self::$loadedBeans[$module][$id]))
+            return true;
+
+        $index = "i" . (self::$total % self::$maxLoaded);
+        //We should only hold a limited number of beans in memory at a time.
+        //Once we have the max, unload the oldest bean.
+        if (count(self::$loadOrder) >= self::$maxLoaded - 1)
         {
-            $index = self::$total - self::$maxLoaded;
-            $info = self::$loadOrder[$index];
-            unset(self::$loadedBeans[$info['module']][$info['id']]);
-            unset(self::$loadOrder[$index]);
+            for($i = 0; $i < self::$maxLoaded; $i++)
+            {
+                if (isset(self::$loadOrder[$index]))
+                {
+                    $info = self::$loadOrder[$index];
+                    //If a bean isn't in the database yet, we need to hold onto it.
+                    if (!empty(self::$loadedBeans[$info['module']][$info['id']]->in_save))
+                    {
+                        self::$total++;
+                    }
+                    //Beans that have been used recently should be held in memory if possible
+                    else if (!empty(self::$touched[$info['module']][$info['id']]) && self::$touched[$info['module']][$info['id']] > 0)
+                    {
+                        self::$touched[$info['module']][$info['id']]--;
+                        self::$total++;
+                    }
+                    else
+                        break;
+                } else {
+                    break;
+                }
+                $index = "i" . (self::$total % self::$maxLoaded);
+            }
+            if (isset(self::$loadOrder[$index]))
+            {
+                unset(self::$loadedBeans[$info['module']][$info['id']]);
+                unset(self::$touched[$info['module']][$info['id']]);
+                unset(self::$loadOrder[$index]);
+            }
         }
 
         if(!empty($bean->id))
@@ -117,10 +162,12 @@ class BeanFactory {
         {
             self::$loadedBeans[$module][$id] = $bean;
             self::$total++;
-            self::$loadOrder[self::$total] = array("module" => $module, "id" => $id);
+            self::$loadOrder[$index] = array("module" => $module, "id" => $id);
+            self::$touched[$module][$id] = 0;
+        } else{
+            return false;
         }
-
-        return $beanList[$module];
+        return true;
     }
 }
 

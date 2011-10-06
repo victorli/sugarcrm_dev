@@ -35,6 +35,16 @@
  ********************************************************************************/
 
 *}
+
+<style>
+{literal}
+.moduleTitle h2
+{
+    font-size: 18px;
+}
+{/literal}
+
+</style>
 <script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_yui_widgets.js'}"></script>
 {overlib_includes}
 <div class="dashletPanelMenu">
@@ -48,6 +58,7 @@
         <div class="bd-center">
             <div class="screen">
                 {$MODULE_TITLE}
+                <br>
                 {$CONTENT}
             </div>
         </div>

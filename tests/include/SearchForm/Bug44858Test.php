@@ -35,7 +35,6 @@
  ********************************************************************************/
 
 
-
 require_once "modules/Accounts/Account.php";
 require_once "include/Popups/PopupSmarty.php";
 require_once "include/SearchForm/SearchForm2.php";

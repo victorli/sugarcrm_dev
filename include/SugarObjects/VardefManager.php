@@ -380,7 +380,7 @@ class VardefManager{
             //if the consumer has demanded a refresh or the cache/modules... file
             //does not exist, then we should do out and try to reload things
             if($refresh || !file_exists($GLOBALS['sugar_config']['cache_dir'].'modules/'. $module . '/' . $object . 'vardefs.php')){
-                VardefManager::refreshVardefs($module, $object, null, null, $params);
+                VardefManager::refreshVardefs($module, $object, null, true, $params);
             }
             
             //at this point we should have the cache/modules/... file

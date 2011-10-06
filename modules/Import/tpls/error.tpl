@@ -59,13 +59,13 @@
     //function called when 'start over' button is pressed
     var chooseToStartOver = function() {
         //hide the modal and redirect window to previous step
-        ImportErrorBox.destroy();
+        this.hide();
         document.location.href='index.php?module=Import&action='+actionVAR+'&import_module='+importModuleVAR+'&source='+sourceVAR;
         //SUGAR.importWizard.renderDialog(importModuleVAR,actionVAR,sourceVAR);
     };
     var chooseToCancel = function() {
         //do nothing, just hide the modal
-        ImportErrorBox.destroy();
+        this.hide();
     };
 
     //define the buttons to be used in modal popup

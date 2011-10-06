@@ -35,7 +35,6 @@
  ********************************************************************************/
 
 
-
 require_once "include/export_utils.php";
 
 class Bug43478Test extends Sugar_PHPUnit_Framework_TestCase

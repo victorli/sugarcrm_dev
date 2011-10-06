@@ -271,7 +271,10 @@ abstract class SugarRelationship
 
         $leftID = $row[$leftIDName];
         $rightID = $row[$rightIDName];
-        $query = "SELECT * FROM {$this->getRelationshipTable()} WHERE $leftIDName='$leftID' AND $rightIDName='$rightID' AND deleted=0";
+        //Check the relationship role as well
+        $roleCheck = $this->getRoleWhere();
+
+        $query = "SELECT * FROM {$this->getRelationshipTable()} WHERE $leftIDName='$leftID' AND $rightIDName='$rightID' $roleCheck AND deleted=0";
 
         $db = DBManagerFactory::getInstance();
         $result = $db->query($query);
@@ -282,6 +285,31 @@ abstract class SugarRelationship
         } else{
             return false;
         }
+    }
+
+    /**
+     * Gets the relationship role column check for the where clause
+     * @param string $table
+     * @return string
+     */
+    protected function getRoleWhere($table = "", $ignore_role_filter = false)
+    {
+        $ignore_role_filter = $ignore_role_filter || $this->ignore_role_filter;
+        $roleCheck = "";
+        if (empty ($table))
+            $table = $this->getRelationshipTable();
+        if (!empty($this->def['relationship_role_column']) && !empty($this->def["relationship_role_column_value"]) && !$ignore_role_filter )
+        {
+            $roleCheck = " AND $table.{$this->relationship_role_column}";
+            //role column value.
+            if (empty($this->def['relationship_role_column_value']))
+            {
+                $roleCheck.=' IS NULL';
+            } else {
+                $roleCheck.= " = '$this->relationship_role_column_value'";
+            }
+        }
+        return $roleCheck;
     }
 
     /**

@@ -134,8 +134,7 @@ class M2MRelationship extends SugarRelationship
         }
 
         //Many to many has no additional logic, so just add a new row to the table and notify the beans.
-        $dataToInsert = $this->getRowToInsert($lhs, $rhs);
-        $dataToInsert = array_merge($dataToInsert, $additionalFields);
+        $dataToInsert = $this->getRowToInsert($lhs, $rhs, $additionalFields);
 
         $this->addRow($dataToInsert);
 
@@ -148,7 +147,7 @@ class M2MRelationship extends SugarRelationship
             $this->callAfterAdd($rhs, $lhs, $rhsLinkName);
     }
 
-    protected function getRowToInsert($lhs, $rhs)
+    protected function getRowToInsert($lhs, $rhs, $additionalFields = array())
     {
         $row = array(
             "id" => create_guid(),
@@ -173,6 +172,10 @@ class M2MRelationship extends SugarRelationship
                     $row[$fieldDef['name']] = $fieldDef['default'];
                 }
             }
+        }
+        if (!empty($additionalFields))
+        {
+            $row = array_merge($row, $additionalFields);
         }
 
         return $row;
@@ -262,6 +265,7 @@ class M2MRelationship extends SugarRelationship
         {
             $where = "($rel_table.{$this->def['join_key_rhs']} = '{$link->getFocus()->id}' OR $rel_table.{$this->def['join_key_lhs']} = '{$link->getFocus()->id}')";
         }
+        $where .= $this->getRoleWhere();
 
         if (empty($params['return_as_array'])) {
             return "SELECT $targetKey id FROM $rel_table WHERE $where AND deleted=0";
@@ -327,7 +331,7 @@ class M2MRelationship extends SugarRelationship
         //First join the relationship table
         $join .= "$join_type $joinTableWithAlias ON $join1 AND $joinTable.deleted=0\n"
         //Next add any role filters
-               . $this->getRoleFilterForJoin() . "\n"
+               . $this->getRoleWhere($joinTable) . "\n"
         //Then finally join the related module's table
                . "$join_type $targetTableWithAlias ON $join2 AND $targetTable.deleted=0\n";
 
@@ -350,7 +354,7 @@ class M2MRelationship extends SugarRelationship
      * @param  $link
      * @param array $params
      * @param bool $return_array
-     * @return void
+     * @return String|Array
      */
     public function getSubpanelQuery($link, $params = array(), $return_array = false)
     {
@@ -383,11 +387,14 @@ class M2MRelationship extends SugarRelationship
                    . "($startingTable.$startingKey=$joinTable.{$this->def['join_key_lhs']} AND $joinTable.{$this->def['join_key_rhs']}='{$link->getFocus()->$targetKey}'))";
         }
 
+        //Check if we should ignore the role fileter;
+        $ignoreRole = !empty($params['ignore_role']);
+
         //First join the relationship table
         $query .= "$join_type $joinTableWithAlias ON $where AND $joinTable.deleted=0\n"
         //Next add any role filters
-               . $this->getRoleFilterForJoin() . "\n";
-        
+               . $this->getRoleWhere($joinTable, $ignoreRole) . "\n";
+
         if (!empty($params['return_as_array'])) {
             $return_array = true;
         }
@@ -433,7 +440,7 @@ class M2MRelationship extends SugarRelationship
         $query = "SELECT * FROM {$this->getRelationshipTable()} WHERE {$this->join_key_lhs} = {$lhs->id} AND {$this->join_key_rhs} = {$rhs->id}";
 
         //Roles can allow for multiple links between two records with different roles
-        $query .= $this->getRoleFilterForJoin() . " and deleted = 0";
+        $query .= $this->getRoleWhere() . " and deleted = 0";
 
         $result = DBManagerFactory::getInstance()->query($query);
         $row = $this->_db->fetchByAssoc($result);

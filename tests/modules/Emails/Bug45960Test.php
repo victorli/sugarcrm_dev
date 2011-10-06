@@ -35,34 +35,49 @@
  ********************************************************************************/
 
 
-/**
- * Bug 40450 - Extra 'Name' field in a File type module in module builder
- */
-require_once 'modules/ModuleBuilder/MB/MBModule.php';
+ 
+require_once('modules/Emails/Email.php');
 
-class Bug40450Test extends Sugar_PHPUnit_Framework_TestCase
+class Bug45960 extends Sugar_PHPUnit_Framework_TestCase
 {
-    var $MBModule;
-    
     public function setUp()
-	{
-	    $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-        $this->MBModule = new MBModule('testModule', 'custom/modulebuilder/packages/testPkg', 'testPkg', 'testPkg');
-	}
-	
-	public function tearDown()
-	{
-		SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-		unset($GLOBALS['current_user']);
-        $this->MBModule->delete();
-	}
-    
-    public function testFileModuleNameField()
     {
-        $this->MBModule->mbvardefs->mergeVardefs();
-        $this->assertArrayHasKey('name', $this->MBModule->mbvardefs->vardefs['fields']);
-        $this->MBModule->mbvardefs->templates['file'] = 1;
-        $this->MBModule->mbvardefs->mergeVardefs();
-        $this->assertArrayNotHasKey('name', $this->MBModule->mbvardefs->vardefs['fields']);
+        $this->_user = SugarTestUserUtilities::createAnonymousUser();
+        $GLOBALS['current_user'] = $this->_user;
+        $this->_account = SugarTestAccountUtilities::createAccount();
     }
+    
+    public function tearDown()
+    {
+        SugarTestAccountUtilities::removeAllCreatedAccounts();
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        unset($GLOBALS['current_user']);
+    }
+
+    public function testSaveNewEmailWithParent()
+    {
+        $email = new Email();
+        $email->type = 'out';
+        $email->status = 'sent';
+        $email->from_addr_name = $email->cleanEmails("sender@domain.eu");
+        $email->to_addrs_names = $email->cleanEmails("to@domain.eu");
+        $email->cc_addrs_names = $email->cleanEmails("cc@domain.eu");
+
+        // set a few parent info to test the scenario
+        $email->parent_type = 'Accounts';
+        $email->parent_id = $this->_account->id;
+        $email->fetched_row['parent_type'] = 'Accounts';
+        $email->fetched_row['parent_id'] = $this->_account->id;
+
+        $email->save();
+
+        // ensure record is inserted into emails_beans table
+        $query = "select count(*) as CNT from emails_beans eb WHERE eb.bean_id = '{$this->_account->id}' AND eb.bean_module = 'Accounts' AND eb.email_id = '{$email->id}' AND eb.deleted=0";
+        $result = $GLOBALS['db']->query($query);
+        $count = $GLOBALS['db']->fetchByAssoc($result);
+        $this->assertEquals(1, $count['CNT'], 'Incorrect emails_beans count');
+    }
+    
 }
+
+

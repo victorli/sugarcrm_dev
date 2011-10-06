@@ -403,7 +403,7 @@ eoq;
         $importMappings = array('ImportMapSalesforce', 'ImportMapOutlook');
         foreach($importMappings as $importMap)
         {
-            $tmpFile = "modules/Import/$importMap.php";
+            $tmpFile = "modules/Import/maps/$importMap.php";
             if( file_exists($tmpFile) )
             {
                 require_once($tmpFile);

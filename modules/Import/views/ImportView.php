@@ -127,11 +127,7 @@ class ImportView extends SugarView
 	protected function _getModuleTitleParams($browserTitle = false)
 	{
 	    global $mod_strings, $app_list_strings;
-
-	    $returnArray = array();
-    	$returnArray[] = $app_list_strings['moduleList'][$this->importModule];
-	    $returnArray[] = $mod_strings['LBL_MODULE_NAME'];
-	    $returnArray[] = string_format($mod_strings[$this->pageTitleKey], array($this->currentStep));
+	    $returnArray = array(string_format($mod_strings[$this->pageTitleKey], array($this->currentStep)));
 
 	    return $returnArray;
     }

@@ -740,23 +740,25 @@ class ModuleBuilderController extends SugarController
         require_once 'modules/ModuleBuilder/parsers/views/SearchViewMetaDataParser.php' ;
         $parser = new SearchViewMetaDataParser ( $_REQUEST [ 'view' ], $_REQUEST [ 'view_module' ], $packageName ) ;
         $parser->handleSave () ;
-        
+
+
         //Repair or create a custom SearchFields.php file as needed
         $module_name = $_REQUEST [ 'view_module' ] ;
         global $beanList;
-        $objectName = $beanList[$module_name];
-            
-        if($objectName == 'aCase') // Bug 17614 - renamed aCase as Case in vardefs for backwards compatibililty with 451 modules
-        {        
-        	$objectName = 'Case';
+        if (isset($beanList[$module_name]) && $beanList[$module_name]!="") {
+            $objectName = $beanList[$module_name];
+            if($objectName == 'aCase') // Bug 17614 - renamed aCase as Case in vardefs for backwards compatibililty with 451 modules
+            {
+                $objectName = 'Case';
+            }
+
+            //Load the vardefs for the module to pass to TemplateRange
+            VardefManager::loadVardef($module_name, $objectName, true);
+            global $dictionary;
+            $vardefs = $dictionary[$objectName]['fields'];
+            require_once('modules/DynamicFields/templates/Fields/TemplateRange.php');
+            TemplateRange::repairCustomSearchFields($vardefs, $module_name, $packageName);
         }
-        
-        //Load the vardefs for the module to pass to TemplateRange
-        VardefManager::loadVardef($module_name, $objectName, true); 
-        global $dictionary;      
-        $vardefs = $dictionary[$objectName]['fields'];
-        require_once('modules/DynamicFields/templates/Fields/TemplateRange.php');
-        TemplateRange::repairCustomSearchFields($vardefs, $module_name, $packageName);
         $this->view = 'searchView' ;
     }
 

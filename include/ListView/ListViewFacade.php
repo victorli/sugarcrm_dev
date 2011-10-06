@@ -162,15 +162,18 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
  	function display($title = '', $section = 'main', $return = FALSE){
  		if($this->type == 1){
+            ob_start();
  			$this->lv->setHeaderTitle($title);
  			$this->lv->processListView($this->focus, $section, $this->prefix);
+            $output = ob_get_contents();
+            ob_end_clean();
  		}else{
              $output = get_form_header($title, '', false) . $this->lv->display();
-             if($return)
-                 return $output;
-             else
-                 echo $output;
  		}
+        if($return)
+            return $output;
+        else
+            echo $output;
  	}
 
 	function setTitle($title = ''){

@@ -308,7 +308,7 @@ function get_sugar_config_defaults() {
 	'verify_client_ip' => true,
 	'js_custom_version' => '',
 	'js_lang_version' => 1,
-        'lead_conv_activity_opt' => 'move',
+        'lead_conv_activity_opt' => 'donothing',
 	'default_number_grouping_seperator' => ',',
 	'default_decimal_seperator' => '.',
 	'lock_homepage' => false,

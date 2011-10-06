@@ -263,7 +263,11 @@ function getClassicModuleTitle(
     $iconPath = "";
     $the_title = "<div class='moduleTitle'>\n<h2>";
     
-    
+    if(!empty($GLOBALS['app_list_strings']['moduleList'][$module]))
+        $moduleName = $GLOBALS['app_list_strings']['moduleList'][$module];
+    else
+        $moduleName = $module;
+
     if(is_file(SugarThemeRegistry::current()->getImageURL('icon_'.$module.'_32.png',false)))
     {
     	$iconPath = SugarThemeRegistry::current()->getImageURL('icon_'.$module.'_32.png');
@@ -274,7 +278,7 @@ function getClassicModuleTitle(
     if (!empty($iconPath)) {
     	$url = (!empty($index_url_override)) ? $index_url_override : "index.php?module={$module}&action=index";
     	array_unshift ($params,"<a href='{$url}'><img src='{$iconPath}' " 
-	                    . "alt='".$module."' title='".$module."' align='absmiddle'></a>");
+	                    . "alt='".$moduleName."' title='".$moduleName."' align='absmiddle'></a>");
 	}
 	
 	$new_params = array();

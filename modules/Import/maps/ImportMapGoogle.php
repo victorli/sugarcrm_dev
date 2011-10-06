@@ -52,7 +52,7 @@ class ImportMapGoogle extends ImportMapOther
      * @param  string $module
      * @return array field mappings
      */
-	public function getMapping()
+	public function getMapping($module)
     {
          $return_array = array(
              'first_name' => array('sugar_key' => 'first_name', 'sugar_label' => '', 'default_label' => 'Given Name'),
@@ -84,10 +84,14 @@ class ImportMapGoogle extends ImportMapOther
 
              'assigned_user_name' => array('sugar_key' => 'assigned_user_name', 'sugar_help_key' => 'LBL_EXTERNAL_ASSIGNED_TOOLTIP', 'sugar_label' => 'LBL_ASSIGNED_TO_NAME', 'default_label' => 'Assigned To'),
              'team_name' => array('sugar_key' => 'team_name', 'sugar_help_key' => 'LBL_EXTERNAL_TEAM_TOOLTIP','sugar_label' => 'LBL_TEAMS', 'default_label' => 'Teams'),
+            );
 
-             );
-
-         return $return_array;
+        if($module == 'Users')
+        {
+            $return_array['status'] =  array('sugar_key' => 'status', 'sugar_label' => '', 'default_label' => 'Status');
+            $return_array['full_name'] =  array('sugar_key' => 'user_name', 'sugar_label' => '', 'default_label' => 'Full Name');
+        }
+        return $return_array;
     }
 }
 

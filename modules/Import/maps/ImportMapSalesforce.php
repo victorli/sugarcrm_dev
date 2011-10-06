@@ -127,6 +127,7 @@ class ImportMapSalesforce extends ImportMapOther
                 "Billing Address Line2"=>"billing_address_street_3",
                 "Billing City"=>"billing_address_city",
                 "Billing State"=>"billing_address_state",
+                "Billing State/Province"=>"billing_address_state",
                 "Billing Zip/Postal Code"=>"billing_address_postalcode",
                 "Billing Country"=>"billing_address_country",
                 "Shipping Street"=>"shipping_address_street",
@@ -139,6 +140,7 @@ class ImportMapSalesforce extends ImportMapOther
                 "Phone"=>"phone_office",
                 "Fax"=>"phone_fax",
                 "Website"=>"website",
+                "Created Date"=>"date_entered",
                 );
             break;
         default:

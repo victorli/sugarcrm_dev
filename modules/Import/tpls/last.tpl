@@ -39,6 +39,10 @@
 
 {literal}
 <style>
+    #tabListContainer ul.subpanelTablist li a.current
+    {
+        padding-left: 10px;
+    }
 div.resultsTable {
     overflow: auto;
     width: 1056px;

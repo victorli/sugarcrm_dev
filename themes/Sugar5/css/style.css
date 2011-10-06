@@ -2290,7 +2290,7 @@ embed
     display: block;
     background-color: #fff;
 }
-.dashletPanelMenu.wizard.import div.confirmTable {
+div.confirmTable {
 	    overflow: auto;
 	    width: 1056px;
 	    position: relative;

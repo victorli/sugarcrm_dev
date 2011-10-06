@@ -235,7 +235,7 @@ class One2MBeanRelationship extends One2MRelationship
         //First join the relationship table
         $join .= "$join_type $targetTableWithAlias ON $startingTable.$startingKey=$targetTable.$targetKey AND $targetTable.deleted=0\n"
         //Next add any role filters
-               . $this->getRoleFilterForJoin() . "\n";
+               . $this->getRoleWhere() . "\n";
 
         if($return_array){
             return array(
@@ -270,7 +270,7 @@ class One2MBeanRelationship extends One2MRelationship
 
         $query .= "$join_type $targetTableWithAlias ON $startingTable.$startingKey=$targetTable.$targetKey AND $targetTable.deleted=0\n"
         //Next add any role filters
-               . $this->getRoleFilterForJoin() . "\n";
+               . $this->getRoleWhere() . "\n";
 
         if($return_array){
             return array(
@@ -299,6 +299,9 @@ class One2MBeanRelationship extends One2MRelationship
 
     public function getRelationshipTable()
     {
-        return $this->def['table'];
+        if (isset($this->def['table']))
+            return $this->def['table'];
+        else
+            return $this->def['rhs_table'];
     }
 }

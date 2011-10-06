@@ -444,4 +444,17 @@ abstract class source{
  	 * @return Array of key/value pair(s) of connector record; empty Array if no results are found
  	 */
 	public abstract function getList($args=array(), $module=null);
+
+    /**
+	 * Default destructor
+	 *
+	 */
+ 	public function __destruct(){
+         // Bug # 47233 - This desctructor was originally removed by bug # 44533.
+         // We have to add this destructor back in
+         // because there are customers who upgrade from 61x to 623
+         // who have the Jigsaw connector enabled, and the jigsaw connector
+         // makes a call to this destructor. 
+
+     }
 }

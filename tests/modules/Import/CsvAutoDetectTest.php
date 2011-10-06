@@ -44,7 +44,10 @@ class CsvAutoDetectTest extends Sugar_PHPUnit_Framework_TestCase
         0 => "\"date_entered\",\"description\"\n\"3/26/2011 10:02am\",\"test description\"",
         1 => "\"date_entered\"\t\"description\"\n\"2011-3-26 10:2 am\"\t\"test description\"",
         2 => "\"date_entered\",\"description\"\n\"3.26.2011 15.02\",\"test description\"",
-        3 => "\"3/26/2011 10:02am\",\"some text\"\n\"4/26/2011 11:20am\",\"some more text\"",
+        3 => "\"3/26/2011 10:02am\",\"some text\"\n\"4/26/2011 11:20am\",\"some more jim's text\"",
+        4 => "\"date_entered\",\"description\"\n\"2010/03/26 10:2am\",\"test description\"",
+        5 => "'date_entered','description'\n'26/3/2011 15:02','test description'",
+        6 => "\"date_entered\"|\"description\"\n\"3/26/2011 10:02am\"|\"test description\"",
     );
 
     public function setUp()
@@ -58,7 +61,6 @@ class CsvAutoDetectTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        unlink($GLOBALS['sugar_config']['tmp_dir'].'test.csv');
     }
 
     public function providerCsvData()
@@ -68,6 +70,9 @@ class CsvAutoDetectTest extends Sugar_PHPUnit_Framework_TestCase
             array(1, "\t", '"', 'Y-m-d', 'h:i a', true),
             array(2, ",", '"', 'm.d.Y', 'H.i', true),
             array(3, ',', '"', 'm/d/Y', 'h:ia', false),
+            array(4, ',', '"', 'Y/m/d', 'h:ia', true),
+            array(5, ',', "'", 'd/m/Y', 'H:i', true),
+            array(6, '|', '"', 'm/d/Y', 'h:ia', true),
             );
     }
 
@@ -100,8 +105,12 @@ class CsvAutoDetectTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEquals($time, $time_format, 'Incorrect time format');
 
         // header
-        $auto->hasHeader($hasHeader, 'Contacts');
+        $ret = $auto->hasHeader($hasHeader, 'Contacts');
+        $this->assertTrue($ret, 'Failed to detect header');
         $this->assertEquals($header, $hasHeader, 'Incorrect header');
+
+        // remove temp file
+        unlink($GLOBALS['sugar_config']['tmp_dir'].'test.csv');
     }
 
 }

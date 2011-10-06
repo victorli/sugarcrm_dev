@@ -43,6 +43,10 @@
 <style>
 <!--
 
+#DupeCheck{
+    border: none;
+    box-shadow:none;
+}
 
 #selected_indices
 {
@@ -60,7 +64,13 @@
 
 {foreach from=$smarty.request key=k item=v}
     {if $k neq 'current_step'}
-    <input type="hidden" name="{$k}" value="{$v}">
+        {if is_array($v)}
+            {foreach from=$v key=k1 item=v1}
+                <input type="hidden" name="{$k}[]" value="{$v1}">
+            {/foreach}
+        {else}
+            <input type="hidden" name="{$k}" value="{$v}">
+        {/if}
     {/if}
 {/foreach}
 

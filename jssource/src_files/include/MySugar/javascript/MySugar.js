@@ -149,8 +149,7 @@ SUGAR.mySugar = function() {
 			configureDlg = new YAHOO.widget.SimpleDialog("dlg", 
 				{ visible:false, 
 				  width:"510", 
-				  effect:[{effect:YAHOO.widget.ContainerEffect.SLIDE, duration:0.5},
-				  		  {effect:YAHOO.widget.ContainerEffect.FADE,duration:0.5}], 
+				  effect:[{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.5}],
 				  fixedcenter:true, 
 				  modal:true, 
 				  draggable:false }

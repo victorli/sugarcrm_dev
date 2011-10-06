@@ -99,7 +99,6 @@ class One2MRelationship extends M2MRelationship
         }
         $this->lhsLink = $this->lhsLinkDef['name'];
         $this->rhsLink = $this->rhsLinkDef['name'];
-        $this->self_referencing = $lhsModule == $rhsModule;
     }
 
     /**
@@ -110,11 +109,15 @@ class One2MRelationship extends M2MRelationship
      */
     public function add($lhs, $rhs, $additionalFields = array())
     {
-        $rhsLinkName = $this->rhsLink;
-        //In a one to many, any existing links from the many (right) side must be removed first
-        $rhs->load_relationship($rhsLinkName);
-        $this->removeAll($rhs->$rhsLinkName);
-
-        parent::add($lhs, $rhs, $additionalFields);
+        $dataToInsert = $this->getRowToInsert($lhs, $rhs, $additionalFields);
+        //If the current data matches the existing data, don't do anything
+        if (!$this->checkExisting($dataToInsert))
+        {
+            $rhsLinkName = $this->rhsLink;
+            //In a one to many, any existing links from the many (right) side must be removed first
+            $rhs->load_relationship($rhsLinkName);
+            $this->removeAll($rhs->$rhsLinkName);
+            parent::add($lhs, $rhs, $additionalFields);
+        }
     }
 }

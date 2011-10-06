@@ -69,171 +69,171 @@ class RenameModules
      */
     private static $labelMap = array(
         'Accounts' => array(
-            array('name' => 'LBL_CAMPAIGNS', 'type' => 'plural'),
-            array('name' => 'LBL_CAMPAIGN_ID', 'type' => 'singular'),
-            array('name' => 'LBL_PARENT_ACCOUNT_ID', 'type' => 'singular'),
-            array('name' => 'LBL_PROSPECT_LIST', 'type' => 'singular'),
+            array('name' => 'LBL_CAMPAIGNS', 'type' => 'plural', 'source' => 'Campaigns'),
+            array('name' => 'LBL_CAMPAIGN_ID', 'type' => 'singular', 'source' => 'Campaigns'),
+            array('name' => 'LBL_PARENT_ACCOUNT_ID', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_PROSPECT_LIST', 'type' => 'singular', 'source' => 'Prospects'),
         ),
         'Bugs' => array(
-            array('name' => 'LBL_LIST_FORM_TITLE', 'type' => 'singular'),
-            array('name' => 'LBL_LIST_MY_BUGS', 'type' => 'plural'),
-            array('name' => 'LBL_SEARCH_FORM_TITLE', 'type' => 'singular'),
-            array('name' => 'LNK_BUG_LIST', 'type' => 'plural'),
-            array('name' => 'LNK_BUG_REPORTS', 'type' => 'singular'),
-            array('name' => 'LNK_IMPORT_BUGS', 'type' => 'plural'),
-            array('name' => 'LNK_NEW_BUG', 'type' => 'singular'),
+            array('name' => 'LBL_LIST_FORM_TITLE', 'type' => 'singular', 'source' => 'Bugs'),
+            array('name' => 'LBL_LIST_MY_BUGS', 'type' => 'plural', 'source' => 'Bugs'),
+            array('name' => 'LBL_SEARCH_FORM_TITLE', 'type' => 'singular', 'source' => 'Bugs'),
+            array('name' => 'LNK_BUG_LIST', 'type' => 'plural', 'source' => 'Bugs'),
+            array('name' => 'LNK_BUG_REPORTS', 'type' => 'singular', 'source' => 'Bugs'),
+            array('name' => 'LNK_IMPORT_BUGS', 'type' => 'plural', 'source' => 'Bugs'),
+            array('name' => 'LNK_NEW_BUG', 'type' => 'singular', 'source' => 'Bugs'),
         ),
         'Calls' => array(
-            array('name' => 'LBL_LIST_CONTACT', 'type' => 'singular'),
+            array('name' => 'LBL_LIST_CONTACT', 'type' => 'singular', 'source' => 'Contacts'),
         ),
         'Campaigns' => array(
-            array('name' => 'LBL_ACCOUNTS', 'type' => 'plural'),
-            array('name' => 'LBL_CONTACTS', 'type' => 'plural'),
-            array('name' => 'LBL_LIST_CAMPAIGN_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_LOG_ENTRIES_CONTACT_TITLE', 'type' => 'plural'),
-            array('name' => 'LBL_LOG_ENTRIES_LEAD_TITLE', 'type' => 'plural'),
-            array('name' => 'LBL_OPPORTUNITIES', 'type' => 'plural'),
-            array('name' => 'LBL_PROSPECT_LIST_SUBPANEL_TITLE', 'type' => 'singular'),
+            array('name' => 'LBL_ACCOUNTS', 'type' => 'plural', 'source' => 'Accounts'),
+            array('name' => 'LBL_CONTACTS', 'type' => 'plural', 'source' => 'Contacts'),
+            array('name' => 'LBL_LIST_CAMPAIGN_NAME', 'type' => 'singular', 'source' => 'Campaigns'),
+            array('name' => 'LBL_LOG_ENTRIES_CONTACT_TITLE', 'type' => 'plural', 'source' => 'Contacts'),
+            array('name' => 'LBL_LOG_ENTRIES_LEAD_TITLE', 'type' => 'plural', 'source' => 'Leads'),
+            array('name' => 'LBL_OPPORTUNITIES', 'type' => 'plural', 'source' => 'Opportunities'),
+            array('name' => 'LBL_PROSPECT_LIST_SUBPANEL_TITLE', 'type' => 'singular', 'source' => 'Targets'),
         ),
         'Cases' => array(
-            array('name' => 'LBL_BUGS_SUBPANEL_TITLE', 'type' => 'plural'),
-            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_BUGS_SUBPANEL_TITLE', 'type' => 'plural', 'source' => 'Bugs'),
+            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular', 'source' => 'Accounts'),
         ),
         'Contacts' => array(
-            array('name' => 'LBL_BUGS_SUBPANEL_TITLE', 'type' => 'plural'),
-            array('name' => 'LBL_CAMPAIGN_LIST_SUBPANEL_TITLE', 'type' => 'plural'),
-            array('name' => 'LBL_CONTRACTS', 'type' => 'plural'),
-            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_LEAD_SOURCE', 'type' => 'singular'),
-            array('name' => 'LBL_OPPORTUNITIES', 'type' => 'singular'),
-            array('name' => 'LBL_OPPORTUNITY_ROLE', 'type' => 'singular'),
-            array('name' => 'LBL_OPPORTUNITY_ROLE_ID', 'type' => 'singular'),
-            array('name' => 'LBL_PRODUCTS_TITLE', 'type' => 'plural'),
-            array('name' => 'LBL_PROSPECT_LIST', 'type' => 'singular'),
+            array('name' => 'LBL_BUGS_SUBPANEL_TITLE', 'type' => 'plural', 'source' => 'Bugs'),
+            array('name' => 'LBL_CAMPAIGN_LIST_SUBPANEL_TITLE', 'type' => 'plural', 'source' => 'Campaigns'),
+            array('name' => 'LBL_CONTRACTS', 'type' => 'plural', 'source' => 'Contracts'),
+            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_LEAD_SOURCE', 'type' => 'singular', 'source' => 'Leads'),
+            array('name' => 'LBL_OPPORTUNITIES', 'type' => 'singular', 'source' => 'Opportunities'),
+            array('name' => 'LBL_OPPORTUNITY_ROLE', 'type' => 'singular', 'source' => 'Opportunities'),
+            array('name' => 'LBL_OPPORTUNITY_ROLE_ID', 'type' => 'singular', 'source' => 'Opportunities'),
+            array('name' => 'LBL_PRODUCTS_TITLE', 'type' => 'plural', 'source' => 'Products'),
+            array('name' => 'LBL_PROSPECT_LIST', 'type' => 'singular', 'source' => 'Prospects'),
         ),
         'Contracts' => array(
-            array('name' => 'LBL_CONTRACT_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_CONTRACT_TERM', 'type' => 'singular'),
-            array('name' => 'LBL_DOCUMENTS', 'type' => 'plural'),
-            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_LIST_CONTRACT_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_OPPORTUNITY', 'type' => 'singular'),
-            array('name' => 'LBL_SEARCH_FORM_TITLE', 'type' => 'singular'),
-            array('name' => 'LBL_TOTAL_CONTRACT_VALUE', 'type' => 'singular'),
-            array('name' => 'LBL_TOTAL_CONTRACT_VALUE_USDOLLAR', 'type' => 'singular'),
-            array('name' => 'LNK_NEW_CONTRACT', 'type' => 'singular'),
+            array('name' => 'LBL_CONTRACT_NAME', 'type' => 'singular', 'source' => 'Contracts'),
+            array('name' => 'LBL_CONTRACT_TERM', 'type' => 'singular', 'source' => 'Contracts'),
+            array('name' => 'LBL_DOCUMENTS', 'type' => 'plural', 'source' => 'Documents'),
+            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_LIST_CONTRACT_NAME', 'type' => 'singular', 'source' => 'Contracts'),
+            array('name' => 'LBL_OPPORTUNITY', 'type' => 'singular', 'source' => 'Opportunities'),
+            array('name' => 'LBL_SEARCH_FORM_TITLE', 'type' => 'singular', 'source' => 'Contracts'),
+            array('name' => 'LBL_TOTAL_CONTRACT_VALUE', 'type' => 'singular', 'source' => 'Contracts'),
+            array('name' => 'LBL_TOTAL_CONTRACT_VALUE_USDOLLAR', 'type' => 'singular', 'source' => 'Contracts'),
+            array('name' => 'LNK_NEW_CONTRACT', 'type' => 'singular', 'source' => 'Contracts'),
         ),
         'Documents' => array(
-            array('name' => 'LBL_BUGS_SUBPANEL_TITLE', 'type' => 'plural'),
-            array('name' => 'LBL_CONTRACTS', 'type' => 'plural'),
-            array('name' => 'LBL_CONTRACT_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_CONTRACT_STATUS', 'type' => 'singular'),
-            array('name' => 'LBL_DET_RELATED_DOCUMENT_VERSION', 'type' => 'singular'),
-            array('name' => 'LBL_DET_TEMPLATE_TYPE', 'type' => 'singular'),
-            array('name' => 'LBL_DOC_ID', 'type' => 'singular'),
-            array('name' => 'LBL_DOC_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_DOC_REV_HEADER', 'type' => 'singular'),
-            array('name' => 'LBL_DOC_URL', 'type' => 'singular'),
-            array('name' => 'LBL_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_TEMPLATE_TYPE', 'type' => 'singular'),
+            array('name' => 'LBL_BUGS_SUBPANEL_TITLE', 'type' => 'plural', 'source' => 'Bugs'),
+            array('name' => 'LBL_CONTRACTS', 'type' => 'plural', 'source' => 'Contracts'),
+            array('name' => 'LBL_CONTRACT_NAME', 'type' => 'singular', 'source' => 'Contracts'),
+            array('name' => 'LBL_CONTRACT_STATUS', 'type' => 'singular', 'source' => 'Contracts'),
+            array('name' => 'LBL_DET_RELATED_DOCUMENT_VERSION', 'type' => 'singular', 'source' => 'Documents'),
+            array('name' => 'LBL_DET_TEMPLATE_TYPE', 'type' => 'singular', 'source' => 'Documents'),
+            array('name' => 'LBL_DOC_ID', 'type' => 'singular', 'source' => 'Documents'),
+            array('name' => 'LBL_DOC_NAME', 'type' => 'singular', 'source' => 'Documents'),
+            array('name' => 'LBL_DOC_REV_HEADER', 'type' => 'singular', 'source' => 'Documents'),
+            array('name' => 'LBL_DOC_URL', 'type' => 'singular', 'source' => 'Documents'),
+            array('name' => 'LBL_NAME', 'type' => 'singular', 'source' => 'Documents'),
+            array('name' => 'LBL_TEMPLATE_TYPE', 'type' => 'singular', 'source' => 'Documents'),
         ),
         'KBDocuments' => array(
-            array('name' => 'LBL_CASES', 'type' => 'plural'),
-            array('name' => 'LBL_CONTRACTS', 'type' => 'plural'),
-            array('name' => 'LBL_CONTRACT_NAME', 'type' => 'plural'),
+            array('name' => 'LBL_CASES', 'type' => 'plural', 'source' => 'Cases'),
+            array('name' => 'LBL_CONTRACTS', 'type' => 'plural', 'source' => 'Contracts'),
+            array('name' => 'LBL_CONTRACT_NAME', 'type' => 'plural', 'source' => 'Contracts'),
         ),
         'Leads' => array(
-            array('name' => 'LNK_SELECT_###MODULE_PLURAL###', 'type' => 'singular'),
-            array('name' => 'LNK_SELECT_###MODULE_SINGULAR###', 'type' => 'singular'),
-            array('name' => 'LBL_ACCOUNT_DESCRIPTION', 'type' => 'singular'),
-            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular'),
-            array('name' => 'LBL_ACCOUNT_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_CAMPAIGN_ID', 'type' => 'singular'),
-            array('name' => 'LBL_CAMPAIGN_LEAD', 'type' => 'plural'),
-            array('name' => 'LBL_CAMPAIGN_LIST_SUBPANEL_TITLE', 'type' => 'plural'),
-            array('name' => 'LBL_CONTACT_ID', 'type' => 'singular'),
-            array('name' => 'LBL_LEAD_SOURCE', 'type' => 'singular'),
-            array('name' => 'LBL_LEAD_SOURCE_DESCRIPTION', 'type' => 'singular'),
-            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_OPPORTUNITY_AMOUNT', 'type' => 'singular'),
-            array('name' => 'LBL_OPPORTUNITY_ID', 'type' => 'singular'),
-            array('name' => 'LBL_OPPORTUNITY_NAME', 'type' => 'singular'),
+            array('name' => 'LNK_SELECT_###MODULE_PLURAL###', 'type' => 'singular', 'source' => 'Leads'),
+            array('name' => 'LNK_SELECT_###MODULE_SINGULAR###', 'type' => 'singular', 'source' => 'Leads'),
+            array('name' => 'LBL_ACCOUNT_DESCRIPTION', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_ACCOUNT_NAME', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_CAMPAIGN_ID', 'type' => 'singular', 'source' => 'Campaigns'),
+            array('name' => 'LBL_CAMPAIGN_LEAD', 'type' => 'plural', 'source' => 'Campaigns'),
+            array('name' => 'LBL_CAMPAIGN_LIST_SUBPANEL_TITLE', 'type' => 'plural', 'source' => 'Campaigns'),
+            array('name' => 'LBL_CONTACT_ID', 'type' => 'singular', 'source' => 'Contacts'),
+            array('name' => 'LBL_LEAD_SOURCE', 'type' => 'singular', 'source' => 'Leads'),
+            array('name' => 'LBL_LEAD_SOURCE_DESCRIPTION', 'type' => 'singular', 'source' => 'Leads'),
+            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_OPPORTUNITY_AMOUNT', 'type' => 'singular', 'source' => 'Opportunities'),
+            array('name' => 'LBL_OPPORTUNITY_ID', 'type' => 'singular', 'source' => 'Opportunities'),
+            array('name' => 'LBL_OPPORTUNITY_NAME', 'type' => 'singular', 'source' => 'Opportunities'),
         ),
         'Meetings' => array(
-            array('name' => 'LBL_LIST_CONTACT', 'type' => 'singular'),
-            array('name' => 'LBL_LIST_JOIN_MEETING', 'type' => 'singular'),
-            array('name' => 'LBL_PASSWORD', 'type' => 'singular'),
-            array('name' => 'LBL_TYPE', 'type' => 'singular'),
-            array('name' => 'LBL_URL', 'type' => 'singular'),
+            array('name' => 'LBL_LIST_CONTACT', 'type' => 'singular', 'source' => 'Contacts'),
+            array('name' => 'LBL_LIST_JOIN_MEETING', 'type' => 'singular', 'source' => 'Meetings'),
+            array('name' => 'LBL_PASSWORD', 'type' => 'singular', 'source' => 'Meetings'),
+            array('name' => 'LBL_TYPE', 'type' => 'singular', 'source' => 'Meetings'),
+            array('name' => 'LBL_URL', 'type' => 'singular', 'source' => 'Meetings'),
         ),
         'Notes' => array(
-            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular'),
-            array('name' => 'LBL_CASE_ID', 'type' => 'singular'),
-            array('name' => 'LBL_CONTACT_ID', 'type' => 'singular'),
-            array('name' => 'LBL_LIST_CONTACT', 'type' => 'singular'),
-            array('name' => 'LBL_LIST_CONTACT_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_NOTE_STATUS', 'type' => 'singular'),
-            array('name' => 'LBL_OPPORTUNITY_ID', 'type' => 'singular'),
-            array('name' => 'LBL_PRODUCT_ID', 'type' => 'singular'),
-            array('name' => 'LBL_QUOTE_ID', 'type' => 'singular'),
+            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_CASE_ID', 'type' => 'singular', 'source' => 'Cases'),
+            array('name' => 'LBL_CONTACT_ID', 'type' => 'singular', 'source' => 'Contacts'),
+            array('name' => 'LBL_LIST_CONTACT', 'type' => 'singular', 'source' => 'Contacts'),
+            array('name' => 'LBL_LIST_CONTACT_NAME', 'type' => 'singular', 'source' => 'Contacts'),
+            array('name' => 'LBL_NOTE_STATUS', 'type' => 'singular', 'source' => 'Notes'),
+            array('name' => 'LBL_OPPORTUNITY_ID', 'type' => 'singular', 'source' => 'Opportunities'),
+            array('name' => 'LBL_PRODUCT_ID', 'type' => 'singular', 'source' => 'Products'),
+            array('name' => 'LBL_QUOTE_ID', 'type' => 'singular', 'source' => 'Quotes'),
         ),
         'Opportunities' => array(
-            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular'),
-            array('name' => 'LBL_AMOUNT', 'type' => 'singular'),
-            array('name' => 'LBL_CAMPAIGN_OPPORTUNITY', 'type' => 'plural'),
-            array('name' => 'LBL_CONTRACTS', 'type' => 'plural'),
-            array('name' => 'LBL_LEAD_SOURCE', 'type' => 'singular'),
-            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_OPPORTUNITY_NAME', 'type' => 'singular'),
+            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_AMOUNT', 'type' => 'singular', 'source' => 'Opportunities'),
+            array('name' => 'LBL_CAMPAIGN_OPPORTUNITY', 'type' => 'plural', 'source' => 'Campaigns'),
+            array('name' => 'LBL_CONTRACTS', 'type' => 'plural', 'source' => 'Contracts'),
+            array('name' => 'LBL_LEAD_SOURCE', 'type' => 'singular', 'source' => 'Leads'),
+            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_OPPORTUNITY_NAME', 'type' => 'singular', 'source' => 'Opportunities'),
         ),
         'ProductTemplates' => array(
-            array('name' => 'LBL_PRODUCT_ID', 'type' => 'singular'),
+            array('name' => 'LBL_PRODUCT_ID', 'type' => 'singular', 'source' => 'Products'),
         ),
         'Products' => array(
-            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular'),
-            array('name' => 'LBL_CONTACT', 'type' => 'singular'),
-            array('name' => 'LBL_CONTACT_ID', 'type' => 'singular'),
-            array('name' => 'LBL_CONTRACTS', 'type' => 'plural'),
-            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_LIST_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_QUOTE_ID', 'type' => 'singular'),
-            array('name' => 'LBL_RELATED_PRODUCTS', 'type' => 'plural'),
-            array('name' => 'LBL_URL', 'type' => 'singular'),
+            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_CONTACT', 'type' => 'singular', 'source' => 'Contacts'),
+            array('name' => 'LBL_CONTACT_ID', 'type' => 'singular', 'source' => 'Contacts'),
+            array('name' => 'LBL_CONTRACTS', 'type' => 'plural', 'source' => 'Contacts'),
+            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_LIST_NAME', 'type' => 'singular', 'source' => 'Products'),
+            array('name' => 'LBL_NAME', 'type' => 'singular', 'source' => 'Products'),
+            array('name' => 'LBL_QUOTE_ID', 'type' => 'singular', 'source' => 'Quotes'),
+            array('name' => 'LBL_RELATED_PRODUCTS', 'type' => 'plural', 'source' => 'Products'),
+            array('name' => 'LBL_URL', 'type' => 'singular', 'source' => 'Products'),
         ),
         'ProjectTask' => array(
-            array('name' => 'LBL_PARENT_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_PROJECT_ID', 'type' => 'singular'),
-            array('name' => 'LBL_PROJECT_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_PROJECT_TASK_ID', 'type' => 'singular'),
+            array('name' => 'LBL_PARENT_NAME', 'type' => 'singular', 'source' => 'Projects'),
+            array('name' => 'LBL_PROJECT_ID', 'type' => 'singular', 'source' => 'Projects'),
+            array('name' => 'LBL_PROJECT_NAME', 'type' => 'singular', 'source' => 'Projects'),
+            array('name' => 'LBL_PROJECT_TASK_ID', 'type' => 'singular', 'source' => 'Projects'),
         ),
         'Project' => array(
-            array('name' => 'LBL_BUGS_SUBPANEL_TITLE', 'type' => 'plural'),
-            array('name' => 'LBL_CONTACTS_RESOURCE', 'type' => 'singular'),
-            array('name' => 'LBL_LIST_FORM_TITLE', 'type' => 'singular'),
-            array('name' => 'LBL_OPPORTUNITIES', 'type' => 'plural'),
-            array('name' => 'LBL_PROJECT_HOLIDAYS_TITLE', 'type' => 'singular'),
-            array('name' => 'LBL_PROJECT_TASKS_SUBPANEL_TITLE', 'type' => 'singular'),
-            array('name' => 'LBL_SEARCH_FORM_TITLE', 'type' => 'singular'),
-            array('name' => 'LNK_NEW_PROJECT', 'type' => 'singular'),
-            array('name' => 'LNK_PROJECT_LIST', 'type' => 'singular'),
+            array('name' => 'LBL_BUGS_SUBPANEL_TITLE', 'type' => 'plural', 'source' => 'Bugs'),
+            array('name' => 'LBL_CONTACTS_RESOURCE', 'type' => 'singular', 'source' => 'Contacts'),
+            array('name' => 'LBL_LIST_FORM_TITLE', 'type' => 'singular', 'source' => 'Projects'),
+            array('name' => 'LBL_OPPORTUNITIES', 'type' => 'plural', 'source' => 'Opportunities'),
+            array('name' => 'LBL_PROJECT_HOLIDAYS_TITLE', 'type' => 'singular', 'source' => 'Projects'),
+            array('name' => 'LBL_PROJECT_TASKS_SUBPANEL_TITLE', 'type' => 'singular', 'source' => 'Projects'),
+            array('name' => 'LBL_SEARCH_FORM_TITLE', 'type' => 'singular', 'source' => 'Projects'),
+            array('name' => 'LNK_NEW_PROJECT', 'type' => 'singular', 'source' => 'Projects'),
+            array('name' => 'LNK_PROJECT_LIST', 'type' => 'singular', 'source' => 'Projects'),
         ),
         'Quotes' => array(
-            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular'),
-            array('name' => 'LBL_CONTRACTS', 'type' => 'plural'),
-            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_QUOTE_NUM', 'type' => 'singular'),
+            array('name' => 'LBL_ACCOUNT_ID', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_CONTRACTS', 'type' => 'plural', 'source' => 'Contracts'),
+            array('name' => 'LBL_LIST_ACCOUNT_NAME', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_QUOTE_NUM', 'type' => 'singular', 'source' => 'Quotes'),
         ),
         'Targets' => array(
-            array('name' => 'LBL_ACCOUNT_NAME', 'type' => 'singular'),
-            array('name' => 'LBL_CAMPAIGN_ID', 'type' => 'plural'),
-            array('name' => 'LBL_CAMPAIGN_LIST_SUBPANEL_TITLE', 'type' => 'singular'),
-            array('name' => 'LBL_PROSPECT_LIST', 'type' => 'singular'),
+            array('name' => 'LBL_ACCOUNT_NAME', 'type' => 'singular', 'source' => 'Accounts'),
+            array('name' => 'LBL_CAMPAIGN_ID', 'type' => 'plural', 'source' => 'Campaigns'),
+            array('name' => 'LBL_CAMPAIGN_LIST_SUBPANEL_TITLE', 'type' => 'singular', 'source' => 'Campaigns'),
+            array('name' => 'LBL_PROSPECT_LIST', 'type' => 'singular', 'source' => 'Prospects'),
         ),
         'Tasks' => array(
-            array('name' => 'LBL_CONTACT', 'type' => 'singular'),
-            array('name' => 'LBL_CONTACT_ID', 'type' => 'singular'),
-            array('name' => 'LBL_CONTACT_PHONE', 'type' => 'singular'),
+            array('name' => 'LBL_CONTACT', 'type' => 'singular', 'source' => 'Contacts'),
+            array('name' => 'LBL_CONTACT_ID', 'type' => 'singular', 'source' => 'Contacts'),
+            array('name' => 'LBL_CONTACT_PHONE', 'type' => 'singular', 'source' => 'Contacts'),
         ),
     );
 
@@ -666,6 +666,11 @@ class RenameModules
         $replacedLabels = array();
         foreach($labelKeysToReplace as $entry)
         {
+            if (!isset($entry['source']) || $entry['source'] != $moduleName) {
+                // skip this entry if the source module does not match the module being renamed
+                continue;
+            }
+
             $formattedLanguageKey = $this->formatModuleLanguageKey($entry['name'], $replacementLabels);
 
             //If the static of dynamic key exists it should be replaced.
@@ -704,6 +709,8 @@ class RenameModules
             array('name' => 'LNK_###MODULE_SINGULAR###_REPORTS', 'type' => 'singular'),
             array('name' => 'LNK_IMPORT_VCARD', 'type' => 'singular'),
             array('name' => 'LNK_IMPORT_###MODULE_PLURAL###', 'type' => 'plural'),
+            array('name' => 'MSG_SHOW_DUPLICATES', 'type' => 'singular', 'case' => 'both'),
+            array('name' => 'LBL_SAVE_###MODULE_SINGULAR###', 'type' => 'singular'),
             array('name' => 'LBL_LIST_FORM_TITLE', 'type' => 'singular'), //Popup title
             array('name' => 'LBL_SEARCH_FORM_TITLE', 'type' => 'singular'), //Popup title
         );
@@ -718,6 +725,10 @@ class RenameModules
             {
                 $oldStringValue = $currentModuleStrings[$formattedLanguageKey];
                 $replacedLabels[$formattedLanguageKey] = $this->replaceSingleLabel($oldStringValue, $replacementLabels, $entry);
+                if( isset($entry['case']) && $entry['case'] == 'both')
+                {
+                    $replacedLabels[$formattedLanguageKey] = $this->replaceSingleLabel($replacedLabels[$formattedLanguageKey], $replacementLabels, $entry, 'strtolower');
+                }
             }
         }
 
@@ -748,10 +759,18 @@ class RenameModules
      * @param  array $replacementMetaData
      * @return string
      */
-    private function replaceSingleLabel($oldStringValue, $replacementLabels, $replacementMetaData)
+    private function replaceSingleLabel($oldStringValue, $replacementLabels, $replacementMetaData, $modifier = '')
     {
         $replaceKey = 'prev_' . $replacementMetaData['type'];
-        return str_replace(html_entity_decode_utf8($replacementLabels[$replaceKey], ENT_QUOTES) , $replacementLabels[$replacementMetaData['type']], $oldStringValue);
+        $search = html_entity_decode_utf8($replacementLabels[$replaceKey], ENT_QUOTES);
+        $replace = $replacementLabels[$replacementMetaData['type']];
+        if( !empty($modifier) )
+        {
+            $search = call_user_func($modifier, $search);
+            $replace = call_user_func($modifier, $replace);
+        }
+        
+        return str_replace($search, $replace, $oldStringValue);
     }
 
 

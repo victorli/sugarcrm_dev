@@ -2873,9 +2873,9 @@ function uwFindAllFiles($dir, $theArray, $includeDirs=false, $skipDirs=array(), 
 	    return $theArray;
 	}
 
-    if (!is_dir($dir)) { return $the_array; }   // Bug # 46035, just checking for valid dir 
+    if (!is_dir($dir)) { return $theArray; }   // Bug # 46035, just checking for valid dir
 	$d = dir($dir);
-    if ($d === false)  { return $the_array; }   // Bug # 46035, more checking
+    if ($d === false)  { return $theArray; }   // Bug # 46035, more checking
 
 	while($f = $d->read()) {
 	                                // bug 40793 Skip Directories array in upgradeWizard does not function correctly
@@ -4586,7 +4586,7 @@ function upgradeModulesForTeam() {
 		foreach( $allHelpFiles as $the_file ){
 	        if( is_file( $the_file ) ){
 	            unlink( $the_file );
-	            logThis("Deleted file: $the_file", $path);
+	            logThis("Deleted file: $the_file");
 	        }
 	    }
 	}

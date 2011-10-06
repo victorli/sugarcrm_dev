@@ -129,7 +129,7 @@ class ConvertLeadTests extends Sugar_PHPUnit_Framework_TestCase
         $sql = "select id from meetings_leads where meeting_id='{$meeting->id}' and lead_id='{$lead->id}' and deleted=0";
         $result = $GLOBALS['db']->query($sql);
         $row = $GLOBALS['db']->fetchByAssoc($result);
-        $this->assertNull($row, "Meeting-Lead relationship is not removed.");
+        $this->assertFalse($row, "Meeting-Lead relationship is not removed.");
 
         // verification 4, record should be added to meetings_contacts table
         $sql = "select id from meetings_contacts where meeting_id='{$meeting->id}' and contact_id='{$contact->id}' and deleted=0";
@@ -257,7 +257,7 @@ class ConvertLeadTests extends Sugar_PHPUnit_Framework_TestCase
         $sql = "select id from meetings_leads where meeting_id='{$meeting->id}' and lead_id='{$lead->id}' and deleted=0";
         $result = $GLOBALS['db']->query($sql);
         $row = $GLOBALS['db']->fetchByAssoc($result);
-        $this->assertNull($row, "Meeting-Lead relationship is not removed.");
+        $this->assertFalse($row, "Meeting-Lead relationship is not removed.");
 
         // 6. record should be added to meetings_contacts table
         $sql = "select id from meetings_contacts where meeting_id='{$meeting->id}' and contact_id='{$contact_id}' and deleted=0";
@@ -271,6 +271,92 @@ class ConvertLeadTests extends Sugar_PHPUnit_Framework_TestCase
         $GLOBALS['db']->query("delete from meetings where parent_id='{$contact_id}' and parent_type= 'Contacts'");
         $GLOBALS['db']->query("delete from contacts where id='{$contact_id}'");
         $GLOBALS['db']->query("delete from meetings_contacts where meeting_id='{$meeting->id}' and contact_id= '{$contact_id}'");
+        SugarTestMeetingUtilities::deleteMeetingLeadRelation($relation_id);
+        SugarTestMeetingUtilities::removeMeetingContacts();
+        SugarTestMeetingUtilities::removeAllCreatedMeetings();
+        SugarTestAccountUtilities::removeAllCreatedAccounts();
+        SugarTestLeadUtilities::removeAllCreatedLeads();
+    }
+
+    public function testConversionAndCopyActivities() {
+        global $sugar_config;
+
+        // init
+        $lead = SugarTestLeadUtilities::createLead();
+        $account = SugarTestAccountUtilities::createAccount();
+        $meeting = SugarTestMeetingUtilities::createMeeting();
+        SugarTestMeetingUtilities::addMeetingParent($meeting->id, $lead->id);
+        $relation_id = SugarTestMeetingUtilities::addMeetingLeadRelation($meeting->id, $lead->id);
+        $_REQUEST['record'] = $lead->id;
+
+        // set the request/post parameters before converting the lead
+        $_REQUEST['module'] = 'Leads';
+        $_REQUEST['action'] = 'ConvertLead';
+        $_REQUEST['record'] = $lead->id;
+        $_REQUEST['handle'] = 'save';
+        $_REQUEST['selectedAccount'] = $account->id;
+        $sugar_config['lead_conv_activity_opt'] = 'copy';
+        $_POST['lead_conv_ac_op_sel'] = array('Contacts');
+
+        // call display to trigger conversion
+        $vc = new ViewConvertLead();
+        $vc->display();
+
+        // refresh meeting
+        $meeting_id = $meeting->id;
+        $meeting = new Meeting();
+        $meeting->retrieve($meeting_id);
+
+        // refresh lead
+        $lead_id = $lead->id;
+        $lead = new Lead();
+        $lead->retrieve($lead_id);
+
+        // retrieve the new contact id from the conversion
+        $contact_id = $lead->contact_id;
+
+        // 1. Lead's contact_id should not be null
+        $this->assertNotNull($contact_id, 'Lead has null contact id after conversion.');
+
+        // 2. Lead status should be 'Converted'
+        $this->assertEquals('Converted', $lead->status, "Lead atatus should be 'Converted'.");
+
+        // 3. parent_type of the original meeting should be Leads
+        $this->assertEquals('Leads', $meeting->parent_type, 'Meeting parent should be Leads');
+
+        // 4. parent_id of the original meeting should be contact id
+        $this->assertEquals($lead_id, $meeting->parent_id, 'Meeting parent id should be lead id.');
+
+        // 5. record should NOT be deleted from meetings_leads table
+        $sql = "select id from meetings_leads where meeting_id='{$meeting->id}' and lead_id='{$lead->id}' and deleted=0";
+        $result = $GLOBALS['db']->query($sql);
+        $row = $GLOBALS['db']->fetchByAssoc($result);
+        $this->assertFalse(empty($row), "Meeting-Lead relationship is removed.");
+
+        // 6. record should be added to meetings_contacts table
+        $sql = "select meeting_id from meetings_contacts where contact_id='{$contact_id}' and deleted=0";
+        $result = $GLOBALS['db']->query($sql);
+        $row = $GLOBALS['db']->fetchByAssoc($result);
+        $this->assertFalse(empty($row), "Meeting-Contact relationship is not added.");
+
+        // 7. the parent_type of the new meeting should be Contacts
+        $new_meeting_id = $row['meeting_id'];
+        $sql = "select id, parent_type, parent_id from meetings where id='{$new_meeting_id}' and deleted=0";
+        $result = $GLOBALS['db']->query($sql);
+        $row = $GLOBALS['db']->fetchByAssoc($result);
+        $this->assertFalse(empty($row), "New meeting is not added for contact.");
+        $this->assertEquals('Contacts', $row['parent_type'], 'Parent type of the new meeting should be Contacts');
+
+        // 8. the parent_id of the new meeting should be contact id
+        $this->assertEquals($contact_id, $row['parent_id'], 'Parent id of the new meeting should be contact id.');
+
+        // clean up
+        unset($_REQUEST['record']);
+        $GLOBALS['db']->query("delete from meetings where parent_id='{$lead->id}' and parent_type= 'Leads'");
+        $GLOBALS['db']->query("delete from meetings where parent_id='{$contact_id}' and parent_type= 'Contacts'");
+        $GLOBALS['db']->query("delete from contacts where id='{$contact_id}'");
+        $GLOBALS['db']->query("delete from meetings_leads where meeting_id='{$meeting->id}' and lead_id= '{$lead_id}'");
+        $GLOBALS['db']->query("delete from meetings_contacts where contact_id= '{$contact_id}'");
         SugarTestMeetingUtilities::deleteMeetingLeadRelation($relation_id);
         SugarTestMeetingUtilities::removeMeetingContacts();
         SugarTestMeetingUtilities::removeAllCreatedMeetings();

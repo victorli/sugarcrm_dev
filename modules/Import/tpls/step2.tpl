@@ -70,7 +70,10 @@
 <td>
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
         <tr>
-            <td align="left" scope="row" colspan="4">{$SAMPLE_URL} &nbsp;{sugar_help text=$MOD.LBL_SAMPLE_URL_HELP}</td>
+            <td align="left" scope="row" colspan="4" style="padding-left: 10px;">{$SAMPLE_URL} &nbsp;{sugar_help text=$MOD.LBL_SAMPLE_URL_HELP}</td>
+        </tr>
+        <tr>
+            <td scope="row" colspan="4">&nbsp;</td>
         </tr>
         <tr>
             <td scope="row" colspan="4">&nbsp;</td>
@@ -79,7 +82,10 @@
             <td align="left" scope="row" colspan="3">{$MOD.LBL_SELECT_FILE} <input type="hidden" /><input size="20" name="userfile" type="file"/> &nbsp;{sugar_help text=$MOD.LBL_FILE_UPLOAD_WIDGET_HELP}</td>
         </tr>
         <tr>
-            <td scope="row" colspan="4"><div class="hr"></div></td>
+            <td scope="row" colspan="4"><div class="hr">&nbsp;</div></td>
+        </tr>
+        <tr>
+            <td scope="row" colspan="4">&nbsp;</td>
         </tr>
         <tr>
             <td scope="row" colspan="3">

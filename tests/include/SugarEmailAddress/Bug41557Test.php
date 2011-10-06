@@ -35,39 +35,54 @@
  ********************************************************************************/
 
 
+
+
 /**
- * @ticket 23816
- *
- *		Bug 7566: Accounts Find Duplicates does not allow filtering by website 
- *
+ * @ticket 41557
  */
-class Bug7566Test extends Sugar_PHPUnit_Framework_TestCase
+class Bug41557Test extends Sugar_PHPUnit_Framework_TestCase
 {
-	private $_bean;
-	private $_rac;
-	
-    public function setUp()
+    public function providerGetPrimaryAddress()
+        {
+            return array(
+                array('old1@test.com', 'new1@test.com', false, 2),
+                array('old2@test.com', 'new2@test.com', true, 1),
+            );
+        }
+
+    /**
+     * @group bug41557
+     * @dataProvider providerGetPrimaryAddress
+     */
+    public function testGetPrimaryAddress($oldemail, $newemail, $conversion, $primary_count)
     {
-    	$GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-		require_once("modules/Administration/QuickRepairAndRebuild.php");
-		$this->_rac = new RepairAndClear();
-		$this->_bean =  SugarTestAccountUtilities::createAccount();
+        if ($conversion) {
+            $_REQUEST['action'] = 'ConvertLead';
+        }
+
+        $user = SugarTestUserUtilities::createAnonymousUser();
+
+        // primary email address
+        $user->emailAddress->addAddress($oldemail, true, false);
+        $user->emailAddress->save($user->id, $user->module_dir);
+
+        $this->assertEquals($oldemail, $user->emailAddress->getPrimaryAddress($user), 'Primary email should be '.$oldemail);
+
+        // second email
+        $user->emailAddress->addAddress($newemail, true, false);
+
+        // simulate lead conversion mode
+        if ($conversion) {
+            $_REQUEST['action'] = 'ConvertLead';
+        }
+        $user->emailAddress->save($user->id, $user->module_dir);
+
+        $query = "select count(*) as CNT from email_addr_bean_rel eabr WHERE eabr.bean_id = '{$user->id}' AND eabr.bean_module = 'Users' and primary_address = 1 and eabr.deleted=0";
+        $result = $GLOBALS['db']->query($query);
+        $count = $GLOBALS['db']->fetchByAssoc($result);
+        $this->assertEquals($primary_count, $count['CNT'], 'Incorrect primary email count');
+
+        // cleanup
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
     }
-
-    public function tearDown()
-	{	
-		SugarTestAccountUtilities::removeAllCreatedAccounts();
-		unset($this->_bean);
-		unset($this->_rac);
-	}
-
-    public function testWebsiteMergeFilter()
-    {
-		//verify that website is a merge_filter for Accounts...if so it'll be there for any company SugarObject
-		$this->_rac->clearVardefs();
-		
-		$this->assertEquals($this->_bean->field_defs['website']['merge_filter'],'enabled','Website merge_filter is not enabled');
-        
-    }
-
 }
