@@ -44,16 +44,16 @@ global $sugar_config;
 $ignoreCase = (substr_count(strtolower($_SERVER['SERVER_SOFTWARE']), 'apache/2') > 0)?'(?i)':'';
 $htaccess_file   = getcwd() . "/.htaccess";
 $contents = '';
-$restrict_str = <<<EOQ
 
+$restrict_str = <<<EOQ
 # BEGIN SUGARCRM RESTRICTIONS
 RedirectMatch 403 {$ignoreCase}.*\.log$
 RedirectMatch 403 {$ignoreCase}/+not_imported_.*\.txt
 RedirectMatch 403 {$ignoreCase}/+(soap|cache|xtemplate|data|examples|include|log4php|metadata|modules)/+.*\.(php|tpl)
 RedirectMatch 403 {$ignoreCase}/+emailmandelivery\.php
-RedirectMatch 403 {$ignoreCase}/+cache/+upload
+RedirectMatch 403 {$ignoreCase}/+upload
 RedirectMatch 403 {$ignoreCase}/+cache/+diagnostic
-RedirectMatch 403 {$ignoreCase}/+files\.md5$
+RedirectMatch 403 {$ignoreCase}/+files\.md5\$
 # END SUGARCRM RESTRICTIONS
 EOQ;
 
@@ -62,10 +62,13 @@ if(file_exists($htaccess_file)){
     $skip = false;
     while($line = fgets($fp)){
 
-    	if(preg_match("/\s*#\s*BEGIN\s*SUGARCRM\s*RESTRICTIONS/i", $line))$skip = true;
+    	if(preg_match('/\s*#\s*BEGIN\s*SUGARCRM\s*RESTRICTIONS/i', $line))$skip = true;
         if(!$skip)$contents .= $line;
-        if(preg_match("/\s*#\s*END\s*SUGARCRM\s*RESTRICTIONS/i", $line))$skip = false;
+        if(preg_match('/\s*#\s*END\s*SUGARCRM\s*RESTRICTIONS/i', $line))$skip = false;
     }
+}
+if(substr($contents, -1) != "\n") {
+    $restrict_str = "\n".$restrict_str;
 }
 $status =  file_put_contents($htaccess_file, $contents . $restrict_str);
 if( !$status ){
@@ -80,18 +83,10 @@ $uploadDir='';
 $uploadHta='';
 
 if (empty($GLOBALS['sugar_config']['upload_dir'])) {
-    $GLOBALS['sugar_config']['upload_dir']='cache/upload/';
+    $GLOBALS['sugar_config']['upload_dir']='upload/';
 }
-$uploadDir = getcwd()."/".$sugar_config['upload_dir'];
-if(file_exists($uploadDir)){
-	$uploadHta = $uploadDir.".htaccess";
-}
-else{
-	mkdir_recursive($uploadDir);
-	if(is_dir($uploadDir)){
-		$uploadHta = $uploadDir.".htaccess";
-	}
-}
+
+$uploadHta = "upload://.htaccess";
 
 $denyAll =<<<eoq
 <Directory>
@@ -102,35 +97,27 @@ eoq;
 
 if(file_exists($uploadHta) && filesize($uploadHta)) {
 	// file exists, parse to make sure it is current
-	if(is_writable($uploadHta) && ($fpUploadHta = @sugar_fopen($uploadHta, "r+"))) {
+	if(is_writable($uploadHta)) {
 		$oldHtaccess = file_get_contents($uploadHta);
 		// use a different regex boundary b/c .htaccess uses the typicals
-		if(!preg_match("=".$denyAll."=", $oldHtaccess)) {
+		if(strstr($oldHtaccess, $denyAll) === false) {
+		    $oldHtaccess .= "\n";
 			$oldHtaccess .= $denyAll;
 		}
-
-		rewind($fpUploadHta);
-		fwrite($fpUploadHta, $oldHtaccess);
-		ftruncate($fpUploadHta, ftell($fpUploadHta));
-		fclose($fpUploadHta);
+		if(!file_put_contents($uploadHta, $oldHtaccess)) {
+		    $htaccess_failed = true;
+		}
 	} else {
 		$htaccess_failed = true;
 	}
 } else {
 	// no .htaccess yet, create a fill
-	if($fpUploadHta = @sugar_fopen($uploadHta, "w")) {
-		fputs($fpUploadHta, $denyAll);
-		fclose($fpUploadHta);
-	} else {
+	if(!file_put_contents($uploadHta, $denyAll)) {
 		$htaccess_failed = true;
 	}
 }
 
-
-
-
 include('modules/Versions/ExpectedVersions.php');
-
 
 global $expect_versions;
 

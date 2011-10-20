@@ -43,13 +43,7 @@ if( !isset( $install_script ) || !$install_script ){
     die($mod_strings['ERR_NO_DIRECT_SCRIPT']);
 }
 
-
-
-
-
-$dbType = '';
-$oci8 = '';
-
+$db = getDbConnection();
 
 $dbCreate = "({$mod_strings['LBL_CONFIRM_WILL']} ";
 if(!$_SESSION['setup_db_create_database']){
@@ -83,10 +77,11 @@ $defaultLanguages = "";
 
 ///////////////////////////////////////////////////////////////////////////////
 ////	START OUTPUT
+$langHeader = get_language_header();
 
 $out =<<<EOQ
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<html {$langHeader}>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
    <meta http-equiv="Content-Script-Type" content="text/javascript">
@@ -114,8 +109,8 @@ $out =<<<EOQ
 
         <table width="100%" cellpadding="0" cellpadding="0" border="0" class="StyleDottedHr">
             <tr><th colspan="3" align="left">{$mod_strings['LBL_DBCONF_TITLE']}</th></tr>
-            {$dbType}
-            {$oci8}
+            <tr><td></td><td><b>{$mod_strings['LBL_CONFIRM_DB_TYPE']}</b></td><td>{$_SESSION['setup_db_type']}</td></tr>
+            <tr><td></td><td><b>{$mod_strings['LBL_DBCONF_HOST_NAME']}</b></td><td>{$_SESSION['setup_db_host_name']}</td></tr>
             <tr>
                 <td></td>
                 <td><b>{$mod_strings['LBL_DBCONF_DB_NAME']}</b></td>
@@ -192,17 +187,6 @@ $out .=<<<EOQ
             </tr>
 EOQ;
 }
-/*
-if(isset($_SESSION['licenseKey_submitted']) && ($_SESSION['licenseKey_submitted'])
-            && (isset($GLOBALS['db']) && !empty($GLOBALS['db']))){
-$out .=<<<EOQ
-
-<!--
--->
-EOQ;
-}
-*/
-
 
 $out .=<<<EOQ
 

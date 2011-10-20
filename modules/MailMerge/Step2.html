@@ -124,8 +124,8 @@
 	</form>
 {JAVASCRIPT}
 <script type="text/javascript">{JSON_CONFIG_JAVASCRIPT}</script>
-<script type="text/javascript" src="include/javascript/jsclass_base.js?s={SUGAR_VERSION}&c={JS_CUSTOM_VERSION}"></script>
-<script type="text/javascript" src="include/javascript/jsclass_async.js?s={SUGAR_VERSION}&c={JS_CUSTOM_VERSION}"></script>
+<script type="text/javascript" src="include/javascript/jsclass_base.js?v={VERSION_MARK}"></script>
+<script type="text/javascript" src="include/javascript/jsclass_async.js?v={VERSION_MARK}"></script>
 
 <script>
 var module = "{MAILMERGE_MODULE}";
@@ -133,6 +133,8 @@ var mOffset = 0;
 var max = 20;
 var mWhere = "{MAILMERGE_WHERE}";
 var orderBy = '';
+var relModule = '';
+var mTerm = '';
 
 function submit_form()
 {
@@ -144,9 +146,10 @@ function ResponseObj()
 {
 }
 
-ResponseObj.prototype.response = function (result) 
+function ajaxSuccess(data)
 {	 
-
+    var result = YAHOO.lang.JSON.parse(data.responseText);
+    result = result.result;
 	var prevButton = document.getElementById("prevButton");
 	var nextButton = document.getElementById("nextButton");
 	
@@ -242,14 +245,8 @@ function getObjects()
 	getOrderBy();
 	
 	//rrs
-	//mWhere = "campaigns.id = '9be5dd91-d20b-c5fd-1769-4554d8eede05'";
+	var cObj = YAHOO.util.Connect.asyncRequest('GET', 'index.php?module=MailMerge&action=search&qModule='+module+'&rel_module='+relModule+'&term='+mTerm,{success: ajaxSuccess, failure: ajaxSuccess}, null);
 
-	query = {"module":module, "offset":mOffset, "where":mWhere, "max":max, "order_by":orderBy};
-
-	req_id = global_rpcClient.call_method('get_objects_from_module',query);
-	
-	var res = new ResponseObj();
-    global_request_registry[req_id] = [ res,'response']; 
 
 }
 
@@ -349,25 +346,13 @@ function search(searchText)
 	var where = '';
 	if(searchText != '')
 	{
-		if(module == 'Contacts' || module == 'Leads')
-		{
-			where = module+".first_name like '%"+searchText+"%' OR "+module+".last_name like '%"+searchText+"%'";
-		}
-		else if(module == 'CampaignProspects'){
+        mTerm = searchText;
+		if(module == 'CampaignProspects'){
 			var prospectType = document.getElementById("campaign_prospect_type");
 			var lmodule = prospectType.value.toLowerCase();
-			var campign_where = "{MAILMERGE_WHERE}";
-			where = lmodule+".first_name like '%"+searchText+"%' OR "+lmodule+".last_name like '%"+searchText+"%'";
-			if(campign_where)
-				where += " AND "+campign_where ;
-			where += "  AND related_type = #"+lmodule+"#"
-		}
-		else
-		{
-			where = module+".name like '"+searchText+"%'";
+            relModule = lmodule;
 		}
 	}
-	mWhere = where.toLowerCase();
     mOffset = 0;
 	getObjects();
 }

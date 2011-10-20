@@ -170,14 +170,14 @@ EOQ;
 
 	function generateButtons(){
 
-
-		$imageSave = SugarThemeRegistry::current()->getImage( 'studio_save', '');
-		$imagePublish = SugarThemeRegistry::current()->getImage( 'studio_publish', '');
-		$imageHistory = SugarThemeRegistry::current()->getImage( 'studio_history', '');
-		$imageAddRows = SugarThemeRegistry::current()->getImage('studio_addRows', '');
-		$imageUndo = SugarThemeRegistry::current()->getImage('studio_undo', '');
-		$imageRedo = SugarThemeRegistry::current()->getImage('studio_redo', '');
-		$imageAddField = SugarThemeRegistry::current()->getImage( 'studio_addField', '');
+        global $mod_strings;
+		$imageSave = SugarThemeRegistry::current()->getImage( 'studio_save', '',null,null,'.gif',$mod_strings['LBL_SAVE']);
+		$imagePublish = SugarThemeRegistry::current()->getImage( 'studio_publish', '',null,null,'.gif',$mod_strings['LBL_PUBLISH']);
+		$imageHistory = SugarThemeRegistry::current()->getImage( 'studio_history', '',null,null,'.gif',$mod_strings['LBL_HISTORY']);
+		$imageAddRows = SugarThemeRegistry::current()->getImage('studio_addRows', '',null,null,'.gif',$mod_strings['LBL_ADDROWS']);
+		$imageUndo = SugarThemeRegistry::current()->getImage('studio_undo', '',null,null,'.gif',$mod_strings['LBL_UNDO']);
+		$imageRedo = SugarThemeRegistry::current()->getImage('studio_redo', '',null,null,'.gif',$mod_strings['LBL_REDO']);
+		$imageAddField = SugarThemeRegistry::current()->getImage( 'studio_addField', '',null,null,'.gif',$mod_strings['LBL_ADDFIELD']);
 		$buttons = array();
 
 		$buttons[] = array('image'=>$imageUndo,'text'=>$GLOBALS['mod_strings']['LBL_BTN_UNDO'],'actionScript'=>"onclick='jstransaction.undo()'" );
@@ -377,8 +377,8 @@ EOQ;
 	}
 
 	function enableLabelEditor($str) {
-
-		$image = SugarThemeRegistry::current()->getImage( 'edit_inline', "onclick='studiojs.handleLabelClick(\"$2\", 1);' onmouseover='this.style.cursor=\"default\"'");
+        global $mod_strings;
+		$image = SugarThemeRegistry::current()->getImage( 'edit_inline', "onclick='studiojs.handleLabelClick(\"$2\", 1);' onmouseover='this.style.cursor=\"default\"'",null,null,'.gif',$mod_strings['LBL_EDIT']);
 		$match = array ("'>[^<]*\{(MOD.)([^\}]*)\}'si" => "$image<span id='label$2' onclick='studiojs.handleLabelClick(\"$2\", 2);' >{".'$1$2' . "}</span><span id='span$2' style='display:none'><input type='text' id='$2' name='$2' msi='label' value='{".'$1$2' . "}' onblur='studiojs.endLabelEdit(\"$2\")'></span>");
 		$keys = array_keys($match);
 		$matches = array();
@@ -499,6 +499,7 @@ EOQ;
 	function yahooJS() {
 		$custom_module = $_SESSION['studio']['module'];
 		$custom_type = $this->curType;
+		$v = getVersionedPath('');
 		return<<<EOQ
 		<style type='text/css'>
 		.slot {
@@ -514,16 +515,15 @@ EOQ;
 
 	<!-- Namespace source file -->
 
-	<script type="text/javascript" src="modules/Studio/JSTransaction.js" ></script>
+	<script type="text/javascript" src="modules/Studio/JSTransaction.js?v=$v" ></script>
 	<script>
 	var jstransaction = new JSTransaction();
 	</script>
 
 	<!-- Drag and Drop source file -->
-	<script src = "include/javascript/yui/build/dragdrop/dragdrop.js" ></script>
-
-	<script type="text/javascript" src="modules/Studio/studiodd.js" ></script>
-	<script type="text/javascript" src="modules/Studio/studio.js" ></script>
+	<script type="text/javascript" src="include/javascript/yui/build/dragdrop/dragdrop.js?v=$v" ></script>
+	<script type="text/javascript" src="modules/Studio/studiodd.js?v=$v" ></script>
+	<script type="text/javascript" src="modules/Studio/studio.js?v=$v" ></script>
 	<script>
 
 	var yahooSlots = [];

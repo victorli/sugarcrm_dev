@@ -115,7 +115,7 @@ $mod_strings = array (
   	,'next Saturday' => 'next week'
   	,'last this_month' => 'this month'
   	,'last next_month' => 'next month'
-  ),
+),
   'LNK_IMPORT_CALLS'=>'Import Calls',
   'LNK_IMPORT_MEETINGS'=>'Import Meetings',
   'LNK_IMPORT_TASKS'=>'Import Tasks',
@@ -124,6 +124,8 @@ $mod_strings = array (
   'LBL_ACCEPT_THIS'=>'Accept?',
   'LBL_DEFAULT_SUBPANEL_TITLE' => 'Open Activities',
   'LBL_LIST_ASSIGNED_TO_NAME' => 'Assigned User',
+
+	'LBL_ACCEPT' => 'Accept' /*for 508 compliance fix*/,
 );
 
 

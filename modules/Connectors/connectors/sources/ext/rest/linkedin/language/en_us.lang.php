@@ -51,6 +51,8 @@ $connector_strings = array (
 
 	//Configuration labels
 	'company_url' => 'URL',
+    'oauth_consumer_key' => 'API Key',
+    'oauth_consumer_secret' => 'Secret Key'
 );
 
 ?>

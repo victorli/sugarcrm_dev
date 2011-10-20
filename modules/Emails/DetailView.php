@@ -196,10 +196,8 @@ if(isset($start['assigned_user_id']) && !empty($start['assigned_user_id'])) {
 $html = trim(from_html($focus->description_html));
 if(empty($html)) {
 	$xtpl->assign('SHOW_PLAINTEXT', 'true');
-	$description = nl2br($focus->description);
 } else {
 	$xtpl->assign('SHOW_PLAINTEXT', 'false');
-	$description = from_html($focus->description_html);
 }
 $show_subpanels=true;
 //if the email is of type campaign, process the macros...using the values stored in the relationship table.
@@ -265,8 +263,6 @@ $xtpl->assign('CC', $cc_addr);
 $xtpl->assign('BCC', $bcc_addr);
 $xtpl->assign('CREATED_BY', $focus->created_by_name);
 $xtpl->assign('MODIFIED_BY', $focus->modified_by_name);
-$xtpl->assign('DESCRIPTION', nl2br($focus->description));
-$xtpl->assign('DESCRIPTION_HTML', from_html($focus->description_html));
 $xtpl->assign('DATE_SENT', $focus->date_entered);
 $xtpl->assign('EMAIL_NAME', 'RE: '.$focus->name);
 $xtpl->assign("TAG", $focus->listviewACLHelper());
@@ -295,7 +291,7 @@ $xtpl->assign("JS_VARS", $jsVars);
 
 // ADMIN EDIT
 if(is_admin($GLOBALS['current_user']) && $_REQUEST['module'] != 'DynamicLayout' && !empty($_SESSION['editinplace'])){
-	$xtpl->assign("ADMIN_EDIT","<a href='index.php?action=index&module=DynamicLayout&from_action=".$_REQUEST['action'] ."&from_module=".$_REQUEST['module'] ."&record=".$_REQUEST['record']. "'>".SugarThemeRegistry::current()->getImage("EditLayout","border='0' alt='Edit Layout' align='bottom'")."</a>");
+	$xtpl->assign("ADMIN_EDIT","<a href='index.php?action=index&module=DynamicLayout&from_action=".$_REQUEST['action'] ."&from_module=".$_REQUEST['module'] ."&record=".$_REQUEST['record']. "'>".SugarThemeRegistry::current()->getImage("EditLayout","border='0' align='bottom'",null,null,'.gif',$mod_strings['LBL_EDIT_LAYOUT'])."</a>");
 }
 
 if(isset($_REQUEST['offset']) && !empty($_REQUEST['offset'])) { $offset = $_REQUEST['offset']; }
@@ -333,8 +329,11 @@ for($i=0; $i<count($notes_list); $i++) {
 	$the_note = $notes_list[$i];
 	if(!empty($the_note->filename))
     	$attachments .= "<a href=\"index.php?entryPoint=download&id=".$the_note->id."&type=Notes\">".$the_note->name."</a><br />";
+    $focus->cid2Link($the_note->id, $the_note->file_mime_type);
 }
 
+$xtpl->assign('DESCRIPTION', nl2br($focus->description));
+$xtpl->assign('DESCRIPTION_HTML', from_html($focus->description_html));
 $xtpl->assign("ATTACHMENTS", $attachments);
 $xtpl->parse("main");
 $xtpl->out("main");

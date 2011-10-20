@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
@@ -46,24 +46,39 @@ class Bug44113Test extends Sugar_PHPUnit_Framework_TestCase
 	private $cfg;   // configurator
 	private $emailMan;
     private $email_xss; // the security settings to be saved in config_ovverride
-    
+    private $original_email_xss = null;
+
 	public function setUp()
 	{
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
         $GLOBALS['current_user']->is_admin = '1';
+        require("config.php");
+        if(isset($sugar_config['email_xss']))
+        {
+           $this->_original_email_xss = $sugar_config['email_xss'];
+           $this->cfg = new Configurator();
+           $this->cfg->config['email_xss'] = getDefaultXssTags();
+           $this->cfg->handleOverride();
+        }
 
-          // email_xss settings to be saved using config_override
+        // email_xss settings to be saved using config_override
         $this->email_xss = array(
-            'applet' => 'applet',
+            //'applet' => 'applet',
             'form' => 'form',
             'iframe' => 'iframe',
             'script' => 'script'
             );
 
 	}
-	
+
 	public function tearDown()
 	{
+        if(isset($this->original_email_xss))
+        {
+           $this->cfg = new Configurator();
+           $this->cfg->config['email_xss'] = $this->original_email_xss;
+           $this->cfg->handleOverride();
+        }
 		unset($this->cfg);
         unset($this->emailMan);
         unset($this->email_xss);
@@ -81,24 +96,20 @@ class Bug44113Test extends Sugar_PHPUnit_Framework_TestCase
       global $sugar_config;
       $conn = new EmailManController();
 
-        // populate the REQUEST array because configurator will read that to write config_override 
+      // populate the REQUEST array because configurator will read that to write config_override
       foreach ($this->email_xss as $key=>$val) {
            $_REQUEST["$key"] = $val;
       }
 
       $new_security_settings = base64_encode(serialize($this->email_xss));
 
-
-
       // make sure that settings from config.php are untouched
-      require("config.php");
-      $original_security_settings = $sugar_config['email_xss'];
-      $this->assertNotEquals($original_security_settings, $new_security_settings,
-                            "ensure that original email_xss is not touched");
+      $original_security_settings = getDefaultXssTags();
+      $this->assertNotEquals($original_security_settings, $new_security_settings, "ensure that original email_xss is not touched");
 
-       $conn->action_Save();   // testing the save,
+      $conn->action_Save();   // testing the save,
                               // it should use the above request vars
-                              // to create a new config_override.php 
+                              // to create a new config_override.php
 
       // now check to make sure that config_override received the updated settings
       require("config_override.php");
@@ -114,8 +125,8 @@ class Bug44113Test extends Sugar_PHPUnit_Framework_TestCase
      */
 	public function testSavingToConfigOverride()
 	{
-        $this->cfg = new Configurator();
-        global $sugar_config;
+       $this->cfg = new Configurator();
+       global $sugar_config;
 
        $new_security_settings = base64_encode(serialize($this->email_xss));
 
@@ -123,10 +134,7 @@ class Bug44113Test extends Sugar_PHPUnit_Framework_TestCase
        $this->cfg->handleOverride();
 
        // just test to make sure that configuration is saved
-       $this->assertEquals($sugar_config['email_xss'], $new_security_settings,
-                         "testing configurator");
-
-
+       $this->assertEquals($sugar_config['email_xss'], $new_security_settings, "testing configurator");
     }
 
 }

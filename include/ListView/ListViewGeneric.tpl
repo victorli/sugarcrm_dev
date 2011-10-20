@@ -43,7 +43,7 @@
 <script type='text/javascript' src='{sugar_getjspath file='include/javascript/popup_helper.js'}'></script>
 
 {if $overlib}
-	<script type='text/javascript' src='{sugar_getjspath file='include/javascript/sugar_grp_overlib.js'}'></script>
+	<script type='text/javascript' src='{sugar_getjspath file='cache/include/javascript/sugar_grp_overlib.js'}'></script>
 	<div id='overDiv' style='position:absolute; visibility:hidden; z-index:1000;'></div>
 {/if}
 
@@ -78,19 +78,23 @@
                         {/if}
                     {/if}
                     {sugar_translate label=$params.label module=$pageData.bean.moduleDir}
-					</a>&nbsp;&nbsp;
+					&nbsp;&nbsp;
 					{if $params.orderBy|default:$colHeader|lower == $pageData.ordering.orderBy}
 						{if $pageData.ordering.sortOrder == 'ASC'}
 							{capture assign="imageName"}arrow_down.{$arrowExt}{/capture}
-							<img border='0' src='{sugar_getimagepath file=$imageName}' width='{$arrowWidth}' height='{$arrowHeight}' align='absmiddle' alt='{$arrowAlt}'>
+                            {capture assign="alt_sort"}{sugar_translate label='LBL_ALT_SORT_DESC'}{/capture}
+							{sugar_getimage name=$imageName attr='align="absmiddle" border="0" ' alt="$alt_sort"}
 						{else}
 							{capture assign="imageName"}arrow_up.{$arrowExt}{/capture}
-							<img border='0' src='{sugar_getimagepath file=$imageName}' width='{$arrowWidth}' height='{$arrowHeight}' align='absmiddle' alt='{$arrowAlt}'>
+                            {capture assign="alt_sort"}{sugar_translate label='LBL_ALT_SORT_ASC'}{/capture}
+							{sugar_getimage name=$imageName attr='align="absmiddle" border="0" ' alt="$alt_sort"}
 						{/if}
 					{else}
 						{capture assign="imageName"}arrow.{$arrowExt}{/capture}
-						<img border='0' src='{sugar_getimagepath file=$imageName}' width='{$arrowWidth}' height='{$arrowHeight}' align='absmiddle' alt='{$arrowAlt}'>
+                        {capture assign="alt_sort"}{sugar_translate label='LBL_ALT_SORT'}{/capture}
+						{sugar_getimage name=$imageName attr='align="absmiddle" border="0" ' alt="$alt_sort"}
 					{/if}
+                    </a>
 				{else}
                     {if !isset($params.noHeader) || $params.noHeader == false} 
 					  {sugar_translate label=$params.label module=$pageData.bean.moduleDir}
@@ -130,9 +134,11 @@
                 <a title='{$editLinkString}' id="edit-{$rowData.ID}"
 href="index.php?module={$linkModule}&offset={$offset}&stamp={$pageData.stamp}&return_module={$linkModule}&action={$action}&record={$rowData.ID}"
                 >
-                <img border=0 src='{sugar_getimagepath file='edit_inline.gif'}'></a>
+                    {capture name='tmp1' assign='alt_edit'}{sugar_translate label="LNK_EDIT"}{/capture}
+                    {sugar_getimage name="edit_inline.gif" attr='border="0" ' alt="$alt_edit"}</a>
                 {/if}
             </td>
+
 			{/if}
 			{counter start=0 name="colCounter" print=false assign="colCounter"}
 			{foreach from=$displayColumns key=col item=params}

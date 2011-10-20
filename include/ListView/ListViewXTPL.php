@@ -116,7 +116,7 @@ class ListViewXTPL extends ListViewDisplay{
 		
         list($width,$height) = getimagesize($pathParts['dirname'].'/'.$pathParts['basename']);
 		
-		$this->xtpl->assign('arrow_start', "&nbsp;<img border='0' src='".getJSPath($pathParts['dirname'].'/'.$pathParts['filename']));
+		$this->xtpl->assign('arrow_start', "&nbsp;<!--not_in_theme!--><img border='0' src='".getJSPath($pathParts['dirname'].'/'.$pathParts['filename']));
 		$this->xtpl->assign('arrow_end', "' width='$width' height='$height' align='absmiddle' alt=".translate('LBL_SORT').">");
 		$arrow_order = (strcmp($ordering['sortOrder'], 'ASC'))?'_up': '_down';
 		$this->xtpl->assign($ordering['orderBy'].'_arrow', $arrow_order);
@@ -130,46 +130,46 @@ class ListViewXTPL extends ListViewDisplay{
 		global $app_strings;
 //_pp($this->data['pageData']);
 		if(empty($this->data['pageData']['urls']['prevPage'])) {
-			$startLink = SugarThemeRegistry::current()->getImage("start_off", "alt='".$app_strings['LNK_LIST_START']."'  border='0' align='absmiddle'")."&nbsp;".$app_strings['LNK_LIST_START'];
-			$prevLink = SugarThemeRegistry::current()->getImage("previous_off", "alt='".$app_strings['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'")."&nbsp;".$app_strings['LNK_LIST_PREVIOUS'];
+			$startLink = SugarThemeRegistry::current()->getImage("start_off", "border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_START'])."&nbsp;".$app_strings['LNK_LIST_START'];
+			$prevLink = SugarThemeRegistry::current()->getImage("previous_off", "border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_PREVIOUS'])."&nbsp;".$app_strings['LNK_LIST_PREVIOUS'];
 		}
 		else {
 //			if($this->multi_select_popup) {// nav links for multiselect popup, submit form to save checks. 
-//				$start_link = "<a href=\"#\" onclick=\"javascript:save_checks(0, '{$moduleString}')\" >".SugarThemeRegistry::current()->getImage("start","alt='".$app_strings['LNK_LIST_START']."'  border='0' align='absmiddle'")."&nbsp;".$app_strings['LNK_LIST_START']."</a>";
-//				$previous_link = "<a href=\"#\" onclick=\"javascript:save_checks($previous_offset, '{$moduleString}')\" >".SugarThemeRegistry::current()->getImage("previous","alt='".$app_strings['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'")."&nbsp;".$app_strings['LNK_LIST_PREVIOUS']."</a>";
+//				$start_link = "<a href=\"#\" onclick=\"javascript:save_checks(0, '{$moduleString}')\" >".SugarThemeRegistry::current()->getImage("start","border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_START'])."&nbsp;".$app_strings['LNK_LIST_START']."</a>";
+//				$previous_link = "<a href=\"#\" onclick=\"javascript:save_checks($previous_offset, '{$moduleString}')\" >".SugarThemeRegistry::current()->getImage("previous","border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_PREVIOUS'])."&nbsp;".$app_strings['LNK_LIST_PREVIOUS']."</a>";
 //			}
 //			elseif($this->shouldProcess) {
 //				// TODO: make popups / listview check saving the same 
-//				$start_link = "<a href=\"$start_URL\" onclick=\"javascript:return sListView.save_checks(0, '{$moduleString}')\" >".SugarThemeRegistry::current()->getImage("start","alt='".$app_strings['LNK_LIST_START']."'  border='0' align='absmiddle'")."&nbsp;".$app_strings['LNK_LIST_START']."</a>";
-//				$previous_link = "<a href=\"$previous_URL\" onclick=\"javascript:return sListView.save_checks($previous_offset, '{$moduleString}')\" >".SugarThemeRegistry::current()->getImage("previous","alt='".$app_strings['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'")."&nbsp;".$app_strings['LNK_LIST_PREVIOUS']."</a>";
+//				$start_link = "<a href=\"$start_URL\" onclick=\"javascript:return sListView.save_checks(0, '{$moduleString}')\" >".SugarThemeRegistry::current()->getImage("start","border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_START'])."&nbsp;".$app_strings['LNK_LIST_START']."</a>";
+//				$previous_link = "<a href=\"$previous_URL\" onclick=\"javascript:return sListView.save_checks($previous_offset, '{$moduleString}')\" >".SugarThemeRegistry::current()->getImage("previous","border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_PREVIOUS'])."&nbsp;".$app_strings['LNK_LIST_PREVIOUS']."</a>";
 //			}
 //			else {
-				$startLink = "<a href=\"{$this->data['pageData']['urls']['startPage']}\" >".SugarThemeRegistry::current()->getImage("start","alt='".$app_strings['LNK_LIST_START']."'  border='0' align='absmiddle'")."&nbsp;".$app_strings['LNK_LIST_START']."</a>";
-				$prevLink = "<a href=\"{$this->data['pageData']['urls']['prevPage']}\" >".SugarThemeRegistry::current()->getImage("previous","alt='".$app_strings['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'")."&nbsp;".$app_strings['LNK_LIST_PREVIOUS']."</a>";
+				$startLink = "<a href=\"{$this->data['pageData']['urls']['startPage']}\" >".SugarThemeRegistry::current()->getImage("start","border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_START'])."&nbsp;".$app_strings['LNK_LIST_START']."</a>";
+				$prevLink = "<a href=\"{$this->data['pageData']['urls']['prevPage']}\" >".SugarThemeRegistry::current()->getImage("previous","border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_PREVIOUS'])."&nbsp;".$app_strings['LNK_LIST_PREVIOUS']."</a>";
 //			}
 		}
 
 		if(!$this->data['pageData']['offsets']['totalCounted']) {
-			$endLink = $app_strings['LNK_LIST_END']."&nbsp;".SugarThemeRegistry::current()->getImage("end_off","alt='".$app_strings['LNK_LIST_END']."'  border='0' align='absmiddle'");
+			$endLink = $app_strings['LNK_LIST_END']."&nbsp;".SugarThemeRegistry::current()->getImage("end_off","border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_END']);
 		}
 		else {
 //			if($this->multi_select_popup) { // nav links for multiselect popup, submit form to save checks.
-//				$end_link = "<a href=\"#\" onclick=\"javascript:save_checks($last_offset, '{$moduleString}')\" >".$app_strings['LNK_LIST_END']."&nbsp;".SugarThemeRegistry::current()->getImage("end","alt='".$app_strings['LNK_LIST_END']."'  border='0' align='absmiddle'")."</a>";
-//				$next_link = "<a href=\"#\" onclick=\"javascript:save_checks($next_offset, '{$moduleString}')\" >".$app_strings['LNK_LIST_NEXT']."&nbsp;".SugarThemeRegistry::current()->getImage("next","alt='".$app_strings['LNK_LIST_NEXT']."'  border='0' align='absmiddle'")."</a>";
+//				$end_link = "<a href=\"#\" onclick=\"javascript:save_checks($last_offset, '{$moduleString}')\" >".$app_strings['LNK_LIST_END']."&nbsp;".SugarThemeRegistry::current()->getImage("end","border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_END'])."</a>";
+//				$next_link = "<a href=\"#\" onclick=\"javascript:save_checks($next_offset, '{$moduleString}')\" >".$app_strings['LNK_LIST_NEXT']."&nbsp;".SugarThemeRegistry::current()->getImage("next","border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_NEXT'])."</a>";
 //			}
 //			elseif($this->shouldProcess) {
-//				$end_link = "<a href=\"$end_URL\" onclick=\"javascript:return sListView.save_checks($last_offset, '{$moduleString}')\" >".$app_strings['LNK_LIST_END']."&nbsp;".SugarThemeRegistry::current()->getImage("end","alt='".$app_strings['LNK_LIST_END']."'  border='0' align='absmiddle'")."</a>";
-//				$next_link = "<a href=\"$next_URL\" onclick=\"javascript:return sListView.save_checks($next_offset, '{$moduleString}')\" >".$app_strings['LNK_LIST_NEXT']."&nbsp;".SugarThemeRegistry::current()->getImage("next","alt='".$app_strings['LNK_LIST_NEXT']."'  border='0' align='absmiddle'")."</a>";
+//				$end_link = "<a href=\"$end_URL\" onclick=\"javascript:return sListView.save_checks($last_offset, '{$moduleString}')\" >".$app_strings['LNK_LIST_END']."&nbsp;".SugarThemeRegistry::current()->getImage("end","border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_END'])."</a>";
+//				$next_link = "<a href=\"$next_URL\" onclick=\"javascript:return sListView.save_checks($next_offset, '{$moduleString}')\" >".$app_strings['LNK_LIST_NEXT']."&nbsp;".SugarThemeRegistry::current()->getImage("next","border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_NEXT'])."</a>";
 //			}
 //			else {
-				$endLink = "<a href=\"{$this->data['pageData']['urls']['endPage']}\" >".$app_strings['LNK_LIST_END']."&nbsp;".SugarThemeRegistry::current()->getImage("end","alt='".$app_strings['LNK_LIST_END']."'  border='0' align='absmiddle'")."</a>";
+				$endLink = "<a href=\"{$this->data['pageData']['urls']['endPage']}\" >".$app_strings['LNK_LIST_END']."&nbsp;".SugarThemeRegistry::current()->getImage("end","border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_END'])."</a>";
 				
 //			}
 		}
 		if(empty($this->data['pageData']['urls']['nextPage'])){
-			$nextLink = $app_strings['LNK_LIST_NEXT']."&nbsp;".SugarThemeRegistry::current()->getImage("next_off","alt='".$app_strings['LNK_LIST_NEXT']."'  border='0' align='absmiddle'");
+			$nextLink = $app_strings['LNK_LIST_NEXT']."&nbsp;".SugarThemeRegistry::current()->getImage("next_off","border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_NEXT']);
 		}else{
-				$nextLink = "<a href=\"{$this->data['pageData']['urls']['nextPage']}\" >".$app_strings['LNK_LIST_NEXT']."&nbsp;".SugarThemeRegistry::current()->getImage("next","alt='".$app_strings['LNK_LIST_NEXT']."'  border='0' align='absmiddle'")."</a>";
+				$nextLink = "<a href=\"{$this->data['pageData']['urls']['nextPage']}\" >".$app_strings['LNK_LIST_NEXT']."&nbsp;".SugarThemeRegistry::current()->getImage("next","border='0' align='absmiddle'",null,null,'.gif',$app_strings['LNK_LIST_NEXT'])."</a>";
 		}
 		
 		if($this->export) $export_link = $this->buildExportLink();

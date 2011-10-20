@@ -106,7 +106,7 @@ CL: Bug fix for 9291 and 9427 - parent_id should be parent_type, not the module 
 	<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
 		<td nowrap="nowrap"><input name='date_due' id='jscal_field' onblur="parseDate(this, '{$USER_DATEFORMAT}');" tabindex='2' maxlength='10' size='11' {$READONLY} type="text" value="{$DATE_DUE}">
-			<img src="{sugar_getimagepath file='jscalendar.gif'}" alt="{$APP.LBL_ENTER_DATE}" id="jscal_trigger" align="absmiddle">&nbsp;</td>
+			{sugar_getimage name="jscalendar" ext=".gif" alt=$APP.LBL_ENTER_DATE other_attributes='align="absmiddle" id="jscal_trigger" '}&nbsp;</td>
 		<td nowrap="nowrap"><input name='time_due' size='5' maxlength='5' tabindex='2' {$READONLY} type="text" value='{$TIME_DUE}'>{$DUE_TIME_MERIDIEM} </td>
 		{if $TIME_MERIDIEM}
         <td><select name='due_meridiem' tabindex="2">{$TIME_MERIDIEM}</select></td>
@@ -125,7 +125,7 @@ CL: Bug fix for 9291 and 9427 - parent_id should be parent_type, not the module 
 	<td  nowrap="nowrap"><slot>
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
-		<td nowrap="nowrap"><input name='date_start' id='date_start' onblur="parseDate(this, '{$CALENDAR_DATEFORMAT}');" tabindex='2' maxlength='10' size='11' {$READONLY} type="text" value="{$DATE_START}"> <img src="{sugar_getimagepath file='jscalendar.gif'}" alt="{$APP.LBL_ENTER_DATE}"  id="date_start_trigger" align="absmiddle">&nbsp;</td>
+		<td nowrap="nowrap"><input name='date_start' id='date_start' onblur="parseDate(this, '{$CALENDAR_DATEFORMAT}');" tabindex='2' maxlength='10' size='11' {$READONLY} type="text" value="{$DATE_START}"> {sugar_getimage name="jscalendar" ext=".gif" alt=$APP.LBL_ENTER_DATE other_attributes='align="absmiddle" id="date_start_trigger" '}&nbsp;</td>
 		<td nowrap="nowrap"><input name='time_start' size='5' maxlength='5' tabindex='2' {$READONLY} type="text" value='{$TIME_START}'>{$START_TIME_MERIDIEM} </td>
 		{if $TIME_MERIDIEM}
         <td><select name='start_meridiem' tabindex="2">{$TIME_MERIDIEM}</select></td>
@@ -145,10 +145,10 @@ CL: Bug fix for 9291 and 9427 - parent_id should be parent_type, not the module 
 <script type="text/javascript">
 {literal}
 Calendar.setup ({
-	inputField : "jscal_field", daFormat : "{/literal}{$CALENDAR_FORMAT}{literal}", showsTime : false, button : "jscal_trigger", singleClick : true, step : 1, weekNumbers:false
+	inputField : "jscal_field", daFormat : "{/literal}{$CALENDAR_FORMAT}{literal}", showsTime : false, button : "jscal_trigger", singleClick : true, step : 1, startWeekday: {/literal}{$CALENDAR_FDOW|default:'0'}{literal}, weekNumbers:false
 });
 Calendar.setup ({
-	inputField : "date_start", daFormat : "{/literal}{$CALENDAR_FORMAT}{literal}", showsTime : false, button : "date_start_trigger", singleClick : true, step : 1, weekNumbers:false
+	inputField : "date_start", daFormat : "{/literal}{$CALENDAR_FORMAT}{literal}", showsTime : false, button : "date_start_trigger", singleClick : true, step : 1, startWeekday: {/literal}{$CALENDAR_FDOW|default:'0'}{literal}, weekNumbers:false
 });
 {/literal}
 	{$additionalScripts}

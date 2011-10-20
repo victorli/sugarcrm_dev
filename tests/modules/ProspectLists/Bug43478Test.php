@@ -107,6 +107,13 @@ class Bug43478Test extends Sugar_PHPUnit_Framework_TestCase
     {
         global $current_user;
         $current_user = SugarTestUserUtilities::createAnonymousUser();
+
+        $beanList = array();
+        $beanFiles = array();
+        require('include/modules.php');
+        $GLOBALS['beanList'] = $beanList;
+        $GLOBALS['beanFiles'] = $beanFiles;
+
         $contact = self::createContact();
         $contact->primary_address_state = 'Test adress state';
         $this->_contacts[] = $contact;
@@ -125,6 +132,9 @@ class Bug43478Test extends Sugar_PHPUnit_Framework_TestCase
         SugarTestAccountUtilities::removeAllCreatedAccounts();
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         $this->_clearProspects();
+        unset($GLOBALS['current_user']);
+        unset($GLOBALS['beanList']);
+        unset($GLOBALS['beanFiles']);
     }
 
     /**

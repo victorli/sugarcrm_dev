@@ -84,7 +84,7 @@ class Employee extends Person {
 	var $messenger_type;
 	var $employee_status;
 	var $error_string;
-	
+
 	var $module_dir = "Employees";
 
 
@@ -98,20 +98,20 @@ class Employee extends Person {
 	// This is used to retrieve related fields from form posts.
 	var $additional_column_fields = Array('reports_to_name');
 
-    
+
 
 	var $new_schema = true;
 
 	function Employee() {
 		parent::Person();
-		//$this->setupCustomFields('Employees');
+		$this->setupCustomFields('Users');
 		$this->emailAddress = new SugarEmailAddress();
 	}
-	
-    
+
+
 	function get_summary_text() {
         $this->_create_proper_name_field();
-        return $this->name;	
+        return $this->name;
     }
 
 
@@ -160,7 +160,7 @@ class Employee extends Person {
 	}
 
 	function get_list_view_data(){
-		
+
         global $current_user;
 		$this->_create_proper_name_field(); // create proper NAME (by combining first + last)
 		$user_fields = $this->get_list_view_array();
@@ -184,13 +184,13 @@ class Employee extends Person {
 
 	function create_export_query($order_by, $where) {
 		include('modules/Employees/field_arrays.php');
-		
+
 		$cols = '';
 		foreach($fields_array['Employee']['export_fields'] as $field) {
 			$cols .= (empty($cols)) ? '' : ', ';
 			$cols .= $field;
 		}
-		
+
 		$query = "SELECT {$cols} FROM users ";
 
 		$where_auto = " users.deleted = 0";
@@ -207,7 +207,7 @@ class Employee extends Person {
 
 		return $query;
 	}
-	
+
 	//use parent class
 	/**
 	 * Generate the name field from the first_name and last_name fields.
@@ -217,13 +217,13 @@ class Employee extends Person {
         global $locale;
         $full_name = $locale->getLocaleFormattedName($this->first_name, $this->last_name);
         $this->name = $full_name;
-        $this->full_name = $full_name; 
+        $this->full_name = $full_name;
 	}
 	*/
-	
-	function preprocess_fields_on_save(){		
-		parent::preprocess_fields_on_save();	
-				
+
+	function preprocess_fields_on_save(){
+		parent::preprocess_fields_on_save();
+
 	}
 }
 

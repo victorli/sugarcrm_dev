@@ -69,23 +69,23 @@ function table_changed(obj) {
 		document.getElementById('checkGroups').style.display = '';
 		hideCheckGroupsTimeout = window.setTimeout('hideCheckGroups()', 6000);
 	}
-	
+
 	current_module = document.EditView.self.options[document.EditView.self.options.selectedIndex].value;
 	if(obj.options[obj.selectedIndex].value == '') { // None was selected, delete the link
 		delete_this_join(obj.id);
 		return;
 	}
-	
+
 	// Set the master table list to the current value
 	full_table_list[obj.id].value = obj.value;
 	full_table_list[obj.id].label = obj.options[obj.options.selectedIndex].text;
-	
+
 	if ( obj.id != 'self' )	{
 		// Get the link definitions, and store them
 		var parent_id = full_table_list[obj.id].parent;
 		var parent_module = full_table_list[parent_id].module;
 		var parent_link_defs = getLinksByRelType(module_defs[parent_module].link_defs);
-		
+
 		full_table_list[obj.id].link_def = parent_link_defs[full_table_list[obj.id].value];
 		//full_table_list[obj.id].rel_def = rel_defs[full_table_list[obj.id].link_def.relationship_name];
 		//full_table_list[obj.id].module = full_table_list[obj.id].label;
@@ -158,10 +158,10 @@ function deleteGroup(index) {
 			groups_count_map[id]--;
 		}
 	}
-	
+
 	var group_by_button = document.getElementById('group_by_button');
-	group_by_button.style.display = 'inline';	
-	
+	group_by_button.style.display = 'inline';
+
 	// add back line charts
 	if(groups_arr.length == 1 && document.EditView.chart_type.options.length > 5) {
 		chartTypesHolder.push(document.EditView.chart_type.options[5]);
@@ -345,7 +345,7 @@ function addColumnSelectGroup(cell,group) {
 	var got_selected = 0;
 	for(var index in field_defs_arr) {
 	    var field = field_defs_arr[index];
-		if ( field.type == 'text' || ( current_db_type == 'oci8' && field.type == 'name' && typeof (field.fields) != 'undefined' )) {
+		if ( field.type == 'text' || ( field.type == 'name' && typeof (field.fields) != 'undefined' )) {
 			continue;
 		}
 
@@ -358,7 +358,7 @@ function addColumnSelectGroup(cell,group) {
     if ( group.column_name == key) {
     	got_selected = 1;
 		selected = true;
-    } 
+    }
     else {
 		selected = false;
     }
@@ -401,7 +401,7 @@ function addModuleSelectFilter(cell,filter) {
 		var selected = false;
 		if ( i == selected_link_name) {
 				selected=true;
-		} 
+		}
 		else {
 				selected=false;
 		}
@@ -447,7 +447,7 @@ function addModuleSelectGroup(cell,filter) {
 		var selected = false;
 		if ( i == selected_link_name) {
 			selected=true;
-		} 
+		}
 		else {
 			selected=false;
 		}
@@ -478,7 +478,7 @@ function getOrderedFieldDefArray(field_defs,show_id_field) {
 		var field = field_defs[field_name];
 		field_defs_arr.push(field);
 	}
-	
+
 	field_defs_arr.sort( _sort_by_field_name);
 
 	if ( id_field  != null && show_id_field ) {
@@ -490,18 +490,18 @@ function getOrderedFieldDefArray(field_defs,show_id_field) {
 function _sort_by_field_name(a,b) {
 	if ( typeof(a['vname']) == 'undefined') {
 		a['vname'] = a['name'];
-	} 
+	}
 	else if ( typeof(b['vname']) == 'undefined') {
 		b['vname'] = b['name'];
 	}
-	
+
 	if ( a['type'] == 'name' ||  a['type'] == 'user_name' ) {
 		return -1;
-	} 
+	}
 	else if ( b['type'] == 'name' ||  b['type'] == 'user_name' ) {
 		return 1;
-	} 
-	else { 
+	}
+	else {
 		return a['vname'].localeCompare( b['vname']);
 	}
 }
@@ -521,7 +521,7 @@ function addColumnSelectFilter(cell,filter) {
 	if (table_key == 'self') {
 		selected_module = current_module;
 		field_defs = module_defs[selected_module].field_defs;
-	} 
+	}
 	else {
 		selected_module = table_key;
 		var field_defs = module_defs[full_table_list[table_key].module].field_defs;
@@ -543,7 +543,7 @@ function addColumnSelectFilter(cell,filter) {
 
 		if ( filter.column_name == key) {
 			selected = true;
-		} 
+		}
 		else {
 			selected = false;
 		}
@@ -586,7 +586,7 @@ function addFilterInput(cell,filter) {
 	if ( typeof ( column_name) == 'undefined' || column_name == '') {
 		column_name='';
 	}
-	var field = all_fields[column_name].field_def;	
+	var field = all_fields[column_name].field_def;
 
 	var field_type = field.type;
 	if ( typeof(field.custom_type) != 'undefined') {
@@ -598,10 +598,10 @@ function addFilterInput(cell,filter) {
 
 	if (qualifier_name == 'between') {
 		addFilterInputTextBetween(row,filter);
-	} 
+	}
 	else if (qualifier_name == 'between_dates') {
 		addFilterInputDateBetween(row,filter);
-	} 
+	}
 	else if (qualifier_name == 'empty' || qualifier_name == 'not_empty') {
 	    addFilterNoInput(row,filter);
  	}
@@ -609,19 +609,19 @@ function addFilterInput(cell,filter) {
 		if (qualifier_name.indexOf('tp_') == 0) {
 			addFilterInputEmpty(row,filter);
 		}
-		
+
 		else {
 			addFilterInputDate(row,filter);
 		}
-	} 
+	}
 	else if (field_type == 'id' || field_type == 'name' ) {
 		if ( qualifier_name == 'is') {
 			addFilterInputRelate(row,field,filter);
-		} 
+		}
 		else {
 			addFilterInputText(row,filter);
 		}
-	} 
+	}
 	else if ((field_type == 'user_name')||(field_type == 'assigned_user_name')) {
 		if(users_array=="") {
 			loadXML();
@@ -632,7 +632,7 @@ function addFilterInput(cell,filter) {
 		else {
 			addFilterInputSelectSingle(row,users_array,filter);
 		}
-	} 
+	}
 	else if (field_type == 'enum' || field_type == 'multienum') {
 		if (qualifier_name == 'one_of') {
 			addFilterInputSelectMultiple(row,field.options,filter);
@@ -660,18 +660,18 @@ function addFilterInput(cell,filter) {
 
 function loadXML() {
 	var gURL = 'index.php?module=Reports&action=fillUserCombo';
-	if (window.XMLHttpRequest) { // code for Mozilla, Safari, etc 
+	if (window.XMLHttpRequest) { // code for Mozilla, Safari, etc
 		xmlhttp=new XMLHttpRequest();
 		if (xmlhttp.overrideMimeType) {
 			xmlhttp.overrideMimeType('text/xml');
-		}	
+		}
 		xmlhttp.open("GET", gURL, false);
 		xmlhttp.onreadystatechange=loadUsers;
 		xmlhttp.send(null);
 		loadUsers();
-	} 
-	else if (window.ActiveXObject) { //IE 
-		xmlhttp=new ActiveXObject('Microsoft.XMLHTTP'); 
+	}
+	else if (window.ActiveXObject) { //IE
+		xmlhttp=new ActiveXObject('Microsoft.XMLHTTP');
 		if (xmlhttp) {
 			xmlhttp.onreadystatechange=loadUsers;
 			xmlhttp.open('GET', gURL, false);
@@ -681,15 +681,15 @@ function loadXML() {
 }
 
 function loadUsers() {
-	if (xmlhttp.readyState==4) { 
-		if(xmlhttp.status==200 || xmlhttp.status==0){ 
+	if (xmlhttp.readyState==4) {
+		if(xmlhttp.status==200 || xmlhttp.status==0){
 			if (window.ActiveXObject)
 				xmlhttp.responseXML.loadXML(xmlhttp.responseText);
 
 			var acc = xmlhttp.responseXML.getElementsByTagName('data');
 			var opts = '';
 			for (var i=0;i<acc.length;i++)
-			{	
+			{
 				val = getNodeValue(acc[i],'datavalue');
 				users_array[users_array.length] = eval("("+val+")");
 			}
@@ -729,7 +729,7 @@ function to_display_date(date_str) {
     	new_date = new_date.replace("%m",date_arr[2]);
     	new_date = new_date.replace("%d",date_arr[3]);
     	return new_date;
- 	} 
+ 	}
  	else {
     	return date_str;
  	}
@@ -737,7 +737,7 @@ function to_display_date(date_str) {
 
 function addFilterInputDate(row,filter) {
 	var cell = document.createElement("td");
-	cell.setAttribute('valign','middle'); 
+	cell.setAttribute('valign','middle');
 	var new_input = document.createElement("input");
 	new_input.type="text";
 
@@ -750,22 +750,22 @@ function addFilterInputDate(row,filter) {
 	new_input.size="30";
 	new_input.maxsize="255";
 	new_input.visible="true";
-	new_input.setAttribute('id','jscal_field'); 
+	new_input.setAttribute('id','jscal_field');
 	cell.appendChild(new_input);
 	row.appendChild(cell);
 
 	var cell = document.createElement("td");
-	cell.setAttribute('valign','middle'); 
+	cell.setAttribute('valign','middle');
 	var img_element = document.createElement("img");
-	img_element.setAttribute('src','index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=jscalendar.gif'); 
-	img_element.setAttribute('id','jscal_trigger'); 
+	img_element.setAttribute('src','index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=jscalendar.gif');
+	img_element.setAttribute('id','jscal_trigger');
 	cell.appendChild(img_element);
 	row.appendChild(cell);
 	Calendar.setup ({
-		inputFieldObj : new_input , 
-		buttonObj : img_element, 
-		ifFormat : cal_date_format, 
-		showsTime : false, 
+		inputFieldObj : new_input ,
+		buttonObj : img_element,
+		ifFormat : cal_date_format,
+		showsTime : false,
 		singleClick : true, step : 1,
 		weekNumbers:false
 	});
@@ -788,7 +788,7 @@ function addFilterNoInput(row,filter) {
 
 function addFilterInputEmpty(row,filter) {
 	var cell = document.createElement("td");
-	cell.setAttribute('valign','middle'); 
+	cell.setAttribute('valign','middle');
 	var new_input = document.createElement("input");
 	new_input.type="hidden";
 	new_input.value=filter.qualifier_name;
@@ -911,7 +911,7 @@ function addFilterInputTextBetween(row,filter) {
 	cell.appendChild(new_input);
 	row.appendChild(cell);
 	filter_row.input_field0 = new_input;
-	
+
 	var cell = document.createElement('td');
 	var new_text = document.createTextNode(lbl_and);
 	cell.appendChild(new_text);
@@ -934,49 +934,49 @@ function addFilterInputDateBetween(row,filter) {
 	var filter_row = filters_arr[filters_count_map[current_filter_id]];
 
 	var cell = document.createElement("td");
-	cell.setAttribute('valign','middle'); 
+	cell.setAttribute('valign','middle');
 	var new_input = document.createElement("input");
 	new_input.type="text";
 	if (typeof(filter.input_name0) == 'undefined') {
 		filter.input_name0 = '';
 	}
-	
+
 	filter.input_name0 = to_display_date(filter.input_name0);
 	new_input.value=filter.input_name0;
 	new_input.name="text_input";
 	new_input.size="12";
 	new_input.maxsize="255";
 	new_input.visible="true";
-	new_input.setAttribute('id','jscal_field'); 
+	new_input.setAttribute('id','jscal_field');
 	cell.appendChild(new_input);
 	row.appendChild(cell);
 	filter_row.input_field1 = new_input;
 
 	var cell = document.createElement("td");
-	cell.setAttribute('valign','middle'); 
+	cell.setAttribute('valign','middle');
 	var img_element = document.createElement("img");
-	img_element.setAttribute('src','index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=jscalendar.gif'); 
-	img_element.setAttribute('id','jscal_trigger'); 
+	img_element.setAttribute('src','index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=jscalendar.gif');
+	img_element.setAttribute('id','jscal_trigger');
 	cell.appendChild(img_element);
 	row.appendChild(cell);
 
-	Calendar.setup ({ 
-		inputFieldObj : new_input , 
-		buttonObj : img_element, 	
-		ifFormat : cal_date_format, 
-		showsTime : false, 
+	Calendar.setup ({
+		inputFieldObj : new_input ,
+		buttonObj : img_element,
+		ifFormat : cal_date_format,
+		showsTime : false,
 		singleClick : true,
 		weekNumbers:false,
 		step : 1 });
 
     var cell = document.createElement('td');
-	cell.setAttribute('valign','middle'); 
+	cell.setAttribute('valign','middle');
     var new_text = document.createTextNode(lbl_and);
     cell.appendChild(new_text);
     row.appendChild(cell);
 
 	var cell = document.createElement("td");
-	cell.setAttribute('valign','middle'); 
+	cell.setAttribute('valign','middle');
 	var new_input = document.createElement("input");
 	new_input.type="text";
 	if (typeof(filter.input_name1) == 'undefined') {
@@ -988,22 +988,22 @@ function addFilterInputDateBetween(row,filter) {
 	new_input.size="12";
 	new_input.maxsize="255";
 	new_input.visible="true";
-	new_input.setAttribute('id','jscal_field2'); 
+	new_input.setAttribute('id','jscal_field2');
 	cell.appendChild(new_input);
 	row.appendChild(cell);
 	filter_row.input_field1 = new_input;
 
 	var cell = document.createElement("td");
 	var img_element = document.createElement("img");
-	img_element.setAttribute('src','index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=jscalendar.gif'); 
-	img_element.setAttribute('id','jscal_trigger2'); 
+	img_element.setAttribute('src','index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=jscalendar.gif');
+	img_element.setAttribute('id','jscal_trigger2');
 	cell.appendChild(img_element);
 	row.appendChild(cell);
-	Calendar.setup ({ 
-		inputFieldObj : new_input , 
-		buttonObj : img_element, 	
-		ifFormat : cal_date_format, 
-		showsTime : false, 
+	Calendar.setup ({
+		inputFieldObj : new_input ,
+		buttonObj : img_element,
+		ifFormat : cal_date_format,
+		showsTime : false,
 		singleClick : true,
 		weekNumbers:false,
 		step : 1 });
@@ -1028,7 +1028,7 @@ function getModuleInFilter(filter) {
 	var selected_option = view_join.options[view_join.selectedIndex].value;
 	if ( selected_option != 'self') {
 		selected_module = full_table_list[selected_option].module;
-	} 
+	}
 
 	return selected_module;
 }
@@ -1037,7 +1037,7 @@ function set_form_return_reports(popup_reply_data) {
 	var form_name = popup_reply_data.form_name;
 	var name_to_value_array = popup_reply_data.name_to_value_array;
 	var passthru_data = popup_reply_data.passthru_data;
-	
+
  	current_parent_id.value = name_to_value_array['id'];
  	current_parent.value = name_to_value_array['name'];
 }
@@ -1056,19 +1056,19 @@ function addFilterInputRelate(row,field,filter) {
 	if ( typeof (filter.input_name0) == 'undefined') {
 		filter.input_name0 = '';
 	}
-	id_input.setAttribute("value",filter.input_name0); 
+	id_input.setAttribute("value",filter.input_name0);
 	cell.appendChild(id_input);
 	filter_row.input_field0 = id_input;
 
 	var name_input = document.createElement("input");
-	name_input.setAttribute("type","text"); 
-	name_input.setAttribute("readonly","true"); 
+	name_input.setAttribute("type","text");
+	name_input.setAttribute("readonly","true");
 	name_input.setAttribute("name", field_name);
 	name_input.setAttribute("id", field_name);
 	if ( typeof (filter.input_name1) == 'undefined') {
 		filter.input_name1= '';
 	}
-	name_input.setAttribute("value",filter.input_name1); 
+	name_input.setAttribute("value",filter.input_name1);
 	cell.appendChild(name_input);
 	filter_row.input_field1 = name_input;
 
@@ -1079,12 +1079,12 @@ function addFilterInputRelate(row,field,filter) {
 	new_input.title= lbl_select+"[Alt+G]";
 	new_input.accessKey="G";
 	new_input.type="button";
-	new_input.value=lbl_select; 
+	new_input.value=lbl_select;
 	new_input.name=field.module;
-	new_input.setAttribute("class","button"); 
-	new_input.onclick= function () { 	        
-		current_parent = name_input; 	 
-		current_parent_id = id_input; 	 
+	new_input.setAttribute("class","button");
+	new_input.onclick= function () {
+		current_parent = name_input;
+		current_parent_id = id_input;
 		return	open_popup(module_name, 600, 400, "", true, false, { "call_back_function":"set_form_return_reports", "form_name":"EditView", "field_to_name_array":{ "id":"id", "name":"name" } });
 	}
 
@@ -1101,7 +1101,7 @@ function addGroupQualify(cell, group) {
 	var table_key = module_select.options[module_select.selectedIndex].value;
 	if (table_key == 'self') {
 	selected_module = current_module;
-	} 
+	}
 	else {
 	  selected_module = full_table_list[table_key].module;
 	}
@@ -1109,10 +1109,10 @@ function addGroupQualify(cell, group) {
 	var field;
 
 	if (typeof(column_name) == 'undefined' || column_name == '') {
-		field = all_fields['self:name'].field_def;	
-	} 
+		field = all_fields['self:name'].field_def;
+	}
 	else {
-		field = all_fields[column_name].field_def;	
+		field = all_fields[column_name].field_def;
 	}
 
 	var field_type = field.type;
@@ -1162,7 +1162,7 @@ function addFilterQualify(cell, filter) {
 
 	var field = new Object();
 	if (typeof(field_key) != 'undefined' && field_key != '') {
-		field = all_fields[field_key].field_def;	
+		field = all_fields[field_key].field_def;
 	}
 
 	var select_html_info = new Object();
@@ -1247,13 +1247,13 @@ function addGroupBy(group) {
 	row.appendChild(cell);
 
 	the_table.appendChild(row);
-	
+
 	if(groups_arr.length == 1 && document.EditView.chart_type.options.length > 5) {
 		chartTypesHolder.push(document.EditView.chart_type.options[5]);
 		document.EditView.chart_type.options[5] = null;
 	}
 	else if(groups_arr.length == 2){
-		document.EditView.chart_type.options[5] = chartTypesHolder.pop();		
+		document.EditView.chart_type.options[5] = chartTypesHolder.pop();
 	}
 }
 
@@ -1322,13 +1322,13 @@ function deleteAllGroups(index) {
 		var this_row = groups_arr[groups_count_map[index]].row;
 		this_row.parentNode.removeChild(this_row);
 		groups_arr.splice(groups_count_map[index],1);
-	
+
 		for ( id in groups_count_map) {
 			if (groups_count_map[id] > groups_count_map[index]) {
 				groups_count_map[id]--;
 			}
 		}
-		
+
 		var group_by_button = document.getElementById('group_by_button');
 		group_by_button.style.display = 'inline';
 	}
@@ -1341,12 +1341,12 @@ function remakeGroups() {
 	document.EditView['report_offset'].value=0;
 	if (typeof(document.EditView.show_columns) != 'undefined' && document.EditView.show_columns.checked){
 		module_defs[current_module].group_by_field_defs = new Object();
-	
+
 		for(i=0; i < object_refs['display_columns'].options.length ;i++)  {
 			var field_name =  object_refs['display_columns'].options[i].value;
 			var field_def = module_defs[current_module].field_defs[field_name];
 			module_defs[current_module].group_by_field_defs[ field_def.name ] = field_def;
-		}	
+		}
 	}
 }
 
@@ -1360,9 +1360,9 @@ function getListFieldDef(field_key) {
 	else {
 		field_def.name = vardef['name'];
 	}
-	
+
 	field_def.label = vardef['vname'];
-	
+
 	if ( typeof(vardef.group_function) != 'undefined' && vardef.group_function != null) {
 		field_def.group_function = vardef.group_function;
 	}
@@ -1397,7 +1397,7 @@ function fill_form(type) {
 	if (document.EditView.show_details.checked == true || report_def.report_type=='tabular') {
 	    var disp_opts = object_refs['display_columns'].options;
 
-    	// loop thru display columns in the select element    
+    	// loop thru display columns in the select element
 	    // and construct report_def for display_columns
 		for(i=0; i < disp_opts.length ;i++) {
 			var field_def = getListFieldDef(disp_opts[i].value);
@@ -1413,14 +1413,14 @@ function fill_form(type) {
 
 			if (form_obj.sort_by.value == disp_opts[i].value) {
 				got_sort = 1;
-			}			
+			}
 		}
 	}
 
 	report_def.summary_columns = new Array();
 
 	if (report_def.report_type=='summary' && object_refs['display_summary'].style.display != 'none') {
-		// loop thru display columns in the select element    
+		// loop thru display columns in the select element
 		// and construct report_def for display_columns
 		var sum_opts = object_refs['display_summary'].options;
 		var summary_column_map = new Object();
@@ -1444,7 +1444,7 @@ function fill_form(type) {
 
 			if (form_obj.summary_sort_by.value == sum_opts[i].value) {
 				got_summary_sort = 1;
-			}			
+			}
    		}
 	}
 
@@ -1471,7 +1471,7 @@ function fill_form(type) {
 	if (got_summary_sort == 0 || document.EditView.show_details.checked) {
 		form_obj.summary_sort_by.value = '';
 		form_obj.summary_sort_dir.value = '';
-	} 
+	}
 	else {
 		var summary_sort_by_elem = new Object();
 		var key_arr = form_obj.summary_sort_by.value.split(':');
@@ -1480,7 +1480,7 @@ function fill_form(type) {
 
 		if ( typeof(all_fields[ form_obj.summary_sort_by.value ].field_def.group_function) != 'undefined') {
 			summary_sort_by_elem.group_function = all_fields[ form_obj.summary_sort_by.value ].field_def.group_function;
-		} 
+		}
 		else if ( typeof(all_fields[ form_obj.summary_sort_by.value ].field_def.column_function) != 'undefined') {
 			summary_sort_by_elem.group_function = all_fields[ form_obj.summary_sort_by.value ].field_def.column_function;
 		}
@@ -1523,10 +1523,10 @@ function fill_form(type) {
 		var cell0 = filter_table.rows[i].cells[1];
 		var cell1 = filter_table.rows[i].cells[2];
 		var cell2 = filter_table.rows[i].cells[3];
-	
+
 		var column_name = cell0.getElementsByTagName('select')[0].value;
 		var filter_def = new Object();
-		var field = all_fields[column_name].field_def;	
+		var field = all_fields[column_name].field_def;
 		filter_def.name = field.name;
 		filter_def.table_key = all_fields[column_name].linked_field_name;
 
@@ -1540,7 +1540,7 @@ function fill_form(type) {
 				got_error = 1;
 				error_msgs += "\""+column_vname+"\""+lbl_missing_input_value+"\n";
 			}
-	
+
 			if ( typeof(input_arr[1]) != 'undefined') {
 				filter_def.input_name1=input_arr[1].value;
 				if (input_arr[1].value == '') {
@@ -1548,7 +1548,7 @@ function fill_form(type) {
 					error_msgs += "\"" + column_vname + "\""+lbl_missing_second_input_value+"\n";
 				}
 			}
-			
+
 			if(field.type=='datetimecombo'){
 				if( typeof(input_arr[2]) != 'undefined'){
 					filter_def.input_name2=input_arr[2].value;
@@ -1572,7 +1572,7 @@ function fill_form(type) {
 					}
 				}
 			}
-		} 
+		}
 		else {
 			var got_selected = 0;
 			var select_input = cell2.getElementsByTagName('select')[0];
@@ -1595,13 +1595,13 @@ function fill_form(type) {
 				if ( date_match != null) {
 					filter_def.input_name0 = date_match[date_reg_positions['Y']] + "-"+date_match[date_reg_positions['m']] + "-"+date_match[date_reg_positions['d']];
 				}
-			}			
+			}
 			if ( typeof(filter_def.input_name1) != 'undefined' && typeof(filter_def.input_name1) != 'array') {
 				var date_match = filter_def.input_name1.match(date_reg_format);
 				if ( date_match != null) {
 					filter_def.input_name1 = date_match[date_reg_positions['Y']] + "-"+date_match[date_reg_positions['m']] + "-"+date_match[date_reg_positions['d']];
 				}
-			}			
+			}
 		}else if ( field.type == 'datetimecombo') {
 			if ( (typeof(filter_def.input_name0) != 'undefined' && typeof(filter_def.input_name0) != 'array') && (typeof(filter_def.input_name1) != 'undefined' && typeof(filter_def.input_name1) != 'array')) {
 				var date_match = filter_def.input_name0.match(date_reg_format);
@@ -1609,14 +1609,14 @@ function fill_form(type) {
 				if ( date_match != null && time_match != null) {
 					filter_def.input_name0 = date_match[date_reg_positions['Y']] + "-"+date_match[date_reg_positions['m']] + "-"+date_match[date_reg_positions['d']] + ' '+ filter_def.input_name1;
 				}
-			}			
+			}
 			if ( typeof(filter_def.input_name2) != 'undefined' && typeof(filter_def.input_name2) != 'array' && typeof(filter_def.input_name3) != 'undefined' && typeof(filter_def.input_name3) != 'array') {
 				var date_match = filter_def.input_name2.match(date_reg_format);
 				var time_match = filter_def.input_name3.match(time_reg_format);
 				if ( date_match != null && time_match != null) {
 					filter_def.input_name2 = date_match[date_reg_positions['Y']] + "-"+date_match[date_reg_positions['m']] + "-"+date_match[date_reg_positions['d']] + ' '+ filter_def.input_name3;
 				}
-			}			
+			}
 		}
 		filters_def.push(filter_def);
 	}
@@ -1627,10 +1627,10 @@ function fill_form(type) {
 	}
 
 	report_def.filters_def = filters_def;
-	
+
 	// and/or filter option
 	report_def.filters_combiner = document.getElementById('filters_combiner').options[document.getElementById('filters_combiner').selectedIndex].value;
-	
+
 	var group_by_table = document.getElementById('group_by_tbody');
 	var group_defs = new Array();
 
@@ -1668,7 +1668,7 @@ function fill_form(type) {
 
 	for(var i in links) {
 	  	links_def.push(links[i]);
-	}	
+	}
 
 	var link_joins = getSelectedLinkJoins(links_def);
 	report_def.full_table_list = full_table_list;
@@ -1681,7 +1681,7 @@ function fill_form(type) {
 
 	global_report_def = report_def;
   	report_def.assigned_user_id = document.EditView.assigned_user_id.value;
-  
+
 	report_def_str = YAHOO.lang.JSON.stringify(report_def);
 	form_obj.report_def.value = report_def_str;
 
@@ -1699,11 +1699,11 @@ function set_sort(column_name,source) {
 		source = 'columns';
 	}
 
-	var sort_by = 'sort_by';	
-	var sort_dir = 'sort_dir';	
+	var sort_by = 'sort_by';
+	var sort_dir = 'sort_dir';
 	if ( source == 'summary') {
-		sort_by = 'summary_sort_by';	
-		sort_dir = 'summary_sort_dir';	
+		sort_by = 'summary_sort_by';
+		sort_dir = 'summary_sort_dir';
 	}
 
 	if (column_name == document.EditView[sort_by].value) {
@@ -1733,7 +1733,7 @@ function set_offset(offset) {
 	if ( fill_form() == true) {
 		document.EditView.submit();
 	}
-	
+
 }
 
 function load_page() {
@@ -1782,7 +1782,7 @@ function getFieldKey(field_def) {
 	var func_name = '';
 	if (typeof(field_def.group_function) != 'undefined') {
 		func_name = field_def.group_function;
-	} 
+	}
 	else if (typeof(field_def.column_function) != 'undefined') {
 		func_name = field_def.column_function;
 	}
@@ -1793,7 +1793,7 @@ function getFieldKey(field_def) {
 	else if (! (func_name == 'weighted_amount' || func_name == 'weighted_sum') && func_name != '' ) {
 		return field_def.table_key+":"+field_def.name+":"+func_name;
 	}
-	
+
 	return field_def.table_key+":"+field_def.name;
 }
 
@@ -1802,7 +1802,7 @@ function reload_filters() {
 	for(index in report_def.filters_def) {
 		report_def.filters_def[index].column_name = getFieldKey(report_def.filters_def[index]);
 		addFilter(report_def.filters_def[index]);
-	}	
+	}
 }
 
 function reload_groups() {
@@ -1816,13 +1816,13 @@ function get_rel_type(linked_field,relationship) {
 		return linked_field['link_type'];
 	}
 
-	// code should never get this far.. link_type is already defined 
-	
+	// code should never get this far.. link_type is already defined
+
 	if ( relationship.relationship_type == 'one-to-many') {
 		if (linked_field.bean_is_lhs == true) {
 			if ( relationship['lhs_module'] == linked_field['module']) {
 				return 'one';
-			} 
+			}
 			else {
 				return 'many';
 			}
@@ -1835,8 +1835,8 @@ function get_rel_type(linked_field,relationship) {
 				return 'many';
 			}
 		}
-	} 
-	
+	}
+
 	return 'many';
 }
 
@@ -1845,18 +1845,18 @@ function joinChecked(obj) {
 	reload_join_rows('add');
 
 	var objName = obj.id;
-	
-	// loop thru all filters, refresh module select, and reset if 
+
+	// loop thru all filters, refresh module select, and reset if
 	// was selecting a module that doesnt exist in the current links
 	for( var index in filters_arr) {
 		current_filter_id = index;
-		var filter_row = filters_arr[filters_count_map[index]];		
+		var filter_row = filters_arr[filters_count_map[index]];
 
 		// Bug 13073////
 		var filter_module = filter_row.module_select[filter_row.module_select.selectedIndex].value;
 		if ( objName.indexOf("_div") > -1)
 			filter_module = filter_module.substr(0, objName.indexOf("_div"));
-		
+
 		// If the filter and the object refer to the same module and we aren't just adding more relations...
 		// When we add more relations, the object is not a div
 		if ( objName.indexOf("_div") > -1 && objName.substr(0, objName.indexOf("_div")) == filter_module) {
@@ -1868,8 +1868,8 @@ function joinChecked(obj) {
 				qualifier_name:'',input_name0:'',input_name1:''};
 			// Bug 13124////
 
-			refreshFilterModule(filter_row.module_select,filter,index);		
-		}	
+			refreshFilterModule(filter_row.module_select,filter,index);
+		}
 	}
 
 	for( var index in groups_arr) {
@@ -1892,7 +1892,7 @@ function joinChecked(obj) {
 			refreshGroupModule(group_row.module_select,group,index);
 			refreshGroupColumn(group_row.column_select,group,index);
 			refreshGroupQualify(group_row.qualify_select,group,index);
-		}	
+		}
 
 	}
 }
@@ -1918,7 +1918,7 @@ function delete_this_join( this_id ) {
 function delete_join_rows( parent_id ) {
 	// Reset the selected fields
 	all_fields = new Array();
-	
+
 	if ( full_table_list[parent_id] != null && full_table_list[parent_id].children != null ) {
 		// This guy has some children
 		// Make a copy of the list, javascript doesn't like iterating through a list you are modifying.
@@ -1954,7 +1954,7 @@ function add_related( parent_id, my_id ) {
 	if ( mod_name == null ) {
 		alert(lbl_alert_cant_add);
 		return(false);
-	}			
+	}
 
 	if ( module_defs[mod_name] == null ) {
 		return(false);
@@ -2010,16 +2010,16 @@ function add_related( parent_id, my_id ) {
 		// We want to add children, we should make the display visible
 		children_div.style.display = '';
 	}
-	
+
 	new_child_div = document.createElement('div');
 	new_child_div.style.marginLeft = '10px';
 	new_child_div.style.marginTop = '5px';
 	new_child_div.style.marginBottom = '5px';
-	
-	new_child_div.innerHTML = "<b>" + LBL_RELATED + "</b>" + buildSelectHTML(select_html_info) + 
-		' <a href="" class="button" style="padding: 2px; text-decoration: none;" onClick="add_related(\'' + select_info['name'] + '\'); return(false);">' + lbl_add_related + 
-		'</a> <a href="" class="button" style="padding: 2px; text-decoration: none;" onClick="delete_this_join(\'' + select_info['name'] + '\'); return(false);">' + lbl_del_this + '</a> ' + 
-		buildOuterJoinHTML(select_html_info) + 
+
+	new_child_div.innerHTML = "<b>" + LBL_RELATED + "</b>" + buildSelectHTML(select_html_info) +
+		' <a href="" class="button" style="padding: 2px; text-decoration: none;" onClick="add_related(\'' + select_info['name'] + '\'); return(false);">' + lbl_add_related +
+		'</a> <a href="" class="button" style="padding: 2px; text-decoration: none;" onClick="delete_this_join(\'' + select_info['name'] + '\'); return(false);">' + lbl_del_this + '</a> ' +
+		buildOuterJoinHTML(select_html_info) +
 		'<div style="display: none; border-left: 2px dotted #000000; padding-left: 5px;" id="' + select_info['name'] + '_children"></div>';
 
 	new_child_div.id = select_info['name'] + '_div';
@@ -2055,14 +2055,14 @@ function build_join_rows(module,joins_table,level) {
 			input_elem.name='link_'+linked_field['name'];
 			input_elem.id='link_'+linked_field['name'];
 			input_elem.value=linked_field['name'];
-	
+
 			join_index++;
-	
+
 			join_refs.push(input_elem);
 			td.appendChild(input_elem);
 		}
 	}
-	
+
 	if ( level == 1 ) {
 		var options = new Array();
 		var option_info = new Object();
@@ -2083,7 +2083,7 @@ function build_join_rows(module,joins_table,level) {
 			var selected = false;
 			var option_info = new Object();
 			option_info['value'] = linked_field['name'];
-			option_info['text'] = linked_field_name.substring(0,1).toUpperCase() + linked_field_name.substring(1,linked_field_name.length); 
+			option_info['text'] = linked_field_name.substring(0,1).toUpperCase() + linked_field_name.substring(1,linked_field_name.length);
 			option_info['selected'] = selected;
 			options[options.length] = option_info;
 		}
@@ -2126,7 +2126,7 @@ function getSelectedLinks() {
 			// This is the primary module, we don't want to include it
 			continue;
 		}
-		
+
 		if ( full_table_list[index] != null && full_table_list[index].value != '' ) {
 			joins_array.push(index);
 		}
@@ -2146,7 +2146,7 @@ function getRelatedModule(link_def) {
 	}
 	if ( link_def.bean_is_lhs ) {
 		return rel_def['rhs_module'];
-	} 
+	}
 	else {
 		return rel_def['lhs_module'];
 	}
@@ -2159,18 +2159,18 @@ function viewJoinChanged(obj) {
 
 function getSelectedLinkDefs(module) {
 	if ( typeof(module) == 'undefined') {
-		module = current_module;	
+		module = current_module;
 	}
 	var new_links = new Object();
 	var links = getSelectedLinks()
-	
+
 	var type = 'one';
 	for(var i in  links) {
 		if(typeof full_table_list[links[i]].link_def == 'undefined') {
 			return;
 		}
 		var linked_field = full_table_list[links[i]].link_def;
-		
+
 		var selected = false;
 		var relationship = rel_defs[linked_field['relationship_name']];
 		var rel_type = get_rel_type(linked_field,relationship);
@@ -2191,17 +2191,17 @@ function getLinksByRelType(link_defs,type) {
 	var new_links = new Object();
 	for(var i in link_defs) {
 		var linked_field = link_defs[i];
-		
+
 		var module = getRelatedModule(linked_field);
 		if (! moduleIsVisible(module)) {
 			continue;
 		}
-		
+
 		var selected = false;
 		var relationship = rel_defs[linked_field['relationship_name']];
 		var rel_type = get_rel_type(linked_field,relationship);
 
-		if (typeof(type) == 'undefined' || rel_type == type) { 
+		if (typeof(type) == 'undefined' || rel_type == type) {
 			new_links[i] = link_defs[i];
 		}
 	}
@@ -2217,7 +2217,7 @@ function getAllFieldsMapped(module) {
 	for(var k in module_defs[module].field_defs) {
 		all_fields["self:"+module_defs[module].field_defs[k].name] = {"field_def": module_defs[module].field_defs[k],"linked_field_name":"self","label_prefix":module_defs[module].label};
 	}
-	
+
 	for(var k in module_defs[module].summary_field_defs) {
 		all_fields["self:"+module_defs[module].summary_field_defs[k].name] = {"field_def": module_defs[module].summary_field_defs[k],"linked_field_name":"self","label_prefix":module_defs[module].label};
 			summary_fields_str+='|'+"self:"+module_defs[module].summary_field_defs[k].name;
@@ -2233,7 +2233,7 @@ function getAllFieldsMapped(module) {
 		if ( typeof(module_defs[join_module]) == 'undefined') {
 			continue;
 		}
-		
+
 		for( var j in module_defs[join_module].field_defs) {
 			all_fields[i+":"+module_defs[join_module].field_defs[j].name] = {"field_def": module_defs[join_module].field_defs[j],"linked_field_name":i,"label_prefix":link_defs[i].label};
 		}
@@ -2250,13 +2250,13 @@ function getAllFieldsMapped(module) {
 			}
 			all_fields[i+":"+module_defs[join_module].summary_field_defs[j].name] ={"field_def": module_defs[join_module].summary_field_defs[j],"linked_field_name":i,"label_prefix":link_defs[i].label};
 		}
-	}	
+	}
 
 	return all_fields;
 }
 
 // this is called on doubleclick of the columns selector
-function doRename(obj) { 
+function doRename(obj) {
 	var label = prompt("Rename label:\n"+obj.default_label,obj.text);
 	if ( label != null) {
 		obj.text = label;
@@ -2266,13 +2266,13 @@ function doRename(obj) {
 
 function saveLabel(type, obj) {
 	if(type == 'column') {
-		var columns_ref = object_refs['display_columns'];	
+		var columns_ref = object_refs['display_columns'];
 	}
 	else if(type == 'detailsummary'){
-		var columns_ref = object_refs['display_summary'];	
+		var columns_ref = object_refs['display_summary'];
 	}
 	else {
-		return;	
+		return;
 	}
 
 	if(typeof(obj.lastIndex) != 'undefined' &&  obj.lastIndex != -1 ){
@@ -2282,7 +2282,7 @@ function saveLabel(type, obj) {
 	 }
 	 else{
 	 	this.value = '';
-	 	this.lastIndex = -1;	
+	 	this.lastIndex = -1;
 	 }
 }
 
@@ -2299,29 +2299,29 @@ function reload_columns( reload_type) {
     display_columns_ref = object_refs['display_columns'];
     hidden_columns_ref = object_refs['hidden_columns'];
     display_summary_ref = object_refs['display_summary'];
-    display_summary_ref.onchange = function() { 
+    display_summary_ref.onchange = function() {
 		var current_option = this.options[this.selectedIndex];
 		document.getElementById('detailsummary_label_editor').lastIndex = this.selectedIndex;
 		if(typeof(current_option.saved_text) == 'undefined') {
-			document.getElementById('detailsummary_label_editor').value =current_option.text; 
+			document.getElementById('detailsummary_label_editor').value =current_option.text;
 		}
 		else{
-			document.getElementById('detailsummary_label_editor').value =current_option.saved_text; 
+			document.getElementById('detailsummary_label_editor').value =current_option.saved_text;
 		}
 	};
 
     hidden_summary_ref = object_refs['hidden_summary'];
-	display_columns_ref.onchange = function() { 
+	display_columns_ref.onchange = function() {
 		var current_option = this.options[this.selectedIndex];
 		document.getElementById('column_label_editor').lastIndex = this.selectedIndex;
 		if(typeof(current_option.saved_text) == 'undefined'){
-			document.getElementById('column_label_editor').value =current_option.text; 
+			document.getElementById('column_label_editor').value =current_option.text;
 		}
 		else{
-			document.getElementById('column_label_editor').value =current_option.saved_text; 
+			document.getElementById('column_label_editor').value =current_option.saved_text;
 		}
 	};
-	
+
     if ( reload_type == 'default' || reload_type=='regular') {
 		if (reload_type == 'default') {
 			visible_fields_map = new Object();
@@ -2333,13 +2333,13 @@ function reload_columns( reload_type) {
 			document.getElementById('columns_table').style.display='';
 			document.getElementById('columns_more_div').style.display='';
            	visible_summary_fields_org = module_defs[current_module].default_summary_columns;
-					
+
         	visible_summary_fields = new Array();
 
           	for(i=0;i < visible_summary_fields_org.length;i++) {
 				if ( visible_summary_fields_org[i] == 'count') {
 	         		visible_summary_fields.push(  visible_summary_fields_org[i]);
-				} 
+				}
 				else {
 	         		visible_summary_fields.push( 'self:'+ visible_summary_fields_org[i]);
 				}
@@ -2348,7 +2348,7 @@ function reload_columns( reload_type) {
 		}
 
 		// TODO: FIX THIS:
-		
+
 		selected_link_name = module_defs[current_module].default_link_name;
 		display_columns_ref.options.length = 0;
 		display_summary_ref.options.length = 0;
@@ -2365,7 +2365,7 @@ function reload_columns( reload_type) {
 			if ( typeof(visible_fields_map) != 'undefined' && typeof(visible_fields_map[display_columns_ref.options[i].value]) == 'undefined' ) {
 				if ( typeof (display_columns_ref.options[i].saved_text) != 'undefined') {
 					visible_fields_map[display_columns_ref.options[i].value] = {"label":display_columns_ref.options[i].saved_text};
-				}					
+				}
 			}
 		}
 
@@ -2374,10 +2374,10 @@ function reload_columns( reload_type) {
 			if ( typeof(visible_summary_fields_map) != 'undefined' && typeof(visible_summary_fields_map[display_summary_ref.options[i].value]) == 'undefined' ) {
 				if ( typeof (display_summary_ref.options[i].saved_text) != 'undefined') {
 					visible_fields_map[display_summary_ref.options[i].value] = {"label":display_summary_ref.options[i].saved_text};
-				}					
+				}
 			}
 		}
-	
+
 		display_columns_ref.options.length = 0;
 		display_summary_ref.options.length = 0;
 		hidden_columns_ref.options.length = 0;
@@ -2387,7 +2387,7 @@ function reload_columns( reload_type) {
     var seen_visible = new Object();
 
 	var view_join = document.EditView.view_join;
-	
+
 	var selected_link = '';
 	var link_defs = getSelectedLinkDefs();
 
@@ -2401,7 +2401,7 @@ function reload_columns( reload_type) {
 
 	if ('self' == view_join_value) {
 		selected=true;
-	} 
+	}
 	else {
 		selected=false;
 	}
@@ -2422,7 +2422,7 @@ function reload_columns( reload_type) {
 		// re-selected the remembered select (if there was one)
 		if (i == view_join_value) {
 			selected=true;
-		} 
+		}
 		else {
 			selected=false;
 		}
@@ -2460,14 +2460,14 @@ function reload_columns( reload_type) {
 		}
 		var field = all_fields[visible_fields[i]].field_def;
 		var default_label = all_fields[visible_fields[i]]['label_prefix']+": "+field['vname'];
-		
+
 		if ( typeof (visible_fields_map[visible_fields[i]]) != 'undefined' &&  typeof (visible_fields_map[visible_fields[i]].label) != 'undefined') {
 			display_columns_ref.options[display_columns_ref.options.length] = new Option(visible_fields_map[visible_fields[i]].label,all_fields[visible_fields[i]]['linked_field_name']+":"+all_fields[visible_fields[i]].field_def['name']);
-		} 
+		}
 		else {
 			display_columns_ref.options[display_columns_ref.options.length] = new Option(default_label,all_fields[visible_fields[i]]['linked_field_name']+":"+all_fields[visible_fields[i]].field_def['name']);
 		}
-	
+
 		var current_option = display_columns_ref.options[display_columns_ref.options.length-1];
 		current_option.default_label = default_label;
 
@@ -2478,7 +2478,7 @@ function reload_columns( reload_type) {
 
        seen_visible[ visible_fields[i] ] = 1;
 	}
-                                                                                                      
+
 	var field_defs_arr = getOrderedFieldDefArray(field_defs,false);
 
 	for(var index in field_defs_arr) {
@@ -2511,7 +2511,7 @@ function reload_columns( reload_type) {
 	else {
 		selected=false;
 	}
-	
+
 	view_join_summary.options[view_join_summary.options.length] = new Option(module_defs[current_module].label,'self',selected);
 
 	var summary_select_counter = 0;
@@ -2529,16 +2529,16 @@ function reload_columns( reload_type) {
 
 		if (i == selected_link_value) {
 			selected=true;
-		} 
+		}
 		else {
 			selected=false;
 		}
-		
+
 		var label = linked_field['label'];
 		if ( i != 'self' ) {
 			label = full_table_list[full_table_list[i].parent].label + ' > '+ label;
 		}
-		
+
 		summary_select_counter++;
 		view_join_summary.options[view_join_summary.options.length] = new Option(label,i,selected);
 		if(selected){
@@ -2560,7 +2560,7 @@ function reload_columns( reload_type) {
 
 	var valid_groups = new Object();
 
-	var group_by_table = document.getElementById('group_by_tbody'); 
+	var group_by_table = document.getElementById('group_by_tbody');
 
 	has_group = null;
 
@@ -2581,11 +2581,11 @@ function reload_columns( reload_type) {
 			continue;
 		}
 		var key = group_by_def.table_key+":"+group_by_def.name;
-						
+
 		if ( typeof (cell1) !=  'undefined' && cell1.getElementsByTagName('select')[0].style.display != 'none') {
 			key += ":"+cell1.getElementsByTagName('select')[0].value;
 		}
-        
+
         valid_groups[key] = 1;
 	}
 
@@ -2598,18 +2598,18 @@ function reload_columns( reload_type) {
 		var key = visible_summary_fields[i];
 		if (typeof(all_fields[key]) == 'undefined' || typeof( all_fields[key].field_def) == 'undefined') {
             continue;
-		} 
+		}
 
-		if ( current_db_type !='mysql' && (typeof(valid_groups[key]) == 'undefined' && ( typeof( all_fields[key].field_def.summary_type)  == 'undefined' 
+		if ( (typeof(valid_groups[key]) == 'undefined' && ( typeof( all_fields[key].field_def.summary_type)  == 'undefined'
              || all_fields[key].field_def.summary_type != 'group'))) {
 			continue;
-		} 
+		}
 
 		var field = all_fields[key].field_def;
 		var linked_field_name = '';
 		var label_prefix = '';
 		var default_label =  '';
-		
+
 		if ( field.name == 'count') {
 			key = 'count';
 			default_label = field['vname'];
@@ -2668,7 +2668,7 @@ function reload_columns( reload_type) {
 
 	for( var index in summary_field_defs) {
 		var field = summary_field_defs[index];
-		if ( field.summary_type != 'group' && current_db_type !='mysql') {
+		if ( field.summary_type != 'group') {
 			continue;
 		}
 
@@ -2685,17 +2685,6 @@ function reload_columns( reload_type) {
 		if (seen_visible_summary[key] != 1) {
 			hidden_summary_ref.options[hidden_summary_ref.options.length] = new Option(field['vname'],key);
 		}
-	}
-
-	if ( current_db_type == 'mysql') {
-        for(var index in field_defs_arr) {
-	        var field = field_defs_arr[index];
-	        var key = current_prefix +":"+field['name'];
-
-            if (seen_visible_summary[key] != 1) {
-				hidden_summary_ref.options[hidden_summary_ref.options.length] = new Option(field['vname'],key);
-			}
-        }
 	}
 
 	refresh_chart_tab();
@@ -2717,7 +2706,7 @@ function refresh_chart_tab() {
 		document.EditView.chart_type.disabled = false;
 		document.EditView.chart_type.selectedIndex = 1;
 		document.EditView.chart_description.disabled = false;
-	} 
+	}
 	else {
 		document.getElementById('no_chart_text').style.display='';
 		document.EditView.numerical_chart_column.disabled = true;
@@ -2753,18 +2742,18 @@ function addSelectOptionAttrs(info,obj) {
 	}
 }
 
-//builds the html for a select 
+//builds the html for a select
 function buildSelectHTML(info) {
 	var text;
 	text = "<select";
-       
+
 	for(var key in info['select']) {
 		if ( typeof (info['select'][key]) != 'undefined') {
 			text +=" "+ key +"=\""+ info['select'][key] +"\"";
 		}
 	}
 	text +=">";
-	
+
 	var saved_attrs = new Array();
 
 	for(i=0; i < info['options'].length; i++) {
@@ -2809,7 +2798,7 @@ function buildOuterJoinHTML(info) {
 function updateOuterJoin ( obj ) {
 	// Nuke the outer_ part at the front of the string, to get the table key
 	table_key = obj.id.replace("outer_","");
-	
+
 	if ( obj.checked == true ) {
 		full_table_list[table_key].optional = true;
 	}
@@ -2842,15 +2831,15 @@ function expandCollapseComboSummaryDiv(divId) {
 	if (document.getElementById(divId)) {
 		if (document.getElementById(divId).style.display == "none") {
 			document.getElementById(divId).style.display = "";
-			document.getElementById("img_" + divId).innerHTML = 
+			document.getElementById("img_" + divId).innerHTML =
 				document.getElementById("img_" + divId).innerHTML.replace(/advanced_search/,"basic_search");
 			document.getElementById('expanded_combo_summary_divs').value += divId + " ";
 		}
 		else {
 			document.getElementById(divId).style.display = "none";
-			document.getElementById("img_" + divId).innerHTML = 			
+			document.getElementById("img_" + divId).innerHTML =
 				document.getElementById("img_" + divId).innerHTML.replace(/basic_search/,"advanced_search");
-			document.getElementById('expanded_combo_summary_divs').value = 
+			document.getElementById('expanded_combo_summary_divs').value =
 				document.getElementById('expanded_combo_summary_divs').value.replace(divId,"");
 
 		}

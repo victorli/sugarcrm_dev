@@ -61,7 +61,7 @@ class Bug39610Test extends Sugar_PHPUnit_Framework_TestCase
         {
 $string = <<<EOQ
 <?php
-class CustomContactsViewEdit
+class CustomContactsViewEdit extends ViewEdit
 {
      var \$useForSubpanel = false;
 

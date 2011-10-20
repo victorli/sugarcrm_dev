@@ -55,7 +55,8 @@
         </td>
 <!-- BEGIN Remove and Radio -->
         <td valign='top'>
-            <img id="remove_{$vardef.name}_collection_0" name="remove_{$vardef.name}_collection_0" src="{sugar_getimagepath file='delete_inline.gif'}" onclick="collection['{$displayParams.formName}_{$vardef.name}'].remove('lineFields_{$displayParams.formName}_{$vardef.name}_0');"/>
+        	{capture assign=attr}id="remove_{$vardef.name}_collection_0" name="remove_{$vardef.name}_collection_0" onclick="collection['{$displayParams.formName}_{$vardef.name}'].remove('lineFields_{$displayParams.formName}_{$vardef.name}_0');"{/capture}
+        	{sugar_getimage name="delete_inline" ext=".gif" attr=$attr}
             {if !empty($displayParams.allowNewValue) }
             <input type="hidden" name="allow_new_value_{$vardef.name}_collection_0" id="allow_new_value_{$vardef.name}_collection_0" value="true">
             {/if}
@@ -71,7 +72,11 @@
 <table name='{$displayParams.formName}_{$vardef.name}_add_table' id='{$displayParams.formName}_{$vardef.name}_add_table'>
     <tr>
         <td>
-            <a href="javascript:collection['{$displayParams.formName}_{$vardef.name}'].add();"><img class="img" id="add_{$displayParams.formName}_{$vardef.name}_image" border="0" width="10" height="10" src="{sugar_getimagepath file='plus_inline.gif'}" style="margin-top: 3px;"/></a><a href="javascript:collection['{$displayParams.formName}_{$vardef.name}'].add();"> Add </a>
+            <a href="javascript:collection['{$displayParams.formName}_{$vardef.name}'].add();">
+            {capture assign="attr"}class="img" id="add_{$displayParams.formName}_{$vardef.name}_image" border="0" style="margin-top: 3px;"{/capture}
+            [sugar_getimage name="plus_inline" ext=".gif" attr=$attr width="10" height="10"}
+            </a>
+            <a href="javascript:collection['{$displayParams.formName}_{$vardef.name}'].add();"> Add </a>
         </td>
     </tr>
 </table>

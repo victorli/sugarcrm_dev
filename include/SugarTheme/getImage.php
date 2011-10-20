@@ -44,11 +44,21 @@ elseif ( isset($_SESSION['authenticated_user_theme']) )
 while(substr_count($_REQUEST['imageName'], '..') > 0){
 	$_REQUEST['imageName'] = str_replace('..', '.', $_REQUEST['imageName']);
 }
-$filename = SugarThemeRegistry::current()->getImageURL($_REQUEST['imageName']);
-if ( empty($filename) ) {
-    header($_SERVER["SERVER_PROTOCOL"].' 404 Not Found');
-    die;
+
+if(isset($_REQUEST['spriteNamespace'])) {
+	$filename = "cache/sprites/{$_REQUEST['spriteNamespace']}/{$_REQUEST['imageName']}";
+	if(! file_exists($filename)) {
+		header($_SERVER["SERVER_PROTOCOL"].' 404 Not Found');
+		die;
+	}
+} else {
+	$filename = SugarThemeRegistry::current()->getImageURL($_REQUEST['imageName']);
+	if ( empty($filename) ) {
+		header($_SERVER["SERVER_PROTOCOL"].' 404 Not Found');
+		die;
+	}
 }
+
 $filename_arr = explode('?', $filename);
 $filename = $filename_arr[0];
 $file_ext = substr($filename,-3);
@@ -71,6 +81,7 @@ $etag = '"'.md5_file($filename).'"';
 header("Cache-Control: private");
 header("Pragma: dummy=bogus");
 header("Etag: $etag");
+header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 86400));
 
 $ifmod = isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
     ? strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $last_modified_time : null;
@@ -81,7 +92,6 @@ if (($ifmod || $iftag) && ($ifmod !== false && $iftag !== false)) {
     die;
 }
 
-header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 86400));
 header("Last-Modified: ".gmdate('D, d M Y H:i:s \G\M\T', $last_modified_time));
 
 // now send the content

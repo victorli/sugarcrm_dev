@@ -99,9 +99,9 @@ $currentitems = 0;
 define("CONFIG_WEIGHT", 1);
 define("CUSTOM_DIR_WEIGHT", 1);
 define("PHPINFO_WEIGHT", 1);
-define("MYSQL_DUMPS_WEIGHT", 2);
-define("MYSQL_SCHEMA_WEIGHT", 3);
-define("MYSQL_INFO_WEIGHT", 1);
+define("SQL_DUMPS_WEIGHT", 2);
+define("SQL_SCHEMA_WEIGHT", 3);
+define("SQL_INFO_WEIGHT", 1);
 define("MD5_WEIGHT", 5);
 define("BEANLISTBEANFILES_WEIGHT", 1);
 define("SUGARLOG_WEIGHT", 2);
@@ -134,82 +134,105 @@ function sodUpdateProgressBar($itemweight){
 }
 
 
+/**
+ * Dump table as array
+ * @param  $header string table header
+ * @param  $values array list of values
+ * @return string
+ */
+function array_as_table($header, $values)
+{
+    $contents = "<table border=\"0\" cellpadding=\"0\" class=\"tabDetailView\">";
+    $keys = array();
+    foreach($values as $field) {
+        $keys = array_unique($keys + array_keys($field));
+    }
+    $cols = count($keys);
+
+    $contents .= "<tr colspan=\"$cols\">$header</tr><tr>";
+    foreach($keys as $key) {
+       $contents .= "<th class=\"tabDetailViewDL\"><b>$key</b></th>";
+    }
+    $contents .= "</tr>";
+    foreach($values as $field) {
+        $contents .= "<tr>";
+        foreach($field as $item) {
+            if(is_array($item)) {
+                $item = join(",", $item);
+            }
+            $contents .= "<td class=\"tabDetailViewDF\">$item</td>";
+        }
+        $contents .= "</tr>";
+    }
+    $contents .= "</table>";
+    return $contents;
+}
+
 // expects a string containing the name of the table you would like to get the dump of
-// expects there to already be a connection to mysql and the 'use database_name' to be done
+// expects there to already be a connection to the db and the 'use database_name' to be done
 // returns a string containing (in html) the dump of all rows
 function getFullTableDump($tableName){
 
 	global $db;
 
-	$returnString = "<table border=\"1\">";
-	$returnString .= "<tr><b><center>Table ".$tableName."</center></b></tr>";
-	//get table field definitions
-	$definitions = array();
-	$def_result = $db->query("describe ".$tableName);
-	if(!$def_result)
-	{
-		return mysql_error();
-	}
-	else
-	{
-		$returnString .= "<tr><td><b>Row Num</b></td>";
-		$def_count = 0;
-		while($row = $db->fetchByAssoc($def_result))
-		{
-			$row = array_values($row);
-			$definitions[$def_count] = $row[0];
-			$def_count++;
-			$returnString .= "<td><b>".$row[0]."</b></td>";
-		}
-		$returnString .= "</tr>";
-	}
+    $cols = $db->get_columns($tableName);
+    $indexes = $db->get_indices($tableName);
+    $returnString = "";
+    //setting up table header for each file
+    $returnString .= array_as_table("{$db->dbName} $tableName Definitions:", $cols);
+    $returnString .= array_as_table("{$db->dbName} $tableName Keys:", $indexes);
+    $returnString .= "<BR><BR>";
+
+    $def_count = count($cols);
 
 	$td_result = $db->query("select * from ".$tableName);
-	if(!$td_result)
-	{
-		return mysql_error();
-	}
-	else
-	{
-		$row_counter = 1;
-		while($row = $db->fetchByAssoc($td_result))
-		{
-			$row = array_values($row);
-			$returnString .= "<tr>";
-			$returnString .= "<td>".$row_counter."</td>";
-			for($counter = 0; $counter < $def_count; $counter++){
+    if(!$td_result) {
+        return $db->lastError();
+    }
+    $returnString .= "<table border=\"0\" cellpadding=\"0\" class=\"tabDetailView\"><tr><th class=\"tabDetailViewDL\">#</th>";
+    $fields = $db->getFieldsArray($td_result);
+    foreach($fields as $field) {
+        $returnString .= "<th class=\"tabDetailViewDL\">$field</th>";
 
-			$replace_val = false;
+    }
+    $returnString .= "</tr>";
+    $row_counter = 1;
+	while($row = $db->fetchByAssoc($td_result))
+	{
+		$row = array_values($row);
+		$returnString .= "<tr>";
+		$returnString .= "<td class=\"tabDetailViewDL\">".$row_counter."</td>";
+		for($counter = 0; $counter < $def_count; $counter++) {
+            $replace_val = false;
 			//perform this check when counter is set to two, which means it is on the 'value' column
-			if($counter == 2){
-				//if the previous "name" column value was set to smtppass, set replace_val to true 
+			if($counter == 2) {
+				//if the previous "name" column value was set to smtppass, set replace_val to true
 				if(strcmp($row[$counter - 1], "smtppass") == 0  )
 					$replace_val = true;
-				
-				//if the previous "name" column value was set to smtppass, 
+
+				//if the previous "name" column value was set to smtppass,
 				//and the "category" value set to ldap, set replace_val to true
 				if (strcmp($row[$counter - 2], "ldap") == 0 && strcmp($row[$counter - 1], "admin_password") == 0)
 					$replace_val = true;
-					
-				//if the previous "name" column value was set to password, 
+
+				//if the previous "name" column value was set to password,
 				//and the "category" value set to proxy, set replace_val to true
 				if(strcmp($row[$counter - 2], "proxy") == 0 && strcmp($row[$counter - 1], "password") == 0 )
-					$replace_val = true;				
+					$replace_val = true;
 			}
 
-			if($replace_val)				
-					$returnString .= "<td>********</td>";
-				else
-					$returnString .= "<td>".($row[$counter] == "" ? "&nbsp;" : $row[$counter])."</td>";
+			if($replace_val) {
+					$returnString .= "<td class=\"tabDetailViewDF\">********</td>";
+            } else {
+					$returnString .= "<td class=\"tabDetailViewDF\">".($row[$counter] == "" ? "&nbsp;" : $row[$counter])."</td>";
 			}
-			$row_counter++;
-			$returnString .= "</tr>";
-		}
-	}
+	    }
+        $row_counter++;
+        $returnString .= "</tr>";
+    }
 	$returnString .= "</table>";
 
 	return $returnString;
-
 }
 
 // Deletes the directory recursively
@@ -258,11 +281,11 @@ function prepareDiag()
 	global $mod_strings;
 
 	echo getClassicModuleTitle(
-        "Administration", 
+        "Administration",
         array(
             "<a href='index.php?module=Administration&action=index'>{$mod_strings['LBL_MODULE_NAME']}</a>",
            translate('LBL_DIAGNOSTIC_TITLE')
-           ), 
+           ),
         false
         );
 	echo "<BR>";
@@ -350,163 +373,139 @@ function executeconfigphp()
     sodUpdateProgressBar(CONFIG_WEIGHT);
 }
 
-function executemysql($getinfo, $getdumps, $getschema)
+function execute_sql($getinfo, $getdumps, $getschema)
 {
     //BEGIN GET DB INFO
     global $getDumpsFrom;
     global $curdatetime;
-    global $sugar_config;
-    global $progress_bar_percent;
     global $sod_guid;
     global $db;
 
-    if($db->dbType != "mysql") {
-        if($getinfo) sodUpdateProgressBar(MYSQL_INFO_WEIGHT);
-        if($getschema) sodUpdateProgressBar(MYSQL_SCHEMA_WEIGHT);
-        if($getdumps) sodUpdateProgressBar(MYSQL_DUMPS_WEIGHT);
-        return;
-    }
-    
-    $mysqlInfoDir = create_cache_directory("diagnostic/".$sod_guid."/diagnostic".$curdatetime."/MySQL/");
+    $sqlInfoDir = create_cache_directory("diagnostic/".$sod_guid."/diagnostic".$curdatetime."/{$db->dbName}/");
 
 
     //create directory for table definitions
     if($getschema)
-      $tablesSchemaDir = create_cache_directory("diagnostic/".$sod_guid."/diagnostic".$curdatetime."/MySQL/TableSchema/");
+      $tablesSchemaDir = create_cache_directory("diagnostic/".$sod_guid."/diagnostic".$curdatetime."/{$db->dbName}/TableSchema/");
 
-    //BEGIN GET MYSQL INFO
     //make sure they checked the box to get basic info
     if($getinfo)
     {
-      ob_start();
-      echo "MySQL Version: ".(function_exists('mysqli_get_client_info') ? @mysqli_get_client_info() : @mysql_get_client_info())."<BR>";
-      echo "MySQL Host Info: ".(function_exists('mysqli_get_host_info') ? @mysqli_get_host_info($db->getDatabase()) : @mysql_get_host_info())."<BR>";
-      echo "MySQL Server Info: ".(function_exists('mysqli_get_client_info') ? @mysqli_get_client_info() : @mysql_get_client_info())."<BR>";
-      echo "MySQL Client Encoding: ".(function_exists('mysqli_character_set_name') ? @mysqli_character_set_name($db->getDatabase()) : @mysql_client_encoding())."<BR>";
-
-      /* Uncomment to get current processes as well
-      echo "<BR>MySQL Processes<BR>";
-      $res = $db->query('SHOW PROCESSLIST');
-      echo "<table border=\"1\"><tr><th>Id</th><th>Host</th><th>db</th><th>Command</th><th>Time</th></tr>";
-      if($db->getRowCount($res) > 0)
-      {
-        while($row = $db->fetchByAssoc($res))
-        {
-          printf("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>",
-                 $row['Id'], $row['Host'], $row['db'], $row['Command'], $row['Time']
-                 );
+        $info = $db->getDbInfo();
+        $content = '';
+        if(!empty($info)) {
+            foreach($info as $name => $value) {
+                $content .= "$name: $value<BR>";
+            }
         }
-        echo "</table><br>";
-      }
-      else
-      {
-        echo "</table>";
-        echo "No processes running<br>";
-      }
-      */
-
-      echo "<BR>MySQL Character Set Settings<BR>";
-      $res = $db->query("show variables like 'character\_set\_%'");
-      echo "<table border=\"1\"><tr><th>Variable Name</th><th>Value</th></tr>";
-      while($row = $db->fetchByAssoc($res))
-      {
-        printf("<tr><td>%s</td><td>%s</td></tr>",
-               $row['Variable_name'], $row['Value']
-               );
-      }
-      echo "</table>";
-
-      $content = ob_get_contents();
-      ob_clean();
-
-      $handle = sugar_fopen($mysqlInfoDir."MySQL-General-info.html", "w");
-      if(fwrite($handle, $content) === FALSE){
-        echo "Cannot write to file ".$mysqlInfoDir."_MySQL-General-info.html<br>";
-      }
-      fclose($handle);
-      //BEGIN UPDATING PROGRESS BAR
-      sodUpdateProgressBar(MYSQL_INFO_WEIGHT);
-      //END UPDATING PROGRESS BAR
+        if(!empty($content)) {
+            file_put_contents($sqlInfoDir."{$db->dbName}-General-info.html", $content);
+            sodUpdateProgressBar(SQL_INFO_WEIGHT);
+        }
     }
-    //END GET MYSQL INFO
 
+    $style = '<style>
+.tabDetailView
+{
+    border-bottom:2px solid;
+    border-top:2px solid;
+    margin-bottom:10px;
+    margin-top:2px;
+    border-bottom-color:#ABC3D7;
+    border-top-color:#4E8CCF;
+}
 
+.tabDetailView td table td
+{
+    border: 0;
+    background: white;
+}
+
+.tabDetailView tr.pagination td
+{
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-bottom:1px solid #CBDAE6;
+}
+
+.tabDetailView tr.pagination td table td
+{
+    border: none;
+}
+
+.tabDetailViewDL
+{
+    background-color:#F6F6F6;
+    color:#000000;
+    border-bottom:1px solid #CBDAE6;
+    font-size:12px;
+    padding:5px 6px;
+    text-align:left;
+    vertical-align:top;
+}
+
+.tabDetailViewDF
+{
+    background-color:#FFFFFF;
+    color:#444444;
+    border-bottom:1px solid #CBDAE6;
+    font-size:12px;
+    padding:5px 10px 5px 8px;
+    vertical-align:top;
+}
+
+.listViewThS1
+{
+    background:#EBEBED none repeat scroll 0 0;
+    border-color:#CCCCCC -moz-use-text-color;
+    border-style:solid none;
+    border-width:1px medium;
+    font-size:11px;
+    font-weight:bold;
+    padding:4px 5px;
+    text-align:left;
+}
+    </style>';
     if($getschema)
     {
         //BEGIN GET ALL TABLES SCHEMAS
         $all_tables = $db->getTablesArray();
 
-        global $theme_path;
+        $contents = $style;
 
-		ob_start();
-		echo "<style>";
-		echo file_get_contents($theme_path."style.css");
-		echo "</style>";
         foreach($all_tables as $tablename){
+            $cols = $db->get_columns($tablename);
+            $indexes = $db->get_indices($tablename);
 			//setting up table header for each file
-			echo "<table border=\"0\" cellpadding=\"0\" class=\"tabDetailView\">";
-			echo "<tr>MySQL ".$tablename." Definitions:</tr>".
-				"<tr><td class=\"tabDetailViewDL\"><b>Field</b></td>".
-					"<td class=\"tabDetailViewDL\">Type</td>".
-					"<td class=\"tabDetailViewDL\">Null</td>".
-					"<td class=\"tabDetailViewDL\">Key</td>".
-					"<td class=\"tabDetailViewDL\">Default</td>".
-					"<td class=\"tabDetailViewDL\">Extra</td></tr>";
-			$describe = $db->query("describe ".$tablename);
-			while($inner_row = $db->fetchByAssoc($describe)){
-				$inner_row = array_values($inner_row);
-				echo "<tr><td class=\"tabDetailViewDF\"><b>".$inner_row[0]."</b></td>";
-				echo	 "<td class=\"tabDetailViewDF\">".$inner_row[1]."</td>";
-				echo	 "<td class=\"tabDetailViewDF\">".$inner_row[2]."</td>";
-				echo	 "<td class=\"tabDetailViewDF\">".$inner_row[3]."</td>";
-				echo	 "<td class=\"tabDetailViewDF\">".$inner_row[4]."</td>";
-				echo	 "<td class=\"tabDetailViewDF\">".$inner_row[5]."</td></tr>";
-			}
-			echo "</table>";
-			echo "<BR><BR>";
+            $contents .= array_as_table("{$db->dbName} $tablename Definitions:", $cols);
+            $contents .= array_as_table("{$db->dbName} $tablename Keys:", $indexes);
+			$contents .= "<BR><BR>";
 		}
 
-		$content = ob_get_contents();
-		ob_clean();
-
-		$handle = sugar_fopen($tablesSchemaDir."MySQLTablesSchema.html", "w");
-		if(fwrite($handle, $content) === FALSE){
-		  echo "Cannot write to file ".$tablesSchemaDir."MySQLTablesSchema.html<br>";
-		}
-		fclose($handle);
-
+        file_put_contents($tablesSchemaDir."{$db->dbName}TablesSchema.html", $contents);
 		//END GET ALL TABLES SCHEMAS
 		//BEGIN UPDATING PROGRESS BAR
-		sodUpdateProgressBar(MYSQL_SCHEMA_WEIGHT);
+		sodUpdateProgressBar(SQL_SCHEMA_WEIGHT);
 		//END UPDATING PROGRESS BAR
     }
 
     if($getdumps)
     {
 		//BEGIN GET TABLEDUMPS
-		$tableDumpsDir = create_cache_directory("diagnostic/".$sod_guid."/diagnostic".$curdatetime."/MySQL/TableDumps/");
+		$tableDumpsDir = create_cache_directory("diagnostic/".$sod_guid."/diagnostic".$curdatetime."/{$db->dbName}/TableDumps/");
 
 
 		foreach ($getDumpsFrom as $table)
 		{
-			ob_start();
 			//calling function defined above to get the string for dump
-			echo getFullTableDump($table);
-			$content = ob_get_contents();
-			ob_clean();
-			$handle = sugar_fopen($tableDumpsDir.$table.".html", "w");
-			if(fwrite($handle, $content) === FALSE){
-			  echo "Cannot write to file ".$tableDumpsDir.$table."html<br>";
-			}
-			fclose($handle);
+			$contents = $style .getFullTableDump($table);
+            file_put_contents($tableDumpsDir.$table.".html", $contents);
 		}
 		//END GET TABLEDUMPS
 		//BEGIN UPDATING PROGRESS BAR
-		sodUpdateProgressBar(MYSQL_DUMPS_WEIGHT);
+		sodUpdateProgressBar(SQL_DUMPS_WEIGHT);
 		//END UPDATING PROGRESS BAR
 	}
-
-
     //END GET DB INFO
 }
 
@@ -639,11 +638,11 @@ function executevardefs()
 	$vardefFileName = $path_parts[ 'dirname' ]."/vardefs.php";
 	  if( file_exists( $vardefFileName )) {
 	    // echo "<br>".$vardefFileName."<br>";
-	    include_once( $vardefFileName );
-	  }
+      }
+      include_once( $vardefFileName );
     }
 
-    echo "<html>";
+    echo "<html lang='en'>";
     echo "<BODY>";
     echo "<H1>Schema listing based on vardefs</H1>";
     echo "<P>Sugar version:  ".$sugar_version." / Sugar DB version:  ".$sugar_db_version." / Sugar flavor:  ".$sugar_flavor;
@@ -765,9 +764,9 @@ $totalweight = 0;
 if($doconfigphp) {$totalweight += CONFIG_WEIGHT; $totalitems++;}
 if($docustom_dir) {$totalweight += CUSTOM_DIR_WEIGHT; $totalitems++;}
 if($dophpinfo) {$totalweight += PHPINFO_WEIGHT; $totalitems++;}
-if($domysql_dumps) {$totalweight += MYSQL_DUMPS_WEIGHT; $totalitems++;}
-if($domysql_schema) {$totalweight += MYSQL_SCHEMA_WEIGHT; $totalitems++;}
-if($domysql_info) {$totalweight += MYSQL_INFO_WEIGHT; $totalitems++;}
+if($domysql_dumps) {$totalweight += SQL_DUMPS_WEIGHT; $totalitems++;}
+if($domysql_schema) {$totalweight += SQL_SCHEMA_WEIGHT; $totalitems++;}
+if($domysql_info) {$totalweight += SQL_INFO_WEIGHT; $totalitems++;}
 if($domd5) {$totalweight += MD5_WEIGHT; $totalitems++;}
 if($dobeanlistbeanfiles) {$totalweight += BEANLISTBEANFILES_WEIGHT; $totalitems++;}
 if($dosugarlog) {$totalweight += SUGARLOG_WEIGHT; $totalitems++;}
@@ -803,7 +802,7 @@ if($domysql_info || $domysql_dumps || $domysql_schema)
                  ($domysql_dumps ? "... ".$mod_strings['LBL_DIAGNOSTIC_GETMYSQLTD'] : " ").
                  ($domysql_schema ? "... ".$mod_strings['LBL_DIAGNOSTIC_GETMYSQLTS'] : "...").
                  "<BR>";
-  executemysql($domysql_info, $domysql_dumps, $domysql_schema);
+  execute_sql($domysql_info, $domysql_dumps, $domysql_schema);
   echo $mod_strings['LBL_DIAGNOSTIC_DONE']."<BR><BR>";
 }
 if($domd5)

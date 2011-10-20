@@ -670,13 +670,13 @@ function get_user_id($session){
  * @exception 'SoapFault' -- The SOAP error, if any
  */
 function get_module_fields($session, $module_name, $fields = array()){
-	$GLOBALS['log']->info('Begin: SugarWebServiceImpl->get_module_fields');
+	$GLOBALS['log']->info('Begin: SugarWebServiceImpl->get_module_fields for ' . $module_name);
 	global  $beanList, $beanFiles;
 	$error = new SoapError();
 	$module_fields = array();
 
 	if (!self::$helperObject->checkSessionAndModuleAccess($session, 'invalid_session', $module_name, 'read', 'no_access', $error)) {
-		$GLOBALS['log']->info('End: SugarWebServiceImpl->get_module_fields');
+		$GLOBALS['log']->error('End: SugarWebServiceImpl->get_module_fields FAILED on checkSessionAndModuleAccess for ' . $module_name);
 		return;
 	} // if
 
@@ -684,11 +684,13 @@ function get_module_fields($session, $module_name, $fields = array()){
 	require_once($beanFiles[$class_name]);
 	$seed = new $class_name();
 	if($seed->ACLAccess('ListView', true) || $seed->ACLAccess('DetailView', true) || 	$seed->ACLAccess('EditView', true) ) {
-    	return self::$helperObject->get_return_module_fields($seed, $module_name, $fields);
+    	$return = self::$helperObject->get_return_module_fields($seed, $module_name, $fields);
+        $GLOBALS['log']->info('End: SugarWebServiceImpl->get_module_fields SUCCESS for ' . $module_name);
+        return $return;
     }
     $error->set_error('no_access');
 	self::$helperObject->setFaultObject($error);
-	$GLOBALS['log']->info('End: SugarWebServiceImpl->get_module_fields');
+    $GLOBALS['log']->error('End: SugarWebServiceImpl->get_module_fields FAILED NO ACCESS to ListView, DetailView or EditView for ' . $module_name);
 }
 
 /**
@@ -839,7 +841,7 @@ function get_document_revision($session, $id) {
     $dr = new DocumentRevision();
     $dr->retrieve($id);
     if(!empty($dr->filename)){
-        $filename = $sugar_config['upload_dir']."/".$dr->id;
+        $filename = "upload://{$dr->id}";
         if (filesize($filename) > 0) {
         	$contents = sugar_file_get_contents($filename);
         } else {
@@ -888,11 +890,11 @@ function search_by_module($session, $search_string, $modules, $offset, $max_resu
 	require_once('modules/Home/UnifiedSearchAdvanced.php');
 	require_once 'include/utils.php';
 	$usa = new UnifiedSearchAdvanced();
-    if(!file_exists($GLOBALS['sugar_config']['cache_dir'].'modules/unified_search_modules.php')) {
+    if(!file_exists($cachedfile = sugar_cached('modules/unified_search_modules.php'))) {
         $usa->buildCache();
     }
 
-	include($GLOBALS['sugar_config']['cache_dir'].'modules/unified_search_modules.php');
+	include($cachedfile);
 	$modules_to_search = array();
 	$unified_search_modules['Users'] =   array('fields' => array());
 

@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 
-  
+
 class VardefManager{
     static $custom_disabled_modules = array();
     static $linkFields;
@@ -128,6 +128,7 @@ class VardefManager{
         
     }
 
+
     /**
      * Remove invalid field definitions
      * @static
@@ -199,7 +200,7 @@ class VardefManager{
                 $object_name = 'Case';
             }
             
-            $file = $GLOBALS['sugar_config']['cache_dir'].'modules/'.$module_dir.'/' . $object_name . 'vardefs.php';
+            $file = sugar_cached('modules/').$module_dir.'/' . $object_name . 'vardefs.php';
             if(file_exists($file)){
                 unlink($file);
                 $key = "VardefManager.$module_dir.$object_name";
@@ -253,7 +254,7 @@ class VardefManager{
             $df = new DynamicField ($module) ;
             $df->buildCache($module);
         }
-        
+
         //great! now that we have loaded all of our vardefs.
         //let's go save them to the cache file.
         if(!empty($GLOBALS['dictionary'][$object])) {
@@ -346,6 +347,7 @@ class VardefManager{
         return $vardef;
     }
 
+
     /**
      * load the vardefs for a given module and object
      * @param string $module the given module we want to load the vardefs for
@@ -379,17 +381,19 @@ class VardefManager{
         if(empty($GLOBALS['dictionary'][$object]) || $refresh){
             //if the consumer has demanded a refresh or the cache/modules... file
             //does not exist, then we should do out and try to reload things
-            if($refresh || !file_exists($GLOBALS['sugar_config']['cache_dir'].'modules/'. $module . '/' . $object . 'vardefs.php')){
-                VardefManager::refreshVardefs($module, $object, null, true, $params);
-            }
+
+			$cachedfile = sugar_cached('modules/'). $module . '/' . $object . 'vardefs.php';
+			if($refresh || !file_exists($cachedfile)){
+				VardefManager::refreshVardefs($module, $object, null, true, $params);
+			}
             
             //at this point we should have the cache/modules/... file
             //which was created from the refreshVardefs so let's try to load it.
-            if(file_exists($GLOBALS['sugar_config']['cache_dir'].'modules/'. $module .  '/' . $object . 'vardefs.php'))
+            if(file_exists($cachedfile))
             {
-                if ( is_readable($GLOBALS['sugar_config']['cache_dir'].'modules/'. $module .  '/' . $object . 'vardefs.php') )
+                if (is_readable($cachedfile))
                 {
-                    include_once($GLOBALS['sugar_config']['cache_dir'].'modules/'. $module .  '/' . $object . 'vardefs.php');
+                    include_once($cachedfile);
                 }
                 // now that we hae loaded the data from disk, put it in the cache.
                 if(!empty($GLOBALS['dictionary'][$object]))
@@ -400,4 +404,5 @@ class VardefManager{
             }
         }
     }
+
 }

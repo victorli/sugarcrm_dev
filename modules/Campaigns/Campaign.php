@@ -40,16 +40,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * Description:
  ********************************************************************************/
 
-
-
-
-
-
-
-
 class Campaign extends SugarBean {
 	var $field_name_map;
-	
+
 	// Stored fields
 	var $id;
 	var $date_entered;
@@ -76,7 +69,7 @@ class Campaign extends SugarBean {
 	var $tracker_count;
 	var $refer_url;
     var $impressions;
-	
+
 	// These are related
 	var $assigned_user_name;
 
@@ -86,42 +79,37 @@ class Campaign extends SugarBean {
 	var $object_name = "Campaign";
 	var $module_dir = 'Campaigns';
 	var $importable = true;
-    
+
   	// This is used to retrieve related fields from form posts.
 	var $additional_column_fields = array(
 				'assigned_user_name', 'assigned_user_id',
 	);
 
 	var $relationship_fields = Array('prospect_list_id'=>'prospect_lists');
-    
-	function Campaign() {
-		global $sugar_config;
-		parent::SugarBean();
-	}
 
 	var $new_schema = true;
-	
+
 	function list_view_parse_additional_sections(&$listTmpl) {
 		global $locale;
-		
+
 		// take $assigned_user_id and get the Username value to assign
 		$assId = $this->getFieldValue('assigned_user_id');
-		
+
 		$query = "SELECT first_name, last_name FROM users WHERE id = '".$assId."'";
 		$result = $this->db->query($query);
 		$user = $this->db->fetchByAssoc($result);
-		
+
 		//_ppd($user);
 		if(!empty($user)) {
 			$fullName = $locale->getLocaleFormattedName($user->first_name, $user->last_name);
 			$listTmpl->assign('ASSIGNED_USER_NAME', $fullName);
 		}
 	}
-	
+
 
 	function get_summary_text()
 	{
-		return "$this->name";
+		return $this->name;
 	}
 
         function create_export_query(&$order_by, &$where, $relate_link_join='')
@@ -164,12 +152,12 @@ class Campaign extends SugarBean {
 			$prospect_clause = " and prospect_list_id = '$prospect_list_id' ";
 		else
 			$prospect_clause = '';
-			
+
 		$query = "DELETE FROM $this->rel_prospect_list_table WHERE campaign_id='$campaign_id' AND deleted = '0' " . $prospect_clause;
 	 	$this->db->query($query, true, "Error clearing campaign to prospect_list relationship: ");
 	}
-	
-		
+
+
 
 	function mark_relationships_deleted($id)
 	{
@@ -183,9 +171,9 @@ class Campaign extends SugarBean {
 
 	function fill_in_additional_detail_fields()
 	{
-        parent::fill_in_additional_detail_fields();		
+        parent::fill_in_additional_detail_fields();
 		//format numbers.
-		
+
 		//don't need additional formatting here.
 		//$this->budget=format_number($this->budget);
 		//$this->expected_cost=format_number($this->expected_cost);
@@ -193,7 +181,7 @@ class Campaign extends SugarBean {
 		//$this->expected_revenue=format_number($this->expected_revenue);
 	}
 
-	
+
 	function update_currency_id($fromid, $toid){
 	}
 
@@ -208,14 +196,16 @@ class Campaign extends SugarBean {
 		$temp_array['TRACK_CAMPAIGN_IMAGE'] = SugarThemeRegistry::current()->getImageURL('view_status.gif');
 		$temp_array['LAUNCH_WIZARD_TITLE'] = translate("LBL_TO_WIZARD_TITLE",'Campaigns');
 		$temp_array['LAUNCH_WIZARD_IMAGE'] = SugarThemeRegistry::current()->getImageURL('edit_wizard.gif');
-		
+        $temp_array['TRACK_VIEW_ALT_TEXT'] = translate("LBL_TRACK_BUTTON_TITLE",'Campaigns');
+        $temp_array['LAUNCH_WIZ_ALT_TEXT'] = translate("LBL_TO_WIZARD_TITLE",'Campaigns');
+
 		return $temp_array;
 	}
 	/**
 		builds a generic search based on the query string using or
 		do not include any $this-> because this is called on without having the class instantiated
 	*/
-	function build_generic_where_clause ($the_query_string) 
+	function build_generic_where_clause ($the_query_string)
 	{
 		$where_clauses = Array();
 		$the_query_string = $this->db->quote($the_query_string);
@@ -233,7 +223,7 @@ class Campaign extends SugarBean {
 	}
 
 	function save($check_notify = FALSE) {
-		
+
 			//US DOLLAR
 			if(isset($this->amount) && !empty($this->amount)){
 
@@ -242,9 +232,9 @@ class Campaign extends SugarBean {
 				$this->amount_usdollar = $currency->convertToDollar($this->amount);
 
 			}
-			
+
 		$this->unformat_all_fields();
-			
+
 		return parent::save($check_notify);
 
 	}
@@ -271,34 +261,34 @@ class Campaign extends SugarBean {
         //get arguments being passed in
         $args = func_get_args();
         $mkt_id ='';
-        
+
 		$this->load_relationship('log_entries');
 		$query_array = $this->log_entries->getQuery(true);
-        
+
         //if one of the arguments is marketing ID, then we need to filter by it
         foreach($args as $arg){
             if(isset($arg['EMAIL_MARKETING_ID_VALUE'])){
                 $mkt_id = $arg['EMAIL_MARKETING_ID_VALUE'];
             }
-            
+
             if(isset($arg['group_by'])) {
             	$query_array['group_by'] = $arg['group_by'];
-            }            
+            }
         }
-        
-        
-        
-		if (empty($type)) 
+
+
+
+		if (empty($type))
 			$type[0]='targeted';
 
 		$query_array['select'] ="SELECT campaign_log.* ";
 		$query_array['where'] = $query_array['where']. " AND activity_type='{$type[0]}' AND archived=0";
         //add filtering by marketing id, if it exists
         if (!empty($mkt_id)) $query_array['where'] = $query_array['where']. " AND marketing_id ='$mkt_id' ";
-		
-        //B.F. #37943 
-        if( isset($query_array['group_by']) && $this->db->dbType != 'mysql' ) 
-        { 
+
+        //B.F. #37943
+        if( isset($query_array['group_by']))
+        {
 			//perform the inner join with the group by if a marketing id is defined, which means we need to filter out duplicates.
 			//if no marketing id is specified then we are displaying results from multiple marketing emails and it is understood there might be duplicate target entries
 			if (!empty($mkt_id)){
@@ -308,14 +298,13 @@ class Campaign extends SugarBean {
 					on campaign_log.id = secondary.id	";
 			}
             unset($query_array['group_by']);
-        }
-        else if(isset($query_array['group_by'])) {
+        } else if(isset($query_array['group_by'])) {
            $query_array['where'] = $query_array['where'] . ' GROUP BY ' . $query_array['group_by'];
            unset($query_array['group_by']);
         }
-       
+
         $query = (implode(" ",$query_array));
-        return $query;     
+        return $query;
 	}
 
 
@@ -325,19 +314,19 @@ class Campaign extends SugarBean {
         $mkt_id ='';
 
         $this->load_relationship('queueitems');
-		$query_array = $this->queueitems->getQuery(true);        
-        
+		$query_array = $this->queueitems->getQuery(true);
+
         //if one of the arguments is marketing ID, then we need to filter by it
         foreach($args as $arg){
             if(isset($arg['EMAIL_MARKETING_ID_VALUE'])){
                 $mkt_id = $arg['EMAIL_MARKETING_ID_VALUE'];
             }
-            
+
             if(isset($arg['group_by'])) {
             	$query_array['group_by'] = $arg['group_by'];
             }
         }
-		                
+
         //add filtering by marketing id, if it exists, and if where key is not empty
         if (!empty($mkt_id) && !empty($query_array['where'])){
              $query_array['where'] = $query_array['where']. " AND marketing_id ='$mkt_id' ";
@@ -345,9 +334,9 @@ class Campaign extends SugarBean {
 
 		//get select query from email man
 		$man = new EmailMan();
-		$listquery= $man->create_queue_items_query('',str_replace(array("WHERE","where"),"",$query_array['where']),null,$query_array);	
+		$listquery= $man->create_queue_items_query('',str_replace(array("WHERE","where"),"",$query_array['where']),null,$query_array);
 		return $listquery;
-		
+
 	}
 //	function get_prospect_list_entries() {
 //		$this->load_relationship('prospectlists');
@@ -355,18 +344,18 @@ class Campaign extends SugarBean {
 //
 //		$query=<<<EOQ
 //			SELECT distinct prospect_lists.*,
-//			(case  when (email_marketing.id is null) then default_message.id else email_marketing.id end) marketing_id, 
+//			(case  when (email_marketing.id is null) then default_message.id else email_marketing.id end) marketing_id,
 //			(case  when  (email_marketing.id is null) then default_message.name else email_marketing.name end) marketing_name
-//	
-//			FROM prospect_lists 
+//
+//			FROM prospect_lists
 //
 //			INNER JOIN prospect_list_campaigns ON (prospect_lists.id=prospect_list_campaigns.prospect_list_id AND prospect_list_campaigns.campaign_id='{$this->id}')
-//		
+//
 //			LEFT JOIN email_marketing on email_marketing.message_for = prospect_lists.id and email_marketing.campaign_id = '{$this->id}'
 //			and email_marketing.deleted =0 and email_marketing.status='active'
 //
-//			LEFT JOIN email_marketing default_message on default_message.message_for = prospect_list_campaigns.campaign_id and 
-//			default_message.campaign_id = '{$this->id}' and default_message.deleted =0 
+//			LEFT JOIN email_marketing default_message on default_message.message_for = prospect_list_campaigns.campaign_id and
+//			default_message.campaign_id = '{$this->id}' and default_message.deleted =0
 //			and default_message.status='active'
 //
 //			WHERE prospect_list_campaigns.deleted=0 AND prospect_lists.deleted=0
@@ -374,15 +363,15 @@ class Campaign extends SugarBean {
 //EOQ;
 //		return $query;
 //	}
-	
+
 	 function bean_implements($interface){
 		switch($interface){
 			case 'ACL':return true;
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * create_list_count_query
 	 * Overrode this method from SugarBean to handle the distinct parameter used to filter out
@@ -405,9 +394,9 @@ class Campaign extends SugarBean {
     	   $query = preg_replace($pattern, $replacement, $query, 1);
     	   return $query;
 		}
-		
+
 		//If distinct parameter not found, default to SugarBean's function
     	return parent::create_list_count_query($query);
-    }	
+    }
 }
 ?>

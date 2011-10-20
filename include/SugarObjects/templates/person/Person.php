@@ -40,7 +40,7 @@ require_once('include/SugarObjects/templates/basic/Basic.php');
 
 
 class Person extends Basic
-{	
+{
     var $picture;
     //Variable to control whether or not to invoke the getLocalFormatttedName method with title and salutation
     var $createLocaleFormattedName = true;
@@ -49,7 +49,7 @@ class Person extends Basic
 		parent::Basic();
 		$this->emailAddress = new SugarEmailAddress();
 	}
-	
+
 	// need to override to have a name field created for this class
 	function retrieve($id = -1, $encode=true) {
 		$ret_val = parent::retrieve($id, $encode);
@@ -57,30 +57,30 @@ class Person extends Basic
 		$this->emailAddress->handleLegacyRetrieve($this);
 		return $ret_val;
 	}
-	
+
 	/**
 	 * Generate the name field from the first_name and last_name fields.
 	 */
-	function _create_proper_name_field() 
+	function _create_proper_name_field()
 	{
 		global $locale, $app_list_strings;
-			if($this->createLocaleFormattedName)
-			{
-			    // Bug 38648 - If the given saluation doesn't exist in the dropdown, don't display it as part of the full name
-				$salutation = '';
-			    if(isset($this->field_defs['salutation']['options']) 
-			            && isset($app_list_strings[$this->field_defs['salutation']['options']])
-			            && isset($app_list_strings[$this->field_defs['salutation']['options']][$this->salutation]) ) {
-			        $salutation = $app_list_strings[$this->field_defs['salutation']['options']][$this->salutation];
-			    }
-				$full_name = $locale->getLocaleFormattedName($this->first_name, $this->last_name, $salutation, $this->title);
-			} else {
-				$full_name = $locale->getLocaleFormattedName($this->first_name, $this->last_name);
-			}
-		$this->name = $full_name;
-		$this->full_name = $full_name; //used by campaigns
-	}
-	
+            if ($this->createLocaleFormattedName) {
+                // Bug 38648 - If the given saluation doesn't exist in the dropdown, don't display it as part of the full name
+                $salutation = '';
+                if (isset($this->field_defs['salutation']['options']) &&
+                     isset($app_list_strings[$this->field_defs['salutation']['options']]) &&
+                     isset($app_list_strings[$this->field_defs['salutation']['options']][$this->salutation])) {
+                        $salutation = $app_list_strings[$this->field_defs['salutation']['options']][$this->salutation];
+                }
+                $full_name = $locale->getLocaleFormattedName($this->first_name, $this->last_name, $salutation, $this->title);
+            } else {
+                $full_name = $locale->getLocaleFormattedName($this->first_name, $this->last_name);
+            }
+
+        $this->name = $full_name;
+        $this->full_name = $full_name; //used by campaigns
+    }
+
 	function save($check_notify=false) {
 		$this->add_address_streets('primary_address_street');
 		$this->add_address_streets('alt_address_street');
@@ -102,14 +102,14 @@ class Person extends Basic
         }
 		return $this->id;
 	}
-	
+
 	function get_summary_text() {
 		$this->_create_proper_name_field();
         return $this->name;
 	}
-	
+
 	function get_list_view_data() {
-		
+
 		global $system_config;
 		global $current_user;
 		$this->_create_proper_name_field();
@@ -120,7 +120,7 @@ class Person extends Basic
 		$temp_array['EMAIL1_LINK'] = $current_user->getEmailLink('email1', $this, '', '', 'ListView');
 		return $temp_array;
 	}
-    
+
     /**
      * @see SugarBean::populateRelatedBean()
  	 */
@@ -129,7 +129,7 @@ class Person extends Basic
         )
     {
         parent::populateRelatedBean($newbean);
-        
+
         if ( $newbean instanceOf Company ) {
             $newbean->phone_fax = $this->phone_fax;
             $newbean->phone_office = $this->phone_work;

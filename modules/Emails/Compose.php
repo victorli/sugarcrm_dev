@@ -57,8 +57,8 @@ else if(!isset($data['forQuickCreate'])) {
 }
 
 /**
- * Initialize the full compose window by creating the compose package 
- * and then including Emails index.php file.  
+ * Initialize the full compose window by creating the compose package
+ * and then including Emails index.php file.
  *
  * @param Array $ret
  */
@@ -74,7 +74,7 @@ function initFullCompose($ret)
 	{
 	    echo $composeOut;
 	}
-	else 
+	else
 	{
 	   //For normal full compose screen
 	   include('modules/Emails/index.php');
@@ -85,26 +85,29 @@ function initFullCompose($ret)
 /**
  * Generate the compose data package consumed by the full and quick compose screens.
  *
- * @param Array $data 
+ * @param Array $data
  * @param Bool $forFullCompose If full compose is set to TRUE, then continue execution and include the full Emails UI.  Otherwise
  *             the data generated is returned.
+ * @param SugarBean $bean Optional - parent object with data
  */
-function generateComposeDataPackage($data,$forFullCompose = TRUE)
+function generateComposeDataPackage($data,$forFullCompose = TRUE, $bean = null)
 {
 	// we will need the following:
 	if( isset($data['parent_type']) && !empty($data['parent_type']) &&
 	isset($data['parent_id']) && !empty($data['parent_id']) &&
 	!isset($data['ListView']) && !isset($data['replyForward'])) {
-		global $beanList;
-		global $beanFiles;
-		global $mod_strings;
+	    if(empty($bean)) {
+    		global $beanList;
+    		global $beanFiles;
+    		global $mod_strings;
 
-		$parentName = '';
-		$class = $beanList[$data['parent_type']];
-		require_once($beanFiles[$class]);
+    		$parentName = '';
+    		$class = $beanList[$data['parent_type']];
+    		require_once($beanFiles[$class]);
 
-		$bean = new $class();
-		$bean->retrieve($data['parent_id']);
+    		$bean = new $class();
+    		$bean->retrieve($data['parent_id']);
+	    }
 		if (isset($bean->full_name)) {
 			$parentName = $bean->full_name;
 		} elseif(isset($bean->name)) {
@@ -130,7 +133,7 @@ function generateComposeDataPackage($data,$forFullCompose = TRUE)
 		$email_id = "";
 		$attachments = array();
 		if ($bean->module_dir == 'Cases') {
-			$subject = str_replace('%1', $bean->case_number, $bean->getEmailSubjectMacro() . " ". from_html($bean->name)) ;//bug 41928 
+			$subject = str_replace('%1', $bean->case_number, $bean->getEmailSubjectMacro() . " ". from_html($bean->name)) ;//bug 41928
 			$bean->load_relationship("contacts");
 			$contact_ids = $bean->contacts->get();
 			$contact = new Contact();
@@ -145,7 +148,7 @@ function generateComposeDataPackage($data,$forFullCompose = TRUE)
 
 			require_once("modules/Emails/EmailUI.php");
 			$subject = $bean->kbdocument_name;
-			$article_body = str_replace('/'.$GLOBALS['sugar_config']['cache_dir'].'images/',$GLOBALS['sugar_config']['site_url'].'/'.$GLOBALS['sugar_config']['cache_dir'].'images/',KBDocument::get_kbdoc_body_without_incrementing_count($bean->id));
+			$article_body = str_replace('/cache/images/',$GLOBALS['sugar_config']['site_url'].'/cache/images/',KBDocument::get_kbdoc_body_without_incrementing_count($bean->id));
 			$body = from_html($article_body);
 			$attachments = KBDocument::get_kbdoc_attachments_for_newemail($bean->id);
 			$attachments = $attachments['attachments'];
@@ -171,7 +174,7 @@ function generateComposeDataPackage($data,$forFullCompose = TRUE)
 
 	);
 } else if(isset($_REQUEST['ListView'])) {
-  	
+
 	$email = new Email();
 	$namePlusEmail = $email->getNamePlusEmailAddressesForCompose($_REQUEST['action_module'], (explode(",", $_REQUEST['uid'])));
 	$ret = array(
@@ -240,7 +243,7 @@ function generateComposeDataPackage($data,$forFullCompose = TRUE)
 		'to_email_addrs' => '',
 		);
 	}
-	
+
 	if($forFullCompose)
 		initFullCompose($ret);
 	else
@@ -250,7 +253,7 @@ function generateComposeDataPackage($data,$forFullCompose = TRUE)
 function getQuotesRelatedData($bean,$data) {
 	$return = array();
 	$emailId = $data['recordId'];
-  	
+
   	require_once("modules/Emails/EmailUI.php");
 	$email = new Email();
 	$email->retrieve($emailId);

@@ -106,7 +106,7 @@ CL: Bug fix for 9291 and 9427 - parent_id should be parent_type, not the module 
 		<tr>
 		<td nowrap>
 		<input name='date_start' id='jscal_field' onblur="parseDate(this, '{$USER_DATEFORMAT}');" tabindex='2' size='11' maxlength='10' type="text" value="{$DATE_START}">
-		<img src="{sugar_getimagepath file='jscalendar.gif'}" alt="{$USER_DATEFORMAT}" id="jscal_trigger" align="absmiddle">&nbsp;</td>
+		{sugar_getimage name="jscalendar" ext=".gif" alt=$USER_DATEFORMAT other_attributes='align="absmiddle" id="jscal_trigger" '}&nbsp;</td>
         <td nowrap>
         <select name='time_hour_start' tabindex="2">{$TIME_START_HOUR_OPTIONS}</select>{$TIME_SEPARATOR}
         <select name='time_minute_start' tabindex="2">{$TIME_START_MINUTE_OPTIONS}</select>
@@ -137,7 +137,7 @@ CL: Bug fix for 9291 and 9427 - parent_id should be parent_type, not the module 
 {literal}
 Calendar.setup ({
     inputField : "jscal_field", daFormat : "{/literal}{$CALENDAR_FORMAT}{literal}", onClose: function(cal) {cal.hide();},
-    showsTime : false, button : "jscal_trigger", singleClick : true, step : 1, weekNumbers:false
+    showsTime : false, button : "jscal_trigger", singleClick : true, step : 1, startWeekday: {/literal}{$CALENDAR_FDOW|default:'0'}{literal}, weekNumbers:false
 });
 {/literal}
 </script>

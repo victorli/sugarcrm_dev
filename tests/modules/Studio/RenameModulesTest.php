@@ -46,12 +46,23 @@ class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
     {
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
         $this->language = 'en_us';
+
+        $beanList = array();
+        $beanFiles = array();
+        require('include/modules.php');
+        $GLOBALS['beanList'] = $beanList;
+        $GLOBALS['beanFiles'] = $beanFiles;
     }
 
     public function tearDown()
     {
+        $this->removeCustomAppStrings();
+        $this->removeModuleStrings(array('Accounts'));
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset($GLOBALS['current_user']);
+        unset($GLOBALS['beanList']);
+        unset($GLOBALS['beanFiles']);
+        SugarCache::$isCacheReset = false;
     }
 
 
@@ -61,7 +72,7 @@ class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEquals(0, count($rm->getRenamedModules()) );
     }
 
-    
+
     public function testRenameContactsModule()
     {
         $module = 'Accounts';
@@ -107,7 +118,7 @@ class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEquals('Companies', $campaignStrings['LBL_CAMPAIGN_ACCOUNTS_SUBPANEL_TITLE'], "Renaming subpanels failed for module.");
         // bug 45554: ensure labels are changed
         $this->assertEquals('Companies', $campaignStrings['LBL_ACCOUNTS'], 'Renaming labels failed for module.');
-    
+
         //Ensure we recorded which modules were modified.
         $renamedModules = $rm->getRenamedModules();
         $this->assertTrue( count($renamedModules) > 0 );
@@ -141,9 +152,13 @@ class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
 
         //Ensure none of the app list strings were modified.
         $app_list_string = return_app_list_strings_language('en_us');
-        $this->assertNotEquals($newSingular, $app_list_string['moduleListSingular'][$module] );
-        $this->assertNotEquals($newPlural, $app_list_string['moduleList'][$module] );
-         
+        if(isset( $app_list_string['moduleListSingular'][$module])) {
+            $this->assertNotEquals($newSingular, $app_list_string['moduleListSingular'][$module] );
+        }
+        if(isset($app_list_string['moduleList'][$module])) {
+            $this->assertNotEquals($newPlural, $app_list_string['moduleList'][$module] );
+        }
+
     }
 
 

@@ -83,7 +83,7 @@
 	</tr>
 
 	<tr>	
-		<td></td><td id='readme'><img id="options" border="0"  alt="Hide Options" src="{sugar_getimagepath file='advanced_search.gif'}"><a style="text-decoration:none" href="javascript: void(0)" onclick ="toggleEl('readmefield');"><b>{$mod_strings.LBL_ADD_README}</b></a></td>
+		<td></td><td id='readme'>{sugar_getimage name="advanced_search" ext=".gif" alt=$mod_strings.LBL_HIDEOPTIONS other_attributes='border="0" id="options" '}<a style="text-decoration:none" href="javascript: void(0)" onclick ="toggleEl('readmefield');"><b>{$mod_strings.LBL_ADD_README}</b></a></td>
 	</tr>
 	<tr>
 		<td height='100%'>&nbsp;</td><td>&nbsp;</td>

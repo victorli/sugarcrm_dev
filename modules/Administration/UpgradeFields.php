@@ -43,10 +43,6 @@ global $db;
 if (!isset ($db)) {
 	$db = DBManagerFactory:: getInstance();
 }
-global $dbManager;
-if (!isset ($dbManager)) {
-	$dbManager = DBManagerFactory::getInstance();
-}
 
 $result = $db->query('SELECT * FROM fields_meta_data WHERE deleted = 0 ORDER BY custom_module');
 $modules = array ();
@@ -79,38 +75,20 @@ foreach ($modules as $the_module => $fields) {
 		$mod->custom_fields->createCustomTable();
 	}
 
-	if ($db->dbType == 'oci8') {
-	} elseif ($db->dbType == 'mssql') {
-        $def_query="SELECT col.name as field, col_type.name as type, col.is_nullable, col.precision as data_precision, col.max_length as data_length, col.scale data_scale";
-        $def_query.=" FROM sys.columns col";
-        $def_query.=" join sys.types col_type on col.user_type_id=col_type.user_type_id ";
-        $def_query.=" where col.object_id = (select object_id(sys.schemas.name + '.' + sys.tables.name)"; 
-        $def_query.=" from sys.tables  join sys.schemas on sys.schemas.schema_id = sys.tables.schema_id";
-        $def_query.=" where sys.tables.name='".$mod->table_name."_cstm')";        
-        $result = $db->query($def_query);    
-	}
-	else {
-		$result = $db->query("DESCRIBE $mod->table_name"."_cstm");
-	}
-    
-	while ($row = $db->fetchByAssoc($result)) {
+	$table = $db->getTableDescription($mod->table_name."_cstm");
+	foreach($table as $row) {
 		$col = strtolower(empty ($row['Field']) ? $row['field'] : $row['Field']);
 		$the_field = $mod->custom_fields->getField($col);
 		$type = strtolower(empty ($row['Type']) ? $row['type'] : $row['Type']);
-		if ($db->dbType == 'oci8' or $db->dbType == 'mssql') {
-			if ($row['data_precision']!= '' and $row['data_scale']!='') {
-				$type.='(' . $row['data_precision'];
-				if (!empty($row['data_scale'])) {
-					$type.=',' . $row['data_scale'];				
-				}		
-				$type.=')';
-			}	 else {
-				if ($row['data_length']!= '' && (strtolower($row['type'])=='varchar' or strtolower($row['type'])=='varchar2')) {
-					$type.='(' . $row['data_length'] . ')';
-			
-				} 
-			}	
-		}	
+		if (!empty($row['data_precision']) && !empty($row['data_scale'])) {
+			$type.='(' . $row['data_precision'];
+			if (!empty($row['data_scale'])) {
+				$type.=',' . $row['data_scale'];
+			}
+			$type.=')';
+		} elseif(!empty($row['data_length']) && (strtolower($row['type'])=='varchar' or strtolower($row['type'])=='varchar2')) {
+			$type.='(' . $row['data_length'] . ')';
+		}
 		if (!isset ($fields[$col]) && $col != 'id_c') {
 			if (!$simulate) {
 				$db->query("ALTER TABLE $mod->table_name"."_cstm DROP COLUMN $col");
@@ -119,9 +97,8 @@ foreach ($modules as $the_module => $fields) {
 			echo "Dropping Column $col from $mod->table_name"."_cstm for module $the_module<br>";
 		} else {
 			if ($col != 'id_c') {
-				//$db_data_type = $dbManager->helper->getColumnType(strtolower($the_field->data_type));
 				$db_data_type = strtolower(str_replace(' ' , '', $the_field->get_db_type()));
-				
+
 				$type = strtolower(str_replace(' ' , '', $type));
 				if (strcmp($db_data_type,$type) != 0) {
 

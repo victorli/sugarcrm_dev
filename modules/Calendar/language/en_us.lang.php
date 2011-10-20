@@ -35,26 +35,18 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description:  Defines the English language pack for the base application.
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
- * All Rights Reserved.
- * Contributor(s): ______________________________________..
- ********************************************************************************/
 
 $mod_strings = array (
   'LBL_MODULE_NAME'=>'Calendar',
   'LBL_MODULE_TITLE'=>'Calendar',
-  'LBL_MODULE_ACTION'=>'View',
-  'LNK_NEW_CALL' => 'Log Call',
+  'LNK_NEW_CALL' => 'Schedule Call',
   'LNK_NEW_MEETING' => 'Schedule Meeting',
   'LNK_NEW_APPOINTMENT' => 'Create Appointment',
   'LNK_NEW_TASK' => 'Create Task',
-  'LNK_CALL_LIST' => 'View Calls',
-  'LNK_MEETING_LIST' => 'View Meetings',
-  'LNK_TASK_LIST' => 'View Tasks',
-  'LNK_VIEW_CALENDAR' => 'View Calendar',
+  'LNK_CALL_LIST' => 'Calls',
+  'LNK_MEETING_LIST' => 'Meetings',
+  'LNK_TASK_LIST' => 'Tasks',
+  'LNK_VIEW_CALENDAR' => 'Today',
   'LNK_IMPORT_CALLS'=>'Import Calls',
   'LNK_IMPORT_MEETINGS'=>'Import Meetings',
   'LNK_IMPORT_TASKS'=>'Import Tasks',
@@ -82,61 +74,145 @@ $mod_strings = array (
   'LBL_SHARED_CAL_TITLE' => 'Shared Calendar',
   'LBL_USERS' => 'User',
   'LBL_REFRESH' => 'Refresh',
-  'LBL_EDIT' => 'Edit',
+  'LBL_EDIT_USERLIST' => 'Edit Userlist',
   'LBL_SELECT_USERS' => 'Select users for calendar display',
   'LBL_FILTER_BY_TEAM' => 'Filter user list by team:',
   'LBL_ASSIGNED_TO_NAME' => 'Assigned to',
-  'LBL_DATE' => 'Start Date & Time'
+  'LBL_DATE' => 'Start Date & Time',  
+  'LBL_CREATE_MEETING' => 'Schedule Meeting',
+  'LBL_CREATE_CALL' => 'Log Call',  
+
+
+//other
+'LBL_YES' => 'Yes',
+'LBL_NO' => 'No',
+'LBL_SETTINGS' => 'Settings',
+'LBL_CREATE_NEW_RECORD' => 'Create Activity',
+'LBL_LOADING' => 'Loading ......',
+'LBL_SAVING' => 'Saving ......',
+'LBL_CONFIRM_REMOVE' => 'Are you sure you want to remove the record?',
+'LBL_EDIT_RECORD' => 'Edit Activity',
+'LBL_ERROR_SAVING' => 'Error while saving',
+'LBL_ERROR_LOADING' => 'Error while loading',
+'LBL_ANOTHER_BROWSER' => 'Please try another browser to add more teams.',
+'LBL_FIRST_TEAM' => 'Sorry. You can not remove the first item.',
+'LBL_REMOVE_PARTICIPANTS' => 'You can not remove all invitees.',
+'LBL_WHOLE_DAY'=>'Whole day',
+'LBL_GOTO_DATE' => 'Goto Date',
+'LBL_EDIT_ALL_RECURRENCES' => 'Edit All Recurrences',
+'NOTICE_DURATION_TIME' => 'Duration time must be greater than 0',
+
+//info box
+'LBL_I_TITLE'=>'Additional Details',
+'LBL_I_DESC'=>'Description',
+'LBL_I_START_DT'=>'Start Date Time',
+'LBL_I_DUE_DT'=>'Due Date Time',
+'LBL_I_DURATION'=>'Duration',
+'LBL_I_NAME'=>'Subject',
+'LBL_I_RELATED_TO'=>'Related to',
+
+//recurrence tab
+'LBL_REPEAT_END_DATE'=>'End Date',
+'LBL_REPEAT_INTERVAL'=>'Repeat Interval',
+'LBL_REPEAT_TYPE'=>'Repeat Type',
+'LBL_REPEAT_DAYS'=>'Repeat Days',
+
+//genaral tab
+
+
+//validation msg
+'LBL_NO_USER'=>'No match for field: Assigned to',
+'LBL_SUBJECT'=>'Subject',
+'LBL_DURATION'=>'Duration',
+'LBL_STATUS'=>'Status',
+'LBL_DATE_TIME'=>'Date and Time',
+
+'LBL_RECURRENCE'=>'Recurrence',
+
+//settings box
+'LBL_SETTINGS_TITLE'=>'Settings',
+'LBL_SETTINGS_TIME_STARTS'=>'Start time:', 
+'LBL_SETTINGS_TIME_ENDS'=>'End time:', 
+'LBL_SETTINGS_CALLS_SHOW'=>'Show Calls:',
+'LBL_SETTINGS_TASKS_SHOW'=>'Show Tasks:', 
+'LBL_SETTINGS_RECURRENCE'=>'Recurrence:',
+
+//buttons
+'LBL_SAVE_BUTTON'=>'Save',
+'LBL_DELETE_BUTTON'=>'Delete',
+'LBL_APPLY_BUTTON'=>'Apply',
+'LBL_SEND_INVITES'=>'Send Invites',
+'LBL_CANCEL_BUTTON'=>'Cancel',
+'LBL_CLOSE_BUTTON'=>'Close',
+
+//tabs
+'LBL_GENERAL_TAB'=>'Details',
+'LBL_PARTICIPANTS_TAB' =>'Invitees',
+'LBL_RECURRENCE_TAB' =>'Recurrence',
+
+ 
 );
 
 $mod_list_strings = array(
-'dom_cal_weekdays'=>array(
-"Sun",
-"Mon",
-"Tue",
-"Wed",
-"Thu",
-"Fri",
-"Sat",
-),
-'dom_cal_weekdays_long'=>array(
-"Sunday",
-"Monday",
-"Tuesday",
-"Wednesday",
-"Thursday",
-"Friday",
-"Saturday",
-),
-'dom_cal_month'=>array(
-"",
-"Jan",
-"Feb",
-"Mar",
-"Apr",
-"May",
-"Jun",
-"Jul",
-"Aug",
-"Sep",
-"Oct",
-"Nov",
-"Dec",
-),
-'dom_cal_month_long'=>array(
-"",
-"January",
-"February",
-"March",
-"April",
-"May",
-"June",
-"July",
-"August",
-"September",
-"October",
-"November",
-"December",
-)
+	'repeat_types' => 
+	array(
+		''	=>	'None',
+		'Daily'	=>	'Daily',
+		'Weekly' =>	'Weekly',
+		'Monthly' =>	'Monthly',
+		'Yearly' =>	'Yearly',
+	),
+	'dom_cal_weekdays'=>
+		array(
+			"Sun",
+			"Mon",
+			"Tue",
+			"Wed",
+			"Thu",
+			"Fri",
+			"Sat",
+		),
+	'dom_cal_weekdays_long'=>
+		array(
+			"Sunday",
+			"Monday",
+			"Tuesday",
+			"Wednesday",
+			"Thursday",
+			"Friday",
+			"Saturday",
+		),
+	'dom_cal_month'=>
+		array(
+			"",
+			"Jan",
+			"Feb",
+			"Mar",
+			"Apr",
+			"May",
+			"Jun",
+			"Jul",
+			"Aug",
+			"Sep",
+			"Oct",
+			"Nov",
+			"Dec",
+		),
+	'dom_cal_month_long'=>
+		array(
+			"",
+			"January",
+			"February",
+			"March",
+			"April",
+			"May",
+			"June",
+			"July",
+			"August",
+			"September",
+			"October",
+			"November",
+			"December",
+		),
 );
 ?>

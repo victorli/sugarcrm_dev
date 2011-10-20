@@ -73,7 +73,7 @@ class AccountsViewDetail extends ViewDetail {
 								 '&primary_address_postalcode=' . $this->bean->billing_address_postalcode . 
 								 '&primary_address_country=' . $this->bean->billing_address_country .
 								 '", true, false);\' value="' . $mod_strings['LBL_PUSH_CONTACTS_BUTTON_TITLE']. '">'.
-								 SugarThemeRegistry::current()->getImage("id-ff-copy","").
+								 SugarThemeRegistry::current()->getImage("id-ff-copy","",null,null,'.png',$mod_strings["LBL_COPY"]).
 								 '</button></span>';
 								 
 			$push_shipping = '<span class="id-ff"><button class="button btn_copy" title="' . $mod_strings['LBL_PUSH_CONTACTS_BUTTON_LABEL'] . 
@@ -85,7 +85,7 @@ class AccountsViewDetail extends ViewDetail {
 								 '&primary_address_postalcode=' . $this->bean->shipping_address_postalcode .
 								 '&primary_address_country=' . $this->bean->shipping_address_country .
 								 '", true, false);\' value="' . $mod_strings['LBL_PUSH_CONTACTS_BUTTON_TITLE'] . '">'.
-								  SugarThemeRegistry::current()->getImage("id-ff-copy","").
+								  SugarThemeRegistry::current()->getImage("id-ff-copy",'',null,null,'.png',$mod_strings['LBL_COPY']).
 								 '</button></span>';
 		} else {
 			$push_billing = '';

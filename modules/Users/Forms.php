@@ -52,172 +52,17 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * Contributor(s): ______________________________________..
  */
 function user_get_validate_record_js () {
-global $mod_strings;
-global $app_strings;
-
-$lbl_email = $mod_strings['LBL_EMAIL'];	
-$lbl_last_name = $mod_strings['LBL_LIST_LAST_NAME'];
-$lbl_password = $mod_strings['LBL_LIST_PASSWORD'];
-$lbl_user_name = $mod_strings['LBL_LIST_USER_NAME'];
-$err_missing_required_fields = $app_strings['ERR_MISSING_REQUIRED_FIELDS'];
-$err_invalid_required_fields = $app_strings['ERR_INVALID_REQUIRED_FIELDS'];
-//$err_invalid_email_address = $app_strings['ERR_INVALID_EMAIL_ADDRESS'];
-$err_self_reporting = $app_strings['ERR_SELF_REPORTING'];
-$err_password_mismatch = $mod_strings['ERR_PASSWORD_MISMATCH'];
-$err_password_missing = $mod_strings['ERR_INVALID_PASSWORD'];
-
-$the_script  = <<<EOQ
-
-<script type="text/javascript" language="Javascript">
-function verify_data(form)
-{
-    // handles any errors in the email widget
-    var isError = !check_form("EditView");
-	
-    if (trim(form.last_name.value) == "") {
-		add_error_style('EditView',form.last_name.name,
-            '{$app_strings['ERR_MISSING_REQUIRED_FIELDS']} {$mod_strings['LBL_LIST_NAME']}' );
-        isError = true;
-	}
-	if (trim(form.sugar_user_name.value) == "") {
-		add_error_style('EditView',form.sugar_user_name.name,
-            '{$app_strings['ERR_MISSING_REQUIRED_FIELDS']} {$mod_strings['LBL_USER_NAME']}' );
-        isError = true;
-	}
-	
-    if (document.getElementById("required_password").value=='1' 
-	        && document.getElementById("new_password").value == "") {
-		add_error_style('EditView',form.new_password.name,
-            '{$app_strings['ERR_MISSING_REQUIRED_FIELDS']} {$mod_strings['LBL_NEW_PASSWORD']}' );
-        isError = true;
-	}
-	
- 	if (isError == true) {
-        return false;
-    }
-		
-	if (document.EditView.return_id.value != '' && (document.EditView.return_id.value == form.reports_to_id.value)) {
-		alert('$err_self_reporting');
-		return false;
-	}
-	
-	if (document.EditView.dec_sep.value != '' && (document.EditView.dec_sep.value == "'")) {
-		alert("{$app_strings['ERR_NO_SINGLE_QUOTE']} {$mod_strings['LBL_DECIMAL_SEP']}");
-		return false;
-	}
-
-	if (document.EditView.num_grp_sep.value != '' && (document.EditView.num_grp_sep.value == "'")) {
-		alert("{$app_strings['ERR_NO_SINGLE_QUOTE']} {$mod_strings['LBL_NUMBER_GROUPING_SEP']}");
-		return false;
-	}
-
-	if (document.EditView.num_grp_sep.value == document.EditView.dec_sep.value) {
-		alert("{$app_strings['ERR_DECIMAL_SEP_EQ_THOUSANDS_SEP']}");
-		return false;
-	}
-	if( document.getElementById("portal_only") && document.getElementById("portal_only")=='1' &&
-		typeof(document.getElementById("new_password")) != "undefined" && typeof(document.getElementById("new_password").value) != "undefined") {
-		if(document.getElementById("new_password").value != '' || document.getElementById("confirm_pwd").value != '') {
-			if(document.getElementById("new_password").value != document.getElementById("confirm_pwd").value) {
-				alert('$err_password_mismatch');
-				return false;
-			}
-		}
-	}
-		
-	return true;
-}
-</script>
-
-EOQ;
-
-return $the_script;
+    // NO LONGER USED, MOVED TO UserEditView.js
+    return '';
 }
 
-function user_get_chooser_js()
-{
-$the_script  = <<<EOQ
-
-<script type="text/javascript" language="Javascript">
-<!--  to hide script contents from old browsers
-
-function set_chooser()
-{
-
-
-
-var display_tabs_def = '';
-var hide_tabs_def = '';
-var remove_tabs_def = '';
-
-var display_td = document.getElementById('display_tabs_td');
-var hide_td    = document.getElementById('hide_tabs_td');
-var remove_td  = document.getElementById('remove_tabs_td');
-
-var display_ref = display_td.getElementsByTagName('select')[0];
-
-for(i=0; i < display_ref.options.length ;i++)
-{
-         display_tabs_def += "display_tabs[]="+display_ref.options[i].value+"&";
-}
-
-if(hide_td != null)
-{
-	var hide_ref = hide_td.getElementsByTagName('select')[0];
-    
-    for(i=0; i < hide_ref.options.length ;i++)
-	{
-         hide_tabs_def += "hide_tabs[]="+hide_ref.options[i].value+"&";
-	}
-}
-
-if(remove_td != null)
-{
-    var remove_ref = remove_td.getElementsByTagName('select')[0];
-    
-    for(i=0; i < remove_ref.options.length ;i++)
-	{
-         remove_tabs_def += "remove_tabs[]="+remove_ref.options[i].value+"&";
-	}
-	
-}
-
-document.EditView.display_tabs_def.value = display_tabs_def;
-document.EditView.hide_tabs_def.value = hide_tabs_def;
-document.EditView.remove_tabs_def.value = remove_tabs_def;
-
-
-
-}
-// end hiding contents from old browsers  -->
-</script>
-EOQ;
-
-return $the_script;
+function user_get_chooser_js() {
+    // NO LONGER USED, MOVED TO UserEditView.js
+    return '';
 }
 
 function user_get_confsettings_js() {
-  global $mod_strings;
-  global $app_strings;
-
-  $lbl_last_name = $mod_strings['LBL_MAIL_FROMADDRESS'];
-  $err_missing_required_fields = $app_strings['ERR_MISSING_REQUIRED_FIELDS'];
-
-  return <<<EOQ
-
-<script type="text/javascript" language="Javascript">
-<!--  to hide script contents from old browsers
-
-function add_checks(f) {
-  return true;
+    // NO LONGER USED, MOVED TO UserEditView.js
+    return '';
 }
-
-// end hiding contents from old browsers  -->
-</script>
-
-EOQ;
-}
-
-
-
 ?>

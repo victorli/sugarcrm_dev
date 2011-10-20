@@ -45,7 +45,8 @@
 <tr valign="middle">
 <td nowrap>
 <input autocomplete="off" type="text" id="{{$idname}}_date" value="{$fields[{{sugarvar key='name' stringFormat=true}}].value}" size="11" maxlength="10" title='{{$vardef.help}}' tabindex="{{$tabindex}}" onblur="combo_{{$idname}}.update(); {{if isset($displayParams.updateCallback)}}{{$displayParams.updateCallback}}{{/if}}" onchange="combo_{{$idname}}.update(); {{if isset($displayParams.updateCallback)}}{{$displayParams.updateCallback}}{{/if}}">
-<img border="0" src="{sugar_getimagepath file='jscalendar.gif'}" alt="{$APP.LBL_ENTER_DATE}" id="{{$idname}}_trigger" name="{{$idname}}_trigger" align="absmiddle">&nbsp;
+{capture assign="other_attributes"}align="absmiddle" border="0" id="{{$idname}}_trigger"{/capture}
+{sugar_getimage name="jscalendar" ext=".gif" alt="$APP.LBL_ENTER_DATE other_attributes=$other_attributes"}&nbsp;
 {{if empty($displayParams.splitDateTime)}}
 </td>
 <td nowrap>
@@ -56,14 +57,14 @@
 {{if $displayParams.showNoneCheckbox}}
 <script type="text/javascript">
 function set_{{$idname}}_values(form) {ldelim}
- if(form.{{$idname}}_flag.checked)  {ldelim} 
+ if(form.{{$idname}}_flag.checked)  {ldelim}
 	form.{{$idname}}_flag.value=1;
 	form.{{$idname}}.value="";
 	form.{{$idname}}.readOnly=true;
- {rdelim} else  {ldelim} 
+ {rdelim} else  {ldelim}
 	form.{{$idname}}_flag.value=0;
 	form.{{$idname}}.readOnly=false;
- {rdelim} 
+ {rdelim}
 {rdelim}
 </script>
 {{/if}}
@@ -81,7 +82,7 @@ function set_{{$idname}}_values(form) {ldelim}
 {{/if}}
 </table>
 <input type="hidden" class="DateTimeCombo" id="{{$idname}}" name="{{$idname}}" value="{$fields[{{sugarvar key='name' stringFormat=true}}].value}">
-<script type="text/javascript" src="include/SugarFields/Fields/Datetimecombo/Datetimecombo.js"></script>
+<script type="text/javascript" src="{sugar_getjspath file="include/SugarFields/Fields/Datetimecombo/Datetimecombo.js"}"></script>
 <script type="text/javascript">
 var combo_{{$idname}} = new Datetimecombo("{$fields[{{sugarvar key='name' stringFormat=true}}].value}", "{{$idname}}", "{$TIME_FORMAT}", "{{$tabindex}}", '{{$displayParams.showNoneCheckbox}}', false, true);
 //Render the remaining widget fields
@@ -108,9 +109,10 @@ YAHOO.util.Event.onDOMReady(function()
 	singleClick : true,
 	step : 1,
 	weekNumbers: false,
+        startWeekday: {$CALENDAR_FDOW|default:'0'},
 	comboObject: combo_{{$idname}}
 	{rdelim});
-	
+
 	//Call update for first time to round hours and minute values
 	combo_{{$idname}}.update(false);
 

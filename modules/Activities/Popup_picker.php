@@ -137,7 +137,7 @@ class Popup_Picker
 									 'date_modified' => $date_due,
 									 'description' => $this->getTaskDetails($task),
 									 'date_type' => $app_strings['DATA_TYPE_DUE'],
-									 'sort_value' => strtotime($task->fetched_row['date_due'].' GMT'),
+									 'sort_value' => $timedate->fromDb($task->fetched_row['date_due'])->ts,
 									 );
 			} else {
 				$open_activity_list[] = array('name' => $task->name,
@@ -159,7 +159,7 @@ class Popup_Picker
 		} // end Tasks
 
 		foreach ($focus_meetings_list as $meeting) {
-			
+
 			if (empty($meeting->contact_id) && empty($meeting->contact_name)) {
 				$meeting_contacts = $meeting->get_linked_beans('contacts','Contact');
 				if (!empty($meeting_contacts[0]->id) && !empty($meeting_contacts[0]->name)) {
@@ -182,7 +182,7 @@ class Popup_Picker
 									 'date_modified' => $meeting->date_start,
 									 'description' => $this->formatDescription($meeting->description),
 									 'date_type' => $app_strings['DATA_TYPE_START'],
-									 'sort_value' => strtotime($meeting->fetched_row['date_start'].' GMT'),
+									 'sort_value' => $timedate->fromDb($task->fetched_row['date_start'])->ts,
 									 );
 			} else {
 				$open_activity_list[] = array('name' => $meeting->name,
@@ -228,7 +228,7 @@ class Popup_Picker
 									 'date_modified' => $call->date_start,
 									 'description' => $this->formatDescription($call->description),
 									 'date_type' => $app_strings['DATA_TYPE_START'],
-									 'sort_value' => strtotime($call->fetched_row['date_start'].' GMT'),
+									 'sort_value' => $timedate->fromDb($task->fetched_row['date_start'])->ts,
 									 );
 			} else {
 				$open_activity_list[] = array('name' => $call->name,
@@ -250,7 +250,7 @@ class Popup_Picker
 		} // end Calls
 
 		foreach ($focus_emails_list as $email) {
-			
+
 			if (empty($email->contact_id) && empty($email->contact_name)) {
 				$email_contacts = $email->get_linked_beans('contacts','Contact');
 				if (!empty($email_contacts[0]->id) && !empty($email_contacts[0]->name)) {
@@ -272,12 +272,12 @@ class Popup_Picker
 									 'date_modified' => $email->date_start." ".$email->time_start,
 									 'description' => $this->getEmailDetails($email),
 									 'date_type' => $app_strings['DATA_TYPE_SENT'],
-									 'sort_value' => strtotime($email->fetched_row['date_sent'].' GMT'),
+									 'sort_value' => $timedate->fromDb($task->fetched_row['date_sent'])->ts,
 									 );
 		} //end Emails
 
 		foreach ($focus_notes_list as $note) {
-			
+
 			$history_list[] = array('name' => $note->name,
 									 'id' => $note->id,
 									 'type' => "Note",
@@ -292,13 +292,13 @@ class Popup_Picker
 									 'date_modified' => $note->date_modified,
 									 'description' => $this->formatDescription($note->description),
 									 'date_type' => $app_strings['DATA_TYPE_MODIFIED'],
-									 'sort_value' => strtotime($note->fetched_row['date_modified'].' GMT'),
+									 'sort_value' => $timedate->fromDb($task->fetched_row['date_modified'])->ts,
 									 );
 			if(!empty($note->filename)) {
 				$count = count($history_list);
 				$count--;
 				$history_list[$count]['filename'] = $note->filename;
-				$history_list[$count]['fileurl'] = UploadFile::get_url($note->filename,$note->id);
+				$history_list[$count]['fileurl'] = UploadFile::get_upload_url($note);
 			}
 		} // end Notes
 
@@ -312,7 +312,7 @@ class Popup_Picker
         echo "<table width='100%' cellpadding='0' cellspacing='0'><tr><td>";
         echo getClassicModuleTitle($focus->module_dir, array(translate('LBL_MODULE_NAME', $focus->module_dir),$focus->name), false);
         echo "</td><td align='right' class='moduleTitle'>";
-        echo "<A href='javascript:print();' class='utilsLink'><img src='".SugarThemeRegistry::current()->getImageURL("print.gif")."' width='13' height='13' alt='".$app_strings['LNK_PRINT']."' border='0' align='absmiddle'></a>&nbsp;<A href='javascript:print();' class='utilsLink'>".$app_strings['LNK_PRINT']."</A>\n";
+        echo "<A href='javascript:print();' class='utilsLink'>" . SugarThemeRegistry::current()->getImage('print', "border='0' align='absmiddle'", 13, 13, ".gif", $app_strings['LNK_PRINT']) . "</a>&nbsp;<A href='javascript:print();' class='utilsLink'>".$app_strings['LNK_PRINT']."</A>\n";
         echo "</td></tr></table>";
 
         $oddRow = true;
@@ -353,13 +353,13 @@ class Popup_Picker
 
             if (isset($activity['location'])) $activity_fields['LOCATION'] = $activity['location'];
             if (isset($activity['filename'])) {
-                $activity_fields['ATTACHMENT'] = "<a href='index.php?entryPoint=download&id=".$activity['id']."&type=Notes' target='_blank'>".SugarThemeRegistry::current()->getImage("attachment","alt='".$activity['filename']."' border='0' align='absmiddle'")."</a>";
+                $activity_fields['ATTACHMENT'] = "<a href='index.php?entryPoint=download&id=".$activity['id']."&type=Notes' target='_blank'>".SugarThemeRegistry::current()->getImage("attachment","border='0' align='absmiddle'",null,null,'.gif',$activity['filename'])."</a>";
             }
 
             if (isset($activity['parent_type'])) $activity_fields['PARENT_MODULE'] = $activity['parent_type'];
 
             $xtpl->assign("ACTIVITY", $activity_fields);
-            $xtpl->assign("ACTIVITY_MODULE_PNG", SugarThemeRegistry::current()->getImage($activity_fields['MODULE'].'','border="0" alt="'.$activity_fields['NAME'].'"'));
+            $xtpl->assign("ACTIVITY_MODULE_PNG", SugarThemeRegistry::current()->getImage($activity_fields['MODULE'].'','border="0"', null,null,'.gif',$activity_fields['NAME']));
 
             if($oddRow)
             {

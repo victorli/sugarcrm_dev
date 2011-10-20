@@ -54,7 +54,7 @@ class Bug36564Test extends SOAPTestCase
     {
     	$this->_login();
 		$result = $this->_soapClient->call('get_entry_list',array('session'=>$this->_sessionId,"module_name" => 'Accounts', "query" => "bad query"));
-		if ( isset($result["faultstring"]) )
-		    $this->assertContains("Unknown error", $result["faultstring"]);
+        $this->assertNotNull($result["faultstring"], "Result does not contain (expected) faultstring");
+        $this->assertContains("Unknown error", $result["faultstring"]);
     } // fn
 }

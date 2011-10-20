@@ -66,7 +66,7 @@ $dictionary['Note'] = array(
     'vname' => 'LBL_DATE_MODIFIED',
     'type' => 'datetime',
     'comment' => 'Date record last modified',
-    'enable_range_search' => true,  
+    'enable_range_search' => true,
   ),
    'modified_user_id' =>
 	  array (
@@ -149,10 +149,9 @@ $dictionary['Note'] = array(
   	'name'=>'file_url',
     'vname' => 'LBL_FILE_URL',
   	'type'=>'function',
-  	'function_require'=>'include/upload_file.php',
   	'function_class'=>'UploadFile',
-  	'function_name'=>'get_url',
-  	'function_params'=> array('filename', 'id'),
+  	'function_name'=>'get_upload_url',
+  	'function_params'=> array('$this'),
   	'source'=>'function',
   	'reportable'=>false,
   	'comment' => 'Path to file (can be URL)',

@@ -99,9 +99,15 @@ class DynamicField {
     */
     function buildCache($module = false) {
         //We can't build the cache while installing as the required database tables may not exist.
-        if (!empty($GLOBALS['installing']) && $GLOBALS['installing'] == true|| !$GLOBALS['db'])
+        if (!empty($GLOBALS['installing']) && $GLOBALS['installing'] == true|| empty($GLOBALS['db']))
             return false;
         if($module == '../data')return false;
+
+        // Employees is a fake module that actually loads it's fields from the
+        // Users module
+        if ($module == 'Employees') {
+            $module = 'Users';
+        }
 
         static $results = array ( ) ;
 
@@ -151,6 +157,7 @@ class DynamicField {
                 $this->saveToVardef ( $module, false );
             }
         }
+
         return true;
 
     }
@@ -180,6 +187,7 @@ class DynamicField {
     * @param array $result
     */
     function saveToVardef($module,$result) {
+
 
         global $beanList;
         if (! empty ( $beanList [$module] )) {
@@ -225,6 +233,15 @@ class DynamicField {
             }
             $manager = new VardefManager ( );
             $manager->saveCache ( $this->module, $object );
+            // Everything works off of vardefs, so let's have it save the users vardefs
+            // to the employees module, because they both use the same table behind
+            // the scenes
+            if ( $module == 'Users' ) {
+                $GLOBALS['dictionary']['Employee'] = $GLOBALS['dictionary']['User'];
+                $manager->saveCache('Employee',$object);
+                return;
+            }
+
         }
     }
 
@@ -424,15 +441,17 @@ class DynamicField {
             }
 
             $queryInsert .= " ) VALUES $values )";
+
             if(!$first){
                 if(!$isUpdate){
                     $GLOBALS['db']->query($queryInsert);
                 }else{
                     $checkquery = "SELECT id_c FROM {$this->bean->table_name}_cstm WHERE id_c = '{$this->bean->id}'";
-                    if ( $GLOBALS['db']->getOne($checkquery) )
+                    if ( $GLOBALS['db']->getOne($checkquery) ) {
                         $result = $GLOBALS['db']->query($query);
-                    else
+                    } else {
                         $GLOBALS['db']->query($queryInsert);
+                    }
                 }
             }
         }
@@ -726,15 +745,40 @@ class DynamicField {
         $out = "";
         if (!$GLOBALS['db']->tableExists($this->bean->table_name."_cstm")) {
             $GLOBALS['log']->debug('creating custom table for '. $this->bean->table_name);
-            $query = 'CREATE TABLE '.$this->bean->table_name.'_cstm ( ';
-            $query .='id_c ' . $this->bean->dbManager->helper->getColumnType('id') .' NOT NULL';
-            $query .=', PRIMARY KEY ( id_c ) )';
-            if($GLOBALS['db']->dbType == 'mysql'){
-                $query .= ' CHARACTER SET utf8 COLLATE utf8_general_ci';
+            $iddef = array(
+                "id_c" => array(
+                    "name" => "id_c",
+                    "type" => "id",
+                    "required" => 1,
+                )
+            );
+            $ididx = array(
+       			'id'=>array(
+       				'name' =>$this->bean->table_name."_cstm_pk",
+       				'type' =>'primary',
+       				'fields'=>array('id_c')
+                ),
+           );
+
+            $query = $GLOBALS['db']->createTableSQLParams($this->bean->table_name."_cstm", $iddef, $ididx);
+            if(!$GLOBALS['db']->supports("inline_keys")) {
+                $indicesArr = $GLOBALS['db']->getConstraintSql($ididx, $this->bean->table_name."_cstm");
+            } else {
+                $indicesArr = array();
+            }
+            if($execute) {
+                $GLOBALS['db']->query($query);
+                if(!empty($indicesArr)) {
+                    foreach($indicesArr as $idxq) {
+                        $GLOBALS['db']->query($idxq);
+                    }
+                }
             }
             $out = $query . "\n";
-            if ($execute)
-                $GLOBALS['db']->query($query);
+            if(!empty($indicesArr)) {
+                $out .= join("\n", $indicesArr)."\n";
+            }
+
             $out .= $this->add_existing_custom_fields($execute);
         }
 
@@ -781,7 +825,7 @@ class DynamicField {
         //We aren't checking for data types, just that the column exists.
         $db = $GLOBALS['db'];
         $tablename = $this->bean->table_name."_cstm";
-        $compareFieldDefs = $db->getHelper()->get_columns($tablename);
+        $compareFieldDefs = $db->get_columns($tablename);
         foreach($this->bean->field_defs as $name=>$data){
             if(empty($data['source']) || $data['source'] != 'custom_fields')
                 continue;

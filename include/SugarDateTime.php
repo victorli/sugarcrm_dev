@@ -35,8 +35,14 @@
  ********************************************************************************/
 
 
+/**
+ * Sugar DateTime container
+ * Extends regular PHP DateTime with useful services
+ * @api
+ */
 class SugarDateTime extends DateTime
 {
+    // Recognized properties and their formats
 	protected $formats = array(
 		"sec" => "s",
 		"min" => "i",
@@ -55,6 +61,7 @@ class SugarDateTime extends DateTime
 		"hour_12" => "g",
 	);
 
+	// Property aliases
 	protected $var_gets = array(
 		"24_hour" => "hour",
 		"day_of_week" => "day_of_week_long",
@@ -123,10 +130,12 @@ class SugarDateTime extends DateTime
 
 	/**
 	 * Internal _createFromFormat implementation for 5.2
+     * @internal
 	 * @param string $format Format like in date()
 	 * @param string $time Time string to parse
 	 * @param DateTimeZone $timezone TZ
-	 * @see DateTime::createFromFormat
+     * @return SugarDateTime
+     * @see DateTime::createFromFormat
 	 */
 	protected static function _createFromFormat($format, $time, DateTimeZone $timezone = null)
 	{
@@ -175,7 +184,8 @@ class SugarDateTime extends DateTime
 	}
 
 	/**
-	 * Load language strings
+	 * Load language Calendar strings
+     * @internal
 	 * @param string $name string section to return
 	 * @return array
 	 */
@@ -190,6 +200,7 @@ class SugarDateTime extends DateTime
 	/**
 	 * Fetch property of the date by name
 	 * @param string $var Property name
+	 * @return mixed
 	 */
 	public function __get($var)
 	{
@@ -228,7 +239,8 @@ class SugarDateTime extends DateTime
 	 *
 	 * @param string $name
 	 * @param array $args
-	 */
+     * @return mixed
+     */
 	public function __call($name, $args)
 	{
 		// fill in 5.2.x gaps
@@ -276,6 +288,10 @@ class SugarDateTime extends DateTime
 		return $newdate;
 	}
 
+	/**
+	 * Get the last second of current hour
+	 * @return SugarDateTime
+	 */
 	function get_hour_end_time()
 	{
 		$newdate = clone $this;
@@ -283,12 +299,21 @@ class SugarDateTime extends DateTime
 		return $newdate;
 	}
 
+	/**
+	 * Get the last second of the current day
+	 * @return SugarDateTime
+	 */
 	function get_day_end_time()
 	{
 		$newdate = clone $this;
 		return $newdate->setTime(23, 59, 59);
 	}
 
+	/**
+	 * Get the beginning of i's day of the week
+	 * @param int $day_index Day, 0 is Sunday, 1 is Monday, etc.
+	 * @return SugarDateTime
+	 */
 	function get_day_by_index_this_week($day_index)
 	{
 		$newdate = clone $this;
@@ -297,6 +322,13 @@ class SugarDateTime extends DateTime
 		return $newdate;
 	}
 
+	/**
+	 * Get the beginning of the last day of i's the month
+	 * @deprecated
+	 * FIXME: no idea why this function exists and what's the use of it
+	 * @param int $month_index Month, January is 0
+	 * @return SugarDateTime
+	 */
 	function get_day_by_index_this_year($month_index)
 	{
 		$newdate = clone $this;
@@ -306,6 +338,11 @@ class SugarDateTime extends DateTime
 		return $newdate;
 	}
 
+	/**
+	 * Get the beginning of i's day of the month
+	 * @param int $day_index 0 is the first day of the month (sic!)
+	 * @return SugarDateTime
+	 */
 	function get_day_by_index_this_month($day_index)
 	{
 		$newdate = clone $this;
@@ -328,15 +365,6 @@ class SugarDateTime extends DateTime
 	}
 
 	/**
-	 * Display as DB date
-	 * @return string
-	 */
-	function get_mysql_date()
-	{
-		return $this->format(TimeDate::DB_DATE_FORMAT);
-	}
-
-	/**
 	 * Create from ISO 8601 datetime
 	 * @param string $str
 	 * @return SugarDateTime
@@ -352,7 +380,8 @@ class SugarDateTime extends DateTime
 	 * @param string $view Which view we are using - day, week, month
 	 * @param SugarDateTime $start_time Start time
 	 * @param SugarDateTime $end_time End time
-	 */
+     * @return array
+     */
 	static function getHashList($view, $start_time, $end_time)
 	{
 		$hash_list = array();
@@ -372,10 +401,10 @@ class SugarDateTime extends DateTime
 
         while ($new_time->ts < $end) {
             if ($view == 'day') {
-                $hash_list[] = $new_time->get_mysql_date() . ":" . $new_time->hour;
+                $hash_list[] = $new_time->format(TimeDate::DB_DATE_FORMAT) . ":" . $new_time->hour;
                 $new_time->modify("next hour");
             } else {
-                $hash_list[] = $new_time->get_mysql_date();
+                $hash_list[] = $new_time->format(TimeDate::DB_DATE_FORMAT);
                 $new_time->modify("next day");
             }
         }
@@ -385,7 +414,11 @@ class SugarDateTime extends DateTime
 
 	/**
 	 * Get the beginning of the given day
-	 */
+	 * @param int $day  Day, starting with 1, default is current
+	 * @param int $month Month, starting with 1, default is current
+	 * @param int $year Year, default is current
+     * @return SugarDateTime
+     */
 	function get_day_begin($day = null, $month = null, $year = null)
 	{
 	    $newdate = clone $this;
@@ -398,7 +431,11 @@ class SugarDateTime extends DateTime
 	}
 
 	/**
-	 * Get the last timestamp of the given day
+	 * Get the last second of the given day
+	 * @param int $day  Day, starting with 1, default is current
+	 * @param int $month Month, starting with 1, default is current
+	 * @param int $year Year, default is current
+	 * @return SugarDateTime
 	 */
 	function get_day_end($day = null, $month = null, $year = null)
 	{
@@ -411,18 +448,23 @@ class SugarDateTime extends DateTime
 	    return $newdate;
 	}
 
+	/**
+	 * Get the beginning of the first day of the year
+	 * @param int $year
+	 * @return SugarDateTime
+	 */
 	function get_year_begin($year)
 	{
         $newdate = clone $this;
-        $newdate->setDate($this->year, 1, 1);
+        $newdate->setDate($year, 1, 1);
         $newdate->setTime(0,0);
         return $newdate;
 	}
 
-	/*
+	/**
 	 * Print datetime in standard DB format
 	 *
-	 * Set $tz parameter to false if you are sure if the date is in UTC.
+	 * Set $tz parameter to false if you are sure that the date is in UTC.
 	 *
 	 * @param bool $tz do conversion to UTC
 	 * @return string
@@ -438,10 +480,10 @@ class SugarDateTime extends DateTime
         return $this->format(TimeDate::DB_DATETIME_FORMAT);
 	}
 
-	/*
+	/**
 	 * Print date in standard DB format
 	 *
-	 * Set $tz parameter to false if you are sure if the date is in UTC.
+	 * Set $tz parameter to false if you are sure that the date is in UTC.
 	 *
 	 * @param bool $tz do conversion to UTC
 	 * @return string
@@ -458,7 +500,7 @@ class SugarDateTime extends DateTime
 	}
 
 	/**
-	 * Get query string for the date
+	 * Get query string for the date, year=%d&month=%d&day=%d&hour=%d
 	 * @return string
 	 */
 	function get_date_str()
@@ -466,12 +508,20 @@ class SugarDateTime extends DateTime
         return sprintf("&year=%d&month=%d&day=%d&hour=%d", $this->year, $this->month, $this->day, $this->hour);
 	}
 
+	/**
+	 * Convert date to string - 'r' format, like: Thu, 21 Dec 2000 16:01:07 +0200
+     * @return string
+     */
 	function __toString()
 	{
 	    return $this->format('r');
 	}
 
-    protected static $parts_match = array(
+    /**
+     * Match between tm_ parts and date() format strings
+     * @var array
+     */
+	protected static $parts_match = array(
             'Y' => 'tm_year',
             'm' => 'tm_mon',
             'n' => 'tm_mon',
@@ -494,9 +544,9 @@ class SugarDateTime extends DateTime
      *
      * Since some OSes and PHP versions (please upgrade to 5.3!) do not support built-in parsing functions,
      * we have to restort to this ugliness.
-     *
-     * @param string $format
-     * @param string $time
+     * @internal
+     * @param string $time  Time formatted string
+     * @param string $format Format, as accepted by strptime()
      * @return array Parsed parts
      */
     protected function _strptime($time, $format)
@@ -576,6 +626,9 @@ class SugarDateTime extends DateTime
     /**
      * (non-PHPdoc)
      * @see DateTime::setDate()
+     * @param $year
+     * @param $month
+     * @param $day
      * @return SugarDateTime
      */
     public function setDate ($year, $month, $day)
@@ -587,6 +640,9 @@ class SugarDateTime extends DateTime
     /**
      * (non-PHPdoc)
      * @see DateTime::setTime()
+     * @param $hour
+     * @param $minute
+     * @param int $sec
      * @return SugarDateTime
      */
     public function setTime($hour, $minute, $sec = 0)
@@ -598,6 +654,7 @@ class SugarDateTime extends DateTime
     /**
      * (non-PHPdoc)
      * @see DateTime::modify()
+     * @param $modify
      * @return SugarDateTime
      */
     public function modify($modify)

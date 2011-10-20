@@ -35,7 +35,8 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-    print( "<html>" );
+    $langHeader = get_language_header();
+    print( "<html {$langHeader}>" );
     print( "Down for maintenance." );
     print( "</html>" );
 ?>

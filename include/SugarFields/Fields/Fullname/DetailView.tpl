@@ -48,7 +48,7 @@
 <input type="hidden" name="module" value="{$module}" />
 <input type="hidden" name="to_pdf" value="true" />
 <span class="id-ff">
-<button type="submit" name="vCardButton" id="btn_vCardButton" value="{$APP.LBL_VCARD}" title="{$APP.LBL_VCARD}" class="button"><img src="{sugar_getimagepath file="id-ff-vcard.png"}"></button>
+<button type="submit" name="vCardButton" id="btn_vCardButton" value="{$APP.LBL_VCARD}" title="{$APP.LBL_VCARD}" class="button">{sugar_getimage alt=$app_strings.LBL_ID_FF_VCARD name="id-ff-vcard" ext=".png" other_attributes=''}</button>
 </span>
 </form>
 {{if !empty($displayParams.enableConnectors)}}

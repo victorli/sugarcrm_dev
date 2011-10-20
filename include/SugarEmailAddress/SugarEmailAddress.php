@@ -192,11 +192,11 @@ class SugarEmailAddress extends SugarBean {
                     $upd_eabr="";
                     if (isset($current_links[$emailId])) {
                         if (!$isConversion) { // do not update anything if this is for lead conversion
-                            if ($address['primary_address'] != $current_links[$emailId]['primary_address'] or $address['reply_to_address'] != $current_links[$emailId]['reply_to_address'] ) {
-                                $upd_eabr="UPDATE email_addr_bean_rel SET primary_address='{$address['primary_address']}', reply_to_address='{$address['reply_to_address']}' WHERE id='{$current_links[$emailId]['id']}'";
-                            }
+                        if ($address['primary_address'] != $current_links[$emailId]['primary_address'] or $address['reply_to_address'] != $current_links[$emailId]['reply_to_address'] ) {
+                            $upd_eabr="UPDATE email_addr_bean_rel SET primary_address='{$address['primary_address']}', reply_to_address='{$address['reply_to_address']}' WHERE id='{$current_links[$emailId]['id']}'";
+                        }
 
-                            unset($current_links[$emailId]);
+                        unset($current_links[$emailId]);
                         }
                     } else {
                         $primary = $address['primary_address'];
@@ -373,9 +373,8 @@ class SugarEmailAddress extends SugarBean {
                    $fromRequest = true;
                    break;
                 }
-            }
             $widget_id = $_REQUEST[$module .'_email_widget_id'];
-
+    }
 
             //Iterate over the widgets for this module, in case there are multiple email widgets for this module
             while(isset($_REQUEST[$module . $widget_id . "emailAddress" . $widgetCount]))
@@ -621,7 +620,7 @@ class SugarEmailAddress extends SugarBean {
     function AddUpdateEmailAddress($addr,$invalid=0,$opt_out=0) {
 
         $address = $this->_cleanAddress($addr);
-        $addressCaps = strtoupper($this->db->quoteForEmail($address));
+        $addressCaps = strtoupper($this->db->quote($address));
 
         $q = "SELECT * FROM email_addresses WHERE email_address_caps = '{$addressCaps}' and deleted=0";
         $r = $this->db->query($q);

@@ -424,6 +424,14 @@ $mod_strings = array (
 	'LBL_MONTH' => "Month",
 	'LBL_YEAR' 	=> "Year",
 	'LBL_DAY' 	=> "Day",
+	'LBL_EDIT_LAYOUT' => 'Edit Layout' /*for 508 compliance fix*/,
+	'LBL_INVALID' => 'Invalid' /*for 508 compliance fix*/,
+	'LBL_VALID' => 'Valid' /*for 508 compliance fix*/,
+	'LBL_ALERT' => 'Alert' /*for 508 compliance fix*/,
+	'LBL_EDIT_INLINE' => 'Edit' /*for 508 compliance fix*/,
+	'LBL_DELETE_INLINE' => 'Delete' /*for 508 compliance fix*/,
+	'LBL_DELETE' => 'Remove' /*for 508 compliance fix*/,
+    'LBL_VIEW_INLINE' => 'View',
 );
 
 

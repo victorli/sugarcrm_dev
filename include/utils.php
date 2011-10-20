@@ -99,7 +99,7 @@ function make_sugar_config(&$sugar_config)
 	global $passwordsetting;
 
 	// assumes the following variables must be set:
-	// $dbconfig, $dbconfigoption, $cache_dir, $import_dir, $session_dir, $site_URL, $tmp_dir, $upload_dir
+	// $dbconfig, $dbconfigoption, $cache_dir,  $session_dir, $site_URL, $upload_dir
 
 	$sugar_config = array (
 	'admin_export_only' => empty($admin_export_only) ? false : $admin_export_only,
@@ -205,6 +205,7 @@ function make_sugar_config(&$sugar_config)
 	    'systexpirationtype' => '0',
 	    'systexpirationlogin' => '',
 		) : $passwordsetting,
+		'use_sprites' => (false && function_exists('imagecreatetruecolor')),
 	);
 }
 
@@ -231,8 +232,6 @@ function get_sugar_config_defaults() {
 	'persistent' => true,
 	'autofree' => false,
 	'debug' => 0,
-	'seqname_format' => '%s_seq',
-	'portability' => 0,
 	'ssl' => false ),
 	'default_action' => 'index',
 	'default_charset' => return_session_value_or_default('default_charset',
@@ -325,6 +324,21 @@ function get_sugar_config_defaults() {
   	'use_common_ml_dir'	=> false,
   	'common_ml_dir' => '',
 	'vcal_time' => '2',
+	'calendar' => array(
+	  'default_view' => 'week', 
+	  'show_calls_by_default' => true,
+	  'show_tasks_by_default' => true,
+	  'editview_width' => 960,
+	  'editview_height' => 480,	
+	  'day_timestep' => 15,
+	  'week_timestep' => 30,
+	  'month_timestep' => 60,	
+	  'default_day_start' => '08:00',
+	  'default_day_end' => '19:00',
+	  'items_draggable' => true, 
+	  'mouseover_expand' => true, 
+	  'item_text' => 'name',	
+	),
 	'passwordsetting' => empty($passwordsetting) ? array (
 	    'SystemGeneratedPasswordON' => '',
 	    'generatepasswordtmpl' => '',
@@ -950,7 +964,7 @@ function return_module_language($language, $module, $refresh=false)
 
 	// Bug 21559 - So we can get all the strings defined in the template, refresh
 	// the vardefs file if the cached language file doesn't exist.
-    if(!file_exists($GLOBALS['sugar_config']['cache_dir'].'modules/'. $module . '/language/'.$language.'.lang.php')
+    if(!file_exists(sugar_cached('modules/'). $module . '/language/'.$language.'.lang.php')
 			&& !empty($GLOBALS['beanList'][$module])){
 		$object = $GLOBALS['beanList'][$module];
 		if ($object == 'aCase') {
@@ -1066,7 +1080,7 @@ function return_mod_list_strings_language($language,$module) {
  */
 function return_theme_language($language, $theme)
 {
-	global $mod_strings, $sugar_config, $currentModule;
+	global $mod_strings, $sugar_config, $current_language;
 
 	$language_used = $language;
 	$default_language = $sugar_config['default_language'];
@@ -1833,7 +1847,7 @@ function clean_string($str, $filter = "STANDARD", $dieOnBadData = true)
 	"NUMBER"          => '#[^0-9\-]#i',
 	"SQL_COLUMN_LIST" => '#[^A-Z0-9\(\),_\.]#i',
 	"PATH_NO_URL"     => '#://#i',
-	"SAFED_GET"		  => '#[^A-Z0-9\@\=\&\?\.\/\-_~]#i', /* range of allowed characters in a GET string */
+	"SAFED_GET"		  => '#[^A-Z0-9\@\=\&\?\.\/\-_~+]#i', /* range of allowed characters in a GET string */
 	"UNIFIED_SEARCH"	=> "#[\\x00]#", /* cn: bug 3356 & 9236 - MBCS search strings */
 	"AUTO_INCREMENT"	=> '#[^0-9\-,\ ]#i',
 	"ALPHANUM"        => '#[^A-Z0-9\-]#i',
@@ -2032,13 +2046,9 @@ function convert_id($string)
 /**
  * @deprecated use SugarTheme::getImage()
  */
-function get_image($image,$other_attributes,$width="",$height="")
+function get_image($image,$other_attributes,$width="",$height="",$ext='.gif',$alt)
 {
-    return SugarThemeRegistry::current()->getImage(basename($image),
-        $other_attributes,
-        empty($width) ? null : $width,
-        empty($height) ? null : $height
-        );
+    return SugarThemeRegistry::current()->getImage(basename($image), $other_attributes, empty($width) ? null : $width, empty($height) ? null : $height, $ext, $alt );
 }
 /**
  * @deprecated use SugarTheme::getImageURL()
@@ -2055,14 +2065,38 @@ function getWebPath($relative_path){
 	return $relative_path;
 }
 
-function getJSPath($relative_path, $additional_attrs=''){
-	if(defined('TEMPLATE_URL'))$relative_path = SugarTemplateUtilities::getWebPath($relative_path);
-	if(empty($GLOBALS['sugar_config']['js_custom_version']))$GLOBALS['sugar_config']['js_custom_version'] = 1;
+function getVersionedPath($path, $additional_attrs='')
+{
+	if(empty($GLOBALS['sugar_config']['js_custom_version'])) $GLOBALS['sugar_config']['js_custom_version'] = 1;
 	$js_version_key = isset($GLOBALS['js_version_key'])?$GLOBALS['js_version_key']:'';
-	$path = $relative_path . '?s=' . $js_version_key . '&c=' . $GLOBALS['sugar_config']['js_custom_version'] ;
-	if ( inDeveloperMode() ) $path .= '&developerMode='.mt_rand();
-	if(!empty($additonal_attrs)) $path .= '&' . $additional_attrs;
-	return $path;
+	if(inDeveloperMode()) {
+	    static $rand;
+	    if(empty($rand)) $rand = mt_rand();
+	    $dev = $rand;
+	} else {
+	    $dev = '';
+	}
+	if(is_array($additional_attrs)) {
+	    $additional_attrs = join("|",$additional_attrs);
+	}
+	// cutting 2 last chars here because since md5 is 32 chars, it's always ==
+	$str = substr(base64_encode(md5("$js_version_key|{$GLOBALS['sugar_config']['js_custom_version']}|$dev|$additional_attrs", true)), 0, -2);
+	// remove / - it confuses some parsers
+	$str = strtr($str, '/+', '-_');
+	if(empty($path)) return $str;
+
+	return $path . "?v=$str";
+}
+
+function getVersionedScript($path, $additional_attrs='')
+{
+    return '<script type="text/javascript" src="'.getVersionedPath($path, $additional_attrs).'"></script>';
+}
+
+function getJSPath($relative_path, $additional_attrs='')
+{
+	if(defined('TEMPLATE_URL'))$relative_path = SugarTemplateUtilities::getWebPath($relative_path);
+	return getVersionedPath($relative_path).(!empty($additional_attrs)?"&$additional_attrs":"");
 }
 
 function getSWFPath($relative_path, $additional_params=''){
@@ -2281,6 +2315,7 @@ function get_bean_select_array($add_blank=true, $bean_name, $display_columns, $w
 	{
 
 		$db = DBManagerFactory::getInstance();
+
 		$temp_result = Array();
 		$query = "SELECT {$focus->table_name}.id, {$display_columns} as display from {$focus->table_name} ";
 		$query .= "where ";
@@ -2566,16 +2601,8 @@ function check_php_version($sys_php_version = '') {
 	// only the supported versions,
 	// should be mutually exclusive with $invalid_php_versions
 	$supported_php_versions = array (
-	'5.2.1', '5.2.2', '5.2.3', '5.2.4', '5.2.5', '5.2.6', '5.2.8', '5.3.0'
+    	'5.2.1', '5.2.2', '5.2.3', '5.2.4', '5.2.5', '5.2.6', '5.2.8', '5.3.0'
 	);
-	//Find out what Database the system is using.
-	global $sugar_config;
-	$dbType = '';
-	if (isset($_REQUEST['setup_db_type'])) {
-		$dbType = $_REQUEST['setup_db_type'];
-	} else if (isset ($sugar_config['dbconfig']) && isset ($sugar_config['dbconfig']['db_type'])) {
-		$dbType = $sugar_config['dbconfig']['db_type'];
-	}
 
 	// invalid versions above the $min_considered_php_version,
 	// should be mutually exclusive with $supported_php_versions
@@ -3453,11 +3480,6 @@ function setPhpIniSettings() {
 	if(!empty($backtrack_limit)) {
 		ini_set('pcre.backtrack_limit', '-1');
 	}
-
-	// mssql only
-	if(ini_get("mssql.charset")) {
-		ini_set('mssql.charset', "UTF-8");
-	}
 }
 
 /**
@@ -3619,7 +3641,7 @@ function generate_search_where ($field_list=array(),$values=array(),&$bean,$add_
 					if (strstr($db_field,'.')===false) {
 						$db_field=$bean->table_name.".".$db_field;
 					}
-					if ($GLOBALS['db']->dbType=='oci8' &&  isset($parms['query_type']) && $parms['query_type']=='case_insensitive') {
+					if ($GLOBALS['db']->supports('case_sensitive') &&  isset($parms['query_type']) && $parms['query_type']=='case_insensitive') {
 						$db_field='upper('.$db_field.")";
 						$field_value=strtoupper($field_value);
 					}
@@ -3765,16 +3787,24 @@ function createGroupUser($name) {
 
 function _getIcon($iconFileName)
 {
-    $iconPath = SugarThemeRegistry::current()->getImageURL("icon_{$iconFileName}.gif");
-    //First try un-ucfirst-ing the icon name
-    if ( empty($iconPath) )
-        $iconPath = SugarThemeRegistry::current()->getImageURL(
-            "icon_" . strtolower(substr($iconFileName,0,1)).substr($iconFileName,1) . ".gif");
-    //Next try removing the icon prefix
-    if ( empty($iconPath) )
-        $iconPath = SugarThemeRegistry::current()->getImageURL("{$iconFileName}.gif");
 
-  	return $iconPath;
+	$iconName = "icon_{$iconFileName}.gif";
+    $iconFound = SugarThemeRegistry::current()->getImageURL($iconName,false);
+
+    //First try un-ucfirst-ing the icon name
+    if ( empty($iconFound) )
+		$iconName = "icon_" . strtolower(substr($iconFileName,0,1)).substr($iconFileName,1) . ".gif";
+        $iconFound = SugarThemeRegistry::current()->getImageURL($iconName,false);
+    
+	//Next try removing the icon prefix
+    if ( empty($iconFound) )
+		$iconName = "{$iconFileName}.gif";
+		$iconFound = SugarThemeRegistry::current()->getImageURL($iconName,false);
+
+	if ( empty($iconFound) )
+		$iconName = '';
+
+  	return $iconName;
 }
 /**
  * Function to grab the correct icon image for Studio
@@ -3783,22 +3813,23 @@ function _getIcon($iconFileName)
  * @param string $width Width of image
  * @param string $height Height of image
  * @param string $align Alignment of image
+ * @param string $alt Alt tag of image
  * @return string $string <img> tag with corresponding image
  */
 
-function getStudioIcon($iconFileName='', $altFileName='', $width='48', $height='48', $align='baseline' )
+function getStudioIcon($iconFileName='', $altFileName='', $width='48', $height='48', $align='baseline', $alt='' )
 {
 	global $app_strings, $theme;
 
-    $iconPath = _getIcon($iconFileName);
- 	if(empty($iconPath)){
- 	    $iconPath = _getIcon($altFileName);
- 	    if (empty($iconPath))
+    $iconName = _getIcon($iconFileName);
+ 	if(empty($iconName)){
+ 	    $iconName = _getIcon($altFileName);
+ 	    if (empty($iconName))
  	    {
             return $app_strings['LBL_NO_IMAGE'];
  	    }
  	}
-	return '<img border="0" src="'.$iconPath.'" width="'.$width.'" height="'.$height.'" align="'.$align.'">';
+	return SugarThemeRegistry::current()->getImage($iconName, "align=\"$align\" border=\"0\"", $width, $height);
 }
 
 /**
@@ -3808,23 +3839,21 @@ function getStudioIcon($iconFileName='', $altFileName='', $width='48', $height='
  * @param string $width Width of image
  * @param string $height Height of image
  * @param string $align Alignment of image
+ * @param string $alt Alt tag of image
  * @return string $string <img> tag with corresponding image
  */
 
-function get_dashlets_dialog_icon($module='', $width='32', $height='32', $align='absmiddle'){
+function get_dashlets_dialog_icon($module='', $width='32', $height='32', $align='absmiddle',$alt=''){
 	global $app_strings, $theme;
- 	$icon_path = _getIcon($module . "_32");
- 	if (empty($icon_path))
+ 	$iconName = _getIcon($module . "_32");
+ 	if (empty($iconName))
  	{
- 		$icon_path = _getIcon($module);
+ 		$iconName = _getIcon($module);
  	}
- 	if(empty($icon_path)){
- 		$icon = $app_strings['LBL_NO_IMAGE'];
+ 	if(empty($iconName)){
+ 		return $app_strings['LBL_NO_IMAGE'];
  	}
-	else{
-		$icon = '<img border="0" src="'.$icon_path.'" width="'.$width.'" height="'.$height.'" align="'.$align.'">';
-	}
-	return $icon;
+	return SugarThemeRegistry::current()->getImage($iconName, "align=\"$align\" border=\"0\"", $width, $height);
 }
 
 // works nicely to change UTF8 strings that are html entities - good for PDF conversions
@@ -3876,45 +3905,11 @@ if (version_compare(phpversion(), '5.0.0', '<')) {
 }
 
 /*
- * Invoked when connected to mssql. checks if we have freetds version of mssql library.
- * the response is put into a global variable.
+ * @deprecated use DBManagerFactory::isFreeTDS
  */
-function is_freetds() {
-
-	$ret=false;
-	if (isset($GLOBALS['mssql_library_version'])) {
-		if ($GLOBALS['mssql_library_version']=='freetds') {
-			$ret=true;
-		} else {
-			$ret=false;
-		}
-	} else {
-		ob_start();
-		phpinfo();
-		$info=ob_get_contents();
-		ob_end_clean();
-
-		if (strpos($info,'FreeTDS') !== false) {
-			$GLOBALS['mssql_library_version']='freetds';
-			$ret=true;
-		} else {
-			$GLOBALS['mssql_library_version']='regular';
-			$ret=false;
-		}
-	}
-	return $ret;
-}
-
-/*
- *  stripos - Find position of first occurrence of a case-insensitive string
- *
- *  The function is being defined for systems with PHP version < 5.
- *
- */
-if (!function_exists("stripos")){
-	function stripos($haystack,$needle,$offset=0){
-      return strpos(strtolower($haystack),strtolower($needle),$offset);
-	}
+function is_freetds()
+{
+    return DBManagerFactory::isFreeTDS();
 }
 
 /**
@@ -4078,16 +4073,10 @@ function filterInboundEmailPopSelection($protocol)
  * The varchar in MySQL, Orcale, and nvarchar in FreeTDS, we can store $length mutilbyte charaters in it. we need mb_substr to keep more info.
 * @returns the substred strings.
  */
-function sugar_substr($string, $length, $charset='UTF-8') {
-    if($GLOBALS['db']->dbType == 'mssql' && empty($GLOBALS['db']->isFreeTDS)) {
-        if(strlen($string) > $length) {
-            $string = trim(substr(trim($string),0,$length));
-        }
-    }
-    else {
-        if(mb_strlen($string,$charset) > $length) {
-            $string = trim(mb_substr(trim($string),0,$length,$charset));
-        }
+function sugar_substr($string, $length, $charset='UTF-8')
+{
+    if(mb_strlen($string,$charset) > $length) {
+        $string = trim(mb_substr(trim($string),0,$length,$charset));
     }
     return $string;
 }
@@ -4320,13 +4309,20 @@ function verify_image_file($path, $jpeg = false)
 		$filetype = $img_size['mime'];
 		//if filetype is jpeg or if we are only allowing jpegs, create jpg image
         if($filetype == "image/jpeg" || $jpeg) {
-            if(imagejpeg($img, $path)) {
+            ob_start();
+            imagejpeg($img);
+            $image = ob_get_clean();
+            // not writing directly because imagejpeg does not work with streams
+            if(file_put_contents($path, $image)) {
                 return true;
             }
         } elseif ($filetype == "image/png") { // else if the filetype is png, create png
         	imagealphablending($img, true);
         	imagesavealpha($img, true);
-    	    if(imagepng($img, $path)) {
+        	ob_start();
+            imagepng($img);
+            $image = ob_get_clean();
+    	    if(file_put_contents($path, $image)) {
                 return true;
     	    }
         } else {
@@ -4423,4 +4419,18 @@ if(file_exists('custom/application/Ext/Utils/custom_utils.ext.php')) {
 function sanitize($input, $quotes = ENT_QUOTES, $charset = 'UTF-8', $remove = false)
 {
     return htmlentities($input, $quotes, $charset);
+}
+
+
+/**
+ * get_language_header
+ * 
+ * This is a utility function for 508 Compliance.  It returns the lang=[Current Language] text string used
+ * inside the <html> tag.  If no current language is specified, it defaults to lang='en'.
+ *
+ * @return String The lang=[Current Language] markup to insert into the <html> tag
+ */
+function get_language_header()
+{
+    return isset($GLOBALS['current_language']) ? "lang='{$GLOBALS['current_language']}'" : "lang='en'";
 }

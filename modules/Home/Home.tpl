@@ -53,7 +53,7 @@
 
 <!-- begin includes for overlib -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000"></div>
-<script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_overlib.js'}"></script>
+<script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_overlib.js'}"></script>
 <!-- end includes for overlib -->
 
 <script type="text/javascript">
@@ -67,7 +67,7 @@ jsChartsArray = new Array();
 var moduleName = 'Home';
 </script>
 
-<script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_yui_widgets.js'}"></script>
+<script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_yui_widgets.js'}"></script>
 <script type="text/javascript" src="{sugar_getjspath file='include/javascript/dashlets.js'}"></script>
 <script type='text/javascript' src='{sugar_getjspath file='include/MySugar/javascript/MySugar.js'}'></script>
 <link rel='stylesheet' href='{sugar_getjspath file='include/javascript/yui/build/assets/skins/sam/skin.css'}'>
@@ -91,7 +91,7 @@ var moduleName = 'Home';
 		</td>
 	
 		<td rowspan="3">
-				<img src='{sugar_getimagepath file='blank.gif'}' width='15' height='1' border='0'>
+				{sugar_getimage alt=" " name="blank" ext=".gif" width="15" height="1" other_attributes='border="0" '}
 		</td>
 		{/if}
 		{if $numCols > 1}
@@ -99,13 +99,13 @@ var moduleName = 'Home';
 		&nbsp;
 		</td>
 		<td rowspan="3">
-				<img src='{sugar_getimagepath file='blank.gif'}' width='15' height='1' border='0'>
+				{sugar_getimage alt=" " name="blank" ext=".gif" width="15" height="1" other_attributes='border="0" '}
 		</td>
 		{/if}	
 		<td align='right'>
 			<input id="add_dashlets" class="button" type="button" value="{$lblAddDashlets}" onclick="return SUGAR.mySugar.showDashletsTree();"/>
 	 		<a href='index.php?module=Administration&action=SupportPortal&view=documentation&version={$sugarVersion}&edition={$sugarFlavor}&lang={$currentLanguage}&help_module=Home&help_action=index&key={$serverUniqueKey}' class='utilsLink' target='_blank'>
-				<img src='{sugar_getimagepath file="help.gif"}' width='13' height='13' alt='{$lblLnkHelp}' border='0' align='absmiddle'>
+				{sugar_getimage name="help" ext=".gif" width="13" height="13" alt=$lblLnkHelp other_attributes='align="absmiddle" border="0" '}
             </a>
             <a href='index.php?module=Administration&action=SupportPortal&view=documentation&version={$sugarVersion}&edition={$sugarFlavor}&lang={$currentLanguage}&help_module=Home&help_action=index&key={$serverUniqueKey}' class='utilsLink' target='_blank'>
 				{$lblLnkHelp}

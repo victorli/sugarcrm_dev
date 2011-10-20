@@ -42,14 +42,14 @@
 {overlib_includes}
 {literal}
 <br />
-<script type="text/javascript" src="modules/Studio/JSTransaction.js" ></script>
+<script type="text/javascript" src="{sugar_getjspath file='modules/Studio/JSTransaction.js'}" ></script>
 <script>
 	var jstransaction = new JSTransaction();
 </script>
-<script src="modules/Studio/studiotabgroups.js"></script>
-<script src="modules/Studio/ygDDListStudio.js"></script>				 	
-<script type="text/javascript" src="modules/Studio/studiodd.js" ></script>	
-<script type="text/javascript" src="modules/Studio/studio.js" ></script>	
+<script type="text/javascript" src="{sugar_getjspath file='modules/Studio/studiotabgroups.js'}"></script>
+<script type="text/javascript" src="{sugar_getjspath file='modules/Studio/ygDDListStudio.js'}"></script>
+<script type="text/javascript" src="{sugar_getjspath file='modules/Studio/studiodd.js'}" ></script>
+<script type="text/javascript" src="{sugar_getjspath file='modules/Studio/studio.js'}" ></script>
 <style type='text/css'>
 .slot {
 	border-width:1px;border-color:#999999;border-style:solid;padding:0px 1px 0px 1px;margin:2px;cursor:move;
@@ -91,14 +91,14 @@
 <p>{$MOD.LBL_GROUP_TAB_WELCOME}</p>
 <br/>
 <table cellspacing=2>
-<button style='cursor:default' onmousedown='this.className="buttonOn";return false;' 
-            onmouseup='this.className="button"' onmouseout='this.className="button"' 
+<button style='cursor:default' onmousedown='this.className="buttonOn";return false;'
+            onmouseup='this.className="button"' onmouseout='this.className="button"'
             onclick='studiotabs.generateForm("edittabs");document.edittabs.submit()'>
             {$MOD.LBL_BTN_SAVEPUBLISH}</button>
 </table>
 <p />
 <form name='edittabs' id='edittabs' method='POST' action='index.php'>
-<input type="hidden" name="slot_count" id="slot_count" value="" />  
+<input type="hidden" name="slot_count" id="slot_count" value="" />
 <table  cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
 	<td width="100%" class='dataLabel' colspan=2>
@@ -198,7 +198,7 @@ subtabModules['modSlot{$modCounter}'] = '{$value.label}'</script>
 			}
 			window.location.href = partURL;
 		}
-		
+
 		function addTabGroup(){
 			var table = document.getElementById('groupTable');
 		  	var rowIndex = table.rows.length - 1;
@@ -209,7 +209,7 @@ subtabModules['modSlot{$modCounter}'] = '{$value.label}'</script>
 		  			rowExists = true;
 		  		}
 		  	}
-		  	
+
 		  	if(!rowExists)table.insertRow(rowIndex);
 		  	cell = table.rows[rowIndex].insertCell(table.rows[rowIndex].cells.length);
 		  	cell.className='tdContainer';
@@ -239,7 +239,7 @@ subtabModules['modSlot{$modCounter}'] = '{$value.label}'</script>
 		  	};
 		  	headerSpan2.appendChild(subspan1);
 		  	headerSpan2.appendChild(subspan2);
-		  	
+
 		  	var editLabel = document.createElement('input');
 		  	editLabel.style.display = 'none';
 		  	editLabel.type = 'text';
@@ -250,7 +250,7 @@ subtabModules['modSlot{$modCounter}'] = '{$value.label}'</script>
 		  	editLabel.onblur = function(){
 		  		studiotabs.editTabGroupLabel(this.slotCount, true);
 		  	}
-		  	
+
 		  	var list = document.createElement('ul');
 		  	list.id = 'ul' + slotCount;
 		  	list.className = 'listContainer';
@@ -260,7 +260,7 @@ subtabModules['modSlot{$modCounter}'] = '{$value.label}'</script>
 		  	li.className = 'noBullet';
 		  	li.innerHTML = '{/literal}{$TGMOD.LBL_DROP_HERE}{literal}';
 		  	list.appendChild(li);
-		  	
+
 		  	slotDiv.appendChild(header);
 		  	slotDiv.appendChild(editLabel);
 		  	slotDiv.appendChild(list);
@@ -269,18 +269,18 @@ subtabModules['modSlot{$modCounter}'] = '{$value.label}'</script>
 		  	var slot = document.createElement('input');
 		  	slot.type = 'hidden';
 		  	slot.id =  'slot_' + slotCount;
-		  	slot.name =  'slot_' + slotCount; 
+		  	slot.name =  'slot_' + slotCount;
 		  	slot.value = slotCount;
 		  	var deleteSlot = document.createElement('input');
 		  	deleteSlot.type = 'hidden';
 		  	deleteSlot.id =  'delete_' + slotCount;
-		  	deleteSlot.name =  'delete_' + slotCount; 
+		  	deleteSlot.name =  'delete_' + slotCount;
 		  	deleteSlot.value = 0;
 		  	slotB.appendChild(slot);
 		  	slotB.appendChild(deleteSlot);
 		  	cell.appendChild(slotDiv);
 		  	cell.appendChild(slotB);
-		  	
+
 		  	yahooSlots["slot" + slotCount] = new ygDDSlot("slot" + slotCount, "mainTabs");
 			yahooSlots["slot" + slotCount].setHandleElId("handle" + slotCount);
 		  	yahooSlots["noselectbottom"+ slotCount] = new ygDDListStudio("noselectbottom"+ slotCount , "subTabs", -1);
@@ -288,12 +288,12 @@ subtabModules['modSlot{$modCounter}'] = '{$value.label}'</script>
 		  	slotCount++;
 		  	ygDDListStudio.prototype.updateTabs();
 		}
-		
+
 		var slotCount = {/literal}{$tabCounter}{literal};
 		var modCount = {/literal}{$modCounter}{literal};
 		var subSlots = [];
 		var yahooSlots = [];
-		
+
 		function dragDropInit(){
 
 			YAHOO.util.DDM.mode = YAHOO.util.DDM.POINT;
@@ -301,27 +301,27 @@ subtabModules['modSlot{$modCounter}'] = '{$value.label}'</script>
 			for(mj = 0; mj <= slotCount; mj++){
 				yahooSlots["slot" + mj] = new ygDDSlot("slot" + mj, "mainTabs");
 				yahooSlots["slot" + mj].setHandleElId("handle" + mj);
-				
+
 				yahooSlots["noselectbottom"+ mj] = new ygDDListStudio("noselectbottom"+ mj , "subTabs", -1);
 				for(msi = 0; msi <= subtabCount[mj]; msi++){
 					yahooSlots["subslot"+ mj + '_' + msi] = new ygDDListStudio("subslot"+ mj + '_' + msi, "subTabs", 0);
-					
+
 				}
-				
+
 			}
 			for(msi = 0; msi <= modCount ; msi++){
 					yahooSlots["modSlot"+ msi] = new ygDDListStudio("modSlot" + msi, "subTabs", 1);
-					
+
 			}
 			var trash1  = new ygDDListStudio("trashcan" , "subTabs", 'trash');
 			ygDDListStudio.prototype.updateTabs();
-		
+
 		}
-			
-		YAHOO.util.DDM.mode = YAHOO.util.DDM.INTERSECT; 
+
+		YAHOO.util.DDM.mode = YAHOO.util.DDM.INTERSECT;
 		YAHOO.util.Event.addListener(window, "load", dragDropInit);
-			
-</script>	
+
+</script>
 {/literal}
 	<input type='hidden' name='action' value='SaveTabs'>
 	<input type='hidden' name='module' value='Studio'>

@@ -83,7 +83,7 @@ function sugar_mkdir($pathname, $mode=null, $recursive=false, $context='') {
 	else {
 	    $GLOBALS['log']->error("Cannot create directory $pathname cannot be touched");
 	}
-	
+
 	return $result;
 }
 
@@ -138,7 +138,7 @@ function sugar_file_put_contents($filename, $data, $flags=null, $context=null){
 	    $GLOBALS['log']->error("File $filename cannot be written to");
 	    return false;
 	}
-	
+
 	if(empty($flags)) {
 		return file_put_contents($filename, $data);
 	} elseif(empty($context)) {
@@ -166,7 +166,7 @@ function sugar_file_get_contents($filename, $use_include_path=false, $context=nu
 	    $GLOBALS['log']->error("File $filename cannot be read");
 	    return false;
 	}
-	
+
 	if(empty($context)) {
 		return file_get_contents($filename, $use_include_path);
 	} else {
@@ -325,4 +325,19 @@ function sugar_is_file($path, $mode='r'){
 		return is_file($path);
 }
 
-?>
+/**
+ * Get filename in cache directory
+ * @api
+ * @param string $file
+ */
+function sugar_cached($file)
+{
+    static $cdir = null;
+    if(empty($cdir) && !empty($GLOBALS['sugar_config']['cache_dir'])) {
+        $cdir = rtrim($GLOBALS['sugar_config']['cache_dir'], '/\\');
+    }
+    if(empty($cdir)) {
+        $cdir = "cache";
+    }
+    return "$cdir/$file";
+}

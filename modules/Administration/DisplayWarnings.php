@@ -63,14 +63,14 @@ if(!empty($_SESSION['HomeOnly'])){
 }
 
 if(isset($license) && !empty($license->settings['license_msg_all'])){
-	displayAdminError(base64_decode($license->settings['license_msg_all']));	
+	displayAdminError(base64_decode($license->settings['license_msg_all']));
 }
 if ( (strpos($_SERVER["SERVER_SOFTWARE"],'Microsoft-IIS') !== false) && (php_sapi_name() == 'cgi-fcgi') && (ini_get('fastcgi.logging') != '0') ) {
     displayAdminError(translate('LBL_FASTCGI_LOGGING', 'Administration'));
 }
 if(is_admin($current_user)){
 if(!empty($_SESSION['COULD_NOT_CONNECT'])){
-	displayAdminError(translate('LBL_COULD_NOT_CONNECT', 'Administration') . ' '. $timedate->to_display_date_time($_SESSION['COULD_NOT_CONNECT']));		
+	displayAdminError(translate('LBL_COULD_NOT_CONNECT', 'Administration') . ' '. $timedate->to_display_date_time($_SESSION['COULD_NOT_CONNECT']));
 }
 if(!empty($_SESSION['EXCEEDING_OC_LICENSES']) && $_SESSION['EXCEEDING_OC_LICENSES'] == true){
     displayAdminError(translate('LBL_EXCEEDING_OC_LICENSES', 'Administration'));
@@ -109,14 +109,6 @@ if($smtp_error) {
 		}
 
 
-
-		
-
-
-
-
-
-
         if(empty($GLOBALS['sugar_config']['admin_access_control'])){
 			if(isset($_SESSION['invalid_versions'])){
 				$invalid_versions = $_SESSION['invalid_versions'];
@@ -124,7 +116,7 @@ if($smtp_error) {
 					displayAdminError(translate('WARN_UPGRADE', 'Administration'). $invalid['name'] .translate('WARN_UPGRADE2', 'Administration'));
 				}
 			}
-		
+
 			if (isset($_SESSION['available_version'])){
 				if($_SESSION['available_version'] != $sugar_version)
 				{

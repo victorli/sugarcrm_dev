@@ -34,7 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 if(!defined('sugarEntry')) define('sugarEntry', true);
 
 set_include_path(
@@ -114,6 +114,8 @@ require_once 'SugarTestImportUtilities.php';
 require_once 'SugarTestMergeUtilities.php';
 require_once 'SugarTestTaskUtilities.php';
 
+$GLOBALS['db']->commit();
+
 // define our testcase subclass
 class Sugar_PHPUnit_Framework_TestCase extends PHPUnit_Framework_TestCase
 {
@@ -149,6 +151,8 @@ class Sugar_PHPUnit_Framework_TestCase extends PHPUnit_Framework_TestCase
         if(isset($GLOBALS['log'])) {
             $GLOBALS['log']->info("DONE TEST: {$this->getName(false)}");
         }
+        // reset error handler in case somebody set it
+        restore_error_handler();
     }
 
     public static function tearDownAfterClass()

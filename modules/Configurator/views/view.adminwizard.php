@@ -115,7 +115,8 @@ class ViewAdminwizard extends SugarView
         $this->options['show_javascript'] = false;
         $this->ss->assign("SUGAR_JS",ob_get_contents().$themeObject->getJS());
         ob_end_clean();
-        
+
+        $this->ss->assign('langHeader', get_language_header());
         $this->ss->assign('START_PAGE', !empty($_REQUEST['page']) ? $_REQUEST['page'] : 'welcome');
                 
             $this->ss->display('modules/Configurator/tpls/adminwizard.tpl');

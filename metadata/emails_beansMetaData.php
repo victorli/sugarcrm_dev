@@ -282,12 +282,13 @@ $dictionary['emails_beans'] = array('table' => 'emails_beans',
 
 /**
  * Large text field table, shares a 1:1 with the emails table.  Moving all longtext fields to this table allows more
- * effiencient email management and full-text search capabilities with MyISAM for MySQL.
+ * effiencient email management and full-text search capabilities.
  */
 $dictionary['emails_text'] = array(
 	'table' => 'emails_text',
 	'comment' => 'Large email text fields',
 	'mysqlengine' => 'MyISAM',
+	'engine' => 'MyISAM',
 	'fields' => array(
 		'email_id' => array (
 			'name'			=> 'email_id',
@@ -371,13 +372,3 @@ $dictionary['emails_text'] = array(
 		),
 	),
 );
-
-
-
-
-
-
-
-
-
-

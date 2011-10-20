@@ -465,11 +465,7 @@ class SugarFolder {
 
 
 
-		if($sugar_config['dbconfig']['db_type'] == 'oci8') {
-			$rootWhere .= "AND f.parent_folder IS NULL";
-		} else {
-			$rootWhere .= "AND f.parent_folder = ''";
-		}
+    	$rootWhere .= "AND (f.parent_folder IS NULL OR f.parent_folder = '')";
 
 		if($subscribed) {
 			$q = $this->coreSubscribed.$teamSecurityClause.$this->coreWhereSubscribed."'{$user->id}' ".$rootWhere.$this->coreOrderBy;
@@ -846,7 +842,7 @@ class SugarFolder {
 	function save($addSubscriptions = TRUE) {
 		global $current_user;
 
-		$this->dynamic_query = $this->db->helper->escape_quote($this->dynamic_query);
+		$this->dynamic_query = $this->db->quote($this->dynamic_query);
 
 		if((empty($this->id) && $this->new_with_id == false) || (!empty($this->id) && $this->new_with_id == true))
 		{
@@ -913,7 +909,7 @@ class SugarFolder {
 	function updateFolder($fields) {
 		global $current_user;
 
-		$this->dynamic_query = $this->db->helper->escape_quote($this->dynamic_query);
+		$this->dynamic_query = $this->db->quote($this->dynamic_query);
 		$id = $fields['record'];
 		$name = $fields['name'];
 		$parent_folder = $fields['parent_folder'];

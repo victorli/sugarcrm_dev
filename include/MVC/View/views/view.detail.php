@@ -51,7 +51,11 @@ class ViewDetail extends SugarView{
  	}
 
  	function preDisplay(){
- 		$this->options['show_subpanels'] = true;
+             //do not override config settings for print
+             if (!isset($_REQUEST['print']) || !$_REQUEST['print']) {
+                 $this->options['show_subpanels'] = true;
+             }
+
         $metadataFile = $this->getMetaDataFile();
 		$this->dv = new DetailView2();
 		$this->dv->ss =&  $this->ss;

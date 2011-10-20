@@ -143,16 +143,16 @@ class Meeting extends SugarBean {
 		global $current_user;
 
 		global $disable_date_format;
-		
-	    if(isset($this->date_start) && isset($this->duration_hours) && isset($this->duration_minutes)) 
+
+	    if(isset($this->date_start) && isset($this->duration_hours) && isset($this->duration_minutes))
         {
-        	if(isset($this->date_start) && isset($this->duration_hours) && isset($this->duration_minutes)) 
+        	if(isset($this->date_start) && isset($this->duration_hours) && isset($this->duration_minutes))
 	        {
 	    	    $td = $timedate->fromDb($this->date_start);
 	    	    if($td)
 	    	    {
 		        	$this->date_end = $td->modify("+{$this->duration_hours} hours {$this->duration_minutes} mins")->asDb();
-	    	    }	
+	    	    }
 	        }
 		}
 
@@ -423,7 +423,7 @@ class Meeting extends SugarBean {
 			if(empty($action))
 			     $action = "index";
             $setCompleteUrl = "<a onclick='SUGAR.util.closeActivityPanel.show(\"{$this->module_dir}\",\"{$this->id}\",\"Held\",\"listview\",\"1\");'>";
-			$meeting_fields['SET_COMPLETE'] = $setCompleteUrl . SugarThemeRegistry::current()->getImage("close_inline","title=".translate('LBL_LIST_CLOSE','Meetings')." border='0'")."</a>";
+			$meeting_fields['SET_COMPLETE'] = $setCompleteUrl . SugarThemeRegistry::current()->getImage("close_inline"," border='0'",null,null,'.gif',translate('LBL_CLOSEINLINE'))."</a>";
 		}
 		global $timedate;
 		$today = $timedate->nowDb();
@@ -462,7 +462,7 @@ class Meeting extends SugarBean {
 
         $meeting_fields['REMINDER_CHECKED'] = $this->reminder_time==-1 ? false : true;
 
-		
+
 		return $meeting_fields;
 	}
 

@@ -505,28 +505,7 @@ function get_related_name($field_def,$id_value) {
 	                $related_def = $focus->field_defs[$field_def['rname']];
 	                //if field defs has concat field array set, then concatenate values
 	                if(isset($related_def['db_concat_fields']) && !empty($related_def['db_concat_fields'])){
-	                    $temp_str = '';
-
-	                    if ( ( $focus->db->dbType == 'mysql' ) || ( $focus->db->dbType == 'oci8' ) ){
-	                        foreach($related_def['db_concat_fields'] as $vals){
-	                            if(empty($temp_str)){
-	                                $temp_str .= ' concat('. $vals;
-	                            }else{
-	                                $temp_str .= ", ' ', " .$vals;
-	                            }
-	                        }
-	                        $temp_str .= ')';
-	                    }else{
-	                        foreach($related_def['db_concat_fields'] as $vals){
-	                            if(empty($temp_str)){
-	                                $temp_str .= $vals;
-	                            }else{
-	                                $temp_str .= " + ' ' + " .$vals;
-	                            }
-	                        }
-	                    }
-
-	                    $col_name = $temp_str;
+                        $col_name = $focus->db->concat($field_def['table'], $related_def['db_concat_fields']);
 	                }
                   }
             }

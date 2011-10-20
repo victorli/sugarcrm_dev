@@ -200,6 +200,8 @@ $mod_strings = array (
 	'LBL_LOGGER_LOG_LEVEL'=>'Log Level',
         'LBL_LEAD_CONV_OPTION' => 'Lead Conversion Options',
         'LEAD_CONV_OPT_HELP' => "<b>Copy</b> - Creates and relates copies of all of the Lead's activities to new records that are selected by the user during conversion. Copies are created for each of the selected records.<br><br><b>Move</b> - Moves all of the Lead's activities to a new record that is selected by the user during conversion.<br><br><b>Do Nothing</b> - Does nothing with the Lead's activities during conversion. The activities remain related to the Lead only.",
+        'LBL_CONFIG_AJAX' => 'Configure AJAX User Interface',
+        'LBL_CONFIG_AJAX_DESC' => 'Enable or disable the use of the AJAX UI for specific modules.',
 	'LBL_LOGGER_MAX_LOGS'=>'Maximum number of logs (before rolling)',
 	'LBL_LOGGER_FILENAME_SUFFIX' =>'Append after filename',
 	'LBL_VCAL_PERIOD' => 'vCal Updates Time Period:',
@@ -416,6 +418,14 @@ To configure additional system settings, click <a href="index.php?module=Adminis
     'LBL_WIZARD_SYSTEM_DESC' => 'Provide your organization\'s name and logo in order to brand your Sugar.',
     'LBL_WIZARD_LOCALE_DESC' => 'Specify how you would like data in Sugar to be displayed, based on your geographical location. The settings you provide here will be the default settings. Users will be able set their own preferences.',
     'LBL_WIZARD_SMTP_DESC' => 'Provide the email account that will be used to send emails, such as the assignment notifications and new user passwords. Users will receive emails from Sugar, as sent from the specified email account.',
+    'LBL_MOBILE_MOD_REPORTS_RESTRICTION' => '* The Reports module is only available for the Sugar Mobile iPhone client.',
+	'LBL_GMAIL_LOGO' => 'Gmail Logo' /*for 508 compliance fix*/,
+	'LBL_YAHOO_MAIL' => 'Yahoo Mail' /*for 508 compliance fix*/,
+	'LBL_EXCHANGE_LOGO' => 'Exchange' /*for 508 compliance fix*/,
+	'LBL_LOADING' => 'Loading...' /*for 508 compliance fix*/,
+	'LBL_DELETE' => 'Delete' /*for 508 compliance fix*/,
+	'LBL_WELCOME' => 'Welcome' /*for 508 compliance fix*/,
+	'LBL_LOGO' => 'Logo' /*for 508 compliance fix*/,
     'LBL_MOBILE_MOD_REPORTS_RESTRICTION' => '* The Reports module is only available for the Sugar Mobile native clients',
 );
 

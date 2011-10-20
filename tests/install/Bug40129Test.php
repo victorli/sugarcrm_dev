@@ -34,7 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 require_once('install/install_utils.php');
 require_once('modules/UpgradeWizard/uw_utils.php');
 
@@ -50,25 +50,20 @@ public function setUp() {
 	{
 		$this->original_argv = $argv;
 	}
-	
-		
+
+
 	$this->current_working_dir = getcwd();
-	
-	if(file_exists('config.php'))
-	{
-	   copy('config.php', 'config.php.bug40129');
-	}	
-	
-	if(file_exists($this->current_working_dir . DIRECTORY_SEPARATOR . 'config_si.php'))
+
+	if(file_exists('config_si.php'))
 	{
 	   $this->has_original_config_si_file = true;
-	   copy($this->current_working_dir . DIRECTORY_SEPARATOR . 'config_si.php', $this->current_working_dir . DIRECTORY_SEPARATOR . 'config_si.php.bug40129');
+	   copy('config_si.php', 'config_si.php.bug40129');
 	} else {
 	   $this->has_original_config_si_file = false;
- 	   copy('config.php', $this->current_working_dir . DIRECTORY_SEPARATOR . 'config_si.php');		
+ 	   copy('config.php', 'config_si.php');
 	}
-	
-	$sugar_config_si = array(	
+
+	$sugar_config_si = array(
 	    'setup_db_host_name' => 'localhost',
 	    'setup_db_database_name' => 'pineapple',
 	    'setup_db_drop_tables' => 0,
@@ -99,8 +94,8 @@ public function setUp() {
 	    'default_language' => 'en_us',
 	    'default_locale_name_format' => 's f l',
 	    'default_number_grouping_seperator' => ',',
-	    'export_delimiter' => ',',	
-	
+	    'export_delimiter' => ',',
+
 	    //These are the additional configuration values we are really testing
 		'disable_count_query' => true,
 		'external_cache_disabled_apc' => true,
@@ -108,8 +103,21 @@ public function setUp() {
 		'external_cache_disabled_memcache' => true,
 		'external_cache_disabled' => true,
 	);
-	
-	write_array_to_file("sugar_config_si", $sugar_config_si, $this->current_working_dir . DIRECTORY_SEPARATOR . 'config_si.php');
+
+	write_array_to_file("sugar_config_si", $sugar_config_si, 'config_si.php');
+
+	if(file_exists('config.php'))
+	{
+	   copy('config.php', 'config.php.bug40129');
+
+	   include 'config.php';
+	   // remove items since merge_config_si_settings does not merge existing keys
+       foreach($sugar_config_si as $k => $v) {
+           unset($sugar_config[$k]);
+       }
+	   write_array_to_file("sugar_config", $sugar_config, 'config.php');
+	}
+
 }
 
 public function tearDown() {
@@ -118,16 +126,16 @@ public function tearDown() {
 		global $argv;
 		$argv = $this->original_argv;
 	}
-	
+
 	if(file_exists('config.php.bug40129'))
 	{
 	   copy('config.php.bug40129', 'config.php');
 	   unlink('config.php.bug40129');
-	}		
-	
+	}
+
 	if(file_exists($this->current_working_dir . DIRECTORY_SEPARATOR . 'config_si.php.bug40129'))
 	{
-	   if($this->has_original_config_si_file) 
+	   if($this->has_original_config_si_file)
 	   {
 	   	  copy($this->current_working_dir . DIRECTORY_SEPARATOR . 'config_si.php.bug40129', $this->current_working_dir . DIRECTORY_SEPARATOR . 'config_si.php');
 	   } else {
@@ -140,25 +148,25 @@ public function tearDown() {
 	}
 
 }
-	
+
 
 public function test_silent_install() {
-	
+
 	if(!file_exists('config.php'))
 	{
 		$this->markTestSkipped('Unable to locate config.php file.  Skipping test.');
 		return;
 	}
 
-	
-	if(!file_exists($this->current_working_dir . DIRECTORY_SEPARATOR . 'config_si.php'))
+
+	if(!file_exists('config_si.php'))
 	{
 		$this->markTestSkipped('Unable to locate config_si.php file.  Skipping test.');
 		return;
-	}	
-	
-	$merge_result = merge_config_si_settings(false, 'config.php', $this->current_working_dir . DIRECTORY_SEPARATOR . 'config_si.php');
-	
+	}
+
+	$merge_result = merge_config_si_settings(false, 'config.php', 'config_si.php');
+
 	include('config.php');
 	//echo var_export($sugar_config, true);
 	$this->assertEquals(true, $sugar_config['disable_count_query'], "Assert disable_count_query is set to true.");

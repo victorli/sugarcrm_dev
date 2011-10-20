@@ -64,7 +64,7 @@
 		<td class="advancedSearchTD" style="padding-bottom: 2px">
 			{$app_strings.LBL_EMAIL_SEARCH_DATE_FROM}:&nbsp;<i>({$dateFormatExample})</i><br/>
 			<input name='searchDateFrom' id='searchDateFrom' onblur="parseDate(this, '{$dateFormat}');" maxlength='10' size='11' value="" type="text">&nbsp;
-			<img src="{sugar_getimagepath file='jscalendar.gif'}" alt="{$app_strings.LBL_ENTER_DATE}" id="searchDateFrom_trigger" align="absmiddle">
+			{sugar_getimage name="jscalendar" ext=".gif" alt=$app_strings.LBL_ENTER_DATE other_attributes='align="absmiddle" id="searchDateFrom_trigger" '}
 		</td>
 	</tr>
 
@@ -72,7 +72,7 @@
 		<td class="advancedSearchTD">
 			{$app_strings.LBL_EMAIL_SEARCH_DATE_UNTIL}:&nbsp;<i>({$dateFormatExample})</i><br/>
 			<input name='searchDateTo' id='searchDateTo' onblur="parseDate(this, '{$dateFormat}');" maxlength='10' size='11' value="" type="text">&nbsp;
-			<img src="{sugar_getimagepath file='jscalendar.gif'}" alt="{$app_strings.LBL_ENTER_DATE}" id="searchDateTo_trigger" align="absmiddle">		
+			{sugar_getimage name="jscalendar" ext=".gif" alt=$app_strings.LBL_ENTER_DATE other_attributes='align="absmiddle" id="searchDateTo_trigger" '}		
 		</td>
 	</tr>
 
@@ -83,7 +83,7 @@
         <input name="assigned_user_id" id="assigned_user_id" value="{$currentUserId}" type="hidden">      
         
         <a href="javascript:void(0);">
-            <img src="{sugar_getimagepath file='select.gif'}" align="absmiddle" border="0" alt="{$mod_strings.LBL_EMAIL_SELECTOR}" onclick='open_popup("Users", 600, 400, "", true, false, {literal}{"call_back_function":"set_return","form_name":"advancedSearchForm","field_to_name_array":{"id":"assigned_user_id","name":"assigned_user_name"}}{/literal}, "single", true);'>
+            <img src="{sugar_getimagepath file='select.gif'}" align="absmiddle" border="0" alt=$mod_strings.LBL_EMAIL_SELECTOR onclick='open_popup("Users", 600, 400, "", true, false, {literal}{"call_back_function":"set_return","form_name":"advancedSearchForm","field_to_name_array":{"id":"assigned_user_id","name":"assigned_user_name"}}{/literal}, "single", true);'>
         </a>
         </td>
     </tr>
@@ -100,7 +100,7 @@
         <input id="data_parent_id_search" name="data_parent_id_search" type="hidden" value="">
         <br/><br/>
         <input class="sqsEnabled" id="data_parent_name_search" name="data_parent_name_search" type="text" value="">
-        <a href="javascript:void(0);"><img src="{sugar_getimagepath file='select.gif'}" align="absmiddle" border="0" alt="{$mod_strings.LBL_EMAIL_SELECTOR}" onclick="SUGAR.email2.composeLayout.callopenpopupForEmail2('_search',{ldelim}'form_name':'advancedSearchForm'{rdelim} );">
+        <a href="javascript:void(0);"><img src="{sugar_getimagepath file='select.gif'}" align="absmiddle" border="0" alt=$mod_strings.LBL_EMAIL_SELECTOR onclick="SUGAR.email2.composeLayout.callopenpopupForEmail2('_search',{ldelim}'form_name':'advancedSearchForm'{rdelim} );">
          </a>
         </td>
     </tr>

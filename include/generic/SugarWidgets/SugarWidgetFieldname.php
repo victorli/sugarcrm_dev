@@ -95,11 +95,6 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
 
 	function _get_normal_column_select($layout_def)
 	{
-		global $sugar_config;
-		// if $this->db->dbytpe is empty, then grab dbtype value from global array "$sugar_config[dbconfig]"
-		if(empty($this->db->dbType)){
-			$this->db->dbType = $sugar_config['dbconfig']['db_type'];
-		}
         if ( isset($this->reporter->all_fields) ) {
             $field_def = $this->reporter->all_fields[$layout_def['column_key']];
         } else {
@@ -112,46 +107,21 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
 		}
 
 		//	 'fields' are the two fields to concat to create the name
-		$alias = '';
-		$endalias = '';
-		if ( ! empty($layout_def['table_alias']))
-		{
-			if ($this->db->dbType == 'mysql')
-			{
-				$alias .= "CONCAT(CONCAT(IFNULL("
-					.$layout_def['table_alias']."."
-					.$field_def['fields'][0].",''),' '),"
-					.$layout_def['table_alias']."."
-					.$field_def['fields'][1].")";
-			}
-			elseif ( $this->db->dbType == 'mssql' )
-			{
-				$alias .= $layout_def['table_alias'] . '.' . $field_def['fields'][0] . " + ' ' + "
-				. $layout_def['table_alias'] . '.' . $field_def['fields'][1]."";
-			}
-		}
-		elseif (! empty($layout_def['name']))
-		{
+		if ( ! empty($layout_def['table_alias'])) {
+		    $alias = $this->reporter->db->concat($layout_def['table_alias'], $field_def['fields']);
+		} elseif (! empty($layout_def['name'])) {
 			$alias = $layout_def['name'];
-		}
-		else
-		{
-			$alias .= "*";
+		} else {
+			$alias = "*";
 		}
 
-		$alias .= $endalias;
 		return $alias;
 	}
 
 	function _get_column_select($layout_def)
 	{
-		global $sugar_config;
 		global $locale, $current_user;
 
-		// if $this->db->dbytpe is empty, then grab dbtype value from global array "$sugar_config[dbconfig]"
-		if(empty($this->db->dbType)){
-			$this->db->dbType = $sugar_config['dbconfig']['db_type'];
-		}
         if ( isset($this->reporter->all_fields) ) {
             $field_def = $this->reporter->all_fields[$layout_def['column_key']];
         } else {
@@ -159,55 +129,38 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
         }
 
         //	 'fields' are the two fields to concat to create the name
-		$alias = '';
-		$endalias = '';
         if(!isset($field_def['fields']))
         {
-			$alias = $this->_get_normal_column_select($layout_def);
-			return $alias;
+			return $this->_get_normal_column_select($layout_def);
         }
 		$localeNameFormat = $locale->getLocaleFormatMacro($current_user);
 		$localeNameFormat = trim(preg_replace('/s/i', '', $localeNameFormat));
 
-		$names = array();
-		$names['f'] = db_convert($layout_def['table_alias'].'.'.$field_def['fields'][0].",''","IFNULL");
-		$names['l'] = $layout_def['table_alias'].'.'.$field_def['fields'][1];
-
-		if (empty($field_def['fields']) || empty($field_def['fields'][0]) || empty($field_def['fields'][1]))
-		{
+		if (empty($field_def['fields']) || empty($field_def['fields'][0]) || empty($field_def['fields'][1])) {
 			return parent::_get_column_select($layout_def);
 		}
 
-		if ( ! empty($layout_def['table_alias']))
-		{
-			if ($this->db->dbType == 'mysql')
-			{
-				for($i=0; $i<strlen($localeNameFormat); $i++) {
-					$alias .=  array_key_exists($localeNameFormat{$i}, $names) ? $names[$localeNameFormat{$i}] : '\''.$localeNameFormat{$i}.'\'';
-					if($i<strlen($localeNameFormat)-1) $alias .= ',';
-				}
-				if(strlen($localeNameFormat)>1)
-				$alias = 'concat('.$alias.')';
-
-			}
-			elseif ( $this->db->dbType == 'mssql' )
-			{
-				for($i=0; $i<strlen($localeNameFormat); $i++) {
-					$alias .=  array_key_exists($localeNameFormat{$i}, $names) ? $names[$localeNameFormat{$i}] : '\''.$localeNameFormat{$i}.'\'';
-					if($i<strlen($localeNameFormat)-1) $alias .= ' + ';
-				}
-			}
-		}
-		elseif (! empty($layout_def['name']))
-		{
+		if ( ! empty($layout_def['table_alias'])) {
+		    $comps = preg_split("/([fl])/", $localeNameFormat, null, PREG_SPLIT_DELIM_CAPTURE);
+		    $name = array();
+		    foreach($comps as $val) {
+		        if($val == 'f') {
+		            $name[] = $this->reporter->db->convert($layout_def['table_alias'].".".$field_def['fields'][0], 'IFNULL', array("''"));
+		        } elseif($val == 'l') {
+		            $name[] = $this->reporter->db->convert($layout_def['table_alias'].".".$field_def['fields'][1], 'IFNULL', array("''"));
+		        } else {
+		            if(!empty($val)) {
+		                $name[] = $this->reporter->db->quoted($val);
+		            }
+		        }
+		    }
+		    $alias = $this->reporter->db->convert($name, "CONCAT");
+		} elseif (! empty($layout_def['name']))	{
 			$alias = $layout_def['name'];
-		}
-		else
-		{
-			$alias .= "*";
+		} else {
+			$alias = "*";
 		}
 
-		$alias .= $endalias;
 		return $alias;
 	}
 
@@ -227,8 +180,8 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
 			$input_name0 = $current_user->id;
 		}
 
-		return SugarWidgetFieldid::_get_column_select($layout_def)."='"
-			.$GLOBALS['db']->quote($input_name0)."'\n";
+		return SugarWidgetFieldid::_get_column_select($layout_def)."="
+			.$this->reporter->db->quoted($input_name0)."\n";
 	}
 
 	function queryFilteris_not($layout_def)
@@ -247,11 +200,12 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
 			$input_name0 = $current_user->id;
 		}
 
-		return SugarWidgetFieldid::_get_column_select($layout_def)."<>'"
-			.$GLOBALS['db']->quote($input_name0)."'\n";
+		return SugarWidgetFieldid::_get_column_select($layout_def)."<>"
+			.$this->reporter->db->quoted($input_name0)."\n";
 	}
+
     // $rename_columns, if true then you're coming from reports
-	function queryFilterone_of(&$layout_def, $rename_columns = true)
+	function queryFilterone_of($layout_def, $rename_columns = true)
 	{
 		require_once('include/generic/SugarWidgets/SugarWidgetFieldid.php');
         if($rename_columns) { // this was a hack to get reports working, sugarwidgets should not be renaming $name!
@@ -264,10 +218,10 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
 		{
 			if ($value == 'Current User') {
 				global $current_user;
-				array_push($arr,"'".$GLOBALS['db']->quote($current_user->id)."'");
+				array_push($arr,$this->reporter->db->quoted($current_user->id));
 			}
 			else
-				array_push($arr,"'".$GLOBALS['db']->quote($value)."'");
+				array_push($arr,$this->reporter->db->quoted($value));
 		}
 
 		$str = implode(",",$arr);
@@ -275,7 +229,7 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
 		return SugarWidgetFieldid::_get_column_select($layout_def)." IN (".$str.")\n";
 	}
     // $rename_columns, if true then you're coming from reports
-	function queryFilternot_one_of(&$layout_def, $rename_columns = true)
+	function queryFilternot_one_of($layout_def, $rename_columns = true)
 	{
 		require_once('include/generic/SugarWidgets/SugarWidgetFieldid.php');
         if($rename_columns) { // this was a hack to get reports working, sugarwidgets should not be renaming $name!
@@ -288,36 +242,28 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
 		{
 			if ($value == 'Current User') {
 				global $current_user;
-				array_push($arr,"'".$GLOBALS['db']->quote($current_user->id)."'");
+				array_push($arr,$this->reporter->db->quoted($current_user->id));
 			}
 			else
-				array_push($arr,"'".$GLOBALS['db']->quote($value)."'");
+				array_push($arr,$this->reporter->db->quoted($value));
 		}
 
 		$str = implode(",",$arr);
 
 		return SugarWidgetFieldid::_get_column_select($layout_def)." NOT IN (".$str.")\n";
 	}
+
 	function &queryGroupBy($layout_def)
 	{
-        if( $this->reporter->db->dbType == 'mysql') {
-         if($layout_def['name'] == 'full_name') {
+        if($layout_def['name'] == 'full_name') {
              $layout_def['name'] = 'id';
              $layout_def['type'] = 'id';
              require_once('include/generic/SugarWidgets/SugarWidgetFieldid.php');
              $group_by =  SugarWidgetFieldid::_get_column_select($layout_def)."\n";
-         }
-         else {
+        } else {
             // group by clause for user name passes through here.
-//    		 $layout_def['name'] = 'name';
-//    		 $layout_def['type'] = 'name';
              $group_by = $this->_get_column_select($layout_def)."\n";
-         }
         }
-		elseif( $this->reporter->db->dbType == 'mssql') {
-			$group_by = $this->_get_column_select($layout_def);
-		}
-
         return $group_by;
 	}
 }

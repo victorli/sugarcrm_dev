@@ -206,7 +206,8 @@ if(is_admin($current_user) && $_REQUEST['module'] != 'DynamicLayout' && !empty($
     if(!empty($_REQUEST['record'])){
         $record =   $_REQUEST['record'];
     }
-    $ss->assign("ADMIN_EDIT","<a href='index.php?action=index&module=DynamicLayout&from_action=".$_REQUEST['action'] ."&from_module=".$_REQUEST['module'] ."&record=".$record. "'>".SugarThemeRegistry::current()->getImage("EditLayout","border='0' alt='Edit Layout' align='bottom'")."</a>");    
+    $ss->assign("ADMIN_EDIT","<a href='index.php?action=index&module=DynamicLayout&from_action=".$_REQUEST['action'] ."&from_module=".$_REQUEST['module'] ."&record=".$record. "'>".SugarThemeRegistry::current()->getImage("EditLayout","border='0' align='bottom'",null,null,'.gif',$mod_strings['LBL_EDIT_LAYOUT'])."</a>");
+
 }
 
 echo $currency->getJavascript();
@@ -297,7 +298,9 @@ global $odd_bg, $even_bg, $hilite_bg;
             $trkr_html .= "<td width='40%'> <input id='existing_tracker_name". $trkr_count ."' type='text' size='20' maxlength='255' name='wiz_step3_tracker_name". $trkr_count ."' title='".$mod_strings['LBL_EDIT_TRACKER_NAME']. $trkr_count ."' value='".$ct_focus->tracker_name."' ></td>";
             $trkr_html .= "<td width='40%'><input type='text' size='60' maxlength='255' name='wiz_step3_tracker_url". $trkr_count ."' title='".$mod_strings['LBL_EDIT_TRACKER_URL']. $trkr_count ."' id='existing_tracker_url". $trkr_count ."' value='".$ct_focus->tracker_url."' ></td>";
             $trkr_html .= "<td><a href='#' onclick=\"javascript:remove_existing_tracker('existing_trkr".$trkr_count."','".$ct_focus->id."'); \" >  ";
-            $trkr_html .= "<img src='".SugarThemeRegistry::current()->getImageURL("delete_inline.gif")."' border='0' alt='rem' align='absmiddle' border='0' height='12' width='12'>". $mod_strings['LBL_REMOVE']."</a></td></tr></table></div>";
+            $trkr_html .= SugarThemeRegistry::current()->getImage('delete_inline', "border='0'  align='absmiddle'", 12, 12, ".gif", $mod_strings['LBL_DELETE'])."</a></td></tr></table></div>";
+
+
 
       }
       $trkr_count =$trkr_count+1;
@@ -439,7 +442,9 @@ if(count($prospect_lists)>0){
              $trgt_html .= "<td width='25%'><input type='hidden' size='60' maxlength='255' name='existing_tracker_list_type". $trgt_count ."'   id='existing_tracker_list_type". $trgt_count ."' value='".$pl_focus->list_type."' >".$app_list_strings['prospect_list_type_dom'][$pl_focus->list_type];
              $trgt_html .= "<input type='hidden' name='added_target_id". $trgt_count ."' id='added_target_id". $trgt_count ."' value='". $pl_focus->id ."' ></td>";
              $trgt_html .= "<td><a href='#' onclick=\"javascript:remove_existing_target('existing_trgt".$trgt_count."','".$pl_focus->id."'); \" >  ";
-             $trgt_html .= "<img src='".SugarThemeRegistry::current()->getImageURL("delete_inline.gif")."' border='0' alt='rem' align='absmiddle' border='0' height='12' width='12'>". $mod_strings['LBL_REMOVE']."</a></td></tr></table></div>";
+             $trgt_html .= SugarThemeRegistry::current()->getImage('delete_inline', "border='0' align='absmiddle'", 12, 12, ".gif", $mod_string['LBL_DELETE'])."</a></td></tr></table></div>";
+
+
     
           
           $trgt_count =$trgt_count +1;

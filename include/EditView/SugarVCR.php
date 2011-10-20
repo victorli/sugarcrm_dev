@@ -114,20 +114,26 @@
 	 		$previous_link = "";
 	 		$next_link = "";
 	 		if(!empty($menu['PREV'])) {
-	 			//$previous_link = "<a href='index.php?module=$module&action=$action&offset=".($offset-1)."&record=".$menu['PREV']."' >".SugarThemeRegistry::current()->getImage("previous","alt='".$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'").'&nbsp;'.$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']."</a>";
+	 			//$previous_link = "<a href='index.php?module=$module&action=$action&offset=".($offset-1)."&record=".$menu['PREV']."' >".SugarThemeRegistry::current()->getImage("previous","border='0' align='absmiddle'",null,null,'.gif',$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']).'&nbsp;'.$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']."</a>";
+
 				$href = ajaxLink("index.php?module=$module&action=$action&offset=".($offset-1)."&record=".$menu['PREV']);
-				$previous_link = "<button type='button' class='button' title='{$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']}' onClick='document.location.href=\"$href\";'>".SugarThemeRegistry::current()->getImage("previous","alt='".$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'")."</button>";
+				$previous_link = "<button type='button' class='button' title='{$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']}' onClick='document.location.href=\"$href\";'>".SugarThemeRegistry::current()->getImage("previous","border='0' align='absmiddle'",null,null,'.gif',$GLOBALS['app_strings']['LNK_LIST_PREVIOUS'])."</button>";
+
 	 		}
 	 		else 
-				$previous_link = "<button type='button' class='button' title='{$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']}' disabled>".SugarThemeRegistry::current()->getImage("previous_off","alt='".$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'")."</button>";
+				$previous_link = "<button type='button' class='button' title='{$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']}' disabled>".SugarThemeRegistry::current()->getImage("previous_off","border='0' align='absmiddle'",null,null,'.gif',$GLOBALS['app_strings']['LNK_LIST_PREVIOUS'])."</button>";
+
 
 	 		if(!empty($menu['NEXT'])) {
-	 			//$next_link = "<a href='index.php?module=$module&action=$action&offset=".($offset+1)."&record=".$menu['NEXT']."' >".$GLOBALS['app_strings']['LNK_LIST_NEXT'].'&nbsp;'.SugarThemeRegistry::current()->getImage("next","alt='".$GLOBALS['app_strings']['LNK_LIST_NEXT']."'  border='0' align='absmiddle'")."</a>";
+	 			//$next_link = "<a href='index.php?module=$module&action=$action&offset=".($offset+1)."&record=".$menu['NEXT']."' >".$GLOBALS['app_strings']['LNK_LIST_NEXT'].'&nbsp;'.SugarThemeRegistry::current()->getImage("next","border='0' align='absmiddle'",null,null,'.gif',$GLOBALS['app_strings']['LNK_LIST_NEXT'])."</a>";
+
 				$href = ajaxLink("index.php?module=$module&action=$action&offset=".($offset+1)."&record=".$menu['NEXT']);
-				$next_link = "<button type='button' class='button' title='{$GLOBALS['app_strings']['LNK_LIST_NEXT']}' onClick='document.location.href=\"$href\";'>".SugarThemeRegistry::current()->getImage("next","alt='".$GLOBALS['app_strings']['LNK_LIST_NEXT']."'  border='0' align='absmiddle'")."</button>";
+				$next_link = "<button type='button' class='button' title='{$GLOBALS['app_strings']['LNK_LIST_NEXT']}' onClick='document.location.href=\"$href\";'>".SugarThemeRegistry::current()->getImage("next","border='0' align='absmiddle'",null,null,'.gif',$GLOBALS['app_strings']['LNK_LIST_NEXT'])."</button>";
+
 	 		}
 	 		else
-				$next_link = "<button type='button' class='button' title='{$GLOBALS['app_strings']['LNK_LIST_NEXT']}' disabled>".SugarThemeRegistry::current()->getImage("next_off","alt='".$GLOBALS['app_strings']['LNK_LIST_NEXT']."'  border='0' align='absmiddle'")."</button>";
+				$next_link = "<button type='button' class='button' title='{$GLOBALS['app_strings']['LNK_LIST_NEXT']}' disabled>".SugarThemeRegistry::current()->getImage("next_off","border='0' align='absmiddle'",null,null,'.gif',$GLOBALS['app_strings']['LNK_LIST_NEXT'])."</button>";
+
 	 		
 	 		if(!empty($_SESSION[$module. 'total'])){
 	 			$count = $offset .' '. $GLOBALS['app_strings']['LBL_LIST_OF'] . ' ' . $_SESSION[$module. 'total'];

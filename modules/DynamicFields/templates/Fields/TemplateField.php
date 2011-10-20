@@ -69,7 +69,8 @@ class TemplateField{
 	var $label_value = '';
 	var $help = '';
 	var $formula = '';
-
+    var $unified_search = 0;
+    var $supports_unified_search = false;
 	var $vardef_map = array(
 		'name'=>'name',
 		'label'=>'vname',
@@ -99,6 +100,7 @@ class TemplateField{
 	//'disable_num_format'=>'ext3',
 	    'ext3'=>'ext3',
 		'label_value'=>'label_value',
+		'unified_search'=>'unified_search',
 	);
 	/*
 		HTML FUNCTIONS
@@ -214,11 +216,12 @@ class TemplateField{
 		*/
 
 	function get_db_type(){
-		switch($GLOBALS['db']->dbType){
-			case 'oci8': return " varchar2($this->len)";
-			case 'mssql': return !empty($GLOBALS['db']->isFreeTDS) ? " nvarchar($this->len)" : " varchar($this->len)";
-			default: return " varchar($this->len)";
-		}
+	    if(!empty($this->type)) {
+	        $type = $GLOBALS['db']->getColumnType($this->type);
+	    }
+	    if(!empty($type)) return " $type";
+	    $type = $GLOBALS['db']->getColumnType("varchar");
+        return " $type({$this->len})";
 	}
 
 	function get_db_default($modify=false){
@@ -311,31 +314,7 @@ class TemplateField{
 	 * mysql requires the datatype caluse in the alter statment.it will be no-op anyway.
 	 */
 	function get_db_modify_alter_table($table){
-		global $db;
-		$db_default=$this->get_db_default(true);
-		$db_required=$this->get_db_required(true);
-		switch ($GLOBALS['db']->dbType) {
-
-			case "mssql":
-				//Bug 21772: MSSQL handles alters in strange ways. Defer to DBHelpers guidance.
-				$query = $db->helper->alterColumnSQL($table, $this->get_field_def());
-				return $query;
-				break;
-
-			case "mysql":
-				$query="ALTER TABLE $table MODIFY $this->name " .$this->get_db_type();
-				break;
-			default:
-				$query="ALTER TABLE $table MODIFY $this->name " .$this->get_db_type();;
-				break;
-
-		}
-		if (!empty($db_default) && !empty($db_required)) {
-			$query .= $db_default . $db_required ;
-		} else if (!empty($db_default)) {
-			$query .= $db_default;
-		}
-		return $query;
+		return $GLOBALS['db']->alterColumnSQL($table, $this->get_field_def());
 	}
 
 
@@ -359,6 +338,7 @@ class TemplateField{
 			'duplicate_merge_dom_value'=> isset($this->duplicate_merge_dom_value) ? $this->duplicate_merge_dom_value : $this->duplicate_merge,
 			'audited'=>$this->convertBooleanValue($this->audited),
 			'reportable'=>$this->convertBooleanValue($this->reportable),
+            'unified_search'=>$this->convertBooleanValue($this->unified_search)
 		);
 		if(!empty($this->len)){
 			$array['len'] = $this->len;
@@ -367,6 +347,7 @@ class TemplateField{
 			$array['size'] = $this->size;
 		}
 		$this->get_dup_merge_def($array);
+
 		return $array;
 	}
 
@@ -467,9 +448,50 @@ class TemplateField{
 		$df->deleteField($this);
 	}
 
+    /**
+     * get_field_name
+     * 
+     * This is a helper function to return a field's proper name.  It checks to see if an instance of the module can
+     * be created and then attempts to retrieve the field's name based on the name lookup skey supplied to the method.
+     *
+     * @param String $module The name of the module
+     * @param String $name The field name key
+     * @return The field name for the module
+     */
+    protected function get_field_name($module, $name)
+    {
+       $bean = loadBean($module);
+       if(empty($bean) || is_null($bean))
+       {
+       	  return $name;
+       }
+
+       $field_defs = $bean->field_defs;
+       return isset($field_defs[$name]['name']) ? $field_defs[$name]['name'] : $name;
+    }
+
+    /**
+     * save
+     *
+     * This function says the field template by calling the DynamicField addFieldObject function.  It then
+     * checks to see if updates are needed for the SearchFields.php file.  In the event that the unified_search
+     * member variable is set to true, a search field definition is updated/created to the SearchFields.php file.
+     *
+     * @param $df Instance of DynamicField
+     */
 	function save($df){
 		//	    $GLOBALS['log']->debug('saving field: '.print_r($this,true));
 		$df->addFieldObject($this);
+
+        require_once('modules/ModuleBuilder/parsers/parser.searchfields.php');
+        $searchFieldParser = new ParserSearchFields( $df->getModuleName() , $df->getPackageName() ) ;
+	    //If unified_search is enabled for this field, then create the SearchFields entry
+	    $fieldName = $this->get_field_name($df->getModuleName(), $this->name);
+        if($this->unified_search && !isset($searchFieldParser->searchFields[$df->getModuleName()][$fieldName]))
+        {
+           $searchFieldParser->addSearchField($fieldName, array('query_type'=>'default'));
+           $searchFieldParser->saveSearchFields($searchFieldParser->searchFields);
+        }
 	}
 
 }

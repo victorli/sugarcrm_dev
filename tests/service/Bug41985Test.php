@@ -97,6 +97,8 @@ class Bug41985Test extends Sugar_PHPUnit_Framework_TestCase
 
         $this->_account->test_custom_c = 'Custom Field';
         $this->_account->save();
+
+        $GLOBALS['db']->commit(); // Making sure we commit any changes
     }
 
     public function tearDown()

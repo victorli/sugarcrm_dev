@@ -77,7 +77,7 @@ $smarty->assign('availableModuleList',$availableModules);
 $smarty->assign('dropdown_languages', get_languages());
 
 
-$imageSave = SugarThemeRegistry::current()->getImage( 'studio_save', '');
+$imageSave = SugarThemeRegistry::current()->getImage( 'studio_save', '',null,null,'.gif',$mod_strings['LBL_SAVE']);
 
 $buttons = array();
 $buttons [] = array ( 'text' => $GLOBALS['mod_strings']['LBL_BTN_SAVEPUBLISH'],'actionScript'=>"onclick='studiotabs.generateForm(\"edittabs\");document.edittabs.submit()'" ) ;
@@ -90,10 +90,10 @@ $smarty->assign('buttons', $html);
 $smarty->assign('title', $title);
 $smarty->assign('dropdown_lang', $selected_lang);
 
-$editImage = SugarThemeRegistry::current()->getImage( 'edit_inline', '');
+$editImage = SugarThemeRegistry::current()->getImage( 'edit_inline', '',null,null,'.gif',$mod_strings['LBL_EDIT']);
 $smarty->assign('editImage',$editImage);
-$deleteImage = SugarThemeRegistry::current()->getImage( 'delete_inline', '');
-$recycleImage = SugarThemeRegistry::current()->getImage('icon_Delete','',48,48 );
+$deleteImage = SugarThemeRegistry::current()->getImage( 'delete_inline', '',null,null,'.gif',$mod_strings['LBL_MB_DELETE']);
+$recycleImage = SugarThemeRegistry::current()->getImage('icon_Delete','',48,48,'.gif',$mod_strings['LBL_MB_DELETE'] );
 $smarty->assign('deleteImage',$deleteImage);
 $smarty->assign('recycleImage',$recycleImage);	
 

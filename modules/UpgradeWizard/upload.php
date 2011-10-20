@@ -71,7 +71,7 @@ switch($run) {
             if(!empty($_SESSION['ML_PATCHES'])){
             	$release_map = $_SESSION['ML_PATCHES'][$_REQUEST['release_id']];
             	if(!empty($release_map)){
-            		$tempFile = $pm->download($release_map['category_id'], $release_map['package_id'], $_REQUEST['release_id'], getcwd().'/'.$sugar_config['upload_dir']);
+            		$tempFile = $pm->download($release_map['category_id'], $release_map['package_id'], $_REQUEST['release_id']);
             		$perform = true;
 					if($release_map['type'] != 'patch'){
 						$pm->performSetup($tempFile, $release_map['type'], false);
@@ -81,29 +81,30 @@ switch($run) {
             }
 
             $base_filename = urldecode($tempFile);
-        }
-        else if( empty( $_FILES['upgrade_zip']['tmp_name'] ) ) {
-			logThis('ERROR: no file uploaded!');
-			echo $mod_strings['ERR_UW_NO_FILE_UPLOADED'];
-
-			// add PHP error if isset
-			if(isset($_FILES['upgrade_zip']['error']) && !empty($_FILES['upgrade_zip']['error'])) {
-				$out = "<b><span class='error'>{$mod_strings['ERR_UW_PHP_FILE_ERRORS'][$_FILES['upgrade_zip']['error']]}</span></b><br />";
-			}
-		} else {
-			if(!move_uploaded_file($_FILES['upgrade_zip']['tmp_name'], getcwd().'/'.$sugar_config['upload_dir'].$_FILES['upgrade_zip']['name'])) {
-				logThis('ERROR: could not move temporary file to final destination!');
-				unlinkTempFiles();
-				$out = "<b><span class='error'>{$mod_strings['ERR_UW_NOT_VALID_UPLOAD']}</span></b><br />";
-			} else {
-				$tempFile = getcwd().'/'.$sugar_config['upload_dir'].$_FILES['upgrade_zip']['name'];
-				logThis('File uploaded to '.$tempFile);
-                $base_filename = urldecode( $_REQUEST['upgrade_zip_escaped'] );
-                $perform = true;
-			}
+        } else {
+            $upload = new UploadFile('upgrade_zip');
+            if(!$upload->confirm_upload()) {
+    			logThis('ERROR: no file uploaded!');
+	    		echo $mod_strings['ERR_UW_NO_FILE_UPLOADED'];
+                $error = $upload->get_upload_error();
+		    	// add PHP error if isset
+			    if($error) {
+				    $out = "<b><span class='error'>{$mod_strings['ERR_UW_PHP_FILE_ERRORS'][$error]}</span></b><br />";
+			    }
+            } else {
+               $tempFile = "upload://".$upload->get_stored_file_name();
+               if(!$upload->final_move($tempFile)) {
+    				logThis('ERROR: could not move temporary file to final destination!');
+    				unlinkUWTempFiles();
+    				$out = "<b><span class='error'>{$mod_strings['ERR_UW_NOT_VALID_UPLOAD']}</span></b><br />";
+               } else {
+    				logThis('File uploaded to '.$tempFile);
+                    $base_filename = urldecode(basename($tempFile));
+                    $perform = true;
+               }
+            }
         }
         if($perform){
-
 		    $manifest_file = extractManifest($tempFile);
 
 			if(is_file($manifest_file)) {
@@ -118,14 +119,10 @@ switch($run) {
 				// exclude the bad permutations
 				if($upgrade_zip_type != "patch") {
 					logThis('ERROR: incorrect patch type found: '.$upgrade_zip_type);
-					unlinkTempFiles();
+					unlinkUWTempFiles();
 					$out = "<b><span class='error'>{$mod_strings['ERR_UW_ONLY_PATCHES']}</span></b><br />";
 					break;
 				}
-
-
-				$base_filename = preg_replace( "#\\\\#", "/", $base_filename );
-				$base_filename = basename( $base_filename );
 
 				mkdir_recursive( "$base_upgrade_dir/$upgrade_zip_type" );
 				$target_path = "$base_upgrade_dir/$upgrade_zip_type/$base_filename";
@@ -135,10 +132,10 @@ switch($run) {
 					logThis('extracting icons.');
 					 $icon_location = extractFile( $tempFile ,$manifest['icon'] );
 					 $path_parts = pathinfo( $icon_location );
-					 copy( $icon_location, remove_file_extension( $target_path ) . "-icon." . $path_parts['extension'] );
+					 copy( $icon_location, remove_file_extension( $target_path ) . "-icon." . pathinfo($icon_location, PATHINFO_EXTENSION) );
 				}
 
-				if(copy($tempFile , $target_path)){
+				if(rename($tempFile , $target_path)){
 					logThis('copying manifest.php to final destination.');
 					copy($manifest_file, $target_manifest);
 					$out .= "<b>{$base_filename} {$mod_strings['LBL_UW_FILE_UPLOADED']}.</b><br>\n";
@@ -149,11 +146,11 @@ switch($run) {
 				}
 			} else {
 				logThis('ERROR: no manifest.php file found!');
-				unlinkTempFiles();
+				unlinkUWTempFiles();
 				$out = "<b><span class='error'>{$mod_strings['ERR_UW_NO_MANIFEST']}</span></b><br />";
 				break;
 			}
-			$_SESSION['install_file'] = clean_path($tempFile);
+			$_SESSION['install_file'] = basename($tempFile);
 			logThis('zip file moved to ['.$_SESSION['install_file'].']');
 			//rrs serialize manifest for saving in the db
 			$serial_manifest = array();
@@ -164,7 +161,7 @@ switch($run) {
 		}
 
 		if(!empty($tempFile)) {
-			upgradeUWFiles($tempFile);
+			upgradeUWFiles($target_path);
 			//set the upgrade progress status. actually it should be set when a file is uploaded
 			set_upgrade_progress('upload','done');
 
@@ -181,7 +178,7 @@ switch($run) {
         }
 
         // delete file in upgrades/patch
-        $delete_me = urldecode( $_REQUEST['install_file'] );
+        $delete_me = 'upload://upgrades/patch/'.basename(urldecode( $_REQUEST['install_file'] ));
         if(@unlink($delete_me)) {
         	logThis('unlinking: '.$delete_me);
             $out = basename($delete_me).$mod_strings['LBL_UW_FILE_DELETED'];
@@ -190,23 +187,11 @@ switch($run) {
 			$error = $mod_strings['ERR_UW_FILE_NOT_DELETED'].$delete_me;
         }
 
-        // delete file in cache/upload
-        $fileS = explode('/', $delete_me);
-        $c = count($fileS);
-        $fileName = (isset($fileS[$c-1]) && !empty($fileS[$c-1])) ? $fileS[$c-1] : $fileS[$c-2];
-        $deleteUpload = getcwd().'/'.$sugar_config['upload_dir'].$fileName;
-        logThis('Trying to delete '.$deleteUpload);
-        if(!@unlink($deleteUpload)) {
-        	logThis('ERROR: could not delete: ['.$deleteUpload.']');
-        	$error = $mod_strings['ERR_UW_FILE_NOT_DELETED'].$sugar_config['upload_dir'].$fileName;
-        }
-
         if(!empty($error)) {
 			$out = "<b><span class='error'>{$error}</span></b><br />";
         }
 
-        unlinkTempFiles();
-        unlinkUploadFiles();
+        unlinkUWTempFiles();
         //set the upgrade progress status. actually it should be set when a file is uploaded
 		set_upgrade_progress('upload','in_progress');
 
@@ -294,6 +279,7 @@ if(class_exists("PackageManagerDisplay")) {
 if($form2 == null){
 	$form2 = $form;
 }
+$json = getVersionedScript('include/JSON.js');
 $form3 =<<<eoq2
 <br>
 
@@ -331,8 +317,7 @@ $form3 =<<<eoq2
    		alert('Not a zip file');
    		document.getElementById("upgrade_zip").value='';
    		document.getElementById("upload_button").disabled='disabled';
-   }
-   else{
+   } else {
 	//AJAX call for checking the file size and comparing with php.ini settings.
 	var callback = {
 		 success:function(r) {
@@ -369,7 +354,7 @@ $form5 =<<<eoq5
 <div id="upgradeDiv" style="display:none">
     <table cellspacing="0" cellpadding="0" border="0">
         <tr><td>
-           <p><img src='modules/UpgradeWizard/processing.gif'></p>
+           <p><!--not_in_theme!--><img src='modules/UpgradeWizard/processing.gif' alt='Processing'></p>
         </td></tr>
      </table>
  </div>

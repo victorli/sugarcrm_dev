@@ -39,6 +39,27 @@ require_once 'include/utils.php';
 
 class XssTest extends Sugar_PHPUnit_Framework_TestCase
 {
+    var $email_xss;
+
+    public function setUp()
+    {
+        global $sugar_config;
+        if(isset($sugar_config['email_xss']))
+        {
+            $this->email_xss = $sugar_config['email_xss'];
+            $sugar_config['email_xss'] = '';
+        }
+    }
+
+    public function tearDown()
+    {
+        if(!empty($this->email_xss))
+        {
+            global $sugar_config;
+            $sugar_config['email_xss'] = $this->email_xss;
+        }
+    }
+
     public function xssData()
     {
         return array(

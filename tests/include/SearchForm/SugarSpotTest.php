@@ -85,8 +85,8 @@ class SugarSpotTest extends Sugar_PHPUnit_Framework_TestCase
             
         $returnValue = $sugarSpot->searchAndDisplay('','');
         
-        $this->assertNotContains('<div id="SpotResults"><div>Foo </div>',$returnValue);
-        $this->assertContains('<div id="SpotResults"><div>Bar </div>',$returnValue);
+        $this->assertRegExp('/Foo/',$returnValue);
+        $this->assertNotRegExp('/Bar/',$returnValue);
     }
 
     /**

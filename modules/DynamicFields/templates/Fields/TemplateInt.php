@@ -39,20 +39,21 @@ require_once('modules/DynamicFields/templates/Fields/TemplateRange.php');
 
 class TemplateInt extends TemplateRange
 {
-	
+	var $type = 'int';
+    var $supports_unified_search = true;
+
 	function __construct(){
 		parent::__construct();
 		$this->vardef_map['autoinc_next'] = 'autoinc_next';
 		$this->vardef_map['autoinc_start'] = 'autoinc_start';
 		$this->vardef_map['auto_increment'] = 'auto_increment';
 	}
-	
-	var $type = 'int';
+
 	function get_html_edit(){
 		$this->prepare();
 		return "<input type='text' name='". $this->name. "' id='".$this->name."' title='{" . strtoupper($this->name) ."_HELP}' size='".$this->size."' maxlength='".$this->len."' value='{". strtoupper($this->name). "}'>";
 	}
-	
+
 	function populateFromPost(){
 		parent::populateFromPost();
 		if (isset($this->auto_increment))
@@ -60,7 +61,7 @@ class TemplateInt extends TemplateRange
 		    $this->auto_increment = $this->auto_increment == "true" || $this->auto_increment === true;
 		}
 	}
-	
+
     function get_field_def(){
 		$vardef = parent::get_field_def();
 		$vardef['disable_num_format'] = isset($this->disable_num_format) ? $this->disable_num_format : $this->ext3;//40005
@@ -83,14 +84,6 @@ class TemplateInt extends TemplateRange
 		return $vardef;
     }
 
-    function get_db_type(){
-	switch($GLOBALS['db']->dbType){
-		case 'oci8': return ' NUMBER ';
-		case 'mysql': return  (!empty($this->len) && $this->len <= 11 && $this->len > 0)? ' INT(' .$this->len . ')' : ' INT(11) ';	
-		default: return ' INT ';
-	}
-}	
-	
     function save($df){
         $next = false;
 		if (!empty($this->auto_increment) && (!empty($this->autoinc_next) || !empty($this->autoinc_start)) && isset($this->module))

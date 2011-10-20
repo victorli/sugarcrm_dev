@@ -4,6 +4,10 @@
 
 Modification information for LGPL compliance
 
+2011-09-23 16:39:38 - 0700 (Fri, 23 Sep 2011) - raagaard - Added support to place the normal field in to a customCode section by replacing @@FIELD@@
+
+2011-08-22 12:52:36 -0700 (Mon, 22 Aug 2011) - jmertic - bug 28321: add support for rendering customCode AND normal field rendering
+
 r56990 - 2010-06-16 13:05:36 -0700 (Wed, 16 Jun 2010) - kjing - snapshot "Mango" svn branch to a new one for GitHub sync
 
 r56989 - 2010-06-16 13:01:33 -0700 (Wed, 16 Jun 2010) - kjing - defunt "Mango" svn dev branch before github cutover
@@ -94,7 +98,27 @@ function smarty_function_sugar_evalcolumn($params, &$smarty)
     	   $code = str_replace(array_keys($str_replace), array_values($str_replace), $code);
     	}
     	
-    	if(!empty($params['var']['displayParams']['enableConnectors'])) {
+        // Add a string replace to swap out @@FIELD@@ for the actual field,
+        // we can't do this through customCode directly because the sugar_field smarty function returns smarty code to run on the second pass
+        if (!empty($code) && strpos($code,'@@FIELD@@') !== FALSE ) {
+            // First we need to fetch extra data about the field
+            // sfp == SugarFieldParams
+            $sfp = $params;
+            $sfp['parentFieldArray'] = 'fields';
+            $vardefs = $smarty->get_template_vars('fields');
+            $sfp['vardef'] = $vardefs[$params['colData']['field']['name']];
+            $sfp['displayType'] = 'EditView';
+            $sfp['displayParams'] = $params['colData']['field']['displayParams'];
+            $sfp['typeOverride'] = $params['colData']['field']['type'];
+            $sfp['formName'] = $smarty->get_template_vars('form_name');
+            
+            $fieldText = smarty_function_sugar_field($sfp, $smarty);
+
+            $code = str_replace('@@FIELD@@',$fieldText,$code);
+        }
+
+    	//eggsurplus bug 28321: add support for rendering customCode AND normal field rendering
+    	if(!empty($params['var']['displayParams']['enableConnectors']) && empty($params['var']['customCodeRenderField'])) {
     	  require_once('include/connectors/utils/ConnectorUtils.php');
     	  $code .= '&nbsp;' . ConnectorUtils::getConnectorButtonScript($params['var']['displayParams'], $smarty);
     	}

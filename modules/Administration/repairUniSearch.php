@@ -40,10 +40,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 global $sugar_config, $mod_strings;
 
-$search_dir='cache/';
-if (!empty($sugar_config['cache_dir'])) {
-	$search_dir=$sugar_config['cache_dir'];
-}
+$search_dir=sugar_cached('');
 
 $src_file = $search_dir . 'modules/unified_search_modules.php';
 if(file_exists($src_file)) {

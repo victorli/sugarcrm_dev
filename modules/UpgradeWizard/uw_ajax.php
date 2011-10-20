@@ -86,7 +86,7 @@ function commitAjaxFinalTouches($persistence) {
 
 	// convert to UTF8 if needed
 	if(!empty($persistence['allTables']))
-		executeConvertTablesSql($GLOBALS['db']->dbType, $persistence['allTables']);
+		executeConvertTablesSql($persistence['allTables']);
 
 	// rebuild
 	logThis('Performing UWrebuild()...');
@@ -157,7 +157,7 @@ function commitAjaxFinalTouches($persistence) {
 	///////////////////////////////////////////////////////////////////////////////
 
 	// clean up
-	unlinkTempFiles();
+	unlinkUWTempFiles();
 
 	ob_start();
 	echo 'done';
@@ -192,20 +192,7 @@ function commitAjaxRunSql($persistence) {
 				logThis("[RUNNING SQL QUERY] {$sql}");
 				$db->query($sql);
 
-				$error = '';
-				switch($db->dbType) {
-					case 'mysql':
-						$error = mysql_error();
-					break;
-
-					case 'oci8':
-					break;
-
-					case 'mssql':
-
-					break;
-				}
-
+				$error = $db->lastError();
 				if(!empty($error)) {
 					logThis('************************************************************');
 					logThis('*** ERROR: SQL Commit Error!');
@@ -332,11 +319,11 @@ function preflightCheckJsonFindUpgradeFiles($persistence) {
 		logThis('unzipping files in upgrade archive...');
 
 		$errors					= array();
-		$base_upgrade_dir      = $sugar_config['upload_dir'] . "/upgrades";
-		$base_tmp_upgrade_dir  = "$base_upgrade_dir/temp";
+		$base_upgrade_dir      = "upload://upgrades";
+		$base_tmp_upgrade_dir  = sugar_cached("upgrades/temp");
 		$install_file			= urldecode( $persistence['install_file'] );
 		$show_files				= true;
-		$unzip_dir				= clean_path(mk_temp_dir( $base_tmp_upgrade_dir ));
+		$unzip_dir				= mk_temp_dir( $base_tmp_upgrade_dir );
 		$zip_from_dir			= ".";
 		$zip_to_dir			= ".";
 		$zip_force_copy			= array();
@@ -398,7 +385,7 @@ function preflightCheckJsonDiffFiles($persistence) {
 
 	// file preflight checks
 	logThis('verifying md5 checksums for files...');
-	$cache_html_files = findAllFilesRelative( "{$GLOBALS['sugar_config']['cache_dir']}layout", array());
+	$cache_html_files = findAllFilesRelative(sugar_cached("layout"), array());
 
 	foreach($persistence['upgrade_files'] as $file) {
 		if(strpos($file, '.md5'))
@@ -604,10 +591,10 @@ function preflightCheckJsonPrepSchemaCheck($persistence, $preflight=true) {
 
 	$current_version = substr(preg_replace("#[^0-9]#", "", $sugar_db_version),0,3);
 	$targetVersion =  substr(preg_replace("#[^0-9]#", "", $manifest['version']),0,3);
-	$sqlScript = $persistence['unzip_dir'].'/scripts/'.$current_version.'_to_'.$targetVersion.'_'.$db->dbType.'.sql';
+    $script_name = $db->getScriptType();
+	$sqlScript = $persistence['unzip_dir']."/scripts/{$current_version}_to_{$targetVersion}_{$script_name}.sql";
 
 	$newTables = array();
-
 
 	logThis('looking for schema script at: '.$sqlScript);
 	if(is_file($sqlScript)) {
@@ -661,11 +648,13 @@ function preflightCheckJsonSchemaCheck($persistence) {
 		if(strtoupper(substr($completeLine,1,5)) == 'CREAT')
 			$newTables[] = getTableFromQuery($completeLine);
 
-		$bad = verifySqlStatement(trim($completeLine), $db->dbType, $newTables);
+        logThis('Verifying statement: '.$completeLine);
+		$bad = $db->verifySQLStatement($completeLine, $newTables);
 
 		if(!empty($bad)) {
 			logThis('*** ERROR: schema change script has errors: '.$completeLine);
-			$persistence['sql_errors'][] = $bad;
+            logThis('*** '.$bad);
+			$persistence['sql_errors'][] = getFormattedError($bad, $completeLine);
 		}
 
 		$persistence = ajaxSqlProgress($persistence, $completeLine, 'sql_to_check');
@@ -722,7 +711,8 @@ function preflightCheckJsonFillSchema() {
 	$alterTableSchemaOut = '';
 	$current_version = substr(preg_replace("#[^0-9]#", "", $sugar_db_version),0,3);
 	$targetVersion =  substr(preg_replace("#[^0-9]#", "", $manifest['version']),0,3);
-	$sqlScript = $persistence['unzip_dir'].'/scripts/'.$current_version.'_to_'.$targetVersion.'_'.$db->dbType.'.sql';
+    $script_name = $db->getScriptType();
+	$sqlScript = $persistence['unzip_dir']."/scripts/{$current_version}_to_{$targetVersion}_{$script_name}.sql";
 	$newTables = array();
 
 	logThis('looking for SQL script for DISPLAY at '.$sqlScript);
@@ -780,7 +770,7 @@ function systemCheckJsonGetFiles($persistence) {
 	// add directories here that should be skipped when doing file permissions checks (cache/upload is the nasty one)
 	$skipDirs = array(
 		$sugar_config['upload_dir'],
-		getcwd().'/themes',
+		'themes',
 	);
 
 	if(!isset($persistence['dirs_checked'])) {

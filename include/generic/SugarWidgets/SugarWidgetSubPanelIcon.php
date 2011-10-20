@@ -97,7 +97,7 @@ class SugarWidgetSubPanelIcon extends SugarWidgetField
 			|| ACLController::checkAccess($layout_def['owner_module'], 'view', $layout_def['owner_id'] == $current_user->id))) {
 			$action_access = true;
 		}
-		$icon_img_html = SugarThemeRegistry::current()->getImage( $module . '', 'border="0" alt="' . $app_list_strings['moduleList'][$module] . '"');
+		$icon_img_html = SugarThemeRegistry::current()->getImage( $module . '', 'border="0"',null,null,'.gif',$app_list_strings['moduleList'][$module]);
 		if (!empty($layout_def['attachment_image_only']) && $layout_def['attachment_image_only'] == true) {
 			$ret="";
 		} else {
@@ -124,7 +124,7 @@ class SugarWidgetSubPanelIcon extends SugarWidgetField
             }
  
             if ( !empty($imagePath) ) {
-                $icon_img_html = SugarThemeRegistry::current()->getImage( $imagePath . '', 'border="0" alt="' . $imagePath . '"');
+                $icon_img_html = SugarThemeRegistry::current()->getImage( $imagePath . '', 'border="0"',null,null,'.gif',$imagePath);
                 $ret.= (empty($link_url)) ? '' : '&nbsp;<a href="' . $link_url. '" TARGET = "_blank">' . "$icon_img_html</a>";
             }
         }
@@ -138,7 +138,6 @@ class SugarWidgetSubPanelIcon extends SugarWidgetField
 					
 					$key=$layout_def['fields'][strtoupper($layout_def['image2_url_field']['id_field'])];
                     $file=$layout_def['fields'][strtoupper($layout_def['image2_url_field']['filename_field'])];
-                    //$filepath=UploadFile :: get_url(from_html($file), $key);	
                     $filepath="index.php?entryPoint=download&id=".$key."&type=".$layout_def['module'];
 				}
 			} else {
@@ -146,7 +145,7 @@ class SugarWidgetSubPanelIcon extends SugarWidgetField
 					$filepath="index.php?entryPoint=download&id=".$layout_def['fields']['ID']."&type=".$layout_def['module'];						
 				}
 			}
-			$icon_img_html = SugarThemeRegistry::current()->getImage( $layout_def['image2'] . '', 'border="0" alt="' . $layout_def['image2'] . '"');
+			$icon_img_html = SugarThemeRegistry::current()->getImage( $layout_def['image2'] . '', 'border="0"',null,null,'.gif',$layout_def['image2']);
 			if ($action_access && !empty($filepath)) {
 				$ret .= '<a href="' . $filepath. '" >' . "$icon_img_html</a>";
 			} elseif (!empty($filepath)) {

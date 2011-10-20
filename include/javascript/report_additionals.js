@@ -69,7 +69,7 @@ function refreshFilterInput(filter,index){current_filter_id=index;var filter_row
 filter_row.input_cell.removeChild(filter_row.input_cell.firstChild);addFilterInput(filter_row.input_cell,filter);}
 function addColumnSelectGroup(cell,group){var select_html_info=new Object();var options=new Array();var select_info=new Object();select_info['name']='group';select_info['onchange']='columnSelectGroupChanged('+current_group_id+');';select_html_info['select']=select_info;var module_select=groups_arr[groups_count_map[current_group_id]].module_select;var table_key=module_select.options[module_select.selectedIndex].value;if(table_key=='self'){selected_module=current_module;field_defs=module_defs[selected_module].group_by_field_defs;}
 else{selected_module=table_key;var field_defs=module_defs[full_table_list[table_key].module].group_by_field_defs;}
-var field_defs_arr=getOrderedFieldDefArray(field_defs,true);var selected=false;var got_selected=0;for(var index in field_defs_arr){var field=field_defs_arr[index];if(field.type=='text'||(current_db_type=='oci8'&&field.type=='name'&&typeof(field.fields)!='undefined')){continue;}
+var field_defs_arr=getOrderedFieldDefArray(field_defs,true);var selected=false;var got_selected=0;for(var index in field_defs_arr){var field=field_defs_arr[index];if(field.type=='text'||(field.type=='name'&&typeof(field.fields)!='undefined')){continue;}
 var key=table_key+":"+field.name;if(typeof(all_fields[key])=='undefined'){continue;}
 if(group.column_name==key){got_selected=1;selected=true;}
 else{selected=false;}
@@ -364,7 +364,7 @@ var group_by_def=getListFieldDef(key);if(group_by_def.table_key!=current_prefix)
 var key=group_by_def.table_key+":"+group_by_def.name;if(typeof(cell1)!='undefined'&&cell1.getElementsByTagName('select')[0].style.display!='none'){key+=":"+cell1.getElementsByTagName('select')[0].value;}
 valid_groups[key]=1;}
 var field_defs=module_defs[selected_module].field_defs;var numerical_chart_column=document.EditView.numerical_chart_column;numerical_chart_column.options.length=0;var which_option_selected=0;for(i=0;i<visible_summary_fields.length;i++){var key=visible_summary_fields[i];if(typeof(all_fields[key])=='undefined'||typeof(all_fields[key].field_def)=='undefined'){continue;}
-if(current_db_type!='mysql'&&(typeof(valid_groups[key])=='undefined'&&(typeof(all_fields[key].field_def.summary_type)=='undefined'||all_fields[key].field_def.summary_type!='group'))){continue;}
+if((typeof(valid_groups[key])=='undefined'&&(typeof(all_fields[key].field_def.summary_type)=='undefined'||all_fields[key].field_def.summary_type!='group'))){continue;}
 var field=all_fields[key].field_def;var linked_field_name='';var label_prefix='';var default_label='';if(field.name=='count'){key='count';default_label=field['vname'];}
 else{linked_field_name=all_fields[key].linked_field_name;label_prefix=all_fields[key].label_prefix;default_label=label_prefix+": "+field['vname'];}
 var column_label;if(typeof(visible_summary_field_map[key])!='undefined'&&typeof(visible_summary_field_map[key].label)!='undefined'){column_label=visible_summary_field_map[key].label;}
@@ -375,11 +375,10 @@ var current_option=display_summary_ref.options[display_summary_ref.options.lengt
 seen_visible_summary[key]=1;}
 numerical_chart_column.options.selectedIndex=which_option_selected;var summary_field_defs=module_defs[selected_module].summary_field_defs;var field_defs_arr=getOrderedFieldDefArray(field_defs,false);group_field=null;for(group_key in valid_groups){if(typeof all_fields[group_key]!='undefined'){group_field=all_fields[group_key].field_def;if(seen_visible_summary[group_key]!=1){hidden_summary_ref.options[hidden_summary_ref.options.length]=new Option(group_field['vname'],group_key);}
 seen_visible_summary[group_key]=1;}}
-for(var index in summary_field_defs){var field=summary_field_defs[index];if(field.summary_type!='group'&&current_db_type!='mysql'){continue;}
+for(var index in summary_field_defs){var field=summary_field_defs[index];if(field.summary_type!='group'){continue;}
 var key=current_prefix+":"+field['name'];if(field['name']=='count'){key='count';}
 if(typeof(all_fields[key])=='undefined'){continue;}
 if(seen_visible_summary[key]!=1){hidden_summary_ref.options[hidden_summary_ref.options.length]=new Option(field['vname'],key);}}
-if(current_db_type=='mysql'){for(var index in field_defs_arr){var field=field_defs_arr[index];var key=current_prefix+":"+field['name'];if(seen_visible_summary[key]!=1){hidden_summary_ref.options[hidden_summary_ref.options.length]=new Option(field['vname'],key);}}}
 refresh_chart_tab();var selected_chart_index=1;if(reload_type=='regular'){for(var i=0;i<document.EditView.chart_type.options.length;i++){if(document.EditView.chart_type.options[i].value==report_def.chart_type){selected_chart_index=i;}}
 document.EditView.chart_type.selectedIndex=selected_chart_index;}}
 function refresh_chart_tab(){if(document.EditView.numerical_chart_column.options.length>0&&has_group!=null){document.getElementById('no_chart_text').style.display='none';document.EditView.numerical_chart_column.disabled=false;document.EditView.chart_type.disabled=false;document.EditView.chart_type.selectedIndex=1;document.EditView.chart_description.disabled=false;}

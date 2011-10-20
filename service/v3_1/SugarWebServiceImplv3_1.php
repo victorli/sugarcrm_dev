@@ -81,7 +81,7 @@ class SugarWebServiceImplv3_1 extends SugarWebServiceImplv3 {
      */
     function get_module_fields_md5($session, $module_name){
 
-        $GLOBALS['log']->info('Begin: SugarWebServiceImpl->get_module_fields_md5');
+        $GLOBALS['log']->info('Begin: SugarWebServiceImpl->get_module_fields_md5(v3_1) for module: '. print_r($module_name, true));
 
         $results = array();
         if( is_array($module_name) )
@@ -92,9 +92,9 @@ class SugarWebServiceImplv3_1 extends SugarWebServiceImplv3 {
         else
             $results[$module_name] = md5(serialize(self::get_module_fields($session, $module_name)));
 
-        return $results;
+        $GLOBALS['log']->info('End: SugarWebServiceImpl->get_module_fields_md5 (v3_1) for module: ' . print_r($module_name, true));
 
-        $GLOBALS['log']->info('End: SugarWebServiceImpl->get_module_fields_md5');
+        return $results;
     }
 
     /**
@@ -144,7 +144,7 @@ class SugarWebServiceImplv3_1 extends SugarWebServiceImplv3 {
         }
         if (!self::$helperObject->checkSessionAndModuleAccess($session, 'invalid_session', $module_name, 'read', 'no_access', $error))
         {
-            $GLOBALS['log']->info('End: SugarWebServiceImpl->get_entries');
+            $GLOBALS['log']->info('No Access: SugarWebServiceImpl->get_entries');
             return;
         } // if
 
@@ -181,7 +181,7 @@ class SugarWebServiceImplv3_1 extends SugarWebServiceImplv3 {
                 $linkoutput_list[] = self::$helperObject->get_return_value_for_link_fields($seed, $module_name, $link_name_to_fields_array);
             }
 
-            $GLOBALS['log']->info('Should we track view: ' . $trackView);
+            $GLOBALS['log']->info('Should we track view: ' . $track_view);
             if($track_view)
             {
                 self::$helperObject->trackView($seed, 'detailview');
@@ -493,7 +493,7 @@ class SugarWebServiceImplv3_1 extends SugarWebServiceImplv3 {
         return $results;
     }
 
-    
+
     /**
      * Retrieve the layout metadata for a given module given a specific type and view.
      *
@@ -686,11 +686,11 @@ class SugarWebServiceImplv3_1 extends SugarWebServiceImplv3 {
     	require_once('modules/Home/UnifiedSearchAdvanced.php');
     	require_once 'include/utils.php';
     	$usa = new UnifiedSearchAdvanced();
-        if(!file_exists($GLOBALS['sugar_config']['cache_dir'].'modules/unified_search_modules.php')) {
+        if(!file_exists($cachedfile = sugar_cached('modules/unified_search_modules.php'))) {
             $usa->buildCache();
         }
 
-    	include($GLOBALS['sugar_config']['cache_dir'].'modules/unified_search_modules.php');
+    	include($cachedfile);
     	$modules_to_search = array();
     	$unified_search_modules['Users'] =   array('fields' => array());
 

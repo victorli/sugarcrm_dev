@@ -99,7 +99,8 @@ class SugarRelationshipFactory {
             break;
             case "one-to-many":
                 require_once("data/Relationships/One2MBeanRelationship.php");
-                if (empty($def['true_relationship_type'])){
+                //If a relationship has no table or join keys, it must be bean based
+                if (empty($def['true_relationship_type']) || (empty($def['table']) && empty($def['join_table'])) || empty($def['join_key_rhs'])){
                     return new One2MBeanRelationship($def);
                 }
                 else {
@@ -192,7 +193,7 @@ class SugarRelationshipFactory {
     }
 
 	protected function getCacheFile() {
-		return "{$GLOBALS['sugar_config']['cache_dir']}Relationships/relationships.cache.php";
+		return sugar_cached("Relationships/relationships.cache.php");
 	}
 
 

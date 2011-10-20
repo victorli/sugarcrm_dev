@@ -144,7 +144,7 @@ class SugarWidgetSubPanelTopScheduleCallButton extends SugarWidgetSubPanelTopBut
 				$button .= '<input type="hidden" name="' . $key . '" value="' . $value . '" />' . "\n";
 			}
 		}
-		$button .='<script type="text/javascript" src="include/SugarFields/Fields/Datetimecombo/Datetimecombo.js"></script>'."\n";
+		$button .= getVersionedScript('include/SugarFields/Fields/Datetimecombo/Datetimecombo.js')."\n";
 		return $button;
 	}
 
@@ -154,7 +154,7 @@ class SugarWidgetSubPanelTopScheduleCallButton extends SugarWidgetSubPanelTopBut
 		if ( !$focus->ACLAccess('EditView') ) {
 		    return '';
 	    }
-		
+
 		return parent::display($defines, $additionalFormFields);
 	}
 }

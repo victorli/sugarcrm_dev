@@ -90,6 +90,7 @@ class RESTAPIRSSTest extends Sugar_PHPUnit_Framework_TestCase
 
     protected function _login()
     {
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before logging in
         return $this->_makeRESTCall('login',
             array(
                 'user_auth' =>

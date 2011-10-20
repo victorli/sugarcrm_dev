@@ -40,7 +40,7 @@ if( !isset( $install_script ) || !$install_script ){
     die($mod_strings['ERR_NO_DIRECT_SCRIPT']);
 }
 if(!isset($_SESSION['setup_db_type']) || $_SESSION['setup_db_type'] ==''){
- $_SESSION['setup_db_type'] = 'mysql';   
+ $_SESSION['setup_db_type'] = 'mysql';
 }
 $setup_db_type = $_SESSION['setup_db_type'];
 
@@ -60,18 +60,15 @@ if(isset($validation_errors)) {
 	}
 }
 
-$mysql = '';
-$oci8 = '';
-$mssql = '';
-if($setup_db_type == "mysql")
-	$mysql = 'checked="checked"';
-else if ($setup_db_type == "mssql")
-	$mssql = 'checked="checked"';
-
-
+$drivers = DBManagerFactory::getDbDrivers();
+foreach(array_keys($drivers) as $dname) {
+    $checked[$dname] = '';
+}
+$checked[$setup_db_type] = 'checked="checked"';
+$langHeader = get_language_header();
 $out=<<<EOQ
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<html {$langHeader}>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
    <meta http-equiv="Content-Script-Type" content="text/javascript">
@@ -97,7 +94,7 @@ $out=<<<EOQ
         </th>
 </tr>
 <tr>
-   <td colspan="2">	
+   <td colspan="2">
 		{$errs}
 
 
@@ -108,33 +105,12 @@ $out=<<<EOQ
     <td>&nbsp;</td>
     <td align="left">
 EOQ;
-if(function_exists('mysql_connect') || function_exists('mysqli_connect')){ 
-$out.=<<<EOQ
-        <input type="radio" class="checkbox" name="setup_db_type" id="setup_db_type" value="mysql" {$mysql} onclick="document.getElementById('ociMsg').style.display='none'"/>{$mod_strings['LBL_MYSQL']}
-EOQ;
-//check to see if mysqli is enabled
-if(function_exists('mysqli_connect')){
-    $_SESSION['mysql_type'] = 'mysqli';
-    $out.=' &nbsp;(MySQLi detected)<br>';
-}else{
-     $out.= '<br>';
-}    
-}
-if(function_exists('mssql_connect') || function_exists('sqlsrv_connect')){
-$out.=<<<EOQ
-		<input type="radio" class="checkbox" name="setup_db_type" id="setup_db_type" value="mssql" {$mssql} onclick="document.getElementById('ociMsg').style.display='none'"/>{$mod_strings['LBL_MSSQL']}
+foreach($drivers as $type => $driver) {
+    $oci = ($type == "oci8")?"":'none'; // hack for special oracle message
+    $out.=<<<EOQ
+        <input type="radio" class="checkbox" name="setup_db_type" id="setup_db_type" value="$type" {$checked[$type]} onclick="document.getElementById('ociMsg').style.display='$oci'"/>{$mod_strings[$driver->label]}
 EOQ;
 }
-//check to see if sqlsrv is enabled
-if(function_exists('sqlsrv_connect')){
-    $_SESSION['mssql_type'] = 'sqlsrv';
-    $out.=' &nbsp;(Microsoft SQL Server Driver for PHP detected)<br>';
-}else{
-     $out.= '<br>';
-}
-
-
-
 
 $out.=<<<EOQ
     </td>
@@ -145,7 +121,7 @@ EOQ;
 
 $out.=<<<EOQ
     </td>
-        
+
 </tr>
 </table>
 </td>

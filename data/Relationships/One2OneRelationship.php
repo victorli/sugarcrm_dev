@@ -39,7 +39,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 require_once("data/Relationships/SugarRelationship.php");
 require_once("data/Relationships/One2MRelationship.php");
 
-class One2OneRelationship extends One2MRelationship
+class One2OneRelationship extends M2MRelationship
 {
 
     public function __construct($def)
@@ -54,12 +54,22 @@ class One2OneRelationship extends One2MRelationship
      */
     public function add($lhs, $rhs, $additionalFields = array())
     {
-        $lhsLinkName = $this->lhsLink;
-        //In a one to one, any existing links from boths sides must be removed first.
-        //one2Many will take care of the right side, so we'll do the left.
-        $lhs->load_relationship($lhsLinkName);
-        $this->removeAll($lhs->$lhsLinkName);
+        $dataToInsert = $this->getRowToInsert($lhs, $rhs, $additionalFields);
+        //If the current data matches the existing data, don't do anything
+        if (!$this->checkExisting($dataToInsert))
+        {
+            $lhsLinkName = $this->lhsLink;
+            $rhsLinkName = $this->rhsLink;
+            //In a one to one, any existing links from boths sides must be removed first.
+            //one2Many will take care of the right side, so we'll do the left.
+            $lhs->load_relationship($lhsLinkName);
+            $this->removeAll($lhs->$lhsLinkName);
+            $rhs->load_relationship($rhsLinkName);
+            $this->removeAll($rhs->$rhsLinkName);
 
-        parent::add($lhs, $rhs, $additionalFields);
+            parent::add($lhs, $rhs, $additionalFields);
+        }
     }
+
+
 }

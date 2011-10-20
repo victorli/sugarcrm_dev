@@ -49,9 +49,9 @@
 	<input type='hidden' name='campaign_type' value="{$MOD.LBL_NEWSLETTER}">
 	<input type="hidden" id="wiz_total_steps" name="totalsteps" value="3">
 	<input type="hidden" id="wiz_current_step" name="currentstep" value='0'>
-	<input type="hidden" id="wiz_summary_step" name="wiz_summary_step" value='create_email_setup_summary'>			
-		
-	
+	<input type="hidden" id="wiz_summary_step" name="wiz_summary_step" value='create_email_setup_summary'>
+
+
 <p>
 	<div id ='buttons'>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0" >
@@ -69,7 +69,7 @@
 		</table>
 	</div>
 </p>
-		
+
 
 <table class='other view' width="100%" border="0" cellspacing="3" cellpadding="0">
 <tr>
@@ -181,20 +181,20 @@
 						{$MOD.LBL_CAMP_MESSAGE_COPY}&nbsp;<span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span>
                         <a href="#" class="rollover"><span>{$MOD.LBL_CAMP_MESSAGE_COPY_DESC}</span><img border="0" src="{sugar_getimagepath file='helpInline.gif'}"></a>
                     </div>
-				
+
 				</td>
 				<td >
 						<input type='radio'  name='massemailer_email_copy' value="1" {$YES_CHECKED}>{$MOD.LBL_YES}&nbsp;<input type='radio' {$NO_CHECKED}  name='massemailer_email_copy' value="2">{$MOD.LBL_NO}
 				</td>
 
 			</tr>
-			 </table>	
+			 </table>
 				</td></tr></table>
 		</td></tr></table>
 		<script type="text/javascript" >
 		{literal}
 		function change_state(radiobutton) {
-		
+
 			if (radiobutton.value == '1') {
 				radiobutton.form['wiz_step1_massemailer_tracking_entities_location'].disabled=true;
 				{/literal}
@@ -216,9 +216,9 @@
 	</tr>
 	<tr>
 	<td scope="row" colspan ='3'>{$MAILBOXES_DETECTED_MESSAGE}</td></td>&nbsp;</td>
-	</tr>	
+	</tr>
 	<tr><td scope="row"><input type='hidden' id='wiz_new_mbox' name='wiz_new_mbox' value='0'>
-	<input title ="{$MOD.LBL_MAIL_SMTPAUTH_REQ}"  id='create_mbox' name='wiz_create_mbox'  type="checkbox" class="checkbox" 
+	<input title ="{$MOD.LBL_MAIL_SMTPAUTH_REQ}"  id='create_mbox' name='wiz_create_mbox'  type="checkbox" class="checkbox"
 	onclick="notify_setrequired();" {$MBOX_NEEDED}>&nbsp;{$MOD.LBL_CREATE_MAILBOX}</td>
 	<td colspan='3'>&nbsp;</td></tr>
 	</table>
@@ -241,14 +241,14 @@
 			<td valign="top"  width="30%">
 				<slot><input title='{$MOD.LBL_SERVER_URL}' name='wiz_step2_server_url' id='server_url' tabindex='20' size='30' maxlength='100' type="text" value="" ></slot></td>
 			<td valign="top" scope="row">
-				<slot>{$MOD.LBL_LOGIN}: 
+				<slot>{$MOD.LBL_LOGIN}:
 				<span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span>&nbsp;</slot></td>
 			<td valign="top"  width="30%">
 				<slot><input title="{$MOD.LBL_LOGIN}" name='wiz_step2_email_user' id='email_user' tabindex='70' size='30' maxlength='100' type="text" value="" ></slot></td>
 		</tr>
 		<tr>
 			<td valign="top" scope="row" width="20%" NOWRAP>
-				<slot>{$MOD.LBL_SERVER_TYPE}: 
+				<slot>{$MOD.LBL_SERVER_TYPE}:
 				<span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span>&nbsp;</slot></td>
 			<td valign="top"  width="30%">
 				<slot>
@@ -261,7 +261,7 @@
 		</tr>
 		<tr>
 			<td valign="top" scope="row" width="20%" NOWRAP>
-				<slot>{$MOD.LBL_PORT}: 
+				<slot>{$MOD.LBL_PORT}:
 				<span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span>&nbsp;</slot></td>
 			<td valign="top"  width="30%">
 				<slot>
@@ -292,17 +292,17 @@
 	</table>
 	</div>
 	</div>
-	
+
 
 	<div id='step3'>
 	<table width="100%" border="0" cellspacing="0" cellpadding="0">
 		<tr><td>
 			<h3>{$MOD.LBL_NAVIGATION_MENU_SUMMARY}</h3>
-		</td></tr>	
+		</td></tr>
 		<tr><td>
-			<div id='wiz_summ'></div>	
-		</td></tr>	
-	</table>			
+			<div id='wiz_summ'></div>
+		</td></tr>
+	</table>
 	</div>
 
 </div>
@@ -316,11 +316,10 @@
 
 <div id='pop3_warn'></div>
 
-<script type="text/javascript" language="javascript" src="modules/Campaigns/wizard.js"></script>
-<script type="text/javascript" lang="Javascript" src="modules/InboundEmail/InboundEmail.js"></script>
+{sugar_getscript file="modules/Campaigns/wizard.js"}
+{sugar_getscript file="modules/InboundEmail/InboundEmail.js"}
 {$WIZ_JAVASCRIPT}
 {$DIV_JAVASCRIPT}
 {$JAVASCRIPT}
 
 
-		

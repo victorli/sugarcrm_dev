@@ -47,17 +47,30 @@ require_once('modules/MySettings/TabController.php');
 
 $tabs_def = urldecode(isset($_REQUEST['display_tabs_def']) ? $_REQUEST['display_tabs_def'] : '');
 $DISPLAY_ARR = array();
-parse_str($tabs_def,$DISPLAY_ARR); 
+parse_str($tabs_def,$DISPLAY_ARR);
 
+//there was an issue where a non-admin user could use a proxy tool to intercept the save on their own Employee
+//record and swap out their record_id with the admin employee_id which would cause the email address
+//of the non-admin user to be associated with the admin user thereby allowing the non-admin to reset the password
+//of the admin user.
+if(isset($_POST['record']) && !is_admin($GLOBALS['current_user']) && !$GLOBALS['current_user']->isAdminForModule('Employees') && ($_POST['record'] != $GLOBALS['current_user']->id))
+{
+    sugar_die("Unauthorized access to administration.");
+}
+elseif (!isset($_POST['record']) && !is_admin($GLOBALS['current_user']) && !$GLOBALS['current_user']->isAdminForModule('Employees'))
+{
+    sugar_die ("Unauthorized access to user administration.");
+}
 
 $focus = new Employee();
 
 $focus->retrieve($_POST['record']);
+
 //rrs bug: 30035 - I am not sure how this ever worked b/c old_reports_to_id was not populated.
 $old_reports_to_id = $focus->reports_to_id;
 
 populateFromRow($focus,$_POST);
-	
+
 $focus->save();
 $return_id = $focus->id;
 
@@ -75,12 +88,19 @@ header("Location: index.php?action=$return_action&module=$return_module&record=$
 
 
 function populateFromRow(&$focus,$row){
-	
 
-	//only employee specific field values need to be copied.    	
+
+	//only employee specific field values need to be copied.
 	$e_fields=array('first_name','last_name','reports_to_id','description','phone_home','phone_mobile','phone_work','phone_other','phone_fax','address_street','address_city','address_state','address_country','address_country', 'address_postalcode', 'messenger_id','messenger_type');
-	if ( is_admin($GLOBALS['current_user']) )
+	if ( is_admin($GLOBALS['current_user']) ) {
         $e_fields = array_merge($e_fields,array('title','department','employee_status'));
+    }
+    // Also add custom fields
+    foreach ($focus->field_defs as $fieldName => $field ) {
+        if ( isset($field['source']) && $field['source'] == 'custom_fields' ) {
+            $e_fields[] = $fieldName;
+        }
+    }
     $nullvalue='';
 	foreach($e_fields as $field)
 	{

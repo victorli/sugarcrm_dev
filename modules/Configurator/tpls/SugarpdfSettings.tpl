@@ -39,7 +39,7 @@
 
 *}
 
-<script type='text/javascript' src='include/javascript/overlibmws.js'></script>
+<script type='text/javascript' src="{sugar_getjspath file='include/javascript/overlibmws.js'}"></script>
 <script type='text/javascript'>var fileFields = new Array();</script>
 <BR>
 <form name="ConfigureSugarpdfSettings" enctype='multipart/form-data' method="POST" action="index.php?action=SugarpdfSettings&module=Configurator" onSubmit="if(checkFileType(null,1))return (check_form('ConfigureSugarpdfSettings'));else return false;">
@@ -50,19 +50,19 @@
             <input title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}" class="button"  type="submit"  name="save" value="  {$APP.LBL_SAVE_BUTTON_LABEL}  " >
             &nbsp;<input title="{$MOD.LBL_RESTORE_BUTTON_LABEL}" class="button"  type="submit"  name="restore" value="  {$MOD.LBL_RESTORE_BUTTON_LABEL}  " >
             &nbsp;<input title="{$MOD.LBL_CANCEL_BUTTON_TITLE}"  onclick="document.location.href='index.php?module=Administration&action=index'" class="button"  type="button" name="cancel" value="  {$APP.LBL_CANCEL_BUTTON_LABEL}  " >
-        </td> 
+        </td>
     </tr>
 </table>
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
     <td>
-    
+
     <table width="100%" border="0" cellspacing="0" cellpadding="0"  class="edit view" {if $pdf_enable_ezpdf=="0"}style="display:none"{/if}>
         <tr>
            <td scope="row" style="text-align: center;">{html_radios name="sugarpdf_pdf_class" options=$pdf_class selected=$selected_pdf_class separator='    ' onchange='processPDFClass()'}</td>
         </tr>
     </table>
-    
+
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="edit view" id="settingsForTCPDF">
         <tr>
             <th align="left" scope="row" colspan="4"><h4 >{$MOD.SUGARPDF_BASIC_SETTINGS}</h4></th>
@@ -86,8 +86,8 @@
             </td>
         </tr>
     </table>
-    
-    
+
+
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="edit view">
         <tr>
             <th align="left" scope="row" colspan="4"><h4 >{$MOD.SUGARPDF_LOGO_SETTINGS}</h4></th>

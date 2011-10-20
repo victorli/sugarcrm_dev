@@ -39,7 +39,7 @@
 
 
 *}
-<script type='text/javascript' src='{sugar_getjspath file='include/javascript/sugar_grp_overlib.js'}'></script>
+<script type='text/javascript' src='{sugar_getjspath file='cache/include/javascript/sugar_grp_overlib.js'}'></script>
 <form name="ConfigureSettings" enctype='multipart/form-data' method="POST" action="index.php" onSubmit="return (add_checks(document.ConfigureSettings) && check_form('ConfigureSettings'));">
 <input type='hidden' name='action' value='SaveConfig'/>
 <input type='hidden' name='module' value='Configurator'/>
@@ -142,7 +142,7 @@
         {$MOD.CURRENT_LOGO}&nbsp;{sugar_help text=$MOD.CURRENT_LOGO_HELP}
         </td>
         <td width='35%' >
-            <img id="company_logo_image" src='{$company_logo}' height="40" width="212">
+            <img id="company_logo_image" src='{$company_logo}' alt=$mod_strings.LBL_LOGO height="40" width="212">
         </td>
     </tr>
     <tr>
@@ -157,6 +157,7 @@
     <tr>
             <td scope="row">{$MOD.LBL_LEAD_CONV_OPTION}:&nbsp;{sugar_help text=$MOD.LEAD_CONV_OPT_HELP}</td>
             <td> <select name="lead_conv_activity_opt">{$lead_conv_activities}</select></td>
+            <td><a href="./index.php?module=Administration&action=ConfigureAjaxUI" id="configure_ajax">{$MOD.LBL_CONFIG_AJAX}</a>:&nbsp;{sugar_help text=$MOD.LBL_CONFIG_AJAX_DESC}</td>
     </tr>
 </table>
 
@@ -367,7 +368,7 @@ addToValidateMoreThan('ConfigureSettings', 'list_max_entries_per_subpanel', 'int
 <div id='upload_panel' style="display:none">
     <form id="upload_form" name="upload_form" method="POST" action='index.php' enctype="multipart/form-data">
         <input type="file" id="my_file_company" name="file_1" size="20" onchange="uploadCheck(false)"/>
-        <img id="loading_img_company" alt="loading..." src="{sugar_getimagepath file='sqsWait.gif'}" style="display:none">
+        {sugar_getimage name="sqsWait" ext=".gif" alt=$mod_strings.LBL_LOADING other_attributes='id="loading_img_company" style="display:none" '}
     </form>
 </div>
 {literal}
@@ -401,7 +402,7 @@ function toggleDisplay_2(div_string){
                 case 'size':
                     alert(SUGAR.language.get('Configurator','LBL_ALERT_SIZE_RATIO'));
                     document.getElementById(forQuotes + "_logo").value=file_type['path'];
-                    document.getElementById(forQuotes + "_logo_image").src=file_type['path'];
+                    document.getElementById(forQuotes + "_logo_image").src=file_type['url'];
                     break;
                 case 'file_error':
                     alert(SUGAR.language.get('Configurator','ERR_ALERT_FILE_UPLOAD'));
@@ -410,7 +411,7 @@ function toggleDisplay_2(div_string){
                 //File good
                 case 'ok':
                     document.getElementById(forQuotes + "_logo").value=file_type['path'];
-                    document.getElementById(forQuotes + "_logo_image").src=file_type['path'];
+                    document.getElementById(forQuotes + "_logo_image").src=file_type['url'];
                     break;
                 //error in getimagesize because unsupported type
                 default:

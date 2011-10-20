@@ -50,6 +50,17 @@ class EmployeesViewList extends ViewList
         }
  	}
 
+    /**
+     * Overridden from ViewList prepareSearchForm so we can tack on some additional where clauses
+     *
+     */
+    function prepareSearchForm() {
+        parent::prepareSearchForm();
+        require_once('modules/Employees/EmployeesSearchForm.php');
+        $newForm = new EmployeesSearchForm($this->searchForm);
+        $this->searchForm = $newForm;
+    }
+
    /**
     * Return the "breadcrumbs" to display at the top of the page
     *
@@ -118,7 +129,7 @@ EOHTML;
 			if(!empty($this->where)){
 			    $this->where .= " AND ";
 			}
-                        $this->where .= "(users.status != 'Reserved' or users.status is null) ";
+            $this->where .= "(users.status <> 'Reserved' or users.status is null) ";
 			$this->lv->setup($this->seed, $tplFile, $this->where, $this->params);
 			$savedSearchName = empty($_REQUEST['saved_search_select_name']) ? '' : (' - ' . $_REQUEST['saved_search_select_name']);
 			echo $this->lv->display();

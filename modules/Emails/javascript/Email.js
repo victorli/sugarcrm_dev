@@ -298,7 +298,7 @@ function multiFiles( list_target){
 		new_row_button_remove.onclick = function() {
 			var filePathComponents = this.parentNode.element.value.split("\\"),
                 fileName = (filePathComponents[filePathComponents.length - 1]),
-            
+
                 // tinymce related
                 tiny = tinyMCE.getInstanceById('body_text'),
                 currValTiny = tiny.getContent();
@@ -336,7 +336,7 @@ function multiFiles( list_target){
 
                 // constants
                 allowedTypes = ['gif', 'bmp', 'png', 'jpg', 'jpeg'],
-                imglocation = sugar_cache_dir + 'images/';
+                imglocation = 'cache/images/';
 
             //check if filetype is valid
             if (SUGAR.util.validateFileExt(fileName, allowedTypes)) {
@@ -487,13 +487,9 @@ function docUpload() {
         this.parentNode.childNodes[2].checked='true';
         var documentRevisionId = this.parentNode.childNodes[4].value;
         var mime_type = this.parentNode.childNodes[5].value;
-		if(mime_type == "image/gif" || mime_type == "image/bmp" || mime_type == "image/png" || mime_type == "image/x-png" || mime_type == "image/jpg")
+		if(mime_type == "image/gif" || mime_type == "image/bmp" || mime_type == "image/png" || mime_type == "image/x-png" || mime_type == "image/jpg" || mime_type == "image/jpeg")
         {
-            var imglocation = unescape(document.location.pathname.substr(1));
-            imglocation = imglocation.substring(0,imglocation.lastIndexOf('/')+1);
-            imglocation='/'+imglocation+sugar_upload_dir;
-            embedImage='<img src='+imglocation+documentRevisionId+'>';
-            embedImage1='<img src=cid:'+documentRevisionId+' width="1" height="1" >';
+            embedImage='<img src="index.php?entryPoint=download&type=Documents&id='+documentRevisionId+'">';
             insert_variable(embedImage);
         }
         else{
@@ -713,30 +709,6 @@ function toggle_textarea() {
 
 ///////////////////////////////////////////////////////////////////////////////
 ////	EMAIL TEMPLATE CODE
-function fill_email(id) {
-	var where = "parent_id='" + id + "'";
-	var order = '';
-
-	if(id == '') {
-		// query based on template, contact_id0,related_to
-		if(! append) {
-			document.EditView.name.value  = '';
-			document.EditView.description.value = '';
-			document.EditView.description_html.value = '';
-		}
-		return;
-	}
-	call_json_method('EmailTemplates','retrieve','record='+id,'email_template_object', appendEmailTemplateJSON);
-	args = {"module":"Notes","where":where, "order":order};
-
-	if(typeof(global_rpcClient) == 'undefined') {
-		global_rpcClient = new SugarRPCClient();
-	}
-
-	req_id = global_rpcClient.call_method('get_full_list', args);
-	global_request_registry[req_id] = [ejo, 'display'];
-}
-
 function appendEmailTemplateJSON() {
 	// query based on template, contact_id0,related_to
 	if(document.EditView.name.value == '') { // cn: bug 7743, don't stomp populated Subject Line

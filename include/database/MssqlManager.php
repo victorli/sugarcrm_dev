@@ -88,30 +88,79 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 * Contributor(s): ______________________________________..
 ********************************************************************************/
 
+/**
+ * SQL Server (mssql) manager
+ */
 class MssqlManager extends DBManager
 {
     /**
      * @see DBManager::$dbType
      */
     public $dbType = 'mssql';
+    public $dbName = 'MsSQL';
+    public $variant = 'mssql';
+    public $label = 'LBL_MSSQL';
 
-	/**
-     * @see DBManager::$backendFunctions
+    protected $capabilities = array(
+        "affected_rows" => true,
+        "select_rows" => true,
+        'fulltext' => true,
+        'limit_subquery' => true,
+        "fix:expandDatabase" => true, // Support expandDatabase fix
+        "create_user" => true,
+        "create_db" => true,
+    );
+
+    /**
+     * Maximum length of identifiers
      */
-    protected $backendFunctions = array(
-        'free_result' => 'mssql_free_result',
-        'close'       => 'mssql_close',
-        'row_count'   => 'mssql_num_rows'
-        );
+    protected $maxNameLengths = array(
+        'table' => 128,
+        'column' => 128,
+        'index' => 128,
+        'alias' => 128
+    );
 
+    protected $type_map = array(
+            'int'      => 'int',
+            'double'   => 'float',
+            'float'    => 'float',
+            'uint'     => 'int',
+            'ulong'    => 'int',
+            'long'     => 'bigint',
+            'short'    => 'smallint',
+            'varchar'  => 'varchar',
+            'text'     => 'text',
+            'longtext' => 'text',
+            'date'     => 'datetime',
+            'enum'     => 'varchar',
+            'relate'   => 'varchar',
+            'multienum'=> 'text',
+            'html'     => 'text',
+            'datetime' => 'datetime',
+            'datetimecombo' => 'datetime',
+            'time'     => 'datetime',
+            'bool'     => 'bit',
+            'tinyint'  => 'tinyint',
+            'char'     => 'char',
+            'blob'     => 'image',
+            'longblob' => 'image',
+            'currency' => 'decimal(26,6)',
+            'decimal'  => 'decimal',
+            'decimal2' => 'decimal',
+            'id'       => 'varchar(36)',
+            'url'      => 'varchar',
+            'encrypt'  => 'varchar',
+            'file'     => 'varchar',
+	        'decimal_tpl' => 'decimal(%d, %d)',
+            );
 
-	/**
+    protected $connectOptions = null;
+
+    /**
      * @see DBManager::connect()
      */
-    public function connect(
-        array $configOptions = null,
-        $dieOnError = false
-        )
+    public function connect(array $configOptions = null, $dieOnError = false)
     {
         global $sugar_config;
 
@@ -124,17 +173,20 @@ class MssqlManager extends DBManager
         //set the text size and textlimit to max number so that blob columns are not truncated
         ini_set('mssql.textlimit','2147483647');
         ini_set('mssql.textsize','2147483647');
+        ini_set('mssql.charset','UTF-8');
 
+        if(!empty($configOptions['db_host_instance'])) {
+            $configOptions['db_host_instance'] = trim($configOptions['db_host_instance']);
+        }
         //set the connections parameters
-        $connect_param = '';
-        $configOptions['db_host_instance'] = trim($configOptions['db_host_instance']);
-        if (empty($configOptions['db_host_instance']))
+        if (empty($configOptions['db_host_instance'])) {
             $connect_param = $configOptions['db_host_name'];
-        else
+        } else {
             $connect_param = $configOptions['db_host_name']."\\".$configOptions['db_host_instance'];
+        }
 
         //create persistent connection
-        if ($sugar_config['dbconfigoption']['persistent'] == true) {
+        if ($this->getOption('persistent')) {
             $this->database =@mssql_pconnect(
                 $connect_param ,
                 $configOptions['db_user_name'],
@@ -151,17 +203,25 @@ class MssqlManager extends DBManager
             if(!$this->database){
                 $GLOBALS['log']->fatal("Could not connect to server ".$configOptions['db_host_name'].
                     " as ".$configOptions['db_user_name'].".");
-                sugar_die($GLOBALS['app_strings']['ERR_NO_DB']);
+                if($dieOnError) {
+                    sugar_die($GLOBALS['app_strings']['ERR_NO_DB']);
+                } else {
+                    return false;
+                }
             }
-            if($this->database && $sugar_config['dbconfigoption']['persistent'] == true){
+            if($this->database && $this->getOption('persistent')){
                 $_SESSION['administrator_error'] = "<B>Severe Performance Degradation: Persistent Database Connections "
                     . "not working.  Please set \$sugar_config['dbconfigoption']['persistent'] to false in your "
                     . "config.php file</B>";
             }
         }
         //make sure connection exists
-        if(!$this->database){
-            sugar_die($GLOBALS['app_strings']['ERR_NO_DB']);
+        if(!$this->database) {
+                if($dieOnError) {
+                    sugar_die($GLOBALS['app_strings']['ERR_NO_DB']);
+                } else {
+                    return false;
+                }
         }
 
         //select database
@@ -182,14 +242,25 @@ class MssqlManager extends DBManager
 			}
 			if(!$connected){
 			    $GLOBALS['log']->fatal( "Unable to select database {$configOptions['db_name']}");
-				sugar_die($GLOBALS['app_strings']['ERR_NO_DB']);
+                if($dieOnError) {
+                    if(isset($GLOBALS['app_strings']['ERR_NO_DB'])) {
+                        sugar_die($GLOBALS['app_strings']['ERR_NO_DB']);
+                    } else {
+                        sugar_die("Could not connect to the database. Please refer to sugarcrm.log for details.");
+                    }
+                } else {
+                    return false;
+                }
 			}
          }
 
-        if($this->checkError('Could Not Connect', $dieOnError))
+        if(!$this->checkError('Could Not Connect', $dieOnError))
             $GLOBALS['log']->info("connected to db");
 
+        $this->connectOptions = $configOptions;
+
         $GLOBALS['log']->info("Connect:".$this->database);
+        return true;
     }
 
 	/**
@@ -200,79 +271,31 @@ class MssqlManager extends DBManager
         return $this->getOne("SELECT @@VERSION as version");
 	}
 
-    /**
-     * @see DBManager::checkError()
-     */
-    public function checkError(
-        $msg = '',
-        $dieOnError = false
-        )
-    {
-    	if (parent::checkError($msg, $dieOnError))
-            return true;
-
-        $sqlmsg = mssql_get_last_message();
-        
-        $sqlpos = strpos($sqlmsg, 'Changed database context to');
-        $sqlpos2 = strpos($sqlmsg, 'Warning:');
-        $sqlpos3 = strpos($sqlmsg, 'Checking identity information:');
-        if ( $sqlpos !== false || $sqlpos2 !== false || $sqlpos3 !== false )
-            $sqlmsg = '';  // empty out sqlmsg if its either of the two error messages described above
-        else {
-        	global $app_strings;
-            //ERR_MSSQL_DB_CONTEXT: localized version of 'Changed database context to' message
-            if (empty($app_strings) or !isset($app_strings['ERR_MSSQL_DB_CONTEXT'])) {
-                //ignore the message from sql-server if $app_strings array is empty. This will happen
-                //only if connection if made before languge is set.
-                $GLOBALS['log']->debug("Ignoring this database message: " . $sqlmsg);
-                $sqlmsg = '';
-            }
-            else {
-                $sqlpos = strpos($sqlmsg, $app_strings['ERR_MSSQL_DB_CONTEXT']);
-                if ( $sqlpos !== false )
-                    $sqlmsg = '';
-            }
-        }
-
-        if ( strlen($sqlmsg) > 2 ) {
-        	$GLOBALS['log']->fatal("$msg: SQL Server error: " . $sqlmsg);
-            return true;
-        }
-
-        return false;
-	}
-
 	/**
      * @see DBManager::query()
 	 */
-	public function query(
-        $sql,
-        $dieOnError = false,
-        $msg = '',
-        $suppress = false
-        )
+	public function query($sql, $dieOnError = false, $msg = '', $suppress = false, $keepResult = false)
     {
+        if(is_array($sql)) {
+            return $this->queryArray($sql, $dieOnError, $msg, $suppress);
+        }
         // Flag if there are odd number of single quotes
         if ((substr_count($sql, "'") & 1))
             $GLOBALS['log']->error("SQL statement[" . $sql . "] has odd number of single quotes.");
 
-        $this->countQuery($sql);
+		$sql = $this->_appendN($sql);
+
         $GLOBALS['log']->info('Query:' . $sql);
         $this->checkConnection();
+        $this->countQuery($sql);
         $this->query_time = microtime(true);
 
         // Bug 34892 - Clear out previous error message by checking the @@ERROR global variable
-        $errorNumberHandle = mssql_query("SELECT @@ERROR",$this->database);
-		$errorNumber = array_shift(mssql_fetch_row($errorNumberHandle));
+		$errorNumber = $this->getOne("SELECT @@ERROR");
 
-        if ($suppress) {
-        }
-        else {
-            $result = @mssql_query($sql, $this->database);
-        }
+        $result = $suppress?@mssql_query($sql, $this->database):mssql_query($sql, $this->database);
 
         if (!$result) {
-
             // awu Bug 10657: ignoring mssql error message 'Changed database context to' - an intermittent
             // 				  and difficult to reproduce error. The message is only a warning, and does
             //				  not affect the functionality of the query
@@ -280,7 +303,7 @@ class MssqlManager extends DBManager
             $sqlpos = strpos($sqlmsg, 'Changed database context to');
 			$sqlpos2 = strpos($sqlmsg, 'Warning:');
 			$sqlpos3 = strpos($sqlmsg, 'Checking identity information:');
-            
+
 			if ($sqlpos !== false || $sqlpos2 !== false || $sqlpos3 !== false)		// if sqlmsg has 'Changed database context to', just log it
 				$GLOBALS['log']->debug($sqlmsg . ": " . $sql );
 			else {
@@ -291,7 +314,6 @@ class MssqlManager extends DBManager
 					echo 'SQL Error : ' . $sqlmsg;
 			}
         }
-        $this->lastmysqlrow = -1;
 
         $this->query_time = microtime(true) - $this->query_time;
         $GLOBALS['log']->info('Query Execution Time:'.$this->query_time);
@@ -311,11 +333,7 @@ class MssqlManager extends DBManager
      * @param  int    $count number of records to retrieve
      * @return string SQL statement
      */
-    private function handleUnionLimitQuery(
-        $sql,
-        $start,
-        $count
-        )
+    private function handleUnionLimitQuery($sql, $start, $count)
     {
         //set the start to 0, no negs
         if ($start < 0)
@@ -386,13 +404,12 @@ class MssqlManager extends DBManager
 
         //if start is 0, then just use a top query
         if($start == 0) {
-            $limitUnionSQL = "select top $count * from (" .$unionsql .") as top_count ".$unionOrderBy;
-        }
-        else {
+            $limitUnionSQL = "SELECT TOP $count * FROM (" .$unionsql .") as top_count ".$unionOrderBy;
+        } else {
             //if start is more than 0, then use top query in conjunction
             //with rownumber() function to create limit query.
-            $limitUnionSQL = "select top $count * from( select ROW_NUMBER() OVER ( order by "
-            .$rowNumOrderBy.") AS row_number, * from ("
+            $limitUnionSQL = "SELECT TOP $count * FROM( select ROW_NUMBER() OVER ( order by "
+            .$rowNumOrderBy.") AS row_number, * FROM ("
             .$unionsql .") As numbered) "
             . "As top_count_limit WHERE row_number > $start "
             .$unionOrderBy;
@@ -402,18 +419,14 @@ class MssqlManager extends DBManager
     }
 
 	/**
+	 * FIXME: verify and thoroughly test this code, these regexps look fishy
      * @see DBManager::limitQuery()
      */
-    public function limitQuery(
-        $sql,
-        $start,
-        $count,
-        $dieOnError = false,
-        $msg = '')
+    public function limitQuery($sql, $start, $count, $dieOnError = false, $msg = '', $execute = true)
     {
         $newSQL = $sql;
         $distinctSQLARRAY = array();
-        if (strpos($sql, "UNION") && !preg_match("/(\')(UNION).?(\')/i", $sql))
+        if (strpos($sql, "UNION") && !preg_match("/(')(UNION).?(')/i", $sql))
             $newSQL = $this->handleUnionLimitQuery($sql,$start,$count);
         else {
             if ($start < 0)
@@ -421,7 +434,7 @@ class MssqlManager extends DBManager
             $GLOBALS['log']->debug(print_r(func_get_args(),true));
             $this->lastsql = $sql;
             $matches = array();
-            preg_match('/^(.*SELECT )(.*?FROM.*WHERE)(.*)$/isxU',$sql, $matches);
+            preg_match('/^(.*SELECT )(.*?FROM.*WHERE)(.*)$/isU',$sql, $matches);
             if (!empty($matches[3])) {
                 if ($start == 0) {
                     $match_two = strtolower($matches[2]);
@@ -455,13 +468,13 @@ class MssqlManager extends DBManager
                             $newSQL = $matches[1] . " TOP $count " . $matches[2] . $matches[3];
                         }
                     }
-                }
-                else {
+                } else {
                     $orderByMatch = array();
                     preg_match('/^(.*)(ORDER BY)(.*)$/is',$matches[3], $orderByMatch);
 
                     //if there is a distinct clause, parse sql string as we will have to insert the rownumber
                     //for paging, AFTER the distinct clause
+                    $grpByStr = '';
                     $hasDistinct = strpos(strtolower($matches[0]), "distinct");
                     if ($hasDistinct) {
                         $matches_sql = strtolower($matches[0]);
@@ -487,12 +500,11 @@ class MssqlManager extends DBManager
                             }
 
                             // strip off last closing parathese from the where clause
-                            $distinctSQLARRAY[1] = preg_replace("/\)\s$/"," ",$distinctSQLARRAY[1]);
+                            $distinctSQLARRAY[1] = preg_replace('/\)\s$/',' ',$distinctSQLARRAY[1]);
                         }
 
                         //place group by string into array
                         $grpByArr = explode(',', $distinctSQLARRAY[0]);
-                        $grpByStr = '';
                         $first = true;
                         //remove the aliases for each group by element, sql server doesnt like these in group by.
                         foreach ($grpByArr as $gb) {
@@ -517,8 +529,7 @@ class MssqlManager extends DBManager
                                 if ($first) {
                                     $grpByStr .= " $gb";
                                     $first = false;
-                                }
-                                else {
+                                } else {
                                     $grpByStr .= ", $gb";
                                 }
                             }
@@ -556,6 +567,8 @@ class MssqlManager extends DBManager
                             $where_pos = strpos($upperQuery, "WHERE");
                             $tablename = trim(substr($upperQuery,$from_pos, $where_pos - $from_pos));
                         }else{
+                            // FIXME: this looks really bad. Probably source for tons of bug
+                            // needs to be removed
                             $tablename = $this->getTableNameFromModuleName($_REQUEST['module'],$sql);
                         }
                         //if there is a distinct clause, form query with rownumber after distinct
@@ -583,9 +596,13 @@ class MssqlManager extends DBManager
         }
 
         $GLOBALS['log']->debug('Limit Query: ' . $newSQL);
-        $result =  $this->query($newSQL, $dieOnError, $msg);
-        $this->dump_slow_queries($newSQL);
-        return $result;
+        if($execute) {
+            $result =  $this->query($newSQL, $dieOnError, $msg);
+            $this->dump_slow_queries($newSQL);
+            return $result;
+        } else {
+            return $newSQL;
+        }
     }
 
 
@@ -599,15 +616,9 @@ class MssqlManager extends DBManager
      * @param  string $strip_end Ending character
      * @param  string $patt      Optional, pattern to
      */
-    private function removePatternFromSQL(
-        $p_sql,
-        $strip_beg,
-        $strip_end,
-        $patt = 'patt')
+    private function removePatternFromSQL($p_sql, $strip_beg, $strip_end, $patt = 'patt')
     {
         //strip all single quotes out
-        $beg_sin = 0;
-        $sec_sin = 0;
         $count = substr_count ( $p_sql, $strip_beg);
         $increment = 1;
         if ($strip_beg != $strip_end)
@@ -619,8 +630,8 @@ class MssqlManager extends DBManager
         while ($i<$count && $offset<strlen($p_sql)) {
             if ($offset > strlen($p_sql))
             {
-				break;   
-            }     	
+				break;
+            }
 
             $beg_sin = strpos($p_sql, $strip_beg, $offset);
             if (!$beg_sin)
@@ -637,7 +648,6 @@ class MssqlManager extends DBManager
                     $strip_array[$patt.$i] = substr($p_sql,$nested_pos+$beg_sin,$sec_sin - ($nested_pos+$beg_sin)+1);
                     $p_sql = substr($p_sql, 0, $nested_pos+$beg_sin) . " ##". $patt.$i."## " . substr($p_sql, $sec_sin+1);
                     $i = $i + 1;
-                    $beg_sin = $nested_pos;
                     continue;
                 }
             }
@@ -659,10 +669,7 @@ class MssqlManager extends DBManager
      * @param  array  $pattern_array
      * @return string
      */
-	private function addPatternToSQL(
-        $token,
-        array $pattern_array
-        )
+	private function addPatternToSQL($token, array $pattern_array)
     {
         //strip all single quotes out
         $pattern_array = array_reverse($pattern_array);
@@ -681,10 +688,7 @@ class MssqlManager extends DBManager
      * @param  string $alias
      * @return string
      */
-	private function getAliasFromSQL(
-        $sql,
-        $alias
-        )
+	private function getAliasFromSQL($sql, $alias)
     {
         $matches = array();
         preg_match('/^(.*SELECT)(.*?FROM.*WHERE)(.*)$/isU',$sql, $matches);
@@ -722,10 +726,7 @@ class MssqlManager extends DBManager
      * @param  string $orderMatch
      * @return string
      */
-    private function findColumnByAlias(
-        $sql,
-        $orderMatch
-        )
+    private function findColumnByAlias($sql, $orderMatch)
     {
         //change case to lowercase
         $sql = strtolower($sql);
@@ -779,10 +780,7 @@ class MssqlManager extends DBManager
      * @param  string $orig_order_match
      * @return string
      */
-    private function returnOrderBy(
-        $sql,
-        $orig_order_match
-        )
+    private function returnOrderBy($sql, $orig_order_match)
     {
         $sql = strtolower($sql);
         $orig_order_match = trim($orig_order_match);
@@ -844,7 +842,7 @@ class MssqlManager extends DBManager
             $alias_beg_pos = 0;
             if(strpos($psql, " as "))
                 $alias_beg_pos = strpos($psql, " as ");
-               
+
             // Bug # 44923 - This breaks the query and does not properly filter isnull
             // as there are other functions such as ltrim and rtrim.
             /* else if (strncasecmp($psql, 'isnull', 6) != 0)
@@ -869,10 +867,7 @@ class MssqlManager extends DBManager
      * @param  string $sql        SQL statement
      * @return string table name
      */
-    private function getTableNameFromModuleName(
-        $module_str,
-        $sql
-        )
+    private function getTableNameFromModuleName($module_str, $sql)
     {
 
         global $beanList, $beanFiles;
@@ -966,10 +961,7 @@ class MssqlManager extends DBManager
 	/**
      * @see DBManager::getFieldsArray()
      */
-	public function getFieldsArray(
-        &$result,
-        $make_lower_case = false
-        )
+	public function getFieldsArray($result, $make_lower_case = false)
 	{
 		$field_array = array();
 
@@ -1000,52 +992,10 @@ class MssqlManager extends DBManager
         return $this->getOne("SELECT @@ROWCOUNT");
     }
 
-    /**
-     * @see DBManager::describeField()
-     */
-	protected function describeField(
-        $name,
-        $tablename
-        )
-    {
-        global $table_descriptions;
-        if(isset($table_descriptions[$tablename]) && isset($table_descriptions[$tablename][$name])){
-            return 	$table_descriptions[$tablename][$name];
-        }
-        $table_descriptions[$tablename] = array();
-
-        $sql = sprintf( "SELECT COLUMN_NAME AS Field
-				, DATA_TYPE + CASE WHEN CHARACTER_MAXIMUM_LENGTH IS NOT NULL
-                        THEN '(' + RTRIM(CAST(CHARACTER_MAXIMUM_LENGTH AS CHAR)) + ')' 
-						ELSE '' END as 'Type'
-				, CHARACTER_MAXIMUM_LENGTH
-				, IS_NULLABLE AS 'Null'
-				, CASE WHEN COLUMN_DEFAULT LIKE '((0))' THEN '(''0'')' ELSE COLUMN_DEFAULT END as 'Default'
-			FROM INFORMATION_SCHEMA.COLUMNS
-			WHERE TABLE_NAME = '%s'",
-			$tablename
-        );
-
-        $result = $this->query($sql);
-        while ($row = $this->fetchByAssoc($result) )
-            $table_descriptions[$tablename][$row['Field']] = $row;
-
-        if (isset($table_descriptions[$tablename][$name]))
-            return 	$table_descriptions[$tablename][$name];
-
-        return array();
-    }
-
-
-
 	/**
      * @see DBManager::fetchByAssoc()
      */
-    public function fetchByAssoc(
-        &$result,
-        $rowNum = -1,
-        $encode = true
-        )
+    public function fetchByAssoc($result, $rowNum = -1, $encode = true)
     {
         if (!$result)
             return false;
@@ -1064,7 +1014,7 @@ class MssqlManager extends DBManager
                 }
             }
 
-            if($encode && $this->encode&& is_array($row))
+            if($encode && $this->encode && is_array($row))
                 return array_map('to_html', $row);
 
             return $row;
@@ -1076,7 +1026,6 @@ class MssqlManager extends DBManager
 			@mssql_data_seek($result, $rowNum);
         }
 
-        $this->lastmysqlrow = $rowNum;
         $row = @mssql_fetch_assoc($result);
         if($encode && $this->encode && is_array($row))
             return array_map('to_html', $row);
@@ -1086,95 +1035,47 @@ class MssqlManager extends DBManager
     /**
      * @see DBManager::quote()
      */
-    public function quote(
-        $string,
-        $isLike = true
-        )
+    public function quote($string)
     {
-        return $string = str_replace("'","''", parent::quote($string));
+        if(is_array($string)) {
+            return $this->arrayQuote($string);
+        }
+        return str_replace("'","''", $this->quoteInternal($string));
     }
-
-    /**
-     * @see DBManager::quoteForEmail()
-     */
-    public function quoteForEmail(
-        $string,
-        $isLike = true
-        )
-    {
-        return str_replace("'","''", $string);
-    }
-
 
     /**
      * @see DBManager::tableExists()
      */
-    public function tableExists(
-        $tableName
-        )
+    public function tableExists($tableName)
     {
         $GLOBALS['log']->info("tableExists: $tableName");
 
         $this->checkConnection();
-        $result = $this->query(
-            "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_NAME='".$tableName."'");
+        $result = $this->getOne(
+            "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_NAME=".$this->quoted($tableName));
 
-        $rowCount = $this->getRowCount($result);
-        $this->freeResult($result);
-        return ($rowCount == 0) ? false : true;
+        return !empty($result);
     }
 
     /**
-     * @see DBManager::addIndexes()
+     * Get tables like expression
+     * @param $like string
+     * @return array
      */
-    public function addIndexes(
-        $tablename,
-        $indexes,
-        $execute = true
-        )
+    public function tablesLike($like)
     {
-    	$alters = $this->helper->indexSQL($tablename,array(),$indexes);
-    	if ($execute)
-            $this->query($alters);
-
-        return $alters;
-    }
-
-    /**
-     * @see DBManager::dropIndexes()
-     */
-    public function dropIndexes(
-        $tablename,
-        $indexes,
-        $execute = true
-        )
-    {
-        $sql = '';
-        foreach ($indexes as $index) {
-            if ( !empty($sql) ) $sql .= ";";
-            $name = $index['name'];
-            if($execute)
-                unset($GLOBALS['table_descriptions'][$tablename]['indexes'][$name]);
-            if ($index['type'] == 'primary')
-                $sql .= "ALTER TABLE $tablename DROP CONSTRAINT $name";
-            else
-                $sql .= "DROP INDEX $name on $tablename";
+        if ($this->getDatabase()) {
+            $tables = array();
+            $r = $this->query('SELECT TABLE_NAME tn FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE=\'BASE TABLE\' AND TABLE_NAME LIKE '.$this->quoted($like));
+            if (!empty($r)) {
+                while ($a = $this->fetchByAssoc($r)) {
+                    $row = array_values($a);
+					$tables[]=$row[0];
+                }
+                return $tables;
+            }
         }
-        if (!empty($sql))
-            if($execute)
-                $this->query($sql);
-
-        return $sql;
-    }
-
-    /**
-     * @see DBManager::checkQuery()
-     */
-    protected function checkQuery(
-        $sql
-        )
-    {
-        return true;
+        return false;
     }
 
     /**
@@ -1204,7 +1105,7 @@ class MssqlManager extends DBManager
      * Indexing would always occur after a fresh sql server install, so this code creates
      * a catalog and table with full text index.
      */
-    public function wakeupFTS()
+    public function full_text_indexing_setup()
     {
         $GLOBALS['log']->debug('MSSQL about to wakeup FTS');
 
@@ -1252,76 +1153,950 @@ class MssqlManager extends DBManager
                     sleep(3);
                     $this->query($q);
                 }
-
-
+                $this->create_default_full_text_catalog();
         }
 
         return false; // no database available
     }
 
+    protected $date_formats = array(
+        '%Y-%m-%d' => 10,
+        '%Y-%m' => 7,
+        '%Y' => 4,
+    );
+
     /**
      * @see DBManager::convert()
      */
-    public function convert(
-        $string,
-        $type,
-        array $additional_parameters = array(),
-        array $additional_parameters_oracle_only = array()
-        )
+    public function convert($string, $type, array $additional_parameters = array())
     {
         // convert the parameters array into a comma delimited string
-        $additional_parameters_string = '';
-        if (!empty($additional_parameters))
+        if (!empty($additional_parameters)) {
             $additional_parameters_string = ','.implode(',',$additional_parameters);
+        } else {
+            $additional_parameters_string = '';
+        }
+        $all_parameters = $additional_parameters;
+        if(is_array($string)) {
+            $all_parameters = array_merge($string, $all_parameters);
+        } elseif (!is_null($string)) {
+            array_unshift($all_parameters, $string);
+        }
 
-        switch ($type) {
-        case 'today': return "GETDATE()";
-        case 'left': return "LEFT($string".$additional_parameters_string.")";
-        case 'date_format':
-            if(!empty($additional_parameters) && in_array("'%Y-%m'", $additional_parameters))
-               return "CONVERT(varchar(7),". $string . ",120)";
-            else
-               return "CONVERT(varchar(10),". $string . ",120)";
-        case 'IFNULL': return "ISNULL($string".$additional_parameters_string.")";
-        case 'CONCAT': return "$string+".implode("+",$additional_parameters);
-        case 'text2char': return "CAST($string AS varchar(8000))";
+        switch (strtolower($type)) {
+            case 'today':
+                return "GETDATE()";
+            case 'left':
+                return "LEFT($string$additional_parameters_string)";
+            case 'date_format':
+                if(!empty($additional_parameters[0]) && $additional_parameters[0][0] == "'") {
+                    $additional_parameters[0] = trim($additional_parameters[0], "'");
+                }
+                if(!empty($additional_parameters) && isset($this->date_formats[$additional_parameters[0]])) {
+                    $len = $this->date_formats[$additional_parameters[0]];
+                    return "LEFT(CONVERT(varchar($len),". $string . ",120),$len)";
+                } else {
+                   return "LEFT(CONVERT(varchar(10),". $string . ",120),10)";
+                }
+            case 'ifnull':
+                if(empty($additional_parameters_string)) {
+                    $additional_parameters_string = ",''";
+                }
+                return "ISNULL($string$additional_parameters_string)";
+            case 'concat':
+                return implode("+",$all_parameters);
+            case 'text2char':
+                return "CAST($string AS varchar(8000))";
+            case 'quarter':
+                return "DATEPART(quarter, $string)";
+            case "length":
+                return "LEN($string)";
+            case 'month':
+                return "MONTH($string)";
+            case 'add_date':
+                return "DATEADD({$additional_parameters[1]},{$additional_parameters[0]},$string)";
+            case 'add_time':
+                return "DATEADD(hh, {$additional_parameters[0]}, DATEADD(mi, {$additional_parameters[1]}, $string))";
         }
 
         return "$string";
     }
 
     /**
-     * @see DBManager::concat()
+     * @see DBManager::fromConvert()
      */
-    public function concat(
-        $table,
-        array $fields
-        )
+    public function fromConvert($string, $type)
     {
-        $ret = '';
-
-        foreach ( $fields as $index => $field )
-			if (empty($ret))
-			    $ret =  db_convert($table.".".$field,'IFNULL', array("''"));
-			else
-			    $ret .=	" + ' ' + ".db_convert($table.".".$field,'IFNULL', array("''"));
-
-		return empty($ret)?$ret:"LTRIM(RTRIM($ret))";
+        switch($type) {
+            case 'datetimecombo':
+            case 'datetime': return substr($string, 0,19);
+            case 'date': return substr($string, 0, 10);
+            case 'time': return substr($string, 11);
+		}
+		return $string;
     }
 
     /**
-     * @see DBManager::fromConvert()
+     * @see DBManager::createTableSQLParams()
      */
-    public function fromConvert(
-        $string,
-        $type)
+	public function createTableSQLParams($tablename, $fieldDefs, $indices)
     {
-        switch($type) {
-        case 'datetime': return substr($string, 0,19);
-        case 'date': return substr($string, 0,11);
-        case 'time': return substr($string, 11);
+        if (empty($tablename) || empty($fieldDefs))
+            return '';
+
+        $columns = $this->columnSQLRep($fieldDefs, false, $tablename);
+        if (empty($columns))
+            return '';
+
+        return "CREATE TABLE $tablename ($columns)";
+    }
+
+    /**
+     * Does this type represent text (i.e., non-varchar) value?
+     * @param string $type
+     */
+    public function isTextType($type)
+    {
+        $type = strtolower($type);
+        return in_array($this->type_map[$type], array('ntext','text','image'));
+    }
+
+    /**
+     * Return representation of an empty value depending on type
+     * @param string $type
+     */
+    public function emptyValue($type)
+    {
+        $ctype = $this->getColumnType($type);
+        if($ctype == "datetime") {
+            return $this->convert($this->quoted("1970-01-01 00:00:00"), "datetime");
+        }
+        if($ctype == "date") {
+            return $this->convert($this->quoted("1970-01-01"), "datetime");
+        }
+        if($ctype == "time") {
+            return $this->convert($this->quoted("00:00:00"), "time");
+        }
+        return parent::emptyValue($type);
+    }
+
+    public function renameColumnSQL($tablename, $column, $newname)
+    {
+        return "SP_RENAME '$tablename.$column', '$newname', 'COLUMN'";
+    }
+
+    /**
+     * Returns the SQL Alter table statment
+     *
+     * MSSQL has a quirky T-SQL alter table syntax. Pay special attention to the
+     * modify operation
+     * @param string $action
+     * @param array  $def
+     * @param bool   $ignorRequired
+     * @param string $tablename
+     */
+    protected function alterSQLRep($action, array $def, $ignoreRequired, $tablename)
+    {
+        switch($action){
+        case 'add':
+             $f_def=$this->oneColumnSQLRep($def, $ignoreRequired,$tablename,false);
+            return "ADD " . $f_def;
+            break;
+        case 'drop':
+            return "DROP COLUMN " . $def['name'];
+            break;
+        case 'modify':
+            //You cannot specify a default value for a column for MSSQL
+            $f_def  = $this->oneColumnSQLRep($def, $ignoreRequired,$tablename, true);
+            $f_stmt = "ALTER COLUMN ".$f_def['name'].' '.$f_def['colType'].' '.
+                        $f_def['required'].' '.$f_def['auto_increment']."\n";
+            if (!empty( $f_def['default']))
+                $f_stmt .= " ALTER TABLE " . $tablename .  " ADD  ". $f_def['default'] . " FOR " . $def['name'];
+            return $f_stmt;
+            break;
+        default:
+            return '';
+    	}
+    }
+
+    /**
+     * @see DBManager::changeColumnSQL()
+     *
+     * MSSQL uses a different syntax than MySQL for table altering that is
+     * not quite as simplistic to implement...
+     */
+    protected function changeColumnSQL($tablename, $fieldDefs, $action, $ignoreRequired = false)
+    {
+        $sql=$sql2='';
+        $constraints = $this->get_field_default_constraint_name($tablename);
+        $columns = array();
+        if ($this->isFieldArray($fieldDefs)) {
+            foreach ($fieldDefs as $def)
+      		{
+          		//if the column is being modified drop the default value
+          		//constraint if it exists. alterSQLRep will add the constraint back
+          		if (!empty($constraints[$def['name']])) {
+          			$sql.=" ALTER TABLE " . $tablename . " DROP CONSTRAINT " . $constraints[$def['name']];
+          		}
+          		//check to see if we need to drop related indexes before the alter
+          		$indices = $this->get_indices($tablename);
+                foreach ( $indices as $index ) {
+                    if ( in_array($def['name'],$index['fields']) ) {
+                        $sql  .= ' ' . $this->add_drop_constraint($tablename,$index,true).' ';
+                        $sql2 .= ' ' . $this->add_drop_constraint($tablename,$index,false).' ';
+                    }
+                }
+
+          		$columns[] = $this->alterSQLRep($action, $def, $ignoreRequired,$tablename);
+      		}
+        }
+        else {
+            //if the column is being modified drop the default value
+      		//constraint if it exists. alterSQLRep will add the constraint back
+      		if (!empty($constraints[$fieldDefs['name']])) {
+      			$sql.=" ALTER TABLE " . $tablename . " DROP CONSTRAINT " . $constraints[$fieldDefs['name']];
+      		}
+      		//check to see if we need to drop related indexes before the alter
+            $indices = $this->get_indices($tablename);
+            foreach ( $indices as $index ) {
+                if ( in_array($fieldDefs['name'],$index['fields']) ) {
+                    $sql  .= ' ' . $this->add_drop_constraint($tablename,$index,true).' ';
+                    $sql2 .= ' ' . $this->add_drop_constraint($tablename,$index,false).' ';
+                }
+            }
+
+
+          	$columns[] = $this->alterSQLRep($action, $fieldDefs, $ignoreRequired,$tablename);
+        }
+
+        $columns = implode(", ", $columns);
+        $sql .= " ALTER TABLE $tablename $columns " . $sql2;
+
+        return $sql;
+    }
+
+    protected function setAutoIncrement($table, $field_name)
+    {
+		return "identity(1,1)";
+	}
+
+    /**
+     * @see DBManager::setAutoIncrementStart()
+     */
+    public function setAutoIncrementStart($table, $field_name, $start_value)
+    {
+        if($start_value > 1)
+            $start_value -= 1;
+		$this->query("DBCC CHECKIDENT ('$table', RESEED, $start_value)");
+        return true;
+    }
+
+	/**
+     * @see DBManager::getAutoIncrement()
+     */
+    public function getAutoIncrement($table, $field_name)
+    {
+		$result = $this->getOne("select IDENT_CURRENT('$table') + IDENT_INCR ( '$table' ) as 'Auto_increment'");
+        return $result;
+    }
+
+   	/**
+     * @see DBManager::get_indices()
+     */
+    public function get_indices($tablename)
+    {
+        //find all unique indexes and primary keys.
+        $query = <<<EOSQL
+SELECT LEFT(so.[name], 30) TableName,
+        LEFT(si.[name], 50) 'Key_name',
+        LEFT(sik.[keyno], 30) Sequence,
+        LEFT(sc.[name], 30) Column_name,
+		isunique = CASE
+            WHEN si.status & 2 = 2 AND so.xtype != 'PK' THEN 1
+            ELSE 0
+        END
+    FROM sysindexes si
+        INNER JOIN sysindexkeys sik
+            ON (si.[id] = sik.[id] AND si.indid = sik.indid)
+        INNER JOIN sysobjects so
+            ON si.[id] = so.[id]
+        INNER JOIN syscolumns sc
+            ON (so.[id] = sc.[id] AND sik.colid = sc.colid)
+        INNER JOIN sysfilegroups sfg
+            ON si.groupid = sfg.groupid
+    WHERE so.[name] = '$tablename'
+    ORDER BY Key_name, Sequence, Column_name
+EOSQL;
+        $result = $this->query($query);
+
+        $indices = array();
+        while (($row=$this->fetchByAssoc($result)) != null) {
+            $index_type = 'index';
+            if ($row['Key_name'] == 'PRIMARY')
+                $index_type = 'primary';
+            elseif ($row['isunique'] == 1 )
+                $index_type = 'unique';
+            $name = strtolower($row['Key_name']);
+            $indices[$name]['name']     = $name;
+            $indices[$name]['type']     = $index_type;
+            $indices[$name]['fields'][] = strtolower($row['Column_name']);
+        }
+        return $indices;
+    }
+
+    /**
+     * @see DBManager::get_columns()
+     */
+    public function get_columns($tablename)
+    {
+        //find all unique indexes and primary keys.
+        $result = $this->query("sp_columns $tablename");
+
+        $columns = array();
+        while (($row=$this->fetchByAssoc($result)) !=null) {
+            $column_name = strtolower($row['COLUMN_NAME']);
+            $columns[$column_name]['name']=$column_name;
+            $columns[$column_name]['type']=strtolower($row['TYPE_NAME']);
+            if ( $row['TYPE_NAME'] == 'decimal' ) {
+                $columns[$column_name]['len']=strtolower($row['PRECISION']);
+                $columns[$column_name]['len'].=','.strtolower($row['SCALE']);
+            }
+			elseif ( in_array($row['TYPE_NAME'],array('nchar','nvarchar')) )
+				$columns[$column_name]['len']=strtolower($row['PRECISION']);
+            elseif ( !in_array($row['TYPE_NAME'],array('datetime','text')) )
+                $columns[$column_name]['len']=strtolower($row['LENGTH']);
+            if ( stristr($row['TYPE_NAME'],'identity') ) {
+                $columns[$column_name]['auto_increment'] = '1';
+                $columns[$column_name]['type']=str_replace(' identity','',strtolower($row['TYPE_NAME']));
+            }
+
+            if (!empty($row['IS_NULLABLE']) && $row['IS_NULLABLE'] == 'NO' && (empty($row['KEY']) || !stristr($row['KEY'],'PRI')))
+                $columns[strtolower($row['COLUMN_NAME'])]['required'] = 'true';
+
+            $column_def = 1;
+            if ( strtolower($tablename) == 'relationships' ) {
+                $column_def = $this->getOne("select cdefault from syscolumns where id = object_id('relationships') and name = '$column_name'");
+            }
+            if ( $column_def != 0 && ($row['COLUMN_DEF'] != null)) {	// NOTE Not using !empty as an empty string may be a viable default value.
+                $matches = array();
+                $row['COLUMN_DEF'] = html_entity_decode($row['COLUMN_DEF'],ENT_QUOTES);
+                if ( preg_match('/\([\(|\'](.*)[\)|\']\)/i',$row['COLUMN_DEF'],$matches) )
+                    $columns[$column_name]['default'] = $matches[1];
+                elseif ( preg_match('/\(N\'(.*)\'\)/i',$row['COLUMN_DEF'],$matches) )
+                    $columns[$column_name]['default'] = $matches[1];
+                else
+                    $columns[$column_name]['default'] = $row['COLUMN_DEF'];
+            }
+        }
+        return $columns;
+    }
+
+
+    /**
+     * Get FTS catalog name for current DB
+     */
+    protected function ftsCatalogName()
+    {
+        if(isset($this->connectOptions['db_name'])) {
+            return $this->connectOptions['db_name']."_fts_catalog";
+        }
+        return 'sugar_fts_catalog';
+    }
+
+    /**
+     * @see DBManager::add_drop_constraint()
+     */
+    public function add_drop_constraint($table, $definition, $drop = false)
+    {
+        $type         = $definition['type'];
+        $fields       = is_array($definition['fields'])?implode(',',$definition['fields']):$definition['fields'];
+        $name         = $definition['name'];
+        $sql          = '';
+
+        switch ($type){
+        // generic indices
+        case 'index':
+        case 'alternate_key':
+            if ($drop)
+                $sql = "DROP INDEX {$name} ON {$table}";
+            else
+                $sql = "CREATE INDEX {$name} ON {$table} ({$fields})";
+            break;
+        case 'clustered':
+            if ($drop)
+                $sql = "DROP INDEX {$name} ON {$table}";
+            else
+                $sql = "CREATE CLUSTERED INDEX $name ON $table ($fields)";
+            break;
+            // constraints as indices
+        case 'unique':
+            if ($drop)
+                $sql = "ALTER TABLE {$table} DROP CONSTRAINT $name";
+            else
+                $sql = "ALTER TABLE {$table} ADD CONSTRAINT {$name} UNIQUE ({$fields})";
+            break;
+        case 'primary':
+            if ($drop)
+                $sql = "ALTER TABLE {$table} DROP PRIMARY KEY";
+            else
+                $sql = "ALTER TABLE {$table} ADD CONSTRAINT {$name} PRIMARY KEY ({$fields})";
+            break;
+        case 'foreign':
+            if ($drop)
+                $sql = "ALTER TABLE {$table} DROP FOREIGN KEY ({$fields})";
+            else
+                $sql = "ALTER TABLE {$table} ADD CONSTRAINT {$name}  FOREIGN KEY ({$fields}) REFERENCES {$definition['foreignTable']}({$definition['foreignFields']})";
+            break;
+        case 'fulltext':
+            if ($this->full_text_indexing_enabled() && $drop) {
+                $sql = "DROP FULLTEXT INDEX ON {$table}";
+            } elseif ($this->full_text_indexing_enabled()) {
+                $catalog_name=$this->ftsCatalogName();
+                if ( isset($definition['catalog_name']) && $definition['catalog_name'] != 'default')
+                    $catalog_name = $definition['catalog_name'];
+
+                $language = "Language 1033";
+                if (isset($definition['language']) && !empty($definition['language']))
+                    $language = "Language " . $definition['language'];
+
+                $key_index = $definition['key_index'];
+
+                $change_tracking = "auto";
+                if (isset($definition['change_tracking']) && !empty($definition['change_tracking']))
+                    $change_tracking = $definition['change_tracking'];
+
+                $sql = " CREATE FULLTEXT INDEX ON $table ($fields $language) KEY INDEX $key_index ON $catalog_name WITH CHANGE_TRACKING $change_tracking" ;
+            }
+            break;
+        }
+        return $sql;
+    }
+
+    /**
+     * Returns true if Full Text Search is installed
+     *
+     * @return bool
+     */
+    public function full_text_indexing_installed()
+    {
+        $ftsChckRes = $this->getOne("SELECT FULLTEXTSERVICEPROPERTY('IsFulltextInstalled') as fts");
+        return !empty($ftsChckRes);
+    }
+
+    /**
+     * @see DBManager::full_text_indexing_enabled()
+     */
+    protected function full_text_indexing_enabled($dbname = null)
+    {
+        // check to see if we already have install setting in session
+    	if(!isset($_SESSION['IsFulltextInstalled']))
+            $_SESSION['IsFulltextInstalled'] = $this->full_text_indexing_installed();
+
+        // check to see if FTS Indexing service is installed
+        if(empty($_SESSION['IsFulltextInstalled']))
+            return false;
+
+        // grab the dbname if it was not passed through
+		if (empty($dbname)) {
+			global $sugar_config;
+			$dbname = $sugar_config['dbconfig']['db_name'];
+		}
+        //we already know that Indexing service is installed, now check
+        //to see if it is enabled
+		$res = $this->getOne("SELECT DATABASEPROPERTY('$dbname', 'IsFulltextEnabled') ftext");
+        return !empty($res);
+	}
+
+    /**
+     * Creates default full text catalog
+     */
+	protected function create_default_full_text_catalog()
+    {
+		if ($this->full_text_indexing_enabled()) {
+		    $catalog = $this->ftsCatalogName();
+            $GLOBALS['log']->debug("Creating the default catalog for full-text indexing, $catalog");
+
+            //drop catalog if exists.
+			$ret = $this->query("
+                if not exists(
+                    select *
+                        from sys.fulltext_catalogs
+                        where name ='$catalog'
+                        )
+                CREATE FULLTEXT CATALOG $catalog");
+
+			if (empty($ret)) {
+				$GLOBALS['log']->error("Error creating default full-text catalog, $catalog");
+			}
+		}
+	}
+
+    /**
+     * Function returns name of the constraint automatically generated by sql-server.
+     * We request this for default, primary key, required
+     *
+     * @param  string $table
+     * @param  string $column
+     * @return string
+     */
+	private function get_field_default_constraint_name($table, $column = null)
+    {
+        static $results = array();
+
+        if ( empty($column) && isset($results[$table]) )
+            return $results[$table];
+
+        $query = <<<EOQ
+select s.name, o.name, c.name dtrt, d.name ctrt
+    from sys.default_constraints as d
+        join sys.objects as o
+            on o.object_id = d.parent_object_id
+        join sys.columns as c
+            on c.object_id = o.object_id and c.column_id = d.parent_column_id
+        join sys.schemas as s
+            on s.schema_id = o.schema_id
+    where o.name = '$table'
+EOQ;
+        if ( !empty($column) )
+            $query .= " and c.name = '$column'";
+        $res = $this->query($query);
+        if ( !empty($column) ) {
+            $row = $this->fetchByAssoc($res);
+            if (!empty($row))
+                return $row['ctrt'];
+        }
+        else {
+            $returnResult = array();
+            while ( $row = $this->fetchByAssoc($res) )
+                $returnResult[$row['dtrt']] = $row['ctrt'];
+            $results[$table] = $returnResult;
+            return $returnResult;
+        }
+
+        return null;
+	}
+
+    /**
+     * @see DBManager::massageFieldDef()
+     */
+    public function massageFieldDef(&$fieldDef, $tablename)
+    {
+        parent::massageFieldDef($fieldDef,$tablename);
+
+        if ($fieldDef['type'] == 'int')
+            $fieldDef['len'] = '4';
+
+        if(empty($fieldDef['len']))
+        {
+            switch($fieldDef['type']) {
+                case 'bit'      :
+                case 'bool'     : $fieldDef['len'] = '1'; break;
+                case 'smallint' : $fieldDef['len'] = '2'; break;
+                case 'float'    : $fieldDef['len'] = '8'; break;
+                case 'varchar'  :
+                case 'nvarchar' : if(!in_array($fieldDef['dbType'],array('text','ntext')))
+                                      $fieldDef['len'] = '255';
+                                  else
+                                      $fieldDef['len'] = 'max'; // text or ntext
+                                  break;
+                case 'image'    : $fieldDef['len'] = '2147483647'; break;
+                case 'ntext'    : $fieldDef['len'] = '2147483646'; break;   // Note: this is from legacy code, don't know if this is correct
+            }
+        }
+        if($fieldDef['type'] == 'decimal'
+           && empty($fieldDef['precision'])
+           && !strpos($fieldDef['len'], ','))
+        {
+             $fieldDef['len'] .= ',0'; // Adding 0 precision if it is not specified
+        }
+
+        if(empty($fieldDef['default'])
+            && in_array($fieldDef['type'],array('bit','bool')))
+        {
+            $fieldDef['default'] = '0';
+        }
+		if (isset($fieldDef['required']) && $fieldDef['required'] && !isset($fieldDef['default']) )
+			$fieldDef['default'] = '';
+//        if ($fieldDef['type'] == 'bit' && empty($fieldDef['len']) )
+//            $fieldDef['len'] = '1';
+//		if ($fieldDef['type'] == 'bool' && empty($fieldDef['len']) )
+//            $fieldDef['len'] = '1';
+//        if ($fieldDef['type'] == 'float' && empty($fieldDef['len']) )
+//            $fieldDef['len'] = '8';
+//        if ($fieldDef['type'] == 'varchar' && empty($fieldDef['len']) )
+//            $fieldDef['len'] = '255';
+//		if ($fieldDef['type'] == 'nvarchar' && empty($fieldDef['len']) )
+//            $fieldDef['len'] = '255';
+//        if ($fieldDef['type'] == 'image' && empty($fieldDef['len']) )
+//            $fieldDef['len'] = '2147483647';
+//        if ($fieldDef['type'] == 'ntext' && empty($fieldDef['len']) )
+//            $fieldDef['len'] = '2147483646';
+//        if ($fieldDef['type'] == 'smallint' && empty($fieldDef['len']) )
+//            $fieldDef['len'] = '2';
+//        if ($fieldDef['type'] == 'bit' && empty($fieldDef['default']) )
+//            $fieldDef['default'] = '0';
+//		if ($fieldDef['type'] == 'bool' && empty($fieldDef['default']) )
+//            $fieldDef['default'] = '0';
+
+    }
+
+    /**
+     * @see DBManager::oneColumnSQLRep()
+     */
+    protected function oneColumnSQLRep($fieldDef, $ignoreRequired = false, $table = '', $return_as_array = false)
+    {
+    	//Bug 25814
+		if(isset($fieldDef['name'])){
+		    $colType = $this->getFieldType($fieldDef);
+        	if(stristr($this->getFieldType($fieldDef), 'decimal') && isset($fieldDef['len'])){
+				$fieldDef['len'] = min($fieldDef['len'],38);
+			}
+		    //bug: 39690 float(8) is interpreted as real and this generates a diff when doing repair
+			if(stristr($colType, 'float') && isset($fieldDef['len']) && $fieldDef['len'] == 8){
+				unset($fieldDef['len']);
+			}
 		}
 
-		return $string;
+		// always return as array for post-processing
+		$ref = parent::oneColumnSQLRep($fieldDef, $ignoreRequired, $table, true);
+
+		// Bug 24307 - Don't add precision for float fields.
+		if ( stristr($ref['colType'],'float') )
+			$ref['colType'] = preg_replace('/(,\d+)/','',$ref['colType']);
+
+        if ( $return_as_array )
+            return $ref;
+        else
+            return "{$ref['name']} {$ref['colType']} {$ref['default']} {$ref['required']} {$ref['auto_increment']}";
+	}
+
+    /**
+     * Saves changes to module's audit table
+     *
+     * @param object $bean    Sugarbean instance
+     * @param array  $changes changes
+     */
+    public function save_audit_records(SugarBean $bean, $changes)
+	{
+		//Bug 25078 fixed by Martin Hu: sqlserver haven't 'date' type, trim extra "00:00:00"
+		if($changes['data_type'] == 'date'){
+			$changes['before'] = str_replace(' 00:00:00','',$changes['before']);
+		}
+		parent::save_audit_records($bean,$changes);
+	}
+
+    /**
+     * Disconnects from the database
+     *
+     * Also handles any cleanup needed
+     */
+    public function disconnect()
+    {
+    	$GLOBALS['log']->debug('Calling Mssql::disconnect()');
+        if(!empty($this->database)){
+            $this->freeResult();
+            mssql_close($this->database);
+            $this->database = null;
+        }
+    }
+
+    /**
+     * @see DBManager::freeDbResult()
+     */
+    protected function freeDbResult($dbResult)
+    {
+        if(!empty($dbResult))
+            mssql_free_result($dbResult);
+    }
+
+    /**
+     * Returns the number of rows returned by the result
+     *
+     * @param  resource $result
+     * @return int
+     */
+     public function getRowCount($result)
+    {
+        if(!empty($result)) {
+            return mssql_num_rows($result);
+		}
+		return 0;
+	}
+
+	/**
+	 * (non-PHPdoc)
+	 * @see DBManager::lastDbError()
+	 */
+    public function lastDbError()
+    {
+        $sqlmsg = mssql_get_last_message();
+        if(empty($sqlmsg)) return false;
+        global $app_strings;
+        if (empty($app_strings)
+		    or !isset($app_strings['ERR_MSSQL_DB_CONTEXT'])
+			or !isset($app_strings['ERR_MSSQL_WARNING']) ) {
+        //ignore the message from sql-server if $app_strings array is empty. This will happen
+        //only if connection if made before languge is set.
+		    return false;
+        }
+
+        $sqlpos = strpos($sqlmsg, 'Changed database context to');
+        $sqlpos2 = strpos($sqlmsg, 'Warning:');
+        $sqlpos3 = strpos($sqlmsg, 'Checking identity information:');
+        if ( $sqlpos !== false || $sqlpos2 !== false || $sqlpos3 !== false ) {
+            return false;
+        } else {
+        	global $app_strings;
+            //ERR_MSSQL_DB_CONTEXT: localized version of 'Changed database context to' message
+            if (empty($app_strings) or !isset($app_strings['ERR_MSSQL_DB_CONTEXT'])) {
+                //ignore the message from sql-server if $app_strings array is empty. This will happen
+                //only if connection if made before languge is set.
+                $GLOBALS['log']->debug("Ignoring this database message: " . $sqlmsg);
+                return false;
+            }
+            else {
+                $sqlpos = strpos($sqlmsg, $app_strings['ERR_MSSQL_DB_CONTEXT']);
+                if ( $sqlpos !== false )
+                    return false;
+            }
+        }
+
+        if ( strlen($sqlmsg) > 2 ) {
+        	return "SQL Server error: " . $sqlmsg;
+        }
+
+        return false;
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see DBManager::getDbInfo()
+     */
+    public function getDbInfo()
+    {
+        return array("version" => $this->version());
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see DBManager::validateQuery()
+     */
+    public function validateQuery($query)
+    {
+        if(!$this->isSelect($query)) {
+            return false;
+        }
+        $this->query("SET SHOWPLAN_TEXT ON");
+        $res = $this->getOne($query);
+        $this->query("SET SHOWPLAN_TEXT OFF");
+        return !empty($res);
+    }
+
+    /**
+     * This is a utility function to prepend the "N" character in front of SQL values that are
+     * surrounded by single quotes.
+     *
+     * @param  $sql string SQL statement
+     * @return string SQL statement with single quote values prepended with "N" character for nvarchar columns
+     */
+    protected function _appendN($sql)
+    {
+        // If there are no single quotes, don't bother, will just assume there is no character data
+        if (strpos($sql, "'") === false)
+            return $sql;
+
+        // Flag if there are odd number of single quotes, just continue w/o trying to append N
+        if ((substr_count($sql, "'") & 1)) {
+            $GLOBALS['log']->error("SQL statement[" . $sql . "] has odd number of single quotes.");
+            return $sql;
+        }
+
+        //The only location of three subsequent ' will be at the begning or end of a value.
+        $sql = preg_replace('/(?<!\')(\'{3})(?!\')/', "'<@#@#@PAIR@#@#@>", $sql);
+
+        // Remove any remaining '' and do not parse... replace later (hopefully we don't even have any)
+        $pairs        = array();
+        $regexp       = '/(\'{2})/';
+        $pair_matches = array();
+        preg_match_all($regexp, $sql, $pair_matches);
+        if ($pair_matches) {
+            foreach (array_unique($pair_matches[0]) as $key=>$value) {
+                $pairs['<@PAIR-'.$key.'@>'] = $value;
+            }
+            if (!empty($pairs)) {
+                $sql = str_replace($pairs, array_keys($pairs), $sql);
+            }
+        }
+
+        $regexp  = "/(N?'.+?')/is";
+        $matches = array();
+        preg_match_all($regexp, $sql, $matches);
+        $replace = array();
+        if (!empty($matches)) {
+            foreach ($matches[0] as $value) {
+                // We are assuming that all nvarchar columns are no more than 200 characters in length
+                // One problem we face is the image column type in reports which cannot accept nvarchar data
+                if (!empty($value) && !is_numeric(trim(str_replace(array("'", ","), "", $value))) && !preg_match('/^\'[\,]\'$/', $value)) {
+                    $replace[$value] = 'N' . trim($value, "N");
+                }
+            }
+        }
+
+        if (!empty($replace))
+            $sql = str_replace(array_keys($replace), $replace, $sql);
+
+        if (!empty($pairs))
+            $sql = str_replace(array_keys($pairs), $pairs, $sql);
+
+        if(strpos($sql, "<@#@#@PAIR@#@#@>"))
+            $sql = str_replace(array('<@#@#@PAIR@#@#@>'), array("''"), $sql);
+
+        return $sql;
+    }
+
+    /**
+     * Quote SQL Server search term
+     * @param string $term
+     * @return string
+     */
+    protected function quoteTerm($term)
+    {
+        $term = str_replace("%", "*", $term); // Mssql wildcard is *
+        return '"'.$term.'"';
+    }
+
+    /**
+     * Generate fulltext query from set of terms
+     * @param string $fields Field to search against
+     * @param array $terms Search terms that may be or not be in the result
+     * @param array $must_terms Search terms that have to be in the result
+     * @param array $exclude_terms Search terms that have to be not in the result
+     */
+    public function getFulltextQuery($field, $terms, $must_terms = array(), $exclude_terms = array())
+    {
+        $condition = $or_condition = array();
+        foreach($must_terms as $term) {
+            $condition[] = $this->quoteTerm($term);
+        }
+
+        foreach($terms as $term) {
+            $or_condition[] = $this->quoteTerm($term);
+        }
+
+        if(!empty($or_condition)) {
+            $condition[] = " AND (".join(" | ", $or_condition).")";
+        }
+
+        foreach($exclude_terms as $term) {
+            $condition[] = " NOT ".$this->quoteTerm($term);
+        }
+        $condition = $this->quoted(join(" AND ",$condition));
+        return "CONTAINS($field, $condition)";
+    }
+
+    /**
+     * Check if certain database exists
+     * @param string $dbname
+     */
+    public function dbExists($dbname)
+    {
+        $db = $this->getOne("SELECT name FROM master..sysdatabases WHERE name = N".$this->quoted($dbname));
+        return !empty($db);
+    }
+
+    /**
+     * Select database
+     * @param string $dbname
+     */
+    protected function selectDb($dbname)
+    {
+        return mssql_select_db($dbname);
+    }
+
+    /**
+     * Check if certain DB user exists
+     * @param string $username
+     */
+    public function userExists($username)
+    {
+        $this->selectDb("master");
+        $user = $this->getOne("select count(*) from sys.sql_logins where name =".$this->quoted($username));
+        // FIXME: go back to the original DB
+        return !empty($user);
+    }
+
+    /**
+     * Create DB user
+     * @param string $database_name
+     * @param string $host_name
+     * @param string $user
+     * @param string $password
+     */
+    public function createDbUser($database_name, $host_name, $user, $password)
+    {
+        $qpassword = $this->quote($password);
+        $this->selectDb($database_name);
+        $this->query("CREATE LOGIN $user WITH PASSWORD = '$qpassword'", true);
+        $this->query("CREATE USER $user FOR LOGIN $user", true);
+        $this->query("EXEC sp_addRoleMember 'db_ddladmin ', '$user'", true);
+        $this->query("EXEC sp_addRoleMember 'db_datareader','$user'", true);
+        $this->query("EXEC sp_addRoleMember 'db_datawriter','$user'", true);
+    }
+
+    /**
+     * Create a database
+     * @param string $dbname
+     */
+    public function createDatabase($dbname)
+    {
+        return $this->query("CREATE DATABASE $dbname", true);
+    }
+
+    /**
+     * Drop a database
+     * @param string $dbname
+     */
+    public function dropDatabase($dbname)
+    {
+        return $this->query("DROP DATABASE $dbname", true);
+    }
+
+    /**
+     * Check if this driver can be used
+     * @return bool
+     */
+    public function valid()
+    {
+        return function_exists("mssql_connect");
+    }
+
+    /**
+     * Check if this DB name is valid
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function isDatabaseNameValid($name)
+    {
+        // No funny chars, does not begin with number
+        return preg_match('/^[0-9#@]+|[\"\'\*\/\\?\:\\<\>\-\ \&\!\(\)\[\]\{\}\;\,\.\`\~\|\\\\]+/', $name)==0;
+    }
+
+    public function installConfig()
+    {
+        return array(
+        	'LBL_DBCONFIG_MSG3' =>  array(
+                "setup_db_database_name" => array("label" => 'LBL_DBCONF_DB_NAME', "required" => true),
+            ),
+            'LBL_DBCONFIG_MSG2' =>  array(
+                "setup_db_host_name" => array("label" => 'LBL_DBCONF_HOST_NAME', "required" => true),
+                "setup_db_host_instance" => array("label" => 'LBL_DBCONF_HOST_INSTANCE'),
+            ),
+            'LBL_DBCONF_TITLE_USER_INFO' => array(),
+            'LBL_DBCONFIG_B_MSG1' => array(
+                "setup_db_admin_user_name" => array("label" => 'LBL_DBCONF_DB_ADMIN_USER', "required" => true),
+                "setup_db_admin_password" => array("label" => 'LBL_DBCONF_DB_ADMIN_PASSWORD', "type" => "password"),
+            )
+        );
     }
 }

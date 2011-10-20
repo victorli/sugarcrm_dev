@@ -69,6 +69,8 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
         $this->_admin_user->status = 'Active';
         $this->_admin_user->is_admin = 1;
         $this->_admin_user->save();
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before continuing
+
         $GLOBALS['current_user'] = $this->_user;
 
         self::$helperObject = new APIv3Helper();
@@ -77,7 +79,10 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
         $this->aclRole = new ACLRole();
         $this->aclRole->name = "Unit Test";
         $this->aclRole->save();
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before continuing
+
         $this->aclRole->set_relationship('acl_roles_users', array('role_id'=>$this->aclRole->id ,'user_id'=> $this->_user->id), false);
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before continuing
     }
 
     public function tearDown()
@@ -132,6 +137,7 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
 
     protected function _login($user = null)
     {
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before logging in
         if($user == null)
             $user = $this->_user;
         return $this->_makeRESTCall('login',
@@ -153,14 +159,14 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testGetModuleFavoriteList()
     {
-        $result = $this->_login($this->_admin_user);
-        $session = $result['id'];
-
         $account = new Account();
         $account->id = uniqid();
         $account->new_with_id = TRUE;
         $account->name = "Test " . $account->id;
         $account->save();
+
+        $result = $this->_login($this->_admin_user); // Logging in just before the REST call as this will also commit any pending DB changes
+        $session = $result['id'];
 
         $this->_markBeanAsFavorite($session, "Accounts", $account->id);
         
@@ -224,9 +230,6 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testSearchByModuleWithFavorites()
     {
-        $result = $this->_login($this->_admin_user);
-        $session = $result['id'];
-
         $account = new Account();
         $account->id = uniqid();
         $account->assigned_user_id = $this->_user->id;
@@ -234,8 +237,7 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
         $account->new_with_id = TRUE;
         $account->name = "Unit Test Fav " . $account->id;
         $account->save();
-        $this->_markBeanAsFavorite($session, "Accounts", $account->id);
-        
+
         //Negative test.
         $account2 = new Account();
         $account2->id = uniqid();
@@ -244,6 +246,11 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
         $account->assigned_user_id = $this->_user->id;
         $account2->save();
         
+        $result = $this->_login($this->_admin_user); // Logging in just before the REST call as this will also commit any pending DB changes
+        $session = $result['id'];
+
+        $this->_markBeanAsFavorite($session, "Accounts", $account->id);
+
         $searchModules = array('Accounts');
         $searchString = "Unit Test Fav ";
         $offSet = 0;

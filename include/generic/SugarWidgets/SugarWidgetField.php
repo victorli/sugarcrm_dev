@@ -134,7 +134,6 @@ class SugarWidgetField extends SugarWidget {
 
 		$header_cell = "<a class=\"listViewThLinkS1\" href=\"".$start.$this->base_URL.$subpanel_module.'&'.$sort_by.$end."\">";
 		$header_cell .= $header_cell_text;
-		$header_cell .= "</a>";
 
 		$imgArrow = '';
 
@@ -144,7 +143,7 @@ class SugarWidgetField extends SugarWidget {
 
 		$arrow_start = ListView::getArrowUpDownStart($imgArrow);
 		$arrow_end = ListView::getArrowUpDownEnd($imgArrow);
-		$header_cell .= " ".$arrow_start.$arrow_end;
+		$header_cell .= " ".$arrow_start.$arrow_end."</a>";
 
 		return $header_cell;
 

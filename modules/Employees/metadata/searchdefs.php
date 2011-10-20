@@ -47,7 +47,7 @@
                     'layout' => array(
                     	'basic_search' => array(
                     		array('name'=>'search_name','label' =>'LBL_NAME', 'type' => 'name'),
-							array('name'=>'current_user_only', 'label'=>'LBL_CURRENT_USER_FILTER', 'type'=>'bool'),
+                            array('name'=>'open_only_active_users', 'label'=>'LBL_ONLY_ACTIVE', 'type' => 'bool'),
 							),
                     	'advanced_search' => array(
                     	    'first_name',

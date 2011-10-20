@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
@@ -34,39 +34,24 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
-require_once('include/nusoap/nusoap.php');
+
+require_once 'tests/service/SOAPTestCase.php';
 
 
 /**
  * @group bug44280
  */
-class Bug44280Test extends Sugar_PHPUnit_Framework_TestCase
+class Bug44280Test extends SOAPTestCase
 {
-	public $_user = null;
-	public $_soapClient = null;
-	public $_session = null;
-	public $_sessionId = null;
     public $accnt1;
     public $accnt2;
     public $cont1;
     public $cont2;
 
-	
-
-	public function setUp() 
+	public function setUp()
     {
-    	$this->_soapClient = new nusoapclient($GLOBALS['sugar_config']['site_url'].'/service/v2/soap.php',false,false,false,false,false,600,600);
-
-        $this->_user = SugarTestUserUtilities::createAnonymousUser();
-        $this->_user->status = 'Active';
-        $this->_user->is_admin = 1;
-        $this->_user->save();
-        $GLOBALS['current_user'] = $this->_user;
-
-       
-        
-		 
+    	$this->_soapURL = $GLOBALS['sugar_config']['site_url'].'/service/v2/soap.php';
+        parent::setUp();
     }
 
     /**
@@ -74,14 +59,6 @@ class Bug44280Test extends Sugar_PHPUnit_Framework_TestCase
      *
      */
     public function tearDown() {
-    	SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-        unset($GLOBALS['current_user']);
-
-        unset($this->_user);
-        unset($this->_soapClient);
-        unset($this->_session);
-        unset($this->_sessionId);
-
         $GLOBALS['db']->query("DELETE FROM contacts WHERE id= '{$this->cont1->id}'");
         $GLOBALS['db']->query("DELETE FROM contacts WHERE id= '{$this->cont2->id}'");
         $GLOBALS['db']->query("DELETE FROM accounts_contacts WHERE contact_id= '{$this->cont1->id}'");
@@ -91,7 +68,7 @@ class Bug44280Test extends Sugar_PHPUnit_Framework_TestCase
 
         unset($this->accnt1); unset($this->accnt2);
         unset($this->cont1); unset($this->cont2);
-
+        parent::tearDown();
     }
 
     public function createAccount($name,$user_id) {
@@ -102,7 +79,7 @@ class Bug44280Test extends Sugar_PHPUnit_Framework_TestCase
         $account->new_with_id = true;
         $account->disable_custom_fields = true;
         $account->save();
-
+        $GLOBALS['db']->commit();
         return $account;
     }
 
@@ -115,10 +92,10 @@ class Bug44280Test extends Sugar_PHPUnit_Framework_TestCase
         $contact->new_with_id = true;
         $contact->disable_custom_fields = true;
         $contact->save();
-
+        $GLOBALS['db']->commit();
         return $contact;
     }
-    
+
     public function testSetEntries() {
     	$this->_login();
 
@@ -208,9 +185,9 @@ class Bug44280Test extends Sugar_PHPUnit_Framework_TestCase
 
           }
 
-         
-    }  
-    
+
+    }
+
 
     /**
      * Attempt to login to the soap server
@@ -219,9 +196,9 @@ class Bug44280Test extends Sugar_PHPUnit_Framework_TestCase
      * to the session_id.
      */
     public function _login(){
-		global $current_user;  	
+		global $current_user;
     	$result = $this->_soapClient->call('login',
-            array('user_auth' => 
+            array('user_auth' =>
                 array('user_name' => $current_user->user_name,
                     'password' => $current_user->user_hash,
                     'version' => '1.0'),
@@ -230,8 +207,8 @@ class Bug44280Test extends Sugar_PHPUnit_Framework_TestCase
          $this->_sessionId = $result['id'];
 		return $result;
     }
-    
 
-	
+
+
 }
 ?>

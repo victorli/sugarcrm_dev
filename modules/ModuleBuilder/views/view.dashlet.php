@@ -172,9 +172,11 @@ class ViewDashlet extends ViewListView
 
         $smarty->assign ( 'groups', $groups ) ;
 
-        global $image_path ;
-        $imageSave = SugarThemeRegistry::current()->getImage('studio_save') ;
-//        $imageHelp = SugarThemeRegistry::current()->getImage('help') ;
+        global $image_path, $mod_strings;
+        $imageSave = SugarThemeRegistry::current()->getImage('studio_save','',null,null,'.gif',$mod_strings['LBL_BTN_SAVE']) ;
+
+//        $imageHelp = SugarThemeRegistry::current()->getImage('help','',null,null,'.gif',$mod_strings['LBL_SECTION_HELP']) ;
+
 
         $histaction = "ModuleBuilder.history.browse(\"{$this->editModule}\", \"{$this->editLayout}\")" ;
         if (isset($this->searchlayout))
@@ -190,9 +192,11 @@ class ViewDashlet extends ViewListView
         }
         $buttons [] = array ( 'name' => 'historyBtn' , 'text' => translate ( 'LBL_HISTORY' ) , 'actionScript' => "onclick='$histaction'" ) ;
         $smarty->assign ( 'buttons', $this->_buildImageButtons ( $buttons ) ) ;
-        $editImage = SugarThemeRegistry::current()->getImage('edit_inline') ;
+        $editImage = SugarThemeRegistry::current()->getImage('edit_inline','',null,null,'.gif',$mod_strings['LBL_EDIT']) ;
+
         $smarty->assign ( 'editImage', $editImage ) ;
-        $deleteImage = SugarThemeRegistry::current()->getImage('delete_inline') ;
+        $deleteImage = SugarThemeRegistry::current()->getImage('delete_inline','',null,null,'.gif',$mod_strings['LBL_MB_DELETE']) ;
+
         $smarty->assign ( 'deleteImage', $deleteImage ) ;
         $smarty->assign ( 'MOD', $GLOBALS [ 'mod_strings' ] ) ;
 

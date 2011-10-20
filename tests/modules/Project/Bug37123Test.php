@@ -41,6 +41,8 @@ class Bug37123Test extends Sugar_PHPUnit_Framework_TestCase
     public function setUp()
     {
         global $current_user, $currentModule ;
+        global $beanList;
+        require('include/modules.php');
         $current_user = SugarTestUserUtilities::createAnonymousUser();
         $unid = uniqid();
         $time = date('Y-m-d H:i:s');
@@ -67,19 +69,20 @@ class Bug37123Test extends Sugar_PHPUnit_Framework_TestCase
         $ac_id = 'ac_'.$unid;
         $this->ac_id = $ac_id;//Accounts to Contacts
         $GLOBALS['db']->query("INSERT INTO accounts_contacts (id , contact_id, account_id, date_modified, deleted) values ('{$ac_id}', '{$contact->id}', '{$account->id}', '$time', 0)");
+
+        $_REQUEST['relate_id'] = $this->contact->id;
+        $_REQUEST['relate_to'] = 'projects_contacts';
     }
 
     public function testRelationshipSave()
     {
-        global $current_user, $currentModule ;
-        $_REQUEST['relate_id'] = $this->contact->id;
-        $_REQUEST['relate_to'] = 'projects_contacts';
+        $timedate = TimeDate::getInstance();
         $unid = uniqid();
         $project = new Project();
         $project->id = 'p_' . $unid;
         $project->name = 'test project ' . $unid;
-        $project->estimated_start_date = date('Y-m-d H:i:s');
-        $project->estimated_end_date = date('Y-m-d H:i:s', (time() + 24*3600*7));
+        $project->estimated_start_date = $timedate->nowDate();
+        $project->estimated_end_date = $timedate->asUserDate($timedate->getNow(true)->modify("+7 days"));
         $project->new_with_id = true;
         $project->disable_custom_fields = true;
         $newProjectId = $project->save();
@@ -108,6 +111,8 @@ class Bug37123Test extends Sugar_PHPUnit_Framework_TestCase
         unset($this->contact);
         unset($this->project);
         unset($this->ac_id);
+        unset($GLOBALS['relate_id']);
+        unset($GLOBALS['relate_to']);
     }
 
 

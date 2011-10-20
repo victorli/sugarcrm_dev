@@ -101,17 +101,20 @@ class SchedulerDaemon extends Scheduler {
 		$fireTimePlus = $timedate->asDb($timedate->getNow()->get('+1 minute'));
 
 		// collapse list of schedulers where "catch_up" is 0 and status is "ready" (not "in progress, completed, etc.");
-		if($sugar_config['dbconfig']['db_type'] == 'oci8') {
-		} else  {
-			$q = 'UPDATE schedulers_times st LEFT JOIN schedulers s ON st.scheduler_id = s.id SET st.status = \'not run\' WHERE st.execute_time < '.db_convert('\''.$fireTimeMinus.'\'', 'datetime').' AND st.status = \'ready\' AND s.catch_up = 0';
-		}
-		$this->db->query($q); 
+		$q = 'UPDATE schedulers_times st
+					SET st.status = \'not run\' 
+					WHERE st.execute_time < '.$this->db->convert($this->db->quoted($fireTimeMinus), 'datetime').'
+					AND st.status = \'ready\' 
+					AND st.scheduler_id IN (SELECT s.id FROM schedulers s WHERE st.scheduler_id = s.id AND s.catch_up = 0)';
+		$this->db->query($q);
 		
-		$q = 'SELECT DISTINCT st.id, st.scheduler_id, st.status, s.name, s.job FROM schedulers_times st LEFT JOIN schedulers s ON st.scheduler_id = s.id WHERE st.execute_time < '.db_convert('\''.$fireTimePlus.'\'', 'datetime').' AND st.deleted=0 AND s.deleted=0 AND st.status=\'ready\' AND s.status=\'Active\' ORDER BY s.name';
+		$q = 'SELECT DISTINCT st.id, st.scheduler_id, st.status, s.name, s.job FROM schedulers_times st
+		    LEFT JOIN schedulers s ON st.scheduler_id = s.id WHERE st.execute_time < '.$this->db->convert($this->db->quoted($fireTimeMinus), 'datetime').
+            ' AND st.deleted=0 AND s.deleted=0 AND st.status=\'ready\' AND s.status=\'Active\' ORDER BY s.name';
 		$r = $this->db->query($q);
 		$count = 0;
 		
-		if($sugar_config['dbconfig']['db_type'] == 'mysql') {
+		if($this->db->supports("select_rows")) {
 			$loopCount = $this->db->getRowCount($r);
 			$GLOBALS['log']->debug('----->Scheduler has '.$loopCount.' jobs to fire.');
 		}
@@ -517,10 +520,7 @@ class SchedulerDaemon extends Scheduler {
 		}
 		
 		if($truncate) {
-			if($sugar_config['dbconfig']['db_type'] == 'oci8') {
-			} else {
-				$query = 'TRUNCATE schedulers_times';
-			}
+            $query = $this->db->truncateTableSQL('schedulers_times');
 			$this->db->query($query);
 			$GLOBALS['log']->debug('----->Scheduler TRUNCATED ALL Jobs: '.$query);
 		} else {

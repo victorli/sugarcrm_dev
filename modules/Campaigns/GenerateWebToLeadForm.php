@@ -105,8 +105,10 @@ if(!empty($_REQUEST['assigned_user_id'])){
  $xtpl->assign("APP", $app_strings);
  $Web_To_Lead_Form_html = '';
  $Web_To_Lead_Form_html .='<link rel="stylesheet" type="text/css" media="all" href="' . getJSPath(SugarThemeRegistry::current()->getCSSURL('calendar-win2k-cold-1.css')) . '">';
- $Web_To_Lead_Form_html .= "<script type=\"text/javascript\" src='" . getJSPath($site_url.'/include/javascript/sugar_grp1.js') . "'></script>";
- $Web_To_Lead_Form_html .= '<script type="text/javascript" src="' . getJSPath($site_url.'/include/javascript/calendar.js') . '"></script>';
+
+ $Web_To_Lead_Form_html .= "<script type=\"text/javascript\" src='" . getJSPath($site_url.'/cache/include/javascript/sugar_grp1.js') . "'></script>";
+ $Web_To_Lead_Form_html .= '<script type="text/javascript" src="' . getJSPath($site_url.'/cache/include/javascript/calendar.js') . '"></script>';
+
  $Web_To_Lead_Form_html .="<form action='$web_post_url' name='WebToLeadForm' method='POST' id='WebToLeadForm'>";
  $Web_To_Lead_Form_html .= "<table width='100%' style='border-top: 1px solid;
 border-bottom: 1px solid;
@@ -268,6 +270,7 @@ for($i= 0; $i<$columns;$i++){
           else{
                 $Web_To_Lead_Form_html .= "<td width='15%' style='text-align: left; font-size: 12px; font-weight: normal;'><span sugar='slot'>$field_label</span sugar='slot'></td>";
           }
+
 			$Web_To_Lead_Form_html .= "
 				<td width='35%' style='font-size: 12px; font-weight: normal;'>
 				<script type='text/javascript'>
@@ -303,6 +306,7 @@ for($i= 0; $i<$columns;$i++){
           	}
           	$Web_To_Lead_Form_html .= "</span></td>";
 	     } // if
+
          if( $field_type=='varchar' ||  $field_type=='name'
           ||  $field_type=='phone' || $field_type=='currency' || $field_type=='url' || $field_type=='int'){
            if($field_name=='last_name' ||   $field_required){

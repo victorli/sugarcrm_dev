@@ -41,45 +41,34 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * All Rights Reserved.
  * Contributor(s): ______________________________________..
  ********************************************************************************/
- 
+
 require_once('modules/Trackers/store/Store.php');
 
 class TrackerQueriesDatabaseStore implements Store {
-    
-    public function flush($monitor) {
+
+    public function flush($monitor)
+    {
+        if($monitor->run_count > 1) {
+            $query = "UPDATE $monitor->table_name set run_count={$monitor->run_count}, sec_avg={$monitor->sec_avg}, sec_total={$monitor->sec_total}, date_modified='{$monitor->date_modified}' where query_hash = '{$monitor->query_hash}'";
+            $GLOBALS['db']->query($query);
+            return;
+        }
 
        $metrics = $monitor->getMetrics();
-       $columns = array();
        $values = array();
        foreach($metrics as $name=>$metric) {
        	  if(!empty($monitor->$name)) {
        	  	 $columns[] = $name;
-       	  	 if($metrics[$name]->_type == 'int' || $metrics[$name]->_type == 'double') {
-                $values[] = $GLOBALS['db']->quote($monitor->$name);
-             } else if ($metrics[$name]->_type == 'datetime') {
-             	$values[] = ($GLOBALS['db']->dbType == 'oci8') ? db_convert("'".$monitor->$name."'",'datetime') : "'".$monitor->$name."'";
-       	  	 } else {
-                $values[] = "'".$GLOBALS['db']->quote($monitor->$name)."'";
-             } 
-       	  }
+       	  	 $fields[$name] = array('name' => $name, 'type' => $metrics[$name]->_type);
+       	  	 $values[$name] = $monitor->$name;
+           }
        } //foreach
-       
+
        if(empty($values)) {
        	  return;
        }
-       
-       
-       if($monitor->run_count == 1) {
-       	  if($GLOBALS['db']->dbType == 'oci8') {
-       	  } else {
-	          $query = "INSERT INTO $monitor->table_name (" .implode("," , $columns). " ) VALUES ( ". implode("," , $values). ')';
-		      $GLOBALS['db']->query($query);
-       	  }       
-       } else {
-       	  $query = "UPDATE $monitor->table_name set run_count={$monitor->run_count}, sec_avg={$monitor->sec_avg}, sec_total={$monitor->sec_total}, date_modified='{$monitor->date_modified}' where query_hash = '{$monitor->query_hash}'";
-          $GLOBALS['db']->query($query);
-       }
+
+       $fields['id'] = array('auto_increment' => true, "name" => "id", "type" => "int");
+       $GLOBALS['db']->insertParams($monitor->table_name, $fields, $values);
     }
 }
-
-?>

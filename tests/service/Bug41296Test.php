@@ -47,12 +47,12 @@ class Bug41296Test extends SOAPTestCase
     var $_sessionId;
     var $c = null;
     var $c2 = null;
-	
-	public function setUp() 
+
+	public function setUp()
     {
         $this->_soapURL = $GLOBALS['sugar_config']['site_url'].'/soap.php';
-        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-        
+        parent::setUp();
+
 		$unid = uniqid();
 		$time = date('Y-m-d H:i:s');
 
@@ -65,12 +65,12 @@ class Bug41296Test extends SOAPTestCase
         $contact->new_with_id = true;
         $contact->disable_custom_fields = true;
         $contact->save();
+        $GLOBALS['db']->commit();
 		$this->c = $contact;
 
-        parent::setUp();
     }
 
-    public function tearDown() 
+    public function tearDown()
     {
         $GLOBALS['db']->query("DELETE FROM contacts WHERE id= '{$this->c->id}'");
         $GLOBALS['db']->query("DELETE FROM contacts WHERE id= '{$this->_resultId}'");
@@ -84,7 +84,7 @@ class Bug41296Test extends SOAPTestCase
 
         $contacts_list=array( 'session'=>$this->_sessionId, 'module_name' => 'Contacts',
 				   'name_value_lists' => array(
-                                        array(array('name'=>'assigned_user_id' , 'value'=>$this->_user->id),array('name'=>'first_name' , 'value'=>'testfirst'),array('name'=>'last_name' , 'value'=>'testlast'))
+                                        array(array('name'=>'assigned_user_id' , 'value'=>$GLOBALS['current_user']->id),array('name'=>'first_name' , 'value'=>'testfirst'),array('name'=>'last_name' , 'value'=>'testlast'))
                                         ));
 
         $result = $this->_soapClient->call('set_entries',$contacts_list);

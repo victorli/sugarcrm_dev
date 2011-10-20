@@ -108,6 +108,13 @@ class Bug43805Test extends Sugar_PHPUnit_Framework_TestCase
     {
         global $current_user;
         $current_user = SugarTestUserUtilities::createAnonymousUser();;
+
+        $beanList = array();
+        $beanFiles = array();
+        require('include/modules.php');
+        $GLOBALS['beanList'] = $beanList;
+        $GLOBALS['beanFiles'] = $beanFiles;
+
         $this->_prospects[] = self::createProspect();
         $this->_prospectList = self::createProspectList($this->_prospects[0]);
         self::attachProspectToProspectList($this->_prospectList, $this->_prospects[0]);
@@ -122,6 +129,9 @@ class Bug43805Test extends Sugar_PHPUnit_Framework_TestCase
         SugarTestProspectUtilities::removeAllCreatedProspects();
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         $this->_clearProspects();
+        unset($GLOBALS['current_user']);
+        unset($GLOBALS['beanList']);
+        unset($GLOBALS['beanFiles']);
     }
 
     /**

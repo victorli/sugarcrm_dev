@@ -298,7 +298,7 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
 
     function get_field_list($value,$fields,  $translate=true) {
 
-	    $GLOBALS['log']->info('Begin: SoapHelperWebServices->get_field_list');
+	    $GLOBALS['log']->info('Begin: SoapHelperWebServices->get_field_list(too large a struct, '.print_r($fields, true).", $translate");
 		$module_fields = array();
 		$link_fields = array();
 		if(!empty($value->field_defs)){

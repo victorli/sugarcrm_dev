@@ -47,24 +47,23 @@ class Bug40793Test extends Sugar_PHPUnit_Framework_TestCase
     const WEBALIZER_DIR_NAME = 'bug40793';
     private $_notIncludeDir;
     private $_includeDir;
-    
-    public function setUp() 
+
+    public function setUp()
     {
-        $this->_notIncludeDir = self::WEBALIZER_DIR_NAME . DIRECTORY_SEPARATOR . "this_dir_should_not_include";
-        $this->_includeDir = self::WEBALIZER_DIR_NAME . DIRECTORY_SEPARATOR . "1"; 
-        mkdir(self::WEBALIZER_DIR_NAME);
-        mkdir($this->_notIncludeDir);
-        mkdir($this->_includeDir);
-        chmod($this->_notIncludeDir, 0555);
+        $this->_notIncludeDir = self::WEBALIZER_DIR_NAME . "/this_dir_should_not_include";
+        $this->_includeDir = self::WEBALIZER_DIR_NAME . "/1";
+        mkdir(self::WEBALIZER_DIR_NAME, 0755);
+        mkdir($this->_notIncludeDir, 0755);
+        mkdir($this->_includeDir, 0755);
     }
-    
-    public function tearDown() 
+
+    public function tearDown()
     {
         rmdir($this->_notIncludeDir);
         rmdir($this->_includeDir);
         rmdir(self::WEBALIZER_DIR_NAME);
     }
-    
+
     public function testIfDirIsNotIncluded()
     {
         $skipDirs = array($this->_notIncludeDir);

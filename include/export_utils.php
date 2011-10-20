@@ -159,7 +159,7 @@ function export($type, $records = null, $members = false, $sample=false) {
 	} else {
 		if(!empty($_REQUEST['current_post'])) {
 			$ret_array = generateSearchWhere($type, $_REQUEST['current_post']);
-			
+
 			$where = $ret_array['where'];
 			$searchFields = $ret_array['searchFields'];
 		} else {
@@ -208,7 +208,7 @@ function export($type, $records = null, $members = false, $sample=false) {
         $result = $db->query($query, true, $app_strings['ERR_EXPORT_TYPE'].$type.": <BR>.".$query);
     }
 
-	
+
 	$fields_array = $db->getFieldsArray($result,true);
 
     //set up the order on the header row
@@ -290,7 +290,7 @@ function export($type, $records = null, $members = false, $sample=false) {
         }
     }
 	return $content;
-    
+
 }
 
 function generateSearchWhere($module, $query) {//this function is similar with function prepareSearchForm() in view.list.php

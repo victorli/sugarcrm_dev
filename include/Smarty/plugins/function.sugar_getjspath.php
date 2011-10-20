@@ -32,13 +32,12 @@ r32629 - 2008-03-11 00:44:13 -0700 (Tue, 11 Mar 2008) - majed - fixes issues wit
 
 
 /**
- * Smarty {sugar_include} function plugin
+ * Smarty {sugar_getjspath} function plugin
  *
  * Type:     function<br>
- * Name:     sugar_include<br>
- * Purpose:  Handles rendering the global file includes from the metadata files defined
- *           in templateMeta=>includes.
- * 
+ * Name:     sugar_getjspath<br>
+ * Purpose:  Adds JS caching string to path
+ *
  * @author Collin Lee {clee@sugarcrm.com}
  * @param array
  * @param Smarty
@@ -47,7 +46,7 @@ function smarty_function_sugar_getjspath($params, &$smarty)
 {
 	if(!isset($params['file'])) {
 		   $smarty->trigger_error($GLOBALS['app_strings']['ERR_MISSING_REQUIRED_FIELDS'] . 'file');
-	} 
+	}
  	return getJSPath($params['file']);
 }
 ?>

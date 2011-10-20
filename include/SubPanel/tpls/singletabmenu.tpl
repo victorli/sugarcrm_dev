@@ -61,7 +61,7 @@
 {/foreach}
 
 {assign var='notFirst' value='0'}
-	SUGAR.subpanelUtils.subpanelTitles = {ldelim}{foreach from=$othertabs.All.tabs item=subtab}{if $notFirst != 0}, {else}{assign var='notFirst' value='1'}{/if}'{$subtab.key}':'{$subtab.label}'{/foreach}{foreach from=$otherMoreSubMenu.All.tabs item=subtab}, '{$subtab.key}':'{$subtab.label}'{/foreach}{rdelim};
+	SUGAR.subpanelUtils.subpanelTitles = {$subpanelTitlesJSON};
 
 	SUGAR.subpanelUtils.tabCookieName = get_module_name() + '_sp_tab';
 	
@@ -81,7 +81,7 @@
 {if !empty($moreMenu)}
 	<li>
 		<div id='MorePanelHandle' onmouseover='SUGAR.subpanelUtils.menu.tbspButtonMouseOver(this.id,"","",0);'>
-			<img src="{sugar_getimagepath file='blank.gif'}" alt="more" border="0" height="16" width="16" />
+			{sugar_getimage name="blank" ext=".gif" width="16" height="16" alt=$app_strings.LBL_MORE other_attributes='border="0" '}
 		</div>
 	</li>
 {/if}

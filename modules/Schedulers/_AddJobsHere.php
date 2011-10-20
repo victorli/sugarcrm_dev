@@ -83,8 +83,8 @@ function pollMonitoredInboxes() {
 	$GLOBALS['log']->info('----->Scheduler fired job of type pollMonitoredInboxes()');
 	global $dictionary;
 	global $app_strings;
-	
-	
+
+
 	require_once('modules/Emails/EmailUI.php');
 
 	$ie = new InboundEmail();
@@ -247,7 +247,7 @@ function pollMonitoredInboxes() {
  */
 function runMassEmailCampaign() {
 	if (!class_exists('LoggerManager')){
-		
+
 	}
 	$GLOBALS['log'] = LoggerManager::getLogger('emailmandelivery');
 	$GLOBALS['log']->debug('Called:runMassEmailCampaign');
@@ -255,7 +255,7 @@ function runMassEmailCampaign() {
 	if (!class_exists('DBManagerFactory')){
 		require('include/database/DBManagerFactory.php');
 	}
-	
+
 	global $beanList;
 	global $beanFiles;
 	require("config.php");
@@ -273,7 +273,7 @@ function runMassEmailCampaign() {
  */
 function pruneDatabase() {
 	$GLOBALS['log']->info('----->Scheduler fired job of type pruneDatabase()');
-	$backupDir	= $GLOBALS['sugar_config']['cache_dir'].'backups';
+	$backupDir	= sugar_cached('backups');
 	$backupFile	= 'backup-pruneDatabase-GMT0_'.gmdate('Y_m_d-H_i_s', strtotime('now')).'.php';
 
 	$db = DBManagerFactory::getInstance();
@@ -381,7 +381,7 @@ function trimTracker()
     global $sugar_config, $timedate;
 	$GLOBALS['log']->info('----->Scheduler fired job of type trimTracker()');
 	$db = DBManagerFactory::getInstance();
-	
+
 	$admin = new Administration();
 	$admin->retrieveSettings('tracker');
 	require('modules/Trackers/config.php');
@@ -415,7 +415,7 @@ function trimTracker()
 function pollMonitoredInboxesForBouncedCampaignEmails() {
 	$GLOBALS['log']->info('----->Scheduler job of type pollMonitoredInboxesForBouncedCampaignEmails()');
 	global $dictionary;
-	
+
 
 	$ie = new InboundEmail();
 	$r = $ie->db->query('SELECT id FROM inbound_email WHERE deleted=0 AND status=\'Active\' AND mailbox_type=\'bounce\'');

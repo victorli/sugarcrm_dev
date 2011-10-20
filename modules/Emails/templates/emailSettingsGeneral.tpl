@@ -96,7 +96,7 @@
 		<td NOWRAP scope="row" width="20%">
 			{$app_strings.LBL_EMAIL_SETTINGS_SHOW_NUM_IN_LIST}:
 			<div id="rollover">
-                            <a href="#" class="rollover"><img border="0" src="{sugar_getimagepath file='helpInline.gif'}"><span>{$app_strings.LBL_EMAIL_SETTINGS_REQUIRE_REFRESH}</span></a>
+                            <a href="#" class="rollover">{sugar_getimage alt=$mod_strings.LBL_HELP name="helpInline" ext=".gif" other_attributes='border="0" '}<span>{$app_strings.LBL_EMAIL_SETTINGS_REQUIRE_REFRESH}</span></a>
             </div>
 		</td>
 		<td NOWRAP >

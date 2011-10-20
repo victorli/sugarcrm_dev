@@ -248,6 +248,7 @@ $mod_strings = array (
 	'LBL_SELECTION_TIP' => 'Modules with a relate field in Contacts can be selected rather than created during the convert lead process.',
 	'LBL_EDIT_TIP'		=> 'Modify the convert layout for this module.',
 	'LBL_DELETE_TIP'	=> 'Remove this module from the convert layout.',
+
     'LBL_ACTIVITIES_MOVE'   => 'Move Activities to',
     'LBL_ACTIVITIES_COPY'   => 'Copy Activities to',
     'LBL_ACTIVITIES_MOVE_HELP'   => "Select the record to which to move the Lead's activities. Tasks, Calls, Meetings, Notes and Emails will be moved to the selected record(s).",
@@ -264,7 +265,9 @@ $mod_strings = array (
     'LBL_EXPORT_MODIFIED_USER_ID' => 'Modified By ID',
     'LBL_EXPORT_CREATED_BY' => 'Created By ID',
     'LBL_EXPORT_EMAIL2'=>'Other Email Address',
+	'LBL_EDITLAYOUT' => 'Edit Layout' /*for 508 compliance fix*/,
+	'LBL_ENTERDATE' => 'Enter Date' /*for 508 compliance fix*/,
+	'LBL_LOADING' => 'Loading' /*for 508 compliance fix*/,
+	'LBL_EDIT_INLINE' => 'Edit' /*for 508 compliance fix*/,
 );
-
-
 ?>

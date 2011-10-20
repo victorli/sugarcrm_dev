@@ -1255,16 +1255,16 @@ function handle_set_relationship($set_relationship_value)
     	$key = array_search(strtolower($module2),$mod->relationship_fields);
     	if(!$key) {
     	    $key = Relationship::retrieve_by_modules($module1, $module2, $GLOBALS['db']);
-    	    
+
             // BEGIN SnapLogic fix for bug 32064
             if ($module1 == "Quotes" && $module2 == "ProductBundles") {
-                // Alternative solution is perhaps to 
+                // Alternative solution is perhaps to
                 // do whatever Sugar does when the same
                 // request is received from the web:
-                $pb_cls = $beanList[$module2]; 
+                $pb_cls = $beanList[$module2];
                 $pb = new $pb_cls();
                 $pb->retrieve($module2_id);
-                
+
                 // Check if this relationship already exists
                 $query = "SELECT count(*) AS count FROM product_bundle_quote WHERE quote_id = '{$module1_id}' AND bundle_id = '{$module2_id}' AND deleted = '0'";
                 $result = $GLOBALS['db']->query($query, true, "Error checking for previously existing relationship between quote and product_bundle");
@@ -1272,18 +1272,18 @@ function handle_set_relationship($set_relationship_value)
                 if(isset($row['count']) && $row['count'] > 0){
                     return $error->get_soap_array();
                 }
-                
+
                 $query = "SELECT MAX(bundle_index)+1 AS idx FROM product_bundle_quote WHERE quote_id = '{$module1_id}' AND deleted='0'";
                 $result = $GLOBALS['db']->query($query, true, "Error getting bundle_index");
                 $GLOBALS['log']->debug("*********** Getting max bundle_index");
                 $GLOBALS['log']->debug($query);
                 $row = $GLOBALS['db']->fetchByAssoc($result);
-                
+
                 $idx = 0;
                 if ($row) {
                     $idx = $row['idx'];
                 }
-                
+
                 $pb->set_productbundle_quote_relationship($module1_id,$module2_id,$idx);
                 $pb->save();
                 return $error->get_soap_array();
@@ -1301,7 +1301,7 @@ function handle_set_relationship($set_relationship_value)
                 if(isset($row['count']) && $row['count'] > 0){
                     return $error->get_soap_array();
                 }
-                
+
                 $query = "SELECT MAX(product_index)+1 AS idx FROM product_bundle_product WHERE bundle_id='{$module1_id}'";
                 $result = $GLOBALS['db']->query($query, true, "Error getting bundle_index");
                 $GLOBALS['log']->debug("*********** Getting max bundle_index");
@@ -1323,7 +1323,7 @@ function handle_set_relationship($set_relationship_value)
                 return $error->get_soap_array();
             }
             // END SnapLogic fix for bug 32064
-            
+
     		if (!empty($key)) {
     			$mod->load_relationship($key);
     			$mod->$key->add($module2_id);
@@ -1554,7 +1554,7 @@ function get_mailmerge_document($session, $file_name, $fields)
         return array('result'=>'', 'error'=>$error->get_soap_array());
     }
     $html = '';
-    $file_name = $GLOBALS['sugar_config']['cache_dir'].'MergedDocuments/'.$file_name;
+    $file_name = sugar_cached('MergedDocuments/').$file_name;
 
     $master_fields = array();
     $related_fields = array();
@@ -1596,7 +1596,7 @@ function get_mailmerge_document($session, $file_name, $fields)
             }
         }
 
-        $html = '<html><body><table border = 1><tr>';
+        $html = '<html ' . get_language_header() .'><body><table border = 1><tr>';
 
         foreach($master_fields as $master_field){
             $html .= '<td>'.$class1.'_'.$master_field.'</td>';
@@ -1677,7 +1677,7 @@ function get_mailmerge_document2($session, $file_name, $fields)
         return array('result'=>'', 'error'=>$error->get_soap_array());
     }
     $html = '';
-    $file_name = $GLOBALS['sugar_config']['cache_dir'].'MergedDocuments/'.$file_name;
+    $file_name = sugar_cached('MergedDocuments/').$file_name;
 
     $master_fields = array();
     $related_fields = array();
@@ -1719,7 +1719,7 @@ function get_mailmerge_document2($session, $file_name, $fields)
             }
         }
 
-        $html = '<html><body><table border = 1><tr>';
+        $html = '<html ' . get_language_header() . '><body><table border = 1><tr>';
 
         foreach($master_fields as $master_field){
             $html .= '<td>'.$class1.'_'.$master_field.'</td>';
@@ -1811,10 +1811,8 @@ function get_document_revision($session,$id)
     $dr = new DocumentRevision();
     $dr->retrieve($id);
     if(!empty($dr->filename)){
-        $filename = $sugar_config['upload_dir']."/".$dr->id;
+        $filename = "upload://{$dr->id}";
         $contents = base64_encode(sugar_file_get_contents($filename));
-//        $fh = sugar_fopen($sugar_config['upload_dir']."/rogerrsmith.doc", 'w');
-//        fwrite($fh, base64_decode($contents));
         return array('document_revision'=>array('id' => $dr->id, 'document_name' => $dr->document_name, 'revision' => $dr->revision, 'filename' => $dr->filename, 'file' => $contents), 'error'=>$error->get_soap_array());
     }else{
         $error->set_error('no_records');

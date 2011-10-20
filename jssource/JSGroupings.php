@@ -90,7 +90,7 @@
 			'include/javascript/sugar_connection_event_listener.js'     => 'include/javascript/sugar_grp1_yui.js',
 			'include/javascript/yui/build/calendar/calendar.js'     => 'include/javascript/sugar_grp1_yui.js',
             'include/javascript/yui/build/history/history.js'     => 'include/javascript/sugar_grp1_yui.js',
-			    
+
             ),
 
             $sugar_grp_yui_widgets = array(
@@ -115,7 +115,7 @@
                 "include/javascript/yui/build/button/assets/skins/sam/button.css"
 					=> 'include/javascript/sugar_grp_yui_widgets.css',
 				"include/javascript/yui/build/calendar/assets/skins/sam/calendar.css"
-					=> 'include/javascript/sugar_grp_yui_widgets.css',					
+					=> 'include/javascript/sugar_grp_yui_widgets.css',
 			),
 
             $sugar_grp_yui2 = array(

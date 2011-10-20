@@ -134,7 +134,7 @@ class="yui-navset"
               {capture name="overlibStuff" assign="overlibStuff"}{overlib_includes}{/capture}
               {sugar_help text=$popupText WIDTH=-1}
             {{/if}}
-          
+
 		</td>
 		{{/if}}
 		{counter name="fieldsUsed"}
@@ -166,7 +166,7 @@ class="yui-navset"
 			            {{sugar_field parentFieldArray='fields' tabindex=$colData.field.tabindex vardef=$fields[$subField.name] displayType='EditView' displayParams=$subField.displayParams formName=$form_name}}&nbsp;
 			        {{/if}}
 			    {{/foreach}}
-			{{elseif !empty($colData.field.customCode)}}
+			{{elseif !empty($colData.field.customCode) && empty($colData.field.customCodeRenderField)}}
 				{counter name="panelFieldCount"}
 				{{sugar_evalcolumn var=$colData.field.customCode colData=$colData tabindex=$colData.field.tabindex}}
 			{{elseif $fields[$colData.field.name]}}
@@ -174,6 +174,10 @@ class="yui-navset"
 			    {{$colData.displayParams}}
 				{{sugar_field parentFieldArray='fields' tabindex=$colData.field.tabindex vardef=$fields[$colData.field.name] displayType='EditView' displayParams=$colData.field.displayParams typeOverride=$colData.field.type formName=$form_name}}
 			{{/if}}
+	{{if !empty($colData.field.customCode) && !empty($colData.field.customCodeRenderField)}}
+	    {counter name="panelFieldCount"}
+	    {{sugar_evalcolumn var=$colData.field.customCode colData=$colData tabindex=$colData.field.tabindex}}
+    {{/if}}
     {{if !empty($colData.field.hideIf)}}
 		{else}
 		<td></td><td></td>
@@ -201,7 +205,7 @@ class="yui-navset"
 {{include file=$footerTpl}}
 {$overlibStuff}
 {{if $useTabs}}
-<script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_yui_widgets.js'}"></script>
+{sugar_getscript file="cache/include/javascript/sugar_grp_yui_widgets.js"}
 <script type="text/javascript">
 var {{$form_name}}_tabs = new YAHOO.widget.TabView("{{$form_name}}_tabs");
 {{$form_name}}_tabs.selectTab(0);

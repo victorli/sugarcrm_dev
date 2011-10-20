@@ -97,7 +97,7 @@
 					<td valign="top" scope="row" NOWRAP>
 						{$ie_mod_strings.LBL_SSL}:&nbsp;
                         <div id="rollover">
-                            <a href="#" class="rollover"><img border="0" src="{sugar_getimagepath file='helpInline.gif'}"><span>{$ie_mod_strings.LBL_SSL_DESC}</span></a>
+                            <a href="#" class="rollover">{sugar_getimage alt=$mod_strings.LBL_HELP name="helpInline" ext=".gif" other_attributes='border="0" '}<span>{$ie_mod_strings.LBL_SSL_DESC}</span></a>
                         </div>
 					</td>
 					<td valign="top"  width="15%">

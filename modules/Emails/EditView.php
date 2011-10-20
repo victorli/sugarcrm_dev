@@ -183,9 +183,6 @@ if($email_type == 'archived') {
 	} // if
 	header("Location: index.php?module=Emails&action=Compose&record=$focus->id&replyForward=true&reply=$replyType");
 	return;
-
-	echo getClassicModuleTitle('Emails', array($mod_strings['LBL_COMPOSE_MODULE_NAME']), true);
-	$xtpl=new XTemplate('modules/Emails/EditView.html');
 }
 echo "\n</p>\n";
 
@@ -501,7 +498,7 @@ if(is_admin($current_user) && $_REQUEST['module'] != 'DynamicLayout' && !empty($
 	if(!empty($_REQUEST['record'])){
 		$record = 	$_REQUEST['record'];
 	}
-	$xtpl->assign('ADMIN_EDIT',"<a href='index.php?action=index&module=DynamicLayout&from_action=".$_REQUEST['action'] ."&from_module=".$_REQUEST['module'] ."&record=".$record. "'>".SugarThemeRegistry::current()->getImage("EditLayout","border='0' alt='Edit Layout' align='bottom'")."</a>");
+	$xtpl->assign('ADMIN_EDIT',"<a href='index.php?action=index&module=DynamicLayout&from_action=".$_REQUEST['action'] ."&from_module=".$_REQUEST['module'] ."&record=".$record. "'>".SugarThemeRegistry::current()->getImage("EditLayout","border='0' align='bottom'",null,null,'.gif',$mod_strings['LBL_EDIT_LAYOUT'])."</a>");
 }
 
 ////	END GENERAL TEMPLATE ASSIGNMENTS
@@ -551,7 +548,7 @@ $change_parent_button = '<input type="button" name="button" tabindex="2" class="
     		}
     		open_popup(document.EditView.parent_type.value,600,400,"&tree=ProductsProd",true,false,' .$encoded_popup_request_data.');
 		}</script>';
-	
+
 $xtpl->assign("CHANGE_PARENT_BUTTON", $change_parent_button);
 
 $button_attr = '';
@@ -589,7 +586,7 @@ if(is_admin($current_user) && $_REQUEST['module'] != 'DynamicLayout' && !empty($
 	if(!empty($_REQUEST['record'])) {
 		$record = $_REQUEST['record'];
 	}
-	$xtpl->assign('ADMIN_EDIT',"<a href='index.php?action=index&module=DynamicLayout&from_action=".$_REQUEST['action'] ."&from_module=".$_REQUEST['module'] ."&record=".$record. "'>".SugarThemeRegistry::current()->getImage("EditLayout","border='0' alt='Edit Layout' align='bottom'")."</a>");
+	$xtpl->assign('ADMIN_EDIT',"<a href='index.php?action=index&module=DynamicLayout&from_action=".$_REQUEST['action'] ."&from_module=".$_REQUEST['module'] ."&record=".$record. "'>".SugarThemeRegistry::current()->getImage("EditLayout","border='0' align='bottom'",null,null,'.gif',$mod_strings['LBL_EDIT_LAYOUT'])."</a>");
 }
 
 if(empty($focus->assigned_user_id) && empty($focus->id))
@@ -644,7 +641,7 @@ if(!empty($focus->id) || (!empty($_REQUEST['record']) && $_REQUEST['type'] == 'f
 
 		$attachments .= "
 			<div id='noteDiv{$the_note->id}'>
-				<img onclick='deletePriorAttachment(\"{$the_note->id}\");' src='".SugarThemeRegistry::current()->getImageURL('delete_inline.gif')." value='{$the_note->id}'>&nbsp;";
+				" . SugarThemeRegistry::current()->getImage('delete_inline', "onclick='deletePriorAttachment(\"{$the_note->id}\");' value='{$the_note->id}'", null, null, ".gif", $mod_strings['LBL_DELETE_INLINE']) . "&nbsp;";
 		$attachments .= "<a href=\"index.php?entryPoint=download&id=".$the_note->id."&type=Notes\">".$the_note->name."</a><div />";
 		//$attachments .= '<a href="'.UploadFile::get_url($the_note->filename,$the_note->id).'&entryPoint=download&type=Notes' . '" target="_blank">'. $the_note->filename .'</a></div>';
 
@@ -658,7 +655,6 @@ if(!empty($focus->id) || (!empty($_REQUEST['record']) && $_REQUEST['type'] == 'f
 }
 
 $attJs  = '<script type="text/javascript">';
-$attJs .= 'var file_path = "'.$sugar_config['site_url'].'/'.$sugar_config['upload_dir'].'";';
 $attJs .= 'var lnk_remove = "'.$app_strings['LNK_REMOVE'].'";';
 $attJs .= '</script>';
 $xtpl->assign('ATTACHMENTS', $attachments);

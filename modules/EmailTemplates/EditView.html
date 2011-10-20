@@ -43,13 +43,13 @@
 	#subjectfield { height: 1.6em; }
 </style>
 {JAVASCRIPT}
-<script type="text/javascript" src="include/javascript/sugar_grp1.js?s={SUGAR_VERSION}&c={JS_CUSTOM_VERSION}"></script>
+<script type="text/javascript" src="cache/include/javascript/sugar_grp1.js?v={VERSION_MARK}"></script>
 {JSLANG}
-<script type="text/javascript" language="Javascript" src="modules/Emails/javascript/Email.js"></script>
-<script type="text/javascript" language="Javascript" src="modules/EmailTemplates/EmailTemplate.js"></script>
+<script type="text/javascript" language="Javascript" src="modules/Emails/javascript/Email.js?v={VERSION_MARK}"></script>
+<script type="text/javascript" language="Javascript" src="modules/EmailTemplates/EmailTemplate.js?v={VERSION_MARK}"></script>
 <script type="text/javascript">
 	{FIELD_DEFS_JS}
-</script> 
+</script>
 
 <form name="EditView" id="EditView" method="POST" action="index.php" enctype="multipart/form-data">
 	<input type="hidden" name="module" value="EmailTemplates">
@@ -71,18 +71,18 @@
 								addUploadFiles('EditView');
 								addUploadDocs('EditView');
 <!-- END: NoInbound1 -->
-								return check_form('EditView');" 
+								return check_form('EditView');"
 					type="submit" name="button" value="{APP.LBL_SAVE_BUTTON_LABEL}">
 				<input title="{APP.LBL_CANCEL_BUTTON_TITLE}" accesskey="{APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="{CANCEL_SCRIPT}" type="submit" name="button" value="{APP.LBL_CANCEL_BUTTON_LABEL}">
 			</td>
 			<td align="right" nowrap>
 				<span class="required">
-					{APP.LBL_REQUIRED_SYMBOL} 
+					{APP.LBL_REQUIRED_SYMBOL}
 				</span>
-				{APP.NTC_REQUIRED} 
+				{APP.NTC_REQUIRED}
 			</td>
 			<td align='right'>
-				{ADMIN_EDIT} 
+				{ADMIN_EDIT}
 			</td>
 		</tr>
 	</table>
@@ -93,7 +93,7 @@
 				<table width="100%" border="0" cellspacing="0" cellpadding="0">
 					<tr>
 						<td width="15%" scope="row">
-							{MOD.LBL_NAME} 
+							{MOD.LBL_NAME}
 							<span class="required">
 								{APP.LBL_REQUIRED_SYMBOL}
 							</span>
@@ -108,21 +108,21 @@
 					</tr>
 					<tr>
 						<td width="15%" scope="row">
-							{MOD.LBL_DESCRIPTION} 
+							{MOD.LBL_DESCRIPTION}
 						</td>
 						<td colspan="3" >
-							<textarea name='description' tabindex='30' cols="90" rows="1" style="height: 1.6.em; overflow-y:auto; font-family:sans-serif,monospace; font-size:inherit;" id="subjectfield">{DESCRIPTION}</textarea> 
+							<textarea name='description' tabindex='30' cols="90" rows="1" style="height: 1.6.em; overflow-y:auto; font-family:sans-serif,monospace; font-size:inherit;" id="subjectfield">{DESCRIPTION}</textarea>
 						</td>
 					</tr>
 					<tr>
 						<td colspan="4">
-							&nbsp; 
+							&nbsp;
 						</td>
 					</tr>
 <!-- BEGIN: NoInbound -->
 					<tr>
 						<td width="15%" scope="row" align='left'>
-							{MOD.LBL_INSERT_VARIABLE}&nbsp; 
+							{MOD.LBL_INSERT_VARIABLE}&nbsp;
 						</td>
 						<td width="30%"  colspan="3">
 							<select name='variable_module' tabindex="40" onchange="addVariables(document.EditView.variable_name,this.options[this.selectedIndex].value);">
@@ -131,7 +131,7 @@
 							<select name='variable_name' tabindex="50" onchange="showVariable();">
 							</select>
 							<span scope="row">
-								{MOD.LBL_USE}: 
+								{MOD.LBL_USE}:
 							</span>
 							<input type="text" size="30" tabindex="60" name="variable_text" />
 <!-- BEGIN: variable_button -->
@@ -142,7 +142,7 @@
 <!-- BEGIN: tracker_url -->
 					<tr>
 						<td width="15%" scope="row" align='left'>
-							{MOD.LBL_INSERT_TRACKER_URL}&nbsp; 
+							{MOD.LBL_INSERT_TRACKER_URL}&nbsp;
 						</td>
 						<td width="85%" colspan="3" valign="top" >
 							<select tabindex='75' name='tracker_url' onchange='this.form.url_text.value=this.value'>
@@ -159,20 +159,20 @@
 							{MOD.LBL_SUBJECT}
 						</td>
 						<td colspan='4' >
-							<textarea onblur="remember_place(this);" name='subject' tabindex='80' cols="90" rows="1" style="height: 1.6.em; overflow-y:auto; font-family:sans-serif,monospace; font-size:inherit;" id="subjectfield">{SUBJECT}</textarea> 
+							<textarea onblur="remember_place(this);" name='subject' tabindex='80' cols="90" rows="1" style="height: 1.6.em; overflow-y:auto; font-family:sans-serif,monospace; font-size:inherit;" id="subjectfield">{SUBJECT}</textarea>
 						</td>
 					</tr>
 					<tr>
 						<td>&nbsp;</td>
 						<td colspan='4'>
 						<input  name="toggle_textonly"  id="toggle_textonly" onclick="toggle_text_only();" type="checkbox" {TEXTONLY_CHECKED}/>
-						<input  name="text_only"  id="text_only"  type="hidden" value='{TEXTONLY_VALUE}'/>						
-							&nbsp;{MOD.LBL_SEND_AS_TEXT}	
+						<input  name="text_only"  id="text_only"  type="hidden" value='{TEXTONLY_VALUE}'/>
+							&nbsp;{MOD.LBL_SEND_AS_TEXT}
 						</td>
 					</tr>
 					<tr>
 						<td valign="top" scope="row">
-							{MOD.LBL_BODY} 
+							{MOD.LBL_BODY}
 						</td>
 
 <!-- BEGIN: textarea -->
@@ -182,22 +182,22 @@
 							</div>
                             <br>
 							<div id='toggle_textarea_option'>
-                                <input id='toggle_textarea_elem' onclick="toggle_textarea_edit(this);" type="button" name="toggle_html" value="{MOD.LBL_EDIT_ALT_TEXT}" /> 
+                                <input id='toggle_textarea_elem' onclick="toggle_textarea_edit(this);" type="button" name="toggle_html" value="{MOD.LBL_EDIT_ALT_TEXT}" />
                             </div>
                             <br>
                             <div id="text_div" style="display: none">
-                                <textarea tabindex='110' name='body' cols="100" rows="20" >{BODY}</textarea> 
-                            </div> 
+                                <textarea tabindex='110' name='body' cols="100" rows="20" >{BODY}</textarea>
+                            </div>
 						</td>
 <!-- END: textarea -->
 					</tr>
 <!-- BEGIN: NoInbound2 -->
 					<tr>
 						<td valign="top" scope="row">
-							{MOD.LBL_ATTACHMENTS}: 
+							{MOD.LBL_ATTACHMENTS}:
 						</td>
 						<td colspan="2" nowrap>
-							{ATTACHMENTS_JAVASCRIPT} {ATTACHMENTS} 
+							{ATTACHMENTS_JAVASCRIPT} {ATTACHMENTS}
 						</td>
 					</tr>
 <!-- END: NoInbound2 -->

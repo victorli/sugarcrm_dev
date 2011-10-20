@@ -123,6 +123,7 @@ class Bug43196Test extends Sugar_PHPUnit_Framework_TestCase
     {
 		global $current_user;  	
     	
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before logging in
 		$result = $this->_soapClient->call(
 		    'login',
             array('user_auth' => 

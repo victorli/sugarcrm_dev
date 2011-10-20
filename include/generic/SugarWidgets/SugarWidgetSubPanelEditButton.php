@@ -42,31 +42,33 @@ require_once('include/generic/SugarWidgets/SugarWidgetField.php');
 //TODO Rename this to edit link
 class SugarWidgetSubPanelEditButton extends SugarWidgetField
 {
-	function displayHeaderCell(&$layout_def)
+    protected static $defs = array();
+    protected static $edit_icon_html;
+
+	function displayHeaderCell($layout_def)
 	{
 		return '&nbsp;';
 	}
 
-	function displayList(&$layout_def)
+	function displayList($layout_def)
 	{
-		global $app_strings, $beanList;
+		global $app_strings;
 
-		$edit_icon_html = SugarThemeRegistry::current()->getImage( 'edit_inline',
-			'align="absmiddle" alt="' . $app_strings['LNK_EDIT'] . '" border="0"');
+		if(empty(self::$edit_icon_html)) {
+		    self::$edit_icon_html = SugarThemeRegistry::current()->getImage( 'edit_inline', 'align="absmiddle" border="0"',null,null,'.gif','');//setting alt to blank on purpose on subpanels for 508
+		}
 
         $onclick ='';
-            if($layout_def['EditView']) {
+        if($layout_def['EditView']) {
 			return "<a href='#' onMouseOver=\"javascript:subp_nav('".$layout_def['module']."', '".$layout_def['fields']['ID']."', 'e', this"
 			. (empty($layout_def['linked_field']) ? "" : ", '{$layout_def['linked_field']}'") . ");\""
 			. " onFocus=\"javascript:subp_nav('".$layout_def['module']."', '".$layout_def['fields']['ID']."', 'e', this"
 			. (empty($layout_def['linked_field']) ? "" : ", '{$layout_def['linked_field']}'") . ");\""
-			. ' class="listViewTdToolsS1">' . $edit_icon_html . '&nbsp;' . $app_strings['LNK_EDIT'] .'</a>&nbsp;';
+			. ' class="listViewTdToolsS1">' . self::$edit_icon_html . '&nbsp;' . $app_strings['LNK_EDIT'] .'</a>&nbsp;';
 		}
-		else{
-		}
-			return '';
-		}
-	//}
+
+        return '';
+    }
 
 }
 

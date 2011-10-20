@@ -195,7 +195,7 @@ class SugarRestService extends SugarWebService{
 	function error($errorObject){
 		$GLOBALS['log']->info('Begin: SugarRestService->error');
 		$this->server->fault($errorObject);
-		$GLOBALS['log']->info('Begin: SugarRestService->error');
+		$GLOBALS['log']->info('End: SugarRestService->error');
 	} // fn
 
 	/**

@@ -292,13 +292,13 @@ $diffs ='';
 		{
 			$current_version = $matches[1].'0';
 		}
-
+        $type = $db->getScriptName();
 		switch($manifest['name']){
 			case 'SugarCE to SugarPro':
-				$sqlFile = $current_version.'_ce_to_pro_'.$db->dbType;
+				$sqlFile = $current_version.'_ce_to_pro_'.$type;
 				break;
 			case 'SugarCE to SugarEnt':
-				$sqlFile = $current_version.'_ce_to_ent_'.$db->dbType;
+				$sqlFile = $current_version.'_ce_to_ent_'.$type;
 				break;
             case 'SugarCE to SugarCorp':
 				$sqlFile = $current_version.'_ce_to_corp_'.$db->dbType;
@@ -307,21 +307,18 @@ $diffs ='';
 				$sqlFile = $current_version.'_ce_to_ult_'.$db->dbType;
 				break;
 			case 'SugarPro to SugarEnt':
-				$sqlFile = $current_version.'_pro_to_ent_'.$db->dbType;
+				$sqlFile = $current_version.'_pro_to_ent_'.$type;
 				break;
 			default:
 				break;
 		}
 	} else {
-		$sqlFile = $current_version.'_to_'.$targetVersion.'_'.$db->dbType;
+		$sqlFile = $current_version.'_to_'.$targetVersion.'_'.$type;
 	}
 
 	$newTables = array();
 
-	if($db->dbType == 'oci8') {
-	} else {
-		$sqlScript = $_SESSION['unzip_dir'].'/scripts/'.$sqlFile.'.sql';
-	}
+    $sqlScript = $_SESSION['unzip_dir'].'/scripts/'.$sqlFile.'.sql';
 
 	logThis('looking for schema script at: '.$sqlScript);
 	if(is_file($sqlScript)) {
@@ -337,13 +334,11 @@ $diffs ='';
 		$contents = stream_get_contents($fp);
 	    $anyScriptChanges =$contents;
 
-		// remove __uw_temp tables
-		//testCleanUp($db->dbType);
 		fclose($fp);
 
-		$customTables = getCustomTables($db->dbType);
+		$customTables = getCustomTables();
 		if ( !empty($customTables) ) {
-			$_SESSION['alterCustomTableQueries'] = alterCustomTables($db->dbType, $customTables);
+			$_SESSION['alterCustomTableQueries'] = alterCustomTables($customTables);
 		} else {
 			$_SESSION['alterCustomTableQueries'] = false;
 		}
@@ -433,7 +428,7 @@ $form5 =<<<eoq5
 <div id="upgradeDiv" style="display:none">
     <table cellspacing="0" cellpadding="0" border="0">
         <tr><td>
-           <p><img src='modules/UpgradeWizard/processing.gif'></p>
+           <p><!--not_in_theme!--><img src='modules/UpgradeWizard/processing.gif' alt='Processing'></p>
         </td></tr>
      </table>
  </div>

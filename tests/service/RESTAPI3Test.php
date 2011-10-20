@@ -108,6 +108,8 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
     protected function _login()
     {
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before logging in
+
         return $this->_makeRESTCall('login',
             array(
                 'user_auth' =>
@@ -124,9 +126,6 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function testSearchByModule()
     {
-        $result = $this->_login();
-        $session = $result['id'];
-
         $seedData = self::$helperObject->populateSeedDataForSearchTest($this->_user->id);
 
         $searchModules = array('Accounts','Contacts','Opportunities');
@@ -134,6 +133,8 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $offSet = 0;
         $maxResults = 10;
 
+        $result = $this->_login(); // Logging in just before the REST call as this will also commit any pending DB changes
+        $session = $result['id'];
         $results = $this->_makeRESTCall('search_by_module',
                         array(
                             'session' => $session,
@@ -156,9 +157,6 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function testSearchByModuleWithReturnFields()
     {
-        $result = $this->_login();
-        $session = $result['id'];
-
         $seedData = self::$helperObject->populateSeedDataForSearchTest($this->_user->id);
 
         $returnFields = array('name','id','deleted');
@@ -167,6 +165,8 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $offSet = 0;
         $maxResults = 10;
 
+        $result = $this->_login(); // Logging in just before the REST call as this will also commit any pending DB changes
+        $session = $result['id'];
         $results = $this->_makeRESTCall('search_by_module',
                         array(
                             'session' => $session,
@@ -205,9 +205,6 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function testGetModuleList()
     {
-        $result = $this->_login();
-        $session = $result['id'];
-
         $account = new Account();
         $account->id = uniqid();
         $account->new_with_id = TRUE;
@@ -219,6 +216,9 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $orderBy = 'name';
         $offset = 0;
         $returnFields = array('name');
+
+        $result = $this->_login(); // Logging in just before the REST call as this will also commit any pending DB changes
+        $session = $result['id'];
         $result = $this->_makeRESTCall('get_entry_list', array($session, $module, $whereClause, $orderBy,$offset, $returnFields));
 
         $this->assertEquals($account->id, $result['entry_list'][0]['id'],'Unable to retrieve account list during search.');
@@ -723,10 +723,11 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
     }
      public function testGetUpcomingActivities()
      {
-         $result = $this->_login();
+         $expected = $this->_createUpcomingActivities(); //Seed the data.
+
+         $result = $this->_login(); // Logging in just before the REST call as this will also commit any pending DB changes
          $this->assertTrue(!empty($result['id']) && $result['id'] != -1,$this->_returnLastRawResponse());
          $session = $result['id'];
-         $expected = $this->_createUpcomingActivities(); //Seed the data.
          $results = $this->_makeRESTCall('get_upcoming_activities',
                              array(
                              'session' => $session,

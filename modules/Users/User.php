@@ -413,11 +413,23 @@ class User extends Person {
         return $user->_userPreferenceFocus->getPreference($name, $category);
 	}
 
+	/**
+	 * Get WHERE clause that fetches all users counted for licensing purposes
+	 * @return string
+	 */
+	public static function getLicensedUsersWhere()
+	{
+		return "deleted=0 AND status='Active' AND user_name !='' AND user_name IS NOT NULL AND is_group=0 AND portal_only=0";
+	    return "1<>1";
+	}
+
+	/**
+	 * (non-PHPdoc)
+	 * @see Person::save()
+	 */
 	function save($check_notify = false) {
 		$isUpdate = !empty($this->id) && !$this->new_with_id;
 
-
-		$query = "SELECT count(id) as total from users WHERE status='Active' AND deleted=0 AND is_group=0 AND portal_only=0";
 
 
 		// wp: do not save user_preferences in this table, see user_preferences module
@@ -816,16 +828,10 @@ EOQ;
 			$verified = FALSE;
 		}
 
-		if (($current_user->is_admin == "on")) {
-            if($this->db->dbType == 'mssql'){
-                $query = "SELECT user_name from users where is_admin = 1 AND deleted=0";
-            }else{
-                $query = "SELECT user_name from users where is_admin = 'on' AND deleted=0";
-            }
-			$result = $this->db->query($query, true, "Error selecting possible duplicate users: ");
-			$remaining_admins = $this->db->getRowCount($result);
+		if (is_admin($current_user)) {
+			$remaining_admins = $this->db->getOne("SELECT COUNT(*) as c from users where is_admin = 1 AND deleted=0");
 
-			if (($remaining_admins <= 1) && ($this->is_admin != "on") && ($this->id == $current_user->id)) {
+			if (($remaining_admins <= 1) && $this->id == $current_user->id && !is_admin($this)) {
 				$GLOBALS['log']->debug("Number of remaining administrator accounts: {$remaining_admins}");
 				$this->error_string .= $mod_strings['ERR_LAST_ADMIN_1'].$this->user_name.$mod_strings['ERR_LAST_ADMIN_2'];
 				$verified = FALSE;
@@ -843,14 +849,14 @@ EOQ;
 
 	function get_list_view_data() {
 
-		global $current_user;
+		global $current_user, $mod_strings;
 
 		$user_fields = $this->get_list_view_array();
 		if ($this->is_admin)
-			$user_fields['IS_ADMIN_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '');
+			$user_fields['IS_ADMIN_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '',null,null,'.gif',$mod_strings['LBL_CHECKMARK']);
 		elseif (!$this->is_admin) $user_fields['IS_ADMIN'] = '';
 		if ($this->is_group)
-			$user_fields['IS_GROUP_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '');
+			$user_fields['IS_GROUP_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '',null,null,'.gif',$mod_strings['LBL_CHECKMARK']);
 		else
 			$user_fields['IS_GROUP_IMAGE'] = '';
 		$user_fields['NAME'] = empty ($this->name) ? '' : $this->name;
@@ -1284,13 +1290,13 @@ EOQ;
      * @return string
      */
     protected function _fixupModuleForACL($module) {
-        if($module=='ContractTypes') { 
+        if($module=='ContractTypes') {
             $module = 'Contracts';
         }
         if(preg_match('/Product[a-zA-Z]*/',$module)) {
             $module = 'Products';
         }
-        
+
         return $module;
     }
     /**
@@ -1313,9 +1319,9 @@ EOQ;
         // These modules don't take kindly to the studio trying to play about with them.
         static $ignoredModuleList = array('iFrames','Feeds','Home','Dashboard','Calendar','Activities','Reports');
 
-        
+
         $actions = ACLAction::getUserActions($this->id);
-        
+
         foreach ($beanList as $module=>$val) {
             // Remap the module name
             $module = $this->_fixupModuleForACL($module);
@@ -1329,14 +1335,14 @@ EOQ;
             }
 
             $key = 'module';
-            
+
             if (($this->isAdmin() && isset($actions[$module][$key]))
                 ) {
                 $myModules[] = $module;
             }
         }
 
-        return $myModules;        
+        return $myModules;
     }
     /**
      * Is this user a system wide admin
@@ -1383,9 +1389,9 @@ EOQ;
         if ($this->isAdmin()) {
             return true;
         }
-        
+
         $devModules = $this->getDeveloperModules();
-        
+
         $module = $this->_fixupModuleForACL($module);
 
         if (in_array($module,$devModules) ) {
@@ -1415,9 +1421,9 @@ EOQ;
         if ($this->isAdmin()) {
             return true;
         }
-        
+
         $adminModules = $this->getAdminModules();
-        
+
         $module = $this->_fixupModuleForACL($module);
 
         if (in_array($module,$adminModules) ) {
@@ -1492,5 +1498,25 @@ EOQ;
 
 
    }
+
+
+    /**
+     * Get user first day of week.
+     *
+     * @param [User] $user user object, current user if not specified
+     * @return int : 0 = Sunday, 1 = Monday, etc...
+     */
+    public function get_first_day_of_week()
+    {
+        $fdow = $this->getPreference('fdow');
+        if (empty($fdow))
+        {
+            $fdow = 0;
+        }
+
+        return $fdow;
+    }
+
+
 
 }

@@ -246,6 +246,7 @@ class ProjectTask extends SugarBean {
 		//$date_due = $timedate->to_db_date($task_fields['DATE_DUE'],false);
         if (isset($this->parent_type))
 			$task_fields['PARENT_MODULE'] = $this->parent_type;
+
 		/*
         if ($this->status != "Completed" && $this->status != "Deferred" ) {
 			$task_fields['SET_COMPLETE'] = "<a href='index.php?return_module=$currentModule&return_action=$action&return_id=" . ((!empty($focus->id)) ? $focus->id : "") . "&module=ProjectTask&action=EditView&record={$this->id}&status=Completed'>".SugarThemeRegistry::current()->getImage("close_inline","alt='Close' border='0'")."</a>";
@@ -322,6 +323,7 @@ class ProjectTask extends SugarBean {
         if($custom_join){
 			$query .=  $custom_join['select'];
 		}
+
         $query .= " FROM project_task LEFT JOIN project ON project_task.project_id=project.id AND project.deleted=0 ";
 
 		if($custom_join){
@@ -351,7 +353,6 @@ class ProjectTask extends SugarBean {
         }
         return $query;
     }
-
 
 
 }

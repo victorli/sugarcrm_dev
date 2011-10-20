@@ -39,11 +39,16 @@
 
 {literal}
 <style>
+#smtpButtonGroup .yui-button {
+    padding-top: 10px;
+}
 #smtpButtonGroup .yui-radio-button-checked button, .yui-checkbox-button-checked button {
     background-color: #CCCCCC;
     color: #FFFFFF;
     text-shadow: none;
 }
+
+
 {/literal}
 </style>
 {if $ERROR != ''}

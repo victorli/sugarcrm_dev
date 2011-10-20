@@ -478,8 +478,8 @@ class ConnectorUtils
             return false;
         }
 
-        if(file_exists("{$GLOBALS['sugar_config']['cache_dir']}modules/{$module}/DetailView.tpl") && !unlink("{$GLOBALS['sugar_config']['cache_dir']}modules/{$module}/DetailView.tpl")) {
-            $GLOBALS['log']->fatal("Cannot delete file {$GLOBALS['sugar_config']['cache_dir']}modules/{$module}/DetailView.tpl");
+        if(file_exists($cachedfile = sugar_cached("modules/{$module}/DetailView.tpl")) && !unlink($cachedfile)) {
+            $GLOBALS['log']->fatal("Cannot delete file $cachedfile");
             return false;
         }
     }
@@ -582,9 +582,9 @@ class ConnectorUtils
                         return false;
                      }
 
-                     if(file_exists("{$GLOBALS['sugar_config']['cache_dir']}modules/{$module}/DetailView.tpl") && !unlink("{$GLOBALS['sugar_config']['cache_dir']}modules/{$module}/DetailView.tpl")) {
-                        $GLOBALS['log']->fatal("Cannot delete file {$GLOBALS['sugar_config']['cache_dir']}modules/{$module}/DetailView.tpl");
-                        return false;
+                     if(file_exists($cachedfile = sugar_cached("modules/{$module}/DetailView.tpl")) && !unlink($cachedfile)) {
+                         $GLOBALS['log']->fatal("Cannot delete file $cachedfile");
+                         return false;
                      }
               }
            }
@@ -752,7 +752,8 @@ class ConnectorUtils
                       $iconFilePath = $formatter->getIconFilePath();
                       $iconFilePath = empty($iconFilePath) ? 'themes/default/images/MoreDetail.png' : $iconFilePath;
 
-                      $code = '<img id="dswidget_img" border="0" src="' . $iconFilePath .'" alt="' . $shown_sources[0] .'" onmouseover="show_' . $shown_sources[0] . '(event);">';
+                      $code = '<!--not_in_theme!--><img id="dswidget_img" border="0" src="' . $iconFilePath .'" alt="' . $shown_sources[0] .'" onmouseover="show_' . $shown_sources[0] . '(event);">';
+
                       $code .= "<script type='text/javascript' src='{sugar_getjspath file='include/connectors/formatters/default/company_detail.js'}'></script>";
                       $code .= $formatter->getDetailViewFormat();
                       $code .= $formatter_code;
@@ -783,11 +784,13 @@ class ConnectorUtils
                   if(!empty($formatterCode)) {
                       if($sourcesDisplayed > 1) {
                       	$dswidget_img = SugarThemeRegistry::current()->getImageURL('MoreDetail.png');
-                        $code = '<img id="dswidget_img" src="'.$dswidget_img.'" width="11" height="7" border="0" alt="connectors_popups" onmouseover="return showConnectorMenu2();" onmouseout="return nd(1000);">';
+                        $code = '<!--not_in_theme!--><img id="dswidget_img" src="'.$dswidget_img.'" width="11" height="7" border="0" alt="'.$app_strings['LBL_CONNECTORS_POPUPS'].'" onmouseover="return showConnectorMenu2();" onmouseout="return nd(1000);">';
+
                       } else {
                        	  $dswidget_img = SugarThemeRegistry::current()->getImageURL('MoreDetail.png');
                           $singleIcon = empty($singleIcon) ? $dswidget_img : $singleIcon;
-                          $code = '<img id="dswidget_img" border="0" src="' . $singleIcon . '" alt="connectors_popups" onmouseover="return showConnectorMenu2();" onmouseout="return nd(1000);">';
+                          $code = '<!--not_in_theme!--><img id="dswidget_img" border="0" src="' . $singleIcon . '" alt="'.$app_strings['LBL_CONNECTORS_POPUPS'].'" onmouseover="return showConnectorMenu2();" onmouseout="return nd(1000);">';
+
                       }
                       $code .= "{overlib_includes}\n";
                       $code .= "<script type='text/javascript' src='{sugar_getjspath file='include/connectors/formatters/default/company_detail.js'}'></script>\n";

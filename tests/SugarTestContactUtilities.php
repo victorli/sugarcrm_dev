@@ -60,6 +60,7 @@ class SugarTestContactUtilities
         }
         $contact->save();
         self::$_createdContacts[] = $contact;
+        $GLOBALS['db']->commit();
         return $contact;
     }
 

@@ -82,7 +82,7 @@ class FontManager{
      * @var String
      */
     var $font_type = "";
-    
+
     private function setFontPath(){
         if(file_exists(K_PATH_CUSTOM_FONTS.$this->filename)){
             $this->fontPath = K_PATH_CUSTOM_FONTS;
@@ -112,7 +112,7 @@ class FontManager{
     }
     /**
      * This method return the style of the given font set in filename
-     * Values can be regular, bold, italic. 
+     * Values can be regular, bold, italic.
      * @return array of styles on success
      * @return empty array on failure
      */
@@ -197,12 +197,12 @@ class FontManager{
             //The font definition file has a bad format
             return false;
         }
-        
+
         $this->font_name = "";
         $this->font_enc = "";
         $this->font_displayname = "";
         $this->font_type = "";
-        
+
         if(!empty($name)){
             $this->font_name = $name;
         }
@@ -251,8 +251,8 @@ class FontManager{
      */
     public function listFontFiles(){
         $this->fontList=array();
-        if(file_exists($GLOBALS['sugar_config']['cache_dir']."/Sugarpdf/cachedFontList.php")){
-            require($GLOBALS['sugar_config']['cache_dir']."/Sugarpdf/cachedFontList.php");
+        if(file_exists($cachedfile = sugar_cached("Sugarpdf/cachedFontList.php"))) {
+            require $cachedfile;
             $this->fontList=$cachedFontList;
             return true;
         }else{
@@ -295,7 +295,7 @@ class FontManager{
     public function deleteFont(){
         global $current_user;
         if(!is_admin($current_user)){
-            sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']); 
+            sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);
         }
         $this->loadFontFile();
         if($this->font_type == "core" || $this->fontPath == K_PATH_FONTS){
@@ -336,10 +336,10 @@ class FontManager{
     public function addFont($font_file, $metric_file, $embedded=true, $encoding_table='cp1252', $patch=array(), $cid_info="", $style="regular"){
         global $current_user;
         if(!is_admin($current_user)){
-            sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);     
+            sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);
         }
         $error=false;
-        
+
         $oldStr=ob_get_contents();
         ob_clean();
         require_once("include/tcpdf/fonts/utils/makefont.php");
@@ -350,9 +350,9 @@ class FontManager{
 
         $this->log=ob_get_contents();
         ob_clean();
-        
+
         echo $oldStr;
-        
+
         if(empty($filename)){
             array_push($this->errors, translate("ERR_FONT_MAKEFONT","Configurator"));
             $error=true;
@@ -398,7 +398,7 @@ class FontManager{
                 if(file_exists($filename.".z"))
                     unlink($filename.".z");
             }
-            
+
         }
         $this->clearCachedFile();
         return $error;
@@ -410,10 +410,10 @@ class FontManager{
     public function clearCachedFile(){
         global $current_user;
         if(!is_admin($current_user)){
-            sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);     
+            sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);
         }
-        if(file_exists($GLOBALS['sugar_config']['cache_dir']."/Sugarpdf/cachedFontList.php")){
-            return(unlink($GLOBALS['sugar_config']['cache_dir']."/Sugarpdf/cachedFontList.php"));
+         if(file_exists($cachedfile = sugar_cached("Sugarpdf/cachedFontList.php"))) {
+            return unlink($cachedfile);
         }
         return true;
     }

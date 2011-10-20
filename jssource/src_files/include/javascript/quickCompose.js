@@ -277,7 +277,7 @@ SUGAR.quickCompose = function() {
 				    type : "js",
 				    varName: "SUGAR.email2.complexLayout",
 				    requires: ["layout", "sugarwidgets", "tinymce"],
-				    fullpath: "include/javascript/sugar_grp_quickcomp.js"
+				    fullpath: "cache/include/javascript/sugar_grp_quickcomp.js"
 				});
 				
 				//Load the css needed for the quickCompose.

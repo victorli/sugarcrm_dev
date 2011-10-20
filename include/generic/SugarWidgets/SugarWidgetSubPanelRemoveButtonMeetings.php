@@ -93,9 +93,8 @@ class SugarWidgetSubPanelRemoveButtonMeetings extends SugarWidgetField
 		}
 		$return_url = "index.php?module=$return_module&action=$return_action&subpanel=$subpanel&record=$return_id&sugar_body_only=1";
 
-		$icon_remove_text = $app_strings['LNK_REMOVE'];
-		$icon_remove_html = SugarThemeRegistry::current()->getImage( 'delete_inline',
-			'align="absmiddle" alt="' . $icon_remove_text . '" border="0"');
+		$icon_remove_text = strtolower($app_strings['LBL_ID_FF_REMOVE']);
+		$icon_remove_html = SugarThemeRegistry::current()->getImage( 'delete_inline','align="absmiddle" border="0"',null,null,'.gif','');//setting alt to blank on purpose on subpanels for 508
 		$remove_url = $layout_def['start_link_wrapper']
 			. "index.php?module=$parent_module"
 			. "&action=$action"

@@ -38,7 +38,7 @@
 
 {/if}
 
-<script type="text/javascript" language="Javascript" src="modules/UpgradeWizard/upgradeWizard.js"></script>
+<script type="text/javascript" language="Javascript" src="{sugar_getjspath file='modules/UpgradeWizard/upgradeWizard.js'}"></script>
 
 {$UW_JS}
 
@@ -69,10 +69,10 @@
 	<input type="hidden" name="addTaskReminder" id="addTaskReminder">
 	<input type="hidden" name="addEmailReminder" id="addEmailReminder">
     {if !isset($includeContainerCSS) || $includeContainerCSS}
-    <link rel='stylesheet' type='text/css' href='include/javascript/yui/assets/container.css' />
+    <link rel='stylesheet' type='text/css' href="{sugar_getjspath file='include/javascript/yui/assets/container.css'}" />
         {if $step == 'commit'}
-    <link rel='stylesheet' type='text/css' href='include/javascript/yui/build/container/assets/container.css'/>
-    <link rel='stylesheet' type='text/css' href='themes/default/css/yui.css'/>
+    <link rel='stylesheet' type='text/css' href="{sugar_getjspath file='include/javascript/yui/build/container/assets/container.css'}"/>
+    <link rel='stylesheet' type='text/css' href="{sugar_getjspath file='themes/default/css/yui.css'}"/>
        {/if}
     {/if}
 		{if $showBack}
@@ -133,7 +133,7 @@
 </div>
 
 <div id="main">
-<table width="100%" border="0" cellpadding="0" cellpadding="0" 
+<table width="100%" border="0" cellpadding="0" cellpadding="0"
     class="{if !isset($includeContainerCSS) || $includeContainerCSS}tabDetailView{else}detail view small{/if}">
 {if $step != "start" && $step != "cancel" && $step != "end"}
 	<tr>

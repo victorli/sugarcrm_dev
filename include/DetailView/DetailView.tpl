@@ -122,7 +122,7 @@ class="yui-navset detailview_tabs"
 			    {{if !empty($colData.field.name)}}
 			    {if !$fields.{{$colData.field.name}}.hidden}
 			    {{/if}}
-				{{if $colData.field.customCode || $colData.field.assign}}
+				{{if ($colData.field.customCode && !$colData.field.customCodeRenderField) || $colData.field.assign}}
 					{counter name="panelFieldCount"}
 					<span id="{{$colData.field.name}}" class="sugar_field">{{sugar_evalcolumn var=$colData.field colData=$colData}}</span>
 				{{elseif $fields[$colData.field.name] && !empty($colData.field.fields) }}
@@ -139,6 +139,10 @@ class="yui-navset detailview_tabs"
 					{counter name="panelFieldCount"}
 					{{sugar_field parentFieldArray='fields' vardef=$fields[$colData.field.name] displayType='DetailView' displayParams=$colData.field.displayParams typeOverride=$colData.field.type}}
 				{{/if}}
+				{{if !empty($colData.field.customCode) && $colData.field.customCodeRenderField}}
+				    {counter name="panelFieldCount"}
+				    <span id="{{$colData.field.name}}" class="sugar_field">{{sugar_evalcolumn var=$colData.field colData=$colData}}</span>
+                {{/if}}
 				{{if !empty($colData.field.name)}}
 				{/if}
 				{{/if}}
@@ -168,7 +172,7 @@ class="yui-navset detailview_tabs"
 {{include file=$footerTpl}}
 {{if $useTabs}}
 <script type='text/javascript' src='{sugar_getjspath file='include/javascript/popup_helper.js'}'></script>
-<script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_yui_widgets.js'}"></script>
+<script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_yui_widgets.js'}"></script>
 <script type="text/javascript">
 var {{$module}}_detailview_tabs = new YAHOO.widget.TabView("{{$module}}_detailview_tabs");
 {{$module}}_detailview_tabs.selectTab(0);

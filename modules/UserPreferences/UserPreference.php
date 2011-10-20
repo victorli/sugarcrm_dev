@@ -379,7 +379,7 @@ class UserPreference extends SugarBean
         else {
         	if(!empty($_COOKIE['sugar_user_theme']) && !headers_sent()){
                 setcookie('sugar_user_theme', '', time() - 3600); // expire the sugar_user_theme cookie
-            }        	
+            }
             unset($_SESSION[$user->user_name."_PREFERENCES"]);
             if($user->id == $GLOBALS['current_user']->id) {
                 session_destroy();
@@ -488,5 +488,17 @@ class UserPreference extends SugarBean
         unset($prefs);
         unset($newprefs);
         unset($newstr);
+    }
+
+    /**
+     * Utility method to see if the current user is the $_userFocus Object
+     *
+     * @return bool
+     */
+    protected function isCurrentUser()
+    {
+        global $current_user;
+        
+        return ($this->_userFocus instanceof User && $current_user instanceof User && $this->_userFocus->id == $current_user->id);
     }
 }

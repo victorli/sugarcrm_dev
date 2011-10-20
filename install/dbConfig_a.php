@@ -49,48 +49,30 @@ if( !isset( $install_script ) || !$install_script ){
 }
 
 
-// DB split 
-$oci8sid = '';
+// DB split
 $createDbCheckbox = '';
-$createDb = (isset($_SESSION['setup_db_create_database']) && !empty($_SESSION['setup_db_create_database'])) ? 'checked="checked"' : '';
-$dropCreate = (isset($_SESSION['setup_db_drop_tables']) && !empty($_SESSION['setup_db_drop_tables'])) ? 'checked="checked"' : ''; 
+$createDb = (!empty($_SESSION['setup_db_create_database'])) ? 'checked="checked"' : '';
+$dropCreate = (!empty($_SESSION['setup_db_drop_tables'])) ? 'checked="checked"' : '';
 $instanceName = '';
 if (isset($_SESSION['setup_db_host_instance']) && !empty($_SESSION['setup_db_host_instance'])){
 	$instanceName = $_SESSION['setup_db_host_instance'];
 }
 
-if($_SESSION['setup_db_type'] == 'oci8') {
-}else {
-    
-    $host_lbl = $mod_strings['LBL_DBCONF_HOST_NAME'];
-    if($_SESSION['setup_db_type'] == 'mssql') {
-        $host_lbl = $mod_strings['LBL_DBCONF_HOST_NAME_MSSQL'];    
-    }
-    
-	$dbSplit1 = '<tr><td colspan="3" align="left">'.$mod_strings['LBL_DBCONFIG_MSG2'].' </td></tr>
-        <tr>
-		 <td><span class="required">*</span></td>
-		 <td nowrap><b>'.$host_lbl.'</b></td>
-		 <td align="left">
-			<input type="text" name="setup_db_host_name" id="setup_db_host_name" value="'.$_SESSION['setup_db_host_name'].'" />';
-			if (isset($_SESSION['setup_db_type']) && $_SESSION['setup_db_type'] =='mssql'){
-				$dbSplit1 .= '&nbsp;\&nbsp;<input type="text" name="setup_db_host_instance" id="setup_db_host_instance" value="'.$instanceName.'" />';
-			}
-		$dbSplit1 .= '</td>
-	</tr>';
-	
-
+$setupDbPortNum ='';
+if (isset($_SESSION['setup_db_port_num']) && !empty($_SESSION['setup_db_port_num'])){
+	$setupDbPortNum = $_SESSION['setup_db_port_num'];
 }
 
-
-
+$db = getInstallDbInstance();
 
 ///////////////////////////////////////////////////////////////////////////////
 ////	BEGIN PAGE OUTPUT
 
+$langHeader = get_language_header();
+
 $out =<<<EOQ
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<html {$langHeader}>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="Content-Script-Type" content="text/javascript">
@@ -100,14 +82,14 @@ $out =<<<EOQ
     <script type="text/javascript" src="install/installCommon.js"></script>
     <script type="text/javascript" src="install/dbConfig.js"></script>
     <link REL="SHORTCUT ICON" HREF="include/images/sugar_icon.ico">
-    <script src="include/javascript/sugar_grp1_yui.js?s={$sugar_version}&c={$js_custom_version}"></script>
+    <script src="cache/include/javascript/sugar_grp1_yui.js?s={$sugar_version}&c={$js_custom_version}"></script>
     <script type="text/javascript">
     <!--
     if ( YAHOO.env.ua )
         UA = YAHOO.env.ua;
     -->
     </script>
-    <link rel='stylesheet' type='text/css' href='include/javascript/yui/build/container/assets/container.css' />     
+    <link rel='stylesheet' type='text/css' href='include/javascript/yui/build/container/assets/container.css' />
 
 </head>
 EOQ;
@@ -115,7 +97,7 @@ $out .= '<body onload="document.getElementById(\'button_next2\').focus();">';
 
 $out2 =<<<EOQ2
 <form action="install.php" method="post" name="setConfig" id="form">
-<input type='hidden' name='setup_db_drop_tables' id='setup_db_drop_tables' value='false'>
+<input type='hidden' name='setup_db_drop_tables' id='setup_db_drop_tables' value=''>
 <input type="hidden" id="hidden_goto" name="goto" value="{$mod_strings['LBL_BACK']}" />
 <table cellspacing="0" cellpadding="0" border="0" align="center" class="shell">
 
@@ -138,38 +120,46 @@ $out2 =<<<EOQ2
 <table width="100%" cellpadding="0" cellpadding="0" border="0" class="StyleDottedHr">
 <tr><th colspan="3" align="left" >{$mod_strings['LBL_DBCONF_TITLE_NAME']} </td></tr>
 
-<tr><td colspan="3" align="left">&nbsp;{$mod_strings['LBL_DBCONFIG_MSG3']}</td></tr>
-<tr><td width='1%'><span class="required">*</span></td>
-    <td width='60%' nowrap><b>{$mod_strings['LBL_DBCONF_DB_NAME']} {$oci8sid}</b></td>
-    <td width='35%' nowrap align="left">
-         <input type="text" name="setup_db_database_name"  value="{$_SESSION['setup_db_database_name']}"><br>&nbsp;
-    </td>
-</tr>
-
-
-
-{$dbSplit1}
-
-
-<tr><th colspan="3" align="left">{$mod_strings['LBL_DBCONF_TITLE_USER_INFO']} </td></tr>
-<tr><td colspan="3" align="left">{$mod_strings['LBL_DBCONFIG_B_MSG1']}</td></tr>
-<tr>
-    <td><span class="required">*</span></td>
-    <td nowrap><b>{$mod_strings['LBL_DBCONF_DB_ADMIN_USER']}</b></td>
-    <td nowrap align="left">
-         <input type="text" name="setup_db_admin_user_name" maxlength="30" value="{$_SESSION['setup_db_admin_user_name']}" autocomplete="off"/>
-    </td>
-</tr>
-<tr>
-    <td></td>
-    <td nowrap><b>{$mod_strings['LBL_DBCONF_DB_ADMIN_PASSWORD']}</b></td>
-    <td nowrap align="left"><input type="password" name="setup_db_admin_password" value="{$_SESSION['setup_db_admin_password']}" autocomplete="off" /></td></tr>
-    </table>
 EOQ2;
 
-//if we are installing in custom mode, include the following html 
-if($_SESSION['setup_db_type'] != 'oci8' ){
+$config_params = $db->installConfig();
+$form = '';
+foreach($config_params as $group => $gdata) {
+    $form .= "<tr><td colspan=\"3\" align=\"left\">{$mod_strings[$group]}</td></tr>\n";
+    foreach($gdata as $name => $value) {
+        if(!empty($value)) {
+            $form .= "<tr>";
+            if(!empty($value['required'])) {
+               $form .= "<td><span class=\"required\">*</span></td>\n";
+            } else {
+                $form .= "<td>&nbsp;</td>\n";
+            }
+            if(!empty($_SESSION[$name])) {
+                $sessval = $_SESSION[$name];
+            } else {
+                $sessval = '';
+            }
+            if(!empty($value["type"])) {
+                $type = $value["type"];
+            } else {
+                $type = '';
+            }
+            $form .= <<<FORM
+            <td nowrap><b>{$mod_strings[$value["label"]]}</b></td>
+            <td align="left">
+			<input type="$type" name="$name" id="$name" value="$sessval">
+			</td></tr>
+FORM;
+        } else {
+            $form .= "<input name=\"$name\" id=\"$name\" value=\"\" type=\"hidden\">\n";
+        }
+    }
+}
 
+$out2 .= $form;
+
+//if we are installing in custom mode, include the following html
+if($db->supports("create_user")){
 // create / set db user dropdown
 $auto_select = '';$provide_select ='';$create_select = '';$same_select = '';
 if(isset($_SESSION['dbUSRData'])){
@@ -229,18 +219,9 @@ EOQ2;
 //	'ja_jp' => 'Japanese - 日本語',
 //);
 $demoDD = "<select name='demoData' id='demoData'><option value='no' >".$mod_strings['LBL_NO']."</option><option value='yes'>".$mod_strings['LBL_YES']."</option>";
-//foreach($supported_demodata as $key => $v){
-//	// mssql is broken for mbcs
-//	if( ($_SESSION['setup_db_type'] == 'mssql') && ($key != 'en_us'))
-//		continue;
-//	$selected = '';
-//	if($_SESSION['demoData'] == $key)
-//		$selected = "selected"; 
-//	$demoDD .="<option value='$key' $selected>".$v."</option>";
-//}
 $demoDD .= "</select><br>&nbsp;";
 
-   
+
 $out3 =<<<EOQ3
 <table width="100%" cellpadding="0" cellpadding="0" border="0" class="StyleDottedHr">
 <tr><th colspan="3" align="left">{$mod_strings['LBL_DBCONF_DEMO_DATA_TITLE']}</th></tr>
@@ -253,8 +234,8 @@ $out3 =<<<EOQ3
 </tr>
 </table>
 EOQ3;
-   
-   
+
+
 $out4 =<<<EOQ4
 </td>
 </tr>
@@ -294,7 +275,7 @@ function toggleDBUser(){
     }
 }
     toggleDBUser();
-    
+
 var msgPanel;
 function callDBCheck(){
 
@@ -302,26 +283,26 @@ function callDBCheck(){
             ajaxCall = function(msg_panel){
                 //create success function for callback
 
-                getPanel = function() {        
-                var args = {    width:"300px", 
+                getPanel = function() {
+                var args = {    width:"300px",
                                 modal:true,
                                 fixedcenter: true,
-                                constraintoviewport: false,  
-                                underlay:"shadow",  
-                                close:false, 
-                                draggable:true, 
-                                
+                                constraintoviewport: false,
+                                underlay:"shadow",
+                                close:false,
+                                draggable:true,
+
                                 effect:{effect:YAHOO.widget.ContainerEffect.FADE, duration:.5}
-                               } ; 
+                               } ;
                         msg_panel = new YAHOO.widget.Panel('p_msg', args);
 
-                        msg_panel.setHeader("{$mod_strings['LBL_LICENSE_CHKDB_HEADER']}"); 
+                        msg_panel.setHeader("{$mod_strings['LBL_LICENSE_CHKDB_HEADER']}");
                         msg_panel.setBody(document.getElementById("checkingDiv").innerHTML);
                         msg_panel.render(document.body);
                         msgPanel = msg_panel;
-                } 
-                
-                
+                }
+
+
                 passed = function(url){
                     document.setConfig.goto.value="{$mod_strings['LBL_NEXT']}";
                     document.getElementById('hidden_goto').value="{$mod_strings['LBL_NEXT']}";
@@ -329,7 +310,7 @@ function callDBCheck(){
                     document.setConfig.submit();
                 }
                 success = function(o) {
-                    
+
                     //condition for just the preexisting database
                     if (o.responseText.indexOf('preexeest')>=0){
 
@@ -343,7 +324,7 @@ function callDBCheck(){
                         //make navigation
                         passed("install.php?goto={$mod_strings['LBL_NEXT']}");
 
-                    //condition for other errors    
+                    //condition for other errors
                     }else{
                         //turn off loading message
                         msgPanel.hide();
@@ -352,15 +333,18 @@ function callDBCheck(){
                         return false;
                     }
 
-                    
+
                 }//end success
-        
+
                 //set loading message and create url
 
                 postData = "checkDBSettings=true&to_pdf=1&sugar_body_only=1";
                 postData += "&setup_db_database_name="+document.setConfig.setup_db_database_name.value;
                 if(typeof(document.setConfig.setup_db_host_instance) != 'undefined'){
                     postData += "&setup_db_host_instance="+document.setConfig.setup_db_host_instance.value;
+                }
+                if(typeof(document.setConfig.setup_db_port_num) != 'undefined'){
+                    postData += "&setup_db_port_num="+document.setConfig.setup_db_port_num.value;
                 }
                 postData += "&setup_db_host_name="+document.setConfig.setup_db_host_name.value;
                 postData += "&setup_db_admin_user_name="+document.setConfig.setup_db_admin_user_name.value;
@@ -382,21 +366,21 @@ EOQ4;
 
 $out_dd = 'postData += "&demoData="+document.setConfig.demoData.value;';
 $out5 =<<<EOQ5
-                postData += "&to_pdf=1&sugar_body_only=1";                                                
-                 
-                //if this is a call already in progress, then just return               
-                    if(typeof ajxProgress != 'undefined'){ 
-                        return;                            
+                postData += "&to_pdf=1&sugar_body_only=1";
+
+                //if this is a call already in progress, then just return
+                    if(typeof ajxProgress != 'undefined'){
+                        return;
                     }
 
                 getPanel();
                 msgPanel.show;
-                var ajxProgress = YAHOO.util.Connect.asyncRequest('POST','install.php', {success: success, failure: success}, postData);                
-                        
-    
+                var ajxProgress = YAHOO.util.Connect.asyncRequest('POST','install.php', {success: success, failure: success}, postData);
+
+
             };//end ajaxCall method
               ajaxCall();
-            return;   
+            return;
 }
 
 function confirm_drop_tables(yes_no){
@@ -414,7 +398,7 @@ function confirm_drop_tables(yes_no){
             msgPanel.hide();
         }
 }
-    
+
 </script>
 
 
@@ -422,7 +406,7 @@ function confirm_drop_tables(yes_no){
            <div id="checkingDiv" style="display:none">
            <table cellspacing="0" cellpadding="0" border="0">
                <tr><td>
-                    <p><img src='install/processing.gif'> <br>{$mod_strings['LBL_LICENSE_CHKDB_HEADER']}</p>
+                    <p><img alt="{$mod_strings['LBL_LICENSE_CHKDB_HEADER']}" src='install/processing.gif'> <br>{$mod_strings['LBL_LICENSE_CHKDB_HEADER']}</p>
                 </td></tr>
             </table>
             </div>
@@ -437,7 +421,7 @@ function confirm_drop_tables(yes_no){
                     <input type='button' class='button' onclick='confirm_drop_tables(false)' id="button_cancel_dbConfig" value="{$mod_strings['LBL_CANCEL']}">
                 </td></tr>
             </table>
-                
+
           <div>
 
 </body>
@@ -456,7 +440,8 @@ EOQ5;
 
 
 
-echo $out.$out2;
+echo $out;
+echo $out2;
     echo $out3;
 echo $out4;
     echo $out_dd;

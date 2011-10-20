@@ -132,10 +132,9 @@ class quicksearchQuery {
         
         foreach($args['modules'] as $module) {
             require_once($beanFiles[$beanList[$module]]);
-			
-			$focus = new $beanList[$module];        
-            
-			$query_orderby = '';
+            $focus = new $beanList[$module];
+
+            $query_orderby = '';
             if (!empty($args['order'])) {
                 $query_orderby = $args['order'];
                 if ($focus instanceof Person && $args['order'] == 'name') {

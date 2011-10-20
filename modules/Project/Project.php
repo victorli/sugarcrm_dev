@@ -36,21 +36,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- *
- */
 class Project extends SugarBean {
 	// database table columns
 	var $id;
@@ -164,7 +149,7 @@ class Project extends SugarBean {
                 }
             }
             if ($new_rel_link == 'contacts') {
-                $accountId = $this->db->getOne('SELECT account_id FROM accounts_contacts WHERE contact_id="' . $new_rel_id .'"');
+                $accountId = $this->db->getOne('SELECT account_id FROM accounts_contacts WHERE contact_id=' . $this->db->quoted($new_rel_id));
                 if ($accountId !== false) {
                     if($this->load_relationship('accounts')){
                         $this->accounts->add($accountId);
@@ -180,9 +165,7 @@ class Project extends SugarBean {
 	{
 		$return_value = '';
 
-		$query = 'SELECT SUM(estimated_effort) total_estimated_effort';
-		if ($this->db->dbType=='oci8') {
-		}
+		$query = 'SELECT SUM('.$this->db->convert('estimated_effort', "IFNULL", 0).') total_estimated_effort';
 		$query.= ' FROM project_task';
 		$query.= " WHERE parent_id='{$project_id}' AND deleted=0";
 
@@ -203,9 +186,7 @@ class Project extends SugarBean {
 	{
 		$return_value = '';
 
-		$query = 'SELECT SUM(actual_effort) total_actual_effort';
-		if ($this->db->dbType=='oci8') {
-		}
+		$query = 'SELECT SUM('.$this->db->convert('actual_effort', "IFNULL", 0).') total_actual_effort';
 		$query.=  ' FROM project_task';
 		$query.=  " WHERE parent_id='{$project_id}' AND deleted=0";
 

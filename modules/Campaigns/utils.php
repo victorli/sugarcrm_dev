@@ -49,16 +49,16 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  *
  */
 function get_message_scope_dom($campaign_id, $campaign_name,$db=null, $mod_strings=array()) {
-        
+
     //find prospect list attached to this campaign..
-    $query =  "SELECT prospect_list_id, prospect_lists.name "; 
+    $query =  "SELECT prospect_list_id, prospect_lists.name ";
     $query .= "FROM prospect_list_campaigns ";
     $query .= "INNER join prospect_lists on prospect_lists.id = prospect_list_campaigns.prospect_list_id ";
-    $query .= "WHERE prospect_lists.deleted = 0 "; 
-    $query .= "AND prospect_list_campaigns.deleted=0 "; 
+    $query .= "WHERE prospect_lists.deleted = 0 ";
+    $query .= "AND prospect_list_campaigns.deleted=0 ";
     $query .= "AND campaign_id='".$campaign_id."'";
     $query.=" and prospect_lists.list_type not like 'exempt%'";
-    
+
     if (empty($db)) {
         $db = DBManagerFactory::getInstance();
     }
@@ -66,15 +66,15 @@ function get_message_scope_dom($campaign_id, $campaign_name,$db=null, $mod_strin
         global $current_language;
         $mod_strings = return_module_language($current_language, 'Campaigns');
     }
-    
+
     //add campaign to the result array.
     //$return_array[$campaign_id]= $campaign_name . ' (' . $mod_strings['LBL_DEFAULT'] . ')';
-    
+
     $result=$db->query($query);
     while(($row=$db->fetchByAssoc($result))!= null) {
         $return_array[$row['prospect_list_id']]=$row['name'];
     }
-    if (empty($return_array)) $return_array=array();    
+    if (empty($return_array)) $return_array=array();
     else return $return_array;
 }
 /**
@@ -88,7 +88,7 @@ function get_campaign_mailboxes(&$emails, $get_name=true) {
     if (!class_exists('InboundEmail')) {
         require('modules/InboundEmail/InboundEmail.php');
     }
-    $query =  "select id,name,stored_options from inbound_email where mailbox_type='bounce' and status='Active' and deleted='0'"; 
+    $query =  "select id,name,stored_options from inbound_email where mailbox_type='bounce' and status='Active' and deleted='0'";
     $db = DBManagerFactory::getInstance();
     $result=$db->query($query);
     while(($row=$db->fetchByAssoc($result))!= null) {
@@ -100,24 +100,24 @@ function get_campaign_mailboxes(&$emails, $get_name=true) {
         $emails[$row['id']]=InboundEmail::get_stored_options('from_addr','nobody@example.com',$row['stored_options']);
     }
 
-    if (empty($return_array)) $return_array=array(''=>'');  
+    if (empty($return_array)) $return_array=array(''=>'');
     return $return_array;
-    
+
 }
 
 function get_campaign_mailboxes_with_stored_options() {
 	$ret = array();
-	
+
     if(!class_exists('InboundEmail')) {
         require('modules/InboundEmail/InboundEmail.php');
     }
-    
-    $q = "SELECT id, name, stored_options FROM inbound_email WHERE mailbox_type='bounce' AND status='Active' AND deleted='0'"; 
-    
+
+    $q = "SELECT id, name, stored_options FROM inbound_email WHERE mailbox_type='bounce' AND status='Active' AND deleted='0'";
+
     $db = DBManagerFactory::getInstance();
-    
+
     $r = $db->query($q);
-    
+
     while($a = $db->fetchByAssoc($r)) {
         $ret[$a['id']] = unserialize(base64_decode($a['stored_options']));
     }
@@ -127,7 +127,7 @@ function get_campaign_mailboxes_with_stored_options() {
 function log_campaign_activity($identifier, $activity, $update=true, $clicked_url_key=null) {
 
     $return_array = array();
-        
+
     $db = DBManagerFactory::getInstance();
 
 
@@ -136,37 +136,37 @@ function log_campaign_activity($identifier, $activity, $update=true, $clicked_ur
     if($identifier == 'BANNER' && isset($clicked_url_key)  && !empty($clicked_url_key))
     {
         // create md5 encrypted string using the client ip, this will be used for tracker id purposes
-        $enc_id = 'BNR'.md5($_SERVER['REMOTE_ADDR']);   
-        
+        $enc_id = 'BNR'.md5($_SERVER['REMOTE_ADDR']);
+
         //default the identifier to ip address
         $identifier = $enc_id;
-        
+
         //if user has chosen to not use this mode of id generation, then replace identifier with plain guid.
         //difference is that guid will generate a new campaign log for EACH CLICK!!
         //encrypted generation will generate 1 campaign log and update the hit counter for each click
         if(isset($sugar_config['campaign_banner_id_generation'])  && $sugar_config['campaign_banner_id_generation'] != 'md5'){
-            $identifier = create_guid(); 
+            $identifier = create_guid();
         }
 
-        //retrieve campaign log.  
+        //retrieve campaign log.
         $trkr_query = "select * from campaign_log where target_tracker_key='$identifier ' and related_id = '$clicked_url_key'";
         $current_trkr=$db->query($trkr_query);
         $row=$db->fetchByAssoc($current_trkr);
 
-        //if campaign log is not retrieved (this is a new ip address or we have chosen to create 
+        //if campaign log is not retrieved (this is a new ip address or we have chosen to create
         //unique entries for each click
-        if($row==null  || empty($row)){ 
+        if($row==null  || empty($row)){
 
-        
+
                 //retrieve campaign id
                 $trkr_query = "select ct.campaign_id from campaign_trkrs ct, campaigns c where c.id = ct.campaign_id and ct.id = '$clicked_url_key'";
                 $current_trkr=$db->query($trkr_query);
                 $row=$db->fetchByAssoc($current_trkr);
-            
-        
+
+
                 //create new campaign log with minimal info.  Note that we are creating new unique id
                 //as target id, since we do not link banner/web campaigns to any users
-        
+
                 $data['target_id']="'" . create_guid() . "'";
                 $data['target_type']= "'Prospects'";
                 $data['id']="'" . create_guid() . "'";
@@ -177,35 +177,35 @@ function log_campaign_activity($identifier, $activity, $update=true, $clicked_ur
                 $data['hits']=1;
                 if (!empty($clicked_url_key)) {
                     $data['related_id']="'".$clicked_url_key."'";
-                    $data['related_type']="'".'CampaignTrackers'."'";               
+                    $data['related_type']="'".'CampaignTrackers'."'";
                 }
-        
+
                 //values for return array..
                 $return_array['target_id']=$data['target_id'];
-                $return_array['target_type']=$data['target_type'];       
-        
+                $return_array['target_type']=$data['target_type'];
+
                 //create insert query for new campaign log
-                $insert_query="INSERT into campaign_log (" . implode(",",array_keys($data)) . ")"; 
-                $insert_query.=" VALUES  (" . implode(",",array_values($data)) . ")"; 
+                $insert_query="INSERT into campaign_log (" . implode(",",array_keys($data)) . ")";
+                $insert_query.=" VALUES  (" . implode(",",array_values($data)) . ")";
                 $db->query($insert_query);
             }else{
 
                 //campaign log already exists, so just set the return array and update hits column
                 $return_array['target_id']= $row['target_id'];
-                $return_array['target_type']= $row['target_type'];      
+                $return_array['target_type']= $row['target_type'];
                 $query1="update campaign_log set hits=hits+1 where id='{$row['id']}'";
                 $current=$db->query($query1);
-                
-                
+
+
            }
 
-        //return array and exit                
+        //return array and exit
         return $return_array;
 
     }
-    
-    
-    
+
+
+
     $query1="select * from campaign_log where target_tracker_key='$identifier' and activity_type='$activity'";
     if (!empty($clicked_url_key)) {
         $query1.=" AND related_id='$clicked_url_key'";
@@ -213,19 +213,19 @@ function log_campaign_activity($identifier, $activity, $update=true, $clicked_ur
     $current=$db->query($query1);
     $row=$db->fetchByAssoc($current);
 
-        if ($row==null) {   
+        if ($row==null) {
             $query="select * from campaign_log where target_tracker_key='$identifier' and activity_type='targeted'";
             $targeted=$db->query($query);
             $row=$db->fetchByAssoc($targeted);
-            
+
             //if activity is removed and target type is users, then a user is trying to opt out
-            //of emails.  This is not possible as Users Table does not have opt out column. 
+            //of emails.  This is not possible as Users Table does not have opt out column.
             if ($row  && (strtolower($row['target_type']) == 'users' &&  $activity == 'removed' )) {
                 $return_array['target_id']= $row['target_id'];
-                $return_array['target_type']= $row['target_type']; 
+                $return_array['target_type']= $row['target_type'];
                 return $return_array;
             }
-            elseif ($row){                
+            elseif ($row){
                 $data['id']="'" . create_guid() . "'";
                 $data['campaign_id']="'" . $row['campaign_id'] . "'";
                 $data['target_tracker_key']="'" . $identifier . "'";
@@ -238,39 +238,39 @@ function log_campaign_activity($identifier, $activity, $update=true, $clicked_ur
                 $data['hits']=1;
                 if (!empty($clicked_url_key)) {
                     $data['related_id']="'".$clicked_url_key."'";
-                    $data['related_type']="'".'CampaignTrackers'."'";               
+                    $data['related_type']="'".'CampaignTrackers'."'";
                 }
                 //values for return array..
                 $return_array['target_id']=$row['target_id'];
-                $return_array['target_type']=$row['target_type'];       
-                $insert_query="INSERT into campaign_log (" . implode(",",array_keys($data)) . ")"; 
-                $insert_query.=" VALUES  (" . implode(",",array_values($data)) . ")"; 
+                $return_array['target_type']=$row['target_type'];
+                $insert_query="INSERT into campaign_log (" . implode(",",array_keys($data)) . ")";
+                $insert_query.=" VALUES  (" . implode(",",array_values($data)) . ")";
                 $db->query($insert_query);
             }
         } else {
-    
+
             $return_array['target_id']= $row['target_id'];
-            $return_array['target_type']= $row['target_type'];      
-    
+            $return_array['target_type']= $row['target_type'];
+
             $query1="update campaign_log set hits=hits+1 where id='{$row['id']}'";
             $current=$db->query($query1);
-            
+
         }
         //check to see if this is a removal action
         if ($row  && $activity == 'removed' ) {
             //retrieve campaign and check it's type, we are looking for newsletter Campaigns
             $query = "SELECT campaigns.* FROM campaigns WHERE campaigns.id = '".$row['campaign_id']."' ";
             $result = $db->query($query);
-            if(!empty($result)) 
+            if(!empty($result))
             {
                 $c_row = $db->fetchByAssoc($result);
-    
+
                 //if type is newsletter, then add campaign id to return_array for further processing.
                 if(isset($c_row['campaign_type']) && $c_row['campaign_type'] == 'NewsLetter'){
                     $return_array['campaign_id']=$c_row['id'];
                 }
             }
-        }            
+        }
         return $return_array;
     }
 
@@ -282,30 +282,27 @@ function log_campaign_activity($identifier, $activity, $update=true, $clicked_ur
      * @see campaign_log_lead_or_contact_entry()
      */
 function campaign_log_lead_entry($campaign_id, $parent_bean,$child_bean,$activity_type){
-    	
-          campaign_log_lead_or_contact_entry($campaign_id, $parent_bean,$child_bean,$activity_type);                             
- }
-    
-    
-    
-function campaign_log_lead_or_contact_entry($campaign_id, $parent_bean,$child_bean,$activity_type){
-        global $timedate;        
-                                  
+    campaign_log_lead_or_contact_entry($campaign_id, $parent_bean,$child_bean,$activity_type);
+}
 
-                    //create campaign tracker id and retrieve related bio bean                 
-                     $tracker_id = create_guid();                          
-                    //create new campaign log record.
-                    $campaign_log = new CampaignLog();
-                    $campaign_log->campaign_id = $campaign_id;
-                    $campaign_log->target_tracker_key = $tracker_id;
-                    $campaign_log->related_id = $parent_bean->id;
-                    $campaign_log->related_type = $parent_bean->module_dir;
-                    $campaign_log->target_id = $child_bean->id;
-                    $campaign_log->target_type = $child_bean->module_dir;
-                    $campaign_log->activity_date = $timedate->now();
-                    $campaign_log->activity_type = $activity_type;
-                    //save the campaign log entry
-                    $campaign_log->save();                                        
+
+function campaign_log_lead_or_contact_entry($campaign_id, $parent_bean,$child_bean,$activity_type){
+    global $timedate;
+
+    //create campaign tracker id and retrieve related bio bean
+     $tracker_id = create_guid();
+    //create new campaign log record.
+    $campaign_log = new CampaignLog();
+    $campaign_log->campaign_id = $campaign_id;
+    $campaign_log->target_tracker_key = $tracker_id;
+    $campaign_log->related_id = $parent_bean->id;
+    $campaign_log->related_type = $parent_bean->module_dir;
+    $campaign_log->target_id = $child_bean->id;
+    $campaign_log->target_type = $child_bean->module_dir;
+    $campaign_log->activity_date = $timedate->now();
+    $campaign_log->activity_type = $activity_type;
+    //save the campaign log entry
+    $campaign_log->save();
 }
     
 
@@ -313,14 +310,14 @@ function get_campaign_urls($campaign_id) {
     $return_array=array();
 
     if (!empty($campaign_id)) {
-        
+
         $db = DBManagerFactory::getInstance();
 
         $query1="select * from campaign_trkrs where campaign_id='$campaign_id' and deleted=0";
         $current=$db->query($query1);
         while (($row=$db->fetchByAssoc($current)) != null) {
             $return_array['{'.$row['tracker_name'].'}']=$row['tracker_name'] . ' : ' . $row['tracker_url'];
-        }       
+        }
     }
     return $return_array;
 }
@@ -328,23 +325,23 @@ function get_campaign_urls($campaign_id) {
 /**
  * Queries for the list
  */
-function get_subscription_lists_query($focus, $additional_fields = null) { 
+function get_subscription_lists_query($focus, $additional_fields = null) {
     //get all prospect lists belonging to Campaigns of type newsletter
     $all_news_type_pl_query = "select c.name, pl.list_type, plc.campaign_id, plc.prospect_list_id";
-    if(is_array($additional_fields) && !empty($additional_fields)) $all_news_type_pl_query .= ', ' . implode(', ', $additional_fields); 
-    $all_news_type_pl_query .= " from prospect_list_campaigns plc , prospect_lists pl, campaigns c "; 
-    
-    
+    if(is_array($additional_fields) && !empty($additional_fields)) $all_news_type_pl_query .= ', ' . implode(', ', $additional_fields);
+    $all_news_type_pl_query .= " from prospect_list_campaigns plc , prospect_lists pl, campaigns c ";
+
+
 	$all_news_type_pl_query .= "where plc.campaign_id = c.id ";
     $all_news_type_pl_query .= "and plc.prospect_list_id = pl.id ";
     $all_news_type_pl_query .= "and c.campaign_type = 'NewsLetter'  and pl.deleted = 0 and c.deleted=0 and plc.deleted=0 ";
     $all_news_type_pl_query .= "and (pl.list_type like 'exempt%' or pl.list_type ='default') ";
-    
+
     $all_news_type_list =$focus->db->query($all_news_type_pl_query);
 
-    //build array of all newsletter campaigns  
+    //build array of all newsletter campaigns
     $news_type_list_arr = array();
-    while ($row = $focus->db->fetchByAssoc($all_news_type_list)){$news_type_list_arr[] = $row;}        
+    while ($row = $focus->db->fetchByAssoc($all_news_type_list)){$news_type_list_arr[] = $row;}
 
     //now get all the campaigns that the current user is assigned to
     $all_plp_current = "select prospect_list_id from prospect_lists_prospects where related_id = '$focus->id' and deleted = 0 ";
@@ -353,18 +350,18 @@ function get_subscription_lists_query($focus, $additional_fields = null) {
     $current_plp =$focus->db->query($all_plp_current );
     $current_plp_arr = array();
     while ($row = $focus->db->fetchByAssoc($current_plp)){$current_plp_arr[] = $row;}
-    
+
     return array('current_plp_arr' => $current_plp_arr, 'news_type_list_arr' => $news_type_list_arr);
 }
 /*
- * This function takes in a bean from a lead, propsect, or contact and returns an array containing 
- * all subscription lists that the bean is a part of, and all the subscriptions that the bean is not 
+ * This function takes in a bean from a lead, propsect, or contact and returns an array containing
+ * all subscription lists that the bean is a part of, and all the subscriptions that the bean is not
  * a part of.  The array elements have the key names of "subscribed" and "unsusbscribed".  These elements contain an array
- * of the corresponding list.  In other words, the "subscribed" element holds another array that holds the subscription information. 
- * 
+ * of the corresponding list.  In other words, the "subscribed" element holds another array that holds the subscription information.
+ *
  * The subscription information is a concatenated string that holds the prospect list id and the campaign id, seperated by at "@" character.
  * To parse these information string into something more usable, use the "process subscriptions()" function
- *  
+ *
  * */
 function get_subscription_lists($focus, $descriptions = false) {
     $subs_arr = array();
@@ -374,13 +371,13 @@ function get_subscription_lists($focus, $descriptions = false) {
 
     $news_type_list_arr = $results['news_type_list_arr'];
     $current_plp_arr = $results['current_plp_arr'];
-    
-   //For each  prospect list of type 'NewsLetter', check to see if current user is already in list, 
+
+   //For each  prospect list of type 'NewsLetter', check to see if current user is already in list,
     foreach($news_type_list_arr as $news_list){
         $match = 'false';
 
         //perform this check against each prospect list this user belongs to
-        foreach($current_plp_arr as $current_list_key => $current_list){//echo " new entry from current lists user is subscribed to-------------"; 
+        foreach($current_plp_arr as $current_list_key => $current_list){//echo " new entry from current lists user is subscribed to-------------";
             //compare current user list id against newsletter id
             if ($news_list['prospect_list_id'] == $current_list['prospect_list_id']){
                 //if id's match, user is subscribed to this list, check to see if this is an exempt list,
@@ -396,7 +393,7 @@ function get_subscription_lists($focus, $descriptions = false) {
                         //non exempt list has not been processed yet, so just add to exempt array
                         $unsubs_arr[$news_list['name']] = "prospect_list@".$news_list['prospect_list_id']."@campaign@".$news_list['campaign_id'];
                     }
-                    $match = 'false';//although match is false, this is an exempt array, so 
+                    $match = 'false';//although match is false, this is an exempt array, so
                     //it will not be added a second time down below
                 }else{
                     //this list is not exempt, and user is subscribed, so add to subscribed array, and unset from the unsubs_arr
@@ -404,7 +401,7 @@ function get_subscription_lists($focus, $descriptions = false) {
                 	$temp = "prospect_list@".$news_list['prospect_list_id']."@campaign@".$news_list['campaign_id'];
                 	if(!array_search($temp,$unsubs_arr)){
                         $subs_arr[$news_list['name']] = "prospect_list@".$news_list['prospect_list_id']."@campaign@".$news_list['campaign_id'];
-                        $match = 'true'; 
+                        $match = 'true';
                         //unset($unsubs_arr[$news_list['name']]);
                     }
                 }
@@ -414,10 +411,10 @@ function get_subscription_lists($focus, $descriptions = false) {
         }
          //if this newsletter id never matched a user subscription..
          //..then add to available(unsubscribed) NewsLetters if list is not of type exempt
-         if(($match == 'false') && (strpos($news_list['list_type'],  'exempt') === false)){  
-            $unsubs_arr[$news_list['name']] = "prospect_list@".$news_list['prospect_list_id']."@campaign@".$news_list['campaign_id'];                
+         if(($match == 'false') && (strpos($news_list['list_type'],  'exempt') === false)){
+            $unsubs_arr[$news_list['name']] = "prospect_list@".$news_list['prospect_list_id']."@campaign@".$news_list['campaign_id'];
         }
-    
+
     }
     $return_array['unsubscribed'] = $unsubs_arr;
     $return_array['subscribed'] = $subs_arr;
@@ -432,21 +429,21 @@ function get_subscription_lists_keyed($focus) {
     $unsubs_arr = array();
 
     $results = get_subscription_lists_query($focus, array('c.content', 'c.frequency'));
-      
+
     $news_type_list_arr = $results['news_type_list_arr'];
     $current_plp_arr = $results['current_plp_arr'];
-    
-   //For each  prospect list of type 'NewsLetter', check to see if current user is already in list, 
+
+   //For each  prospect list of type 'NewsLetter', check to see if current user is already in list,
     foreach($news_type_list_arr as $news_list){
         $match = false;
-        
+
         $news_list_data = array('prospect_list_id' => $news_list['prospect_list_id'],
                                 'campaign_id'      => $news_list['campaign_id'],
                                 'description'      => $news_list['content'],
                                 'frequency'        => $news_list['frequency']);
 
         //perform this check against each prospect list this user belongs to
-        foreach($current_plp_arr as $current_list_key => $current_list){//echo " new entry from current lists user is subscribed to-------------"; 
+        foreach($current_plp_arr as $current_list_key => $current_list){//echo " new entry from current lists user is subscribed to-------------";
             //compare current user list id against newsletter id
             if ($news_list['prospect_list_id'] == $current_list['prospect_list_id']){
                 //if id's match, user is subscribed to this list, check to see if this is an exempt list,
@@ -463,14 +460,14 @@ function get_subscription_lists_keyed($focus) {
                         //non exempt list has not been processed yet, so just add to exempt array
                         $unsubs_arr[$news_list['name']] = $news_list_data;
                     }
-                    $match = false;//although match is false, this is an exempt array, so 
+                    $match = false;//although match is false, this is an exempt array, so
                     //it will not be added a second time down below
                 }else{
                     //this list is not exempt, and user is subscribed, so add to subscribed array
                     //as long as this list is not in exempt array
                     if(!array_key_exists($news_list['name'],$unsubs_arr)){
                         $subs_arr[$news_list['name']] = $news_list_data;
-                        $match = 'true';   
+                        $match = 'true';
                     }
                 }
             }else{
@@ -479,14 +476,14 @@ function get_subscription_lists_keyed($focus) {
         }
          //if this newsletter id never matched a user subscription..
          //..then add to available(unsubscribed) NewsLetters if list is not of type exempt
-         if(($match == false) && ($news_list['list_type'] != 'exempt')){  
-            $unsubs_arr[$news_list['name']] = $news_list_data;                
+         if(($match == false) && ($news_list['list_type'] != 'exempt')){
+            $unsubs_arr[$news_list['name']] = $news_list_data;
         }
-    
+
     }
 
     $return_array['unsubscribed'] = $unsubs_arr;
-    $return_array['subscribed'] = $subs_arr; 
+    $return_array['subscribed'] = $subs_arr;
     return $return_array;
 }
 
@@ -494,20 +491,20 @@ function get_subscription_lists_keyed($focus) {
 
 /*
  * This function will take an array of strings that have been created by the "get_subscription_lists()" method
- * and parses it into an array.  The returned array has it's key's labeled in a specific fashion.  
- * 
- * Each string produces a campaign and a prospect id.  The keys are appended with a number specifying the order 
+ * and parses it into an array.  The returned array has it's key's labeled in a specific fashion.
+ *
+ * Each string produces a campaign and a prospect id.  The keys are appended with a number specifying the order
  * it was process in.  So an input array containing 3 strings will have the following key values:
  * "prospect_list0", "campaign0"
  * "prospect_list1", "campaign1"
- * "prospect_list2", "campaign2" 
- * 
+ * "prospect_list2", "campaign2"
+ *
  * */
 function process_subscriptions($subscription_string_to_parse) {
     $subs_change = array();
 
-    //parse through and build list of id's'.  We are retrieving the campaign_id and 
-    //the prospect_list id from the selected subscriptions 
+    //parse through and build list of id's'.  We are retrieving the campaign_id and
+    //the prospect_list id from the selected subscriptions
     $i = 0;
     foreach($subscription_string_to_parse as $subs_changes){
         $subs_changes = trim($subs_changes);
@@ -523,57 +520,57 @@ function process_subscriptions($subscription_string_to_parse) {
 
 
     /*This function is used by the Manage Subscriptions page in order to add the user
-     * to the default prospect lists of the passed in campaign 
-     * Takes in campaign and prospect list id's we are subscribing to.  
+     * to the default prospect lists of the passed in campaign
+     * Takes in campaign and prospect list id's we are subscribing to.
      * It also takes in a bean of the user (lead,target,prospect) we are subscribing
      * */
     function subscribe($campaign, $prospect_list, $focus, $default_list = false) {
             $relationship = strtolower($focus->getObjectName()).'s';
 
             //--grab all the lists for the passed in campaign id
-            $pl_qry ="select id, list_type from prospect_lists where id in (select prospect_list_id from prospect_list_campaigns "; 
+            $pl_qry ="select id, list_type from prospect_lists where id in (select prospect_list_id from prospect_list_campaigns ";
             $pl_qry .= "where campaign_id = '$campaign') and deleted = 0 ";
             $GLOBALS['log']->debug("In Campaigns Util: subscribe function, about to run query: ".$pl_qry );
             $pl_qry_result = $focus->db->query($pl_qry);
-    
-            //build the array of all prospect_lists 
+
+            //build the array of all prospect_lists
             $pl_arr = array();
             while ($row = $focus->db->fetchByAssoc($pl_qry_result)){$pl_arr[] = $row;}
-    
+
             //--grab all the prospect_lists this user belongs to
             $curr_pl_qry ="select prospect_list_id, related_id  from prospect_lists_prospects ";
             $curr_pl_qry .="where related_id = '$focus->id'  and deleted = 0 ";
             $GLOBALS['log']->debug("In Campaigns Util: subscribe function, about to run query: ".$curr_pl_qry );
             $curr_pl_qry_result = $focus->db->query($curr_pl_qry);
-    
+
             //build the array of all prospect lists that this current user belongs to
             $curr_pl_arr = array();
             while ($row = $focus->db->fetchByAssoc($curr_pl_qry_result)){$curr_pl_arr[] = $row;}
-    
+
             //search through prospect lists for this campaign and identifiy the "unsubscription list"
             $exempt_id = '';
            foreach($pl_arr as $subscription_list){
                 if(strpos($subscription_list['list_type'],  'exempt')!== false){
                     $exempt_id = $subscription_list['id'];
                 }
-                          
+
                 if($subscription_list['list_type'] == 'default' && $default_list) {
                     $prospect_list = $subscription_list['id'];
                 }
-           } 
-           
+           }
+
            //now that we have exempt (unsubscription) list id, compare against user list id's
            if(!empty($exempt_id)){
             $exempt_array['exempt_id'] = $exempt_id;
-                
+
                foreach($curr_pl_arr as $curr_subscription_list){
                     if($curr_subscription_list['prospect_list_id'] == $exempt_id){
                         //--if we are in here then user is subscribing to a list in which they are exempt.
                         // we need to remove the user from this unsubscription list.
                         //Begin by retrieving unsubscription prospect list
                         $exempt_subscription_list = new ProspectList();
-                        
-		                
+
+
                         $exempt_result = $exempt_subscription_list->retrieve($exempt_id);
                         if($exempt_result == null)
                         {//error happened while retrieving this list
@@ -582,19 +579,19 @@ function process_subscriptions($subscription_string_to_parse) {
                         //load realationships and delete user from unsubscription list
                         $exempt_subscription_list->load_relationship($relationship);
                         $exempt_subscription_list->$relationship->delete($exempt_id,$focus->id);
-                        
+
                     }
-               } 
-           }    
-    
+               }
+           }
+
             //Now we need to check if user is already in subscription list
             $already_here = 'false';
             //for each list user is subscribed to, compare id's with current list id'
             foreach($curr_pl_arr as $user_list){
                 if(in_array($prospect_list, $user_list)){
                     //if user already exists, then set flag to true
-                    $already_here = 'true';    
-                }    
+                    $already_here = 'true';
+                }
             }
             if($already_here ==='true'){
                 //do nothing, user is already subscribed
@@ -615,26 +612,26 @@ function process_subscriptions($subscription_string_to_parse) {
 
 
     /*This function is used by the Manage Subscriptions page in order to add the user
-     * to the exempt prospect lists of the passed in campaign 
-     * Takes in campaign and focus parameters.  
+     * to the exempt prospect lists of the passed in campaign
+     * Takes in campaign and focus parameters.
      * */
     function unsubscribe($campaign, $focus) {
         $relationship = strtolower($focus->getObjectName()).'s';
-        //--grab all the list for this campaign id   
-        $pl_qry ="select id, list_type from prospect_lists where id in (select prospect_list_id from prospect_list_campaigns "; 
+        //--grab all the list for this campaign id
+        $pl_qry ="select id, list_type from prospect_lists where id in (select prospect_list_id from prospect_list_campaigns ";
         $pl_qry .= "where campaign_id = '$campaign') and deleted = 0 ";
         $pl_qry_result = $focus->db->query($pl_qry);
         //build the array with list information
         $pl_arr = array();
         $GLOBALS['log']->debug("In Campaigns Util, about to run query: ".$pl_qry);
     	while ($row = $focus->db->fetchByAssoc($pl_qry_result)){$pl_arr[] = $row;}
-    
+
         //retrieve lists that this user belongs to
         $curr_pl_qry ="select prospect_list_id, related_id  from prospect_lists_prospects ";
         $curr_pl_qry .="where related_id = '$focus->id'  and deleted = 0 ";
         $GLOBALS['log']->debug("In Campaigns Util, unsubscribe function about to run query: ".$curr_pl_qry );
         $curr_pl_qry_result = $focus->db->query($curr_pl_qry);
-        
+
         //build the array with current user list information
         $curr_pl_arr = array();
         while ($row = $focus->db->fetchByAssoc($curr_pl_qry_result)){$curr_pl_arr[] = $row;}
@@ -652,18 +649,18 @@ function process_subscriptions($subscription_string_to_parse) {
             		if(in_array($v['id'], $user_list)){
                 		$already_here = 'true';
             		}
-                	
-                	break 2;    
+
+                	break 2;
             	}
-        	}    
+        	}
         }
-		
+
         //unsubscribe subscripted newsletter
         foreach($pl_arr as $subscription_list){
 			//create a new instance of the prospect list
         	$exempt_list = new ProspectList();
         	$exempt_list->retrieve($subscription_list['id']);
-        	$exempt_list->load_relationship($relationship);  
+        	$exempt_list->load_relationship($relationship);
 			//if list type is default, then delete the relationship
             //if list type is exempt, then add the relationship to unsubscription list
             if($subscription_list['list_type'] == 'exempt') {
@@ -672,16 +669,16 @@ function process_subscriptions($subscription_string_to_parse) {
             	//if list type is default or test, then delete the relationship
             	//$exempt_list->$relationship->delete($subscription_list['id'],$focus->id);
             }
-            
-        } 
+
+        }
 
         if($already_here =='true'){
             //do nothing, user is already exempted
-        
+
         }else{
             //user is not exempted yet , so add to unsubscription list
-            
-            
+
+
             $exempt_result = $exempt_list->retrieve($exempt_id);
             if($exempt_result == null)
             {//error happened while retrieving this list
@@ -691,13 +688,13 @@ function process_subscriptions($subscription_string_to_parse) {
             $exempt_list->load_relationship($relationship);
             $exempt_list->$relationship->add($focus->id);
         }
-    
+
     }
-    
-    
+
+
     /*
-     *This function will return a string to the newsletter wizard if campaign check 
-     *does not return 100% healthy. 
+     *This function will return a string to the newsletter wizard if campaign check
+     *does not return 100% healthy.
      */
     function diagnose()
     {
@@ -708,27 +705,27 @@ function process_subscriptions($subscription_string_to_parse) {
         //monitored mailbox section
         $focus = new Administration();
         $focus->retrieveSettings(); //retrieve all admin settings.
-        
-        
-        //run query for mail boxes of type 'bounce' 
+
+
+        //run query for mail boxes of type 'bounce'
         $email_health = 0;
         $email_components = 2;
         $mbox_qry = "select * from inbound_email where deleted ='0' and mailbox_type = 'bounce'";
         $mbox_res = $focus->db->query($mbox_qry);
-        
+
         $mbox = array();
         while ($mbox_row = $focus->db->fetchByAssoc($mbox_res)){$mbox[] = $mbox_row;}
         //if the array is not empty, then set "good" message
         if(isset($mbox) && count($mbox)>0){
             //everything is ok, do nothing
-        
+
         }else{
             //if array is empty, then increment health counter
             $email_health =$email_health +1;
             $msg  .=  "<tr><td ><font color='red'><b>". $mod_strings['LBL_MAILBOX_CHECK1_BAD']."</b></font></td></tr>";
         }
-        
-        
+
+
         if (strstr($focus->settings['notify_fromaddress'], 'example.com')){
             //if "from_address" is the default, then set "bad" message and increment health counter
             $email_health =$email_health +1;
@@ -736,7 +733,7 @@ function process_subscriptions($subscription_string_to_parse) {
         }else{
             //do nothing, address has been changed
         }
-        //if health counter is above 1, then show admin link            
+        //if health counter is above 1, then show admin link
         if($email_health>0){
             if (is_admin($current_user)){
                 $msg.="<tr><td ><a href='index.php?module=Campaigns&action=WizardEmailSetup";
@@ -745,19 +742,19 @@ function process_subscriptions($subscription_string_to_parse) {
                 }
                 if(isset($_REQUEST['return_action'])){
                     $msg.="&return_action=".$_REQUEST['return_action'];
-                }                
+                }
                 $msg.="'>".$mod_strings['LBL_EMAIL_SETUP_WIZ']."</a></td></tr>";
             }else{
                 $msg.="<tr><td >".$mod_strings['LBL_NON_ADMIN_ERROR_MSG']."</td></tr>";
-                
-            }    
-            
-        }      
-        
 
-        // proceed with scheduler components 
-        
-        //create and run the scheduler queries 
+            }
+
+        }
+
+
+        // proceed with scheduler components
+
+        //create and run the scheduler queries
         $sched_qry = "select job, name, status from schedulers where deleted = 0 and status = 'Active'";
         $sched_res = $focus->db->query($sched_qry);
         $sched_health = 0;
@@ -767,7 +764,7 @@ function process_subscriptions($subscription_string_to_parse) {
         $sched_mes = '';
         $sched_mes_body = '';
         $scheds = array();
-        
+
         while ($sched_row = $focus->db->fetchByAssoc($sched_res)){$scheds[] = $sched_row;}
         //iterate through and see which jobs were found
         foreach ($scheds as $funct){
@@ -776,8 +773,8 @@ function process_subscriptions($subscription_string_to_parse) {
                     $check_sched1 ="found";
                 }else{
                     $check_sched2 ="found";
-                }  
-                
+                }
+
           }
         }
         //determine if error messages need to be displayed for schedulers
@@ -789,38 +786,38 @@ function process_subscriptions($subscription_string_to_parse) {
             $sched_health =$sched_health +1;
             $msg.= "<tr><td><font color='red'><b>".$mod_strings['LBL_SCHEDULER_CHECK2_BAD']."</b></font></td></tr>";
         }
-        //if health counter is above 1, then show admin link            
+        //if health counter is above 1, then show admin link
         if($sched_health>0){
             global $current_user;
             if (is_admin($current_user)){
                 $msg.="<tr><td ><a href='index.php?module=Schedulers&action=index'>".$mod_strings['LBL_SCHEDULER_LINK']."</a></td></tr>";
             }else{
                 $msg.="<tr><td >".$mod_strings['LBL_NON_ADMIN_ERROR_MSG']."</td></tr>";
-            }    
-            
-        }      
+            }
+
+        }
 
         //determine whether message should be returned
         if(($sched_health + $email_health)>0){
-            $msg  .= "</table> ";    
+            $msg  .= "</table> ";
         }else{
             $msg = '';
         }
-        return $msg;        
+        return $msg;
     }
-    
-    
+
+
 /**
  * Handle campaign log entry creation for mail-merge activity. The function will be called by the soap component.
- * 
+ *
  * @param String campaign_id Primary key of the campaign
  * @param array targets List of keys for entries from prospect_lists_prosects table
  */
  function campaign_log_mail_merge($campaign_id, $targets) {
-    
+
     $campaign= new Campaign();
     $campaign->retrieve($campaign_id);
-       
+
     if (empty($campaign->id)) {
         $GLOBALS['log']->debug('set_campaign_merge: Invalid campaign id'. $campaign_id);
     } else {
@@ -831,9 +828,9 @@ function process_subscriptions($subscription_string_to_parse) {
             if (!empty($row)) {
                 write_mail_merge_log_entry($campaign_id,$row);
             }
-        }        
+        }
     }
- 
+
  }
 /**
  * Function creates a campaign_log entry for campaigns processesed using the mail-merge feature. If any entry
@@ -842,16 +839,16 @@ function process_subscriptions($subscription_string_to_parse) {
  * @param array $pl_row A row of data from prospect_lists_prospects table.
  */
 function write_mail_merge_log_entry($campaign_id,$pl_row) {
-    
+
     //Update the log entry if it exists.
     $update="update campaign_log set hits=hits+1 where campaign_id='$campaign_id' and target_tracker_key='" . $pl_row['id'] . "'";
     $result=$GLOBALS['db']->query($update);
-    
+
     //get affected row count...
     $count=$GLOBALS['db']->getAffectedRowCount();
     if ($count==0) {
         $data=array();
-        
+
         $data['id']="'" . create_guid() . "'";
         $data['campaign_id']="'" . $campaign_id . "'";
         $data['target_tracker_key']="'" . $pl_row['id'] . "'";
@@ -861,12 +858,12 @@ function write_mail_merge_log_entry($campaign_id,$pl_row) {
         $data['activity_date']="'" . TimeDate::getInstance()->nowDb() . "'";
         $data['list_id']="'" .  $pl_row['prospect_list_id'] . "'";
         $data['hits']=1;
-        
-        $insert_query="INSERT into campaign_log (" . implode(",",array_keys($data)) . ")"; 
-        $insert_query.=" VALUES  (" . implode(",",array_values($data)) . ")"; 
-        $GLOBALS['db']->query($insert_query);       
+
+        $insert_query="INSERT into campaign_log (" . implode(",",array_keys($data)) . ")";
+        $insert_query.=" VALUES  (" . implode(",",array_values($data)) . ")";
+        $GLOBALS['db']->query($insert_query);
     }
-}     
+}
 
     function track_campaign_prospects($focus){
 		$delete_query="delete from campaign_log where campaign_id='{$focus->id}' and activity_type='targeted'";
@@ -874,48 +871,35 @@ function write_mail_merge_log_entry($campaign_id,$pl_row) {
 
 		$query="SELECT prospect_lists.id prospect_list_id from prospect_lists ";
 		$query.=" INNER JOIN prospect_list_campaigns plc ON plc.prospect_list_id = prospect_lists.id";
-		$query.=" WHERE plc.campaign_id='{$focus->id}'"; 
+		$query.=" WHERE plc.campaign_id='{$focus->id}'";
 		$query.=" AND prospect_lists.deleted=0";
 		$query.=" AND plc.deleted=0";
-		$query.=" AND prospect_lists.list_type!='test' AND prospect_lists.list_type not like 'exempt%'";					
+		$query.=" AND prospect_lists.list_type!='test' AND prospect_lists.list_type not like 'exempt%'";
 		$result=$focus->db->query($query);
 		while (($row=$focus->db->fetchByAssoc($result))!=null ) {
 			$prospect_list_id=$row['prospect_list_id'];
-
-			if ($focus->db->dbType=='oci8') {
-			} 
-			else if ($focus->db->dbType=='mssql') {
-				$current_date= "'".TimeDate::getInstance()->nowDb()."'";
-				$guid = "NEWID()";
-			}
-			else {
-				$current_date= "'".TimeDate::getInstance()->nowDb()."'";
-				$guid = "UUID()";
-			}
+            $guid = create_guid();
+            $current_date = $focus->db->now();
 
 			$insert_query= "INSERT INTO campaign_log (id,activity_date, campaign_id, target_tracker_key,list_id, target_id, target_type, activity_type";
-			$insert_query.=')'; 
-			$insert_query.= " SELECT $guid,$current_date,plc.campaign_id,$guid,plp.prospect_list_id, plp.related_id, plp.related_type,'targeted' ";  
+			$insert_query.=')';
+			$insert_query.= " SELECT $guid,$current_date,plc.campaign_id,$guid,plp.prospect_list_id, plp.related_id, plp.related_type,'targeted' ";
 			$insert_query.= "FROM prospect_lists_prospects plp ";
-			$insert_query.= "INNER JOIN prospect_list_campaigns plc ON plc.prospect_list_id = plp.prospect_list_id "; 
+			$insert_query.= "INNER JOIN prospect_list_campaigns plc ON plc.prospect_list_id = plp.prospect_list_id ";
 			$insert_query.= "WHERE plp.prospect_list_id = '{$prospect_list_id}' ";
 			$insert_query.= "AND plp.deleted=0 ";
 			$insert_query.= "AND plc.deleted=0 ";
 			$insert_query.= "AND plc.campaign_id='{$focus->id}'";
-/*
-			if ($focus->db->dbType=='oci8') {
-			}
-			*/
 			$focus->db->query($insert_query);
 		}
         global $mod_strings;
-        //return success message   
+        //return success message
         return $mod_strings['LBL_DEFAULT_LIST_ENTRIES_WERE_PROCESSED'];
     }
-    
+
     function create_campaign_log_entry($campaign_id, $focus, $rel_name, $rel_bean, $target_id = ''){
         global $timedate;
-        
+
         $target_ids = array();
         //check if this is specified for one target/contact/prospect/lead (from contact/lead detail subpanel)
         if(!empty($target_id)){
@@ -924,11 +908,11 @@ function write_mail_merge_log_entry($campaign_id,$pl_row) {
             //this is specified for all, so load target/prospect relationships (mark as sent button)
             $focus->load_relationship($rel_name);
             $target_ids = $focus->$rel_name->get();
-        
+
         }
         if(count($target_ids)>0){
-            
-          
+
+
             //retrieve the target beans and create campaign log entry
             foreach($target_ids as $id){
                  //perform duplicate check
@@ -938,10 +922,10 @@ function write_mail_merge_log_entry($campaign_id,$pl_row) {
 
                 //process if this is not a duplicate campaign log entry
                 if(empty($row)){
-                    //create campaign tracker id and retrieve related bio bean                 
-                     $tracker_id = create_guid();     
+                    //create campaign tracker id and retrieve related bio bean
+                     $tracker_id = create_guid();
                      $rel_bean->retrieve($id);
-    
+
                     //create new campaign log record.
                     $campaign_log = new CampaignLog();
                     $campaign_log->campaign_id = $campaign_id;
@@ -949,15 +933,15 @@ function write_mail_merge_log_entry($campaign_id,$pl_row) {
                     $campaign_log->target_id = $rel_bean->id;
                     $campaign_log->target_type = $rel_bean->module_dir;
                     $campaign_log->activity_type = 'targeted';
-                    $campaign_log->activity_date=$timedate->now();                    
+                    $campaign_log->activity_date=$timedate->now();
                     //save the campaign log entry
                     $campaign_log->save();
                 }
-            }    
+            }
         }
-    
+
     }
-    
+
     /*
      * This function will return an array that has been formatted to work as a Quick Search Object for prospect lists
      */
@@ -965,22 +949,22 @@ function write_mail_merge_log_entry($campaign_id,$pl_row) {
         global $app_strings;
         //if source has not been specified, then search across all prospect lists
         if(empty($source)){
-            $qsProspectList = array('method' => 'query', 
-                                'modules'=> array('ProspectLists'), 
+            $qsProspectList = array('method' => 'query',
+                                'modules'=> array('ProspectLists'),
                                 'group' => 'and',
                                 'field_list' => array('name', 'id'),
-                                'populate_list' => array('prospect_list_name', 'prospect_list_id'), 
+                                'populate_list' => array('prospect_list_name', 'prospect_list_id'),
                                 'conditions' => array( array('name'=>'name','op'=>'like_custom','end'=>'%','value'=>'') ),
                                 'order' => 'name',
                                 'limit' => '30',
                                 'no_match_text' => $app_strings['ERR_SQS_NO_MATCH']);
         }else{
-             //source has been specified use it to tell quicksearch.js which html input to use to get filter value 
-            $qsProspectList = array('method' => 'query', 
-                                'modules'=> array('ProspectLists'), 
+             //source has been specified use it to tell quicksearch.js which html input to use to get filter value
+            $qsProspectList = array('method' => 'query',
+                                'modules'=> array('ProspectLists'),
                                 'group' => 'and',
-                                'field_list' => array('name', 'id'), 
-                                'populate_list' => array($return_field_name, $return_field_id), 
+                                'field_list' => array('name', 'id'),
+                                'populate_list' => array($return_field_name, $return_field_id),
                                 'conditions' => array(
                                                     array('name'=>'name','op'=>'like_custom','end'=>'%','value'=>''),
                                                     //this condition has the source parameter defined, meaning the query will take the value specified below
@@ -989,11 +973,11 @@ function write_mail_merge_log_entry($campaign_id,$pl_row) {
                                 'order' => 'name',
                                 'limit' => '30',
                                 'no_match_text' => $app_strings['ERR_SQS_NO_MATCH']);
-                
+
         }
-                            
+
         return $qsProspectList;
     }
-    
-    
+
+
 ?>

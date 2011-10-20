@@ -400,16 +400,13 @@
 		    newContent.eaw = this;
 		    newContent.onblur = function(e){this.eaw.retrieveEmailAddress(e)};
 		    newContent.onkeydown = function(e){this.eaw.handleKeyDown(e)};
-            if (YAHOO.env.ua.ie) {
-                // IE doesn't bubble up "change" events through the DOM. So we need to find events that are looking at our parent and manually push them down to here
+            if (YAHOO.env.ua.ie > 0) {
+                // IE doesn't bubble up "change" events through the DOM.
+                // So we need to fire onChange events on the parent span when the input changes
                 var emailcontainer = Dom.getAncestorByTagName(insertInto,'span');
-                var listeners = YAHOO.util.Event.getListeners(emailcontainer);
-                if (typeof listeners != 'undefined' && listeners instanceof Array) {
-                    for (var i=0; i<listeners.length; ++i) {
-                        var listener = listeners[i];
-                        YAHOO.util.Event.addListener(newContent, listener.type, listener.fn, listener.obj, listener.adjust);
-                    }
-                }
+                YAHOO.util.Event.addListener(newContent, "change",
+                        function(ev, el){SUGAR.util.callOnChangeListers(el);}, emailcontainer
+                );
             }
 		    
 		    // Add validation to field

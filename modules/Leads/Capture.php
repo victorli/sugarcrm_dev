@@ -88,7 +88,7 @@ if (!empty($_POST['user']) && !empty($users[$_POST['user']])) {
 		if(isset($_POST['redirect']) && !empty($_POST['redirect'])){
 
 			//header("Location: ".$_POST['redirect']);
-			echo '<html><head><title>SugarCRM</title></head><body>';
+			echo '<html ' . get_language_header() .'><head><title>SugarCRM</title></head><body>';
 			echo '<form name="redirect" action="' .$_POST['redirect']. '" method="POST">';
 
 			foreach($_POST as $param => $value) {
@@ -116,7 +116,7 @@ if (!empty($_POST['user']) && !empty($users[$_POST['user']])) {
 
 echo "We're sorry, the server is currently unavailable, please try again later.";
 if (!empty($_POST['redirect'])) {
-	echo '<html><head><title>SugarCRM</title></head><body>';
+	echo '<html ' . get_language_header() . '><head><title>SugarCRM</title></head><body>';
 	echo '<form name="redirect" action="' .$_POST['redirect']. '" method="POST">';
 	echo '</form><script language="javascript" type="text/javascript">document.redirect.submit();</script>';
 	echo '</body></html>';

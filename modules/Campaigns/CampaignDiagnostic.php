@@ -259,19 +259,25 @@ if(!isset($_REQUEST['inline']) || $_REQUEST['inline'] != 'inline'){
  * @return string HTML img tag
  */
 function define_image($num, $total)
-{
+{ global $mod_strings;
     //if health number is equal to total number then all checks failed, set red image
     if($num == $total){
         //red
-        return "<img src='".SugarThemeRegistry::current()->getImageURL("red_camp.gif")."' align='absmiddle'> ";
+        return SugarThemeRegistry::current()->getImage('red_camp', "align='absmiddle'", null, null, ".gif", $mod_strings['LBL_INVALID']);
+
+
     }elseif($num == 0){
         //if health number is zero, then all checks passed, set green image
         //green
-       return "<img src='".SugarThemeRegistry::current()->getImageURL("green_camp.gif")."' align='absmiddle' > ";
+       return SugarThemeRegistry::current()->getImage('green_camp', "align='absmiddle'", null, null, ".gif", $mod_strings['LBL_VALID']);
+
+
     }else{
         //if health number is between total and num params, then some checks failed but not all, set yellow image
         //yellow
-        return "<img src='".SugarThemeRegistry::current()->getImageURL("yellow_camp.gif")."' align='absmiddle' > ";
+        return SugarThemeRegistry::current()->getImage('yellow_camp', "align='absmiddle'", null, null, ".gif", $mod_strings['LBL_ALERT']);
+
+
     }
 }
     

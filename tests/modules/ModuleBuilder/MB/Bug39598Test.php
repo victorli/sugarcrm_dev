@@ -79,9 +79,9 @@ class Bug39598Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->tmpDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'bug32821';
+        $this->tmpDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'bug39598';
         mkdir($this->tmpDir);
-        $this->tmpFile = tempnam($this->tmpDir, 'bug32821');
+        $this->tmpFile = tempnam($this->tmpDir, 'bug39598');
         //rename file to 'relationships.php'
         rename($this->tmpFile, $this->tmpDir . DIRECTORY_SEPARATOR . 'relationships.php');
         $this->tmpFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'relationships.php';
@@ -100,6 +100,6 @@ class Bug39598Test extends Sugar_PHPUnit_Framework_TestCase
         $mbModule->renameMetaData($this->tmpDir, 'test_oldname');
         $replacedContents = file_get_contents($this->tmpFile);
         $this->assertEquals('[\'test_newname\'] => ', $replacedContents, 'Module name replaced correctly in relationships metadata');
-        
+
     }
 }

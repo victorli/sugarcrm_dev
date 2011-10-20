@@ -97,7 +97,7 @@ class Popup_Picker
 		$printImageURL = SugarThemeRegistry::current()->getImageURL('print.gif');
 		$titleExtra = <<<EOHTML
 <a href="javascript:void window.open('index.php?{$GLOBALS['request_string']}','printwin','menubar=1,status=0,resizable=1,scrollbars=1,toolbar=0,location=1')" class='utilsLink'>
-<img src="{$printImageURL}" alt="{$GLOBALS['app_strings']['LNK_PRINT']}"></a>
+<!--not_in_theme!--><img src="{$printImageURL}" alt="{$GLOBALS['app_strings']['LNK_PRINT']}"></a>
 <a href="javascript:void window.open('index.php?{$GLOBALS['request_string']}','printwin','menubar=1,status=0,resizable=1,scrollbars=1,toolbar=0,location=1')" class='utilsLink'>
 {$GLOBALS['app_strings']['LNK_PRINT']}
 </a>

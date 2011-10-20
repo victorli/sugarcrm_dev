@@ -72,7 +72,7 @@ if(isset($_REQUEST['reset']) && $_REQUEST['reset'])
 {
 	$_SESSION['MAILMERGE_MODULE'] = null;
 	$_SESSION['MAILMERGE_DOCUMENT_ID'] = null;
-	$_SESSION['SELECTED_OBJECTS_DEF'] = null;	
+	$_SESSION['SELECTED_OBJECTS_DEF'] = null;
 	$_SESSION['MAILMERGE_SKIP_REL'] = null;
 	$_SESSION['MAILMERGE_RECORD'] = null;
 	$_SESSION['MAILMERGE_RECORDS'] = null;
@@ -81,11 +81,11 @@ if(isset($_REQUEST['reset']) && $_REQUEST['reset'])
 $fromListView = false;
 if(!empty($_REQUEST['record']))
 {
-	$_SESSION['MAILMERGE_RECORD'] = $_REQUEST['record'];	
+	$_SESSION['MAILMERGE_RECORD'] = $_REQUEST['record'];
 }
 else if(isset($_REQUEST['uid'])) {
 	$_SESSION['MAILMERGE_RECORD'] = explode(',', $_REQUEST['uid']);
-    
+
 }
 else if(isset($_REQUEST['entire']) && $_REQUEST['entire'] == 'true') {
 	// do entire list
@@ -94,7 +94,7 @@ else if(isset($_REQUEST['entire']) && $_REQUEST['entire'] == 'true') {
 	$bean = $beanList[ $_SESSION['MAILMERGE_MODULE']];
 	require_once($beanFiles[$bean]);
 	$focus = new $bean;
-	
+
 	if(isset($_SESSION['export_where']) && !empty($_SESSION['export_where'])) { // bug 4679
 		$where = $_SESSION['export_where'];
 	} else {
@@ -104,7 +104,7 @@ else if(isset($_REQUEST['entire']) && $_REQUEST['entire'] == 'true') {
     if ($beginWhere == "where")
         $where = substr(trim($where), 5, strlen($where));
 	$query = $focus->create_export_query($order_by,$where);
-	
+
 	$result = $db->query($query,true,"Error mail merging {$_SESSION['MAILMERGE_MODULE']}: "."<BR>$query");
 
 	$new_arr = array();
@@ -138,9 +138,9 @@ if(isset($_SESSION['MAILMERGE_RECORD']))
 		$rModule = $_SESSION['MAILMERGE_MODULE'];
 	}
 	if($rModule == 'CampaignProspects'){
-    	$rModule = 'Campaigns';   
+    	$rModule = 'Campaigns';
 	}
-	
+
 	$_SESSION['MAILMERGE_MODULE'] = $rModule;
 	if(!empty($rModule) && $rModule != "MailMerge")
 	{
@@ -153,24 +153,24 @@ if(isset($_SESSION['MAILMERGE_RECORD']))
     	foreach($_SESSION['MAILMERGE_RECORD'] as $record_id)
     	{
     		if($rModule == 'Campaigns'){
-    			
+
     			$prospect = new Prospect();
     			$prospect_module_list = array('leads', 'contacts', 'prospects', 'users');
     			foreach($prospect_module_list as $mname){
 	    			$pList = $prospect->retrieveTargetList("campaigns.id = '$record_id' AND related_type = #$mname#", array('id', 'first_name', 'last_name'));
-	    			
+
 	    			foreach($pList['list'] as $bean){
 	    				$selected_objects .= $bean->id.'='.str_replace("&", "##", $bean->name).'&';
 	    			}
     			}
     		}else{
-    	   		$seed->retrieve($record_id);	
+    	   		$seed->retrieve($record_id);
     	   		$selected_objects .= $record_id.'='.str_replace("&", "##", $seed->name).'&';
     		}
-    	}	
+    	}
 
-    	 
-    	if($rModule != 'Contacts' 
+
+    	if($rModule != 'Contacts'
     	   && $rModule != 'Leads' && $rModule != 'Products' && $rModule != 'Campaigns' && $rModule != 'Projects'
     	   )
     	{
@@ -214,7 +214,7 @@ else{
 }
 $xtpl->assign("MODULE_SELECT", $module_select_text);
 if($_SESSION['MAILMERGE_MODULE'] == 'Campaigns'){
-    $_SESSION['MAILMERGE_MODULE'] = 'CampaignProspects';   
+    $_SESSION['MAILMERGE_MODULE'] = 'CampaignProspects';
 }
 
 $admin = new Administration();
@@ -229,29 +229,28 @@ if ($user_merge != 'on' || !isset($admin->settings['system_mailmerge_on']) || !$
 $xtpl->parse("main");
 $xtpl->out("main");
 
-function get_user_module_list($user){
+/*function get_user_module_list($user){
 	global $app_list_strings, $current_language;
 	$app_list_strings = return_app_list_strings_language($current_language);
 	$modules = query_module_access_list($user);
 	global $modInvisList;
 
 	return $modules;
-}
+}*/
 
 function getDocumentRevisions()
-{			
+{
 	$document = new Document();
 
-	$currentDate = TimeDate::getInstance()->nowDb();
-	if ($document->db->dbType=="mysql") {
-		$empty_date=db_convert("'0000-00-00'", 'datetime');
-	}
-	else {
-		$empty_date=db_convert("'1970-01-01 00:00:00'", 'datetime');
-	}
-	
+	$currentDate = $document->db->now();
+	$empty_date = $document->db->emptyValue("date");
+
 			$query = "SELECT revision, document_name, document_revisions.id FROM document_revisions
-LEFT JOIN documents on documents.id = document_revisions.document_id WHERE ((active_date <= ".db_convert("'".$currentDate."'", 'datetime')." AND exp_date > ".db_convert("'".$currentDate."'", 'datetime').") OR (active_date is NULL) or (active_date = ".$empty_date.") or (active_date <= ".db_convert("'".$currentDate."'", 'datetime')." AND ((exp_date = ".$empty_date.") OR (exp_date is NULL)))) AND is_template = 1 AND template_type = 'mailmerge' AND documents.deleted = 0 ORDER BY document_name";
+LEFT JOIN documents on documents.id = document_revisions.document_id
+WHERE ((active_date <= $currentDate AND exp_date > $currentDate)
+	OR (active_date is NULL) or (active_date = ".$empty_date.")
+	OR (active_date <= $currentDate AND ((exp_date = $empty_date OR (exp_date is NULL)))))
+AND is_template = 1 AND template_type = 'mailmerge' AND documents.deleted = 0 ORDER BY document_name";
 
 			$result = $document->db->query($query,true,"Error retrieving $document->object_name list: ");
 

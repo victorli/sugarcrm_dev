@@ -47,14 +47,6 @@ class TemplateMultiEnum extends TemplateEnum{
 		return "<input type='hidden' name='". $this->name. "' value='0'><select name='". $this->name . "[]' size='5' title='{" . $xtpl_var ."_HELP}' MULTIPLE=true>{OPTIONS_".$xtpl_var. "}</select>";
 	}
 
-	function get_db_type(){
-		if ($GLOBALS['db']->dbType=='oci8') {
-			return " CLOB ";
-		} else {
-			return " TEXT ";
-		}
-	}
-
 	function get_xtpl_edit(){
 		$name = $this->name;
 		$value = '';
@@ -153,10 +145,6 @@ class TemplateMultiEnum extends TemplateEnum{
 
 	function get_db_default(){
     	return '';
-	}
-
-    function get_db_modify_alter_table($table){
-        return parent::get_db_modify_alter_table($table);
 	}
 
 	function save($df) {

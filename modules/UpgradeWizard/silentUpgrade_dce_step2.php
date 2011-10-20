@@ -104,7 +104,7 @@ function checkLoggerSettings(){
  		}
 	 }
 }
- 
+
 function checkResourceSettings(){
 	if(file_exists(getcwd().'/config.php')){
          require(getcwd().'/config.php');
@@ -140,33 +140,21 @@ function createMissingRels(){
 		$result= $GLOBALS['db']->query($query, true);
 		$a = null;
 		$a = $GLOBALS['db']->fetchByAssoc($result);
-		if($GLOBALS['db']->checkError()){
-			//log this
-		}
 		if(!isset($a['id']) && empty($a['id']) ){
 			$qRel = "INSERT INTO relationships (id,relationship_name, lhs_module, lhs_table, lhs_key, rhs_module, rhs_table, rhs_key, join_table, join_key_lhs, join_key_rhs, relationship_type, relationship_role_column, relationship_role_column_value, reverse, deleted)
 						VALUES ('{$guid}', '{$relObjName}_assigned_user','Users','users','id','{$relModName}','{$relObjName}','assigned_user_id',NULL,NULL,NULL,'one-to-many',NULL,NULL,'0','0')";
 			$GLOBALS['db']->query($qRel);
-			if($GLOBALS['db']->checkError()){
-				//log this
-			}
 		}
 		//modified_user
 		$guid = create_guid();
 		$query = "SELECT id FROM relationships WHERE relationship_name = '{$relObjName}_modified_user'";
 		$result= $GLOBALS['db']->query($query, true);
-		if($GLOBALS['db']->checkError()){
-			//log this
-		}
 		$a = null;
 		$a = $GLOBALS['db']->fetchByAssoc($result);
 		if(!isset($a['id']) && empty($a['id']) ){
 			$qRel = "INSERT INTO relationships (id,relationship_name, lhs_module, lhs_table, lhs_key, rhs_module, rhs_table, rhs_key, join_table, join_key_lhs, join_key_rhs, relationship_type, relationship_role_column, relationship_role_column_value, reverse, deleted)
 						VALUES ('{$guid}', '{$relObjName}_modified_user','Users','users','id','{$relModName}','{$relObjName}','modified_user_id',NULL,NULL,NULL,'one-to-many',NULL,NULL,'0','0')";
 			$GLOBALS['db']->query($qRel);
-			if($GLOBALS['db']->checkError()){
-				//log this
-			}
 		}
 		//created_by
 		$guid = create_guid();
@@ -178,9 +166,6 @@ function createMissingRels(){
 			$qRel = "INSERT INTO relationships (id,relationship_name, lhs_module, lhs_table, lhs_key, rhs_module, rhs_table, rhs_key, join_table, join_key_lhs, join_key_rhs, relationship_type, relationship_role_column, relationship_role_column_value, reverse, deleted)
 						VALUES ('{$guid}', '{$relObjName}_created_by','Users','users','id','{$relModName}','{$relObjName}','created_by',NULL,NULL,NULL,'one-to-many',NULL,NULL,'0','0')";
 			$GLOBALS['db']->query($qRel);
-			if($GLOBALS['db']->checkError()){
-				//log this
-			}
     	}
 	}
 	//Also add tracker perf relationship
@@ -193,7 +178,7 @@ function createMissingRels(){
  * @param   $sugar_version
  * @return  bool true if successful
  */
-function merge_passwordsetting($sugar_config, $sugar_version) {	
+function merge_passwordsetting($sugar_config, $sugar_version) {
     $passwordsetting_defaults = array(
     'passwordsetting' => array (
         'SystemGeneratedPasswordON' => '',
@@ -208,9 +193,9 @@ function merge_passwordsetting($sugar_config, $sugar_version) {
         'systexpirationtype' => '0',
         'systexpirationlogin' => '',
         ) ,
-    );    
-   
-        
+    );
+
+
     $sugar_config = sugarArrayMerge($passwordsetting_defaults, $sugar_config );
 
     // need to override version with default no matter what
@@ -239,9 +224,6 @@ function addDefaultModuleRoles($defaultRoles = array()) {
 	                	$currdate = gmdate('Y-m-d H:i:s');
 	                	$query= "INSERT INTO acl_actions (id,date_entered,date_modified,modified_user_id,name,category,acltype,aclaccess,deleted ) VALUES ('$guid','$currdate','$currdate','1','$name','$category','$roleName','$access_override','0')";
 						$GLOBALS['db']->query($query);
-						if($GLOBALS['db']->checkError()){
-							//log this
-						}
 	                }
             }
         }
@@ -307,13 +289,13 @@ function verifyArguments($argv,$usage_dce,$usage_regular){
         //this should be a regular sugar install
         echo "*******************************************************************************\n";
         echo "*** ERROR: Tried to execute in a non-SugarCRM root directory.\n";
-        exit(1);      
+        exit(1);
     }
 
     if(isset($argv[7]) && file_exists($argv[7].'SugarTemplateUtilties.php')){
         require_once($argv[7].'SugarTemplateUtilties.php');
     }
-    
+
     return $upgradeType;
 }
 
@@ -468,7 +450,7 @@ if($upgradeType == constant('DCE_INSTANCE')){
 	//get new template path for use in later processing
     $dceupgrade_pos = strpos($argv[1], '/DCEUpgrade');
     $newtemplate_path = substr($argv[1], 0, $dceupgrade_pos);
-	
+
 	require("{$argv[4]}/sugar_version.php");
 	global $sugar_version;
 
@@ -484,10 +466,10 @@ if($upgradeType == constant('DCE_INSTANCE')){
 		require_once("{$newtemplate_path}/include/SugarObjects/LanguageManager.php");
 	}
     */
-	
+
 	//load up entrypoint from original template
    	require_once("{$argv[4]}/include/entryPoint.php");
-   	
+
 	require_once("{$newtemplate_path}/include/utils/zip_utils.php");
 	require_once("{$newtemplate_path}/modules/Administration/UpgradeHistory.php");
 
@@ -496,8 +478,8 @@ if($upgradeType == constant('DCE_INSTANCE')){
 	global $current_user;
 	$current_user = new User();
 	$current_user->retrieve('1');
-	
-	
+
+
 	//This is DCE instance
       global $sugar_config;
       global $sugar_version;
@@ -520,15 +502,15 @@ if($upgradeType == constant('DCE_INSTANCE')){
     if( isset( $manifest['copy_files']['from_dir'] ) && $manifest['copy_files']['from_dir'] != "" ){
 	    $zip_from_dir   = $manifest['copy_files']['from_dir'];
 	}
-	
+
 	$instanceUpgradePath = "{$argv[1]}/{$zip_from_dir}";
 	$_SESSION['sugar_version_file'] = '';
 	$srcFile = clean_path("{$instanceUpgradePath}/sugar_version.php");
 	if(file_exists($srcFile)) {
 	   $_SESSION['sugar_version_file'] = $srcFile;
-	}	
-	
-	
+	}
+
+
 	global $instancePath;
 	$instancePath = $instanceUpgradePath;
 	$_SESSION['instancePath'] = $instancePath;
@@ -540,7 +522,7 @@ if($upgradeType == constant('DCE_INSTANCE')){
 
     $ce_to_pro_ent = isset($manifest['name']) && ($manifest['name'] == 'SugarCE to SugarPro' || $manifest['name'] == 'SugarCE to SugarEnt' || $manifest['name'] == 'SugarCE to SugarCorp' || $manifest['name'] == 'SugarCE to SugarUlt');
 	$_SESSION['upgrade_from_flavor'] = $manifest['name'];
-	
+
     //check for db upgrade
     //check exit on conflicts
     $skipDBUpgrade = 'no'; //default
@@ -575,16 +557,16 @@ if($upgradeType == constant('DCE_INSTANCE')){
             $merger = new SugarMerge($instanceUpgradePath, $argv[4].'/', $argv[3].'/custom');
             $merger->mergeAll();
             logThis('Finished 3 way merge()...', $path);
-        }        
-        
+        }
+
 		logThis('Starting post_install()...', $path);
 		$file = "{$argv[1]}/".constant('SUGARCRM_POST_INSTALL_FILE');
 		if(is_file($file)) {
 		    include($file);
 			post_install();
-		}  
-		logThis('post_install() done.', $path);        
-        
+		}
+		logThis('post_install() done.', $path);
+
     	///////////////////////////////////////////////////////////////////////////////
 		//clean vardefs
 		logThis('Performing UWrebuild()...', $path);
@@ -598,15 +580,15 @@ if($upgradeType == constant('DCE_INSTANCE')){
         logThis('begin check logger settings .', $path);
             checkLoggerSettings();
         logThis('end check logger settings .', $path);
-        
+
         logThis('Set default_max_tabs to 7', $path);
         $sugar_config['default_max_tabs'] = '7';
-		
+
         if( !write_array_to_file( "sugar_config", $sugar_config, "config.php" ) ) {
             logThis('*** ERROR: could not write config.php! - upgrade will fail!', $path);
             $errors[] = 'Could not write config.php!';
         }
-	
+
         //check to see if there are any new files that need to be added to systems tab
         //retrieve old modules list
         logThis('check to see if new modules exist',$path);
@@ -616,7 +598,7 @@ if($upgradeType == constant('DCE_INSTANCE')){
         $oldModuleList = $moduleList;
         include($newtemplate_path.'/include/modules.php');
         $newModuleList = $moduleList;
-        
+
 		///    RELOAD NEW DEFINITIONS
 		global $ACLActions, $beanList, $beanFiles;
 		include($newtemplate_path.'/modules/ACLActions/actiondefs.php');
@@ -624,27 +606,27 @@ if($upgradeType == constant('DCE_INSTANCE')){
 		//First repair the databse to ensure it is up to date with the new vardefs/tabledefs
 		logThis('About to repair the database.', $path);
 		//Use Repair and rebuild to update the database.
-		global $dictionary; 
+		global $dictionary;
 		require_once($newtemplate_path.'/modules/Administration/QuickRepairAndRebuild.php');
 		$rac = new RepairAndClear();
 		$rac->clearVardefs();
 		$rac->rebuildExtensions();
-		
+
 		$repairedTables = array();
-		
+
 		//Force vardefs to be reloaded
 		$GLOBALS['reload_vardefs'] = true;
-		
+
 		foreach ($beanFiles as $bean => $file) {
 			if(file_exists($newtemplate_path . '/' . $file) && $bean != 'UpgradeHistory'){
 				unset($GLOBALS['dictionary'][$bean]);
 				require_once($newtemplate_path . '/' . $file);
-				
+
 				$focus = new $bean ();
 				if(empty($focus->table_name) || isset($repairedTables[$focus->table_name])) {
 				   continue;
 				}
-		
+
 				if (($focus instanceOf SugarBean)) {
 					$sql = $db->repairTable($focus, true);
 					if(!empty($sql)) {
@@ -654,16 +636,16 @@ if($upgradeType == constant('DCE_INSTANCE')){
 				}
 			}
 		}
-		
+
 		unset ($dictionary);
 		include ($newtemplate_path.'/modules/TableDictionary.php');
 		foreach ($dictionary as $meta) {
 			$tablename = $meta['table'];
-		
+
 			if(isset($repairedTables[$tablename])) {
 			   continue;
 			}
-			
+
 			$fielddefs = $meta['fields'];
 			$indices = $meta['indices'];
 			$sql = $GLOBALS['db']->repairTableParams($tablename, $fielddefs, $indices, true);
@@ -671,27 +653,27 @@ if($upgradeType == constant('DCE_INSTANCE')){
 			    logThis($sql, $path);
 			    $repairedTables[$tablename] = true;
 			}
-			
-		}		
-		logThis('database repaired', $path);         
 
-        //include tab controller 
+		}
+		logThis('database repaired', $path);
+
+        //include tab controller
         require_once($newtemplate_path.'/modules/MySettings/TabController.php');
         $newTB = new TabController();
-        
+
         //make sure new modules list has a key we can reference directly
         $newModuleList = $newTB->get_key_array($newModuleList);
         $oldModuleList = $newTB->get_key_array($oldModuleList);
-        
+
         //iterate through list and remove commonalities to get new modules
         foreach ($newModuleList as $remove_mod){
             if(in_array($remove_mod, $oldModuleList)){
                 unset($newModuleList[$remove_mod]);
-            }   
+            }
         }
         //new modules list now has left over modules which are new to this install, so lets add them to the system tabs
         logThis('new modules to add are '.var_export($newModuleList,true),$path);
-        
+
         //grab the existing system tabs
         $tabs = $newTB->get_system_tabs();
 
@@ -703,8 +685,8 @@ if($upgradeType == constant('DCE_INSTANCE')){
         //now assign the modules to system tabs
         $newTB->set_system_tabs($tabs);
         logThis('module tabs updated',$path);
-        
-	    
+
+
 
 	    if($ce_to_pro_ent){
 	    	//add the global team if it does not exist
@@ -712,34 +694,34 @@ if($upgradeType == constant('DCE_INSTANCE')){
 			$globalteam->retrieve('1');
 			include($newtemplate_path.'/modules/Administration/language/en_us.lang.php');
 			if(isset($globalteam->name)){
-				
+
 			   echo 'Global '.$mod_strings['LBL_UPGRADE_TEAM_EXISTS'].'<br>';
 			   logThis(" Finish Building private teams", $path);
-			
+
 			}else{
 			   $globalteam->create_team("Global", $mod_strings['LBL_GLOBAL_TEAM_DESC'], $globalteam->global_team);
 			}
-	    	
+
 	    	//build private teams
 		    logThis(" Start Building private teams", $path);
 		    upgradeModulesForTeam();
-		    logThis(" Finish Building private teams", $path); 
+		    logThis(" Finish Building private teams", $path);
 
 			//build team sets
 		    logThis(" Start Building the team_set and team_sets_teams", $path);
 		    upgradeModulesForTeamsets();
 		    logThis(" Finish Building the team_set and team_sets_teams", $path);
-		    
+
 		    //upgrade teams
 			if(file_exists($newtemplate_path.'/modules/Administration/upgradeTeams.php')) {
 				logThis(" Start {$newtemplate_path}/modules/Administration/upgradeTeams.php", $path);
-				include($newtemplate_path.'/modules/Administration/upgradeTeams.php');	
+				include($newtemplate_path.'/modules/Administration/upgradeTeams.php');
 				logThis(" Finish {$newtemplate_path}/modules/Administration/upgradeTeams.php", $path);
 
 				//update the users records to have default team
 				logThis('running query to populate default_team on users table',$path);
 				$GLOBALS['db']->query("update users set default_team = (select teams.id from teams where teams.name = concat('(',users.user_name, ')') or team.associated_user_id = users.id)");
-				
+
 			}
 
 			//run upgrade script for dashlets to include sales/marketing
@@ -747,9 +729,9 @@ if($upgradeType == constant('DCE_INSTANCE')){
 	           logThis('calling upgradeDashlets script',$path);
 			   upgradeDashletsForSalesAndMarketing();
 			}
-		    
+
 	    }
-	    
+
 		require("sugar_version.php");
 		require('config.php');
 		global $sugar_config;
@@ -766,13 +748,13 @@ if($upgradeType == constant('DCE_INSTANCE')){
 		    require_once($newtemplate_path . '/include/SugarTheme/SugarTheme.php');
 		}
 		SugarThemeRegistry::buildRegistry();
-		SugarThemeRegistry::clearAllCaches();    
-		    
+		SugarThemeRegistry::clearAllCaches();
+
 		// re-minify the JS source files
 		$_REQUEST['root_directory'] = getcwd();
 		$_REQUEST['js_rebuild_concat'] = 'rebuild';
-		require_once($newtemplate_path . '/jssource/minify.php');  
-	    
+		require_once($newtemplate_path . '/jssource/minify.php');
+
 		//as last step, rebuild the language files and rebuild relationships
 		/*
 		if(file_exists($newtemplate_path.'/modules/Administration/RebuildJSLang.php')) {
@@ -780,10 +762,10 @@ if($upgradeType == constant('DCE_INSTANCE')){
 			include($newtemplate_path.'/modules/Administration/RebuildJSLang.php');
 			rebuildRelations($newtemplate_path.'/');
 		}
-		*/	
-		
+		*/
+
     }
-    
+
 } //END OF BIG if block
 
 
@@ -829,7 +811,7 @@ if(file_exists($newtemplate_path . '/modules/Configurator/Configurator.php')){
 if(file_exists($newtemplate_path . '/include/SugarLogger/LoggerManager.php')){
 	set_upgrade_progress('logger','in_progress');
 	if(!class_exists('LoggerManager')){
-		
+
 	}
 	if(class_exists('LoggerManager')){
 		unset($GLOBALS['log']);

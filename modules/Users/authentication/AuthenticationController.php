@@ -37,10 +37,13 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 
-class AuthenticationController {
-	var $loggedIn = false; //if a user has attempted to login
-	var $authenticated = false;
-	var $loginSuccess = false;// if a user has successfully logged in
+class AuthenticationController 
+{
+	public $loggedIn = false; //if a user has attempted to login
+	public $authenticated = false;
+	public $loginSuccess = false;// if a user has successfully logged in
+	
+	protected static $authcontrollerinstance = null;
 
 	/**
 	 * Creates an instance of the authentication controller and loads it
@@ -48,45 +51,53 @@ class AuthenticationController {
 	 * @param STRING $type - the authentication Controller - default to SugarAuthenticate
 	 * @return AuthenticationController -
 	 */
-	function AuthenticationController($type = 'SugarAuthenticate') {
-		if(!file_exists('modules/Users/authentication/'.$type.'/' . $type . '.php'))$type = 'SugarAuthenticate';
-
-
-		if($type == 'SugarAuthenticate' && !empty($GLOBALS['system_config']->settings['system_ldap_enabled']) && empty($_SESSION['sugar_user'])){
+	public function __construct($type = 'SugarAuthenticate') 
+	{
+	    if ($type == 'SugarAuthenticate' && !empty($GLOBALS['system_config']->settings['system_ldap_enabled']) && empty($_SESSION['sugar_user'])){
 			$type = 'LDAPAuthenticate';
-		}
+        }
+	    
+        // check in custom dir first, in case someone want's to override an auth controller
+		if (file_exists('custom/modules/Users/authentication/'.$type.'/' . $type . '.php')) {
+            require_once('custom/modules/Users/authentication/'.$type.'/' . $type . '.php');
+        }
+        elseif (file_exists('modules/Users/authentication/'.$type.'/' . $type . '.php')) {
+            require_once('modules/Users/authentication/'.$type.'/' . $type . '.php');
+        }
+        else {
+            require_once('modules/Users/authentication/SugarAuthenticate/SugarAuthenticate.php');
+            $type = 'SugarAuthenticate';
+        }
 
-
-
-		require_once ('modules/Users/authentication/'.$type.'/' . $type . '.php');
-		$this->authController = new $type();
+        $this->authController = new $type();
 	}
 
 
 	/**
 	 * Returns an instance of the authentication controller
 	 *
-	 * @param STRING $type this is the type of authetnication you want to use default is SugarAuthenticate
+	 * @param string $type this is the type of authetnication you want to use default is SugarAuthenticate
 	 * @return an instance of the authetnciation controller
 	 */
-	function &getInstance($type='SugarAuthenticate'){
-		static $authcontroller;
-		if(empty($authcontroller)){
-			$authcontroller = new AuthenticationController($type);
+	public static function getInstance($type = 'SugarAuthenticate')
+	{
+		if (empty(self::$authcontrollerinstance)) {
+			self::$authcontrollerinstance = new AuthenticationController($type);
 		}
-		return $authcontroller;
+		
+		return self::$authcontrollerinstance;
 	}
 
 	/**
 	 * This function is called when a user initially tries to login.
-	 * It will return true if the user successfully logs in or false otherwise.
 	 *
-	 * @param STRING $username
-	 * @param STRING $password
-	 * @param ARRAY $PARAMS
-	 * @return boolean
+	 * @param string $username
+	 * @param string $password
+	 * @param array $PARAMS
+	 * @return boolean true if the user successfully logs in or false otherwise.
 	 */
-	function login($username, $password, $PARAMS = array ()) {
+	public function login($username, $password, $PARAMS = array()) 
+	{
 		//kbrill bug #13225
 		$_SESSION['loginAttempts'] = (isset($_SESSION['loginAttempts']))? $_SESSION['loginAttempts'] + 1: 1;
 		unset($GLOBALS['login_error']);
@@ -150,10 +161,11 @@ class AuthenticationController {
 	/**
 	 * This is called on every page hit.
 	 * It returns true if the current session is authenticated or false otherwise
+	 *
 	 * @return booelan
 	 */
-	function sessionAuthenticate() {
-
+	public function sessionAuthenticate() 
+	{
 		if(!$this->authenticated){
 			$this->authenticated = $this->authController->sessionAuthenticate();
 		}
@@ -172,15 +184,12 @@ class AuthenticationController {
 	/**
 	 * Called when a user requests to logout. Should invalidate the session and redirect
 	 * to the login page.
-	 *
 	 */
-	function logout(){
+	public function logout()
+	{
 		$GLOBALS['current_user']->call_custom_logic('before_logout');
 		$this->authController->logout();
 		LogicHook::initialize();
 		$GLOBALS['logic_hook']->call_custom_logic('Users', 'after_logout');
 	}
-
-
 }
-?>

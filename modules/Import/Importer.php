@@ -85,7 +85,7 @@ class Importer
         global $mod_strings, $sugar_config;
 
         $this->importSource = $importSource;
-        
+
         //Vanilla copy of the bean object.
         $this->bean = $bean;
 
@@ -532,7 +532,7 @@ class Importer
     protected function saveMappingFile()
     {
         global $current_user;
-        
+
         $firstrow    = unserialize(base64_decode($_REQUEST['firstrow']));
         $mappingValsArr = $this->importColumns;
         $mapping_file = new ImportMap();
@@ -684,7 +684,7 @@ class Importer
         $currency = new Currency();
         $currency->retrieve($this->importSource->importlocale_currency);
         $ifs->currency_symbol = $currency->symbol;
-        
+
         return $ifs;
     }
 

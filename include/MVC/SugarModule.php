@@ -39,26 +39,26 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 class SugarModule
 {
     protected static $_instances = array();
-    
+
     protected $_moduleName;
-    
+
     public static function get(
         $moduleName
         )
     {
         if ( !isset(self::$_instances[$moduleName]) )
             self::$_instances[$moduleName] = new SugarModule($moduleName);
-            
+
         return self::$_instances[$moduleName];
-    }   
-    
+    }
+
     public function __construct(
         $moduleName
         )
     {
         $this->_moduleName = $moduleName;
     }
-    
+
     /**
      * Returns true if the given module implements the indicated template
      *
@@ -70,13 +70,13 @@ class SugarModule
         )
     {
         $focus = self::loadBean();
-        
+
         if ( !$focus )
             return false;
-        
+
         return is_a($focus,$template);
     }
-    
+
     /**
      * Returns the bean object of the given module
      *

@@ -68,7 +68,7 @@ class PHPUnit_Util_TestDox_ResultPrinter_HTML extends PHPUnit_Util_TestDox_Resul
      */
     protected function startRun()
     {
-        $this->write('<html><body>');
+        $this->write('<html ' . get_language_header() . '><body>');
     }
 
     /**

@@ -51,6 +51,7 @@ $dictionary['User'] = array(
             'dbType' => 'varchar',
             'len' => '60',
             'importable' => 'required',
+            'required' => true,
         ) ,
         'user_hash' => array(
             'name' => 'user_hash',
@@ -146,23 +147,6 @@ $dictionary['User'] = array(
                 1 => 'last_name'
             ) ,
             'importable' => 'false',
-        ) ,
-        'reports_to_id' => array(
-            'name' => 'reports_to_id',
-            'vname' => 'LBL_REPORTS_TO_ID',
-            'type' => 'id',
-            'required' => false,
-        ) ,
-        'reports_to_name' => array(
-            'name' => 'reports_to_name',
-            'vname' => 'LBL_REPORTS_TO_NAME',
-            'type' => 'relate',
-            'reportable' => false,
-            'source' => 'non-db',
-            'table' => 'users',
-            'id_name' => 'reports_to_id',
-            'module' => 'Users',
-            'duplicate_merge' => 'disabled',
         ) ,
         'is_admin' => array(
             'name' => 'is_admin',
@@ -288,6 +272,7 @@ $dictionary['User'] = array(
             'len' => 100,
             'options' => 'user_status_dom',
             'importable' => 'required',
+            'required' => true,
         ) ,
         'address_street' => array(
             'name' => 'address_street',
@@ -319,6 +304,17 @@ $dictionary['User'] = array(
             'type' => 'varchar',
             'len' => '20',
         ) ,
+        // This is a fake field for the edit view
+        'UserType' => array(
+            'name' => 'UserType',
+            'vname' => 'LBL_USER_TYPE',
+            'type' => 'enum',
+            'len' => 50,
+            'options' => 'user_type_dom',
+            'source' => 'non-db',
+            'import' => false,
+            'reportable' => false,
+        ),
         'deleted' => array(
             'name' => 'deleted',
             'vname' => 'LBL_DELETED',
@@ -332,6 +328,14 @@ $dictionary['User'] = array(
             'type' => 'bool',
             'massupdate' => false,
             'default' => '0'
+        ) ,
+        'show_on_employees' => array(
+            'name' => 'show_on_employees',
+            'vname' => 'LBL_SHOW_ON_EMPLOYEES',
+            'type' => 'bool',
+            'massupdate' => true,
+            'importable' => true,
+            'default' => true,
         ) ,
         'employee_status' => array(
             'name' => 'employee_status',
@@ -353,12 +357,8 @@ $dictionary['User'] = array(
         'messenger_type' => array(
             'name' => 'messenger_type',
             'vname' => 'LBL_MESSENGER_TYPE',
-            'type' => 'varchar',
-            'function' => array(
-                'name' => 'getMessengerTypeOptions',
-                'returns' => 'html',
-                'include' => 'modules/Employees/EmployeeStatus.php'
-            ) ,
+            'type' => 'enum',
+            'options' => 'messenger_type_dom',
             'len' => 100,
         ) ,
         'calls' => array(
@@ -382,6 +382,27 @@ $dictionary['User'] = array(
             'source' => 'non-db',
             'vname' => 'LBL_CONTACTS_SYNC',
             'reportable' => false,
+        ) ,
+        'reports_to_id' => array(
+            'name' => 'reports_to_id',
+            'vname' => 'LBL_REPORTS_TO_ID',
+            'type' => 'id',
+            'required' => false,
+        ) ,
+        'reports_to_name' => array(
+            'name' => 'reports_to_name',
+            'rname' => 'id',
+            'id_name' => 'reports_to_id',
+            'vname' => 'LBL_REPORTS_TO_NAME',
+            'type' => 'relate',
+            'isnull' => 'true',
+            'module' => 'Users',
+            'table' => 'users',
+            'link' => 'reports_to_link',
+            'reportable' => false,
+            'source' => 'non-db',
+            'duplicate_merge' => 'disabled',
+            'side' => 'right',
         ) ,
         'reports_to_link' => array(
             'name' => 'reports_to_link',
@@ -434,7 +455,18 @@ $dictionary['User'] = array(
             'vname' => 'LBL_EMAIL_ADDRESS_PRIMARY',
             'duplicate_merge' => 'disabled',
             'required' => true,
-        ) ,
+        ),
+        /* Virtual email fields so they will display on the main user page */
+        'email_link_type' => array(
+            'name' => 'email_link_type',
+            'vname' => 'LBL_EMAIL_LINK_TYPE',
+            'type' => 'enum',
+            'options' => 'dom_email_link_type',
+            'importable' => false,
+            'reportable' => false,
+            'source' => 'non-db',
+        ),
+        
         'aclroles' => array(
             'name' => 'aclroles',
             'type' => 'link',

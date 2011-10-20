@@ -56,13 +56,16 @@ function build_related_list_by_user_id($bean, $user_id,$where) {
     $list = array();
 
     while($row = $bean->db->fetchByAssoc($result)) {
-        foreach($bean->column_fields as $field) {
-            if(isset($row[$field])) {
-                $bean->$field = $row[$field];
-            } else {
-                $bean->$field = '';
-            }
-        }
+        $row = $bean->convertRow($row);
+        $bean->fetched_row = $row;
+        $bean->fromArray($row);
+//        foreach($bean->column_fields as $field) {
+//            if(isset($row[$field])) {
+//                $bean->$field = $row[$field];
+//            } else {
+//                $bean->$field = '';
+//            }
+//        }
 
         $bean->processed_dates_times = array();
         $bean->check_date_relationships_load();

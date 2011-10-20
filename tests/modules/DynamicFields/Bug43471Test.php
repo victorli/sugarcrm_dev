@@ -42,17 +42,17 @@ class Bug43471Test extends Sugar_PHPUnit_Framework_TestCase
 {
     private $_tablename;
     private $_old_installing;
-    
+
     public function setUp()
     {
         $this->accountMockBean = $this->getMock('TestBean');
         $this->_tablename = 'test' . date("YmdHis");
     }
-    
+
     public function tearDown()
     {
     }
-    
+
     public function testDynamicFieldsRepairCustomFields()
     {
         $bean = $this->accountMockBean;
@@ -112,7 +112,7 @@ class Bug43471Test extends Sugar_PHPUnit_Framework_TestCase
                 ->method('createCustomTable')
                 ->will($this->returnValue(null));
 
-        $helper = $this->getMock('MysqliHelper');
+        $helper = $this->getMock('MysqliManager', array('get_columns'));
         $helper->expects($this->any())
                 ->method('get_columns')
                 ->will($this->returnValue(array(
@@ -122,14 +122,15 @@ class Bug43471Test extends Sugar_PHPUnit_Framework_TestCase
                     'len' => '255',
                     ),
                 )));
-        // set the new db helper
-        $GLOBALS['db']->helper = $helper;
+        // set the mock db manager (no longer a helper)
+        $db = $GLOBALS['db'];
+        $GLOBALS['db'] = $helper;
 
         $repair = $df->repairCustomFields(false);
         $this->assertEquals("", $repair);
 
-        // reset the db helper
-        $GLOBALS['db']->helper = null;
+        // reset the db
+        $GLOBALS['db'] = $db;
     }
 }
 

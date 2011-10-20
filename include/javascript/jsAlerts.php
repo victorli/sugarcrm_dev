@@ -73,39 +73,31 @@ EOQ;
             return;
 		}
 
+        //Create separate variable to hold timedate value
+        $alertDateTimeNow = $timedate->nowDb();
+
 		// cn: get a boundary limiter
 		$dateTimeMax = $timedate->getNow()->modify("+{$app_list_strings['reminder_max_time']} seconds")->asDb();
 		$dateTimeNow = $timedate->nowDb();
 
 		global $db;
-		// Prep Meetings Query
-		if ($db->dbType == 'mysql') {
-			$selectMeetings = "
-				SELECT meetings.id, name,reminder_time, description,location, date_start, assigned_user_id
-				FROM meetings LEFT JOIN meetings_users ON meetings.id = meetings_users.meeting_id
-				WHERE meetings_users.user_id ='".$current_user->id."'
-					AND meetings_users.accept_status != 'decline'
-					AND meetings.reminder_time != -1
-					AND meetings_users.deleted != 1
-					AND meetings.status != 'Held'
-				    AND date_start >= '$dateTimeNow'
-				    AND date_start <= '$dateTimeMax'";
-		}
-		elseif ($db->dbType == 'oci8')
-		{
-		}elseif($db->dbType == 'mssql') {
-			$selectMeetings = "
-				SELECT meetings.id, name,reminder_time, CAST(description AS varchar(8000)),location, date_start, assigned_user_id
-				FROM meetings LEFT JOIN meetings_users ON meetings.id = meetings_users.meeting_id
-				WHERE meetings_users.user_id ='".$current_user->id."'
-					AND meetings_users.accept_status != 'decline'
-					AND meetings.reminder_time != -1
-					AND meetings_users.deleted != 1
-					AND meetings.status != 'Held'
-				    AND date_start >= '$dateTimeNow'
-				    AND date_start <= '$dateTimeMax'";
+		$dateTimeNow = $db->convert($db->quoted($dateTimeNow), 'datetime');
+		$dateTimeMax = $db->convert($db->quoted($dateTimeMax), 'datetime');
+		$desc = $db->convert("description", "text2char");
+		if($desc != "description") {
+		    $desc .= " description";
 		}
 
+		// Prep Meetings Query
+    	$selectMeetings = "SELECT meetings.id, name,reminder_time, $desc,location, date_start, assigned_user_id
+			FROM meetings LEFT JOIN meetings_users ON meetings.id = meetings_users.meeting_id
+			WHERE meetings_users.user_id ='".$current_user->id."'
+				AND meetings_users.accept_status != 'decline'
+				AND meetings.reminder_time != -1
+				AND meetings_users.deleted != 1
+				AND meetings.status != 'Held'
+			    AND date_start >= $dateTimeNow
+			    AND date_start <= $dateTimeMax";
 		$result = $db->query($selectMeetings);
 
 		///////////////////////////////////////////////////////////////////////
@@ -163,41 +155,23 @@ EOQ;
 				$app_strings['MSG_JS_ALERT_MTG_REMINDER_LOC'].$row['location'].
 				$description.
 				$instructions,
-				$timeStart - strtotime($dateTimeNow),
+				$timeStart - strtotime($alertDateTimeNow),
 				$url
 			);
 		}
 
 		// Prep Calls Query
-		if ($db->dbType == 'mysql') {
-
-			$selectCalls = "
-				SELECT calls.id, name, reminder_time, description, date_start
+		$selectCalls = "
+				SELECT calls.id, name, reminder_time, $desc, date_start
 				FROM calls LEFT JOIN calls_users ON calls.id = calls_users.call_id
 				WHERE calls_users.user_id ='".$current_user->id."'
 				    AND calls_users.accept_status != 'decline'
 				    AND calls.reminder_time != -1
 					AND calls_users.deleted != 1
 					AND calls.status != 'Held'
-				    AND date_start >= '$dateTimeNow'
-				    AND date_start <= '$dateTimeMax'";
-		}elseif ($db->dbType == 'oci8')
-		{
-		}elseif ($db->dbType == 'mssql') {
+				    AND date_start >= $dateTimeNow
+				    AND date_start <= $dateTimeMax";
 
-			$selectCalls = "
-				SELECT calls.id, name, reminder_time, CAST(description AS varchar(8000)), date_start
-				FROM calls LEFT JOIN calls_users ON calls.id = calls_users.call_id
-				WHERE calls_users.user_id ='".$current_user->id."'
-                    AND calls_users.accept_status != 'decline'
-				    AND calls.reminder_time != -1
-					AND calls_users.deleted != 1
-					AND calls.status != 'Held'
-				    AND date_start >= '$dateTimeNow'
-				    AND date_start <= '$dateTimeMax'";
-		}
-
-		global $db;
 		$result = $db->query($selectCalls);
 
 		while($row = $db->fetchByAssoc($result)){
@@ -208,11 +182,9 @@ EOQ;
 			$row['description'] = (isset($row['description'])) ? $row['description'] : '';
 
 
-			$this->addAlert($app_strings['MSG_JS_ALERT_MTG_REMINDER_CALL'], $row['name'], $app_strings['MSG_JS_ALERT_MTG_REMINDER_TIME'].$timedate->to_display_date_time($db->fromConvert($row['date_start'], 'datetime')) , $app_strings['MSG_JS_ALERT_MTG_REMINDER_DESC'].$row['description']. $app_strings['MSG_JS_ALERT_MTG_REMINDER_CALL_MSG'] , $timeStart - strtotime($dateTimeNow), 'index.php?action=DetailView&module=Calls&record=' . $row['id']);
+			$this->addAlert($app_strings['MSG_JS_ALERT_MTG_REMINDER_CALL'], $row['name'], $app_strings['MSG_JS_ALERT_MTG_REMINDER_TIME'].$timedate->to_display_date_time($db->fromConvert($row['date_start'], 'datetime')) , $app_strings['MSG_JS_ALERT_MTG_REMINDER_DESC'].$row['description']. $app_strings['MSG_JS_ALERT_MTG_REMINDER_CALL_MSG'] , $timeStart - strtotime($alertDateTimeNow), 'index.php?action=DetailView&module=Calls&record=' . $row['id']);
 		}
 	}
 
 
 }
-
-?>

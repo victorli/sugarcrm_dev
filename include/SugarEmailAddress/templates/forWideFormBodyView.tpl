@@ -39,7 +39,7 @@
     <td scope="row">{$app_strings.LBL_EMAIL_ADDRESSES}: </td>
 </tr>
 
-<script type="text/javascript" src="include/SugarEmailAddress/SugarEmailAddress.js"></script>
+<script type="text/javascript" src="{sugar_getjspath file='include/SugarEmailAddress/SugarEmailAddress.js'}"></script>
 <script type="text/javascript">
 	var module = '{$module}';
 </script>
@@ -56,8 +56,9 @@
 						<span class="id-ff multiple ownline">
 						<button class='button' type='button' id="{$module}{$index}_email_widget_add"
 onClick="javascript:SUGAR.EmailAddressWidget.instances.{$module}{$index}.addEmailAddress('{$module}emailAddressesTable{$index}','','');" 
-value='{$app_strings.LBL_ADD_BUTTON}'><img src="{sugar_getimagepath file="id-ff-add.png"}"></button>
+value='{$app_strings.LBL_ADD_BUTTON}'>{sugar_getimage name="id-ff-add" alt=$app_strings.LBL_ID_FF_ADD ext=".png" other_attributes=''}</button>
 						</span>					
+
 					</td>
 					<td scope="row" NOWRAP>
 					    &nbsp;

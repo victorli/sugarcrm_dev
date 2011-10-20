@@ -47,7 +47,7 @@ class SugarFeedFlush {
         $timedate = TimeDate::getInstance();
 
         $currDate = $timedate->nowDbDate();
-        if ( $admin->settings['sugarfeed_flushdate'] != $currDate ) {
+        if (isset($admin->settings['sugarfeed_flushdate']) && $admin->settings['sugarfeed_flushdate'] != $currDate ) {
             global $db;
             if ( ! isset($db) ) { $db = DBManagerFactory::getInstance(); }
 

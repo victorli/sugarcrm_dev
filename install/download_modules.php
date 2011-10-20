@@ -45,7 +45,7 @@ if(!isset( $install_script ) || !$install_script || empty($_SESSION['setup_db_ad
 ///////////////////////////////////////////////////////////////////////////////
 ////    PREFILL $sugar_config VARS
 if(empty($sugar_config['upload_dir'])) {
-    $sugar_config['upload_dir'] = 'cache/upload/';
+    $sugar_config['upload_dir'] = 'upload/';
 }
 if(empty($sugar_config['upload_maxsize'])) {
     $sugar_config['upload_maxsize'] = 8192000;
@@ -65,7 +65,7 @@ $GLOBALS['log'] = LoggerManager::getLogger('SugarCRM');
 
 ///////////////////////////////////////////////////////////////////////////////
 ////    PREP VARS FOR LANG PACK
-    $base_upgrade_dir       = $sugar_config['upload_dir'] . "upgrades";
+    $base_upgrade_dir       = sugar_cached("upgrades");
     $base_tmp_upgrade_dir   = $base_upgrade_dir."/temp";
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -82,7 +82,7 @@ if(isset($_REQUEST['languagePackAction']) && !empty($_REQUEST['languagePackActio
         if(isset($_REQUEST['release_id']) && $_REQUEST['release_id'] != ""){
             require_once('ModuleInstall/PackageManager/PackageManager.php');
             $pm = new PackageManager();
-            $tempFile = $pm->download($_REQUEST['release_id'], getcwd().'/'.$sugar_config['upload_dir']);
+            $tempFile = $pm->download($_REQUEST['release_id']);
             $perform = true;
             //$base_filename = urldecode($tempFile);
         }else{
@@ -90,7 +90,8 @@ if(isset($_REQUEST['languagePackAction']) && !empty($_REQUEST['languagePackActio
             if($file->confirm_upload()){
             $perform = true;
              if(strpos($file->mime_type, 'zip') !== false) { // only .zip files
-                    if(langPackFinalMove($file)) {
+					$tempFile = $file->get_stored_filename();
+					if($file->final_move($tempFile)) {
                         $perform = true;
                     }
                     else {
@@ -174,9 +175,10 @@ if(isset($validation_errors)) {
 ////    BEING PAGE OUTPUT
 $disabled = "";
 $result = "";
+$langHeader = get_language_header();
 $out =<<<EOQ
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<html {$langHeader}>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
    <meta http-equiv="Content-Script-Type" content="text/javascript">
@@ -187,8 +189,8 @@ $out =<<<EOQ
    <script type="text/javascript" src="install/installCommon.js"></script>
    <link rel="stylesheet" type="text/css" media="all" href="jscalendar/calendar-win2k-cold-1.css?s={$sugar_version}&c={$js_custom_version}">
    <script>jscal_today = 1161698116000; if(typeof app_strings == "undefined") app_strings = new Array();</script>
-   <script type="text/javascript" src="include/javascript/sugar_grp1.js?s={$sugar_version}&c={$js_custom_version}"></script>
-   <script type="text/javascript" src="include/javascript/sugar_grp1_yui.js?s={$sugar_version}&c={$js_custom_version}"></script>
+   <script type="text/javascript" src="cache/include/javascript/sugar_grp1.js?s={$sugar_version}&c={$js_custom_version}"></script>
+   <script type="text/javascript" src="cache/include/javascript/sugar_grp1_yui.js?s={$sugar_version}&c={$js_custom_version}"></script>
    <script type="text/javascript">
    <!--
    if ( YAHOO.env.ua )

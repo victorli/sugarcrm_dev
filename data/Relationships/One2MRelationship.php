@@ -120,4 +120,20 @@ class One2MRelationship extends M2MRelationship
             parent::add($lhs, $rhs, $additionalFields);
         }
     }
+
+    /**
+     * Just overriding the function from M2M to prevent it from occuring
+     */
+    protected function addSelfReferencing($lhs, $rhs, $additionalFields = array())
+    {
+        //No opp on One2M.
+    }
+
+    /**
+     * Just overriding the function from M2M to prevent it from occuring
+     */
+    protected function removeSelfReferencing($lhs, $rhs, $additionalFields = array())
+    {
+        //No opp on One2M.
+    }
 }

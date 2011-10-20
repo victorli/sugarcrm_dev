@@ -87,7 +87,9 @@ function smarty_function_sugar_help($params, &$smarty)
     return <<<EOHTML
 <img border="0" onmouseout="return nd();"
     onmouseover="$onmouseover"
-    src="$helpImage"/>
+    src="$helpImage"
+    alt="$helpImage"
+    />
 EOHTML;
 }
 

@@ -369,9 +369,29 @@ $mod_strings = array (
 	'LBL_EXCHANGE_SMTPPORT'					=> 'Exchange Server Port:',
 	'LBL_EXCHANGE_SMTPSERVER'				=> 'Exchange Server:',
 
+	'LBL_EDIT_LAYOUT' => 'Edit Layout' /*for 508 compliance fix*/,
+	'LBL_ATTACHMENT' => 'Attachment' /*for 508 compliance fix*/,
+	'LBL_DELETE_INLINE' => 'Delete' /*for 508 compliance fix*/,
+	'LBL_CREATE_CASES' => 'Create Cases' /*for 508 compliance fix*/,
+	'LBL_CREATE_LEADS' => 'Create Leads' /*for 508 compliance fix*/,
+	'LBL_CREATE_CONTACTS' => 'Create Contacts' /*for 508 compliance fix*/,
+	'LBL_CREATE_BUGS' => 'Create Bugs' /*for 508 compliance fix*/,
+	'LBL_CREATE_TASKS' => 'Create Tasks' /*for 508 compliance fix*/,
+	'LBL_CHECK_INLINE' => 'Correct' /*for 508 compliance fix*/,
+	'LBL_CLOSE' => 'Close' /*for 508 compliance fix*/,
+	'LBL_HELP' => 'Help' /*for 508 compliance fix*/,
+	'LBL_GMAIL_LOGO' => 'Gmail' /*for 508 compliance fix*/,
+	'LBL_YAHOO_MAIL' => 'Yahoo' /*for 508 compliance fix*/,
+	'LBL_EXCHANGE_LOGO' => 'Exchange' /*for 508 compliance fix*/,
+	'LBL_WAIT' => 'Wait' /*for 508 compliance fix*/,
+	'LBL_CHECKEMAIL' => 'Check Email' /*for 508 compliance fix*/,
+	'LBL_COMPOSEEMAIL' => 'Compose Email' /*for 508 compliance fix*/,
+	'LBL_EMAILSETTINGS' => 'Email Settings' /*for 508 compliance fix*/,
+
 	// SNIP
 	'LBL_CONTACTS_SUBPANEL_TITLE_SNIP' => 'Email Contacts',
 	'LBL_EMAILS_MEETINGS_REL' => 'Emails:Meetings',
 	'LBL_DATE_CREATED' => 'Date Created',
 	'LBL_DATE_MODIFIED' => 'Date Modified',
 );
+

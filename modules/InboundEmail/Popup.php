@@ -142,7 +142,7 @@ echo /*'
 		<table width="100%" cellpadding="0" cellspacing="0" border="0">
 			<tr>
 				<td>
-					<img src="'.SugarThemeRegistry::current()->getImageURL('h3Arrow.gif').'" width="11" height="11" border="0" alt="'.$mod_strings['LBL_POPUP_TITLE'].'">
+					'.SugarThemeRegistry::current()->getImage('h3Arrow', 'border="0"', 11, 11, ".gif", $mod_strings['LBL_POPUP_TITLE']).'
 				</td>
 				<td>
 					<h3>&nbsp;'.$title.'</h3>

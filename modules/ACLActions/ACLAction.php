@@ -240,24 +240,19 @@ class ACLAction  extends SugarBean{
         $additional_where = '';
         $db = DBManagerFactory::getInstance();
         if(!empty($category)){
-            $additional_where .= " AND $this->table_name.category = '$category' ";
+            $additional_where .= " AND acl_actions.category = '$category' ";
         }
         if(!empty($action)){
-            $additional_where .= " AND $this->table_name.name = '$action' ";
+            $additional_where .= " AND acl_actions.name = '$action' ";
         }
         if(!empty($type)){
-            $additional_where .= " AND $this->table_name.acltype = '$type' ";
+            $additional_where .= " AND acl_actions.acltype = '$type' ";
         }
-        $query=null;
-        if ($db->dbType == 'oci8') {
-        }
-        if (empty($query)) {
-            $query = "SELECT acl_actions .*, acl_roles_actions.access_override
+        $query = "SELECT acl_actions .*, acl_roles_actions.access_override
                     FROM acl_actions
                     LEFT JOIN acl_roles_users ON acl_roles_users.user_id = '$user_id' AND  acl_roles_users.deleted = 0
                     LEFT JOIN acl_roles_actions ON acl_roles_actions.role_id = acl_roles_users.role_id AND acl_roles_actions.action_id = acl_actions.id AND acl_roles_actions.deleted=0
                     WHERE acl_actions.deleted=0 $additional_where ORDER BY category,name";
-        }
         $result = $db->query($query);
         $selected_actions = array();
         while($row = $db->fetchByAssoc($result) ){

@@ -1,5 +1,5 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
+//if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
@@ -39,103 +39,88 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 class SugarSpot
 {
 	/**
+     * searchAndDisplay
+     *
 	 * Performs the search and returns the HTML widget containing the results
 	 *
-	 * @param  $query   string what we are searching for
-	 * @param  $modules array  modules we are searching in
-	 * @param  $offset  int    search result offset
-	 * @return string HTML widget
+	 * @param  $query string what we are searching for
+	 * @param  $modules array modules we are searching in
+	 * @param  $offset int search result offset
+	 * @return string HTML code containing results
 	 */
-	public function searchAndDisplay(
-	    $query,
-	    $modules,
-	    $offset = -1
-	    )
+	public function searchAndDisplay($query, $modules, $offset=-1)
 	{
 		$query_encoded = urlencode($query);
 	    $results = $this->_performSearch($query, $modules, $offset);
-
-		$str = '<div id="SpotResults">';
-
-		$actions=0;
-		$foundData = false;
-		foreach($results as $m=>$data){
-			if(empty($data['data'])){
+        $displayResults = array();
+        $displayMoreForModule = array();
+		//$actions=0;
+		foreach($results as $m=>$data)
+        {
+			if(empty($data['data']))
+            {
 				continue;
 			}
 
-			$foundData = true;
-
 			$countRemaining = $data['pageData']['offsets']['total'] - count($data['data']);
-			if($offset > 0) $countRemaining -= $offset;
-			$more = '';
-			$data['pageData']['offsets']['next']++;
-			if($countRemaining > 0){
-				$more = <<<EOHTML
-<small class='more' onclick="DCMenu.spotZoom('$query', '$m','{$data['pageData']['offsets']['next']}' )">($countRemaining {$GLOBALS['app_strings']['LBL_SEARCH_MORE']})</small>
-EOHTML;
+			if($offset > 0)
+            {
+                $countRemaining -= $offset;
+            }
+
+			if($countRemaining > 0)
+            {
+                $displayMoreForModule[$m] = array('query'=>$query,
+                                                  'offset'=>$data['pageData']['offsets']['next']++,
+                                                  'countRemaining'=>$countRemaining);
 			}
 
-			$modDisplayString = $m;
-			if(isset($GLOBALS['app_list_strings']['moduleList'][$m]))
-			    $modDisplayString = $GLOBALS['app_list_strings']['moduleList'][$m];
-
-			$str.= "<div>{$modDisplayString} $more</div>";
-			$str.= '<ul>';
-			foreach($data['data'] as $row){
+            foreach($data['data'] as $row)
+            {
 				$name = '';
-				
-				if(!empty($row['NAME'])){
+
+                //Determine a name to use
+				if(!empty($row['NAME']))
+                {
 					$name = $row['NAME'];
 				} else if(!empty($row['DOCUMENT_NAME'])) {
 				    $name = $row['DOCUMENT_NAME'];
 				} else {
+                    $foundName = '';
 					foreach($row as $k=>$v){
-						if(strpos($k, 'NAME') !== false && !empty($row[$k])){
-							$name = $v;
-							break;
+						if(strpos($k, 'NAME') !== false)
+                        {
+                            if(!empty($row[$k]))
+                            {
+							    $name = $v;
+							    break;
+                            } else if(empty($foundName)) {
+                                $foundName = $v;
+                            }
 						}
 					}
 
 					if(empty($name))
 					{
-						foreach($row as $k=>$v){
-							if(strpos($k, 'NAME') !== false){
-								$name = $v;
-								break;
-							}
-						}
+					   $name = $foundName;
 					}
 				}
 
-				    $str .= <<<EOHTML
-<li><a href="index.php?module={$data['pageData']['bean']['moduleDir']}&action=DetailView&record={$row['ID']}">$name</a></li>
-EOHTML;
-			}
-			$str.= '</ul>';
-		}
-
-		if($foundData)
-		{
-			$str = <<<EOHTML
-			<button onclick="document.location.href='index.php?module=Home&action=UnifiedSearch&search_form=false&advanced=false&query_string={$query_encoded}'">{$GLOBALS['app_strings']['LBL_EMAIL_SHOW_READ']}</button>
-			<br><br>
-			{$str}
-			</div>
-			<p>
-			<button onclick="document.location.href='index.php?module=Home&action=UnifiedSearch&search_form=false&advanced=false&query_string={$query_encoded}'">{$GLOBALS['app_strings']['LBL_EMAIL_SHOW_READ']}</button>
-EOHTML;
-		} else {
-			$str .= $GLOBALS['app_strings']['LBL_EMAIL_SEARCH_NO_RESULTS'];
-			$str .= <<<EOHTML
-			</div>
-			<p>
-			<button onclick="document.location.href='index.php?module=Home&action=UnifiedSearch&search_form=false&advanced=false&query_string={$query_encoded}'">{$GLOBALS['app_strings']['LBL_EMAIL_SHOW_READ']}</button>
-EOHTML;
-
-		}
-
-		return $str;
+				$displayResults[$m][$row['ID']] = $name;
+		    }
+        }
+        $ss = new Sugar_Smarty();
+        $ss->assign('displayResults', $displayResults);
+        $ss->assign('displayMoreForModule', $displayMoreForModule);
+        $ss->assign('appStrings', $GLOBALS['app_strings']);
+        $ss->assign('appListStrings', $GLOBALS['app_list_strings']);
+        $ss->assign('queryEncoded', $query_encoded);
+        $template = 'include/SearchForm/tpls/SugarSpot.tpl';
+        if(file_exists('custom/include/SearchForm/tpls/SugarSpot.tpl'))
+        {
+            $template = 'custom/include/SearchForm/tpls/SugarSpot.tpl';
+        }
+        return $ss->fetch($template);
 	}
 
 	/**
@@ -416,6 +401,7 @@ EOHTML;
         return $results;
 	}
 
+
 	/**
      * Function used to walk the array and find keys that map the queried string.
      * if both the pattern and module name is found the promote the string to thet top.
@@ -442,4 +428,5 @@ EOHTML;
             }
         }
     }
+
 }

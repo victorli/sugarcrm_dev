@@ -889,7 +889,7 @@ function add_create_account($seed)
 
 	    $query = "select id, deleted from {$focus->table_name} WHERE name='".$seed->db->quote($account_name)."'";
 	    $query .=" ORDER BY deleted ASC";
-	    $result = $seed->db->query($query) or sugar_die("Error selecting sugarbean: ".mysql_error());
+	    $result = $seed->db->query($query, true);
 
 	    $row = $seed->db->fetchByAssoc($result, -1, false);
 
@@ -900,7 +900,7 @@ function add_create_account($seed)
 	        if ( isset($row['deleted']) && $row['deleted'] == 1)
 	        {
 	            $query2 = "delete from {$focus->table_name} WHERE id='". $seed->db->quote($row['id'])."'";
-	            $result2 = $seed->db->query($query2) or sugar_die("Error deleting existing sugarbean: ".mysql_error());
+	            $result2 = $seed->db->query($query2, true);
 			}
 			// else just use this id to link the contact to the account
 	        else
@@ -1002,8 +1002,7 @@ function is_server_version_greater($left, $right){
 }
 
 function getFile( $zip_file, $file_in_zip ){
-    global $sugar_config;
-    $base_upgrade_dir = $sugar_config['upload_dir'] . "/upgrades";
+    $base_upgrade_dir = sugar_cached("/upgrades");
     $base_tmp_upgrade_dir   = "$base_upgrade_dir/temp";
     $my_zip_dir = mk_temp_dir( $base_tmp_upgrade_dir );
     unzip_file( $zip_file, $file_in_zip, $my_zip_dir );

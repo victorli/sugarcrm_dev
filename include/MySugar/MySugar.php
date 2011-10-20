@@ -37,9 +37,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 
-
-
-
 class MySugar{
 	var $type;
 
@@ -49,8 +46,8 @@ class MySugar{
 
     function checkDashletDisplay () {
 
-		if((!in_array($this->type, $GLOBALS['moduleList']) 
-				&& !in_array($this->type, $GLOBALS['modInvisList'])) 
+		if((!in_array($this->type, $GLOBALS['moduleList'])
+				&& !in_array($this->type, $GLOBALS['modInvisList']))
 				&& (!in_array('Activities', $GLOBALS['moduleList']))){
 			$displayDashlet = false;
 		}
@@ -69,13 +66,13 @@ class MySugar{
     }
 
 	function addDashlet(){
-		if(!is_file($GLOBALS['sugar_config']['cache_dir'].'dashlets/dashlets.php')) {
+		if(!is_file(sugar_cached('dashlets/dashlets.php'))) {
             require_once('include/Dashlets/DashletCacheBuilder.php');
 
             $dc = new DashletCacheBuilder();
             $dc->buildCache();
 		}
-		require_once($GLOBALS['sugar_config']['cache_dir'].'dashlets/dashlets.php');
+		require_once sugar_cached('dashlets/dashlets.php');
 
 		global $current_user;
 
@@ -147,7 +144,7 @@ class MySugar{
 		        $dashlets[$id]['sort_options'] = array('sortOrder' => $sortOrder, 'orderBy' => $orderBy);
 		        $current_user->setPreference('dashlets', $dashlets, 0, $this->type);
 		    }
-		    
+
 		    require_once($dashlets[$id]['fileLocation']);
 		    $dashlet = new $dashlets[$id]['className']($id, (isset($dashlets[$id]['options']) ? $dashlets[$id]['options'] : array()));
 		    if(!empty($_REQUEST['configure']) && $_REQUEST['configure']) { // save settings
@@ -421,5 +418,4 @@ EOJS;
 
 
 }
-
 ?>

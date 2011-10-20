@@ -61,6 +61,7 @@ class SugarWebServiceUtilv3 extends SoapHelperWebServices {
             if (isset($value->field_defs[$field]))
             {
                 $var = $value->field_defs[$field];
+                if($var['type'] == 'link') continue;
                 if( isset($var['source'])
                     && ($var['source'] != 'db' && $var['source'] != 'custom_fields' && $var['source'] != 'non-db')
                     && $var['name'] != 'email1' && $var['name'] != 'email2'

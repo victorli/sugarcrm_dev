@@ -49,5 +49,6 @@ $mod_strings = array (
 'LBL_SEARCH_FORM_TITLE'=>'Search',
 'LBL_NO_ACCESS'=>'You do not have access to this area. Contact your site administrator to obtain access.',
 'LBL_ADDING'=>'Adding for ',
+
 )
 ?>

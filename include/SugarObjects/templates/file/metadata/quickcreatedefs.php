@@ -54,9 +54,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
                                             array('label' => '10', 'field' => '30')
                                             ),
 'javascript' =>
-	'<script type="text/javascript" src="include/javascript/popup_parent_helper.js?s={$SUGAR_VERSION}&c={$JS_CUSTOM_VERSION}"></script>
-    <script type="text/javascript" src="include/javascript/sugar_grp_jsolait.js?s={$SUGAR_VERSION}&c={$JS_CUSTOM_VERSION}"></script>
-	<script type="text/javascript" src="modules/Documents/documents.js?s={$SUGAR_VERSION}&c={$JS_CUSTOM_VERSION}"></script>',
+	'{sugar_getscript file="include/javascript/popup_parent_helper.js"}
+	{sugar_getscript file="cache/include/javascript/sugar_grp_jsolait.js"}
+	{sugar_getscript file="modules/Documents/documents.js"}',
 ),
  'panels' =>array (
   'default' =>
@@ -65,7 +65,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
       'document_name',
       'assigned_user_name',
 	),
-	
+
     array (
       array('name'=>'uploadfile',
             'customCode' => '{if $fields.id.value!=""}
@@ -85,8 +85,8 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
     array (
        'category_id',
        'subcategory_id',
-    ),    
-    
+    ),
+
     array (
       array('name'=>'description', 'displayParams'=>array('rows'=>10, 'cols'=>120)),
     ),

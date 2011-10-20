@@ -1,0 +1,76 @@
+<?php
+if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
+
+
+require_once('modules/Import/maps/ImportMapOther.php');
+
+class ImportMapLinkedin extends ImportMapOther
+{
+	/**
+     * String identifier for this import
+     */
+    public $name = 'linkedin';
+    
+    /**
+     * Gets the default mapping for a module
+     *
+     * @param  string $module
+     * @return array field mappings
+     */
+	public function getMapping()
+    {
+         $return_array = array(
+             'first-name' => array('sugar_key' => 'first_name', 'sugar_label' => '', 'default_label' => 'First Name'),
+             'last-name' => array('sugar_key' => 'last_name', 'sugar_label' => '', 'default_label' => 'Last Name'),
+             'title' => array('sugar_key' => 'title', 'sugar_label' => '', 'default_label' => 'Title'),
+             'industry' => array('sugar_key' => '', 'sugar_label' => '', 'default_label' => 'Industry'),
+             'location-country-code' => array('sugar_key' => 'primary_address_country', 'sugar_label' => '', 'default_label' => 'Country Code'),
+             'company_name' => array('sugar_key' => 'account_name', 'sugar_label' => '', 'default_label' => 'Company Name'),
+             'position-summary' => array('sugar_key' => 'description', 'sugar_label' => '', 'default_label' => 'Position Summary'),
+             
+             'assigned_user_name' => array('sugar_key' => 'assigned_user_name', 'sugar_help_key' => 'LBL_EXTERNAL_ASSIGNED_TOOLTIP', 'sugar_label' => 'LBL_ASSIGNED_TO_NAME', 'default_label' => 'Assigned To'),
+             'team_name' => array('sugar_key' => 'team_name', 'sugar_help_key' => 'LBL_EXTERNAL_TEAM_TOOLTIP','sugar_label' => 'LBL_TEAMS', 'default_label' => 'Teams'),
+
+             );
+
+         return $return_array;
+    }
+}
+
+
+?>

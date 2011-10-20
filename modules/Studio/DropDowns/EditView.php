@@ -124,9 +124,9 @@ if(strcmp($_REQUEST['dropdown_name'], 'moduleList') == 0){
 	$smarty->assign('use_push', 0);
 }
 
-$imageSave = SugarThemeRegistry::current()->getImage( 'studio_save', '');
-$imageUndo = SugarThemeRegistry::current()->getImage('studio_undo', '');
-$imageRedo = SugarThemeRegistry::current()->getImage('studio_redo', '');
+$imageSave = SugarThemeRegistry::current()->getImage( 'studio_save', '',null,null,'.gif',$mod_strings['LBL_SAVE']);
+$imageUndo = SugarThemeRegistry::current()->getImage('studio_undo', '',null,null,'.gif',$mod_strings['LBL_UNDO']);
+$imageRedo = SugarThemeRegistry::current()->getImage('studio_redo', '',null,null,'.gif',$mod_strings['LBL_REDO']);
 $buttons = array();
 $buttons[] = array('text'=>$mod_strings['LBL_BTN_UNDO'],'actionScript'=>"onclick='jstransaction.undo()'" );
 $buttons[] = array('text'=>$mod_strings['LBL_BTN_REDO'],'actionScript'=>"onclick='jstransaction.redo()'" );
@@ -135,9 +135,9 @@ $buttonTxt = StudioParser::buildImageButtons($buttons);
 $smarty->assign('buttons', $buttonTxt);
 $smarty->assign('dropdown_lang', $selected_lang);
 
-$editImage = SugarThemeRegistry::current()->getImage( 'edit_inline', '');
+$editImage = SugarThemeRegistry::current()->getImage( 'edit_inline', '',null,null,'.gif',$mod_strings['LBL_INLINE']);
 $smarty->assign('editImage',$editImage);
-$deleteImage = SugarThemeRegistry::current()->getImage( 'delete_inline', '');
+$deleteImage = SugarThemeRegistry::current()->getImage( 'delete_inline', '',null,null,'.gif',$mod_strings['LBL_DELETE']);
 $smarty->assign('deleteImage',$deleteImage);
 $smarty->display("modules/Studio/DropDowns/EditView.tpl");
 ?>

@@ -64,8 +64,8 @@ function document_set_return(popup_reply_data)
 	//make request for document revisions data.
 	var conditions  = new Array();
     conditions[conditions.length] = {"name":"document_id","op":"starts_with","value":related_doc_id};
- 	var query = {"module":"DocumentRevisions","field_list":['id','revision','date_entered'],"conditions":conditions,"order":'date_entered desc'};
-    
+ 	var query = {"module":"DocumentRevisions","field_list":['id','revision','date_entered'],"conditions":conditions,"order":{'by':'date_entered', 'desc': true}};
+
  	//make the call call synchronous for now...
     //todo: convert to async, test on mozilla..
     result = global_rpcClient.call_method('query',query,true);
@@ -79,8 +79,8 @@ RevisionListHandler.prototype.display = function(result) {
  	var names = result['list'];
  	var rev_tag=document.getElementById('related_doc_rev_id');
  	rev_tag.options.length=0;
-	
-	for(i=0; i < names.length; i++) { 
+
+	for(i=0; i < names.length; i++) {
 		rev_tag.options[i] = new Option(names[i].fields['revision'],names[i].fields['id'],false,false);
 	}
  	rev_tag.disabled=false;
@@ -92,18 +92,18 @@ function setvalue(source) {
 	src = new String(source.value);
 	target=new String(source.form.document_name.value);
 
-	if (target.length == 0) 
+	if (target.length == 0)
 	{
 		lastindex=src.lastIndexOf("/");
 		if (lastindex == -1) {
 			lastindex=src.lastIndexOf("\\");
-		} 
+		}
 		if (lastindex == -1) {
 			source.form.document_name.value=src;
 		} else {
 			source.form.document_name.value=src.substr(++lastindex, src.length);
-		}	
-	}			
+		}
+	}
 }
 
 function toggle_template_type(istemplate) {
@@ -113,6 +113,6 @@ function toggle_template_type(istemplate) {
 		template_type.disabled=false;
 	} else {
 		//template_type.enabled=false;
-		template_type.disabled=true;					
+		template_type.disabled=true;
 	}
 }

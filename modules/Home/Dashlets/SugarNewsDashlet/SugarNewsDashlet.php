@@ -115,6 +115,6 @@ class SugarNewsDashlet extends Dashlet {
             array('@@LANG@@','@@VER@@','@@EDITION@@'),
             array($GLOBALS['current_language'],$GLOBALS['sugar_config']['sugar_version'],$sugar_edition),
             $this->url);
-        return parent::display() . "<iframe class='teamNoticeBox' src='".$out_url."' height='".$this->height."px'></iframe>";
+        return parent::display() . "<iframe class='teamNoticeBox' title='{$out_url}' src='{$out_url}' height='{$this->height}px'></iframe>";
     }
 }

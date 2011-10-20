@@ -161,7 +161,7 @@ class Administration extends SugarBean {
             $result = $this->db->query("UPDATE config SET value = '{$value}' WHERE category = '{$category}' AND name = '{$key}'");
         }
         sugar_cache_clear('admin_settings_cache');
-        return $this->db->getAffectedRowCount();
+        return $this->db->getAffectedRowCount($result);
     }
 
     function get_config_prefix($str) {

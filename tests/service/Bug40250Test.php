@@ -73,16 +73,17 @@ class Bug40250Test extends Sugar_PHPUnit_Framework_TestCase
     
     public function testRetrieveUsersList() {
     	//First retrieve the users count (should be at least 1)
-		$countArr  = $this->_soapClient->call('get_entries_count',array('session'=>$this->_sessionId,'module_name'=>'Users','query'=>" users.status = 'active' ",0));
+        // 20110707 Frank Steegmans: DB2 by default is case sensitive. Note http://www.db2ude.com/?q=node/79
+		$countArr  = $this->_soapClient->call('get_entries_count',array('session'=>$this->_sessionId,'module_name'=>'Users','query'=>" users.status = 'Active' ",0));
     	$count = $countArr['result_count'];
-    	$this->assertTrue($count > 1, 'no users were retrieved so the test user was not set up correctly');
+    	$this->assertGreaterThanOrEqual(1, $count, 'no users were retrieved so the test user was not set up correctly');
     	
 		//now retrieve the list of users
-    	$usersArr =   $this->_soapClient->call('get_entry_list',array('session'=>$this->_sessionId,'module_name'=>'Users','query'=>" users.status = 'active' ", 'user_name','0'  ,'select_field'=>array('user_name'),100,0));
+    	$usersArr =   $this->_soapClient->call('get_entry_list',array('session'=>$this->_sessionId,'module_name'=>'Users','query'=>" users.status = 'Active' ", 'user_name','0'  ,'select_field'=>array('user_name'),10000,0));
     	$usersCount = $usersArr['result_count'];
     	
     	//the count from both functions should be the same
-    	$this->assertTrue($count == $usersCount ,'count is not the same which means that the 2 calls are generating different results.');
+    	$this->assertEquals($count, $usersCount ,'count is not the same which means that the 2 calls are generating different results.');
     	
 		//logout
     	$result =  $this->_soapClient->call('logout',array('session' => $this->_sessionId));
@@ -100,6 +101,7 @@ class Bug40250Test extends Sugar_PHPUnit_Framework_TestCase
      */
     public function _login(){
 		global $current_user;  	
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before logging in
     	$result = $this->_soapClient->call('login',
             array('user_auth' => 
                 array('user_name' => $this->_user->user_name,

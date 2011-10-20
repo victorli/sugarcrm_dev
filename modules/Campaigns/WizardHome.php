@@ -396,9 +396,13 @@ function create_target_summary  ($focus){
                 $pl_tbl  .= "<td scope='row' width='30%'>$type</td>";
                 $pl_tbl  .= "<td scope='row' width='15%'>".$pl_focus->get_entry_count()."</td>";
                 $pl_tbl  .= "<td scope='row' width='5%' align='right'><a href='index.php?action=EditView&module=ProspectLists&return_module=Campaigns&return_action=WizardHome&return_id=" .$focus->id. "&record=".$pl_focus->id."'>";
-                $pl_tbl  .= "<img src='".SugarThemeRegistry::current()->getImageURL("edit_inline.gif")."' border=0></a>&nbsp;";
+                $pl_tbl  .= SugarThemeRegistry::current()->getImage('edit_inline', 'border=0', null, null, ".gif", $mod_strings['LBL_EDIT_INLINE']) . "</a>&nbsp;";
+
+
                 $pl_tbl  .= "<a href='index.php?action=DetailView&module=ProspectLists&return_module=Campaigns&return_action=WizardHome&return_id=" .$focus->id. "&record=".$pl_focus->id."'>";
-                $pl_tbl  .= "<img src='".SugarThemeRegistry::current()->getImageURL("view_inline.gif")."' border=0></a></td>";                  
+                $pl_tbl  .= SugarThemeRegistry::current()->getImage('view_inline', 'border=0', null, null, ".gif", $mod_strings['LBL_VIEW_INLINE'])."</a></td>";
+
+
               }
             }        
     }else{

@@ -39,7 +39,8 @@
 <tr valign="middle">
 <td nowrap>
 <input autocomplete="off" type="text" id="{{sugarvar key='name'}}_date" value="{$fields[{{sugarvar key='name' stringFormat=true}}].value}" size="11" maxlength="10" title='{{$vardef.help}}' tabindex="{{$tabindex}}" onblur="combo_{{sugarvar key='name'}}.update(); {{if isset($displayParams.updateCallback)}}{{$displayParams.updateCallback}}{{/if}}">
-<img border="0" src="{sugar_getimagepath file='jscalendar.gif'}" alt="{$APP.LBL_ENTER_DATE}" id="{{sugarvar key='name'}}_trigger" align="absmiddle">&nbsp;
+{capture assign="other_attributes"}align="absmiddle" border="0" id="{{sugarvar key='name'}}_trigger"{/capture}
+{sugar_getimage name="jscalendar" ext=".gif" alt="$APP.LBL_ENTER_DATE other_attributes=$other_attributes"}&nbsp;
 {{if empty($displayParams.splitDateTime)}}
 </td>
 <td nowrap>
@@ -50,14 +51,14 @@
 {{if $displayParams.showNoneCheckbox}}
 <script type="text/javascript">
 function set_{{sugarvar key='name'}}_values(form) {ldelim}
- if(form.{{sugarvar key='name'}}_flag.checked)  {ldelim} 
+ if(form.{{sugarvar key='name'}}_flag.checked)  {ldelim}
 	form.{{sugarvar key='name'}}_flag.value=1;
 	form.{{sugarvar key='name'}}.value="";
 	form.{{sugarvar key='name'}}.readOnly=true;
- {rdelim} else  {ldelim} 
+ {rdelim} else  {ldelim}
 	form.{{sugarvar key='name'}}_flag.value=0;
 	form.{{sugarvar key='name'}}.readOnly=false;
- {rdelim} 
+ {rdelim}
 {rdelim}
 </script>
 {{/if}}
@@ -75,9 +76,9 @@ function set_{{sugarvar key='name'}}_values(form) {ldelim}
 {{/if}}
 </table>
 <input type="hidden" id="{{sugarvar key='name'}}" name="{{sugarvar key='name'}}" value="{$fields[{{sugarvar key='name' stringFormat=true}}].value}">
-<script type="text/javascript" src="include/SugarFields/Fields/Datetimecombo/Datetimecombo.js"></script>
+<script type="text/javascript" src="{sugar_getjspath file='include/SugarFields/Fields/Datetimecombo/Datetimecombo.js'}"></script>
 <script type="text/javascript">
-var combo_{{sugarvar key='name'}} = new Datetimecombo("{$fields[{{sugarvar key='name' stringFormat=true}}].value}", "{{sugarvar key='name'}}", "{$TIME_FORMAT}", "{{$tabindex}}", '{{$displayParams.showNoneCheckbox}}', '{$fields[{{sugarvar key='name' stringFormat=true}}_flag].value}', true); 
+var combo_{{sugarvar key='name'}} = new Datetimecombo("{$fields[{{sugarvar key='name' stringFormat=true}}].value}", "{{sugarvar key='name'}}", "{$TIME_FORMAT}", "{{$tabindex}}", '{{$displayParams.showNoneCheckbox}}', '{$fields[{{sugarvar key='name' stringFormat=true}}_flag].value}', true);
 //Render the remaining widget fields
 text = combo_{{sugarvar key='name'}}.html('{{$displayParams.updateCallback}}');
 document.getElementById('{{sugarvar key='name'}}_time_section').innerHTML = text;
@@ -88,7 +89,7 @@ eval(combo_{{sugarvar key='name'}}.jsscript('{{$displayParams.updateCallback}}')
 
 <script type="text/javascript">
 function update_{{sugarvar key='name'}}_available() {ldelim}
-      YAHOO.util.Event.onAvailable("{{sugarvar key='name'}}_date", this.handleOnAvailable, this); 
+      YAHOO.util.Event.onAvailable("{{sugarvar key='name'}}_date", this.handleOnAvailable, this);
 {rdelim}
 
 update_{{sugarvar key='name'}}_available.prototype.handleOnAvailable = function(me) {ldelim}
@@ -100,12 +101,13 @@ update_{{sugarvar key='name'}}_available.prototype.handleOnAvailable = function(
 	button : "{{sugarvar key='name'}}_trigger",
 	singleClick : true,
 	step : 1,
+        startWeekday: {$CALENDAR_FDOW|default:'0'},
 	weekNumbers:false
 	{rdelim});
-	
+
 	//Call update for first time to round hours and minute values
 	combo_{{sugarvar key='name'}}.update(false);
 {rdelim}
 
-var obj_{{sugarvar key='name'}} = new update_{{sugarvar key='name'}}_available(); 
+var obj_{{sugarvar key='name'}} = new update_{{sugarvar key='name'}}_available();
 </script>

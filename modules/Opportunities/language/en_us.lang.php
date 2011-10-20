@@ -140,7 +140,8 @@ $mod_strings = array (
   'LBL_CAMPAIGN_OPPORTUNITY' => 'Campaigns',
   'LBL_PROJECT_SUBPANEL_TITLE' => 'Projects',
   'LABEL_PANEL_ASSIGNMENT' => 'Assignment',
-	'LNK_IMPORT_OPPORTUNITIES' => 'Import Opportunities',
+  'LNK_IMPORT_OPPORTUNITIES' => 'Import Opportunities',
+  'LBL_EDITLAYOUT' => 'Edit Layout' /*for 508 compliance fix*/,
   //For export labels
     'LBL_EXPORT_CAMPAIGN_ID' => 'Campaign ID',
     'LBL_OPPORTUNITY_TYPE' => 'Opportunity Type',

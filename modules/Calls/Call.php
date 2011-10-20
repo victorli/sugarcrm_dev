@@ -229,24 +229,13 @@ class Call extends SugarBean
 			}
 			$query .= " FROM calls ";
 
-			/*
-			if ( $this->db->dbType == 'mssql' )
-			{
-				$query .= ", calls.date_start ";
-				if ( preg_match("/contacts/",$where)){
-					$query .= ", contacts.first_name, contacts.last_name";
-					$query .= ", contacts.assigned_user_id contact_name_owner";
-				}
-				$query .= " FROM calls ";
-			}
-			*/
 			if ( preg_match("/contacts/",$where)){
 				$query .=	"LEFT JOIN calls_contacts
 	                    ON calls.id=calls_contacts.call_id
 	                    LEFT JOIN contacts
 	                    ON calls_contacts.contact_id=contacts.id ";
 			}
-			if ( preg_match("/calls_users\.user_id/",$where))
+			if ( preg_match('/calls_users\.user_id/',$where))
 			{
 		$query .= "LEFT JOIN calls_users
 			ON calls.id=calls_users.call_id and calls_users.deleted=0 ";
@@ -409,7 +398,7 @@ class Call extends SugarBean
 			    $action = "index";
 
             $setCompleteUrl = "<a onclick='SUGAR.util.closeActivityPanel.show(\"{$this->module_dir}\",\"{$this->id}\",\"Held\",\"listview\",\"1\");'>";
-			$call_fields['SET_COMPLETE'] = $setCompleteUrl . SugarThemeRegistry::current()->getImage("close_inline","title=".translate('LBL_LIST_CLOSE','Calls')." border='0'")."</a>";
+			$call_fields['SET_COMPLETE'] = $setCompleteUrl . SugarThemeRegistry::current()->getImage("close_inline","title='".translate('LBL_LIST_CLOSE','Calls')."' border='0'", null,null,'.gif', translate('LBL_LIST_CLOSE','Calls')) . "</a>";
 		}
 		global $timedate;
 		$today = $timedate->nowDb();

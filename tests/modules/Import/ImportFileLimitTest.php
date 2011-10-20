@@ -52,10 +52,10 @@ class ImportFileLimitTest extends Sugar_PHPUnit_Framework_TestCase
     public function setUp()
     {
     	$GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-        $this->_fileSample1 = SugarTestImportUtilities::createFile( $this->_fileLineCount1, 3, 'upload_dir' );
-        $this->_fileSample2 = SugarTestImportUtilities::createFile( $this->_fileLineCount2, 3, 'upload_dir' );
-        $this->_fileSample3 = SugarTestImportUtilities::createFile( $this->_fileLineCount3, 3, 'upload_dir' );
-        $this->_fileSample4 = SugarTestImportUtilities::createFile( $this->_fileLineCount4, 3, 'upload_dir' );
+        $this->_fileSample1 = SugarTestImportUtilities::createFile( $this->_fileLineCount1, 3 );
+        $this->_fileSample2 = SugarTestImportUtilities::createFile( $this->_fileLineCount2, 3 );
+        $this->_fileSample3 = SugarTestImportUtilities::createFile( $this->_fileLineCount3, 3 );
+        $this->_fileSample4 = SugarTestImportUtilities::createFile( $this->_fileLineCount4, 3 );
     }
 
     public function tearDown()

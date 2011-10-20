@@ -93,11 +93,11 @@ class Bug45709Test extends Sugar_PHPUnit_Framework_TestCase
     	$result = $GLOBALS['db']->query($test_query);
     	$row = $GLOBALS['db']->fetchByAssoc($result);
 
-    	$this->assertEquals($this->contact->id, $row['id']);
+    	$this->assertEquals($this->contact->id, $row['id'], "Didn't find the correct contact id");
     	
     	$result2 = $GLOBALS['db']->query("SELECT * FROM tasks WHERE tasks.contact_id='{$this->task->contact_id}'");
         $row2 = $GLOBALS['db']->fetchByAssoc($result2);
         
-        $this->assertEquals($this->task->id, $row2['id']);
+        $this->assertEquals($this->task->id, $row2['id'], "Couldn't find the expected related task");
     }
 }

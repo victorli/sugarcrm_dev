@@ -75,6 +75,3 @@ class Bug42326Test extends Sugar_PHPUnit_Framework_TestCase
         return $dataset;
     }
 }
-
-?>
-

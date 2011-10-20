@@ -436,7 +436,20 @@ enableQS(false);
             '$matches',
             'if($matches[1] == "this"){$var = $matches[2]; return $GLOBALS[\'current_sugarfeed\']->$var;}else{return translate($matches[2], $matches[1]);}'
         ),$listview);
-		$listview = preg_replace('/\[(\w+)\:([\w\-\d]*)\:([^\]]*)\]/', '<a href="index.php?module=$1&action=DetailView&record=$2"><img src="themes/default/images/$1.gif" border=0>$3</a>', $listview);
+
+        //grab each token and store the module for later processing
+        preg_match_all('/\[(\w+)\:/', $listview, $alt_modules);
+
+        //now process each token to create the proper url and image tags in feed, leaving a string for the alt to be replaced in next step
+		$listview = preg_replace('/\[(\w+)\:([\w\-\d]*)\:([^\]]*)\]/', '<a href="index.php?module=$1&action=DetailView&record=$2"><img src="themes/default/images/$1.gif" border=0 REPLACE_ALT>$3</a>', $listview); /*SKIP_IMAGE_TAG*/
+
+        //process each module for the singular version so we can populate the alt tag on the image
+        $altStrings = array();
+        foreach($alt_modules[1] as $alt){
+            //create the alt string and replace the alt token
+            $altString = 'alt="'.translate('LBL_VIEW','SugarFeed').' '.$GLOBALS['app_list_strings']['moduleListSingular'][$alt].'"';
+            $listview = preg_replace('/REPLACE_ALT/', $altString, $listview,1);
+        }
 
 		return $listview.'</div></div>';
 	}
@@ -479,8 +492,8 @@ enableQS(false);
             return '';
         }
 		$user_name = ucfirst($GLOBALS['current_user']->user_name);
-		$moreimg = SugarThemeRegistry::current()->getImage('advanced_search' , 'onclick="toggleDisplay(\'more_' . $this->id . '\'); toggleDisplay(\'more_img_'.$this->id.'\'); toggleDisplay(\'less_img_'.$this->id.'\');"');
-		$lessimg = SugarThemeRegistry::current()->getImage('basic_search' , 'onclick="toggleDisplay(\'more_' . $this->id . '\'); toggleDisplay(\'more_img_'.$this->id.'\'); toggleDisplay(\'less_img_'.$this->id.'\');"');
+		$moreimg = SugarThemeRegistry::current()->getImage('advanced_search' , 'onclick="toggleDisplay(\'more_' . $this->id . '\'); toggleDisplay(\'more_img_'.$this->id.'\'); toggleDisplay(\'less_img_'.$this->id.'\');"',null,null,'.gif',translate('LBL_SHOW_MORE_OPTIONS','SugarFeed'));
+		$lessimg = SugarThemeRegistry::current()->getImage('basic_search' , 'onclick="toggleDisplay(\'more_' . $this->id . '\'); toggleDisplay(\'more_img_'.$this->id.'\'); toggleDisplay(\'less_img_'.$this->id.'\');"',null,null,'.gif',translate('LBL_HIDE_OPTIONS','SugarFeed'));
 		$ss = new Sugar_Smarty();
 		$ss->assign('LBL_TO', translate('LBL_TO', 'SugarFeed'));
 		$ss->assign('LBL_POST', translate('LBL_POST', 'SugarFeed'));
@@ -500,7 +513,7 @@ enableQS(false);
         foreach ( $linkTypesIn as $key => $value ) {
             $linkTypes[$key] = translate('LBL_LINK_TYPE_'.$value,'SugarFeed');
         }
-		$ss->assign('link_types', $linkTypes);
+		$ss->assign(' ', $linkTypes);
 		return $ss->fetch('modules/SugarFeed/Dashlets/SugarFeedDashlet/UserPostForm.tpl');
 
 	}

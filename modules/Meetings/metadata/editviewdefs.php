@@ -34,27 +34,27 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-$viewdefs ['Meetings'] = 
+$viewdefs ['Meetings'] =
 array (
-  'EditView' => 
+  'EditView' =>
   array (
-    'templateMeta' => 
+    'templateMeta' =>
     array (
       'maxColumns' => '2',
-      'form' => 
+      'form' =>
       array (
-        'hidden' => 
+        'hidden' =>
         array (
           0 => '<input type="hidden" name="isSaveAndNew" value="false">',
         ),
-        'buttons' => 
+        'buttons' =>
         array (
-          0 => 
+          0 =>
           array (
 			'customCode' => '<input title="{$APP.LBL_SAVE_BUTTON_TITLE}" id ="SAVE" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}" class="button primary" onclick="SUGAR.meetings.fill_invitees();document.EditView.action.value=\'Save\'; document.EditView.return_action.value=\'DetailView\'; {if isset($smarty.request.isDuplicate) && $smarty.request.isDuplicate eq "true"}document.EditView.return_id.value=\'\'; {/if} formSubmitCheck();"type="button" name="button" value="{$APP.LBL_SAVE_BUTTON_LABEL}">',
 		  ),
           1 => 'CANCEL',
-          2 => 
+          2 =>
           array (
              'customCode' => '<input title="{$MOD.LBL_SEND_BUTTON_TITLE}" class="button" onclick="document.EditView.send_invites.value=\'1\';SUGAR.meetings.fill_invitees();document.EditView.action.value=\'Save\';document.EditView.return_action.value=\'EditView\';document.EditView.return_module.value=\'{$smarty.request.return_module}\'; formSubmitCheck();"type="button" name="button" value="{$MOD.LBL_SEND_BUTTON_LABEL}">',
 		  ),
@@ -66,37 +66,37 @@ array (
         'headerTpl' => 'modules/Meetings/tpls/header.tpl',
         'footerTpl' => 'modules/Meetings/tpls/footer.tpl',
       ),
-      'widths' => 
+      'widths' =>
       array (
-        0 => 
+        0 =>
         array (
           'label' => '10',
           'field' => '30',
         ),
-        1 => 
+        1 =>
         array (
           'label' => '10',
           'field' => '30',
         ),
       ),
       'javascript' => '<script type="text/javascript">{$JSON_CONFIG_JAVASCRIPT}</script>
-<script type="text/javascript" src="include/javascript/sugar_grp_jsolait.js?s={$SUGAR_VERSION}&c={$JS_CUSTOM_VERSION}"></script>
-<script>toggle_portal_flag();function toggle_portal_flag()  {ldelim} {$TOGGLE_JS} {rdelim}
+{sugar_getscript file="cache/include/javascript/sugar_grp_jsolait.js"}
+<script>toggle_portal_flag();function toggle_portal_flag()  {ldelim} {$TOGGLE_JS} {rdelim} 
 function formSubmitCheck(){ldelim}if(check_form(\'EditView\') && isValidDuration()){ldelim}document.EditView.submit();{rdelim}{rdelim}</script>',
       'useTabs' => false,
     ),
-    'panels' => 
+    'panels' =>
     array (
-      'lbl_meeting_information' => 
+      'lbl_meeting_information' =>
       array (
         array (
           array (
             'name' => 'name',
-            
+
           ),
           array (
             'name' => 'status',
-            'fields' => 
+            'fields' =>
             array (
               array (
                 'name' => 'status',
@@ -110,9 +110,9 @@ function formSubmitCheck(){ldelim}if(check_form(\'EditView\') && isValidDuration
           array (
             'name' => 'date_start',
             'type' => 'datetimecombo',
-            'displayParams' => 
+            'displayParams' =>
             array (
-              
+
               'updateCallback' => 'SugarWidgetScheduler.update_time();',
             ),
           ),
@@ -151,7 +151,7 @@ function formSubmitCheck(){ldelim}if(check_form(\'EditView\') && isValidDuration
           ),
         ),
       ),
-      'LBL_PANEL_ASSIGNMENT' => 
+      'LBL_PANEL_ASSIGNMENT' =>
       array (
         array (
           array (

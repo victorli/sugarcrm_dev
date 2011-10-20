@@ -40,25 +40,19 @@ require_once('include/MVC/View/SugarView.php');
 class ConfiguratorViewAddFontResult extends SugarView {
    var $log="";
     /**
-     * Constructor
-     */
-    public function AddFontResult(){
-        parent::SugarView();
-    }
-    /** 
      * display the form
      */
     public function display(){
         global $mod_strings, $app_list_strings, $app_strings, $current_user;
         if(!is_admin($current_user)){
-           sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']); 
+           sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);
         }
         $error = $this->addFont();
-        
-        $this->ss->assign("MODULE_TITLE", 
+
+        $this->ss->assign("MODULE_TITLE",
             getClassicModuleTitle(
-                $mod_strings['LBL_MODULE_ID'], 
-                array($mod_strings['LBL_ADDFONTRESULT_TITLE']), 
+                $mod_strings['LBL_MODULE_ID'],
+                array($mod_strings['LBL_ADDFONTRESULT_TITLE']),
                 false
                 )
             );
@@ -72,7 +66,7 @@ class ConfiguratorViewAddFontResult extends SugarView {
 //display
         $this->ss->display('modules/Configurator/tpls/addFontResult.tpl');
     }
-    
+
     /**
      * This method prepares the received data and call the addFont method of the fontManager
      * @return boolean true on success
@@ -80,7 +74,6 @@ class ConfiguratorViewAddFontResult extends SugarView {
     private function addFont(){
         $this->log="";
         $error=false;
-        require_once('include/upload_file.php'); 
         $files = array("pdf_metric_file","pdf_font_file");
         foreach($files as $k){
             // handle uploaded file
@@ -105,4 +98,3 @@ class ConfiguratorViewAddFontResult extends SugarView {
         return $error;
     }
 }
-    

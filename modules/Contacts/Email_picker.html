@@ -38,7 +38,7 @@
 
 <!-- BEGIN: main -->
 <!-- BEGIN: SearchHeader -->
-<script type="text/javascript" src="modules/Emails/javascript/email_popup_helper.js?s={SUGAR_VERSION}&amp;c={JS_CUSTOM_VERSION}"></script> 
+<script type="text/javascript" src="modules/Emails/javascript/email_popup_helper.js?v={VERSION_MARK}"></script>
 <form action="index.php" method="post" name="popup_query_form" id="popup_query_form">
 	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="edit view">
 		<tr>
@@ -46,13 +46,13 @@
 				<table width="100%" border="0" cellspacing="0" cellpadding="0">
 					<tr>
 						<td scope="row" nowrap="nowrap">
-							{MOD.LBL_FIRST_NAME} 
+							{MOD.LBL_FIRST_NAME}
 						</td>
 						<td  nowrap="nowrap">
 							<input type="text" size="20" name="first_name"  value="{LAST_SEARCH.FIRST_NAME}" />
 						</td>
 						<td scope="row" nowrap="nowrap">
-							{MOD.LBL_LAST_NAME} 
+							{MOD.LBL_LAST_NAME}
 						</td>
 						<td  nowrap="nowrap">
 							<input type="text" size="20" name="last_name"  value="{LAST_SEARCH.LAST_NAME}" />
@@ -71,16 +71,16 @@
 					</tr>
 					<tr>
 						<td scope="row" nowrap="nowrap">
-							{MOD.LBL_ACCOUNT_NAME} 
+							{MOD.LBL_ACCOUNT_NAME}
 						</td>
 						<td >
 							<input type="text" size="20" name="account_name"  value="{LAST_SEARCH.ACCOUNT_NAME}{ACCOUNT_NAME}" />
 						</td>
 						<td>
-							&nbsp; 
+							&nbsp;
 						</td>
 						<td>
-							&nbsp; 
+							&nbsp;
 						</td>
 					</tr>
 				</table>
@@ -91,11 +91,11 @@
 
 <p>
 <div id='addformlink'>
-	{CREATECONTACT} 
+	{CREATECONTACT}
 </div>
 <div id='addform' style='display:none;position:relative;z-index:2;left:0px;top:0px;'>
 <form name="ContactSave" onsubmit="return check_form('ContactSave');" method="post" action="index.php">
-	{ADDFORMHEADER} 
+	{ADDFORMHEADER}
 	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="edit view">
 		<tr>
 			<td>
@@ -107,7 +107,7 @@
 							<input type="hidden" name="doAction" value="save" />
 							<input type="hidden" name="query" value="true" />
 							<input type="hidden" name="html" value="Email_picker" />
-							{ADDFORM} 
+							{ADDFORM}
 						</td>
 					</tr>
 				</table>
@@ -120,11 +120,11 @@
 <!-- END: SearchHeader -->
 <!-- BEGIN: list_nav_row -->
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="list view">
-	{PAGINATION} 
+	{PAGINATION}
 <!-- END: list_nav_row -->
 	<tr height="20">
 		<td scope="col"  nowrap>
-			{CHECKALL} 
+			{CHECKALL}
 		</td>
 		<td scope="col" width="40%"  nowrap="nowrap">
 			<a href="{ORDER_BY}last_name" class="listViewThLinkS1">
@@ -137,13 +137,13 @@
 			</a>
 		</td>
 		<td scope="col" width="40%"  nowrap="nowrap">
-			{MOD.LBL_LIST_ACCOUNT_NAME} 
+			{MOD.LBL_LIST_ACCOUNT_NAME}
 		</td>
 	</tr>
 <!-- BEGIN: row -->
 	<tr height="20" class="{ROW_COLOR}S1">
 		<td valign="top">
-			{PREROW} 
+			{PREROW}
 		</td>
 		<td scope='row' valign="top">
 			<a href="#"  onclick="send_back('Contacts','{CONTACT.ID}');">
@@ -160,7 +160,7 @@
 			</a>
 		</td>
 		<td valign="top">
-			{CONTACT.ACCOUNT_NAME} 
+			{CONTACT.ACCOUNT_NAME}
 		</td>
 	</tr>
 	<tr>
@@ -168,6 +168,6 @@
 		</td>
 	</tr>
 <!-- END: row -->
-	{ASSOCIATED_JAVASCRIPT_DATA} 
+	{ASSOCIATED_JAVASCRIPT_DATA}
 </table>
 <!-- END: main -->

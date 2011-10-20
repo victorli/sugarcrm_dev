@@ -48,11 +48,11 @@ require_once('modules/Configurator/Configurator.php');
 
 
 echo getClassicModuleTitle(
-        "Administration", 
+        "Administration",
         array(
             "<a href='index.php?module=Administration&action=index'>".translate('LBL_MODULE_NAME','Administration')."</a>",
            $mod_strings['LBL_MANAGE_LOCALE'],
-           ), 
+           ),
         false
         );
 
@@ -79,24 +79,12 @@ if(isset($_REQUEST['process']) && $_REQUEST['process'] == 'true') {
 
 ///////////////////////////////////////////////////////////////////////////////
 ////	DB COLLATION
-if($GLOBALS['db']->dbType == 'mysql') {
-	// set sugar default if not set from before
+$collationOptions = $GLOBALS['db']->getCollationList();
+if(!empty($collationOptions)) {
 	if(!isset($sugar_config['dbconfigoption']['collation'])) {
-		$sugar_config['dbconfigoption']['collation'] = 'utf8_general_ci';
+		$sugar_config['dbconfigoption']['collation'] = $GLOBALS['db']->getDefaultCollation();
 	}
-
-	$sugar_smarty->assign('dbType', 'mysql');
-	$q = "SHOW COLLATION LIKE 'utf8%'";
-	$r = $GLOBALS['db']->query($q);
-	$collationOptions = '';
-	while($a = $GLOBALS['db']->fetchByAssoc($r)) {
-		$selected = '';
-		if($sugar_config['dbconfigoption']['collation'] == $a['Collation']) {
-			$selected = " SELECTED";
-		}
-		$collationOptions .= "\n<option value='{$a['Collation']}'{$selected}>{$a['Collation']}</option>";
-	}
-	$sugar_smarty->assign('collationOptions', $collationOptions);
+	$sugar_smarty->assign('collationOptions', get_select_options_with_id($collationOptions, $sugar_config['dbconfigoption']['collation']));
 }
 ////	END DB COLLATION
 ///////////////////////////////////////////////////////////////////////////////

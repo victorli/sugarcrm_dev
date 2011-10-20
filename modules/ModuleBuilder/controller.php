@@ -208,10 +208,11 @@ class ModuleBuilderController extends SugarController
             require_once ('ModuleInstall/PackageManager/PackageManager.php') ;
             $pm = new PackageManager ( ) ;
             $info = $mb->packages [ $load ]->build ( false ) ;
-            mkdir_recursive ( $GLOBALS [ 'sugar_config' ] [ 'cache_dir' ] . '/upload/upgrades/module/') ;
-            rename ( $info [ 'zip' ], $GLOBALS [ 'sugar_config' ] [ 'cache_dir' ] . '/' . 'upload/upgrades/module/' . $info [ 'name' ] . '.zip' ) ;
-            copy ( $info [ 'manifest' ], $GLOBALS [ 'sugar_config' ] [ 'cache_dir' ] . '/' . 'upload/upgrades/module/' . $info [ 'name' ] . '-manifest.php' ) ;
-            $_REQUEST [ 'install_file' ] = $GLOBALS [ 'sugar_config' ] [ 'cache_dir' ] . '/' . 'upload/upgrades/module/' . $info [ 'name' ] . '.zip' ;
+            $cachedir = sugar_cached('/upload/upgrades/module/');
+            mkdir_recursive ($cachedir) ;
+            rename ( $info [ 'zip' ], $cachedir . $info [ 'name' ] . '.zip' ) ;
+            copy ( $info [ 'manifest' ], $cachedir . $info [ 'name' ] . '-manifest.php' ) ;
+            $_REQUEST [ 'install_file' ] = $cachedir. $info [ 'name' ] . '.zip' ;
             $GLOBALS [ 'mi_remove_tables' ] = false ;
             $pm->performUninstall ( $load ) ;
             //#23177 , js cache clear
@@ -368,6 +369,9 @@ class ModuleBuilderController extends SugarController
             if (! empty ( $_REQUEST [ 'view_module' ] ))
             {
                 $module = $_REQUEST [ 'view_module' ] ;
+                if ( $module == 'Employees' ) {
+                    $module = 'Users';
+                }
 
                 $bean = BeanFactory::getBean($module);
                 if(!empty($bean))
@@ -393,6 +397,10 @@ class ModuleBuilderController extends SugarController
                 $mod_strings['LBL_ALL_MODULES'] = 'all_modules';
                 $repair = new RepairAndClear();
 		        $repair->repairAndClearAll(array('rebuildExtensions', 'clearVardefs', 'clearTpls'), array($class_name), true, false);
+                if ( $module == 'Users' ) {
+                    $repair->repairAndClearAll(array('rebuildExtensions', 'clearVardefs', 'clearTpls'), array('Employee'), true, false);
+                    
+                }
                 //#28707 ,clear all the js files in cache
 		        $repair->module_list = array();
 		        $repair->clearJsFiles();
@@ -422,6 +430,12 @@ class ModuleBuilderController extends SugarController
         $field->populateFromPost () ;
         require_once ('modules/ModuleBuilder/parsers/StandardField.php') ;
         $module = $_REQUEST [ 'view_module' ] ;
+        
+        // Need to map Employees -> Users
+        if ( $module=='Employees') {
+            $module = 'Users';
+        }
+        
         $df = new StandardField ( $module ) ;
         $mod = BeanFactory::getBean($module);
         $class_name = $GLOBALS [ 'beanList' ] [ $module ] ;
@@ -447,6 +461,9 @@ class ModuleBuilderController extends SugarController
         // now clear the cache so that the results are immediately visible
         include_once ('include/TemplateHandler/TemplateHandler.php') ;
         TemplateHandler::clearCache ( $module ) ;
+        if ( $module == 'Users' ) {
+            TemplateHandler::clearCache('Employees');
+        }
 
         $GLOBALS [ 'mod_strings' ] = $MBmodStrings;
     }
@@ -815,6 +832,26 @@ class ModuleBuilderController extends SugarController
     }
 
 
+    /**
+     * savetablesort
+     * This method handles saving the current user's tabling sorting preferences.  It is called when
+     * the user clicks on a column to sort from the fields layout table.
+     *
+     */
+    function action_savetablesort ()
+    {
+        $this->view = 'ajax';
+        global $current_user;
+
+        if(!empty($current_user) && isset($_REQUEST['column']) && isset($_REQUEST['direction']))
+        {
+            $direction = ($_REQUEST['direction'] == 'yui-dt-asc') ? 'ASC' : 'DESC';
+            $valid_columns = array('name', 'label', 'type', 'required', 'unified_search', 'custom');
+            $key = in_array($_REQUEST['column'], $valid_columns) ? $_REQUEST['column'] : 'name';
+            $val = array('key'=>$key, 'direction'=>$direction);
+            $current_user->setPreference('fieldsTableColumn', getJSONobj()->encode($val), 0, 'ModuleBuilder');
+        }
+    }
 
 }
 ?>

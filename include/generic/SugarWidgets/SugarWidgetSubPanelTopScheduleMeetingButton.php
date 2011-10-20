@@ -144,8 +144,8 @@ class SugarWidgetSubPanelTopScheduleMeetingButton extends SugarWidgetSubPanelTop
 				$button .= '<input type="hidden" name="' . $key . '" value="' . $value . '" />' . "\n";
 			}
 		}
-		$button .='<script type="text/javascript" src="include/SugarFields/Fields/Datetimecombo/Datetimecombo.js"></script>'."\n";
-		$button .='<script type="text/javascript" src="include/javascript/sugar_grp_jsolait.js"></script>'."\n";
+		$button .= getVersionedScript('include/SugarFields/Fields/Datetimecombo/Datetimecombo.js')."\n";
+		$button .= getVersionedScript('cache/include/javascript/sugar_grp_jsolait.js')."\n";
 
 		return $button;
 	}

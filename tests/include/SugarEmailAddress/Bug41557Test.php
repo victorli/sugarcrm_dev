@@ -77,10 +77,10 @@ class Bug41557Test extends Sugar_PHPUnit_Framework_TestCase
         }
         $user->emailAddress->save($user->id, $user->module_dir);
 
-        $query = "select count(*) as CNT from email_addr_bean_rel eabr WHERE eabr.bean_id = '{$user->id}' AND eabr.bean_module = 'Users' and primary_address = 1 and eabr.deleted=0";
+        $query = "select count(*) as cnt from email_addr_bean_rel eabr WHERE eabr.bean_id = '{$user->id}' AND eabr.bean_module = 'Users' and primary_address = 1 and eabr.deleted=0";
         $result = $GLOBALS['db']->query($query);
         $count = $GLOBALS['db']->fetchByAssoc($result);
-        $this->assertEquals($primary_count, $count['CNT'], 'Incorrect primary email count');
+        $this->assertEquals($primary_count, $count['cnt'], 'Incorrect primary email count');
 
         // cleanup
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();

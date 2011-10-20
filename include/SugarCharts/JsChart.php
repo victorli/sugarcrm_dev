@@ -132,7 +132,7 @@ class JsChart extends SugarChart {
 		global $sugar_config, $current_user, $current_language;
 		$this->id = $id;
 		$this->chartId = $id;
-		$this->xmlFile = (!$xmlFile) ? $sugar_config['tmp_dir']. $current_user->id . '_' . $this->id . '.xml' : $xmlFile;
+		$this->xmlFile = (!$xmlFile) ? sugar_cached("xml/{$current_user->id}_{$this->id}.xml") : $xmlFile;
 
 
 		$style = array();
@@ -623,7 +623,7 @@ class JsChart extends SugarChart {
 
 	function saveJsonFile($jsonContents) {
 		$this->jsonFilename = str_replace(".xml",".js",$this->xmlFile);
-		//$jsonContents = mb_convert_encoding($jsonContents, 'UTF-16LE', 'UTF-8');
+		//$jsonContents = $GLOBALS['locale']->translateCharset($jsonContents, 'UTF-8', 'UTF-16LE');
 
 		// open file
 		if (!$fh = sugar_fopen($this->jsonFilename, 'w')) {
@@ -672,7 +672,7 @@ class JsChart extends SugarChart {
 		$pattern = array();
 		$replacement = array();
 		$content = file_get_contents($xmlFile);
-		$content = mb_convert_encoding($content, 'UTF-8','UTF-16LE' );
+		$content = $GLOBALS['locale']->translateCharset($content,'UTF-16LE', 'UTF-8');
 		$pattern[] = '/\<link\>([a-zA-Z0-9#?&%.;\[\]\/=+_-\s]+)\<\/link\>/e';
 		$replacement[] = "'<link>'.urlencode(\"$1\").'</link>'";
 //		$pattern[] = '/NULL/e';

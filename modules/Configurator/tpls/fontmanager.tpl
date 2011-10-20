@@ -38,7 +38,7 @@
 
 
 *}
-<script type="text/javascript" src='{sugar_getjspath file ='include/javascript/sugar_grp_yui_widgets.js'}'></script>
+<script type="text/javascript" src='{sugar_getjspath file ='cache/include/javascript/sugar_grp_yui_widgets.js'}'></script>
 <script type="text/javascript" src='{sugar_getjspath file ='include/javascript/yui/build/paginator/paginator-min.js'}'></script>
 {literal}
 <style type="text/css">
@@ -76,7 +76,7 @@
 <script type="text/javascript">
 var removeFormatter = function (el, oRecord, oColumn, oData) {
     if(oRecord._oData.type != "{/literal}{$MOD.LBL_FONT_TYPE_CORE}{literal}" && oRecord._oData.fontpath != "{/literal}{$K_PATH_FONTS}{literal}"){
-        el.innerHTML = '<a href="#" name="deleteButton" onclick="return false;"><img border="0" align="absmiddle" alt="delete" src="{/literal}{sugar_getimagepath file="delete_inline.gif"}{literal}"/>{/literal} {$MOD.LBL_REMOVE}{literal}<\/a>';
+        el.innerHTML = '<a href="#" name="deleteButton" onclick="return false;">{sugar_getimage name="delete_inline" ext=".gif" alt=$mod_strings.LBL_DELETE other_attributes='align="absmiddle" border="0" '}{/literal} {$MOD.LBL_REMOVE}{literal}<\/a>';
     }
 };
 YAHOO.util.Event.onDOMReady(function() {

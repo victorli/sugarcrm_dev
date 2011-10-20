@@ -261,10 +261,10 @@ class RenameModules
     {
         global $app_list_strings, $mod_strings;
 
-        
+
         require_once('modules/Studio/parsers/StudioParser.php');
         $dh = new DropDownHelper();
-        
+
         $smarty = new Sugar_Smarty();
         $smarty->assign('MOD', $GLOBALS['mod_strings']);
         $title=getClassicModuleTitle($mod_strings['LBL_MODULE_NAME'], array("<a href='index.php?module=Administration&action=index'>".$mod_strings['LBL_MODULE_NAME']."</a>", $mod_strings['LBL_RENAME_TABS']), false);
@@ -334,7 +334,7 @@ class RenameModules
 
         //Clear all relevant language caches
         $this->clearLanguageCaches();
-        
+
         //Retrieve changes the user is requesting and store previous values for future use.
         $this->changedModules = $this->getChangedModules();
 
@@ -407,7 +407,7 @@ class RenameModules
             foreach($this->changedModules as $changedModuleName => $renameFields)
             {
                 if( !( isset($subpanelMetaData['type']) &&  $subpanelMetaData['type'] == 'collection') //Dont bother with collections
-                    && $subpanelMetaData['module'] == $changedModuleName && isset($subpanelMetaData['title_key']) )
+                    && isset($subpanelMetaData['module']) && $subpanelMetaData['module'] == $changedModuleName && isset($subpanelMetaData['title_key']) )
                 {
                     $replaceKey = $subpanelMetaData['title_key'];
                     if( !isset($mod_strings[$replaceKey]) )
@@ -447,6 +447,9 @@ class RenameModules
      */
     private function getSubpanelDefs($bean )
 	{
+        if(empty($bean->module_dir)) {
+            return array();
+        }
 
 		$layout_defs = array();
 
@@ -562,13 +565,13 @@ class RenameModules
     private function renameAllDashlets()
     {
         //Load the Dashlet metadata so we know what needs to be changed
-        if(!is_file($GLOBALS['sugar_config']['cache_dir'].'dashlets/dashlets.php'))
+        if(!is_file(sugar_cached('dashlets/dashlets.php')))
         {
             require_once('include/Dashlets/DashletCacheBuilder.php');
             $dc = new DashletCacheBuilder();
             $dc->buildCache();
 		}
-		require_once($GLOBALS['sugar_config']['cache_dir'].'dashlets/dashlets.php');
+		require_once(sugar_cached('dashlets/dashlets.php'));
 
         foreach($this->changedModules as $moduleName => $replacementLabels)
         {

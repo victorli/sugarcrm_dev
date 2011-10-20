@@ -45,9 +45,9 @@
 </style>
 
 {JAVASCRIPT}
-<script type="text/javascript" language="Javascript" src="modules/EmailTemplates/EmailTemplate.js"></script>
-<script type="text/javascript" language="Javascript" src="include/javascript/sugar_grp1_yui.js"></script>
-<script type="text/javascript" language="Javascript" src="modules/Campaigns/WebToLead.js"></script>
+<script type="text/javascript" language="Javascript" src="modules/EmailTemplates/EmailTemplate.js?v={VERSION_MARK}"></script>
+<script type="text/javascript" language="Javascript" src="cache/include/javascript/sugar_grp1_yui.js?v={VERSION_MARK}"></script>
+<script type="text/javascript" language="Javascript" src="modules/Campaigns/WebToLead.js?v={VERSION_MARK}"></script>
 
 <script type="text/javascript">
 	{FIELD_DEFS_JS}
@@ -57,17 +57,17 @@
 	<tr>
 		<td>
 		<form name="WebToLeadForm" id="WebToLeadForm" method="POST" action="index.php" enctype="multipart/form-data">
-		<input type="hidden" name="module" value="Campaigns"> 
-		<input type="hidden" name="record" value="{ID}"> 
+		<input type="hidden" name="module" value="Campaigns">
+		<input type="hidden" name="record" value="{ID}">
 		<input type="hidden" name="action"> <input type="hidden" name="form">
-		<input type="hidden" name="return_module" value="{RETURN_MODULE}"> 
+		<input type="hidden" name="return_module" value="{RETURN_MODULE}">
 		<input type="hidden" name="return_id" value="{RETURN_ID}">
-		<input type="hidden" name="return_action" value="{RETURN_ACTION}"> 
-		<input type="hidden" name="inpopupwindow" value="{INPOPUPWINDOW}"> 
-		<input type="hidden" name="old_id" value="{OLD_ID}"> 
+		<input type="hidden" name="return_action" value="{RETURN_ACTION}">
+		<input type="hidden" name="inpopupwindow" value="{INPOPUPWINDOW}">
+		<input type="hidden" name="old_id" value="{OLD_ID}">
 		<input title="{APP.LBL_SAVE_WEB_TO_LEAD_FORM}" accessKey="{APP.LBL_SAVE_WEB_TO_LEAD_FORM}" class="button"
 			onclick="this.form.action.value='WebToLeadFormSave';" type="submit" name="button"
-			value="{APP.LBL_SAVE_WEB_TO_LEAD_FORM}"> 
+			value="{APP.LBL_SAVE_WEB_TO_LEAD_FORM}">
 		<input title="{APP.LBL_CANCEL_BUTTON_TITLE}"
 			accessKey="{APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="{CANCEL_SCRIPT}" type="submit" name="button"
 			value="{APP.LBL_CANCEL_BUTTON_LABEL}">
@@ -84,11 +84,11 @@
 
 			<tr>
 				<td valign="top" scope="row">
-                            {MOD.LBL_BODY} 
+                            {MOD.LBL_BODY}
                 </td>
 				<!-- BEGIN: textarea -->
 				<td colspan="4" >
-					<textarea id='body_html' tabindex='90' name='body_html' cols="100" rows="40">{BODY_HTML}</textarea> 
+					<textarea id='body_html' tabindex='90' name='body_html' cols="100" rows="40">{BODY_HTML}</textarea>
                 </td>
 				<!-- END: textarea -->
 			</tr>

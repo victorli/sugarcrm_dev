@@ -48,10 +48,10 @@ require_once('modules/Trackers/store/Store.php');
  * Database
  * This is an implementation of the Store interface where the storage uses
  * the configured database instance as defined in DBManagerFactory::getInstance() method
- * 
+ *
  */
 class DatabaseStore implements Store {
- 
+
     public function flush($monitor) {
 
        $metrics = $monitor->getMetrics();
@@ -60,23 +60,30 @@ class DatabaseStore implements Store {
        foreach($metrics as $name=>$metric) {
        	  if(!empty($monitor->$name)) {
        	  	 $columns[] = $name;
-       	  	 if($metrics[$name]->_type == 'int' || $metrics[$name]->_type == 'double') {
-                $values[] = $GLOBALS['db']->quote($monitor->$name);
+       	  	 if($metrics[$name]->_type == 'int') {
+       	  	    $values[] = intval($monitor->$name);
+       	  	 } else if($metrics[$name]->_type == 'double') {
+                $values[] = floatval($monitor->$name);
              } else if ($metrics[$name]->_type == 'datetime') {
-             	$values[] = ($GLOBALS['db']->dbType == 'oci8') ? db_convert("'".$monitor->$name."'",'datetime') : "'".$monitor->$name."'";
+             	$values[] = $GLOBALS['db']->convert($GLOBALS['db']->quoted($monitor->$name), "datetime");
        	  	 } else {
-                $values[] = "'".$GLOBALS['db']->quote($monitor->$name)."'";
-             }      	  	 	   	  	
+                $values[] = $GLOBALS['db']->quoted($monitor->$name);
+             }
        	  }
        } //foreach
-       
+
        if(empty($values)) {
        	  return;
        }
 
-       
+       $id = $GLOBALS['db']->getAutoIncrementSQL($monitor->table_name,'id');
+       if(!empty($id)) {
+       	  $columns[] = 'id';
+       	  $values[] = $id;
+       }
+
        $query = "INSERT INTO $monitor->table_name (" .implode("," , $columns). " ) VALUES ( ". implode("," , $values). ')';
-	   $GLOBALS['db']->query($query);	   
+	   $GLOBALS['db']->query($query);
     }
 }
 

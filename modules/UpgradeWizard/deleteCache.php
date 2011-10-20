@@ -47,9 +47,10 @@ require_once('include/JSON.php');
 $json = getJSONobj();
 
 //Clean modules from cache
-if(is_dir($GLOBALS['sugar_config']['cache_dir'].'modules')){
+$cachedir = sugar_cached("modules");
+if(is_dir($cachedir)){
 	$allModFiles = array();
-	$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'modules',$allModFiles);
+	$allModFiles = findAllFiles($cachedir,$allModFiles);
    foreach($allModFiles as $file){
        	if(file_exists($file)){
 			unlink($file);
@@ -57,9 +58,10 @@ if(is_dir($GLOBALS['sugar_config']['cache_dir'].'modules')){
    }
 }
 //Clean jsLanguage from cache
-if(is_dir($GLOBALS['sugar_config']['cache_dir'].'jsLanguage')){
+$cachedir = sugar_cached("jsLanguage");
+if(is_dir($cachedir)){
 	$allModFiles = array();
-	$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'jsLanguage',$allModFiles);
+	$allModFiles = findAllFiles($cachedir,$allModFiles);
    foreach($allModFiles as $file){
 	   	if(file_exists($file)){
 			unlink($file);
@@ -67,9 +69,10 @@ if(is_dir($GLOBALS['sugar_config']['cache_dir'].'jsLanguage')){
 	}
 }
 //Clean smarty from cache
-if(is_dir($GLOBALS['sugar_config']['cache_dir'].'smarty')){
+$cachedir = sugar_cached("smarty");
+if(is_dir($cachedir)){
 	$allModFiles = array();
-	$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'smarty',$allModFiles);
+	$allModFiles = findAllFiles($cachedir,$allModFiles);
    foreach($allModFiles as $file){
        	if(file_exists($file)){
 			unlink($file);
