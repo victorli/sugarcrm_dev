@@ -246,7 +246,7 @@ SUGAR.quickCompose = function() {
 			var loader = new YAHOO.util.YUILoader({
 				    require : require,
 				    loadOptional: true,
-				    skin: { base: 'blank', defaultSkin: 'sam' },
+				    skin: { base: 'blank', defaultSkin: '' },
 				    data: o,
 				    onSuccess: this.initComposePackage,
 				    allowRollup: true,

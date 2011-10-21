@@ -36,17 +36,15 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-require_once("data/Relationships/SugarRelationship.php");
-require_once("data/Relationships/One2MRelationship.php");
+require_once("data/Relationships/M2MRelationship.php");
 
-class One2OneRelationship extends M2MRelationship
+/**
+ * Represents a many to many relationship that is table based.
+ */
+class EmailAddressRelationship extends M2MRelationship
 {
-
-    public function __construct($def)
-    {
-        parent::__construct($def);
-    }
     /**
+     * For Email Addresses, there is only a link from the left side, so we need a new add function that ignores rhs
      * @param  $lhs SugarBean left side bean to add to the relationship.
      * @param  $rhs SugarBean right side bean to add to the relationship.
      * @param  $additionalFields key=>value pairs of fields to save on the relationship
@@ -54,22 +52,63 @@ class One2OneRelationship extends M2MRelationship
      */
     public function add($lhs, $rhs, $additionalFields = array())
     {
-        $dataToInsert = $this->getRowToInsert($lhs, $rhs, $additionalFields);
-        //If the current data matches the existing data, don't do anything
-        if (!$this->checkExisting($dataToInsert))
-        {
-            $lhsLinkName = $this->lhsLink;
-            $rhsLinkName = $this->rhsLink;
-            //In a one to one, any existing links from boths sides must be removed first.
-            //one2Many will take care of the right side, so we'll do the left.
-            $lhs->load_relationship($lhsLinkName);
-            $this->removeAll($lhs->$lhsLinkName);
-            $rhs->load_relationship($rhsLinkName);
-            $this->removeAll($rhs->$rhsLinkName);
+        $lhsLinkName = $this->lhsLink;
 
-            parent::add($lhs, $rhs, $additionalFields);
+        if (empty($lhs->$lhsLinkName) && !$lhs->load_relationship($lhsLinkName))
+        {
+            $lhsClass = get_class($lhs);
+            $GLOBALS['log']->fatal("could not load LHS $lhsLinkName in $lhsClass");
+            return false;
         }
+
+        //Many to many has no additional logic, so just add a new row to the table and notify the beans.
+        $dataToInsert = $this->getRowToInsert($lhs, $rhs, $additionalFields);
+
+        $this->addRow($dataToInsert);
+
+        if ($this->self_referencing)
+            $this->addSelfReferencing($lhs, $rhs, $additionalFields);
+
+            if ($lhs->$lhsLinkName->beansAreLoaded())
+                $lhs->$lhsLinkName->addBean($rhs);
+
+            $this->callAfterAdd($lhs, $rhs, $lhsLinkName);
     }
 
+    public function remove($lhs, $rhs)
+    {
+        $lhsLinkName = $this->lhsLink;
 
+        if (!($lhs instanceof SugarBean)) {
+            $GLOBALS['log']->fatal("LHS is not a SugarBean object");
+            return false;
+        }
+        if (!($rhs instanceof SugarBean)) {
+            $GLOBALS['log']->fatal("RHS is not a SugarBean object");
+            return false;
+        }
+        if (empty($lhs->$lhsLinkName) && !$lhs->load_relationship($lhsLinkName))
+        {
+            $GLOBALS['log']->fatal("could not load LHS $lhsLinkName");
+            return false;
+        }
+        $dataToRemove = array(
+            $this->def['join_key_lhs'] => $lhs->id,
+            $this->def['join_key_rhs'] => $rhs->id
+        );
+
+        $this->removeRow($dataToRemove);
+
+        if ($this->self_referencing)
+            $this->removeSelfReferencing($lhs, $rhs);
+
+        if (empty($_SESSION['disable_workflow']) || $_SESSION['disable_workflow'] != "Yes")
+        {
+            if (!empty($lhs->$lhsLinkName))
+            {
+                $lhs->$lhsLinkName->load();
+                $this->callAfterDelete($lhs, $rhs, $lhsLinkName);
+            }
+        }
+    }
 }

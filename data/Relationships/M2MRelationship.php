@@ -138,6 +138,9 @@ class M2MRelationship extends SugarRelationship
 
         $this->addRow($dataToInsert);
 
+        if ($this->self_referencing)
+            $this->addSelfReferencing($lhs, $rhs, $additionalFields);
+
             if ($lhs->$lhsLinkName->beansAreLoaded())
                 $lhs->$lhsLinkName->addBean($rhs);
             if ($rhs->$rhsLinkName->beansAreLoaded())
@@ -181,6 +184,21 @@ class M2MRelationship extends SugarRelationship
         return $row;
     }
 
+    /**
+     * Adds the reversed version of this relationship to the table so that it can be accessed from either side equally
+     * @param $lhs
+     * @param $rhs
+     * @param array $additionalFields
+     * @return void
+     */
+    protected function addSelfReferencing($lhs, $rhs, $additionalFields = array())
+    {
+        if ($rhs->id != $lhs->id)
+        {
+            $dataToInsert = $this->getRowToInsert($rhs, $lhs, $additionalFields);
+            $this->addRow($dataToInsert);
+        }
+    }
 
     public function remove($lhs, $rhs)
     {
@@ -213,13 +231,41 @@ class M2MRelationship extends SugarRelationship
 
         $this->removeRow($dataToRemove);
 
+        if ($this->self_referencing)
+            $this->removeSelfReferencing($lhs, $rhs);
+
         if (empty($_SESSION['disable_workflow']) || $_SESSION['disable_workflow'] != "Yes")
         {
-            $lhs->$lhsLinkName->load();
-            $rhs->$rhsLinkName->load();
+            if (!empty($lhs->$lhsLinkName))
+            {
+                $lhs->$lhsLinkName->load();
+                $this->callAfterDelete($lhs, $rhs, $lhsLinkName);
+            }
 
-            $this->callAfterDelete($lhs, $rhs, $lhsLinkName);
-            $this->callAfterDelete($rhs, $lhs, $rhsLinkName);
+            if ($rhs->$rhsLinkName instanceof Link2)
+            {
+                $rhs->$rhsLinkName->load();
+                $this->callAfterDelete($rhs, $lhs, $rhsLinkName);
+            }
+        }
+    }
+
+    /**
+     * Removes the reversed version of this relationship
+     * @param $lhs
+     * @param $rhs
+     * @param array $additionalFields
+     * @return void
+     */
+    protected function removeSelfReferencing($lhs, $rhs, $additionalFields = array())
+    {
+        if ($rhs->id != $lhs->id)
+        {
+            $dataToRemove = array(
+                $this->def['join_key_lhs'] => $rhs->id,
+                $this->def['join_key_rhs'] => $lhs->id
+            );
+            $this->removeRow($dataToRemove);
         }
     }
 
@@ -257,15 +303,7 @@ class M2MRelationship extends SugarRelationship
         }
         $rel_table = $this->getRelationshipTable();
 
-        if (!$this->self_referencing)
-        {
-            $where = "$rel_table.$knownKey = '{$link->getFocus()->id}'";
-        }
-        else
-        {
-            $where = "($rel_table.{$this->def['join_key_rhs']} = '{$link->getFocus()->id}' OR $rel_table.{$this->def['join_key_lhs']} = '{$link->getFocus()->id}')";
-        }
-        $where .= $this->getRoleWhere();
+        $where = "$rel_table.$knownKey = '{$link->getFocus()->id}'" . $this->getRoleWhere();
 
         if (empty($params['return_as_array'])) {
             return "SELECT $targetKey id FROM $rel_table WHERE $where AND deleted=0";
@@ -313,19 +351,9 @@ class M2MRelationship extends SugarRelationship
             $targetTable = $params['join_table_alias'];
         }
 
-        if (!$this->self_referencing)
-        {
-            $join1 = "$startingTable.$startingKey=$joinTable.$startingJoinKey";
-            $join2 = "$targetTable.$targetKey=$joinTable.$joinKey";
-            $where = "";
-        }
-        else
-        {
-            $join1 = "($startingTable.$startingKey=$joinTable.{$this->def['join_key_rhs']} OR $startingTable.$startingKey=$joinTable.{$this->def['join_key_rhs']})";
-            $join2 = "($targetTable.$targetKey=$joinTable.{$this->def['join_key_rhs']} OR $targetTable.$targetKey=$joinTable.{$this->def['join_key_rhs']})";
-            $where = "(($startingTable.$startingKey=$joinTable.{$this->def['join_key_rhs']} AND $joinTable.{$this->def['join_key_lhs']}='{$link->getFocus()->$targetKey}') OR "
-                   . "($startingTable.$startingKey=$joinTable.{$this->def['join_key_lhs']} AND $joinTable.{$this->def['join_key_rhs']}='{$link->getFocus()->$targetKey}'))";
-        }
+        $join1 = "$startingTable.$startingKey=$joinTable.$startingJoinKey";
+        $join2 = "$targetTable.$targetKey=$joinTable.$joinKey";
+        $where = "";
 
 
         //First join the relationship table
@@ -377,15 +405,7 @@ class M2MRelationship extends SugarRelationship
             $joinTable = $params['join_table_link_alias'];
         }
 
-        if (!$this->self_referencing)
-        {
-            $where = "$startingTable.$startingKey=$joinTable.$startingJoinKey AND $joinTable.$joinKey='{$link->getFocus()->$targetKey}'";
-        }
-        else
-        {
-            $where = "(($startingTable.$startingKey=$joinTable.{$this->def['join_key_rhs']} AND $joinTable.{$this->def['join_key_lhs']}='{$link->getFocus()->$targetKey}') OR "
-                   . "($startingTable.$startingKey=$joinTable.{$this->def['join_key_lhs']} AND $joinTable.{$this->def['join_key_rhs']}='{$link->getFocus()->$targetKey}'))";
-        }
+        $where = "$startingTable.$startingKey=$joinTable.$startingJoinKey AND $joinTable.$joinKey='{$link->getFocus()->$targetKey}'";
 
         //Check if we should ignore the role fileter;
         $ignoreRole = !empty($params['ignore_role']);

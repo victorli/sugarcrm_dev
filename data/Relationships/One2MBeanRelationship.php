@@ -124,6 +124,11 @@ class One2MBeanRelationship extends One2MRelationship
     public function remove($lhs, $rhs, $save = true)
     {
         $rhsID = $this->def['rhs_key'];
+
+        //If this relationship has already been removed, we can just return
+        if ($rhs->$rhsID != $lhs->id)
+            return;
+
         $rhs->$rhsID = '';
 
         if ($save && !$rhs->deleted)
@@ -131,9 +136,7 @@ class One2MBeanRelationship extends One2MRelationship
             $rhs->in_relationship_update = TRUE;
             $rhs->save();
         }
-        $rhsID = $this->def['rhs_key'];
-        $rhs->$rhsID = '';
-
+        
         if (empty($_SESSION['disable_workflow']) || $_SESSION['disable_workflow'] != "Yes")
         {
             $this->callAfterDelete($lhs, $rhs);
@@ -235,7 +238,7 @@ class One2MBeanRelationship extends One2MRelationship
         //First join the relationship table
         $join .= "$join_type $targetTableWithAlias ON $startingTable.$startingKey=$targetTable.$targetKey AND $targetTable.deleted=0\n"
         //Next add any role filters
-               . $this->getRoleWhere() . "\n";
+               . $this->getRoleWhere(($linkIsLHS) ? $targetTable : $startingTable) . "\n"; 
 
         if($return_array){
             return array(

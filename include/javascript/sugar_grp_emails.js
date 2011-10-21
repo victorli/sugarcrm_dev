@@ -213,7 +213,7 @@ if(replyToFlag=='1'){newContentReplyToFlag.setAttribute("checked","true");}
 if(replyToFlag=='1'){this.replyToFlagObject[newContentReplyToFlag.id]=true;}else{this.replyToFlagObject[newContentReplyToFlag.id]=false;}
 if(optOutFlag=='1'){newContentOptOutFlag.setAttribute("checked",'true');}
 if(invalidFlag=='1'){newContentInvalidFlag.setAttribute("checked","true");}
-newContent.eaw=this;newContent.onblur=function(e){this.eaw.retrieveEmailAddress(e)};newContent.onkeydown=function(e){this.eaw.handleKeyDown(e)};if(YAHOO.env.ua.ie){var emailcontainer=Dom.getAncestorByTagName(insertInto,'span');var listeners=YAHOO.util.Event.getListeners(emailcontainer);if(typeof listeners!='undefined'&&listeners instanceof Array){for(var i=0;i<listeners.length;++i){var listener=listeners[i];YAHOO.util.Event.addListener(newContent,listener.type,listener.fn,listener.obj,listener.adjust);}}}
+newContent.eaw=this;newContent.onblur=function(e){this.eaw.retrieveEmailAddress(e)};newContent.onkeydown=function(e){this.eaw.handleKeyDown(e)};if(YAHOO.env.ua.ie>0){var emailcontainer=Dom.getAncestorByTagName(insertInto,'span');YAHOO.util.Event.addListener(newContent,"change",function(ev,el){SUGAR.util.callOnChangeListers(el);},emailcontainer);}
 this.EmailAddressValidation(this.emailView,this.id+'emailAddress'+this.numberEmailAddresses,this.emailIsRequired,SUGAR.language.get('app_strings','LBL_EMAIL_ADDRESS_BOOK_EMAIL_ADDR'));this.numberEmailAddresses++;this.addInProgress=false;},EmailAddressValidation:function(ev,fn,r,stR){YAHOO.util.Event.onContentReady(fn,function(){addToValidate(ev,fn,'email',r,stR);});},removeEmailAddress:function(index){removeFromValidate(this.emailView,this.id+'emailAddress'+index);var oNodeToRemove=Dom.get(this.id+'emailAddressRow'+index);oNodeToRemove.parentNode.removeChild(oNodeToRemove);var removedIndex=parseInt(index);if(this.numberEmailAddresses!=removedIndex){for(var x=removedIndex+1;x<this.numberEmailAddresses;x++){Dom.get(this.id+'emailAddress'+x).setAttribute("name",this.id+"emailAddress"+(x-1));Dom.get(this.id+'emailAddress'+x).setAttribute("id",this.id+"emailAddress"+(x-1));if(Dom.get(this.id+'emailAddressInvalidFlag'+x)){Dom.get(this.id+'emailAddressInvalidFlag'+x).setAttribute("id",this.id+"emailAddressInvalidFlag"+(x-1));}
 if(Dom.get(this.id+'emailAddressOptOutFlag'+x)){Dom.get(this.id+'emailAddressOptOutFlag'+x).setAttribute("id",this.id+"emailAddressOptOutFlag"+(x-1));}
 if(Dom.get(this.id+'emailAddressPrimaryFlag'+x)){Dom.get(this.id+'emailAddressPrimaryFlag'+x).setAttribute("id",this.id+"emailAddressPrimaryFlag"+(x-1));}
@@ -4953,7 +4953,7 @@ SE.composeLayout = {
      		SE.composeLayout[idx].getUnitByPosition("right").collapse();
      		//Initialize tinyMCE
             SE.composeLayout._1_tiny(false);
-            
+
      		//Init templates and address book
      		SE.composeLayout._2_final();
 
@@ -5361,15 +5361,15 @@ SE.composeLayout = {
         var box_title = mod_strings.LBL_EMAILTEMPLATE_MESSAGE_SHOW_TITLE;
 		var box_msg = mod_strings.LBL_EMAILTEMPLATE_MESSAGE_SHOW_MSG;
 		var box_none_msg = mod_strings.LBL_EMAILTEMPLATE_MESSAGE_CLEAR_MSG;
-		
+
 		//bug #6224
 		var to_addr = document.getElementById('addressTO'+idx);
-		if (to_addr.value.search(/[^;,]{6,}[;,][^;,]{6,}/) != -1) 
+		if (to_addr.value.search(/[^;,]{6,}[;,][^;,]{6,}/) != -1)
 		{
 			box_title = mod_strings.LBL_EMAILTEMPLATE_MESSAGE_WARNING_TITLE;
 			box_msg = mod_strings.LBL_EMAILTEMPLATE_MESSAGE_MULTIPLE_RECIPIENTS + '<br /><br />' + box_msg;
 		}
-		
+
 		// id is selected index of email template drop-down
 		if(id == '' || id == "0") {
 			YAHOO.SUGAR.MessageBox.show({
@@ -5406,13 +5406,19 @@ SE.composeLayout = {
 		if (start > -1) {
 	        tinyHTML = tinyHTML.substr(start);
             tiny.setContent(tinyHTML);
-		} else { 
+		} else {
        	    tiny.setContent('');
 		}
     },
 
 	processResult : function(idx , id){
-        call_json_method('EmailTemplates','retrieve','record='+id,'email_template_object', this.appendEmailTemplateJSON);
+		var post_data = {"module":"EmailTemplates","record":id};
+		var global_rpcClient =  new SugarRPCClient();
+
+		result = global_rpcClient.call_method('retrieve', post_data, true);
+		if(!result['record']) return;
+		json_objects['email_template_object'] = result['record'];
+		this.appendEmailTemplateJSON();
 
         // get attachments if any
         AjaxObject.target = '';
@@ -5804,7 +5810,7 @@ SE.composeLayout = {
         var form = document.getElementById('emailCompose' + idx);
         var composeOptionsFormName = "composeOptionsForm" + idx;
 
-        
+
         var t = SE.util.getTiny(SE.tinyInstances.currentHtmleditor);
         if (t != null || typeof(t) != "undefined") {
             var html = t.getContent();

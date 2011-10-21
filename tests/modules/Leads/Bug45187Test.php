@@ -1,5 +1,5 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
+
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
@@ -35,20 +35,63 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
 
- * Description:  TODO To be written.
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
- * All Rights Reserved.
- * Contributor(s): ______________________________________..
- ********************************************************************************/
+require_once 'modules/Leads/views/view.convertlead.php';
 
+class Bug45187Test extends Sugar_PHPUnit_Framework_OutputTestCase
+{
+    public function setUp()
+    {
+        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser(true, 1);
+        $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
+    }
+    
+    public function tearDown()
+    {
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        unset($GLOBALS['current_user']);
+    }
+    
+    /**
+    * @group bug45187
+    */
+    public function testActivityModuleLabel()
+    {
+        global $sugar_config;
+        global $app_list_strings;
 
-global $mod_strings,$app_strings;
-if(ACLController::checkAccess('Meetings', 'edit', true))$module_menu[]=Array("index.php?module=Meetings&action=EditView&return_module=Meetings&return_action=DetailView", $mod_strings['LNK_NEW_MEETING'],"CreateMeetings");
-if(ACLController::checkAccess('Meetings', 'list', true))$module_menu[]=Array("index.php?module=Meetings&action=index&return_module=Meetings&return_action=DetailView", $mod_strings['LNK_MEETING_LIST'],"Meetings");
-if(ACLController::checkAccess('Meetings', 'import', true))$module_menu[]=Array("index.php?module=Import&action=Step1&import_module=Meetings&return_module=Meetings&return_action=index", $mod_strings['LNK_IMPORT_MEETINGS'],"Import", 'Meetings');
+        // init
+        $lead = SugarTestLeadUtilities::createLead();
+        $account = SugarTestAccountUtilities::createAccount();
 
+        // simulate module renaming
+        $org_name = $app_list_strings['moduleListSingular']['Contacts'];
+        $app_list_strings['moduleListSingular']['Contacts'] = 'People';
 
+        // set the request/post parameters before converting the lead
+        $_REQUEST['module'] = 'Leads';
+        $_REQUEST['action'] = 'ConvertLead';
+        $_REQUEST['record'] = $lead->id;
+        unset($_REQUEST['handle']);
+        $_REQUEST['selectedAccount'] = $account->id;
+        $sugar_config['lead_conv_activity_opt'] = 'move';
 
-?>
+        // call display to trigger conversion
+        $vc = new ViewConvertLead();
+        $vc->init($lead);
+        $vc->display();
+
+        // the activity options dropdown should use the renamed module label
+        $this->expectOutputRegex('/.*People<\/OPTION>.*/');
+
+        // cleanup
+        $app_list_strings['moduleListSingular']['Contacts'] = $org_name;
+        unset($_REQUEST['module']);
+        unset($_REQUEST['action']);
+        unset($_REQUEST['record']);
+        unset($_REQUEST['selectedAccount']);
+        SugarTestAccountUtilities::removeAllCreatedAccounts();
+        SugarTestLeadUtilities::removeAllCreatedLeads();
+    }
+
+}

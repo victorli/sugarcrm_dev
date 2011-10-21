@@ -298,7 +298,7 @@ function multiFiles( list_target){
 		new_row_button_remove.onclick = function() {
 			var filePathComponents = this.parentNode.element.value.split("\\"),
                 fileName = (filePathComponents[filePathComponents.length - 1]),
-            
+
                 // tinymce related
                 tiny = tinyMCE.getInstanceById('body_text'),
                 currValTiny = tiny.getContent();
@@ -713,30 +713,6 @@ function toggle_textarea() {
 
 ///////////////////////////////////////////////////////////////////////////////
 ////	EMAIL TEMPLATE CODE
-function fill_email(id) {
-	var where = "parent_id='" + id + "'";
-	var order = '';
-
-	if(id == '') {
-		// query based on template, contact_id0,related_to
-		if(! append) {
-			document.EditView.name.value  = '';
-			document.EditView.description.value = '';
-			document.EditView.description_html.value = '';
-		}
-		return;
-	}
-	call_json_method('EmailTemplates','retrieve','record='+id,'email_template_object', appendEmailTemplateJSON);
-	args = {"module":"Notes","where":where, "order":order};
-
-	if(typeof(global_rpcClient) == 'undefined') {
-		global_rpcClient = new SugarRPCClient();
-	}
-
-	req_id = global_rpcClient.call_method('get_full_list', args);
-	global_request_registry[req_id] = [ejo, 'display'];
-}
-
 function appendEmailTemplateJSON() {
 	// query based on template, contact_id0,related_to
 	if(document.EditView.name.value == '') { // cn: bug 7743, don't stomp populated Subject Line

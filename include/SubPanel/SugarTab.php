@@ -61,11 +61,18 @@ class SugarTab
             unset($mainTabs[$selected_group]);
             array_splice($mainTabs, $max_tabs-1, 0, $temp);
         }
+
+        $subpanelTitles = array();
+        foreach($otherTabs['All']['tabs'] as $subtab)
+        {
+            $subpanelTitles[$subtab['key']] = $subtab['label'];
+        }
         
         $this->ss->assign('showLinks', 'false');
         $this->ss->assign('sugartabs', array_slice($mainTabs, 0, $max_tabs));
         $this->ss->assign('moreMenu', array_slice($mainTabs, $max_tabs));
         $this->ss->assign('othertabs', $otherTabs);
+        $this->ss->assign('subpanelTitlesJSON', json_encode($subpanelTitles));
         $this->ss->assign('startSubPanel', $selected_group);
         $this->ss->assign('sugarVersionJsStr', "?s=$sugar_version&c={$sugar_config['js_custom_version']}");
         if(!empty($mainTabs))

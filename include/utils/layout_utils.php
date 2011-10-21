@@ -240,7 +240,9 @@ EOHTML;
  *    );
  * </code>
  * would display as:
+ * <code>
  * <a href='index.php?module=Contacts&action=index'>Contacts</a> >> <a href='index.php?module=Contacts&action=DetailView&record=123'>John Smith</a> >> Edit   
+ * </code>
  * @param  $show_help    boolean which determines if the print and help links are shown.
  * @return string HTML
  */

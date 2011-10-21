@@ -1,5 +1,4 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
@@ -35,20 +34,56 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description:  TODO To be written.
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
- * All Rights Reserved.
- * Contributor(s): ______________________________________..
- ********************************************************************************/
 
 
-global $mod_strings,$app_strings;
-if(ACLController::checkAccess('Meetings', 'edit', true))$module_menu[]=Array("index.php?module=Meetings&action=EditView&return_module=Meetings&return_action=DetailView", $mod_strings['LNK_NEW_MEETING'],"CreateMeetings");
-if(ACLController::checkAccess('Meetings', 'list', true))$module_menu[]=Array("index.php?module=Meetings&action=index&return_module=Meetings&return_action=DetailView", $mod_strings['LNK_MEETING_LIST'],"Meetings");
-if(ACLController::checkAccess('Meetings', 'import', true))$module_menu[]=Array("index.php?module=Import&action=Step1&import_module=Meetings&return_module=Meetings&return_action=index", $mod_strings['LNK_IMPORT_MEETINGS'],"Import", 'Meetings');
+ 
+require_once 'modules/Import/CsvAutoDetect.php';
 
+class Bug45907Test extends Sugar_PHPUnit_Framework_TestCase
+{
+    public function setUp()
+    {
+        // if beanList got unset, set it back
+        if (!isset($GLOBALS['beanList'])) {
+            require('include/modules.php');
+            $GLOBALS['beanList'] = $beanList;
+        }
+    }
 
+    public function tearDown()
+    {
+    }
 
-?>
+    /**
+     * @ticket 45907
+     */
+    public function testCsvWithExtraInfo()
+    {
+        $sample_file = $GLOBALS['sugar_config']['upload_dir'].'/Bug45907Test.csv';
+        $file = 'tests/modules/Import/Bug45907Test.csv';
+        copy($file, $sample_file);
+
+        $auto = new CsvAutoDetect($file, 4); // parse only the first 4 lines
+        $del = $enc = $hasHeader = false;
+
+        // there is extra non csv info at the bottom of the file
+        // but it should still parse ok because we only parse the first 4 lines
+        $ret = $auto->getCsvSettings($del, $enc);
+        $this->assertEquals(true, $ret, 'Failed to parse and get csv properties');
+
+        // delimiter
+        $this->assertEquals(',', $del, 'Incorrect delimiter');
+
+        // enclosure
+        $this->assertEquals('"', $enc, 'Incorrect enclosure');
+
+        // header
+        $ret = $auto->hasHeader($hasHeader, 'Accounts');
+        $this->assertTrue($ret, 'Failed to detect header');
+        $this->assertTrue($hasHeader, 'Incorrect header');
+
+        // remove temp file
+        unlink($sample_file);
+    }
+
+}

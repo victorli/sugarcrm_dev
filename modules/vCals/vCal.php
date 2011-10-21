@@ -136,7 +136,7 @@ class vCal extends SugarBean {
 		// get activities.. queries Meetings and Calls
 		$acts_arr =
 		CalendarActivity::get_activities($user_bean->id,
-			false,
+			array("show_calls" => true),
 			$start_date_time,
 			$end_date_time,
 			'freebusy');

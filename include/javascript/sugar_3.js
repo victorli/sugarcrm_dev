@@ -260,9 +260,6 @@ global_xmlhttp.onreadystatechange=function(){if(global_xmlhttp.readyState==4){if
 return false;var args={"responseText":global_xmlhttp.responseText,"responseXML":global_xmlhttp.responseXML,"request_id":request_id};callback.call(document,args);}
 else{alert("There was a problem retrieving the XML data:\n"+global_xmlhttp.statusText);}}}
 global_xmlhttp.send(post_data);}
-function call_json_method(module,action,vars,variable_name,callback){global_xmlhttp.open("GET","index.php?entryPoint=json&module="+module+"&action="+action+"&"+vars,true);global_xmlhttp.onreadystatechange=function(){if(global_xmlhttp.readyState==4){if(global_xmlhttp.status==200){json_objects[variable_name]=JSON.parse(global_xmlhttp.responseText);var respText=YAHOO.lang.JSON.stringify(global_xmlhttp.responseText);var args={responseText:respText,responseXML:global_xmlhttp.responseXML};callback.call(document,args);}
-else{alert("There was a problem retrieving the XML data:\n"+global_xmlhttp.statusText);}}}
-global_xmlhttp.send(null);}
 function insert_at_cursor(field,value){if(document.selection){field.focus();sel=document.selection.createRange();sel.text=value;}
 else if(field.selectionStart||field.selectionStart=='0'){var start_pos=field.selectionStart;var end_pos=field.selectionEnd;field.value=field.value.substring(0,start_pos)+value+field.value.substring(end_pos,field.value.length);}
 else{field.value+=value;}}

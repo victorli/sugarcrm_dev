@@ -506,9 +506,8 @@ class EditView
 
 
                 //This code is used for QuickCreates that go to Full Form view.  We want to overwrite the values from the bean
-                //with values from the request if they are set
-                if ($this->populateBean
-                    && (isset($_REQUEST['full_form']) || ($_REQUEST['action'] == "SubpanelCreates" && empty($this->focus->id)))
+                //with values from the request if they are set and either the bean is brand new (such as a create from a subpanels) or the 'full form' button has been clicked
+                if ((($this->populateBean && empty($this->focus->id)) || (isset($_REQUEST['full_form'])))
                     && (!isset($this->fieldDefs[$name]['function']['returns']) || $this->fieldDefs[$name]['function']['returns'] != 'html')
                     && isset($_REQUEST[$name]))
                 {

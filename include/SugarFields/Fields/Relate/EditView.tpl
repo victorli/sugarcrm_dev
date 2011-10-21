@@ -65,11 +65,10 @@ onclick="SUGAR.clearRelateField(this.form, '{{$idname}}', '{{if !empty($displayP
 <input type="hidden" name="{{$idname}}_allow_new_value" id="{{$idname}}_allow_new_value" value="true">
 {{/if}}
 <script type="text/javascript">
-<!--
 if(typeof QSProcessedFieldsArray != 'undefined') 
 	QSProcessedFieldsArray["{$form_name}_{{$idname}}"] = false;
-	
-
-enableQS(false);
--->	
+SUGAR.util.doWhen(
+		"typeof(sqs_objects) != 'undefined' && typeof(sqs_objects['{$form_name}_{{$idname}}']) != 'undefined'",
+		enableQS
+);
 </script>

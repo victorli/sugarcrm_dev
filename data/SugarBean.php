@@ -1099,8 +1099,6 @@ class SugarBean
         {
             if ($this->load_relationship($name))
             {
-                $GLOBALS['log']->fatal("deleting relationship $name where id is $id");
-                $GLOBALS['log']->fatal(get_class($this->$name->getRelationshipObject()));
                 $this->$name->delete($id);
             }
             else
@@ -1563,6 +1561,11 @@ class SugarBean
         }
 
 
+        if (empty($GLOBALS['resavingRelatedBeans'])){
+            SugarRelationship::resaveRelatedBeans();
+        }
+
+
         //If we aren't in setup mode and we have a current user and module, then we track
         if(isset($GLOBALS['current_user']) && isset($this->module_dir))
         {
@@ -1659,11 +1662,26 @@ class SugarBean
                 $notify_mail->FromName = $from_name;
             }
 
-            $oe = new OutboundEmail();
+           $oe = new OutboundEmail();
             $oe = $oe->getUserMailerSettings($current_user);
             //only send if smtp server is defined
             if($sendEmail){
-                if(empty($oe->mail_smtpserver)){
+                $smtpVerified = false;
+
+                //first check the user settings
+                if(!empty($oe->mail_smtpserver)){
+                    $smtpVerified = true;
+                }
+
+                //if still not verified, check against the system settings
+                if (!$smtpVerified){
+                    $oe = $oe->getSystemMailerSettings();
+                    if(!empty($oe->mail_smtpserver)){
+                        $smtpVerified = true;
+                    }
+                }
+                //if smtp was not verified against user or system, then do not send out email
+                if (!$smtpVerified){
                     $GLOBALS['log']->fatal("Notifications: error sending e-mail, smtp server was not found ");
                     //break out
                     return;
@@ -4340,8 +4358,9 @@ function save_relationship_changes($is_update, $exclude=array())
                     $this->modified_user_id = 1;
                 }
                 $query = "UPDATE $this->table_name set deleted=1 , date_modified = '$date_modified', modified_user_id = '$this->modified_user_id' where id='$id'";
-            } else
+            } else {
                 $query = "UPDATE $this->table_name set deleted=1 , date_modified = '$date_modified' where id='$id'";
+            }
             $this->db->query($query, true,"Error marking record deleted: ");
             
             SugarRelationship::resaveRelatedBeans();

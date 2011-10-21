@@ -40,6 +40,8 @@ require_once('modules/Emails/Email.php');
 
 class Bug45960 extends Sugar_PHPUnit_Framework_TestCase
 {
+    protected $email_id = null;
+
     public function setUp()
     {
         $this->_user = SugarTestUserUtilities::createAnonymousUser();
@@ -49,6 +51,9 @@ class Bug45960 extends Sugar_PHPUnit_Framework_TestCase
     
     public function tearDown()
     {
+        if ($this->email_id) {
+            $GLOBALS['db']->query("delete from emails where id='{$this->email_id}'");
+        }
         SugarTestAccountUtilities::removeAllCreatedAccounts();
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset($GLOBALS['current_user']);
@@ -70,6 +75,9 @@ class Bug45960 extends Sugar_PHPUnit_Framework_TestCase
         $email->fetched_row['parent_id'] = $this->_account->id;
 
         $email->save();
+
+        $this->assertNotNull($email->id, 'Null email id');
+        $this->email_id = $email->id;
 
         // ensure record is inserted into emails_beans table
         $query = "select count(*) as CNT from emails_beans eb WHERE eb.bean_id = '{$this->_account->id}' AND eb.bean_module = 'Accounts' AND eb.email_id = '{$email->id}' AND eb.deleted=0";

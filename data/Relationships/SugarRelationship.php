@@ -300,7 +300,10 @@ abstract class SugarRelationship
             $table = $this->getRelationshipTable();
         if (!empty($this->def['relationship_role_column']) && !empty($this->def["relationship_role_column_value"]) && !$ignore_role_filter )
         {
-            $roleCheck = " AND $table.{$this->relationship_role_column}";
+            if (empty($table))
+                $roleCheck = " AND $this->relationship_role_column";
+            else
+                $roleCheck = " AND $table.{$this->relationship_role_column}";
             //role column value.
             if (empty($this->def['relationship_role_column_value']))
             {

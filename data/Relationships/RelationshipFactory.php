@@ -94,12 +94,18 @@ class SugarRelationshipFactory {
         switch($type)
         {
             case "many-to-many":
+                if (isset($def['rhs_module']) && $def['rhs_module'] == 'EmailAddresses')
+                {
+                    require_once("data/Relationships/EmailAddressRelationship.php");
+                    return new EmailAddressRelationship($def);
+                }
                 require_once("data/Relationships/M2MRelationship.php");
                 return new M2MRelationship($def);
             break;
             case "one-to-many":
                 require_once("data/Relationships/One2MBeanRelationship.php");
-                if (empty($def['true_relationship_type'])){
+                //If a relationship has no table or join keys, it must be bean based
+                if (empty($def['true_relationship_type']) || (empty($def['table']) && empty($def['join_table'])) || empty($def['join_key_rhs'])){
                     return new One2MBeanRelationship($def);
                 }
                 else {

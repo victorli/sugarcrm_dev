@@ -39,6 +39,15 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 class DocumentsViewEdit extends ViewEdit
 {
+
+    /**
+     * @see SugarView::ViewEdit()
+     */
+     function DocumentsViewEdit(){
+         parent::ViewEdit();
+         $this->useForSubpanel = true;
+     }
+
  	/**
 	 * @see SugarView::display()
 	 */
@@ -72,7 +81,9 @@ class DocumentsViewEdit extends ViewEdit
 			$this->bean->is_template=0;
 		} //if
 
-		if (!empty($this->bean->id)) {
+		if (!empty($this->bean->id) ||
+            (empty($this->bean->id) && !empty($_REQUEST['record']) && !empty($_REQUEST['action']) && strtolower($_REQUEST['action'])=='quickedit')
+        ) {
 			$this->ss->assign("FILE_OR_HIDDEN", "hidden");
 			if (!$this->ev->isDuplicate) {
 				$this->ss->assign("DISABLED", "disabled");
@@ -162,4 +173,5 @@ class DocumentsViewEdit extends ViewEdit
 
 		return $params;
     }
+
 }

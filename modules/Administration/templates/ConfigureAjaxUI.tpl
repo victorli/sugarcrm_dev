@@ -45,6 +45,7 @@
 	<input type="hidden" name="return_action" value="{$RETURN_ACTION}">
 
 	{$title}<br/>
+        <p>{sugar_translate label="LBL_CONFIG_AJAX_DESC"}</p><br/>
 	<p>{sugar_translate label="LBL_CONFIG_AJAX_HELP"}</p><br/>
 	<input title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}" class="button primary"
 		   onclick="SUGAR.saveConfigureTabs();" type="submit" name="saveButton"
