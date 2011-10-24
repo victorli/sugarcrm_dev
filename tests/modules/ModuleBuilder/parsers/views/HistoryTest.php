@@ -35,65 +35,66 @@
  ********************************************************************************/
 
 
-require_once 'include/EditView/SubpanelQuickCreate.php';
+require_once("modules/ModuleBuilder/parsers/views/History.php");
 
-class Bug39610Test extends Sugar_PHPUnit_Framework_TestCase
+class HistoryTest extends PHPUnit_Framework_TestCase
 {
+
+    /**
+     * @var string
+     */
+    private $_path;
+
+    /**
+     * @var History
+     */
+    private $_history;
+
     public function setUp()
     {
-        global $app_strings, $app_list_strings;
-        $app_strings = return_application_language($GLOBALS['current_language']);
-        $app_list_strings = return_app_list_strings_language($GLOBALS['current_language']);
-        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+        $this->_path = tempnam(sys_get_temp_dir() . 'tmp', 'history');
+        $this->_history = new History($this->_path);
     }
-    
-    public function tearDown()
+
+    public function testConstructor()
     {
-        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-        unset($GLOBALS['current_user']);
+        $this->assertTrue(is_dir($this->getHistoryDir()), "__constructor() creates unique directory for file history");
     }
-    
-    public function testUseCustomViewAndCustomClassName()
+
+    public function testAppendAndRestore()
     {
-        $target_module = 'Contacts';
-        sugar_mkdir('custom/modules/'. $target_module . '/views/',null,true);
-        if( $fh = @fopen('custom/modules/'. $target_module . '/views/view.edit.php', 'w') )
-        {
-$string = <<<EOQ
-<?php
-class CustomContactsViewEdit
-{
-     var \$useForSubpanel = false;
+        $time = $this->_history->append($this->_path);
+        $this->assertTrue(file_exists($this->_history->getFileByTimestamp($time)), '->append() creates history file');
+        $this->assertEquals($this->_history->restoreByTimestamp( $time ), $time, '->restoreByTimestamp() returns correct timestamp');
+    }
 
-     public function CustomContactsViewEdit() 
-     {
-          \$GLOBALS['CustomContactsSubpanelQuickCreated'] = true;
-     }
-};
-?>
-EOQ;
-            fputs( $fh, $string);
-            fclose( $fh );
-        }
+    public function testUndoRestore()
+    {
+        $this->_history->undoRestore();
+        $this->assertFalse(file_exists($this->_path), '->undoRestore removes file');
+    }
 
+    public function testPositioning()
+    {
+        $other_file = tempnam(sys_get_temp_dir(), 'history');
         
-        $subpanelMock = new SubpanelQuickCreateMockBug39610Test($target_module, 'SubpanelQuickCreate');
-        $this->assertTrue(!empty($GLOBALS['CustomContactsSubpanelQuickCreated']), "Assert that CustomContactsEditView constructor was called");
-        @unlink('custom/modules/'. $target_module . '/views/view.subpanelquickcreate.php');
+        $el1 = $this->_history->append($other_file);
+        $el2 = $this->_history->append($other_file);
+        $el3 = $this->_history->append($other_file);
+
+        $this->assertEquals($this->_history->getCount(), 3);
+        $this->assertEquals($this->_history->getFirst(), $el3);
+        $this->assertEquals($this->_history->getLast(), $el1);
+        $this->assertEquals($this->_history->getNth(1), $el2);
+        $this->assertEquals($this->_history->getNext(), $el1);
+        $this->assertFalse($this->_history->getNext());
+
+        unlink($other_file);
     }
 
-}
-
-
-class SubpanelQuickCreateMockBug39610Test extends SubpanelQuickCreate
-{
-	public function SubpanelQuickCreateMockBug39610Test($module, $view='QuickCreate', $proccessOverride = false)
-	{
-		parent::SubpanelQuickCreate($module, $view, $proccessOverride);	
-	}
-	
-	public function process()
-	{
-		//no-op
-	}
+    private function getHistoryDir()
+    {
+        return dirname($this->_path);
+    }
+    
 }

@@ -389,6 +389,8 @@ $dictionary['Call'] = array('table' => 'calls', 'comment' => 'A Call is an activ
 			'rhs_table'			=> 'notes',
 			'rhs_key'			=> 'parent_id',
 			'relationship_type'	=> 'one-to-many',
+      'relationship_role_column'=>'parent_type',
+      'relationship_role_column_value'=>'Calls',
 		),
 	),
 //This enables optimistic locking for Saves From EditView

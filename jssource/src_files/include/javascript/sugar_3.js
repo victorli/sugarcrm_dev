@@ -606,6 +606,7 @@ function check_form(formname) {
 }
 
 function add_error_style(formname, input, txt, flash) {
+    var raiseFlag = false;
 	if (typeof flash == "undefined")
 		flash = true;
 	try {
@@ -623,9 +624,17 @@ function add_error_style(formname, input, txt, flash) {
     nomatchTxt = SUGAR.language.get('app_strings', 'ERR_SQS_NO_MATCH_FIELD');
     matchTxt = txt.replace(requiredTxt,'').replace(invalidTxt,'').replace(nomatchTxt,'');
 
-	if(inputHandle.parentNode.innerHTML.search(matchTxt) == -1) {
+    YUI().use('node', function (Y) {
+        Y.one(inputHandle).get('parentNode').get('children').each(function(node, index, nodeList){
+            if(node.hasClass('validation-message') && node.get('text').search(matchTxt)){
+                raiseFlag = true;
+            }
+        });
+    });
+
+    if(!raiseFlag) {
         errorTextNode = document.createElement('div');
-        errorTextNode.className = 'required';
+        errorTextNode.className = 'required validation-message';
         errorTextNode.innerHTML = txt;
         if ( inputHandle.parentNode.className.indexOf('x-form-field-wrap') != -1 ) {
             inputHandle.parentNode.parentNode.appendChild(errorTextNode);
@@ -668,6 +677,7 @@ function add_error_style(formname, input, txt, flash) {
       // Catch errors here so we don't allow an incomplete record through the javascript validation
   }
 }
+
 
 /**
  * removes all error messages for the current form
@@ -1359,28 +1369,6 @@ function http_fetch_async(url,callback,request_id,post_data) {
 	global_xmlhttp.send(post_data);
 }
 
-function call_json_method(module,action,vars,variable_name,callback) {
-	global_xmlhttp.open("GET", "index.php?entryPoint=json&module="+module+"&action="+action+"&"+vars,true);
-	global_xmlhttp.onreadystatechange=
-	function() {
-		if(global_xmlhttp.readyState==4) {
-			if(global_xmlhttp.status == 200) {
-				// cn: bug 12274 - pass through JSON.parse() to remove security envelope
-				json_objects[variable_name] = YAHOO.lang.JSON.parse(global_xmlhttp.responseText);
-
-				// cn: bug 12274 - safe from CSRF, render response as expected
-				var respText = YAHOO.lang.JSON.parse(global_xmlhttp.responseText);
-				var args = {responseText:respText, responseXML:global_xmlhttp.responseXML};
-				callback.call(document, args);
-			}
-			else {
-				alert("There was a problem retrieving the XML data:\n" + global_xmlhttp.statusText);
-			}
-		}
-	}
-	global_xmlhttp.send(null);
-}
-
 function insert_at_cursor(field, value) {
  //ie:
 	if (document.selection) {
@@ -1870,7 +1858,7 @@ sugarListView.prototype.send_form_for_emails = function(select, currentModule, a
 	else {
 	    maxCount = SUGAR.config.email_sugarclient_listviewmaxselect;
 	}
-    
+
     if (document.MassUpdate.select_entire_list.value == 1) {
 		if (totalCount > maxCount) {
 			alert(totalCountError);
@@ -4216,8 +4204,7 @@ SUGAR.util.setEmailPasswordEdit = function(id) {
  */
 SUGAR.util.validateFileExt = function(fileName, allowedTypes) {
     var ext = fileName.split('.').pop();
-    
-    for (var i = allowedTypes.length; i > 0; i--) {
+    for (var i = allowedTypes.length; i >= 0; i--) {
         if (ext === allowedTypes[i]) {
             return true;
         }

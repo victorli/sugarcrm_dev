@@ -5176,8 +5176,18 @@ function unlinkUpgradeFiles($version)
 
     //First check if we even have the scripts_for_patch/files_to_remove directory
     require_once('modules/UpgradeWizard/UpgradeRemoval.php');
+
+    /*
+    if(empty($_SESSION['unzip_dir']))
+    {
+        global $sugar_config;
+        $base_upgrade_dir		= $sugar_config['upload_dir'] . "/upgrades";
+        $base_tmp_upgrade_dir	= "$base_upgrade_dir/temp";
+        $_SESSION['unzip_dir'] = mk_temp_dir( $base_tmp_upgrade_dir );
+    }
+    */
     
-    if(file_exists($_SESSION['unzip_dir'].'/scripts/files_to_remove'))
+    if(isset($_SESSION['unzip_dir']) && file_exists($_SESSION['unzip_dir'].'/scripts/files_to_remove'))
     {
        $files_to_remove = glob($_SESSION['unzip_dir'].'/scripts/files_to_remove/*.php');
       

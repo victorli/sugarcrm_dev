@@ -60,7 +60,7 @@ class StudioBrowser{
     function loadRelatableModules(){
         $d = dir('modules');
         while($e = $d->read()){
-            if(substr($e, 0, 1) == '.' || !is_dir('modules/' . $e))continue;
+        	if(substr($e, 0, 1) == '.' || !is_dir('modules/' . $e))continue;
             if(file_exists('modules/' . $e . '/metadata/studio.php') && isset($GLOBALS [ 'beanList' ][$e])) // installed modules must also exist in the beanList
             {
                 $this->modules[$e] = StudioModuleFactory::getStudioModule( $e ) ;

@@ -60,7 +60,7 @@ function template_cal_tabs($args) {
 
 	foreach($tabs as $tab) {
 ?>
-<input type="button" <?php if($args['view'] == $tab) {?>selected="selected" <?php } ?> value=" <?php echo $mod_strings["LBL_".$args['calendar']->get_view_name($tab)]; ?> " title="<?php echo $mod_strings["LBL_".$args['calendar']->get_view_name($tab)]; ?>" onclick="window.location.href='index.php?module=Calendar&action=index&view=<?php echo $tab; ?><?php echo $args['calendar']->date_time->get_date_str(); ?>'">&nbsp;
+<input type="button" <?php if($args['view'] == $tab) {?>selected="selected" <?php } ?> value=" <?php echo $mod_strings["LBL_".$args['calendar']->get_view_name($tab)]; ?> " id="<?php echo $tab; ?>_tab_id" title="<?php echo $mod_strings["LBL_".$args['calendar']->get_view_name($tab)]; ?>" onclick="window.location.href='index.php?module=Calendar&action=index&view=<?php echo $tab; ?><?php echo $args['calendar']->date_time->get_date_str(); ?>'">&nbsp;
 <?php } ?>
 </td>
 </tr>
@@ -874,4 +874,3 @@ function template_get_previous_calendar($args) {
 
 }
 ?>
-

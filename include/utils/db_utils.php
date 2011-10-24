@@ -199,4 +199,31 @@ function run_sql_file( $filename )
     return strtolower ( $result ) ;
 }
 
+/**
+ * Utility to perform the check during install to ensure a database name entered by the user
+ * is valid based on the type of database server
+ * @param string $name Proposed name for the DB
+ * @param string $dbType Type of database server
+ * @return bool true or false based on the validity of the DB name
+ */
+function isValidDBName($name, $dbType) {
+    switch ($dbType){
+        case 'mssql':
+            $pattern = '/^[0-9#@]+|[\"\'\*\/\\?\:\\<\>\-\ \&\!\(\)\[\]\{\}\;\,\.\`\~\|\\\\]+/i';
+            break;
+        case 'oci8':
+            $pattern = '/[\#\"\'\*\/\\?\:\\<\>\-\ \&\!\(\)\[\]\{\}\;\,\.\`\~\|\\\\]+/i';
+            break;
+        case 'mysql':
+            $pattern = '/[\/\.\\\\]/i';
+            break;
+        default:
+            $pattern = '/[\/\.\\\\]/i';
+            break;
+    }
+    return preg_match($pattern, $name)==0?true:false;
+}
+
+
+
 ?>

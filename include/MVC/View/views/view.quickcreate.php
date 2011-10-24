@@ -42,9 +42,6 @@ require_once('include/EditView/EditView2.php');
 
 class ViewQuickcreate extends ViewAjax
 {
-    /**
-     * $var true if this form is used in the Dashlet Container
-     */
 	protected $_isDCForm = false;
 	
 	/**

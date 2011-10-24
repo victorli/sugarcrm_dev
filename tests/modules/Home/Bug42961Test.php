@@ -34,65 +34,41 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-require_once('include/SugarFields/Fields/File/SugarFieldFile.php');
-		
+
+require_once 'modules/Home/UnifiedSearchAdvanced.php';
+
 /**
- * @ticket 22505
- *
- *		Original Bug: Sugar should indicate to customer the max file size that can be uploaded 
- *
+ * @brief Try to find force_unifedsearch fields
+ * @ticket 42961
  */
-class Bug22505Test extends Sugar_PHPUnit_Framework_TestCase 
+class Bug42961Test extends Sugar_PHPUnit_Framework_TestCase
 {
-	private $_post_max_size;
-	private $_upload_max_filesize;
-	private $_upload_maxsize;
-	private $_file_field;
-	
-	function setUp() 
-	{
-		$this->_post_max_size = ini_get('post_max_size');
-		$this->_upload_max_filesize = ini_get('upload_max_filesize');
-		$this->_upload_maxsize = $GLOBALS['sugar_config']['upload_maxsize'];
-		
-		$this->_file_field = new Bug22505TestMock('file');
-	}
 
-	function tearDown() {
-		//ini_set('post_max_size',$this->_post_max_size);
-		//ini_set('upload_max_filesize',$this->_upload_max_filesize);
-		$GLOBALS['sugar_config']['upload_maxsize'] = $this->_upload_maxsize;
-		
-		unset($this->_post_max_size);
-		unset($this->_upload_max_filesize);
-		unset($this->_upload_maxsize);
-		unset($this->_file_field);
-	}
-
-	function testMaxFileUploadSize() {	
-		$small = '9999'; //9.76 kb
-		$large = '99999999999999';
-		
-		//Test 1: upload_maxsize is smallest
-		//ini_set('post_max_size',$small);
-		//ini_set('upload_max_filesize',$large);
-		$GLOBALS['sugar_config']['upload_maxsize'] = $small;
-		$max_size = $this->_file_field->getMaxFileUploadSize();
-
-		$this->assertEquals($max_size, '9.76 kb','Max file upload size is not 9.76 kb as expected');
-		
-		//Test 2: upload_maxsize is greatest
-		$GLOBALS['sugar_config']['upload_maxsize'] = $large;
-		$max_size = $this->_file_field->getMaxFileUploadSize();
-
-		$this->assertNotEquals($max_size, '9.76 kb','Max file upload size is 9.76 kb which is not expected');
-	}
-}
-
-class Bug22505TestMock extends SugarFieldFile
-{
-    public function getMaxFileUploadSize()
+    /**
+     * @brief generation of new cache file and search for force_unifiedsearch fields in it
+     * @group 42961
+     */
+    public function testBuildCache()
     {
-        return parent::getMaxFileUploadSize();
+        $beanList = array();
+        $beanFiles = array();
+        require('include/modules.php');
+        $GLOBALS['beanList'] = $beanList;
+        $GLOBALS['beanFiles'] = $beanFiles;
+        $unifiedSearchAdvanced = new UnifiedSearchAdvanced();
+        $unifiedSearchAdvanced->buildCache();
+        $this->assertFileExists($GLOBALS['sugar_config']['cache_dir'].'modules/unified_search_modules.php', 'Here should be cache file with data');
+        include $GLOBALS['sugar_config']['cache_dir'].'modules/unified_search_modules.php';
+        $force_unifiedsearch = 0;
+        foreach ($unified_search_modules as $moduleName=>$moduleInformation)
+        {
+            foreach ($moduleInformation['fields'] as $fieldName=>$fieldInformation)
+            {
+                if (key_exists('force_unifiedsearch', $fieldInformation)) {
+                    $force_unifiedsearch++;
+                }
+            }
+        }
+        $this->assertGreaterThan(0, $force_unifiedsearch, 'Here should be fields with force_unifiedsearch key');
     }
 }

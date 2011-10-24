@@ -133,10 +133,13 @@ var mOffset = 0;
 var max = 20;
 var mWhere = "{MAILMERGE_WHERE}";
 var orderBy = '';
+var relModule = '';
+var mTerm = '';
+YAHOO.namespace("mailmerge");
+YAHOO.mailmerge.cObj = null;
 
 function submit_form()
 {
-	document.MailMerge.action='index.php';
 	document.MailMerge.submit();
 }
 
@@ -144,9 +147,10 @@ function ResponseObj()
 {
 }
 
-ResponseObj.prototype.response = function (result) 
+function ajaxSuccess(data)
 {	 
-
+    var result = YAHOO.lang.JSON.parse(data.responseText);
+    result = result.result;
 	var prevButton = document.getElementById("prevButton");
 	var nextButton = document.getElementById("nextButton");
 	
@@ -159,7 +163,7 @@ ResponseObj.prototype.response = function (result)
 		dispCount = result.result_count;
 		nextItems_disabled = true;
 	}
-	if(result.result_count < (mOffset + max))
+	if(result.result_count <= (mOffset + max))
 	{
 		nextItems_disabled = true;
 	}
@@ -218,6 +222,9 @@ ResponseObj.prototype.response = function (result)
 }
 function increaseOffset()
 {
+    if(isCallInProgress())
+        return;
+
     if(!nextItems_disabled) {
         mOffset += 20;
         getObjects();
@@ -226,10 +233,21 @@ function increaseOffset()
 
 function decreaseOffset()
 {
+    if(isCallInProgress())
+        return;
+
     if(!prevItems_disabled) {
 	    mOffset -= 20;
         getObjects();
     }
+}
+
+function isCallInProgress()
+{
+    if(YAHOO.mailmerge.cObj)
+        return YAHOO.util.Connect.isCallInProgress(YAHOO.mailmerge.cObj);
+    else
+        return false;
 }
 
 function getObjects()
@@ -242,15 +260,8 @@ function getObjects()
 	getOrderBy();
 	
 	//rrs
-	//mWhere = "campaigns.id = '9be5dd91-d20b-c5fd-1769-4554d8eede05'";
-
-	query = {"module":module, "offset":mOffset, "where":mWhere, "max":max, "order_by":orderBy};
-
-	req_id = global_rpcClient.call_method('get_objects_from_module',query);
-	
-	var res = new ResponseObj();
-    global_request_registry[req_id] = [ res,'response']; 
-
+    var qs = 'index.php?module=MailMerge&action=search&qModule='+module+'&rel_module='+relModule+'&term='+mTerm+'&max='+max+'&order_by='+orderBy+'&offset='+mOffset;
+	YAHOO.mailmerge.cObj = YAHOO.util.Connect.asyncRequest('GET', qs,{success: ajaxSuccess, failure: ajaxSuccess}, null);
 }
 
 function moveRight()
@@ -349,25 +360,13 @@ function search(searchText)
 	var where = '';
 	if(searchText != '')
 	{
-		if(module == 'Contacts' || module == 'Leads')
-		{
-			where = module+".first_name like '%"+searchText+"%' OR "+module+".last_name like '%"+searchText+"%'";
-		}
-		else if(module == 'CampaignProspects'){
+        mTerm = searchText;
+		if(module == 'CampaignProspects'){
 			var prospectType = document.getElementById("campaign_prospect_type");
 			var lmodule = prospectType.value.toLowerCase();
-			var campign_where = "{MAILMERGE_WHERE}";
-			where = lmodule+".first_name like '%"+searchText+"%' OR "+lmodule+".last_name like '%"+searchText+"%'";
-			if(campign_where)
-				where += " AND "+campign_where ;
-			where += "  AND related_type = #"+lmodule+"#"
-		}
-		else
-		{
-			where = module+".name like '"+searchText+"%'";
+            relModule = lmodule;
 		}
 	}
-	mWhere = where.toLowerCase();
     mOffset = 0;
 	getObjects();
 }
@@ -392,7 +391,6 @@ function validateForm()
 	
 	if(selObjs.options.length > 0)
 	{
-		document.MailMerge.action='index.php';
 		document.MailMerge.submit();
 		return true;
 	}

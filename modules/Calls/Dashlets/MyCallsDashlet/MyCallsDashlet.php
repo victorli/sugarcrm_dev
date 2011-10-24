@@ -76,8 +76,8 @@ class MyCallsDashlet extends DashletGeneric {
         	//join with meeting_users table to process related users
        		$this->seedBean->listview_inner_join = array('LEFT JOIN  calls_users c_u on  c_u.call_id = calls.id');
         	
-        	//set the custom query to include assigned meetings            
-        	$lvsParams['custom_where'] = ' AND (calls.assigned_user_id = \'' . $current_user->id . '\' OR c_u.user_id = \'' . $current_user->id . '\') AND c_u.deleted = 0 ';
+        	//set the custom query to include assigned meetings
+            $lvsParams['custom_where'] = ' AND (calls.assigned_user_id = \'' . $current_user->id . '\' OR c_u.user_id = \'' . $current_user->id . '\') AND c_u.deleted = 0 ';
         }
         
         $this->myItemsOnly = false; 

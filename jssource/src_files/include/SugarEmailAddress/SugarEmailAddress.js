@@ -167,7 +167,7 @@
 		        
 		        if(this.enterPressed || this.tabPressed) {
 		           this.retrieveEmailAddress(e);
-		           if (this.enterPressed);
+		           if (this.enterPressed)
 		               this.freezeEvent(e);
 		        }
 		    }
@@ -200,11 +200,7 @@
 		    var newContent = document.createElement("input");
 		    var nav = new String(navigator.appVersion);
 		    var newContentPrimaryFlag;
-		    if(YAHOO.env.ua.ie){
-		       newContentPrimaryFlag = document.createElement("<input name='emailAddressPrimaryFlag' />");
-		    }else{
-		       newContentPrimaryFlag = document.createElement("input");
-		    }   
+            newContentPrimaryFlag = document.createElement("input");
 		    var newContentReplyToFlag = document.createElement("input");
 		    var newContentOptOutFlag = document.createElement("input");
 		    var newContentInvalidFlag = document.createElement("input");

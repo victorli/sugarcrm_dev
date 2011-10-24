@@ -545,6 +545,7 @@ class ModuleBuilderController extends SugarController
                 $relationships = new UndeployedRelationships ( $module->getModuleDir () ) ;
             }
             $relationships->delete ( $_REQUEST [ 'relationship_name' ] ) ;
+
             $relationships->save () ;
         }
         $this->view = 'relationships' ;
@@ -596,6 +597,18 @@ class ModuleBuilderController extends SugarController
         }
         $module->removeFieldFromLayouts( $field->name );
         $this->view = 'modulefields' ;
+
+        if (isset($GLOBALS['current_language']) && isset($_REQUEST['label']) &&
+                isset($_REQUEST['labelValue']) && isset($_REQUEST['view_module'])) {
+            $this->DeleteLabel($GLOBALS['current_language'], $_REQUEST['label'], $_REQUEST['labelValue'], $_REQUEST['view_module']);
+        }
+    }
+
+    function DeleteLabel($language, $label, $labelvalue, $modulename, $basepath = null, $forRelationshipLabel = false)
+    {
+        // remove the label
+        require_once 'modules/ModuleBuilder/parsers/parser.label.php';
+        ParserLabel::removeLabel($language, $label, $labelvalue, $modulename, $basepath, $forRelationshipLabel);
     }
 
     function action_CloneField ()

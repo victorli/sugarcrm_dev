@@ -78,8 +78,8 @@ class MyMeetingsDashlet extends DashletGeneric {
            	//join with meeting_users table to process related users
        		$this->seedBean->listview_inner_join = array('LEFT JOIN  meetings_users m_u on  m_u.meeting_id = meetings.id');
         	
-        	//set the custom query to retrieve invitees AND assigned meetings            
-        	$lvsParams['custom_where'] = ' AND (meetings.assigned_user_id = \'' . $current_user->id . '\' OR m_u.user_id = \'' . $current_user->id . '\') AND m_u.deleted=0 ';
+        	//set the custom query to retrieve invitees AND assigned meetings
+            $lvsParams['custom_where'] = ' AND (meetings.assigned_user_id = \'' . $current_user->id . '\' OR m_u.user_id = \'' . $current_user->id . '\') AND m_u.deleted=0 ';
         }
         
         $this->myItemsOnly = false; 

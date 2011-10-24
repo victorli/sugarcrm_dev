@@ -77,7 +77,9 @@ class EmailManController extends SugarController
         if( !isset($_POST['mail_smtpauth_req']) )
         {
             $_POST['mail_smtpauth_req'] = 0;
-            $_POST['notify_allow_default_outbound'] = 0; //If smtp auth is disabled ensure outbound is disabled.
+		if (empty($_POST['campaignConfig'])) {
+			$_POST['notify_allow_default_outbound'] = 0; // If smtp auth is disabled ensure outbound is disabled.
+		}
         }
 
         if( !empty($_POST['notify_allow_default_outbound']) )

@@ -166,13 +166,13 @@
           </tr>
           <tr>
             <td scope="row" colspan="3">
-                <input class="radio" type="radio" name="type" value="import" {if $selectedData->type == 'import' or !$selectedData->type}checked="checked"{/if} />
+                <input class="radio" id="action_create" type="radio" name="type" value="import" {if $selectedData->type == 'import' or !$selectedData->type}checked="checked"{/if} />
                 &nbsp;{$MOD.LBL_IMPORT_BUTTON}
             </td>
           </tr>
           <tr>
             <td scope="row" colspan="3">
-                <input class="radio" type="radio" name="type" value="update" {if $selectedData->type == 'update'}checked="checked"{/if} />
+                <input class="radio" id="action_create_and_update" type="radio" name="type" value="update" {if $selectedData->type == 'update'}checked="checked"{/if} />
                 &nbsp;{$MOD.LBL_UPDATE_BUTTON}
             </td>
           </tr>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
@@ -34,33 +34,45 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-require_once('include/EditView/SubpanelQuickCreate.php');
 
-class Bug44836Test extends Sugar_PHPUnit_Framework_OutputTestCase
+require_once 'include/SugarEmailAddress/SugarEmailAddress.php';
+require_once 'SugarTestContactUtilities.php';
+
+
+/**
+ * 
+ * Bug 42279
+ *
+ */
+
+class Bug42279Test extends Sugar_PHPUnit_Framework_TestCase
 {
-	public function setUp()
-	{
-		include('include/modules.php');
-	    $GLOBALS['beanList'] = $beanList;
-	    $GLOBALS['beanFiles'] = $beanFiles;
-	    $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-        $GLOBALS['current_user']->is_admin = 1;
-	    $GLOBALS['current_user']->setPreference('timezone', "America/Los_Angeles");
-	    $GLOBALS['current_user']->setPreference('datef', "m/d/Y");
-		$GLOBALS['current_user']->setPreference('timef', "h.iA");	    		
-	}
-	
-	public function tearDown()
-	{
-		SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-	}
-	
-	public function testContractsSubpanelQuickCreate()
-	{
-		 $subpanelQuickCreate = new SubpanelQuickCreate('Contracts', 'QuickCreate');
-		 $this->expectOutputRegex('/check_form\s*?\(\s*?\'form_SubpanelQuickCreate_Contracts\'\s*?\)/');
-	}
-	
-}
+    private $contact;	
 
-?>
+    public function setUp() {
+    	
+    	$GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+        $this->contact = SugarTestContactUtilities::createContact();
+               
+    }
+
+    public function tearDown() {
+        SugarTestContactUtilities::removeAllCreatedContacts();
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+    }
+
+    /**
+     * @group bug42279
+     */
+    public function testEmailAddressInFetchedRow() {
+        $sea = new SugarEmailAddress();
+
+        // this will populate contact->email1
+        $sea->populateLegacyFields($this->contact);
+        $email1 = $this->contact->email1;
+
+        // this should set fetched_row['email1'] to contatc->email1
+        $sea->handleLegacyRetrieve($this->contact);
+    	$this->assertEquals($email1, $this->contact->fetched_row['email1']);
+    }
+}

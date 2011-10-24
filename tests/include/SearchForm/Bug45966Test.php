@@ -78,9 +78,9 @@ class Bug45966 extends Sugar_PHPUnit_Framework_TestCase {
 
     public function tearDown() {
         unset($this->array);
-        unset($this->seed);
         unset($this->form);
-        SugarTestAccountUtilities::removeAllCreatedAccounts();
+        unset($this->seed);
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset($GLOBALS['current_user']);
         unset($listViewDefs);
         unset($searchFields);
@@ -171,7 +171,7 @@ class Bug45966 extends Sugar_PHPUnit_Framework_TestCase {
         $this->array['range_date_entered_advanced'] = "[$testDate]";
 
         $adjToday = $timedate->getDayStartEndGMT(date('m/d/Y'), $user);
-        $adjStartDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() - (7 * 24 * 60 * 60)), $user);
+        $adjStartDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() - (6 * TimeDate::SECONDS_IN_A_DAY)), $user);
 
         $expected = array(strtolower($this->module).".date_entered >= '".$adjStartDate['start']."' AND ". strtolower($this->module).".date_entered <= '".$adjToday['end']."'");
 
@@ -191,7 +191,7 @@ class Bug45966 extends Sugar_PHPUnit_Framework_TestCase {
         $this->array['range_date_entered_advanced'] = "[$testDate]";
 
         $adjToday = $timedate->getDayStartEndGMT(date('m/d/Y'), $user);
-        $adjEndDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() + (7 * 24 * 60 * 60)), $user);
+        $adjEndDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() + (6 * TimeDate::SECONDS_IN_A_DAY)), $user);
 
         $expected = array(strtolower($this->module).".date_entered >= '".$adjToday['start']."' AND ". strtolower($this->module).".date_entered <= '".$adjEndDate['end']."'");
 
@@ -211,7 +211,7 @@ class Bug45966 extends Sugar_PHPUnit_Framework_TestCase {
         $this->array['range_date_entered_advanced'] = "[$testDate]";
 
         $adjToday = $timedate->getDayStartEndGMT(date('m/d/Y'), $user);
-        $adjStartDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() - (30 * 24 * 60 * 60)), $user);
+        $adjStartDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() - (29 * TimeDate::SECONDS_IN_A_DAY)), $user);
 
         $expected = array(strtolower($this->module).".date_entered >= '".$adjStartDate['start']."' AND ". strtolower($this->module).".date_entered <= '".$adjToday['end']."'");
 
@@ -231,7 +231,7 @@ class Bug45966 extends Sugar_PHPUnit_Framework_TestCase {
         $this->array['range_date_entered_advanced'] = "[$testDate]";
 
         $adjToday = $timedate->getDayStartEndGMT(date('m/d/Y'), $user);
-        $adjEndDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() + (30 * 24 * 60 * 60)), $user);
+        $adjEndDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() + (29 * TimeDate::SECONDS_IN_A_DAY)), $user);
 
         $expected = array(strtolower($this->module).".date_entered >= '".$adjToday['start']."' AND ". strtolower($this->module).".date_entered <= '".$adjEndDate['end']."'");
 

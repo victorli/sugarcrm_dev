@@ -1473,7 +1473,15 @@ EOQ;
 		                $alias = substr($ljVal,$spacePos,$onPos-$spacePos);
 
 		                //add null check to end of the Join statement
-		                $ljVal ='  LEFT JOIN '.$ljVal.' and '.$alias.'.id is null ';
+                        // Bug #46390 to use id_c field instead of id field for custom tables
+                        if(substr($alias, -5) != '_cstm')
+                        {
+                            $ljVal ='  LEFT JOIN '.$ljVal.' and '.$alias.'.id is null ';
+                        }
+                        else
+                        {
+                            $ljVal ='  LEFT JOIN '.$ljVal.' and '.$alias.'.id_c is null ';
+                        }
 
 		                //add statement into new string
 		                $new_left_str .= $ljVal;

@@ -555,7 +555,7 @@ function get_user_array($add_blank=true, $status="Active", $assigned_user="", $u
 	if($from_cache)
 		$user_array = get_register_value('user_array', $add_blank. $status . $assigned_user);
 
-	if(!isset($user_array)) {
+	if(empty($user_array)) {
 		$db = DBManagerFactory::getInstance();
 		$temp_result = Array();
 		// Including deleted users for now.
@@ -795,14 +795,23 @@ function return_app_list_strings_language($language)
 function _mergeCustomAppListStrings($file , $app_list_strings){
 	$app_list_strings_original = $app_list_strings;
 	unset($app_list_strings);
+        // FG - bug 45525 - $exemptDropdown array is defined (once) here, not inside the foreach
+        //                  This way, language file can add items to save specific standard codelist from being overwritten
+        $exemptDropdowns = array();
 	include($file);
 	if(!isset($app_list_strings) || !is_array($app_list_strings)){
 		return $app_list_strings_original;
 	}
 	//Bug 25347: We should not merge custom dropdown fields unless they relate to parent fields or the module list.
+
+        // FG - bug 45525 - Specific codelists must NOT be overwritten
+	$exemptDropdowns[] = "moduleList";
+        $exemptDropdowns[] = "parent_type_display";
+        $exemptDropdowns[] = "record_type_display";
+        $exemptDropdowns[] = "record_type_display_notes";
+   
 	foreach($app_list_strings as $key=>$value)
 	{
-		$exemptDropdowns = array("moduleList", "parent_type_display", "record_type_display", "record_type_display_notes");
 		if (!in_array($key, $exemptDropdowns) && array_key_exists($key, $app_list_strings_original))
 		{
 	   		unset($app_list_strings_original["$key"]);
@@ -1427,6 +1436,9 @@ function get_select_options_with_id_separate_key ($label_list, $key_list, $selec
 	//for setting null selection values to human readable --None--
 	$pattern = "/'0?'></";
 	$replacement = "''>".$app_strings['LBL_NONE']."<";
+    if($massupdate){
+        $replacement .= "/OPTION>\n<OPTION value='__SugarMassUpdateClearField__'><"; // Giving the user the option to unset a drop down list. I.e. none means that it won't get updated
+    }
 
 	if (empty($key_list)) $key_list = array();
 	//create the type dropdown domain and set the selected value if $opp value already exists
@@ -3281,6 +3293,22 @@ function getPhpInfo($level=-1) {
  */
 function string_format($format, $args){
 	$result = $format;
+    
+    /** Bug47277 fix.
+     * If args array has only one argument, and it's empty, so empty single quotes are used '' . That's because
+     * IN () fails and IN ('') works. 
+     */
+    if (count($args) == 1)
+    {
+        reset($args);
+        $singleArgument = current($args);
+        if (empty($singleArgument))
+        {
+            return str_replace("{0}", "''", $result);
+        }
+    }
+    /* End of fix */
+    
 	for($i = 0; $i < count($args); $i++){
 		$result = str_replace('{'.$i.'}', $args[$i], $result);
 	}

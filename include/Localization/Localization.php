@@ -324,16 +324,42 @@ class Localization {
 	 * @param string toCharset the charset to translate into (defaults to UTF-8)
 	 * @return string the translated string
 	 */
-	function translateCharset($string, $fromCharset, $toCharset='UTF-8') {
-		$GLOBALS['log']->debug("Localization: translating [ {$string} ] into {$toCharset}");
-		if(function_exists('mb_convert_encoding')) {
-			return mb_convert_encoding($string, $toCharset, $fromCharset);
-		} elseif(function_exists('iconv')) { // iconv is flakey
-			return iconv($fromCharset, $toCharset, $string);
-		} else {
-			return $string;
-		} // end else clause
-	}
+    function translateCharset($string, $fromCharset, $toCharset='UTF-8')
+    {
+        $GLOBALS['log']->debug("Localization: translating [ {$string} ] into {$toCharset}");
+
+        // Bug #35413 Function has to use iconv if $fromCharset is not in mb_list_encodings
+        $isMb = function_exists('mb_convert_encoding');
+        $isIconv = function_exists('iconv');
+        if ($isMb == true)
+        {
+            $fromCharset = strtoupper($fromCharset);
+            $listEncodings = mb_list_encodings();
+            $isFound = false;
+            foreach ($listEncodings as $encoding)
+            {
+                if (strtoupper($encoding) == $fromCharset)
+                {
+                    $isFound = true;
+                    break;
+                }
+            }
+            $isMb = $isFound;
+        }
+
+        if($isMb)
+        {
+            return mb_convert_encoding($string, $toCharset, $fromCharset);
+        }
+        elseif($isIconv)
+        {
+            return iconv($fromCharset, $toCharset, $string);
+        }
+        else
+        {
+            return $string;
+        } // end else clause
+    }
 
 	/**
 	 * translates a character set from one to another, and the into MIME-header friendly format
@@ -668,7 +694,7 @@ eoq;
 			field.value = name;
 		}
 
-		setPreview();";
+        ";
 
 		return $ret;
 	}

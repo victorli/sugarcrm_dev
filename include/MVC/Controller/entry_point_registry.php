@@ -52,7 +52,6 @@ $entry_point_registry = array(
 	'vCard' => array('file' => 'vCard.php', 'auth' => true),
 	'pdf' => array('file' => 'pdf.php', 'auth' => true),
 	'minify' => array('file' => 'jssource/minify.php', 'auth' => true),
-	'json' => array('file' => 'json.php', 'auth' => true),
     'json_server' => array('file' => 'json_server.php', 'auth' => true),
 	'HandleAjaxCall' => array('file' => 'HandleAjaxCall.php', 'auth' => true),
 	'TreeData' => array('file' => 'TreeData.php', 'auth' => true),

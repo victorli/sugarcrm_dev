@@ -279,6 +279,7 @@ class EditView
         $panelCount = 0;
         static $itemCount = 100; //Start the generated tab indexes at 100 so they don't step on custom ones.
 
+
         /* loop all the panels */
         foreach ($this->defs['panels'] as $key=>$p)
         {
@@ -289,46 +290,34 @@ class EditView
             }
             else
             {
-                foreach ($p as $row=>$rowDef)
-                {
-                    $columnsInRows = count($rowDef);
-                    $columnsUsed = 0;
-                    foreach ($rowDef as $col => $colDef)
-                    {
-                        $panel[$row][$col] = is_array($p[$row][$col])
-                            ? array('field' => $p[$row][$col])
-                            : array('field' => array('name'=>$p[$row][$col]));
+			    	foreach($p as $row=>$rowDef) {
+			            $columnsInRows = count($rowDef);
+			            $columnsUsed = 0;
+			            foreach($rowDef as $col => $colDef) {
+			                $panel[$row][$col] = is_array($p[$row][$col]) ? array('field' => $p[$row][$col]) : array('field' => array('name'=>$p[$row][$col]));
+                            $panel[$row][$col]['field']['tabindex'] = (isset($p[$row][$col]['tabindex']) && is_numeric($p[$row][$col]['tabindex'])) ? $p[$row][$col]['tabindex'] : $itemCount;
 
-                        $panel[$row][$col]['field']['tabindex'] =
-                            (isset($p[$row][$col]['tabindex']) && is_numeric($p[$row][$col]['tabindex']))
-                                ? $p[$row][$col]['tabindex']
-                                : $itemCount;
+			                if($columnsInRows < $maxColumns) {
+			                    if($col == $columnsInRows - 1) {
+			                        $panel[$row][$col]['colspan'] = 2 * $maxColumns - ($columnsUsed + 1);
+			                    } else {
+			                        $panel[$row][$col]['colspan'] = floor(($maxColumns * 2 - $columnsInRows) / $columnsInRows);
+			                        $columnsUsed = $panel[$row][$col]['colspan'];
+			                    }
+			                }
 
-                        if ($columnsInRows < $maxColumns)
-                        {
-                            if ($col == $columnsInRows - 1)
-                            {
-                                $panel[$row][$col]['colspan'] = 2 * $maxColumns - ($columnsUsed + 1);
-                            }
-                            else
-                            {
-                                $panel[$row][$col]['colspan'] = floor(($maxColumns * 2 - $columnsInRows) / $columnsInRows);
-                                $columnsUsed = $panel[$row][$col]['colspan'];
-                            }
-                        }
+			                //Set address types to have colspan value of 2 if colspan is not already defined
+			                if(is_array($colDef) && !empty($colDef['hideLabel']) && !isset($panel[$row][$col]['colspan'])) {
+			                    $panel[$row][$col]['colspan'] = 2;
+			                }
 
-                        //Set address types to have colspan value of 2 if colspan is not already defined
-                        if (is_array($colDef) && !empty($colDef['hideLabel']) && !isset($panel[$row][$col]['colspan']))
-                        {
-                            $panel[$row][$col]['colspan'] = 2;
-                        }
+			                $itemCount++;
 
-                        $itemCount++;
+			            } //foreach
+			    	} //foreach
 
-                    }
-                }
+					$panel = $this->getPanelWithFillers($panel);
 
-			    	$panel = $this->getPanelWithFillers($panel);
 
 			    	$this->sectionPanels[strtoupper($key)] = $panel;
 		        }

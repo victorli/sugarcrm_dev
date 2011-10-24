@@ -249,13 +249,7 @@ function disableReturnSubmission(e) {
                         <td colspan="4"><hr /></td>
                     </tr>
                     <tr>
-                        {capture name=SMARTY_LOCALE_NAME_FORMAT_DESC}&nbsp;{$MOD.LBL_LOCALE_NAME_FORMAT_DESC}<br />{$MOD.LBL_LOCALE_NAME_FORMAT_DESC_2}{/capture}
-                        <td nowrap="nowrap" scope="row" valign="top">{$MOD.LBL_LOCALE_DEFAULT_NAME_FORMAT}:&nbsp;{sugar_help text=$smarty.capture.SMARTY_LOCALE_NAME_FORMAT_DESC }</td>
-                        <td valign="top">
-                            <input onkeyup="setPreview();" onkeydown="setPreview();" id="default_locale_name_format" type="text" tabindex='14' name="default_locale_name_format" value="{$default_locale_name_format}">
-                        </td>
-                        <td nowrap="nowrap" scope="row" valign="top"><i>{$MOD.LBL_LOCALE_EXAMPLE_NAME_FORMAT}:</i> </td>
-                        <td valign="top"><input tabindex='14' name="no_value" id="nameTarget" value="" style="border: none;" disabled size="30"></td>
+                        <td><input id="default_locale_name_format" type="hidden" name="default_locale_name_format" value="{$default_locale_name_format}"></td>
                     </tr>
                 </table>
                 </div>

@@ -132,7 +132,7 @@ require_once('include/EditView/EditView2.php');
                                 'name'   => 'advanced',
                                 'displayDiv' => 'display:none');
         }
-        if($this->showCustom){
+        if(isset($this->showCustom) && is_array($this->showCustom)){
             foreach($this->showCustom as $v){
                 $this->nbTabs++;
                 $this->tabs[]=array('title'  => $GLOBALS['app_strings']["LNK_" . strtoupper($v)],
@@ -574,7 +574,7 @@ require_once('include/EditView/EditView2.php');
 					if($parms['operator'] == '=')
 					{
 					   $field_type = isset($this->seed->field_name_map[$real_field]['type']) ? $this->seed->field_name_map[$real_field]['type'] : '';					
-					   if($field_type == 'datetimecombo' || $field_type == 'datetime')
+					   if($field_type == 'datetimecombo' || $field_type == 'datetime' || $field_type == 'int')
 					   {
 					   	  $type = $field_type;
 					   }
@@ -837,12 +837,12 @@ require_once('include/EditView/EditView2.php');
                             } elseif (preg_match('/^\[[(this|last|next)_][_a-z0-9]*\]$/', $field_value)) {
                                 switch($operator) {
                                     case 'last_7_days':
-                                        $startDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() - (7 * 24 * 60 * 60)));
+                                        $startDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() - (6 * TimeDate::SECONDS_IN_A_DAY)));
                                         $endDate = $timedate->getDayStartEndGMT(date('m/d/Y'));
                                         break;
                                     case 'next_7_days':
                                         $startDate = $timedate->getDayStartEndGMT(date('m/d/Y'));
-                                        $endDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() + (7 * 24 * 60 * 60)));
+                                        $endDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() + (6 * TimeDate::SECONDS_IN_A_DAY)));
                                         break;
                                     case 'next_month':
                                         $startDate = $timedate->getDayStartEndGMT(date('m/d/Y', mktime(0, 0, 0, date("m")+1, 01,   date("Y"))));
@@ -857,12 +857,12 @@ require_once('include/EditView/EditView2.php');
                                         $endDate = $timedate->getDayStartEndGMT(date('m/d/Y', mktime(0, 0, -1, date("m")+1, 01,   date("Y"))));
                                         break;
                                     case 'last_30_days':
-                                        $startDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() - (30 * 24 * 60 * 60)));
+                                        $startDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() - (29 * TimeDate::SECONDS_IN_A_DAY)));
                                         $endDate = $timedate->getDayStartEndGMT(date('m/d/Y'));
                                         break;
                                     case 'next_30_days':
                                         $startDate = $timedate->getDayStartEndGMT(date('m/d/Y'));
-                                        $endDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() + (30 * 24 * 60 * 60)));
+                                        $endDate = $timedate->getDayStartEndGMT(date('m/d/Y', time() + (29 * TimeDate::SECONDS_IN_A_DAY)));
                                         break;
                                     case 'this_year':
                                         $startDate = $timedate->getDayStartEndGMT(date('m/d/Y', mktime(0, 0, 0, 01, 01,   date("Y"))));
@@ -920,7 +920,7 @@ require_once('include/EditView/EditView2.php');
 								$first_between = false;								
 							}
 								
-							if(!empty($parms['enable_range_search']) && $parms['operator'] == '=')
+							if(!empty($parms['enable_range_search']) && $parms['operator'] == '=' && $type != 'int')
 							{
 								// Databases can't really search for floating point numbers, because they can't be accurately described in binary,
 								// So we have to fuzz out the math a little bit								

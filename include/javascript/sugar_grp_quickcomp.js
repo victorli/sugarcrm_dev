@@ -2063,8 +2063,8 @@ function gridInit() {
 			//Override Paging request construction
 			grid.set("generateRequest", function(oState, oSelf) {
 	            oState = oState || {pagination:null, sortedBy:null};
-	            var sort = (oState.sortedBy) ? oState.sortedBy.key : oSelf.getColumnSet().keys[1].getKey();
-	            var dir = (oState.sortedBy && oState.sortedBy.dir === YAHOO.widget.DataTable.CLASS_DESC) ? "desc" : "asc";
+	            var sort = (oState.sortedBy) ? oState.sortedBy.key : oSelf.getColumnSet().keys[5].getKey();
+	            var dir = (oState.sortedBy && oState.sortedBy.dir === YAHOO.widget.DataTable.CLASS_ASC) ? "asc" : "desc";
 	            var startIndex = (oState.pagination) ? oState.pagination.recordOffset : 0;
 	            var results = (oState.pagination) ? oState.pagination.rowsPerPage : null;
 	            // Build the request 
@@ -3406,7 +3406,7 @@ SE.composeLayout = {
      		SE.composeLayout[idx].getUnitByPosition("right").collapse();
      		//Initialize tinyMCE
             SE.composeLayout._1_tiny(false);
-            
+
      		//Init templates and address book
      		SE.composeLayout._2_final();
 
@@ -3815,15 +3815,15 @@ SE.composeLayout = {
         var box_title = mod_strings.LBL_EMAILTEMPLATE_MESSAGE_SHOW_TITLE;
 		var box_msg = mod_strings.LBL_EMAILTEMPLATE_MESSAGE_SHOW_MSG;
 		var box_none_msg = mod_strings.LBL_EMAILTEMPLATE_MESSAGE_CLEAR_MSG;
-		
+
 		//bug #6224
 		var to_addr = document.getElementById('addressTO'+idx);
-		if (to_addr.value.search(/[^;,]{6,}[;,][^;,]{6,}/) != -1) 
+		if (to_addr.value.search(/[^;,]{6,}[;,][^;,]{6,}/) != -1)
 		{
 			box_title = mod_strings.LBL_EMAILTEMPLATE_MESSAGE_WARNING_TITLE;
 			box_msg = mod_strings.LBL_EMAILTEMPLATE_MESSAGE_MULTIPLE_RECIPIENTS + '<br /><br />' + box_msg;
 		}
-		
+
 		// id is selected index of email template drop-down
 		if(id == '' || id == "0") {
 			YAHOO.SUGAR.MessageBox.show({
@@ -3860,13 +3860,19 @@ SE.composeLayout = {
 		if (start > -1) {
 	        tinyHTML = tinyHTML.substr(start);
             tiny.setContent(tinyHTML);
-		} else { 
+		} else {
        	    tiny.setContent('');
 		}
     },
 
 	processResult : function(idx , id){
-        call_json_method('EmailTemplates','retrieve','record='+id,'email_template_object', this.appendEmailTemplateJSON);
+		var post_data = {"module":"EmailTemplates","record":id};
+		var global_rpcClient =  new SugarRPCClient();
+
+		result = global_rpcClient.call_method('retrieve', post_data, true);
+		if(!result['record']) return;
+		json_objects['email_template_object'] = result['record'];
+		this.appendEmailTemplateJSON();
 
         // get attachments if any
         AjaxObject.target = '';
@@ -3939,8 +3945,8 @@ SE.composeLayout = {
 
         }
 
-        var openTag = '<div><span><span>';
-        var closeTag = '</span></span></div>';
+        var openTag = '<div><span>&nbsp;</span>';
+        var closeTag = '<span>&nbsp;</span></div>';
         var t = tinyMCE.getInstanceById('htmleditor' + idx);
         //IE 6 Hack
         if(typeof(t) != 'undefined')
@@ -4001,7 +4007,14 @@ SE.composeLayout = {
             } else if(SUGAR.email2.userPrefs.signatures.signature_prepend == 'true') {
             	var newHtml = '<br/>' + openTag + newSignature + closeTag + html;
             } else {
-                var newHtml = html + openTag + newSignature + closeTag;
+                var body = html.indexOf('</body>');
+                if (body > -1) {
+                    var part1 = html.substr(0, body);
+                    var part2 = html.substr(body, html.length);
+                    var newHtml = part1 + openTag + newSignature + closeTag + part2;
+                } else {
+                    var newHtml = html + openTag + newSignature + closeTag;
+                }
             }
             //tinyMCE.setContent(newHtml);
             t.setContent(newHtml);
@@ -4258,7 +4271,7 @@ SE.composeLayout = {
         var form = document.getElementById('emailCompose' + idx);
         var composeOptionsFormName = "composeOptionsForm" + idx;
 
-        
+
         var t = SE.util.getTiny(SE.tinyInstances.currentHtmleditor);
         if (t != null || typeof(t) != "undefined") {
             var html = t.getContent();

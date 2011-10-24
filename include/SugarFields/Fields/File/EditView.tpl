@@ -100,7 +100,7 @@ type="file" title='{{$vardef.help}}' size="{{$displayParams.size|default:30}}"
     maxlength="255"
 {{/if}}
 {{$displayParams.field}}>
-<span class="dateFormat">( < {{$displayParams.max_fileupload_size}} )</span>
+
 
 {{if isset($vardef.allowEapm) && $vardef.allowEapm}}
 <span id="{{$idName}}_externalApiSelector" style="display:none;">

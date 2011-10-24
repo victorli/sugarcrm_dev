@@ -67,8 +67,8 @@ function method_callback (o) {
 
 //////////////////////////////////////////////////
 // class: SugarVCalClient
-// async retrieval/parsing of vCal freebusy info 
-// 
+// async retrieval/parsing of vCal freebusy info
+//
 //////////////////////////////////////////////////
 
 SugarClass.inherit("SugarVCalClient","SugarClass");
@@ -92,9 +92,9 @@ SugarVCalClient.prototype.load = function(user_id, request_id) {
                 GLOBAL_REGISTRY.freebusy_adjusted = new Object();
             }
             // parse vCal and put it in the registry using the user_id as a key:
-            GLOBAL_REGISTRY.freebusy[user_id] = SugarVCalClient.parseResults(result.responseText, false);
+            GLOBAL_REGISTRY.freebusy[user_id] = SugarVCalClient.prototype.parseResults(result.responseText, false);
             // parse for current user adjusted vCal
-            GLOBAL_REGISTRY.freebusy_adjusted[user_id] = SugarVCalClient.parseResults(result.responseText, true);
+            GLOBAL_REGISTRY.freebusy_adjusted[user_id] = SugarVCalClient.prototype.parseResults(result.responseText, true);
             // now call the display() on the widget registered at request_id:
             global_request_registry[request_id][0].display();
         },
@@ -152,7 +152,7 @@ SugarVCalClient.prototype.parseResults = function(textResult, adjusted) {
             startdate.setUTCMinutes(45);
         }
 
-        // starting at startdate, create hash of each busy 15 min 
+        // starting at startdate, create hash of each busy 15 min
         // timeslot and store as a key
 		while (startdate.valueOf() < enddate.valueOf()) {
 			var hash = SugarDateTime.getUTCHash(startdate);
@@ -163,17 +163,16 @@ SugarVCalClient.prototype.parseResults = function(textResult, adjusted) {
 			startdate = new Date(startdate.valueOf() + (15 * 60 * 1000));
 
 		}
-        return timehash;
     }
 
-
+    return timehash;
 }
 
 SugarVCalClient.parseResults = SugarVCalClient.prototype.parseResults;
 //////////////////////////////////////////////////
 // class: SugarRPCClient
 // wrapper around async JSON-RPC client class
-// 
+//
 //////////////////////////////////////////////////
 SugarRPCClient.allowed_methods = ['retrieve','query','save','set_accept_status','get_objects_from_module', 'email', 'get_user_array', 'get_full_list'];
 
@@ -186,7 +185,7 @@ function SugarRPCClient() {
 /*
  * PUT NEW METHODS IN THIS ARRAY:
  */
-SugarRPCClient.prototype.allowed_methods = ['retrieve','query','save','set_accept_status', 'get_objects_from_module', 'email', 'get_user_array', 'get_full_list'];
+SugarRPCClient.prototype.allowed_methods = ['retrieve','query','get_objects_from_module'];
 
 SugarRPCClient.prototype.init = function() {
 	this._showError= function (e){
