@@ -364,7 +364,7 @@ class SugarApplication
             	$GLOBALS['db']->convert('value', 'text2char')." = ".$GLOBALS['db']->quoted($sugar_db_version);
 
             $result = $GLOBALS['db']->query($version_query);
-            $row = $GLOBALS['db']->fetchByAssoc($result, -1, true);
+            $row = $GLOBALS['db']->fetchByAssoc($result);
             $row_count = $row['the_count'];
             sugar_cache_put('checkDatabaseVersion_row_count', $row_count);
         }

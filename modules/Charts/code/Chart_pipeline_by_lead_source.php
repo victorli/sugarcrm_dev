@@ -269,7 +269,7 @@ global $timedate;
 			$fileContents .= '     <pie defaultAltText="'.$current_module_strings['LBL_ROLLOVER_WEDGE_DETAILS'].'" legendStatus="on">'."\n";
 			$result = $opp->db->query($query, true);
 			$leadSourceArr =  array();
-			while($row = $opp->db->fetchByAssoc($result, -1, false))
+			while($row = $opp->db->fetchByAssoc($result, false))
 			{
 				if($row['lead_source'] == ''){
 					$leadSource = $current_module_strings['NTC_NO_LEGENDS'];

@@ -157,7 +157,7 @@
     <tr>
             <td scope="row">{$MOD.LBL_LEAD_CONV_OPTION}:&nbsp;{sugar_help text=$MOD.LEAD_CONV_OPT_HELP}</td>
             <td> <select name="lead_conv_activity_opt">{$lead_conv_activities}</select></td>
-            <td><a href="./index.php?module=Administration&action=ConfigureAjaxUI" id="configure_ajax">{$MOD.LBL_CONFIG_AJAX}</a>:&nbsp;{sugar_help text=$MOD.LBL_CONFIG_AJAX_DESC}</td>
+            <td><a href="./index.php?module=Administration&action=ConfigureAjaxUI" id="configure_ajax">{$MOD.LBL_CONFIG_AJAX}</a>&nbsp;{sugar_help text=$MOD.LBL_CONFIG_AJAX_DESC}</td>
     </tr>
 </table>
 
@@ -223,21 +223,6 @@
 	</tr>
  </table>
 
-
-<table width="100%" border="0" cellspacing="1" cellpadding="0" class="edit view">
-	<tr>
-	<th align="left" scope="row" colspan="4"><h4>{$MOD.LBL_MAILMERGE}</h4></th>
-	</tr>
-	<tr>
-	<td width="25%" scope="row" valign='middle'>{$MOD.LBL_ENABLE_MAILMERGE}&nbsp{sugar_help text=$MOD.LBL_MAILMERGE_DESC WIDTH=400}</td>
-	{if !empty($settings.system_mailmerge_on)}
-		{assign var='system_mailmerge_on_checked' value='CHECKED'}
-	{else}
-		{assign var='system_mailmerge_on_checked' value=''}
-	{/if}
-	<td width="75%" align="left"  valign='middle'><input type='hidden' name='system_mailmerge_on' value='0'><input name="system_mailmerge_on" value="1" class="checkbox" type="checkbox" {$system_mailmerge_on_checked}></td>
-	</tr>
-</table>
 
 
 <table width="100%" border="0" cellspacing="1" cellpadding="0" class="edit view">

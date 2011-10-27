@@ -325,9 +325,7 @@ class SugarTheme
         // Bug 28309 - Set the current directory to one which we expect it to be (i.e. the root directory of the install
         set_include_path(realpath(dirname(__FILE__) . '/../..') . PATH_SEPARATOR . get_include_path());
         $cachedir = sugar_cached($this->getFilePath());
-        if(!file_exists($cachedir)) {
-            sugar_mkdir($cachedir, 0775, true);
-        }
+        
         // clear out the cache on destroy if we are asked to
         if ( $this->_clearCacheOnDestroy ) {
 
@@ -674,7 +672,7 @@ EOHTML;
 
 		// trap alt attributes in other_attributes
 		if(preg_match('/alt=["\']([^\'"]+)["\']/i', $other_attributes))
-			$GLOBALS['log']->debug("VINK alt attribute detected for $imageName");
+			$GLOBALS['log']->debug("Sprites: alt attribute detected for $imageName");
 
 		// sprite handler, makes use of own caching mechanism
 		if(!empty($GLOBALS['sugar_config']['use_sprites']) && $GLOBALS['sugar_config']['use_sprites']) {
@@ -740,7 +738,7 @@ EOHTML;
 			//$this->_spriteCache[$imageName]['imageURL'] = $imageURL;
 		} else {
 			$this->_spriteCache[$imageName] = false;
-			$GLOBALS['log']->debug("VINK sprite miss for $imageURL");
+			$GLOBALS['log']->debug("Sprites: miss for $imageURL");
 		}
 		return $this->_spriteCache[$imageName];
 	}
@@ -770,7 +768,7 @@ EOHTML;
 			$attr .= ' title="'.$title.'"';
 
 		// use </span> instead of /> to prevent weird UI results
-		$GLOBALS['log']->debug("VINK generated sprite -> $attr");
+		$GLOBALS['log']->debug("Sprites: generated sprite -> $attr");
 		return "<span {$attr}></span>";
 	}
 
@@ -793,7 +791,7 @@ EOHTML;
 		if($img_name) {
 			$img = $this->getImage($img_name, $img_other_attributes, $img_width, $img_height, null, $img_alt);
 			if($img == false) {
-				$GLOBALS['log']->debug('VINK unknown image getLink');
+				$GLOBALS['log']->debug('Sprites: unknown image getLink');
 				$img = 'unknown';
 			}
 			switch($img_placement) {

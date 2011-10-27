@@ -53,15 +53,15 @@
 {include file='include/ListView/ListViewPagination.tpl'}
 <tr height='20'>
 		{if $prerow}
-			<th scope='col' width='1%' class="selectCol">
+			<td width='1%' class="selectCol td_alt">
 				<div>
-				<input type='checkbox' class='checkbox' name='massall' id='massall' value='' onclick='sListView.check_all(document.MassUpdate, "mass[]", this.checked);' />
+				<input title="{sugar_translate label='LBL_SELECT_ALL_TITLE'}" type='checkbox' class='checkbox' name='massall' id='massall' value='' onclick='sListView.check_all(document.MassUpdate, "mass[]", this.checked);' />
 				{$selectLink}
 				</div>
-			</th>
+			</td>
 		{/if}
 		{if !empty($quickViewLinks)}
-		<th scope='col' width='1%' style="padding: 0px;">&nbsp;</th>
+		<td class='td_alt' width='1%' style="padding: 0px;">&nbsp;</td>
 		{/if}
 		{counter start=0 name="colCounter" print=false assign="colCounter"}
 		{foreach from=$displayColumns key=colHeader item=params}
@@ -104,12 +104,13 @@
 			</th>
 			{counter name="colCounter"}
 		{/foreach}
-		<th scope='col' nowrap="nowrap" width='1%'>&nbsp;</th>
+		<td class='td_alt' nowrap="nowrap" width='1%'>&nbsp;</td>
 	</tr>
 		
 	{counter start=$pageData.offsets.current print=false assign="offset" name="offset"}	
 	{foreach name=rowIteration from=$data key=id item=rowData}
 	    {counter name="offset" print=false}
+        {assign var='scope_row' value=true}
 
 		{if $smarty.foreach.rowIteration.iteration is odd}
 			{assign var='_rowColor' value=$rowColor[0]}
@@ -122,7 +123,7 @@
 			 {if !$is_admin && is_admin_for_user && $rowData.IS_ADMIN==1}
 					<input type='checkbox' disabled="disabled" class='checkbox' value='{$rowData.ID}'>
 			 {else}
-                    <input onclick='sListView.check_item(this, document.MassUpdate)' type='checkbox' class='checkbox' name='mass[]' value='{$rowData.ID}'>		 
+                    <input title="{sugar_translate label='LBL_SELECT_THIS_ROW_TITLE'}" onclick='sListView.check_item(this, document.MassUpdate)' type='checkbox' class='checkbox' name='mass[]' value='{$rowData.ID}'>
 			 {/if}
 			</td>
 			{/if}
@@ -143,7 +144,7 @@ href="index.php?module={$linkModule}&offset={$offset}&stamp={$pageData.stamp}&re
 			{counter start=0 name="colCounter" print=false assign="colCounter"}
 			{foreach from=$displayColumns key=col item=params}
 			    {strip}
-				<td scope='row' align='{$params.align|default:'left'}' valign="top" class="{if ($params.type == 'teamset')}nowrap{/if}{if preg_match('/PHONE/', $col)} phone{/if}">
+				<td {if $scope_row} scope='row' {/if} align='{$params.align|default:'left'}' valign="top" class="{if ($params.type == 'teamset')}nowrap{/if}{if preg_match('/PHONE/', $col)} phone{/if}">
 					{if $col == 'NAME' || $params.bold}<b>{/if}
 				    {if $params.link && !$params.customCode}
 {capture assign=linkModule}{if $params.dynamic_module}{$rowData[$params.dynamic_module]}{else}{$params.module|default:$pageData.bean.moduleDir}{/if}{/capture}
@@ -165,6 +166,7 @@ href="index.php?module={$linkModule}&offset={$offset}&stamp={$pageData.stamp}&re
                     {if $col == 'NAME' || $params.bold}</b>{/if}
 				</td>
 				{/strip}
+                {assign var='scope_row' value=false}
 				{counter name="colCounter"}
 			{/foreach}
 			<td align='right'>{$pageData.additionalDetails.$id}</td>

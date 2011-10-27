@@ -250,16 +250,14 @@ class SqlsrvManager extends MssqlManager
         return $field_array;
 	}
 
-    /**
-     * @see DBManager::fetchByAssoc()
-     */
-    public function fetchByAssoc($result, $rowNum = -1, $encode = true)
-    {
-        if (!$result) {
-            return false;
-        }
+	/**
+	 * @see DBManager::fetchRow()
+	 */
+	public function fetchRow($result)
+	{
+		if (empty($result))	return false;
 
-        $row = sqlsrv_fetch_array($result,SQLSRV_FETCH_ASSOC);
+	    $row = sqlsrv_fetch_array($result,SQLSRV_FETCH_ASSOC);
         if (empty($row)) {
             return false;
         }
@@ -269,18 +267,8 @@ class SqlsrvManager extends MssqlManager
             // We need to strip empty spaces
             // notice we only strip if one space is returned.  we do not want to strip
             // strings with intentional spaces (" foo ")
-            if (!empty($column) && $column ==" ") {
+            if (!empty($column) && $column == " ") {
                 $row[$key] = '';
-            }
-            // Strip off the extra .000 off of datetime fields
-            $matches = array();
-            preg_match('/^([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}).[0-9]{3}$/',$column,$matches);
-            if ( !empty($matches) && !empty($matches[1]) ) {
-                $row[$key] = $matches[1];
-            }
-            // HTML encode if needed
-            if($encode && $this->encode) {
-                $row[$key] = to_html($row[$key]);
             }
         }
 
@@ -520,16 +508,6 @@ EOSQL;
         return $sql;
     }
 
-    /**
-     * Returns the number of rows returned by the result
-     *
-     * @param  resource $result
-     * @return int
-     */
-     public function getRowCount($result)
-    {
-		return 0;
-	}
 
 	/**
 	 * (non-PHPdoc)

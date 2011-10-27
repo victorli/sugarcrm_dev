@@ -1174,11 +1174,10 @@ class Email extends SugarBean {
         }
         $text->email_id = $this->id;
 		if(!$this->new_with_id) {
-            $q = $this->db->updateSQL($text);
+            $this->db->update($text);
 		} else {
-		    $q = $this->db->insertSQL($text);
+		    $this->db->insert($text);
 		}
-		$this->db->query($q);
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -1252,7 +1251,7 @@ class Email extends SugarBean {
 	function retrieveEmailText() {
 		$q = "SELECT from_addr, reply_to_addr, to_addrs, cc_addrs, bcc_addrs, description, description_html, raw_source FROM emails_text WHERE email_id = '{$this->id}'";
 		$r = $this->db->query($q);
-		$a = $this->db->fetchByAssoc($r, -1, false);
+		$a = $this->db->fetchByAssoc($r, false);
 
 		$this->description = $a['description'];
 		$this->description_html = $a['description_html'];

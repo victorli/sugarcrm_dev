@@ -295,6 +295,9 @@ if(document.DetailView != null &&
 			if(!empty($sugar_config['hide_subpanels'])){
 				$div_display = 'none';
 			}
+            if($thisPanel->isDefaultHidden()) {
+                $div_display = 'none';
+            }
 			if($div_display == 'none'){
 				$opp_display  = 'inline';
 			}else{

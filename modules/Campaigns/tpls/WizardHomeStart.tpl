@@ -67,19 +67,20 @@
 
 	<div id='step1' >
 			<table border="0" cellpadding="0" cellspacing="0" width="100%">
-			<tr><th colspan='2' align="left" ><h4>{$MOD.LBL_CHOOSE_CAMPAIGN_TYPE}</h4></th></tr>
-			<tr><td colspan='2' ><p>{$MOD.LBL_HOME_START_MESSAGE}</p></td></tr>
-
-			<tr><td width='2%'>&nbsp;</td>
-			<td >
-				<input type="radio"  id="wizardtype" name="wizardtype" value='1'checked >{$MOD.LBL_NEWSLETTER}<br>
-				<input type="radio"  id="wizardtype" name="wizardtype" value='2'>{$MOD.LBL_EMAIL}<br>
-				<input type="radio"  id="wizardtype" name='wizardtype' value='3'>{$MOD.LBL_OTHER_TYPE_CAMPAIGN}<br>
+			<tr><th scope='col' colspan='2' align="left" ><h4>{$MOD.LBL_CHOOSE_CAMPAIGN_TYPE}</h4></th></tr>
+			<tr><td colspan='2' >
+				<fieldset><legend>{$MOD.LBL_HOME_START_MESSAGE}</legend>
+                     <p>
+                        <input type="radio"  id="wizardtype_nl" name="wizardtype" value='1'checked ><label for='wizardtype_nl'>{$MOD.LBL_NEWSLETTER}</label><br>
+                        <input type="radio"  id="wizardtype_em" name="wizardtype" value='2'><label for='wizardtype_em'>{$MOD.LBL_EMAIL}</label><br>
+                        <input type="radio"  id="wizardtype_ot" name='wizardtype' value='3'><label for='wizardtype_ot'>{$MOD.LBL_OTHER_TYPE_CAMPAIGN}</label><br>
+                    </p>
+                </fieldset>
 			</td></tr>
 			</table>	
 	</div>
 	</p>
-	
+
 	
 	
 	</td>

@@ -50,7 +50,7 @@ list-style-type: square;
 <span>
 <div class="about" style="padding: 10px 15px 20px 15px;">
 <p>
-<IMG src="include/images/sugar_md_open.png" alt="SugarCRM" width="425" height="30" ondblclick='abouter.display();'>
+<h1><IMG src="include/images/sugar_md_open.png" alt="SugarCRM" width="425" height="30" ondblclick='abouter.display();'></h1>
 <br>
 <b><?php echo $mod_strings['LBL_VERSION']." ".$sugar_version." (".$mod_strings['LBL_BUILD']." ".$sugar_build.")";
     if( is_file( "custom_version.php" ) ){

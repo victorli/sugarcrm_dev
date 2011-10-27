@@ -1860,6 +1860,7 @@ $app_strings = array (
     'LBL_SAVE_NEW_BUTTON_KEY' => 'V',
     'LBL_SAVE_NEW_BUTTON_LABEL' => 'Save & Create New',
     'LBL_SAVE_NEW_BUTTON_TITLE' => 'Save & Create New [Alt+V]',
+    'LBL_SAVE_OBJECT' => 'Save {0}',
     'LBL_SEARCH_BUTTON_KEY' => 'Q',
     'LBL_SEARCH_BUTTON_LABEL' => 'Search',
     'LBL_SEARCH_BUTTON_TITLE' => 'Search [Alt+Q]',
@@ -2375,7 +2376,19 @@ $app_strings = array (
     'LBL_ALT_MOVE_COLUMN_LEFT' => 'Move selected entry to the list on the left',
     'LBL_ALT_MOVE_COLUMN_RIGHT' => 'Move selected entry to the list on the right',
     'LBL_ALT_MOVE_COLUMN_UP' =>'Move selected entry up in the displayed list order',
-    'LBL_ALT_MOVE_COLUMN_DOWN' => 'Move selected entry down in the displayed list order',    
+    'LBL_ALT_MOVE_COLUMN_DOWN' => 'Move selected entry down in the displayed list order',
+    'LBL_ALT_INFO' => 'Information',
+	'MSG_DUPLICATE' => 'The {0} record you are about to create might be a duplicate of an {0} record that already exists. {1} records containing similar names are listed below.<br>Click Create {1} to continue creating this new {0}, or select an existing {0} listed below.',
+    'MSG_SHOW_DUPLICATES' => 'The {0} record you are about to create might be a duplicate of a {0} record that already exists. {1} records containing similar names are listed below.  Click Save to continue creating this new {0}, or click Cancel to return to the module without creating the {0}.',
+    'LBL_EMAIL_TITLE' => 'email address',
+    'LBL_EMAIL_OPT_TITLE' => 'opted out email address',
+    'LBL_EMAIL_INV_TITLE' => 'invalid email address',
+    'LBL_EMAIL_PRIM_TITLE' => 'primary email address',
+    'LBL_SELECT_ALL_TITLE' => 'Select all',
+    'LBL_SELECT_THIS_ROW_TITLE' => 'Select this row',
+    'LBL_TEAM_SELECTED_TITLE' => 'Team Selected ',
+    'LBL_TEAM_SELECT_AS_PRIM_TITLE' => 'Select to make this team primary',
+
     );
 
 $app_list_strings['moduleList']['Library'] = 'Library';

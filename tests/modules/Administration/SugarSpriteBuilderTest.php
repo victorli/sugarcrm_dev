@@ -65,7 +65,7 @@ public function setUp()
 
 public function tearDown()
 {
-    $GLOBALS['sugar_config']['use_sprites'] = true;
+    $GLOBALS['sugar_config']['use_sprites'] = $this->useSprites;
 }
 
 public function testSugarSpriteBuilder()

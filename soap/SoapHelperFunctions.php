@@ -891,7 +891,7 @@ function add_create_account($seed)
 	    $query .=" ORDER BY deleted ASC";
 	    $result = $seed->db->query($query, true);
 
-	    $row = $seed->db->fetchByAssoc($result, -1, false);
+	    $row = $seed->db->fetchByAssoc($result, false);
 
 		// we found a row with that id
 	    if (isset($row['id']) && $row['id'] != -1)

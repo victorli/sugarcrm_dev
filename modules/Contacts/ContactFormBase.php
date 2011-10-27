@@ -43,177 +43,38 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * Contributor(s): ______________________________________..
  ********************************************************************************/
 
-class ContactFormBase {
+require_once('include/SugarObjects/forms/PersonFormBase.php');
 
-function checkForDuplicates($prefix){
-	global $local_log;
-    require_once('include/formbase.php');
-	
-	$focus = new Contact();
-	$query = '';
-	$baseQuery = 'SELECT id, first_name, last_name, title FROM contacts where deleted = 0 AND ';
-	if(!empty($_POST[$prefix.'first_name']) && !empty($_POST[$prefix.'last_name'])){
-		$query = $baseQuery ."  first_name LIKE '". $_POST[$prefix.'first_name'] . "%' AND last_name = '". $_POST[$prefix.'last_name'] ."'";
-	}else{
-		$query = $baseQuery ."  last_name = '". $_POST[$prefix.'last_name'] ."'";
+class ContactFormBase extends PersonFormBase {
+
+var $moduleName = 'Contacts';
+var $objectName = 'Contact';
+
+/**
+ * getDuplicateQuery
+ *
+ * This function returns the SQL String used for initial duplicate Contacts check
+ *
+ * @see checkForDuplicates (method), ContactFormBase.php, LeadFormBase.php, ProspectFormBase.php
+ * @param $prefix String value of prefix that may be present in $_POST variables
+ * @return SQL String of the query that should be used for the initial duplicate lookup check
+ */
+public function getDuplicateQuery($prefix='')
+{
+	$query = 'SELECT id, first_name, last_name, title FROM contacts where deleted = 0 AND ';
+	if(isset($_POST[$prefix.'first_name']) && strlen($_POST[$prefix.'first_name']) != 0 && isset($_POST[$prefix.'last_name']) && strlen($_POST[$prefix.'last_name']) != 0){
+		$query .= " first_name LIKE '". $_POST[$prefix.'first_name'] . "%' AND last_name = '". $_POST[$prefix.'last_name'] ."'";
+	} else {
+		$query .= " last_name = '". $_POST[$prefix.'last_name'] ."'";
 	}
+
 	if(!empty($_POST[$prefix.'record'])) {
 		$query .= " AND  id != '". $_POST[$prefix.'record'] ."'";
 	}
-	
-    $rows = array();
-    global $db;
-	$result = $db->query($query);
-	while (($row = $db->fetchByAssoc($result)) != null) {
-		if(!isset($rows[$row['id']])) {
-		   $rows[]=$row;
-		}
-	}
-
-	$count = 0;
-	$emails = array();
-	$emailStr = '';
-	while(isset($_POST['emailAddress' . $count])) {
-	      $emailStr .= ",'" . strtoupper(trim($_POST['emailAddress' . $count++])) . "'";
-	} //while
-
-	if($count > 0) {
-		$emailStr = substr($emailStr, 1);
-		$query = 'SELECT DISTINCT er.bean_id AS id FROM email_addr_bean_rel er, ' .
-		         'email_addresses ea WHERE ea.id = er.email_address_id ' .
-		         'AND ea.deleted = 0 AND er.deleted = 0 AND er.bean_module = \'Contacts\' ' .
-	             'AND email_address_caps IN (' . $emailStr . ')';
-		$result = $db->query($query);
-		while (($row= $db->fetchByAssoc($result)) != null) {
-			if(!isset($rows[$row['id']])) {
-			   $query2 = "SELECT id, first_name, last_name, title FROM contacts WHERE deleted = 0 AND id = '" . $row['id'] . "'";
-			   $result2 = $db->query($query2);
-			   $r = $db->fetchByAssoc($result2);
-			   if(isset($r['id']) && !array_key_exists('id', $r)) {
-			   	  $rows[]=$r;
-			   }
-			} //if
-		}
-	} //if
-
-    return !empty($rows) ? $rows : null;
+    return $query;
 }
 
-function buildTableForm($rows, $mod=''){
-	global $action;
-	if(!empty($mod)){
-	global $current_language;
-	$mod_strings = return_module_language($current_language, $mod);
-	}else global $mod_strings;
-	global $app_strings;
-	$cols = sizeof($rows[0]) * 2 + 1;
-	if ($action != 'ShowDuplicates')
-	{
-		$form = '<table width="100%"><tr><td>'.$mod_strings['MSG_DUPLICATE']. '</td></tr><tr><td height="20"></td></tr></table>';
-		$form .= "<form action='index.php' method='post' name='dupContacts'>
-					<input type='hidden' name='selectedContact' value=''>";
-		$form .= getPostToForm('/emailAddress(PrimaryFlag|OptOutFlag|InvalidFlag)?[0-9]*?$/', true);
 
-	}
-	else
-	{
-		$form = '<table width="100%"><tr><td>'.$mod_strings['MSG_SHOW_DUPLICATES']. '</td></tr><tr><td height="20"></td></tr></table>';
-	}
-	$form .= "<table width='100%' cellpadding='0' cellspacing='0' class='list view' border='0'><tr class='pagination'><td colspan='$cols'><table width='100%' cellspacing='0' cellpadding='0' border='0'><tr><td>";
-	if ($action == 'ShowDuplicates')
-	{
-		$form .= "<input title='${app_strings['LBL_SAVE_BUTTON_TITLE']}' accessKey='${app_strings['LBL_SAVE_BUTTON_KEY']}' class='button' onclick=\"this.form.action.value='Save';\" type='submit' name='button' value='  ${app_strings['LBL_SAVE_BUTTON_LABEL']}  '>\n";
-        if (!empty($_REQUEST['return_module']) && !empty($_REQUEST['return_action']) && !empty($_REQUEST['return_id']))
-            $form .= "<input title='${app_strings['LBL_CANCEL_BUTTON_TITLE']}' accessKey='${app_strings['LBL_CANCEL_BUTTON_KEY']}' class='button' onclick=\"this.form.module.value=".$_REQUEST['return_module'].";this.form.action.value=".$_REQUEST['return_action'].";this.form.record.value=".$_REQUEST['return_id']."'\" type='submit' name='button' value='  ${app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
-        else if (!empty($_POST['return_module']) && !empty($_POST['return_action']))
-            $form .= "<input title='${app_strings['LBL_CANCEL_BUTTON_TITLE']}' accessKey='${app_strings['LBL_CANCEL_BUTTON_KEY']}' class='button' onclick=\"this.form.module.value=".$_POST['return_module'].";this.form.action.value=". $_POST['return_action'].";'\" type='submit' name='button' value='  ${app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
-        else
-            $form .= "<input title='${app_strings['LBL_CANCEL_BUTTON_TITLE']}' accessKey='${app_strings['LBL_CANCEL_BUTTON_KEY']}' class='button' onclick=\"this.form.action.value='ListView';\" type='submit' type='submit' name='button' value='  ${app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
-	}
-	else
-	{
-		$form .= "<input type='submit' class='button' name='ContinueContact' value='${mod_strings['LNK_NEW_CONTACT']}'>";
-	}
-	$form .= "</td></tr></table></td></tr><tr>";
-    if ($action != 'ShowDuplicates')
-	{
-		$form .= "<td scope='col'>&nbsp;</td>";
-	}
-
-	require_once('include/formbase.php');
-
-	if(isset($_POST['return_action']) && $_POST['return_action'] == 'SubPanelViewer') {
-		$_POST['return_action'] = 'DetailView';
-	} 
-	
-	if(isset($_POST['return_action']) && $_POST['return_action'] == 'DetailView' && empty($_REQUEST['return_id'])) {
-		unset($_POST['return_action']);
-	}
-		
-   $form .= getPostToForm();
-	
-	if(isset($rows[0])){
-		foreach ($rows[0] as $key=>$value){
-			if($key != 'id'){
-			   $form .= "<td scope='col' >". $mod_strings[$mod_strings['db_'.$key]]. "</td>";
-			}
-		}
-		$form .= "</tr>";
-	}
-	$rowColor = 'oddListRowS1';
-	foreach($rows as $row){
-
-		$form .= "<tr class='$rowColor'>";
-		if ($action != 'ShowDuplicates')
-		{
-			$form .= "<td width='1%' nowrap='nowrap'><a href='#' onClick=\"document.forms['dupContacts'].selectedContact.value='${row['id']}';document.forms['dupContacts'].submit() \">[${app_strings['LBL_SELECT_BUTTON_LABEL']}]</a>&nbsp;&nbsp;</td>\n";
-		}
-		$wasSet = false;
-
-		foreach ($row as $key=>$value){
-				if($key != 'id'){
-					if(isset($_POST['popup']) && $_POST['popup']==true){
-						$form .= "<td scope='row'><a  href='#' onclick=\"window.opener.location='index.php?module=Contacts&action=DetailView&record=${row['id']}'\">$value</a></td>\n";
-					}
-					else if(!$wasSet){
-						$form .= "<td scope='row'><a target='_blank' href='index.php?module=Contacts&action=DetailView&record=${row['id']}'>$value</a></td>\n";
-						$wasSet = true;
-					}else{
-					    $form .= "<td><a target='_blank' href='index.php?module=Contacts&action=DetailView&record=${row['id']}'>$value</a></td>\n";
-					}
-				}
-		}
-
-		if($rowColor == 'evenListRowS1'){
-			$rowColor = 'oddListRowS1';
-		}else{
-			 $rowColor = 'evenListRowS1';
-		}
-		$form .= "</tr>";
-	}
-	$form .= "<tr class='pagination'><td colspan='$cols'><table width='100%' cellspacing='0' cellpadding='0' border='0'><tr><td>";
-	if ($action == 'ShowDuplicates')
-	{
-		$form .= "<input title='${app_strings['LBL_SAVE_BUTTON_TITLE']}' accessKey='${app_strings['LBL_SAVE_BUTTON_KEY']}' class='button' onclick=\"this.form.action.value='Save';\" type='submit' name='button' value='  ${app_strings['LBL_SAVE_BUTTON_LABEL']}  '>\n";
-        if (!empty($_REQUEST['return_module']) && !empty($_REQUEST['return_action']) && !empty($_REQUEST['return_id']))
-            $form .= "<input title='${app_strings['LBL_CANCEL_BUTTON_TITLE']}' accessKey='${app_strings['LBL_CANCEL_BUTTON_KEY']}' class='button' onclick=\"this.form.module.value=".$_REQUEST['return_module'].";this.form.action.value=".$_REQUEST['return_action'].";this.form.record.value=".$_REQUEST['return_id']."'\" type='submit' name='button' value='  ${app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
-        else if (!empty($_POST['return_module']) && !empty($_POST['return_action']))
-            $form .= "<input title='${app_strings['LBL_CANCEL_BUTTON_TITLE']}' accessKey='${app_strings['LBL_CANCEL_BUTTON_KEY']}' class='button' onclick=\"this.form.module.value=".$_POST['return_module'].";this.form.action.value=". $_POST['return_action'].";'\" type='submit' name='button' value='  ${app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
-        else
-            $form .= "<input title='${app_strings['LBL_CANCEL_BUTTON_TITLE']}' accessKey='${app_strings['LBL_CANCEL_BUTTON_KEY']}' class='button' onclick=\"this.form.action.value='ListView';\" type='submit' type='submit' name='button' value='  ${app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
-    }
-	else
-	{
-		$form .= "<input type='submit' class='button' name='ContinueContact' value='${mod_strings['LNK_NEW_CONTACT']}'></form>";
-	}
-    $form .= "</td></tr></table></td></tr></table>";
-	return $form;
-
-
-
-
-
-}
 function getWideFormBody($prefix, $mod='',$formname='',  $contact = '', $portal = true){
 	
 	if(!ACLController::checkAccess('Contacts', 'edit', true)){

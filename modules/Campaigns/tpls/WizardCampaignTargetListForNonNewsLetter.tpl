@@ -52,7 +52,7 @@
 	<th colspan="5" align="left" ><h4>{$MOD.LBL_TARGET_LISTS}</h4></th>
 	</tr>
 	<tr>
-	<td scope="row" colspan="5">{$MOD.LBL_WIZARD_TARGET_MESSAGE1}<br></td>
+	<td colspan="5">{$MOD.LBL_WIZARD_TARGET_MESSAGE1}<br></td>
 	</tr>
 	<tr><td colspan=5>&nbsp;</td></tr>
 	<tr>
@@ -60,22 +60,22 @@
 	<input id="popup_target_list_type" name="popup_target_list_type" type='hidden'>
 	<input id="popup_target_list_name" name="popup_target_list_name" type="hidden" value="">
 	<input id='popup_target_list_id' name='popup_target_list_id' title='List ID' type="hidden" value=''>
-	<input title="{$APP.LBL_SELECT_BUTTON_TITLE}" type="button" tabindex='1' class="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' name=btn3 id='target_list_button'
+	<input title="{$APP.LBL_SELECT_BUTTON_TITLE}" type="button"  class="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' name=btn3 id='target_list_button'
  	onclick='open_popup("ProspectLists", 600, 400, "", true, false,  {$encoded_target_list_popup_request_data}, "single", true);'>	
 	</span sugar='slot'>	
 	</td>
-	<td scope="row">&nbsp;</td>
+	<td>&nbsp;</td>
 	</tr>
 	<tr><td colspan=5>&nbsp;</td></tr>
 	<tr>
 	<td scope="row" colspan="5">{$MOD.LBL_WIZARD_TARGET_MESSAGE2}<br></td>
 	</tr>
 	<tr>
-	<td width='10%' scope="row">{$MOD.LBL_TARGET_NAME}</td>
-	<td width='20%' scope="row">
+	<td width='10%' scope="col">{$MOD.LBL_TARGET_NAME}</td>
+	<td width='20%'>
 		<input id="target_list_name" name="target_list_name" type='text' size='40'>
 	</td>
-	<td width='10%' scope="row">
+	<td width='10%' scope="col">
 		<span sugar='slot28'>{$MOD.LBL_TARGET_TYPE}</span sugar='slot'>
 	</td>
 	<td  width='20%' >
@@ -92,9 +92,9 @@
 		<tr><td>{$MOD.LBL_TRACKERS_ADDED}</td></tr>
 		<tr><td>
 		
-			<table bprder=1 width='100%'><tr class='detail view'>
-				<td width='25%'><b>{$MOD.LBL_TARGET_NAME}</b></td>
-			    <td width='25%'><b>{$MOD.LBL_TARGET_TYPE}</b></td><td>&nbsp;</td>
+			<table border=1 width='100%'><tr class='detail view'>
+				<th scope='col' width='25%'><b>{$MOD.LBL_TARGET_NAME}</b></th>
+			    <th scope='col' width='25%'><b>{$MOD.LBL_TARGET_TYPE}</b></th><td>&nbsp;</td>
 			    <td width='25%'><b>&nbsp;</b></td>			    
 		    </tr>
 			</table>

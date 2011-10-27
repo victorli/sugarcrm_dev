@@ -118,5 +118,8 @@ $mod_strings = array (
     'LBL_SHOW_MORE_OPTIONS' => 'Show More Options',
     'LBL_HIDE_OPTIONS' => 'Hide Options',
     'LBL_VIEW' => 'View',
+    'LBL_POST_TITLE' =>'Post Status Update for ',
+    'LBL_URL_LINK_TITLE' => 'URL Link to use',
+    'LBL_TEAM_VISIBILITY_TITLE' => 'team that can see this post',
 );
 ?>

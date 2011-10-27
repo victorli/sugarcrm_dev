@@ -128,8 +128,8 @@ class MyPipelineBySalesStageDashlet extends DashletGenericChart
 
         $xmlFile = $sugarChart->getXMLFileName($this->id);
         $sugarChart->saveXMLFile($xmlFile, $sugarChart->generateXML());
-		
-        return $this->getTitle('') . 
+
+        return $this->getTitle('') .
             '<div align="center">' .$sugarChart->display($this->id, $xmlFile, '100%', '480', false) . '</div><br />'. $this->processAutoRefresh();
     }
 
@@ -166,11 +166,11 @@ class MyPipelineBySalesStageDashlet extends DashletGenericChart
         }
 
         $result = $db->query($query);
-        $row = $db->fetchByAssoc($result, -1, false);
+        $row = $db->fetchByAssoc($result, false);
 
         while($row != null){
         	$temp_data[] = $row;
-        	$row = $db->fetchByAssoc($result, -1, false);
+        	$row = $db->fetchByAssoc($result, false);
         }
 
 		// reorder and set the array based on the order of selected_datax

@@ -137,7 +137,7 @@ class SugarSpriteBuilder
 					if ($file != "." && $file != ".." && $file != "sprites_config.php")
                     {
 
-						// file info & check supported image format 
+						// file info & check supported image format
 						if($info = $this->getFileInfo($dir, $file)) {
 
 							// skip excluded files
@@ -216,7 +216,7 @@ class SugarSpriteBuilder
 		$info = @getimagesize($dir.'/'.$file);
 		if($info) {
 
-			// supported image type ? 
+			// supported image type ?
 			if(isset($this->imageTypes[$info[2]]))
             {
 				$w = $info[0];
@@ -242,9 +242,9 @@ class SugarSpriteBuilder
 					$result['type'] = $info[2];
 				}
 			} else {
-                $msg = "Unsupported image file type ({$info[2]}) for file {$file}";
+                $msg = "Skipping unsupported image file type ({$info[2]}) for file {$file}";
                 $GLOBALS['log']->error($msg);
-                $this->logMessage($msg);
+                $this->logMessage($msg."\n");
             }
 		}
 		return $result;
@@ -349,8 +349,8 @@ class SugarSpriteBuilder
 						}
 					}
 				}
-	
-				// dir & filenames 
+
+				// dir & filenames
 				if($isRepeat)
                 {
 					$outputDir = sugar_cached("sprites/Repeatable");
@@ -358,7 +358,7 @@ class SugarSpriteBuilder
 					$cssFileName = "{$this->fileName}.css";
 					$metaFileName = "{$this->fileName}.meta.php";
 					$nameSpace = "Repeatable";
-				} else { 
+				} else {
 					$outputDir = sugar_cached("sprites/$name");
 					$spriteFileName = "{$this->fileName}.png";
 					$cssFileName = "{$this->fileName}.css";
@@ -407,11 +407,10 @@ background-position: -{$offset_x}px -{$offset_y}px;
 }\n";
 
 					$metadata .= '$sprites["'.$id.'"] = array ("class"=>"'.$hash_id.'","width"=>"'.$w.'","height"=>"'.$h.'");'."\n";
-				} 
+				}
 
 				// common css header
-				//$head .= "span.spr_bogus {background: url('{$GLOBALS['sugar_config']['site_url']}/index.php?entryPoint=getImage&imageName={$spriteFileName}&spriteNamespace={$nameSpace}') no-repeat;display: inline-block";
-				$head .= "span.spr_bogus {background: url('../../../index.php?entryPoint=getImage&imageName={$spriteFileName}&spriteNamespace={$nameSpace}'); no-repeat;display:inline-block;\n";
+				$head = rtrim($head, "\n,")." {background: url('../../../index.php?entryPoint=getImage&imageName={$spriteFileName}&spriteNamespace={$nameSpace}'); no-repeat;display:inline-block;}\n";
 
 				// append mode for repeatable sprites
                 $fileMode = $isRepeat ? 'a' : 'w';
@@ -467,7 +466,7 @@ background-position: -{$offset_x}px -{$offset_y}px;
 		imagefill($this->spriteImg, 0, 0, $transparent);
 		imagealphablending($this->spriteImg, false);
 		imagesavealpha($this->spriteImg, true);
-	} 
+	}
 
 
 	/**
@@ -506,7 +505,7 @@ background-position: -{$offset_x}px -{$offset_y}px;
     {
         if(!$this->silentRun && !$this->fromSilentUpgrade)
         {
-            echo $msg . '</br>';
+            echo $msg . '<br />';
         } else if ($this->fromSilentUpgrade && $this->writeToUpgradeLog) {
             logThis($msg, $GLOBALS['path']);
         } else if(!$this->silentRun) {
@@ -518,7 +517,7 @@ background-position: -{$offset_x}px -{$offset_y}px;
 
 /**
  * SpritePlacement
- * 
+ *
  */
 class SpritePlacement
 {
@@ -537,7 +536,7 @@ class SpritePlacement
 		type = 	boxed
 				horizontal
 				vertical
-		
+
 		required params for
 		type 1 	-> width
 				-> height
@@ -548,7 +547,7 @@ class SpritePlacement
 
 	function __construct($spriteSrc, $config) {
 
-		// convert spriteSrc to flat array 
+		// convert spriteSrc to flat array
 		foreach($spriteSrc as $dir => $files) {
 			foreach($files as $file => $info) {
 				// use full path as identifier
@@ -567,7 +566,7 @@ class SpritePlacement
 			// dimensions
 			$x = $info['x'];
 			$y = $info['y'];
-			
+
 			// update min surface
 			$this->minSurface += $x * $y;
 
@@ -593,7 +592,7 @@ class SpritePlacement
 				$y = ceil($spriteCnt / $this->config['rowcnt']);
 				$x = $spriteCnt - (($y - 1) * $this->config['rowcnt']);
 				$result = array(
-					'x' => ($x * $spriteX) + 1 - $spriteX, 
+					'x' => ($x * $spriteX) + 1 - $spriteX,
 					'y' => ($y * $spriteY) + 1 - $spriteY);
 
 				break;

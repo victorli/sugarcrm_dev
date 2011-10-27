@@ -144,6 +144,7 @@ function from_html($string, $encode=true) {
  * Practically this means no longer than 25 characters as the smallest identifier length for our supported DBs is 30 chars for Oracle plus we add on at least four characters in some places (for indicies for example)
  * @param string $name Proposed name for the column
  * @param string $ensureUnique
+ * @param int $maxlen Deprecated and ignored
  * @return string Valid column name trimmed to right length and with invalid characters removed
  */
 function getValidDBName ($name, $ensureUnique = false, $maxLen = 30)

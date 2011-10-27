@@ -640,8 +640,10 @@ function deleteChance(){
 
 
 /**
- * copies upgrade wizard files from new patch if that dir exists
- * @param	string file Path to uploaded zip file
+ * upgradeUWFiles
+ * This function copies upgrade wizard files from new patch if that dir exists
+ *
+ * @param $file String path to uploaded zip file
  */
 function upgradeUWFiles($file) {
 	$cacheUploadUpgradesTemp = mk_temp_dir(sugar_cached("upgrades/temp"));
@@ -657,31 +659,26 @@ function upgradeUWFiles($file) {
 
 	$allFiles = array();
 	$from_dir = "{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}";
-	
-    // users
-    if(file_exists("$from_dir/modules/Users")) {
-        $allFiles = findAllFiles("$from_dir/modules/Users", $allFiles);
-    }
 
 	// upgradeWizard
 	if(file_exists("$from_dir/modules/UpgradeWizard")) {
-		$allFiles = findAllFiles("$from_dir/modules/UpgradeWizard", $allFiles);
+		$allFiles[] = findAllFiles("$from_dir/modules/UpgradeWizard", $allFiles);
 	}
 	// moduleInstaller
 	if(file_exists("$from_dir/ModuleInstall")) {
-		$allFiles = findAllFiles("$from_dir/ModuleInstall", $allFiles);
+		$allFiles[] = findAllFiles("$from_dir/ModuleInstall", $allFiles);
 	}
 	if(file_exists("$from_dir/include/javascript/yui")) {
-		$allFiles = findAllFiles("$from_dir/include/javascript/yui", $allFiles);
+		$allFiles[] = findAllFiles("$from_dir/include/javascript/yui", $allFiles);
 	}
 	if(file_exists("$from_dir/HandleAjaxCall.php")) {
 		$allFiles[] = "$from_dir/HandleAjaxCall.php";
 	}
 	if(file_exists("$from_dir/include/SugarTheme")) {
-		$allFiles = findAllFiles("$from_dir/include/SugarTheme", $allFiles);
+		$allFiles[] = findAllFiles("$from_dir/include/SugarTheme", $allFiles);
 	}
 	if(file_exists("$from_dir/include/SugarCache")) {
-		$allFiles = findAllFiles("$from_dir/include/SugarCache", $allFiles);
+		$allFiles[] = findAllFiles("$from_dir/include/SugarCache", $allFiles);
 	}
 	if(file_exists("$from_dir/include/utils/external_cache.php")) {
 		$allFiles[] = "$from_dir/include/utils/external_cache.php";
@@ -698,25 +695,44 @@ function upgradeUWFiles($file) {
 	if(file_exists("$from_dir/include/utils/sugar_file_utils.php")) {
 		$allFiles[] = "$from_dir/include/utils/sugar_file_utils.php";
 	}
+    // users
+    if(file_exists("$from_dir/modules/Users")) {
+        $allFiles[] = findAllFiles("$from_dir/modules/Users", $allFiles);
+    }
 
+    upgradeUWFilesCopy($allFiles, $from_dir);
+}
 
-	/*
-	 * /home/chris/workspace/maint450/cache/upload/upgrades/temp/DlNnqP/
-	 * SugarEnt-Patch-4.5.0c/modules/Leads/ConvertLead.html
-	 */
+/**
+ * upgradeUWFilesCopy
+ *
+ * This function recursively copies files from the upgradeUWFiles Array
+ * @see upgradeUWFiles
+ *
+ * @param array $allFiles Array of files to copy over after zip file has been uploaded
+ * @param string $from_dir Source directory
+ */
+function upgradeUWFilesCopy($allFiles, $from_dir)
+{
+   foreach($allFiles as $file)
+   {
+       if(is_array($file))
+       {
+           upgradeUWFilesCopy($file);
+       } else {
+           $destFile = str_replace($from_dir."/", "", $file);
+           if(!is_dir(dirname($destFile))) {
+              mkdir_recursive(dirname($destFile)); // make sure the directory exists
+           }
 
-	foreach($allFiles as $k => $file) {
-       $destFile = str_replace($from_dir."/", "", $file);
-       if(!is_dir(dirname($destFile))) {
-			mkdir_recursive(dirname($destFile)); // make sure the directory exists
-		}
-		if ( stristr($file,'uw_main.tpl') )
-            logThis('Skipping "'.$file.'" - file copy will during commit step.');
-        else {
-            logThis('updating UpgradeWizard code: '.$destFile);
-            copy_recursive($file, $destFile);
-        }
-	}
+           if(stristr($file,'uw_main.tpl'))
+              logThis('Skipping "'.$file.'" - file copy will during commit step.');
+           else {
+              logThis('updating UpgradeWizard code: '.$destFile);
+              copy_recursive($file, $destFile);
+           }
+       }
+   }
 }
 
 
@@ -1911,7 +1927,7 @@ function getInstallType($type_string) {
 function getImageForType($type) {
     global $image_path;
     global $mod_strings;
-    
+
     $icon = "";
     switch($type) {
         case "full":
@@ -4182,6 +4198,7 @@ function rebuildSprites($fromUpgrade=true)
 {
     require_once('modules/Administration/SugarSpriteBuilder.php');
     $sb = new SugarSpriteBuilder();
+    $sb->cssMinify = true;
     $sb->fromSilentUpgrade = $fromUpgrade;
     $sb->silentRun = $fromUpgrade;
 

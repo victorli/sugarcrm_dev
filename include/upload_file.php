@@ -358,13 +358,11 @@ class UploadFile
         if($this->use_soap) {
         	if(!file_put_contents($destination, $this->file)){
         	    $GLOBALS['log']->fatal("ERROR: can't save file to $destination");
-//FIXME:        		die("ERROR: can't save file to $destination");
                 return false;
         	}
 		} else {
 			if(!UploadStream::move_uploaded_file($_FILES[$this->field_name]['tmp_name'], $destination)) {
 			    $GLOBALS['log']->fatal("ERROR: can't move_uploaded_file to $destination. You should try making the directory writable by the webserver");
-// FIXME:				die("ERROR: can't move_uploaded_file to $destination. You should try making the directory writable by the webserver");
                 return false;
 			}
 		}

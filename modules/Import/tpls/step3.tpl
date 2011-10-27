@@ -93,27 +93,27 @@
 {if $smarty.foreach.rows.first}
 <tr>
     {if $HAS_HEADER == 'on'}
-    <td style="text-align: left;" scope="row">
+    <th style="text-align: left;" scope="col">
         <b>{$MOD.LBL_HEADER_ROW}</b>&nbsp;
         {sugar_help text=$MOD.LBL_HEADER_ROW_HELP}
-    </td>
+    </th>
     {/if}
-    <td style="text-align: left;" scope="row">
+    <th style="text-align: left;" scope="col">
         <b>{$MOD.LBL_DATABASE_FIELD}</b>&nbsp;
         {sugar_help text=$MOD.LBL_DATABASE_FIELD_HELP}
-    </td>
-    <td style="text-align: left;" scope="row">
+    </th>
+    <th style="text-align: left;" scope="col">
         <b>{$MOD.LBL_ROW} 1</b>&nbsp;
         {sugar_help text=$MOD.LBL_ROW_HELP}
-    </td>
+    </th>
     {if $HAS_HEADER != 'on'}
-    <td style="text-align: left;" scope="row"><b>{$MOD.LBL_ROW} 2</b></td>
+    <th style="text-align: left;" scope="col"><b>{$MOD.LBL_ROW} 2</b></td>
     {/if}
-    <td style="text-align: left;" scope="row" id="default_column_header" width="10%">
+    <th scope='col' style="text-align: left;" scope="rcol" id="default_column_header" width="10%">
         <span id="hide_default_link" class="expand">&nbsp;<b id="">{$MOD.LBL_DEFAULT_VALUE}</b>&nbsp;
         {sugar_help text=$MOD.LBL_DEFAULT_VALUE_HELP}</span>
         <span id="default_column_header_span">&nbsp;</span>
-    </td>
+    </th>
 </tr>
 {/if}
 <tr>

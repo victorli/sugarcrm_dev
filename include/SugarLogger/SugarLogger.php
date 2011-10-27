@@ -50,13 +50,13 @@ class SugarLogger implements LoggerTemplate
     /**
      * properties for the SugarLogger
      */
-	private $logfile = 'sugarcrm';
-	private $ext = '.log';
-	private $dateFormat = '%c';
-	private $logSize = '10MB';
-	private $maxLogs = 10;
-	private $filesuffix = "";
-	private $log_dir = '.';
+	protected $logfile = 'sugarcrm';
+	protected $ext = '.log';
+	protected $dateFormat = '%c';
+	protected $logSize = '10MB';
+	protected $maxLogs = 10;
+	protected $filesuffix = "";
+	protected $log_dir = '.';
 
 	
 	/**
@@ -71,12 +71,12 @@ class SugarLogger implements LoggerTemplate
 	/**
 	 * Let's us know if we've initialized the logger file
 	 */
-    private $initialized = false;
+    protected $initialized = false;
     
     /**
      * Logger file handle
      */
-    private $fp = false;
+    protected $fp = false;
     
     public function __get(
         $key
@@ -125,7 +125,7 @@ class SugarLogger implements LoggerTemplate
 	/**
 	 * Handles the SugarLogger initialization
 	 */
-    private function _doInitialization() 
+    protected function _doInitialization()
     {
         $this->full_log_file = $this->log_dir . $this->logfile . $this->ext;
         $this->initialized = $this->_fileCanBeCreatedAndWrittenTo();
@@ -135,7 +135,7 @@ class SugarLogger implements LoggerTemplate
     /**
 	 * Checks to see if the SugarLogger file can be created and written to
 	 */
-    private function _fileCanBeCreatedAndWrittenTo() 
+    protected function _fileCanBeCreatedAndWrittenTo()
     {
         $this->_attemptToCreateIfNecessary();
         return file_exists($this->full_log_file) && is_writable($this->full_log_file);
@@ -144,7 +144,7 @@ class SugarLogger implements LoggerTemplate
     /**
 	 * Creates the SugarLogger file if it doesn't exist
 	 */
-    private function _attemptToCreateIfNecessary() 
+    protected function _attemptToCreateIfNecessary()
     {
         if (file_exists($this->full_log_file)) {
             return;
@@ -186,7 +186,7 @@ class SugarLogger implements LoggerTemplate
 	/**
 	 * rolls the logger file to start using a new file
 	 */
-	private function rollLog(
+	protected function rollLog(
 	    $force = false
 	    ) 
 	{

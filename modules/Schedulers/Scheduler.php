@@ -96,7 +96,7 @@ class Scheduler extends SugarBean {
             if (false === $adminId) {//retrive another admin
                 $adminId = $this->db->getOne(
                     'SELECT id FROM users WHERE is_admin=1 AND deleted=0 AND status='.$this->db->quoted('Active'),
-                    true, 
+                    true,
                     'Error retrieving Admin account info'
                 );
                 if ($adminId) {
@@ -105,7 +105,7 @@ class Scheduler extends SugarBean {
                     $GLOBALS['log']->fatal('No Admin account found!');
                     return false;
                 }
-                
+
             } else {
                 $user->retrieve('1'); // Scheduler jobs run as default Admin
             }
@@ -207,7 +207,7 @@ class Scheduler extends SugarBean {
 						$GLOBALS['log']->debug("-----> Scheduler found [ {$a['name']} ] 'In Progress' with most recent Execute Time at [ {$a2['execute_time']} GMT-0 ]");
 
 						$execTime = TimeDate::getInstance()->fromDB($a2['execute_time'])->ts;
-                        
+
                         $GLOBALS['log']->debug("-----> Checking if Scheduler execTime ($execTime) is higher than lowerLimit ($lowerLimit)");
 
 						if($execTime > $lowerLimit) {
@@ -217,7 +217,7 @@ class Scheduler extends SugarBean {
 								$this->db->query($q3);
 
 								$GLOBALS['log']->info("-----> Scheduler setting Job Instance status to 'failed'");
-								$q4 = "UPDATE schedulers_times SET status = 'failed' WHERE id = '{$a2['id']}';";
+								$q4 = "UPDATE schedulers_times SET status = 'failed' WHERE id = '{$a2['id']}'";
 								$this->db->query($q4);
 							} else {
 								$GLOBALS['log']->debug("-----> Scheduler will wait for job to complete - not past threshold of [ ".($this->timeOutMins * 60)."secs ] - timeDiff is ".($now - $execTime)." secs");
@@ -605,7 +605,7 @@ class Scheduler extends SugarBean {
 		 */
         $now = TimeDate::getInstance()->getNow();
 		$now = $now->setTime($now->hour, $now->min, "00")->asDb();
-        
+
 		if($focus->catch_up == 1) {
 			if($focus->last_run == null) {
 				// always "catch-up"
@@ -801,7 +801,7 @@ class Scheduler extends SugarBean {
 	/**
 	 * soft-deletes all job logs older than 24 hours
 	 */
-	function cleanJobLog() 
+	function cleanJobLog()
 	{
 		$GLOBALS['log']->info('DELETE FROM schedulers_times WHERE date_entered < '.db_convert("'" . TimeDate::getInstance()->getNow()->get("-1 day")->asDb() . "'", 'datetime'));
 		$this->db->query('DELETE FROM schedulers_times WHERE date_entered < '.db_convert("'" . TimeDate::getInstance()->getNow()->get("-1 day")->asDb() . "'", 'datetime'));

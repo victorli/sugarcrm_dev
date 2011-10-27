@@ -77,6 +77,7 @@ class CalendarGrid {
 		$this->time_step = $this->args['cal']->time_step;
 		$this->time_format = $GLOBALS['timedate']->get_time_format();
 		$this->date_time_format = $GLOBALS['timedate']->get_date_time_format();	
+	
 	}
 	
 	
@@ -106,13 +107,20 @@ class CalendarGrid {
 			if(!$this->scrollable)			
 				$str .= "<div class='day_head'>".$head_content."</div>";
 			for($i = 0; $i < 24; $i++){
-				for($j = 0; $j < 60; $j += $this->time_step){
-					if($j == 0) 
+				for($j = 0; $j < 60; $j += $this->time_step){	
+							
+					if($j == 0){ 
 						$innerText = $GLOBALS['timedate']->fromTimestamp($start + $i * 3600)->format($this->time_format);						
-					else
-						$innerText = "&nbsp;";						
+					}else{
+						$innerText = "&nbsp;";
+					}						
+					if($j == 60 - $this->time_step && $this->time_step < 60){
+						$class = " odd_border";
+					}else{
+						$class = "";
+					}										
 					if($this->scrollable || !$this->check_owt($i,$j,$this->args['cal']->d_start_minutes,$this->args['cal']->d_end_minutes))											
-						$str .= "<div class='left_cell'>".$innerText."</div>";
+						$str .= "<div class='left_cell".$class."'>".$innerText."</div>";
 				}
 			}	
 		$str .= "</div>";		
@@ -131,11 +139,16 @@ class CalendarGrid {
 		$str = "";
 		$str .= "<div class='day_col'>";
 		$str .= $this->get_day_head($start,$day);
-		for($i = 0; $i < 24; $i++){
+		for($i = 0; $i < 24; $i++){			
 			for($j = 0; $j < 60; $j += $this->time_step){
-				$timestr = $GLOBALS['timedate']->fromTimestamp($curr_time)->format($this->time_format);
+				$timestr = $GLOBALS['timedate']->fromTimestamp($curr_time)->format($this->time_format);	
+				if($j == 60 - $this->time_step && $this->time_step < 60){
+					$class = " odd_border";
+				}else{
+					$class = "";	
+				}				
 				if($this->scrollable || !$this->check_owt($i,$j,$this->args['cal']->d_start_minutes,$this->args['cal']->d_end_minutes))
-					$str .= "<div id='t_".$curr_time.$prefix."' class='slot' time='".$timestr."' datetime='".$GLOBALS['timedate']->fromTimestamp($curr_time)->format($this->date_time_format)."'></div>";
+					$str .= "<div id='t_".$curr_time.$prefix."' class='slot".$class."' time='".$timestr."' datetime='".$GLOBALS['timedate']->fromTimestamp($curr_time)->format($this->date_time_format)."'></div>";
 				$curr_time += $this->time_step*60;
 			}
 		}

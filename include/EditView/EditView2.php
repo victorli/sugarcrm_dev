@@ -302,7 +302,7 @@ class EditView
                         $panel[$row][$col]['field']['tabindex'] =
                             (isset($p[$row][$col]['tabindex']) && is_numeric($p[$row][$col]['tabindex']))
                                 ? $p[$row][$col]['tabindex']
-                                : $itemCount;
+                                : '0';
 
                         if ($columnsInRows < $maxColumns)
                         {

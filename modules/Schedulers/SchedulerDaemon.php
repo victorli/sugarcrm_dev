@@ -113,12 +113,7 @@ class SchedulerDaemon extends Scheduler {
             ' AND st.deleted=0 AND s.deleted=0 AND st.status=\'ready\' AND s.status=\'Active\' ORDER BY s.name';
 		$r = $this->db->query($q);
 		$count = 0;
-		
-		if($this->db->supports("select_rows")) {
-			$loopCount = $this->db->getRowCount($r);
-			$GLOBALS['log']->debug('----->Scheduler has '.$loopCount.' jobs to fire.');
-		}
-		
+
 		while($a = $this->db->fetchByAssoc($r)) {
 			
 			$job = new SchedulersJob();

@@ -54,7 +54,9 @@ $upload_ok = false;
 if(isset($_FILES['file_1'])){
     $upload = new UploadFile('file_1');
     if($upload->confirm_upload()) {
-        $file_name = "upload://tmp_logo_{$returnArray['forQuotes']}_upload/".$upload->get_stored_file_name();
+        $dir = "upload://tmp_logo_{$returnArray['forQuotes']}_upload";
+        UploadStream::ensureDir($dir);
+        $file_name = $dir."/".$upload->get_stored_file_name();
         if($upload->final_move($file_name)) {
             $upload_ok = true;
         }

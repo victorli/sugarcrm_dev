@@ -101,7 +101,7 @@ class ConfiguratorViewSugarpdfsettings extends SugarView
                 $prefix = $focus->get_config_prefix($key);
                 if(in_array($prefix[0], $focus->config_categories)) {
                     $result = $focus->db->query("SELECT count(*) AS the_count FROM config WHERE category = '{$prefix[0]}' AND name = '{$prefix[1]}'");
-                    $row = $focus->db->fetchByAssoc( $result, -1, true );
+                    $row = $focus->db->fetchByAssoc($result);
                     if( $row['the_count'] != 0){
                         $focus->db->query("DELETE FROM config WHERE category = '{$prefix[0]}' AND name = '{$prefix[1]}'");
                     }

@@ -60,10 +60,19 @@ SUGAR.ajaxUI = {
             {
                 action_sugar_grp1 = r.action;
             }
-            
+
             var c = document.getElementById("content");
             c.innerHTML = cont;
             SUGAR.util.evalScript(cont);
+
+            if (r.record)
+            {
+                DCMenu.record = r.record;
+            }
+            if(r.menu && r.menu.module)
+            {
+                DCMenu.module = r.menu.module;
+            }
             // set response time from ajax response
             if(typeof(r.responseTime) != 'undefined'){
                 var rt = document.getElementById('responseTime');
@@ -245,7 +254,7 @@ SUGAR.ajaxUI = {
         }
         YAHOO.util.Event.removeListener(window, 'resize');
         //Hide any connector dialogs
-        if(typeof(dialog) != 'undefined'){
+        if(typeof(dialog) != 'undefined' && typeof(dialog.destroy) == 'function'){
             dialog.destroy();
             delete dialog;
         }

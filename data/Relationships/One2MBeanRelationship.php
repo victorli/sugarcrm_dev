@@ -238,7 +238,7 @@ class One2MBeanRelationship extends One2MRelationship
         //First join the relationship table
         $join .= "$join_type $targetTableWithAlias ON $startingTable.$startingKey=$targetTable.$targetKey AND $targetTable.deleted=0\n"
         //Next add any role filters
-               . $this->getRoleWhere() . "\n";
+               . $this->getRoleWhere(($linkIsLHS) ? $targetTable : $startingTable) . "\n"; 
 
         if($return_array){
             return array(

@@ -376,7 +376,7 @@ echo get_validate_chart_js();
 			$usernameArr = array();
 			$rowTotalArr = array();
 			$rowTotalArr[] = 0;
-			while($row = $opp->db->fetchByAssoc($result, -1, false))
+			while($row = $opp->db->fetchByAssoc($result, false))
 			{
 				if($row['total']*$div<=100){
 					$sum = round($row['total']*$div, 2);

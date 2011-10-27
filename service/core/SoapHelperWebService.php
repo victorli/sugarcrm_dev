@@ -944,7 +944,7 @@ function validate_user($user_name, $password){
             }
             $result = $seed->db->query($query, true);
 
-		    $row = $seed->db->fetchByAssoc($result, -1, false);
+		    $row = $seed->db->fetchByAssoc($result, false);
 
 			// we found a row with that id
 		    if (isset($row['id']) && $row['id'] != -1)

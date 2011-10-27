@@ -46,7 +46,7 @@
 {assign var="alt_end" value=$navStrings.end}
 
 <table cellpadding='0' cellspacing='0' width='100%' border='0' class='list view'>
-    <tr class="pagination">
+    <tr class="pagination" role=”presentation”>
         <td colspan='{$colCount+1}' align='right'>
             <table border='0' cellpadding='0' cellspacing='0' width='100%'>
                 <tr>
@@ -139,7 +139,7 @@
             </th>
         {/foreach}
 		{if !empty($quickViewLinks)}
-		<th scope='col' nowrap="nowrap" width='1%'>&nbsp;</th>
+		<td  class='td_alt' nowrap="nowrap" width='1%'>&nbsp;</td>
 		{/if}
     </tr>
         

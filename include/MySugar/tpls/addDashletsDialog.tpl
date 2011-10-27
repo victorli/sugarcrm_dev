@@ -38,7 +38,7 @@
 <div align="right" id="dashletSearch">
 	<table>
 		<tr>
-			<td>{sugar_translate label='LBL_DASHLET_SEARCH' module='Home'}: <input id="search_string" type="text" length="15" onKeyPress="javascript:if(event.keyCode==13)SUGAR.mySugar.searchDashlets(this.value,document.getElementById('search_category').value);" />
+			<td>{sugar_translate label='LBL_DASHLET_SEARCH' module='Home'}: <input id="search_string" type="text" length="15" onKeyPress="javascript:if(event.keyCode==13)SUGAR.mySugar.searchDashlets(this.value,document.getElementById('search_category').value);"  title="{sugar_translate label='LBL_DASHLET_SEARCH' module='Home'}"/>
 			<input type="button" class="button" value="{sugar_translate label='LBL_SEARCH' module='Home'}" onClick="javascript:SUGAR.mySugar.searchDashlets(document.getElementById('search_string').value,document.getElementById('search_category').value);" />
 			<input type="button" class="button" value="{sugar_translate label='LBL_CLEAR' module='Home'}" onClick="javascript:SUGAR.mySugar.clearSearch();" />			
 			{if $moduleName == 'Home'}
@@ -124,7 +124,7 @@
 	<table width="95%">
 	    <tr>
 	        <td scope="row"></td>
-	        <td><input type="text" id="web_address" value="http://" style="width: 400px" /></td>
+	        <td><input type="text" id="web_address" value="http://" style="width: 400px"   title="{sugar_translate label='LBL_WEBSITE_TITLE' module='Home'}"/></td>
         </tr>
         <tr>
             <td colspan="2">
@@ -137,7 +137,7 @@
 	<table width="95%">
         <tr>
 	        <td scope="row"></td>
-	        <td><input type="text" id="rss_address" value="http://" style="width: 400px" /></td>
+	        <td><input type="text" id="rss_address" value="http://" style="width: 400px"  title="{sugar_translate label='LBL_RSS_TITLE' module='Home'}" /></td>
         </tr>
         <tr>
             <td colspan="2">

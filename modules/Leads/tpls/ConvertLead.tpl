@@ -85,7 +85,7 @@
 </td><td>
 {sugar_translate label='{{$label}}' module='Leads'}
 </td><td>
-{if !empty($def.select)}
+{{if !empty($def.select)}}
     {sugar_translate label='LNK_SELECT_{{$module|strtoupper}}' module='Leads'}
     {if $def.required }
         <span class="required">{{$APP.LBL_REQUIRED_SYMBOL}}</span>
@@ -107,7 +107,7 @@ sqs_objects['{{$form_name}}_{{$def.select}}'] = {ldelim}
     limit         : '10'
 {rdelim}
 </script>
-{/if}
+{{/if}}
 </td></tr></table>
 </h4>
 <table width="100%" border="0" cellspacing="1" cellpadding="0"  class="{$def.templateMeta.panelClass|default:'edit view'}" id ="create{{$module}}" {if !$def.required || !empty($def.select)}style="display:none"{/if}>

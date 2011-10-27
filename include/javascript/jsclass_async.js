@@ -50,8 +50,8 @@ else if(startmins>=15&&startmins<30){startdate.setUTCMinutes(15);}
 else if(startmins>=30&&startmins<45){startdate.setUTCMinutes(30);}
 else{startdate.setUTCMinutes(45);}
 while(startdate.valueOf()<enddate.valueOf()){var hash=SugarDateTime.getUTCHash(startdate);if(typeof(timehash[hash])=='undefined'){timehash[hash]=0;}
-timehash[hash]+=1;startdate=new Date(startdate.valueOf()+(15*60*1000));}
-return timehash;}}
+timehash[hash]+=1;startdate=new Date(startdate.valueOf()+(15*60*1000));}}
+return timehash;}
 SugarVCalClient.parseResults=SugarVCalClient.prototype.parseResults;SugarRPCClient.allowed_methods=['retrieve','query','save','set_accept_status','get_objects_from_module','email','get_user_array','get_full_list'];SugarClass.inherit("SugarRPCClient","SugarClass");function SugarRPCClient(){this.init();}
 SugarRPCClient.prototype.allowed_methods=['retrieve','query','get_objects_from_module'];SugarRPCClient.prototype.init=function(){this._showError=function(e){alert("ERROR CONNECTING to: ./index.php?entryPoint=json_server, ERROR:"+e);}
 this.serviceURL='./index.php?entryPoint=json_server';}

@@ -56,7 +56,6 @@ class SugarSprites {
 	public static function getInstance() {
 		if(!self::$instance)
 			self::$instance = new self();
-		$GLOBALS['log']->debug('VINK Referencing SugarSprites');
 		return self::$instance;
     }
 
@@ -70,7 +69,7 @@ class SugarSprites {
 	private function loadMetaHelper($dir, $file) {
 		if(file_exists("cache/sprites/{$dir}/{$file}.meta.php")) {
 			$sprites = array();
-			$GLOBALS['log']->debug("VINK Loading sprites metadata for $dir");
+			$GLOBALS['log']->debug("Sprites: Loading sprites metadata for $dir");
 			include("cache/sprites/{$dir}/{$file}.meta.php");
 			foreach($sprites as $id => $meta) {
 				$this->sprites[$id] = $meta;

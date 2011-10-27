@@ -51,6 +51,7 @@ class Bug33404Test extends Sugar_PHPUnit_Framework_TestCase
         global $current_user, $currentModule;
 
         $this->_user = SugarTestUserUtilities::createAnonymousUser();
+        $GLOBALS['db']->query("DELETE FROM folders_subscriptions WHERE assigned_user_id='{$this->_user->id}'");
 		$this->folder = new SugarFolder(); 
 	}
 

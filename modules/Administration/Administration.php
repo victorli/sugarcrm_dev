@@ -95,7 +95,7 @@ class Administration extends SugarBean {
             return NULL;
         }
 
-        while($row = $this->db->fetchByAssoc($result, -1, true)) {
+        while($row = $this->db->fetchByAssoc($result)) {
             if($row['category']."_".$row['name'] == 'ldap_admin_password' || $row['category']."_".$row['name'] == 'proxy_password')
                 $this->settings[$row['category']."_".$row['name']] = $this->decrypt_after_retrieve($row['value']);
             else
@@ -148,7 +148,7 @@ class Administration extends SugarBean {
 
     function saveSetting($category, $key, $value) {
         $result = $this->db->query("SELECT count(*) AS the_count FROM config WHERE category = '{$category}' AND name = '{$key}'");
-        $row = $this->db->fetchByAssoc( $result, -1, true );
+        $row = $this->db->fetchByAssoc($result);
         $row_count = $row['the_count'];
 
         if($category."_".$key == 'ldap_admin_password' || $category."_".$key == 'proxy_password')

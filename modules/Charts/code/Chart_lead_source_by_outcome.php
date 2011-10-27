@@ -274,7 +274,7 @@ global  $timedate;
 			}
 			$fileContents = '     <yData defaultAltText="'.$current_module_strings['LBL_ROLLOVER_DETAILS'].'">'."\n";
 			$leadSourceArr = array();
-			while($row = $opp->db->fetchByAssoc($result, -1, false))
+			while($row = $opp->db->fetchByAssoc($result, false))
 			{
 				if($row['total']*$div<=100){
 					$sum = round($row['total']*$div, 2);

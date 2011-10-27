@@ -209,8 +209,8 @@ class SugarEmailAddress extends SugarBean {
                                 }
                             }
                         }
-                        $now = TimeDate::getInstance()->nowDb();
-                        $upd_eabr = "INSERT INTO email_addr_bean_rel (id, email_address_id,bean_id, bean_module,primary_address,reply_to_address,date_created,date_modified,deleted) VALUES('{$guid}', '{$emailId}', '{$id}', '{$module}', {$primary}, {$address['reply_to_address']}, '$now', '$now', 0)";
+                        $now = $this->db->now();
+                        $upd_eabr = "INSERT INTO email_addr_bean_rel (id, email_address_id,bean_id, bean_module,primary_address,reply_to_address,date_created,date_modified,deleted) VALUES('{$guid}', '{$emailId}', '{$id}', '{$module}', {$primary}, {$address['reply_to_address']}, $now, $now, 0)";
                     }
 
                     if (!empty($upd_eabr)) {
@@ -724,7 +724,7 @@ class SugarEmailAddress extends SugarBean {
      * @param bool asMetadata Default false
      * @return string HTML/JS for widget
      */
-    function getEmailAddressWidgetEditView($id, $module, $asMetadata=false, $tpl='',$tabindex='')
+    function getEmailAddressWidgetEditView($id, $module, $asMetadata=false, $tpl='',$tabindex='0')
     {
         if ( !($this->smarty instanceOf Sugar_Smarty ) )
             $this->smarty = new Sugar_Smarty();
@@ -995,7 +995,7 @@ class SugarEmailAddress extends SugarBean {
  * @param string $view DetailView or EditView
  * @return string
  */
-function getEmailAddressWidget($focus, $field, $value, $view, $tabindex='') {
+function getEmailAddressWidget($focus, $field, $value, $view, $tabindex='0') {
     $sea = new SugarEmailAddress();
     $sea->setView($view);
 

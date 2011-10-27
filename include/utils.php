@@ -178,7 +178,7 @@ function make_sugar_config(&$sugar_config)
 	'php', 'php3', 'php4', 'php5', 'pl', 'cgi', 'py',
 	'asp', 'cfm', 'js', 'vbs', 'html', 'htm' ) : $upload_badext,
 	'upload_dir' => $upload_dir,  // this must be set!!
-	'upload_maxsize' => empty($upload_maxsize) ? 3000000 : $upload_maxsize,
+	'upload_maxsize' => empty($upload_maxsize) ? 30000000 : $upload_maxsize,
 	'import_max_execution_time' => empty($import_max_execution_time) ? 3600 : $import_max_execution_time,
 	'lock_homepage' => false,
 	'lock_subpanels' => false,
@@ -205,7 +205,7 @@ function make_sugar_config(&$sugar_config)
 	    'systexpirationtype' => '0',
 	    'systexpirationlogin' => '',
 		) : $passwordsetting,
-		'use_sprites' => (false && function_exists('imagecreatetruecolor')),
+		'use_sprites' => function_exists('imagecreatetruecolor'),
 	);
 }
 
@@ -301,7 +301,7 @@ function get_sugar_config_defaults() {
 	'upload_badext' => array (
 	'php', 'php3', 'php4', 'php5', 'pl', 'cgi', 'py',
 	'asp', 'cfm', 'js', 'vbs', 'html', 'htm' ),
-	'upload_maxsize' => 3000000,
+	'upload_maxsize' => 30000000,
 	'import_max_execution_time' => 3600,
 //	'use_php_code_json' => returnPhpJsonStatus(),
 	'verify_client_ip' => true,
@@ -325,19 +325,19 @@ function get_sugar_config_defaults() {
   	'common_ml_dir' => '',
 	'vcal_time' => '2',
 	'calendar' => array(
-	  'default_view' => 'week', 
+	  'default_view' => 'week',
 	  'show_calls_by_default' => true,
 	  'show_tasks_by_default' => true,
 	  'editview_width' => 960,
-	  'editview_height' => 480,	
+	  'editview_height' => 480,
 	  'day_timestep' => 15,
 	  'week_timestep' => 30,
-	  'month_timestep' => 60,	
+	  'month_timestep' => 60,
 	  'default_day_start' => '08:00',
 	  'default_day_end' => '19:00',
-	  'items_draggable' => true, 
-	  'mouseover_expand' => true, 
-	  'item_text' => 'name',	
+	  'items_draggable' => true,
+	  'mouseover_expand' => true,
+	  'item_text' => 'name',
 	),
 	'passwordsetting' => empty($passwordsetting) ? array (
 	    'SystemGeneratedPasswordON' => '',
@@ -1836,7 +1836,7 @@ function xss_check_pattern($pattern, $str) {
  * 		"ALPHANUM"
  * @param boolean $dieOnBadData true (default) if you want to die if bad data if found, false if not
  */
-function clean_string($str, $filter = "STANDARD", $dieOnBadData = true) 
+function clean_string($str, $filter = "STANDARD", $dieOnBadData = true)
 {
 	global  $sugar_config;
 
@@ -3795,7 +3795,7 @@ function _getIcon($iconFileName)
     if ( empty($iconFound) )
 		$iconName = "icon_" . strtolower(substr($iconFileName,0,1)).substr($iconFileName,1) . ".gif";
         $iconFound = SugarThemeRegistry::current()->getImageURL($iconName,false);
-    
+
 	//Next try removing the icon prefix
     if ( empty($iconFound) )
 		$iconName = "{$iconFileName}.gif";
@@ -4424,7 +4424,7 @@ function sanitize($input, $quotes = ENT_QUOTES, $charset = 'UTF-8', $remove = fa
 
 /**
  * get_language_header
- * 
+ *
  * This is a utility function for 508 Compliance.  It returns the lang=[Current Language] text string used
  * inside the <html> tag.  If no current language is specified, it defaults to lang='en'.
  *

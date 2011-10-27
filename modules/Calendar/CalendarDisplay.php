@@ -95,22 +95,12 @@ class CalendarDisplay {
 			$ss->assign('shared_users_count',count($args['cal']->shared_ids));
 		}				
 		$ss->assign('activity_colors',$this->activity_colors);	
-		$d_param = 0;
-		if($args['cal']->time_step == 60){
-			$d_param = 0;
-		}else{			
-			$d_param = strval(intval(60 / $args['cal']->time_step)) . "n";
-			
-			if($args['cal']->view != "week" && $args['cal']->view != "day")
-				$d_param .= "+1";	
-		}
 		
 		$scroll_hour = 5;
 		if($args['cal']->time_step < 30)
 			$scroll_hour = 8;
 		$ss->assign('scroll_slot',intval(60 / $args['cal']->time_step) * $scroll_hour);	
 		
-		$ss->assign('d_param',$d_param);	
 		$ss->assign('editview_width',SugarConfig::getInstance()->get('calendar.editview_width',800));
 		$ss->assign('editview_height',SugarConfig::getInstance()->get('calendar.editview_height',600));	
 		$ss->assign('a_str',$args['cal']->get_activities_js());
@@ -332,7 +322,7 @@ class CalendarDisplay {
 			$str .= "<a href='".ajaxLink("index.php?action=index&module=Calendar&view=".$this->args['cal']->view."&".$this->args['cal']->get_neighbor_date_str("next"))."'>";
 
 		}else{
-			$str .= "<a href='#' onclick='CAL.remove_record_dialog(); return SUGAR.mySugar.retrieveDashlet(\"".$this->args['dashlet_id']."\", \"index.php?module=Home&action=DynamicAction&DynamicAction=displayDashlet&sugar_body_only=1&".$this->args['cal']->get_neighbor_date_str("next")."&id=".$this->args['dashlet_id']."\")'>";
+			$str .= "<a href='#' onclick='return SUGAR.mySugar.retrieveDashlet(\"".$this->args['dashlet_id']."\", \"index.php?module=Home&action=DynamicAction&DynamicAction=displayDashlet&sugar_body_only=1&".$this->args['cal']->get_neighbor_date_str("next")."&id=".$this->args['dashlet_id']."\")'>";
 		}
 			$str .= $cal_strings["LBL_NEXT_".strtoupper($this->args['cal']->view)]; 
 
@@ -347,7 +337,7 @@ class CalendarDisplay {
 		if($_REQUEST['module'] == "Calendar"){
 			$str .= "<a href='".ajaxLink("index.php?action=index&module=Calendar&view=".$this->args['cal']->view."&".$this->args['cal']->get_neighbor_date_str("previous")."")."'>";
 		}else{
-			$str .= "<a href='#' onclick='CAL.remove_record_dialog(); return SUGAR.mySugar.retrieveDashlet(\"".$this->args['dashlet_id']."\", \"index.php?module=Home&action=DynamicAction&DynamicAction=displayDashlet&sugar_body_only=1&".$this->args['cal']->get_neighbor_date_str("previous")."&id=".$this->args['dashlet_id']."\")'>";
+			$str .= "<a href='#' onclick='return SUGAR.mySugar.retrieveDashlet(\"".$this->args['dashlet_id']."\", \"index.php?module=Home&action=DynamicAction&DynamicAction=displayDashlet&sugar_body_only=1&".$this->args['cal']->get_neighbor_date_str("previous")."&id=".$this->args['dashlet_id']."\")'>";
 		}
 		$str .= SugarThemeRegistry::current()->getImage('calendar_previous','align="absmiddle" border="0"', null, null, '.gif', ''); //setting alt tag blank on purpose for 508 compliance
 		$str .= "&nbsp;&nbsp;".$cal_strings["LBL_PREVIOUS_".strtoupper($this->args['cal']->view)] . "</a>";

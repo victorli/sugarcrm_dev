@@ -199,7 +199,6 @@ $mod_strings = array (
     'LNK_NEW_OPPORTUNITY' => 'Create Opportunity',
     'LNK_SELECT_ACCOUNT' => ' <b>OR</b> Select Account',
 	'LNK_SELECT_ACCOUNTS' => ' <b>OR</b> Select Account',
-    'MSG_DUPLICATE' => 'Similar leads have been found. Please check the box of any leads you would like to associate with the Records that will be created from this conversion. Once you are done, please press next.',
     'NTC_COPY_ALTERNATE_ADDRESS' => 'Copy alternate address to primary address',
     'NTC_COPY_PRIMARY_ADDRESS' => 'Copy primary address to alternate address',
     'NTC_DELETE_CONFIRMATION' => 'Are you sure you want to delete this record?',

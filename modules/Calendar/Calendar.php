@@ -315,18 +315,13 @@ class Calendar {
 			$end_date_time = CalendarUtils::get_first_day_of_week($end_date_time)->get("+7 days");
 		}else{
 			$end_date_time = $this->date_time->get("+1 day");
-		}
-		
-		$params = array(
-			'show_calls' => $this->show_calls,
-			'show_tasks' => $this->show_tasks,
-		);
+		}		
 
 		$acts_arr = array();
 	    	if($type == 'vfb'){
 				$acts_arr = CalendarActivity::get_freebusy_activities($user, $start_date_time, $end_date_time);
 	    	}else{
-				$acts_arr = CalendarActivity::get_activities($user->id, $params, $start_date_time, $end_date_time, $this->view);
+				$acts_arr = CalendarActivity::get_activities($user->id, $this->show_tasks, $start_date_time, $end_date_time, $this->view,$this->show_calls);
 	    	}
 	    	
 	    	$this->acts_arr[$user->id] = $acts_arr;	 

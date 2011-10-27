@@ -163,10 +163,9 @@ SugarVCalClient.prototype.parseResults = function(textResult, adjusted) {
 			startdate = new Date(startdate.valueOf() + (15 * 60 * 1000));
 
 		}
-        return timehash;
     }
 
-
+    return timehash;
 }
 
 SugarVCalClient.parseResults = SugarVCalClient.prototype.parseResults;

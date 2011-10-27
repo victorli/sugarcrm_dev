@@ -48,7 +48,7 @@
 {$LIST_HEADER}
 {if $should_process}
 	<table cellpadding='0' cellspacing='0' width='100%' border='0' class='list view'>
-		<tr class='pagination'>
+		<tr class='pagination'  role='presentation'>
 			<td colspan='{$colCount+1}' align='right'>
 				<table border='0' cellpadding='0' cellspacing='0' width='100%'>
 					<tr>
@@ -108,20 +108,20 @@
 	
 		<tr height='20'>
 			{if $prerow}
-				<th scope='col' nowrap="nowrap" width='1%' class="selectCol">
+				<td nowrap="nowrap" width='1%' class="selectCol td_alt">
 				<div>
-					<input type='checkbox' class='checkbox' id='massall' name='massall' value='' onclick='sListView.check_all(document.MassUpdate, "mass[]", this.checked);' />
+					<input type='checkbox' class='checkbox' title="{sugar_translate label='LBL_SELECT_ALL_TITLE'}" id='massall' name='massall' value='' onclick='sListView.check_all(document.MassUpdate, "mass[]", this.checked);' />
 					{$selectLink}
 				</div>
-				</th>
-				<th scope='col' nowrap="nowrap" width='1%'>&nbsp;</th>
+				</td>
+				<td class='td_alt' nowrap="nowrap" width='1%'>&nbsp;</td>
 			{/if}
 			{counter start=0 name="colCounter" print=false assign="colCounter"}
 			{foreach from=$displayColumns key=colHeader item=params}
 				<th scope='col' width='{$params.width}%' nowrap="nowrap">
 					<div style='white-space: normal;'width='100%' align='{$params.align|default:'left'}'>
 	                {if $params.sortable|default:true}
-		                <a href='#' onclick='location.href="{$pageData.urls.orderBy}{$params.orderBy|default:$colHeader|lower}"; return sListView.save_checks(0, "{$moduleString}");' class='listViewThLinkS1'>{sugar_translate label=$params.label module=$pageData.bean.moduleDir}&nbsp;&nbsp;
+                                <a href="{$pageData.urls.orderBy}{$params.orderBy|default:$colHeader|lower}" onclick='sListView.save_checks(0, "{$moduleString}");' class='listViewThLinkS1'>{sugar_translate label=$params.label module=$pageData.bean.moduleDir}&nbsp;&nbsp;
 						{if $params.orderBy|default:$colHeader|lower == $pageData.ordering.orderBy}
 							{if $pageData.ordering.sortOrder == 'ASC'}
                                 {capture assign="arrowAlt"}{sugar_translate label='LBL_ALT_SORT_DESC'}{/capture}
@@ -146,7 +146,7 @@
 				{counter name="colCounter"}
 			{/foreach}
 			{if !empty($quickViewLinks)}
-			<th scope='col' nowrap="nowrap" width='1%'>&nbsp;</th>
+			<td class='td_alt' nowrap="nowrap" width='1%'>&nbsp;</td>
 			{/if}
 		</tr>
 			
@@ -204,7 +204,7 @@
 				{/foreach}
 		 	
 		{/foreach}
-		<tr class='pagination'>
+		<tr class='pagination' role='presentation'>
 			<td colspan='{$colCount+1}' align='right'>
 				<table border='0' cellpadding='0' cellspacing='0' width='100%'>
 					<tr>

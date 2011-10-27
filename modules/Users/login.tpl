@@ -91,11 +91,11 @@ var LBL_HIDEOPTIONS = '{sugar_translate module="Users" label="LBL_HIDEOPTIONS"}'
 									
                                     <tr><td>&nbsp;</td></tr>
 									<tr>
-										<td scope="row" width="30%">{sugar_translate module="Users" label="LBL_USER_NAME"}:</td>
+										<td scope="row" width="30%"><label for="user_name">{sugar_translate module="Users" label="LBL_USER_NAME"}:</label></td>
 										<td width="70%"><input type="text" size='35' tabindex="1" id="user_name" name="user_name"  value='{$LOGIN_USER_NAME}' /></td>
 									</tr>
 									<tr>
-										<td scope="row">{sugar_translate module="Users" label="LBL_PASSWORD"}:</td>
+										<td scope="row"><label for="user_password">{sugar_translate module="Users" label="LBL_PASSWORD"}:</label></td>
 										<td width="30%"><input type="password" size='26' tabindex="2" id="user_password" name="user_password" value='{$LOGIN_PASSWORD}' /></td>
 									</tr>
 									{if !empty($SELECT_LANGUAGE)}
@@ -129,11 +129,11 @@ var LBL_HIDEOPTIONS = '{sugar_translate module="Users" label="LBL_HIDEOPTIONS"}'
 														</td>
 													</tr>
 													<tr>
-														<td scope="row" width="30%">{sugar_translate module="Users" label="LBL_USER_NAME"}:</td>
+														<td scope="row" width="30%"><label for="fp_user_name">{sugar_translate module="Users" label="LBL_USER_NAME"}:</label></td>
 														<td width="70%"><input type="text" size='26' id="fp_user_name" name="fp_user_name"  value='{$LOGIN_USER_NAME}' /></td>
 													</tr>
 													<tr>
-											            <td scope="row" width="30%">{sugar_translate module="Users" label="LBL_EMAIL"}:</td>
+											            <td scope="row" width="30%"><label for="fp_user_mail">{sugar_translate module="Users" label="LBL_EMAIL"}:</label></td>
 											            <td width="70%"><input type="text" size='26' id="fp_user_mail" name="fp_user_mail"  value='' ></td>
 											     	</tr>
 													{$CAPTCHA}

@@ -258,15 +258,10 @@ $errors = array();
 	$patchName		= basename($argv[1]);
 	$zip_from_dir	= substr($patchName, 0, strlen($patchName) - 4); // patch folder name (minus ".zip")
 	$path			= $argv[2]; // custom log file, if blank will use ./upgradeWizard.log
-
-	if($sugar_version < '5.1.0'){
-		$db				= &DBManager :: getInstance();
-	} else{
-		$db				= &DBManagerFactory::getInstance();
-	}
-
+    $db				= &DBManagerFactory::getInstance();
 	$UWstrings		= return_module_language('en_us', 'UpgradeWizard');
 	$adminStrings	= return_module_language('en_us', 'Administration');
+    $app_list_strings = return_app_list_strings_language('en_us');
 	$mod_strings	= array_merge($adminStrings, $UWstrings);
 	$subdirs		= array('full', 'langpack', 'module', 'patch', 'theme', 'temp');
 	global $unzip_dir;
@@ -342,6 +337,9 @@ $trackerManager->unsetMonitors();
 
 include('modules/ACLActions/actiondefs.php');
 include('include/modules.php');
+
+require_once('modules/Administration/upgrade_custom_relationships.php');
+upgrade_custom_relationships();
 
 // clear out the theme cache
 if(is_dir($GLOBALS['sugar_config']['cache_dir'].'themes')){

@@ -101,10 +101,10 @@ class Bug23140Test extends Sugar_PHPUnit_Framework_TestCase
         $obRetrieved = new OutboundEmail();
         $obRetrieved->retrieve($userID);
         
-        $this->assertEquals($newSystemPort, $obRetrieved->mail_smtpport, "Could not update users system-override accounts after system save.");
-        $this->assertEquals($newSystemServer, $obRetrieved->mail_smtpserver, "Could not update users system-override accounts after system save.");
-        $this->assertEquals($newSystemUsername, $obRetrieved->mail_smtpuser, "Could not update users system-override accounts after system save.");
-        $this->assertEquals($newSystemPassword, $obRetrieved->mail_smtppass, "Could not update users system-override accounts after system save.");
+        $this->assertEquals($newSystemPort, $obRetrieved->mail_smtpport, "Could not update users port system-override accounts after system save.");
+        $this->assertEquals($newSystemServer, $obRetrieved->mail_smtpserver, "Could not update users server system-override accounts after system save.");
+        $this->assertEquals($newSystemUsername, $obRetrieved->mail_smtpuser, "Could not update users username system-override accounts after system save.");
+        $this->assertEquals($newSystemPassword, $obRetrieved->mail_smtppass, "Could not update users password system-override accounts after system save.");
         
     }
     

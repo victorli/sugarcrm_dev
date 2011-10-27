@@ -84,11 +84,12 @@ function smarty_function_sugar_help($params, &$smarty)
 	}
     $helpImage = SugarThemeRegistry::current()->getImageURL('helpInline.gif');
 	$onmouseover .= " );" ;
+    $alt_tag = $GLOBALS['app_strings']['LBL_ALT_INFO'];
     return <<<EOHTML
 <img border="0" onmouseout="return nd();"
     onmouseover="$onmouseover"
     src="$helpImage"
-    alt="$helpImage"
+    alt="$alt_tag"
     />
 EOHTML;
 }

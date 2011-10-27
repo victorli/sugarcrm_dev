@@ -281,7 +281,7 @@ echo get_validate_chart_js();
 			}
 			$months = array();
 			$monthArr = array();
-			while($row = $opp->db->fetchByAssoc($result, -1, false))
+			while($row = $opp->db->fetchByAssoc($result, false))
 			{
 				if($row['total']*$div<=100){
 					$sum = round($row['total']*$div, 2);

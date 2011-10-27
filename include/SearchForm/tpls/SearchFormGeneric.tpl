@@ -57,9 +57,9 @@
 	
 	<td scope="row" nowrap="nowrap" width='1%' >
 	{{if isset($colData.field.label)}}	
-		{sugar_translate label='{{$colData.field.label}}' module='{{$module}}'}
+		<label for='{{$colData.field.name}}' >{sugar_translate label='{{$colData.field.label}}' module='{{$module}}'}</label>
     {{elseif isset($fields[$colData.field.name])}}
-		{sugar_translate label='{{$fields[$colData.field.name].vname}}' module='{{$module}}'}
+		<label for='{{$fields[$colData.field.name].name}}'> {sugar_translate label='{{$fields[$colData.field.name].vname}}' module='{{$module}}'}
 	{{/if}}
 	</td>
 

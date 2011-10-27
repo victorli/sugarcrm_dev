@@ -83,14 +83,19 @@ class EmployeesViewList extends ViewList
 			$params = array_reverse($params);
 		}
 
-        foreach($params as $parm){
-            $index++;
-            $theTitle .= $parm;
-            if($index < $count){
-                $theTitle .= $this->getBreadCrumbSymbol();
-            }
-        }
-        $theTitle .= "</h2>\n";
+           $paramString = '';
+           foreach($params as $parm){
+               $index++;
+               $paramString .= $parm;
+               if($index < $count){
+                   $paramString .= $this->getBreadCrumbSymbol();
+               }
+           }
+
+           if(!empty($paramString)){
+               $theTitle .= "<h2> $paramString </h2>\n";
+           }
+
 
         if ($show_help) {
             $theTitle .= "<span class='utils'>";

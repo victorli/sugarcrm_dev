@@ -67,7 +67,9 @@ $viewdefs['Documents']['QuickCreate'] = array(
     
     array (
       'document_name',
-      'revision'
+       array('name'=>'revision',
+            'customCode' => '<input name="revision" type="text" value="{$fields.revision.value}" {$DISABLED}>'
+           ),
     ),    
     
     array (

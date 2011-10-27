@@ -1497,13 +1497,6 @@ function search_by_module($user_name, $password, $search_string, $modules, $offs
 				//grab the items from the db
 				$result = $seed->db->query($query, $offset, $max_results);
 
-				$list = Array();
-				if(empty($rows_found)){
-  						$rows_found =  $seed->db->getRowCount($result);
-				}//fi
-
-				$row_offset = 0;
-
 				while(($row = $seed->db->fetchByAssoc($result)) != null){
 					$list = array();
 					$fields = explode(", ", $query_array[$module_name]['fields']);

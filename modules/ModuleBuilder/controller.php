@@ -395,12 +395,18 @@ class ModuleBuilderController extends SugarController
                 include_once ('modules/Administration/QuickRepairAndRebuild.php') ;
         		global $mod_strings;
                 $mod_strings['LBL_ALL_MODULES'] = 'all_modules';
+                require_once('ModuleInstall/ModuleInstaller.php');
+                $mi = new ModuleInstaller();
+                $mi->silent = true;
+                $mi->rebuild_extensions();
                 $repair = new RepairAndClear();
+
 		        $repair->repairAndClearAll(array('rebuildExtensions', 'clearVardefs', 'clearTpls'), array($class_name), true, false);
                 if ( $module == 'Users' ) {
                     $repair->repairAndClearAll(array('rebuildExtensions', 'clearVardefs', 'clearTpls'), array('Employee'), true, false);
                     
                 }
+
                 //#28707 ,clear all the js files in cache
 		        $repair->module_list = array();
 		        $repair->clearJsFiles();
@@ -452,8 +458,13 @@ class ModuleBuilderController extends SugarController
         $GLOBALS [ 'mod_strings' ]['LBL_ALL_MODULES'] = 'all_modules';
         $_REQUEST['execute_sql'] = true;
 
+        require_once('ModuleInstall/ModuleInstaller.php');
+		$mi = new ModuleInstaller();
+        $mi->silent = true;
+		$mi->rebuild_extensions();
+
         $repair = new RepairAndClear();
-        $repair->repairAndClearAll(array('rebuildExtensions', 'clearVardefs', 'clearTpls'), array($class_name), true, false);
+        $repair->repairAndClearAll(array('clearVardefs', 'clearTpls'), array($class_name), true, false);
         //#28707 ,clear all the js files in cache
         $repair->module_list = array();
         $repair->clearJsFiles();

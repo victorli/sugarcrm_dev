@@ -110,15 +110,15 @@ class="yui-navset"
     {{/if}}
 
 		{{if empty($def.templateMeta.labelsOnTop) && empty($colData.field.hideLabel)}}
-		<td valign="top" id='{{$colData.field.name}}_label' width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].label}}%' scope="row">
+		<td valign="top" id='{{$colData.field.name}}_label' width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].label}}%' scope="col">
 			{{if isset($colData.field.customLabel)}}
-			   {{$colData.field.customLabel}}
+			   <label for="{{$fields[$colData.field.name].name}}">{{$colData.field.customLabel}}</label>
 			{{elseif isset($colData.field.label)}}
 			   {capture name="label" assign="label"}{sugar_translate label='{{$colData.field.label}}' module='{{$module}}'}{/capture}
-			   {$label|strip_semicolon}:
+			   <label for="{{$fields[$colData.field.name].name}}">{$label|strip_semicolon}:</label>
 			{{elseif isset($fields[$colData.field.name])}}
 			   {capture name="label" assign="label"}{sugar_translate label='{{$fields[$colData.field.name].vname}}' module='{{$module}}'}{/capture}
-			   {$label|strip_semicolon}:
+			   <label for="{{$fields[$colData.field.name].name}}">{$label|strip_semicolon}:</label>
 			{{/if}}
 			{{* Show the required symbol if field is required, but override not set.  Or show if override is set *}}
 				{{if ($fields[$colData.field.name].required && (!isset($colData.field.displayParams.required) || $colData.field.displayParams.required)) ||
@@ -142,10 +142,10 @@ class="yui-navset"
 			{{if !empty($def.templateMeta.labelsOnTop)}}
 				{{if isset($colData.field.label)}}
 				    {{if !empty($colData.field.label)}}
-			   		    {sugar_translate label='{{$colData.field.label}}' module='{{$module}}'}:
+			   		    <label for="{{$fields[$colData.field.name].name}}">{sugar_translate label='{{$colData.field.label}}' module='{{$module}}'}:</label>
 				    {{/if}}
 				{{elseif isset($fields[$colData.field.name])}}
-			  		{sugar_translate label='{{$fields[$colData.field.name].vname}}' module='{{$module}}'}:
+			  		<label for="{{$fields[$colData.field.name].name}}">{sugar_translate label='{{$fields[$colData.field.name].vname}}' module='{{$module}}'}:</label>
 				{{/if}}
 
 				{{* Show the required symbol if field is required, but override not set.  Or show if override is set *}}

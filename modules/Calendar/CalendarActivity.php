@@ -107,8 +107,8 @@ class CalendarActivity {
 		$start_ts_obj = $timedate->tzUser($start_ts_obj);
 		$end_ts_obj = $timedate->tzUser($end_ts_obj);
 
-		$start = $start_ts_obj;
-		$end = $end_ts_obj;
+		$start = clone $start_ts_obj;
+		$end = clone $end_ts_obj;
 
 		$field_date = $table_name.'.'.$field_name;
 		$start_day = $GLOBALS['db']->convert("'{$start->asDb()}'",'datetime');
@@ -143,13 +143,14 @@ class CalendarActivity {
 	/**
 	 * Get array of activities
 	 * @param string $user_id
-	 * @param array $params
+	 * @param boolean $show_tasks
 	 * @param SugarDateTime $view_start_time start date
 	 * @param SugarDateTime $view_end_time end date
 	 * @param string $view view; not used for now, left for compatibility
+	 * @param boolean $show_calls
 	 * @return array
 	 */
- 	function get_activities($user_id, $params, $view_start_time, $view_end_time, $view){
+ 	function get_activities($user_id, $show_tasks, $view_start_time, $view_end_time, $view, $show_calls = true){
 		global $current_user;
 		$act_list = array();
 		$seen_ids = array();
@@ -179,7 +180,7 @@ class CalendarActivity {
 			}
 		}
 
-		if(!empty($params['show_calls'])) {
+		if($show_calls){
 			if(ACLController::checkAccess('Calls', 'list',$current_user->id  == $user_id)) {
 				$call = new Call();
 
@@ -205,7 +206,7 @@ class CalendarActivity {
 		}
 
 
-		if(!empty($params['show_tasks'])){
+		if($show_tasks){
 			if(ACLController::checkAccess('Tasks', 'list',$current_user->id == $user_id)) {
 				$task = new Task();
 

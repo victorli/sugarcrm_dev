@@ -55,7 +55,7 @@
 	
 	SUGAR.EmailAddressWidget.prototype = {
 	    emailTemplate : '<tr id="emailAddressRow">' + 
-		'<td nowrap="NOWRAP"><input type="text" name="emailAddress{$index}" id="emailAddress0" size="30"/></td>' + 
+		'<td nowrap="NOWRAP"><input type="text" title="email address 0" name="emailAddress{$index}" id="emailAddress0" size="30"/></td>' +
 		'<td><span>&nbsp;</span><img id="removeButton0" name="0" src="index.php?entryPoint=getImage&amp;themeName=Sugar&amp;imageName=delete_inline.gif"/></td>' +
 		'<td align="center"><input type="radio" name="emailAddressPrimaryFlag" id="emailAddressPrimaryFlag0" value="emailAddress0" enabled="true" checked="true"/></td>' +
 		'<td align="center"><input type="checkbox" name="emailAddressOptOutFlag[]" id="emailAddressOptOutFlag0" value="emailAddress0" enabled="true"/></td>' + 
@@ -238,8 +238,9 @@
 		    newContent.setAttribute("type", "text");
 		    newContent.setAttribute("name", this.id + "emailAddress" + this.numberEmailAddresses);
 		    newContent.setAttribute("id", this.id + "emailAddress" + this.numberEmailAddresses);
-		    newContent.setAttribute("tabindex", this.tabIndex);
+		    newContent.setAttribute("tabindex", "0");
 		    newContent.setAttribute("size", "30");
+            newContent.setAttribute("title", SUGAR.language.get('app_strings', 'LBL_EMAIL_TITLE'));
 		
 		    if(address != '') {
 		        newContent.setAttribute("value", address);
@@ -378,6 +379,7 @@
 		    // CL Fix for 17651 (added OR condition check to see if this is the first email added)
 		    if(primaryFlag == '1' || (this.numberEmailAddresses == 0)) {
 		        newContentPrimaryFlag.setAttribute("checked", 'true');
+                newContent.setAttribute("title", SUGAR.language.get('app_strings', 'LBL_EMAIL_PRIM_TITLE'));
 		    }
 		    
 		    if(replyToFlag == '1') {
@@ -392,10 +394,12 @@
 		    
 		    if(optOutFlag == '1') {
 		        newContentOptOutFlag.setAttribute("checked", 'true');
+                newContent.setAttribute("title", SUGAR.language.get('app_strings', 'LBL_EMAIL_OPT_TITLE'));
 		    }
 		    
 		    if(invalidFlag == '1') {
 		        newContentInvalidFlag.setAttribute("checked", "true");
+                newContent.setAttribute("title", SUGAR.language.get('app_strings', 'LBL_EMAIL_INV_TITLE'));
 		    }
 		    newContent.eaw = this;
 		    newContent.onblur = function(e){this.eaw.retrieveEmailAddress(e)};

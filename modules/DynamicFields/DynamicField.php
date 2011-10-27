@@ -130,7 +130,7 @@ class DynamicField {
         // retrieve the field definition from the fields_meta_data table
         // using 'encode'=false to fetchByAssoc to prevent any pre-formatting of the base metadata
         // for immediate use in HTML. This metadata will be further massaged by get_field_def() and so should not be pre-formatted
-        while ( $row = $GLOBALS['db']->fetchByAssoc ( $result , -1 ,false ) ) {
+        while ( $row = $GLOBALS['db']->fetchByAssoc ( $result, false ) ) {
             $field = get_widget ( $row ['type'] );
 
             foreach ( $row as $key => $value ) {
@@ -238,7 +238,7 @@ class DynamicField {
             // the scenes
             if ( $module == 'Users' ) {
                 $GLOBALS['dictionary']['Employee'] = $GLOBALS['dictionary']['User'];
-                $manager->saveCache('Employee',$object);
+                $manager->saveCache('Employees','Employee');
                 return;
             }
 

@@ -179,9 +179,9 @@ SugarWidgetSchedulerSearch.prototype.display = function() {
 	html += '<table width="100%" cellpadding="0" cellspacing="0" width="100%" >'
 	html += '<tr>';
 	//html += '<form id="'+this.form_id+'"><table width="100%"><tbody><tr>';
-	html += '<td scope="row" nowrap>'+GLOBAL_REGISTRY['meeting_strings']['LBL_FIRST_NAME']+':&nbsp;&nbsp;<input  name="search_first_name" value="" type="text" size="10"></td>';
-	html += '<td scope="row" nowrap>'+GLOBAL_REGISTRY['meeting_strings']['LBL_LAST_NAME']+':&nbsp;&nbsp;<input  name="search_last_name" value="" type="text" size="10"></td>';
-	html += '<td scope="row" nowrap>'+GLOBAL_REGISTRY['meeting_strings']['LBL_EMAIL']+':&nbsp;&nbsp;<input  name="search_email" type="text" value="" size="15"></td>';
+	html += '<td scope="col" nowrap><label for="search_first_name">'+GLOBAL_REGISTRY['meeting_strings']['LBL_FIRST_NAME']+':</label>&nbsp;&nbsp;<input  name="search_first_name" id="search_first_name" value="" type="text" size="10"></td>';
+	html += '<td scope="col" nowrap><label for="search_last_name">'+GLOBAL_REGISTRY['meeting_strings']['LBL_LAST_NAME']+':</label>&nbsp;&nbsp;<input  name="search_last_name" id="search_last_name" value="" type="text" size="10"></td>';
+	html += '<td scope="col" nowrap><label for="search_email">'+GLOBAL_REGISTRY['meeting_strings']['LBL_EMAIL']+':</label>&nbsp;&nbsp;<input  name="search_email" id="search_email" type="text" value="" size="15"></td>';
 	//html += '<td valign="center"><input type="submit" onclick="SugarWidgetSchedulerSearch.submit(this.form);" value="Search" ></td></tr></tbody></table></form>';
 	html += '<td valign="center"><input type="submit" class="button" value="'+GLOBAL_REGISTRY['meeting_strings']['LBL_SEARCH_BUTTON']+'" ></td></tr>';
 	html += '</table>';
@@ -417,7 +417,7 @@ SugarWidgetSchedulerAttendees.prototype.display = function() {
 		}
 
 		var form_hours = hours+time_separator+"00";
-		html += '<td scope="col" colspan="'+this.segments+'">'+form_hours+am_pm+'</td>';
+		html += '<th scope="col" colspan="'+this.segments+'">'+form_hours+am_pm+'</th>';
 	}
 
 	html += '<td>&nbsp;</td>';

@@ -78,7 +78,7 @@ YAHOO.util.Connect.asyncRequest('POST', 'index.php', callback, "module=Meetings&
 		{if $prerow}
 			<th scope='col' nowrap="nowrap" width='1%' class="selectCol">
 				<div>
-				<input type='checkbox' class='checkbox' name='massall' id='massall' value='' onclick='sListView.check_all(document.MassUpdate, "mass[]", this.checked);' />
+			        <input type='checkbox'  title="{sugar_translate label='LBL_SELECT_ALL_TITLE'}"  class='checkbox' name='massall' id='massall' value='' onclick='sListView.check_all(document.MassUpdate, "mass[]", this.checked);' />
 				{$selectLink}
 				</div>
 			</th>
@@ -111,16 +111,16 @@ YAHOO.util.Connect.asyncRequest('POST', 'index.php', callback, "module=Meetings&
 						{if $pageData.ordering.sortOrder == 'ASC'}
 							{capture assign="imageName"}arrow_down.{$arrowExt}{/capture}
                             {capture assign="alt_sort"}{sugar_translate label='LBL_ALT_SORT_DESC'}{/capture}
-							{sugar_getimage name=$imageName width="{$arrowWidth}" height="{$arrowHeight}" attr='align="absmiddle" border="0" ' alt="$alt_sort"}
+							{sugar_getimage name="$imageName" width="$arrowWidth" height="$arrowHeight" attr='align="absmiddle" border="0" ' alt="$alt_sort"}
 						{else}
 							{capture assign="imageName"}arrow_up.{$arrowExt}{/capture}
                             {capture assign="alt_sort"}{sugar_translate label='LBL_ALT_SORT_ASC'}{/capture}
-							{sugar_getimage name=$imageName width="{$arrowWidth}" height="{$arrowHeight}" attr='align="absmiddle" border="0" ' alt="$alt_sort"}
+							{sugar_getimage name="$imageName" width="$arrowWidth" height="$arrowHeight" attr='align="absmiddle" border="0" ' alt="$alt_sort"}
 						{/if}
 					{else}
 						{capture assign="imageName"}arrow.{$arrowExt}{/capture}
                         {capture assign="alt_sort"}{sugar_translate label='LBL_ALT_SORT'}{/capture}
-						{sugar_getimage name=$imageName width="{$arrowWidth}" height="{$arrowHeight}" attr='align="absmiddle" border="0" ' alt="$alt_sort"}
+						{sugar_getimage name="$imageName" width="$arrowWidth" height="$arrowHeight" attr='align="absmiddle" border="0" ' alt="$alt_sort"}
 					{/if}
                     </a>
 				{else}

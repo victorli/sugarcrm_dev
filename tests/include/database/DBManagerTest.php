@@ -1386,20 +1386,6 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
         $this->_removeRecords($beanIds);
     }
 
-    public function testGetRowCount()
-    {
-        if(!$this->_db->supports("select_rows")) {
-            $this->markTestSkipped('Skipping, backend doesn\'t support select_rows');
-        }
-        $beanIds = $this->_createRecords(1);
-
-        $result = $this->_db->query("SELECT id From contacts where id = '{$beanIds[0]}'");
-
-        $this->assertEquals($this->_db->getRowCount($result),1);
-
-        $this->_removeRecords($beanIds);
-    }
-
     public function testGetAffectedRowCount()
     {
         if(!$this->_db->supports("affected_rows")) {
@@ -1578,10 +1564,6 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function vardefProvider()
     {
-//        $emptydate = "0000-00-00";
-//        if($this->_db instanceof MssqlManager || $this->_db instanceof OracleManager) {
-//            $emptydate = "1970-01-01";
-//        }
         $GLOBALS['log']->info('DBManagerTest.vardefProvider: _db = ' . print_r($this->_db));
         $this->setUp(); // Just in case the DB driver is not created yet.
         $emptydate = $this->_db->emptyValue("date");
@@ -1688,8 +1670,8 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
                         'test_dt' => '1998-10-04', 'test_tm' => '03:04:05'
                   ),
                   array("id" => "'test123'", 'intval' => 42, 'floatval' => 42.24,
-                  		'money' => 56.78, 'test_dtm' => '\'2002-01-02 12:34:56\'', 'test_dtm2' => '\'2011-10-08 01:02:03\'',
-                        'test_dt' => '\'1998-10-04\'', 'test_tm' => '\'03:04:05\''
+                  		'money' => 56.78, 'test_dtm' => $this->_db->convert('\'2002-01-02 12:34:56\'', "datetime"), 'test_dtm2' => $this->_db->convert('\'2011-10-08 01:02:03\'', 'datetime'),
+                        'test_dt' => $this->_db->convert('\'1998-10-04\'', 'date'), 'test_tm' => $this->_db->convert('\'03:04:05\'', 'time')
                   ),
             ),
             array("testreqnull", array (
@@ -1924,7 +1906,7 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
         $names_i = array();
         foreach($result as $k => $v) {
             if($k == "id") continue;
-            $names_i[] = "$k=$v";
+            $names_i[] = preg_quote("$k=$v");
         }
         if(empty($names_i)) {
             $this->assertEquals("", $sql, "Bad sql: $sql");
@@ -1932,5 +1914,31 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
         }
         $names = join('\s*,\s*',$names_i);
         $this->assertRegExp("/UPDATE $name\s+SET\s+$names\s+WHERE\s+$name.id\s*=\s*'test_ID' AND deleted=0/is", $sql, "Bad sql: $sql");
+    }
+
+    /**
+     * Test the canInstall
+     * @return void
+     */
+    public function testCanInstall() {
+        $DBManagerClass = get_class($this->_db);
+        if(!method_exists($this->_db, 'version') || !method_exists($this->_db, 'canInstall'))
+            $this->markTestSkipped(
+              "Class {$DBManagerClass} doesn't implement canInstall or version methods");
+
+        $method = new ReflectionMethod($DBManagerClass, 'canInstall');
+        if($method->class == 'DBManager')
+            $this->markTestSkipped(
+              "Class {$DBManagerClass} or one of it's ancestors doesn't override DBManager's canInstall");
+
+        // First assuming that we are only running unit tests against a supported database :)
+        $this->assertTrue($this->_db->canInstall(), "Apparently we are not running this unit test against a supported database!!!");
+
+        $DBstub = $this->getMock($DBManagerClass, array('version'));
+        $DBstub->expects($this->any())
+               ->method('version')
+               ->will($this->returnValue('0.0.0')); // Expect that any supported version is higher than 0.0.0
+
+        $this->assertTrue(is_array($DBstub->canInstall()), "Apparently we do support version 0.0.0 in " . $DBManagerClass);
     }
 }

@@ -124,7 +124,7 @@ switch($run) {
 					break;
 				}
 
-				mkdir_recursive( "$base_upgrade_dir/$upgrade_zip_type" );
+				sugar_mkdir("$base_upgrade_dir/$upgrade_zip_type", 0775, true);
 				$target_path = "$base_upgrade_dir/$upgrade_zip_type/$base_filename";
 				$target_manifest = remove_file_extension( $target_path ) . "-manifest.php";
 

@@ -82,7 +82,7 @@ class ListViewXTPL extends ListViewDisplay{
 		
 		$oddRow = false;
 		if($this->xtpl->exists($this->pro_nav_block)) $this->xtpl->parse($this->pro_nav_block);
-		$this->xtpl->assign('CHECKALL', "<input type='checkbox' class='checkbox' id='massall' name='massall' value='' onclick='sListView.check_all(document.MassUpdate, \"mass[]\", this.checked);' />");
+		$this->xtpl->assign('CHECKALL', "<input type='checkbox' title='".$GLOBALS['app_strings']['LBL_SELECT_ALL_TITLE']."' class='checkbox' id='massall' name='massall' value='' onclick='sListView.check_all(document.MassUpdate, \"mass[]\", this.checked);' />");
 		foreach($data['data'] as $id=>$row) {
 			$this->xtpl->assign($html_var, $row);
 			if(!empty($data['pageData']['tag'][$id])) {
@@ -179,7 +179,7 @@ class ListViewXTPL extends ListViewDisplay{
 		if($this->multiSelect) $selected_objects_span = $this->buildSelectedObjectsSpan();
 		else $selected_objects_span = '';
 
-		$htmlText = "<tr class='pagination'>\n"
+		$htmlText = "<tr class='pagination' role='presentation'>\n"
 				. "<td COLSPAN=\"20\" align=\"right\">\n"
 				. "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr><td align=\"left\">$export_link$merge_link$selected_objects_span</td>\n"
 				. "<td nowrap align=\"right\">".$startLink."&nbsp;&nbsp;".$prevLink."&nbsp;&nbsp;<span class='pageNumbers'>(".($this->data['pageData']['offsets']['current'] + 1) ." - ".($this->data['pageData']['offsets']['current'] + $this->rowCount)

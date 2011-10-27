@@ -106,7 +106,7 @@ foreach ( $GLOBALS['beanFiles'] as $bean => $file )
     $rel_dictionary = $dictionary ;
     foreach ( $rel_dictionary as $rel_name => $rel_data )
     {
-        $table = $rel_data [ 'table' ] ;
+        $table = isset($rel_data [ 'table' ]) ? $rel_data [ 'table' ] : "" ;
 
         if (empty ( $_REQUEST [ 'silent' ] ))
             echo $mod_strings [ 'LBL_REBUILD_REL_PROC_C_META' ] . $rel_name . "..." ;

@@ -78,7 +78,7 @@
             <td scope="row" colspan="4">&nbsp;</td>
         </tr>
         <tr>
-            <td align="left" scope="row" colspan="3">{$MOD.LBL_SELECT_FILE} <input type="hidden" /><input size="20" name="userfile" type="file"/> &nbsp;{sugar_help text=$MOD.LBL_FILE_UPLOAD_WIDGET_HELP}</td>
+            <td align="left" scope="row" colspan="3"><label for="userfile">{$MOD.LBL_SELECT_FILE}</label> <input type="hidden" /><input size="20" id="userfile" name="userfile" type="file"/> &nbsp;{sugar_help text=$MOD.LBL_FILE_UPLOAD_WIDGET_HELP}</td>
         </tr>
         <tr>
             <td scope="row" colspan="4"><div class="hr">&nbsp;</div></td>
@@ -93,13 +93,13 @@
           <tr>
             <td scope="row" colspan="3">
                 <input id="import_create" class="radio" type="radio" name="type" value="import" checked="checked" />
-                &nbsp;{$MOD.LBL_IMPORT_BUTTON} &nbsp;{sugar_help text=$MOD.LBL_CREATE_BUTTON_HELP}
+                &nbsp;<label for="type">{$MOD.LBL_IMPORT_BUTTON}</label> &nbsp;{sugar_help text=$MOD.LBL_CREATE_BUTTON_HELP}
             </td>
           </tr>
           <tr>
             <td scope="row" colspan="3">
-                <input id="import_update" class="radio" type="radio" name="type" value="update" />
-                &nbsp;{$MOD.LBL_UPDATE_BUTTON} &nbsp;{sugar_help text=$MOD.LBL_UPDATE_BUTTON_HELP}
+                <input id="import_update" class="radio" type="radio" name="type" id="type" value="update" />
+                &nbsp;<label for="type">{$MOD.LBL_UPDATE_BUTTON}</label> &nbsp;{sugar_help text=$MOD.LBL_UPDATE_BUTTON_HELP}
             </td>
           </tr>
 	</table>
@@ -108,8 +108,8 @@
           {foreach from=$custom_mappings item=item name=custommappings}
           {capture assign=mapping_label}{$MOD.LBL_CUSTOM_MAPPING_}{$item|upper}{/capture}
           <tr>
-            <td colspan="3" scope="row"><input class="radio" type="radio" name="source" value="{$item}" />
-              &nbsp;{$mapping_label}</td>
+            <td colspan="3" scope="row"><input class="radio" type="radio" id="source" name="source" value="{$item}" />
+              &nbsp;<label for="source">{$mapping_label}</label></td>
           </tr>
           {/foreach}
 

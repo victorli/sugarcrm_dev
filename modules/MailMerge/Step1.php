@@ -108,7 +108,7 @@ else if(isset($_REQUEST['entire']) && $_REQUEST['entire'] == 'true') {
 	$result = $db->query($query,true,"Error mail merging {$_SESSION['MAILMERGE_MODULE']}: "."<BR>$query");
 
 	$new_arr = array();
-	while($val = $db->fetchByAssoc($result,-1,false))
+	while($val = $db->fetchByAssoc($result,false))
 	{
 		array_push($new_arr, $val['id']);
 	}

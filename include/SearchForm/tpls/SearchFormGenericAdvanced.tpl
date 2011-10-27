@@ -22,9 +22,9 @@
 	
 	<td scope="row" nowrap="nowrap" width='{{$templateMeta.widths.label}}%' >
 	{{if isset($colData.field.label)}}	
-		{sugar_translate label='{{$colData.field.label}}' module='{{$module}}'}
+		<label for='{{$colData.field.name}}'>{sugar_translate label='{{$colData.field.label}}' module='{{$module}}'}</label>
     {{elseif isset($fields[$colData.field.name])}}
-		{sugar_translate label='{{$fields[$colData.field.name].vname}}' module='{{$module}}'}
+		<label for='{{$fields[$colData.field.name].name}}'>{sugar_translate label='{{$fields[$colData.field.name].vname}}' module='{{$module}}'}</label>
 	{{/if}}
 	</td>
 	<td  nowrap="nowrap" width='{{$templateMeta.widths.field}}%'>

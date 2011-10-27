@@ -123,7 +123,7 @@ class SugarDateTime extends DateTime
 		if(!$d) {
 			return false;
 		}
-		$sd = new self("@".$d->getTimestamp());
+		$sd = new self($d->format(DateTime::ISO8601));
 		$sd->setTimezone($d->getTimezone());
 		return $sd;
 	}
@@ -211,7 +211,7 @@ class SugarDateTime extends DateTime
 		// conditional, derived and translated ones
 		switch($var) {
 			case "ts":
-				return $this->getTimestamp();
+				return $this->format("U")+0;
 			case "tz_offset":
 				return $this->getTimezone()->getOffset($this);
 			case "days_in_year":
@@ -245,7 +245,7 @@ class SugarDateTime extends DateTime
 	{
 		// fill in 5.2.x gaps
 		if($name == "getTimestamp") {
-			return (int)$this->format('U');
+			return $this->format('U')+0;
 		}
 		if($name == "setTimestamp") {
 			$sec = (int)$args[0];

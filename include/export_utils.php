@@ -239,7 +239,7 @@ function export($type, $records = null, $members = false, $sample=false) {
 
     }else{
         //process retrieved record
-    	while($val = $db->fetchByAssoc($result, -1, false)) {
+    	while($val = $db->fetchByAssoc($result, false)) {
 
             //order the values in the record array
             $val = get_field_order_mapping($focus->module_dir,$val);
@@ -743,7 +743,7 @@ function get_field_order_mapping($name='',$reorderArr = '', $exclude = true){
         $lname = strtolower($name);
         if(!empty($field_order_array[$lname])) {
 	        foreach($field_order_array[$lname] as $fk=> $fv){
-	
+
 	            //if the value exists as a key in the passed in array, add to temp array and remove from reorder array.
 	            //Do not force into the temp array as we don't want to violate acl's
 	            if(array_key_exists($fk,$newReorder)){

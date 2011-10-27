@@ -106,18 +106,18 @@ while ($mbox_row = $focus->db->fetchByAssoc($mbox_res)){$mbox[] = $mbox_row;}
 //if the array is not empty, then set "good" message
 if(isset($mbox) && count($mbox)>0){
     $mboxTable .= "<tr><td colspan='5' style='text-align: left;'><b>" .count($mbox) ." ". $mod_strings['LBL_MAILBOX_CHECK1_GOOD']." </b>.</td></tr>";
-        $mboxTable .= "<tr><td width='20%'><b>".$mod_strings['LBL_MAILBOX_NAME']."</b></td>"
-                   .  " <td width='20%'><b>".$mod_strings['LBL_LOGIN']."</b></td>"
-                   .  " <td width='20%'><b>".$mod_strings['LBL_MAILBOX']."</b></td>" 
-                   .  " <td width='20%'><b>".$mod_strings['LBL_SERVER_URL']."</b></td>"
-                   .  " <td width='20%'><b>".$mod_strings['LBL_LIST_STATUS']."</b></td></tr>";
+        $mboxTable .= "<tr><th scope='col' width='20%'><b>".$mod_strings['LBL_MAILBOX_NAME']."</b></th>"
+                   .  " <th scope='col' width='20%'><b>".$mod_strings['LBL_LOGIN']."</b></th>"
+                   .  " <th scope='col' width='20%'><b>".$mod_strings['LBL_MAILBOX']."</b></th>"
+                   .  " <th scope='col' width='20%'><b>".$mod_strings['LBL_SERVER_URL']."</b></th>"
+                   .  " <th scope='col' width='20%'><b>".$mod_strings['LBL_LIST_STATUS']."</b></th></tr>";
 
     foreach($mbox as $details){
         $mboxTable .= "<tr><td>".$details['name']."</td>";
-        $mboxTable .= "<td scope='row'>".$details['email_user']."</td>";
-        $mboxTable .= "<td scope='row'>".$details['mailbox']."</td>";
-        $mboxTable .= "<td scope='row'>".$details['server_url']."</td>";
-        $mboxTable .= "<td scope='row'>".$details['status']."</td></tr>";
+        $mboxTable .= "<td>".$details['email_user']."</td>";
+        $mboxTable .= "<td>".$details['mailbox']."</td>";
+        $mboxTable .= "<td>".$details['server_url']."</td>";
+        $mboxTable .= "<td>".$details['status']."</td></tr>";
     }
 
 }else{
@@ -140,18 +140,18 @@ if (strstr($focus->settings['notify_fromaddress'], 'example.com')){
     $email_health =$email_health +1;
 }else{
     $conf_msg .= "<tr><td colspan = '5'><b> ".$mod_strings['LBL_MAILBOX_CHECK2_GOOD']."</b></td></tr>";
-    $conf_msg .= "<tr><td width='20%'><b>".$mod_strings['LBL_WIZ_FROM_NAME']."</b></td>"
-               .  " <td width='20%'><b>".$mod_strings['LBL_WIZ_FROM_ADDRESS']."</b></td>" 
-               .  " <td width='20%'><b>".$mod_strings['LBL_MAIL_SENDTYPE']."</b></td>";
+    $conf_msg .= "<tr><th scope='col' width='20%'><b>".$mod_strings['LBL_WIZ_FROM_NAME']."</b></th>"
+               .  " <th scope='col' width='20%'><b>".$mod_strings['LBL_WIZ_FROM_ADDRESS']."</b></th>"
+               .  " <th scope='col' width='20%'><b>".$mod_strings['LBL_MAIL_SENDTYPE']."</b></th>";
     if($focus->settings['mail_sendtype']=='SMTP'){
-     $conf_msg .= " <td width='20%'><b>".$mod_strings['LBL_MAIL_SMTPSERVER']."</b></td>" 
-               .  " <td width='20%'><b>".$mod_strings['LBL_MAIL_SMTPUSER']."</b></td></tr>";
+     $conf_msg .= " <th scope='col' width='20%'><b>".$mod_strings['LBL_MAIL_SMTPSERVER']."</b></th>"
+               .  " <th scope='col' width='20%'><b>".$mod_strings['LBL_MAIL_SMTPUSER']."</b></th></tr>";
 
     }else{$conf_msg .= "</tr>";}
                    
     
 
-        $conf_msg .= "<tr scope='row'><td>".$focus->settings['notify_fromname']."</td>";
+        $conf_msg .= "<tr><td>".$focus->settings['notify_fromname']."</td>";
         $conf_msg .= "<td>".$focus->settings['notify_fromaddress']."</td>";
         $conf_msg .= "<td>".$focus->settings['mail_sendtype']."</td>";
      if($focus->settings['mail_sendtype']=='SMTP'){
@@ -197,8 +197,8 @@ while ($sched_row = $focus->db->fetchByAssoc($sched_res)){$scheds[] = $sched_row
 foreach ($scheds as $funct){
   if( ($funct['job']==$check_sched1)  ||   ($funct['job']==$check_sched2)){
         $sched_mes = 'use';
-        $sched_mes_body .= "<tr><td scope='row' style='text-align: left;'>".$funct['name']."</td>";
-        $sched_mes_body .= "<td scope='row' style='text-align: left;'>".$funct['status']."</td></tr>";
+        $sched_mes_body .= "<tr><td style='text-align: left;'>".$funct['name']."</td>";
+        $sched_mes_body .= "<td style='text-align: left;'>".$funct['status']."</td></tr>";
         if($funct['job']==$check_sched1){
             $check_sched1 ="found";
         }else{
@@ -212,8 +212,8 @@ foreach ($scheds as $funct){
 $show_admin_link = false;
 if($sched_mes == 'use'){
     $sched_mes = "<h5>".$mod_strings['LBL_SCHEDULER_CHECK_GOOD']."</h5><br><table class='other view' cellspacing='1'>";
-    $sched_mes .= "<tr><td width='40%'><b>".$mod_strings['LBL_SCHEDULER_NAME']."</b></td>"
-               .  " <td width='60%'><b>".$mod_strings['LBL_SCHEDULER_STATUS']."</b></td></tr>";
+    $sched_mes .= "<tr><th scope='col' width='40%'><b>".$mod_strings['LBL_SCHEDULER_NAME']."</b></tH>"
+               .  " <th scope='col' width='60%'><b>".$mod_strings['LBL_SCHEDULER_STATUS']."</b></tH></tr>";
             
 }else{
     $sched_mes = "<table class='other view' cellspacing='1'>";

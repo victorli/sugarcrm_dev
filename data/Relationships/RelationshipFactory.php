@@ -94,6 +94,11 @@ class SugarRelationshipFactory {
         switch($type)
         {
             case "many-to-many":
+                if (isset($def['rhs_module']) && $def['rhs_module'] == 'EmailAddresses')
+                {
+                    require_once("data/Relationships/EmailAddressRelationship.php");
+                    return new EmailAddressRelationship($def);
+                }
                 require_once("data/Relationships/M2MRelationship.php");
                 return new M2MRelationship($def);
             break;

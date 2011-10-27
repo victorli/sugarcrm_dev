@@ -112,7 +112,7 @@ EOHTML;
 </td>
 EOHTML;
         }
-    }
+    } 
     else {
         if ($other_text && $is_min_max === false) {
             $the_form .= <<<EOHTML
@@ -178,7 +178,7 @@ function get_module_title(
     global $sugar_version, $sugar_flavor, $server_unique_key, $current_language, $action;
     global $app_strings;
 
-    $the_title = "<div class='moduleTitle'>\n<h2>";
+    $the_title = "<div class='moduleTitle'>\n";
     $module = preg_replace("/ /","",$module);
     $iconPath = "";
     if(is_file(SugarThemeRegistry::current()->getImageURL('icon_'.$module.'_32.png',false)))
@@ -189,20 +189,22 @@ function get_module_title(
         $iconPath = SugarThemeRegistry::current()->getImageURL('icon_'.ucfirst($module).'_32.png');
     }
     if (!empty($iconPath)) {
+        $the_title .= '<h2>';
     	if (SugarThemeRegistry::current()->directionality == "ltr") {
 	        $the_title .= "<a href='index.php?module={$module}&action=index'><img src='{$iconPath}' " . "alt='".$module."' title='".$module."' align='absmiddle'></a>";
 	        $the_title .= ($count >= 1) ? SugarView::getBreadCrumbSymbol() : "";
-	        $the_title .=  $module_title;
+	        $the_title .=  $module_title.'';
     	} else {
     		$the_title .= $module_title;
     		$the_title .= ($count > 1) ? SugarView::getBreadCrumbSymbol() : "";
     		$the_title .= "<a href='index.php?module={$module}&action=index'><img src='{$iconPath}' "  . "alt='".$module."' title='".$module."' align='absmiddle'></a>";
     	}
+        $the_title .= '</h2>';
     } else {
-		$the_title .= $module_title;
+		$the_title .="<h2> $module_title </h2>";
 	}
-    $the_title .= "</h2>\n";
-
+    $the_title .= "\n";
+    
     if ($show_create) {
         $the_title .= "<span class='utils'>";
         $createRecordURL = SugarThemeRegistry::current()->getImageURL('create-record.gif');
@@ -255,7 +257,7 @@ function getClassicModuleTitle($module, $params, $show_create=false, $index_url_
 
     $module = preg_replace("/ /","",$module);
     $iconPath = "";
-    $the_title = "<div class='moduleTitle'>\n<h2>";
+    $the_title = "<div class='moduleTitle'>\n";
 
     if(is_file(SugarThemeRegistry::current()->getImageURL('icon_'.$module.'_32.png',false)))
     {
@@ -283,8 +285,10 @@ function getClassicModuleTitle($module, $params, $show_create=false, $index_url_
 	}
 
 	$module_title = join(SugarView::getBreadCrumbSymbol(),$new_params);
+    if(!empty($module_title)){
+        $the_title .= "<h2>".$module_title."</h2>\n";//removing empty H2 tag for 508 compliance
+    }
 
-    $the_title .= $module_title."</h2>\n";
 
     if ($show_create) {
         $the_title .= "<span class='utils'>";
