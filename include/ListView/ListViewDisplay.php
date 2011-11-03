@@ -72,12 +72,17 @@ class ListViewDisplay {
 		$this->searchColumns = array () ;
 	}
 	function shouldProcess($moduleDir){
+		$searching = false;
+		$sessionSearchQuery = "{$moduleDir}2_QUERY_QUERY";
+		if (!empty($_SESSION[$sessionSearchQuery])) {
+			$searching = true;
+		}
 		if(!empty($GLOBALS['sugar_config']['save_query']) && $GLOBALS['sugar_config']['save_query'] == 'populate_only'){
 		    if(empty($GLOBALS['displayListView']) 
 		            && (!empty($_REQUEST['clear_query']) 
 		                || $_REQUEST['module'] == $moduleDir 
 		                    && ((empty($_REQUEST['query']) || $_REQUEST['query'] == 'MSI' )
-		                        && (empty($_SESSION['last_search_mod']) || $_SESSION['last_search_mod'] != $moduleDir ) ))){
+		                        && (!$searching)))) {
 				$_SESSION['last_search_mod'] = $_REQUEST['module'] ;
 				$this->should_process = false;
 				return false;
@@ -382,8 +387,8 @@ EOHTML;
 	protected function buildMassUpdateLink()
 	{
 		global $app_strings;
-
-		return "<a href='javascript:void(0)' style='width: 150px' class='menuItem' onmouseover='hiliteItem(this,\"yes\");' onmouseout='unhiliteItem(this);' onclick=\"document.getElementById('massupdate_form').style.display = '';\">{$app_strings['LBL_MASS_UPDATE']}</a>";
+        $onClick = "document.getElementById('massupdate_form').style.display = ''; var yLoc = YAHOO.util.Dom.getY('massupdate_form'); scroll(0,yLoc);";
+		return "<a href='javascript:void(0)' style='width: 150px' class='menuItem' onmouseover='hiliteItem(this,\"yes\");' onmouseout='unhiliteItem(this);' onclick=\"$onClick\">{$app_strings['LBL_MASS_UPDATE']}</a>";
 	}
 
 	/**

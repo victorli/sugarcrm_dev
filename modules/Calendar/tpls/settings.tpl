@@ -39,7 +39,7 @@
 	<div class="hd">{$MOD.LBL_SETTINGS_TITLE}</div>
 	<div class="bd">
 	<form name="settings" id="form_settings" method="POST" action="index.php?module=Calendar&action=SaveSettings">
-		<input type="hidden" name="view" value="{$pview}">
+		<input type="hidden" name="view" value="{$view}">
 		<input type="hidden" name="day" value="{$day}">
 		<input type="hidden" name="month" value="{$month}">
 		<input type="hidden" name="year" value="{$year}">
@@ -51,11 +51,11 @@
 					</td>
 					<td>
 						<div id="d_start_time_section">
-							<select size="1" id="d_start_hours" name="d_start_hours" tabindex="102">
+							<select size="1" id="day_start_hours" name="day_start_hours" tabindex="102">
 								{$TIME_START_HOUR_OPTIONS1}
 							</select>&nbsp;:
 							
-							<select size="1" id="d_start_minutes" name="d_start_minutes"  tabindex="102">
+							<select size="1" id="day_start_minutes" name="day_start_minutes"  tabindex="102">
 								{$TIME_START_MINUTES_OPTIONS1}
 							</select>
 								&nbsp;
@@ -69,11 +69,11 @@
 					</td>
 					<td>
 						<div id="d_end_time_section">
-							<select size="1" id="d_end_hours" name="d_end_hours" tabindex="102">
+							<select size="1" id="day_end_hours" name="day_end_hours" tabindex="102">
 								{$TIME_START_HOUR_OPTIONS2}
 							</select>&nbsp;:
 							
-							<select size="1" id="d_end_minutes" name="d_end_minutes"  tabindex="102">
+							<select size="1" id="day_end_minutes" name="day_end_minutes"  tabindex="102">
 								{$TIME_START_MINUTES_OPTIONS2}
 							</select>
 								&nbsp;
@@ -108,8 +108,8 @@
 	
 	
 	<div style="text-align: right;">
-		<button id="btn_save_settings" class="button" type="button">{$MOD.LBL_APPLY_BUTTON}</button>&nbsp;
-		<button id="btn_cancel_settings" class="button" type="button">{$MOD.LBL_CANCEL_BUTTON}</button>&nbsp;
+		<button id="btn-save-settings" class="button" type="button">{$MOD.LBL_APPLY_BUTTON}</button>&nbsp;
+		<button id="btn-cancel-settings" class="button" type="button">{$MOD.LBL_CANCEL_BUTTON}</button>&nbsp;
 	</div>
 	</div>
 </div>

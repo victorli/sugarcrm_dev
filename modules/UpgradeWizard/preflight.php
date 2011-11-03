@@ -287,12 +287,12 @@ $diffs ='';
 	// aw: BUG 10161: check flavor conversion sql files
 	$sqlFile = ''; // cn: bug
 	if($current_version == $targetVersion) {
+	    $type = $db->getScriptName();
 
 		if(preg_match('/(.*?)([^0])$/', $current_version, $matches))
 		{
 			$current_version = $matches[1].'0';
 		}
-        $type = $db->getScriptName();
 		switch($manifest['name']){
 			case 'SugarCE to SugarPro':
 				$sqlFile = $current_version.'_ce_to_pro_'.$type;
@@ -313,6 +313,8 @@ $diffs ='';
 				break;
 		}
 	} else {
+	    $type = $db->dbType;
+        if($type == 'oci8') $type = 'oracle';
 		$sqlFile = $current_version.'_to_'.$targetVersion.'_'.$type;
 	}
 

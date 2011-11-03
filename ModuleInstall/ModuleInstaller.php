@@ -89,14 +89,14 @@ class ModuleInstaller{
 			}
 		}
 
-                // workaround for bug 45812 - refresh vardefs cache before unpacking to avoid partial vardefs in cache
-                global $beanList;
-                foreach ($this->modules as $module_name) {
-                    if (!empty($beanList[$module_name])) {
-                        $objectName = $beanList[$module_name];
-                        VardefManager::loadVardef($module_name, $objectName);
-                    }
-                }
+        // workaround for bug 45812 - refresh vardefs cache before unpacking to avoid partial vardefs in cache
+        global $beanList;
+        foreach ($this->modules as $module_name) {
+            if (!empty($beanList[$module_name])) {
+                $objectName = BeanFactory::getObjectName($module_name);
+                VardefManager::loadVardef($module_name, $objectName);
+            }
+        }
 
 		global $app_strings, $mod_strings;
 		$this->base_dir = $base_dir;
@@ -1220,7 +1220,9 @@ class ModuleInstaller{
 		//Find all the relatioships/relate fields involving this module.
 		$rels_to_remove = array();
 		foreach($beanList as $mod => $bean) {
-			VardefManager::loadVardef($mod, $bean);
+			//Some modules like cases have a bean name that doesn't match the object name
+			$bean = BeanFactory::getObjectName($mod);
+            VardefManager::loadVardef($mod, $bean);
 			//We can skip modules that are in this package as they will be removed anyhow
 			if (!in_array($mod, $this->modulesInPackage) && !empty($dictionary[$bean]) && !empty($dictionary[$bean]['fields']))
 			{

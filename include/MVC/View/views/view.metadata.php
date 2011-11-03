@@ -253,7 +253,7 @@ class VardefBrowser{
 	static function getModules(){
 		$modules = array();
 		foreach($GLOBALS['beanList'] as $module=>$object){
-			if($object == 'aCase')$object = 'Case';
+			$object = BeanFactory::getObjectName($module);
 			VardefManager::loadVardef($module, $object);
 			if(empty($GLOBALS['dictionary'][$object]['fields'] ))continue;
 			$modules[] = $module;

@@ -197,10 +197,16 @@ class ListLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
             if (is_array($def['studio']))
             {
                 $view = !empty($_REQUEST['view']) ? $_REQUEST['view'] : $this->view;
-
+                
+            	// fix for removing email1 field from studio popup searchview - bug 42902
+                if($view == 'popupsearch' && $key == 'email1')
+                {	
+            		return false;
+            	} //end bug 42902
+           
             	if (!empty($view) && isset($def['studio'][$view]) && ($def['studio'][$view] !== false && (string)$def['studio'][$view] != 'false' && (string)$def['studio'][$view] != 'hidden'))
-            	{
-            		return true;
+                {
+					return true;
                 }
 
                 if (isset($def['studio']['listview']) && ($def['studio']['listview'] !== false && (string)$def['studio']['listview'] != 'false' && (string)$def['studio']['listview'] != 'hidden'))

@@ -195,6 +195,7 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
                 }else{
                     $availableFields [ $key ] = array ( 'name' => $key , 'label' => isset($def [ 'label' ]) ? $def [ 'label' ] : $def['vname'] ) ; // layouts use 'label' not 'vname' for the label entry
                 }
+
                 $availableFields[$key]['translatedLabel'] = translate( isset($def [ 'label' ]) ? $def [ 'label' ] : $def['vname'], $this->_moduleName);
             }
 			

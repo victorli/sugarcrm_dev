@@ -154,6 +154,8 @@ function getValidDBName ($name, $ensureUnique = false, $maxLen = 30)
 
 
 /**
+ * isValidDBName
+ * 
  * Utility to perform the check during install to ensure a database name entered by the user
  * is valid based on the type of database server
  * @param string $name Proposed name for the DB

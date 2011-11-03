@@ -47,20 +47,41 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
     private static $helperObject;
 
+    private $_unified_search_modules_content;
+
     public function setUp()
     {
+        global $beanList, $beanFiles;
+        include('include/modules.php');
+
         //Reload langauge strings
         $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
         $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
         $GLOBALS['mod_strings'] = return_module_language($GLOBALS['current_language'], 'Accounts');
         //Create an anonymous user for login purposes/
-        $this->_user = SugarTestUserUtilities::createAnonymousUser();
-        $this->_user->status = 'Active';
-        $this->_user->is_admin = 1;
-        $this->_user->save();
+        $this->_user = new User();
+        $this->_user->retrieve('1');
         $GLOBALS['current_user'] = $this->_user;
 
         self::$helperObject = new APIv3Helper();
+
+
+        if(file_exists(sugar_cached('modules/unified_search_modules.php')))
+        {
+            $this->unified_search_modules_content = file_get_contents(sugar_cached('modules/unified_search_modules.php'));
+            unlink(sugar_cached('modules/unified_search_modules.php'));
+        }
+
+        require_once('modules/Home/UnifiedSearchAdvanced.php');
+        $unifiedSearchAdvanced = new UnifiedSearchAdvanced();
+        $_REQUEST['enabled_modules'] = 'Accounts,Contacts,Opportunities';
+        $unifiedSearchAdvanced->saveGlobalSearchSettings();
+
+        $GLOBALS['db']->query("DELETE FROM accounts WHERE name like 'UNIT TEST%' ");
+        $GLOBALS['db']->query("DELETE FROM opportunities WHERE name like 'UNIT TEST%' ");
+        $GLOBALS['db']->query("DELETE FROM contacts WHERE first_name like 'UNIT TEST%' ");
+
+        //$this->useOutputBuffering = false;
     }
 
     public function tearDown()
@@ -70,6 +91,15 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 	    unset($GLOBALS['app_list_strings']);
 	    unset($GLOBALS['app_strings']);
 	    unset($GLOBALS['mod_strings']);
+
+        if(!empty($this->unified_search_modules_content))
+        {
+            file_put_contents(sugar_cached('modules/unified_search_modules.php'), $this->unified_search_modules_content);
+        }
+
+        $GLOBALS['db']->query("DELETE FROM accounts WHERE name like 'UNIT TEST%' ");
+        $GLOBALS['db']->query("DELETE FROM opportunities WHERE name like 'UNIT TEST%' ");
+        $GLOBALS['db']->query("DELETE FROM contacts WHERE first_name like 'UNIT TEST%' ");
 	}
 
     protected function _makeRESTCall($method,$parameters)
@@ -150,9 +180,6 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $this->assertTrue( self::$helperObject->findBeanIdFromEntryList($results['entry_list'],$seedData[2]['id'],'Contacts') );
         $this->assertTrue( self::$helperObject->findBeanIdFromEntryList($results['entry_list'],$seedData[3]['id'],'Opportunities') );
         $this->assertFalse( self::$helperObject->findBeanIdFromEntryList($results['entry_list'],$seedData[4]['id'],'Opportunities') );
-        $GLOBALS['db']->query("DELETE FROM accounts WHERE name like 'UNIT TEST%' ");
-        $GLOBALS['db']->query("DELETE FROM opportunities WHERE name like 'UNIT TEST%' ");
-        $GLOBALS['db']->query("DELETE FROM contacts WHERE first_name like 'UNIT TEST%' ");
     }
 
     public function testSearchByModuleWithReturnFields()
@@ -184,10 +211,6 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEquals($seedData[2]['fieldValue'], self::$helperObject->findFieldByNameFromEntryList($results['entry_list'],$seedData[2]['id'],'Contacts', $seedData[2]['fieldName']));
         $this->assertEquals($seedData[3]['fieldValue'], self::$helperObject->findFieldByNameFromEntryList($results['entry_list'],$seedData[3]['id'],'Opportunities', $seedData[3]['fieldName']));
         $this->assertFalse(self::$helperObject->findFieldByNameFromEntryList($results['entry_list'],$seedData[4]['id'],'Opportunities', $seedData[4]['fieldName']));
-
-        $GLOBALS['db']->query("DELETE FROM accounts WHERE name like 'UNIT TEST%' ");
-        $GLOBALS['db']->query("DELETE FROM opportunities WHERE name like 'UNIT TEST%' ");
-        $GLOBALS['db']->query("DELETE FROM contacts WHERE first_name like 'UNIT TEST%' ");
     }
 
     public function testGetServerInformation()

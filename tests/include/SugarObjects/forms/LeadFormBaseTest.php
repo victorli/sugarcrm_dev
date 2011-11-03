@@ -60,12 +60,15 @@ public function setup()
     $this->lead1->first_name = 'Collin';
     $this->lead1->last_name = 'Lee';
     $this->lead1->save();
+    $this->lead1->emailAddress->addAddress('clee@sugarcrm.com', true, false);
+    $this->lead1->emailAddress->save($this->lead1->id, $this->lead1->module_dir);
 }
 
 public function tearDown()
 {
     SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
     SugarTestLeadUtilities::removeAllCreatedLeads();
+    SugarTestLeadUtilities::removeCreatedLeadsEmailAddresses();
     unset($this->form);
     unset($this->lead1);
 }
@@ -95,6 +98,8 @@ public function testCreatingDuplicateLead($first_name, $last_name, $hasDuplicate
 {
     $_POST['first_name'] = $first_name;
     $_POST['last_name'] = $last_name;
+    $_POST['Leads0emailAddresss0'] = 'clee@sugarcrm.com';
+
     $rows = $this->form->checkForDuplicates();
 
     if($hasDuplicate)

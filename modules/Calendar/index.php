@@ -52,36 +52,33 @@ if(empty($_REQUEST['view'])){
 	$_REQUEST['view'] = SugarConfig::getInstance()->get('calendar.default_view','week');
 }
 
-$args = array();
-$args['view'] = $_REQUEST['view'];
-$args['cal'] = new Calendar($args['view']);
-
+$cal = new Calendar($_REQUEST['view']);
 
 if($_REQUEST['view'] == 'day' || $_REQUEST['view'] == 'week' || $_REQUEST['view'] == 'month'){
-	$args['cal']->add_activities($GLOBALS['current_user']);	
+	$cal->add_activities($GLOBALS['current_user']);	
 }else if($_REQUEST['view'] == 'shared'){
-	$args['cal']->init_shared();	
+	$cal->init_shared();	
 	global $shared_user;				
 	$shared_user = new User();	
-	foreach($args['cal']->shared_ids as $member){
+	foreach($cal->shared_ids as $member){
 		$shared_user->retrieve($member);
-		$args['cal']->add_activities($shared_user);
+		$cal->add_activities($shared_user);
 	}
 }
 
-if(in_array($args['cal']->view, array("day","week","month","shared"))){
-	$args['cal']->load_activities();
+if(in_array($cal->view, array("day","week","month","shared"))){
+	$cal->load_activities();
 }
 
-$ed = new CalendarDisplay($args);
-$ed->display_title();
+$display = new CalendarDisplay($cal);
+$display->display_title();
 
-if(in_array($args['cal']->view, array("day","week","month","shared","year"))){
-	if($args['cal']->view == "shared")
-		$ed->display_shared_html();
-	$ed->display_calendar_header();
-	$ed->display();
-	$ed->display_calendar_footer();
+if(in_array($cal->view, array("day","week","month","shared","year"))){
+	if($cal->view == "shared")
+		$display->display_shared_html();
+	$display->display_calendar_header();
+	$display->display();
+	$display->display_calendar_footer();
 }	
 
 ?>

@@ -42,12 +42,12 @@
 
 <div style='float:left; width: 50%;'>
 {foreach name=tabs from=$tabs key=k item=tab}
-	<input type="button" class="button" {if $pview == $tab} selected {/if} title="{$tabs_params[$tab].title}" value=" {$tabs_params[$tab].title} " onclick="{$tabs_params[$tab].link}">
+	<input type="button" class="button" {if $view == $tab} selected {/if} title="{$tabs_params[$tab].title}" value=" {$tabs_params[$tab].title} " onclick="{$tabs_params[$tab].link}">
 {/foreach}
 </div>
 
 <div style="float:left; text-align: right; width: 50%; font-size: 12px;">
-	{if $pview != 'year'}
+	{if $view != 'year'}
 	<span class="dateTime">
 					<img border="0" src="{$cal_img}" alt="Enter Date" id="goto_date_trigger" align="absmiddle">					
 					<input type="hidden" id="goto_date" name="goto_date" value="{$current_date}">		
@@ -76,8 +76,6 @@
 	</span>
 	{/if}
 	<input type="button" class="button" onclick="CAL.toggle_settings()" value="{$MOD.LBL_SETTINGS}">
-			
-	&nbsp;&nbsp;&nbsp;&nbsp;
 </div>
 
 <div style='clear: both;'></div>

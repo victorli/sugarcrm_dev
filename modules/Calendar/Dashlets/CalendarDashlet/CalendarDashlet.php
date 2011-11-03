@@ -76,14 +76,12 @@ class CalendarDashlet extends Dashlet {
 		if(!ACLController::checkAccess('Calendar', 'list', true))
 			ACLController::displayNoAccess(true);
 						
-		$args['view'] = $this->view;
-		$args['cal'] = new Calendar($args['view']);
-		$args['cal']->dashlet = true;
-		$args['cal']->add_activities($GLOBALS['current_user']);
-		$args['cal']->load_activities();
-		$args['dashlet_id'] = $this->id;
+		$cal = new Calendar($this->view);
+		$cal->dashlet = true;
+		$cal->add_activities($GLOBALS['current_user']);
+		$cal->load_activities();
 		
-		$ed = new CalendarDisplay($args);
+		$ed = new CalendarDisplay($cal,$this->id);
 		$ed->display_calendar_header(false);		
 		$ed->display();
 			

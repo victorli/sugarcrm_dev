@@ -42,7 +42,7 @@ if(empty($_REQUEST['id']) || empty($_REQUEST['type']) || !isset($_SESSION['authe
 	die("Not a Valid Entry Point");
 }
 else {
-    require_once("data/BeanFactory.php");
+    $file_type=''; // bug 45896
     ini_set('zlib.output_compression','Off');//bug 27089, if use gzip here, the Content-Length in hearder may be incorrect.
     // cn: bug 8753: current_user's preferred export charset not being honored
     $GLOBALS['current_user']->retrieve($_SESSION['authenticated_user_id']);
@@ -99,6 +99,7 @@ else {
         }
 
     } // if
+
     if(isset($_REQUEST['ieId']) && isset($_REQUEST['isTempFile'])) {
 		$local_location = sugar_cached("modules/Emails/{$_REQUEST['ieId']}/attachments/{$_REQUEST['id']}");
     } elseif(isset($_REQUEST['isTempFile']) && $file_type == "import") {

@@ -36,9 +36,9 @@
 
 require_once('include/MVC/View/SugarView.php');
 
-class CalendarViewAjaxGetGR extends SugarView {
+class CalendarViewRemove extends SugarView {
 
-	function CalendarViewAjaxGetGR(){
+	function CalendarViewRemove(){
  		parent::SugarView();
 	}
 	
@@ -47,14 +47,36 @@ class CalendarViewAjaxGetGR extends SugarView {
 	}
 	
 	function display(){
-		error_reporting(0);
-		require_once('include/json_config.php');
-		global $json;
-        	$json = getJSONobj();
-        	$json_config = new json_config();
-        	$GRjavascript = $json_config->getFocusData($_REQUEST['type'], $_REQUEST['record']);
-        	ob_clean();
-        	echo $GRjavascript;
+		require_once("modules/Calls/Call.php");
+		require_once("modules/Meetings/Meeting.php");
+		require_once("modules/Calendar/CalendarUtils.php");
+
+		global $beanFiles,$beanList;
+		$module = $_REQUEST['current_module'];
+		require_once($beanFiles[$beanList[$module]]);
+		$bean = new $beanList[$module]();
+		//$type = strtolower($beanList[$module]);
+		//$table_name = $bean->table_name;
+		//$jn = $type."_id_c";
+
+		$bean->retrieve($_REQUEST['record']);
+
+		if(!$bean->ACLAccess('delete')){
+			die;	
+		}
+
+		$bean->mark_deleted($_REQUEST['record']);
+
+		/*if($_REQUEST['delete_recurring']){
+			remove_recurrence($bean,$table_name,$jn,$_REQUEST['record']);
+		}*/
+
+		$json_arr = array(
+			'success' => 'yes',
+		);
+
+		ob_clean();
+		echo json_encode($json_arr);
 	}	
 
 }

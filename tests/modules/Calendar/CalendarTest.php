@@ -123,7 +123,7 @@ class CalendarTest extends Sugar_PHPUnit_Framework_TestCase {
 		$cal->acts_arr[$GLOBALS['current_user']->id][] = new CalendarActivity($meeting);	
 		$cal->load_activities();
 			
-		$this->assertEquals($cal->ActRecords[0]['time_start'],$this->time_date->swap_formats("2012-01-01 11:00pm" , 'Y-m-d h:ia', $format['time']),"Time should remain the same after load_activities");		
+		$this->assertEquals($cal->items[0]['time_start'],$this->time_date->swap_formats("2012-01-01 11:00pm" , 'Y-m-d h:ia', $format['time']),"Time should remain the same after load_activities");		
 	}
 
 	public function testHandleOffset(){

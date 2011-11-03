@@ -34,65 +34,29 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-require_once('include/SugarFields/Fields/File/SugarFieldFile.php');
-		
-/**
- * @ticket 22505
- *
- *		Original Bug: Sugar should indicate to customer the max file size that can be uploaded 
- *
- */
-class Bug22505Test extends Sugar_PHPUnit_Framework_TestCase 
-{
-	private $_post_max_size;
-	private $_upload_max_filesize;
-	private $_upload_maxsize;
-	private $_file_field;
+require_once('include/MVC/View/SugarView.php');
+
+class CalendarViewGetGR extends SugarView {
+
+	function CalendarViewGetGR(){
+ 		parent::SugarView();
+	}
 	
-	function setUp() 
-	{
-		$this->_post_max_size = ini_get('post_max_size');
-		$this->_upload_max_filesize = ini_get('upload_max_filesize');
-		$this->_upload_maxsize = $GLOBALS['sugar_config']['upload_maxsize'];
-		
-		$this->_file_field = new Bug22505TestMock('file');
+	function process(){
+		$this->display();
 	}
+	
+	function display(){
+		error_reporting(0);
+		require_once('include/json_config.php');
+		global $json;
+        	$json = getJSONobj();
+        	$json_config = new json_config();
+        	$GRjavascript = $json_config->getFocusData($_REQUEST['type'], $_REQUEST['record']);
+        	ob_clean();
+        	echo $GRjavascript;
+	}	
 
-	function tearDown() {
-		//ini_set('post_max_size',$this->_post_max_size);
-		//ini_set('upload_max_filesize',$this->_upload_max_filesize);
-		$GLOBALS['sugar_config']['upload_maxsize'] = $this->_upload_maxsize;
-		
-		unset($this->_post_max_size);
-		unset($this->_upload_max_filesize);
-		unset($this->_upload_maxsize);
-		unset($this->_file_field);
-	}
-
-	function testMaxFileUploadSize() {	
-		$small = '9999'; //9.76 kb
-		$large = '99999999999999';
-		
-		//Test 1: upload_maxsize is smallest
-		//ini_set('post_max_size',$small);
-		//ini_set('upload_max_filesize',$large);
-		$GLOBALS['sugar_config']['upload_maxsize'] = $small;
-		$max_size = $this->_file_field->getMaxFileUploadSize();
-
-		$this->assertEquals($max_size, '9.76 kb','Max file upload size is not 9.76 kb as expected');
-		
-		//Test 2: upload_maxsize is greatest
-		$GLOBALS['sugar_config']['upload_maxsize'] = $large;
-		$max_size = $this->_file_field->getMaxFileUploadSize();
-
-		$this->assertNotEquals($max_size, '9.76 kb','Max file upload size is 9.76 kb which is not expected');
-	}
 }
 
-class Bug22505TestMock extends SugarFieldFile
-{
-    public function getMaxFileUploadSize()
-    {
-        return parent::getMaxFileUploadSize();
-    }
-}
+?>

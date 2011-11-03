@@ -219,7 +219,7 @@ class SearchForm {
         $values = $this->searchFields;
 
         $where_clauses = array();
-        $like_char = '%';
+        //$like_char = '%';
         $table_name = $this->bean->object_name;
 
         foreach($this->searchFields as $field=>$parms) {
@@ -382,7 +382,7 @@ class SearchForm {
 
     	                    	break;
                             case 'like':
-                                $where .=  $db_field . " like ".$this->bean->db->quoted($field_value);
+                                $where .=  $db_field . " like ".$this->bean->db->quoted($field_value.'%');
                                 break;
                             case 'in':
                                 $where .=  $db_field . " in (".$field_value.')';

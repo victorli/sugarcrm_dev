@@ -79,6 +79,23 @@ class PopupSmarty extends ListViewSmarty{
 
 	}
 
+    /**
+     * Assign several arrow image attributes to TemplateHandler smarty. Such as width, height, etc.
+     * 
+     * @return void
+     */
+    function processArrowVars()
+    {
+        $pathParts = pathinfo(SugarThemeRegistry::current()->getImageURL('arrow.gif',false));
+
+        list($width,$height) = getimagesize($pathParts['dirname'].'/'.$pathParts['basename']);
+
+        $this->th->ss->assign('arrowExt', $pathParts['extension']);
+        $this->th->ss->assign('arrowWidth', $width);
+        $this->th->ss->assign('arrowHeight', $height);
+        $this->th->ss->assign('arrowAlt', translate('LBL_SORT'));
+    }
+
 	/**
      * Processes the request. Calls ListViewData process. Also assigns all lang strings, export links,
      * This is called from ListViewDisplay
@@ -167,6 +184,9 @@ class PopupSmarty extends ListViewSmarty{
 
         //rrs
         $this->_build_field_defs();
+
+            // arrow image attributes
+            $this->processArrowVars();
 	}
 
 	/*

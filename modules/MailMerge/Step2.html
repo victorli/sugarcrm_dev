@@ -135,6 +135,8 @@ var mWhere = "{MAILMERGE_WHERE}";
 var orderBy = '';
 var relModule = '';
 var mTerm = '';
+YAHOO.namespace("mailmerge");
+YAHOO.mailmerge.cObj = null;
 
 function submit_form()
 {
@@ -161,7 +163,7 @@ function ajaxSuccess(data)
 		dispCount = result.result_count;
 		nextItems_disabled = true;
 	}
-	if(result.result_count < (mOffset + max))
+	if(result.result_count <= (mOffset + max))
 	{
 		nextItems_disabled = true;
 	}
@@ -220,6 +222,9 @@ function ajaxSuccess(data)
 }
 function increaseOffset()
 {
+    if(isCallInProgress())
+        return;
+
     if(!nextItems_disabled) {
         mOffset += 20;
         getObjects();
@@ -228,10 +233,21 @@ function increaseOffset()
 
 function decreaseOffset()
 {
+    if(isCallInProgress())
+        return;
+
     if(!prevItems_disabled) {
 	    mOffset -= 20;
         getObjects();
     }
+}
+
+function isCallInProgress()
+{
+    if(YAHOO.mailmerge.cObj)
+        return YAHOO.util.Connect.isCallInProgress(YAHOO.mailmerge.cObj);
+    else
+        return false;
 }
 
 function getObjects()
@@ -245,8 +261,7 @@ function getObjects()
 	
 	//rrs
     var qs = 'index.php?module=MailMerge&action=search&qModule='+module+'&rel_module='+relModule+'&term='+mTerm+'&max='+max+'&order_by='+orderBy+'&offset='+mOffset;
-	var cObj = YAHOO.util.Connect.asyncRequest('GET', qs,{success: ajaxSuccess, failure: ajaxSuccess}, null);
-
+	YAHOO.mailmerge.cObj = YAHOO.util.Connect.asyncRequest('GET', qs,{success: ajaxSuccess, failure: ajaxSuccess}, null);
 }
 
 function moveRight()

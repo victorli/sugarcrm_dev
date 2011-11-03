@@ -155,6 +155,8 @@ class VardefManager{
      */
     static function saveCache($module,$object, $additonal_objects= array()){
         
+        if (empty($GLOBALS['dictionary'][$object]))
+            $object = BeanFactory::getObjectName($module);
         $file = create_cache_directory('modules/' . $module . '/' . $object . 'vardefs.php');
         write_array_to_file('GLOBALS["dictionary"]["'. $object . '"]',$GLOBALS['dictionary'][$object], $file);
         if ( sugar_is_file($file) && is_readable($file)) {
@@ -196,11 +198,14 @@ class VardefManager{
     static function _clearCache($module_dir = '', $object_name = ''){
         if(!empty($module_dir) && !empty($object_name)){
             
-            if($object_name == 'aCase') {
-                $object_name = 'Case';
+            //Some modules like cases have a bean name that doesn't match the object name
+            if (empty($GLOBALS['dictionary'][$object_name])) {
+                $newName = BeanFactory::getObjectName($module_dir);
+                $object_name = $newName != false ? $newName : $object_name;
             }
-            
+
             $file = sugar_cached('modules/').$module_dir.'/' . $object_name . 'vardefs.php';
+
             if(file_exists($file)){
                 unlink($file);
                 $key = "VardefManager.$module_dir.$object_name";
@@ -242,10 +247,20 @@ class VardefManager{
         //Some modules have multiple beans, we need to see if this object has a module_dir that is different from its module_name
         if(!$found){
             $temp = BeanFactory::newBean($module);
-            if ($temp && $temp->module_dir != $temp->module_name && !empty($beanList[$temp->module_dir]))
+            if ($temp)
             {
-                self::refreshVardefs($temp->module_dir, $beanList[$temp->module_dir], $additional_search_paths, $cacheCustom);
+                $object_name = BeanFactory::getObjectName($temp->module_dir);
+                if ($temp && $temp->module_dir != $temp->module_name && !empty($object_name))
+                {
+                    self::refreshVardefs($temp->module_dir, $object_name, $additional_search_paths, $cacheCustom);
+                }
             }
+        }
+
+        //Some modules like cases have a bean name that doesn't match the object name
+        if (empty($dictionary[$object])) {
+            $newName = BeanFactory::getObjectName($module);
+            $object = $newName != false ? $newName : $object;
         }
 
         //load custom fields into the vardef cache
@@ -257,7 +272,7 @@ class VardefManager{
 
         //great! now that we have loaded all of our vardefs.
         //let's go save them to the cache file.
-        if(!empty($GLOBALS['dictionary'][$object])) {
+        if(!empty($dictionary[$object])) {
             VardefManager::saveCache($module, $object);
         }
     }
@@ -271,8 +286,10 @@ class VardefManager{
     protected static function getLinkFieldsForModule($module, $object)
     {
         global $dictionary;
-        if($object == 'aCase') {
-            $object = 'Case';
+        //Some modules like cases have a bean name that doesn't match the object name
+        if (empty($dictionary[$object])) {
+            $newName = BeanFactory::getObjectName($module);
+            $object = $newName != false ? $newName : $object;
         }
         if (empty($dictionary[$object])) {
             self::loadVardef($module, $object, false, array('ignore_rel_calc_fields' => true));

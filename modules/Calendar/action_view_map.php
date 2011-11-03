@@ -38,10 +38,10 @@
 
 
 
-$action_view_map['ajaxsave'] = 'ajaxsave';
-$action_view_map['ajaxreschedule'] = 'ajaxreschedule';
-$action_view_map['ajaxremove'] = 'ajaxremove';
-$action_view_map['ajaxgetgr'] = 'ajaxgetgr';
-$action_view_map['ajaxgetgrusers'] = 'ajaxgetgrusers';
-$action_view_map['ajaxloadform'] = 'ajaxloadform';
+$action_view_map['saveactivity'] = 'saveactivity';
+$action_view_map['reschedule'] = 'reschedule';
+$action_view_map['remove'] = 'remove';
+$action_view_map['getgr'] = 'getgr';
+$action_view_map['getgrusers'] = 'getgrusers';
+$action_view_map['quickedit'] = 'quickedit';
 $action_view_map['savesettings'] = 'savesettings';

@@ -34,51 +34,67 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-require_once('include/MVC/View/SugarView.php');
 
-class CalendarViewAjaxRemove extends SugarView {
+require_once("modules/ModuleBuilder/parsers/views/History.php");
 
-	function CalendarViewAjaxRemove(){
- 		parent::SugarView();
-	}
-	
-	function process(){
-		$this->display();
-	}
-	
-	function display(){
-		require_once("modules/Calls/Call.php");
-		require_once("modules/Meetings/Meeting.php");
-		require_once("modules/Calendar/CalendarUtils.php");
+class HistoryTest extends PHPUnit_Framework_TestCase
+{
 
-		global $beanFiles,$beanList;
-		$module = $_REQUEST['current_module'];
-		require_once($beanFiles[$beanList[$module]]);
-		$bean = new $beanList[$module]();
-		//$type = strtolower($beanList[$module]);
-		//$table_name = $bean->table_name;
-		//$jn = $type."_id_c";
+    /**
+     * @var string
+     */
+    private $_path;
 
-		$bean->retrieve($_REQUEST['record']);
+    /**
+     * @var History
+     */
+    private $_history;
 
-		if(!$bean->ACLAccess('delete')){
-			die;	
-		}
+    public function setUp()
+    {
+        $this->_path = tempnam(sys_get_temp_dir() . 'tmp', 'history');
+        $this->_history = new History($this->_path);
+    }
 
-		$bean->mark_deleted($_REQUEST['record']);
+    public function testConstructor()
+    {
+        $this->assertTrue(is_dir($this->getHistoryDir()), "__constructor() creates unique directory for file history");
+    }
 
-		/*if($_REQUEST['delete_recurring']){
-			remove_recurrence($bean,$table_name,$jn,$_REQUEST['record']);
-		}*/
+    public function testAppendAndRestore()
+    {
+        $time = $this->_history->append($this->_path);
+        $this->assertTrue(file_exists($this->_history->getFileByTimestamp($time)), '->append() creates history file');
+        $this->assertEquals($this->_history->restoreByTimestamp( $time ), $time, '->restoreByTimestamp() returns correct timestamp');
+    }
 
-		$json_arr = array(
-			'success' => 'yes',
-		);
+    public function testUndoRestore()
+    {
+        $this->_history->undoRestore();
+        $this->assertFalse(file_exists($this->_path), '->undoRestore removes file');
+    }
 
-		ob_clean();
-		echo json_encode($json_arr);
-	}	
+    public function testPositioning()
+    {
+        $other_file = tempnam(sys_get_temp_dir(), 'history');
+        
+        $el1 = $this->_history->append($other_file);
+        $el2 = $this->_history->append($other_file);
+        $el3 = $this->_history->append($other_file);
 
+        $this->assertEquals($this->_history->getCount(), 3);
+        $this->assertEquals($this->_history->getFirst(), $el3);
+        $this->assertEquals($this->_history->getLast(), $el1);
+        $this->assertEquals($this->_history->getNth(1), $el2);
+        $this->assertEquals($this->_history->getNext(), $el1);
+        $this->assertFalse($this->_history->getNext());
+
+        unlink($other_file);
+    }
+
+    private function getHistoryDir()
+    {
+        return dirname($this->_path);
+    }
+    
 }
-
-?>

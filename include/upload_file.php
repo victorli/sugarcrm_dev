@@ -496,6 +496,10 @@ class UploadStream
     const STREAM_NAME = "upload";
     protected static $upload_dir;
 
+    /**
+     * Get upload directory
+     * @return string
+     */
     public static function getDir()
     {
         if(empty(self::$upload_dir)) {
@@ -510,16 +514,28 @@ class UploadStream
         return self::$upload_dir;
     }
 
+    /**
+     * Check if upload dir is writable
+     * @return bool
+     */
     public static function writable()
     {
         return is_writable(self::getDir());
     }
 
+    /**
+     * Register the stream
+     */
     public function register()
     {
         stream_register_wrapper(self::STREAM_NAME, __CLASS__);
     }
 
+    /**
+     * Get real FS path of the upload stream file
+     * @param string $path Upload stream path (with upload://)
+     * @return string FS path
+     */
     public static function path($path)
     {
     	$path = substr($path, strlen(self::STREAM_NAME)+3); // cut off upload://
@@ -531,6 +547,12 @@ class UploadStream
         return self::getDir()."/".$path;
     }
 
+    /**
+     * Ensure upload subdir exists
+     * @param string $path Upload stream path (with upload://)
+     * @param bool $writable
+     * @return boolean
+     */
     public static function ensureDir($path, $writable = true)
     {
         $path = self::path($path);

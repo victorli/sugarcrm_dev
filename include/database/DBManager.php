@@ -239,6 +239,7 @@ abstract class DBManager
 	 * create_user		Can create users for Sugar
 	 * create_db		Can create databases
 	 * collation		Supports setting collations
+	 * disable_keys     Supports temporarily disabling keys (for upgrades, etc.)
 	 *
 	 * @abstract
 	 * Special cases:
@@ -1614,7 +1615,21 @@ protected function checkQuery($sql, $object_name = false)
 		return 0;
 	}
 
-    /**
+	/**
+	 * Returns the number of rows returned by the result
+	 *
+	 * This function can't be reliably implemented on most DB, do not use it.
+	 * @abstract
+	 * @deprecated
+	 * @param  resource $result
+	 * @return int
+	 */
+	public function getRowCount($result)
+	{
+	    return 0;
+	}
+
+	/**
      * Get table description
      * @param string $tablename
      * @param bool $reload true means load from DB, false allows using cache
@@ -3337,6 +3352,24 @@ protected function checkQuery($sql, $object_name = false)
 	 * Code run on new database after installing
 	 */
 	public function postInstall()
+	{
+	}
+
+	/**
+	 * Disable keys on the table
+	 * @abstract
+	 * @param string $tableName
+	 */
+	public function disableKeys($tableName)
+	{
+	}
+
+	/**
+	 * Re-enable keys on the table
+	 * @abstract
+	 * @param string $tableName
+	 */
+	public function enableKeys($tableName)
 	{
 	}
 

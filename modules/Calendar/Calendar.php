@@ -46,26 +46,31 @@ require_once('modules/Calendar/CalendarActivity.php');
 
 class Calendar {
 	
-	var $view = 'week'; // current view
-	var $dashlet = false; // if is displayed in dashlet	
-	var $date_time; // current date
+	public $view = 'week'; // current view
+	public $dashlet = false; // if is displayed in dashlet	
+	public $date_time; // current date
 	
-	var $show_tasks = true;
-	var $show_calls = true;	
-	var $day_start_time; // working day start time in format '11:00'
-	var $day_end_time; // working day end time in format '11:00'
+	public $show_tasks = true;
+	public $show_calls = true;	
 
-	var $time_step = 60; // time step of each slot in minutes
+	public $time_step = 60; // time step of each slot in minutes
 		
-	var $acts_arr = array(); // Array of activities objects	
-	var $ActRecords = array(); // Array of activities data to be displayed	
-	var $shared_ids = array(); // ids of users for shared view
+	public $acts_arr = array(); // Array of activities objects	
+	public $items = array(); // Array of activities data to be displayed	
+	public $shared_ids = array(); // ids of users for shared view
 	
-	var $celcount; // working day count of slots 
-	var $cells_per_day; // entire 24h day count of slots 
-	var $d_start_minutes; // working day start minutes 
-	var $d_end_minutes; // working day end minutes
+	public $cells_per_day; // entire 24h day count of slots 	
+	public $grid_start_ts; // start timestamp of calendar grid
 	
+	public $day_start_time; // working day start time in format '11:00'
+	public $day_end_time; // working day end time in format '11:00'
+	public $celcount; // count of slots in a working day
+	
+	/**
+	 * constructor
+	 * @param string $view 
+	 * @param array $time_arr 
+	 */	
 	function __construct($view = "day", $time_arr = array()){
 		global $current_user, $timedate;	
 		
@@ -126,6 +131,7 @@ class Calendar {
 		if(is_null($this->show_calls))
 			$this->show_calls = SugarConfig::getInstance()->get('calendar.show_calls_by_default',true);
 	
+
 		$this->day_start_time = $current_user->getPreference('day_start_time');
 		if(is_null($this->day_start_time))
 			$this->day_start_time = SugarConfig::getInstance()->get('calendar.default_day_start',"08:00");
@@ -142,52 +148,54 @@ class Calendar {
 		}else{
 			$this->time_step = 60;
 		}
-
+		$this->cells_per_day = 24 * (60 / $this->time_step);		
+		$this->calculate_grid_start_ts();
+		
 		$this->calculate_day_range();		
 	}
 	
 	/**
-	 * Loads activities data to array
+	 * Load activities data to array
 	 */		
-	function load_activities(){
+	public function load_activities(){
 		$field_list = CalendarUtils::get_fields();
 		
 		foreach($this->acts_arr as $user_id => $acts){	
 			foreach($acts as $act){										
-					$newAct = array();
-					$newAct['module_name'] = $act->sugar_bean->module_dir;
-					$newAct['type'] = strtolower($act->sugar_bean->object_name);				
-					$newAct['user_id'] = $user_id;
-					$newAct['assigned_user_id'] = $act->sugar_bean->assigned_user_id;
-					$newAct['id'] = $act->sugar_bean->id;	
-					$newAct['name'] = $act->sugar_bean->name;
-					$newAct['status'] = $act->sugar_bean->status;
+					$item = array();
+					$item['user_id'] = $user_id;
+					$item['module_name'] = $act->sugar_bean->module_dir;
+					$item['type'] = strtolower($act->sugar_bean->object_name);
+					$item['assigned_user_id'] = $act->sugar_bean->assigned_user_id;
+					$item['id'] = $act->sugar_bean->id;	
+					$item['name'] = $act->sugar_bean->name;
+					$item['status'] = $act->sugar_bean->status;
 					
 					if(isset($act->sugar_bean->duration_hours)){
-						$newAct['duration_hours'] = $act->sugar_bean->duration_hours;
-						$newAct['duration_minutes'] = $act->sugar_bean->duration_minutes;
+						$item['duration_hours'] = $act->sugar_bean->duration_hours;
+						$item['duration_minutes'] = $act->sugar_bean->duration_minutes;
 					}				
 					 			
-					$newAct['detailview'] = 0;
-					$newAct['editview'] = 0;
+					$item['detail'] = 0;
+					$item['edit'] = 0;
 					
 					if($act->sugar_bean->ACLAccess('DetailView'))
-						$newAct['detailview'] = 1;						
+						$item['detail'] = 1;						
 					if($act->sugar_bean->ACLAccess('Save'))
-						$newAct['editview'] = 1;					
+						$item['edit'] = 1;					
 						
 					if(empty($act->sugar_bean->id)){
-						$newAct['detailview'] = 0;
-						$newAct['editview'] = 0;
+						$item['detail'] = 0;
+						$item['edit'] = 0;
 					}					
 					
-					if($newAct['detailview'] == 1){
-						if(isset($field_list[$newAct['module_name']])){
-							foreach($field_list[$newAct['module_name']] as $field){
-								if(!isset($newAct[$field])){
-									$newAct[$field] = $act->sugar_bean->$field;									
+					if($item['detail'] == 1){
+						if(isset($field_list[$item['module_name']])){
+							foreach($field_list[$item['module_name']] as $field){
+								if(!isset($item[$field])){
+									$item[$field] = $act->sugar_bean->$field;									
 									if($act->sugar_bean->field_defs[$field]['type'] == 'text'){									
-										$t = $newAct[$field];	
+										$t = $item[$field];	
 										if(strlen($t) > 300){
 											$t = substr($t, 0, 300);
 											$t .= "...";
@@ -195,29 +203,21 @@ class Calendar {
 										$t = str_replace("\r\n","<br>",$t);
 										$t = str_replace("\r","<br>",$t);
 										$t = str_replace("\n","<br>",$t);
-										$newAct[$field] = $t;
+										$item[$field] = $t;
 									}										
 								}
 							}					
 						}				
-					}
-					
-					$date_field = "date_start";								
-					if($newAct['type'] == 'task')
-						$date_field = "date_due";
-																	
-				
-					$timestamp = SugarDateTime::createFromFormat($GLOBALS['timedate']->get_date_time_format(),$act->sugar_bean->$date_field,new DateTimeZone('UTC'))->format('U');				
-								
-					$newAct['timestamp'] = $timestamp;
-					$newAct['time_start'] = $GLOBALS['timedate']->fromTimestamp($newAct['timestamp'])->format($GLOBALS['timedate']->get_time_format());
+					}					
 
-					if(!isset($newAct['duration_hours']) || empty($newAct['duration_hours']))
-						$newAct['duration_hours'] = 0;
-					if(!isset($newAct['duration_minutes']) || empty($newAct['duration_minutes']))
-						$newAct['duration_minutes'] = 0;				
+					if(!isset($item['duration_hours']) || empty($item['duration_hours']))
+						$item['duration_hours'] = 0;
+					if(!isset($item['duration_minutes']) || empty($item['duration_minutes']))
+						$item['duration_minutes'] = 0;	
+						
+					$item = array_merge($item,CalendarUtils::get_time_data($act->sugar_bean));			
 			
-					$this->ActRecords[] = $newAct;
+					$this->items[] = $item;
 			}
 		}
 	}
@@ -226,11 +226,11 @@ class Calendar {
 	 * Get javascript objects of activities to be displayed on calendar
 	 * @return string
 	 */
-	function get_activities_js(){	
+	public function get_activities_js(){	
 				$field_list = CalendarUtils::get_fields();
 				$a_str = "";				
 				$ft = true;
-				foreach($this->ActRecords as $act){
+				foreach($this->items as $act){
 					if(!$ft)
 						$a_str .= ",";						
 					$a_str .= "{";		
@@ -250,8 +250,8 @@ class Calendar {
 					'; 
 					}
 					$a_str .=	'
-						"detailview" : "'.$act["detailview"].'",
-						"editview" : "'.$act["editview"].'"
+						"detail" : "'.$act["detail"].'",
+						"edit" : "'.$act["edit"].'"
 					';
 					$a_str .= "}";
 					$ft = false;				
@@ -262,7 +262,7 @@ class Calendar {
 	/**
 	 * initialize ids of shared users
 	 */	
-	function init_shared(){
+	public function init_shared(){
 		global $current_user;
 		$user_ids = $current_user->getPreference('shared_ids');
 		if(!empty($user_ids) && count($user_ids) != 0 && !isset($_REQUEST['shared_ids'])) {
@@ -276,7 +276,25 @@ class Calendar {
 	}
 	
 	/**
-	 * calculatess count of timeslots per visible day, calculates day start and day end in minutes 
+	 * Calculate timestamp the calendar grid should be started from 
+	 */
+	protected function calculate_grid_start_ts(){
+	
+		if($this->view == "week" || $this->view == "shared"){
+			$week_start = CalendarUtils::get_first_day_of_week($this->date_time);
+			$this->grid_start_ts = $week_start->format('U') + $week_start->getOffset(); 
+		}else if($this->view == "month"){
+			$month_start = $this->date_time->get_day_by_index_this_month(0);
+			$week_start = CalendarUtils::get_first_day_of_week($month_start);
+			$this->grid_start_ts = $week_start->format('U') + $week_start->getOffset(); // convert to timestamp, ignore tz
+		}else if($this->view == "day"){
+			$this->grid_start_ts = $this->date_time->format('U') + $this->date_time->getOffset();
+		}else
+			$this->grid_start_ts = 0;
+	}
+	
+	/**
+	 * calculate count of timeslots per visible day, calculates day start and day end in minutes 
 	 */	
 	function calculate_day_range(){	
 		
@@ -294,15 +312,14 @@ class Calendar {
 					$this->celcount++;
 				}
 		}
-		$this->cells_per_day = 24 * (60 / $this->time_step);
-	}
+	}	
 	
 	/**
 	 * loads array of objects
 	 * @param User $user user object
 	 * @param string $type
 	 */	
-	function add_activities($user,$type='sugar'){
+	public function add_activities($user,$type='sugar'){
 		global $timedate;
 		$start_date_time = $this->date_time;
 		if($this->view == 'week' || $this->view == 'shared'){		
@@ -316,7 +333,7 @@ class Calendar {
 		}else{
 			$end_date_time = $this->date_time->get("+1 day");
 		}		
-
+		
 		$acts_arr = array();
 	    	if($type == 'vfb'){
 				$acts_arr = CalendarActivity::get_freebusy_activities($user, $start_date_time, $end_date_time);
@@ -332,7 +349,7 @@ class Calendar {
 	 * @param string $direction next or previous
 	 * @return string
 	 */
-	function get_neighbor_date_str($direction){
+	public function get_neighbor_date_str($direction){
 		if($direction == "previous")
 			$sign = "-";
 		else 

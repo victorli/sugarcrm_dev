@@ -37,7 +37,6 @@
 
 class Bug43653Test extends Sugar_PHPUnit_Framework_OutputTestCase
 {
-
     public function setUp()
     {
 		$GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();

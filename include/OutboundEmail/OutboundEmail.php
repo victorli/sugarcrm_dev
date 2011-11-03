@@ -616,6 +616,9 @@ class OutboundEmail {
 	        if(!empty($oe) && !empty($oe->id)) {
 	            return $oe;
 	        }
+            else  {
+                return $this->getSystemMailerSettings();
+            }
 	    }
 	    $res = $this->db->query("SELECT id FROM outbound_email WHERE user_id = '{$user->id}' AND name='".$this->db->quote($name)."'");
 		$a = $this->db->fetchByAssoc($res);

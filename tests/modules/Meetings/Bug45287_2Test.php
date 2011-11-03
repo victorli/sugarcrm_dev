@@ -45,10 +45,12 @@ class Bug45287_2Test extends Sugar_PHPUnit_Framework_TestCase
     var $meetingsArr;
     var $searchDefs;
     var $searchFields;
+    var $timedate;
+
 
     public function setup()
     {
-        global $current_user, $timedate;
+        global $current_user;
         // Create Anon User setted on PDT TimeZone
         $current_user = SugarTestUserUtilities::createAnonymousUser();
         $current_user->setPreference('datef', "d/m/Y");
@@ -56,7 +58,7 @@ class Bug45287_2Test extends Sugar_PHPUnit_Framework_TestCase
         $current_user->setPreference('timezone', "America/Los_Angeles");
 
         // new object to avoid TZ caching
-        $timedate = new TimeDate();
+        $this->timedate = new TimeDate();
 
         $this->meetingsArr = array();
 
@@ -67,7 +69,7 @@ class Bug45287_2Test extends Sugar_PHPUnit_Framework_TestCase
         {
           $this->meetingsArr[$cnt] = new Meeting();
           $this->meetingsArr[$cnt]->name = 'Bug45287 Meeting ' . ($cnt + 1);
-          $this->meetingsArr[$cnt]->date_start = $timedate->to_display_date_time(gmdate("Y-m-d H:i:s", mktime(10+$cnt, 30, 00, 7, $d, 2011)));
+          $this->meetingsArr[$cnt]->date_start = $this->timedate->to_display_date_time(gmdate("Y-m-d H:i:s", mktime(10+$cnt, 30, 00, 7, $d, 2011)));
           $this->meetingsArr[$cnt]->save();
           $d++;
           $cnt++;
@@ -117,6 +119,7 @@ class Bug45287_2Test extends Sugar_PHPUnit_Framework_TestCase
         unset($this->meetingsArr);
         unset($this->searchDefs);
         unset($this->searchFields);
+        unset($this->timezone);
 
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
     }
@@ -124,7 +127,7 @@ class Bug45287_2Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function testRetrieveByExactDate()
     {
-        global $current_user, $timedate;
+        global $current_user;
 
         $_REQUEST = $_POST = array("module" => "Meetings",
                                    "action" => "index",
@@ -147,7 +150,7 @@ class Bug45287_2Test extends Sugar_PHPUnit_Framework_TestCase
         $w = $srch->generateSearchWhere();
 
         // Due to daylight savings, I cannot hardcode intervals...
-        $GMTDates = $timedate->getDayStartEndGMT("2011-07-14");
+        $GMTDates = $this->timedate->getDayStartEndGMT("2011-07-14");
 
         // Current User is on GMT-7.
         // Asking for meeting of 14 July 2011, I expect to search (GMT) from 14 July at 07:00 until 15 July at 07:00 (excluded)
@@ -159,7 +162,7 @@ class Bug45287_2Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function testRetrieveByDaterange()
     {
-        global $current_user, $timedate;
+        global $current_user;
 
         $_REQUEST = $_POST = array("module" => "Meetings",
                                    "action" => "index",
@@ -183,9 +186,9 @@ class Bug45287_2Test extends Sugar_PHPUnit_Framework_TestCase
         $w = $srch->generateSearchWhere();
 
         // Due to daylight savings, I cannot hardcode intervals...
-        $GMTDatesStart = $timedate->getDayStartEndGMT("2011-07-13");
-        $GMTDatesEnd = $timedate->getDayStartEndGMT("2011-07-14");
-
+        $GMTDatesStart = $this->timedate->getDayStartEndGMT("2011-07-13");
+        $GMTDatesEnd = $this->timedate->getDayStartEndGMT("2011-07-14");
+ 
         // Current User is on GMT-7.
         // Asking for meeting between 13 and 14 July 2011, I expect to search from 13 July at 07:00 until 15 July at 07:00 (excluded)
         $expectedWhere = "meetings.date_start >= " . $GLOBALS['db']->convert($GLOBALS['db']->quoted($GMTDatesStart['start']), 'datetime') .

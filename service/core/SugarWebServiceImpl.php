@@ -157,7 +157,6 @@ function get_entries($session, $module_name, $ids, $select_fields, $link_name_to
 * @exception 'SoapFault' -- The SOAP error, if any
 */
 function get_entry_list($session, $module_name, $query, $order_by,$offset, $select_fields, $link_name_to_fields_array, $max_results, $deleted ){
-
 	$GLOBALS['log']->info('Begin: SugarWebServiceImpl->get_entry_list');
 	global  $beanList, $beanFiles;
 	$error = new SoapError();
@@ -200,7 +199,8 @@ function get_entry_list($session, $module_name, $query, $order_by,$offset, $sele
     if($using_cp){
         $response = $seed->retrieveTargetList($query, $select_fields, $offset,-1,-1,$deleted);
     }else{
-	   $response = $seed->get_list($order_by, $query, $offset,-1,-1,$deleted);
+        /* @var $seed SugarBean */
+	   $response = $seed->get_list($order_by, $query, $offset,-1,-1,$deleted, false, $select_fields);
     } // else
 	$list = $response['list'];
 
@@ -867,7 +867,7 @@ function get_document_revision($session, $id) {
  * @param string[] $modules			- array of modules to query
  * @param int $offset				- a specified offset in the query
  * @param int $max_results			- max number of records to return
- * @return Array return_search_result 	- Array('Accounts' => array(array('name' => 'first_name', 'value' => 'John', 'name' => 'last_name', 'value' => 'Do')))
+ * @return Array 'entry_list' -- Array('Accounts' => array(array('name' => 'first_name', 'value' => 'John', 'name' => 'last_name', 'value' => 'Do')))
  * @exception 'SoapFault' -- The SOAP error, if any
  */
 function search_by_module($session, $search_string, $modules, $offset, $max_results){

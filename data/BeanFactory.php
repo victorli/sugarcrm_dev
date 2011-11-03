@@ -70,8 +70,11 @@ class BeanFactory {
             if (empty(self::$loadedBeans[$module][$id]))
             {
                 $bean = new $beanClass();
-                $bean->retrieve($id);
-                self::registerBean($module, $bean, $id);
+                $result = $bean->retrieve($id);
+                if($result == null)
+                    return FALSE;
+                else
+                    self::registerBean($module, $bean, $id);
             } else
             {
                 self::$hits++;
@@ -97,6 +100,23 @@ class BeanFactory {
 
         return $beanList[$module];
     }
+
+    /**
+     * Returns the object name / dictionary key for a given module. This should normally
+     * be the same as the bean name, but may not for special case modules (ex. Case vs aCase)
+     * @static 
+     * @param String $module
+     * @return bool
+     */
+    public static function getObjectName($module)
+    {
+        global $objectList;
+        if (empty($objectList[$module]))
+            return self::getBeanName($module);
+
+        return $objectList[$module];
+    }
+
 
     /**
      * @static

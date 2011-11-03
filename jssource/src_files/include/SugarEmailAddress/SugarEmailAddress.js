@@ -216,6 +216,7 @@
 		    var parentObj = insertInto.parentNode;
 		    var newContent = document.createElement("input");
 		    var nav = new String(navigator.appVersion);
+
 		    var newContentPrimaryFlag = document.createElement("input");
 		    var newContentReplyToFlag = document.createElement("input");
 		    var newContentOptOutFlag = document.createElement("input");

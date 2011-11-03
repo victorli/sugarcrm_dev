@@ -62,7 +62,7 @@ $curr_lang = 'en_us';
 if(isset($GLOBALS['current_language']) && ($GLOBALS['current_language'] != null)){
 	$curr_lang = $GLOBALS['current_language'];
 }
-return_module_language($curr_lang, 'UpgradeWizard');
+return_module_language($curr_lang, 'UpgradeWizard', true);
 
 
 $standardErrorLevel = error_reporting();

@@ -102,6 +102,7 @@ $sugar_smarty->assign("exportCharsets", get_select_options_with_id($locale->getC
 //$sugar_smarty->assign('salutation', 'Mr.');
 //$sugar_smarty->assign('first_name', 'John');
 //$sugar_smarty->assign('last_name', 'Doe');
+$sugar_smarty->assign('NAMEFORMATS', $locale->getPrettyLocaleNameOptions($sugar_config['name_formats']));
 $sugar_smarty->assign('getNameJs', $locale->getNameJs());
 
 $sugar_smarty->display('modules/Administration/Locale.tpl');

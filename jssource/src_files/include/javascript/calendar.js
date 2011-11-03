@@ -279,14 +279,27 @@ Calendar.setup = function (params) {
             }
             
             var seldate = calendar.getSelectedDates();
-            if (Dom.get(inputField).value.length > 0) {
-            	val = new Date(Dom.get(inputField).value);
-            	if(!isNaN(val.getTime()))
-            	{
-	            	calendar.cfg.setProperty("selected", Dom.get(inputField).value);
-	                seldate = Dom.get(inputField).value.split(date_field_delimiter);       	
-	            	calendar.cfg.setProperty("pagedate", seldate[monthPos] + calendar.cfg.getProperty("DATE_FIELD_DELIMITER") + seldate[yearPos]);
-	            }
+            var fieldVal = Dom.get(inputField).value;
+            var defaultToToday = function () {
+                var today = new Date();
+                calendar.cfg.setProperty("selected", (today.getMonth() + 1) + date_field_delimiter + today.getFullYear());
+                calendar.cfg.setProperty("pagedate", (today.getMonth() + 1) + calendar.cfg.getProperty("DATE_FIELD_DELIMITER") + today.getFullYear());
+            };
+            if (fieldVal.length > 0) {
+            	val = new Date(fieldVal);
+            	if(!isNaN(val.getTime()) && fieldVal.indexOf(date_field_delimiter) !== -1) {
+	            	seldate = fieldVal.split(date_field_delimiter);
+                    var temp = new Date(seldate[yearPos], seldate[monthPos]);
+                    var tm = temp.getTime();
+                    if (!isNaN(temp.getTime())) {
+                        calendar.cfg.setProperty("selected", fieldVal);
+                        calendar.cfg.setProperty("pagedate", seldate[monthPos] + calendar.cfg.getProperty("DATE_FIELD_DELIMITER") + seldate[yearPos]);
+                    } else {
+                        defaultToToday();
+                    }
+	            } else {
+                    defaultToToday();
+                }
             } else if (seldate.length > 0) {
                 // Set the pagedate to show the selected date if it exists
                 calendar.cfg.setProperty("selected", seldate[0]);

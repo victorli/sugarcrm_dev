@@ -62,7 +62,7 @@ class CalendarUtils {
 	
 	
 	/**
-	 * Returns list of needed fields for modules
+	 * Get list of needed fields for modules
 	 * @return array
 	 */
 	static function get_fields(){
@@ -100,5 +100,25 @@ class CalendarUtils {
 				'parent_id',
 			),
 		);
+	}
+	
+	/**
+	 * Get array of needed time data
+	 * @param SugarBean $bean 
+	 * @return array
+	 */
+	static function get_time_data($bean){
+					$arr = array();
+					
+					$date_field = "date_start";								
+					if($bean->object_name == 'Task')
+						$date_field = "date_due";
+					
+					$timestamp = SugarDateTime::createFromFormat($GLOBALS['timedate']->get_date_time_format(),$bean->$date_field,new DateTimeZone('UTC'))->format('U');				
+					$arr['timestamp'] = $timestamp;
+					$arr['time_start'] = $GLOBALS['timedate']->fromTimestamp($arr['timestamp'])->format($GLOBALS['timedate']->get_time_format());
+
+					
+					return $arr;
 	}
 }

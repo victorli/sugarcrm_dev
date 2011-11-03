@@ -106,13 +106,9 @@
 	</tr>
 	</tr><tr>
 		<td  scope="row" valign="top">{$MOD.LBL_LOCALE_DEFAULT_NAME_FORMAT}: </td>
-		<td  >
-			<input onkeyup="setPreview();" onkeydown="setPreview();" id="default_locale_name_format" type="text" name="default_locale_name_format" value="{$config.default_locale_name_format}">
-			<br>
-			{$MOD.LBL_LOCALE_NAME_FORMAT_DESC}
+		<td>
+            {html_options name='default_locale_name_format' id="default_locale_name_format" selected=$config.default_locale_name_format options=$NAMEFORMATS}
 		</td>
-		<td  scope="row" valign="top">{$MOD.LBL_LOCALE_EXAMPLE_NAME_FORMAT}: </td>
-		<td   valign="top"><input name="no_value" id="nameTarget" value="" style="border: none;" disabled></td>
 	</tr>
 
 	</table>
@@ -214,4 +210,5 @@
 
 <script language="Javascript" type="text/javascript">
 {$getNameJs}
+setPreview();
 </script>

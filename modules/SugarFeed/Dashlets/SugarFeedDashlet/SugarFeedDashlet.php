@@ -513,7 +513,7 @@ enableQS(false);
         foreach ( $linkTypesIn as $key => $value ) {
             $linkTypes[$key] = translate('LBL_LINK_TYPE_'.$value,'SugarFeed');
         }
-		$ss->assign(' ', $linkTypes);
+		$ss->assign('link_types', $linkTypes);
 		return $ss->fetch('modules/SugarFeed/Dashlets/SugarFeedDashlet/UserPostForm.tpl');
 
 	}

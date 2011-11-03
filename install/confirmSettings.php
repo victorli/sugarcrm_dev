@@ -422,7 +422,19 @@ if( $memory_limit == "" ){          // memory_limit disabled at compile time, no
             <td  >'.$fileMaxStatus.'</td>
           </tr>';
 
-
+      //CHECK Sprite support
+        if(function_exists('imagecreatetruecolor'))
+        {
+            $spriteSupportStatus = "{$mod_strings['LBL_CHECKSYS_OK']}</font>";
+        }else{
+            $spriteSupportStatus = "<span class='stop'><b>{$mod_strings['ERROR_SPRITE_SUPPORT']}</b></span>";
+        }
+            $envString .='
+          <tr>
+            <td></td>
+            <td><strong>'.$mod_strings['LBL_SPRITE_SUPPORT'].'</strong></td>
+            <td  >'.$spriteSupportStatus.'</td>
+          </tr>';
 
 
 
@@ -564,12 +576,3 @@ EOQ;
 echo $out;
 
 ?>
-
-
-
-
-
-
-
-
-

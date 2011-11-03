@@ -569,6 +569,7 @@ class ModuleBuilderController extends SugarController
                 $relationships = new UndeployedRelationships ( $module->getModuleDir () ) ;
             }
             $relationships->delete ( $_REQUEST [ 'relationship_name' ] ) ;
+
             $relationships->save () ;
             require_once("data/Relationships/RelationshipFactory.php");
             SugarRelationshipFactory::deleteCache();
@@ -622,6 +623,18 @@ class ModuleBuilderController extends SugarController
         }
         $module->removeFieldFromLayouts( $field->name );
         $this->view = 'modulefields' ;
+
+        if (isset($GLOBALS['current_language']) && isset($_REQUEST['label']) &&
+                isset($_REQUEST['labelValue']) && isset($_REQUEST['view_module'])) {
+            $this->DeleteLabel($GLOBALS['current_language'], $_REQUEST['label'], $_REQUEST['labelValue'], $_REQUEST['view_module']);
+        }
+    }
+
+    function DeleteLabel($language, $label, $labelvalue, $modulename, $basepath = null, $forRelationshipLabel = false)
+    {
+        // remove the label
+        require_once 'modules/ModuleBuilder/parsers/parser.label.php';
+        ParserLabel::removeLabel($language, $label, $labelvalue, $modulename, $basepath, $forRelationshipLabel);
     }
 
     function action_CloneField ()
@@ -774,11 +787,7 @@ class ModuleBuilderController extends SugarController
         $module_name = $_REQUEST [ 'view_module' ] ;
         global $beanList;
         if (isset($beanList[$module_name]) && $beanList[$module_name]!="") {
-            $objectName = $beanList[$module_name];
-            if($objectName == 'aCase') // Bug 17614 - renamed aCase as Case in vardefs for backwards compatibililty with 451 modules
-            {
-                $objectName = 'Case';
-            }
+            $objectName = BeanFactory::getObjectName($module_name);
 
             //Load the vardefs for the module to pass to TemplateRange
             VardefManager::loadVardef($module_name, $objectName, true);

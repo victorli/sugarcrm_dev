@@ -303,6 +303,15 @@ $modules_exempt_from_availability_check['OAuthTokens'] = 'OAuthTokens';
 $modInvisList[] = 'OAuthTokens';
 
 
+
+//Object list is only here to correct for modules that break
+//the bean class name == dictionary entry/object name convention
+//No future module should need an entry here.
+$objectList = array();
+$objectList['Cases'] =  'Case';
+$objectList['Groups'] =  'User';
+$objectList['Schedulers'] =  'schedulers';
+
 if (file_exists('include/modules_override.php'))
 {
     include('include/modules_override.php');

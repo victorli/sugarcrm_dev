@@ -45,8 +45,8 @@ class CurrencyTest extends Sugar_PHPUnit_Framework_TestCase {
     	global $current_user;
     	$this->previousCurrentUser = $current_user;       
         $current_user = SugarTestUserUtilities::createAnonymousUser();
-        $current_user->setPreference('num_grp_sep', ',', 0, 'global');
-        $current_user->setPreference('dec_sep', '.', 0, 'global');
+        $current_user->setPreference('number_grouping_seperator', ',', 0, 'global');
+        $current_user->setPreference('decimal_seperator', '.', 0, 'global');
         $current_user->save();
         //Force reset on dec_sep and num_grp_sep because the dec_sep and num_grp_sep values are stored as static variables
 	    get_number_seperators(true);  
@@ -65,7 +65,7 @@ class CurrencyTest extends Sugar_PHPUnit_Framework_TestCase {
     	$testValue = "$100,000.50";
     	
     	$unformattedValue = unformat_number($testValue);
-    	$this->assertEquals($unformattedValue, 100000.50, "Assert that $100,000.50 becomes 100000.50");
+    	$this->assertEquals($unformattedValue, 100000.50, "Assert that $100,000.50 becomes 100000.50. Formatted value is: ".$unformattedValue);
     	
     	//Switch the num_grp_sep and dec_sep values
         $current_user->setPreference('num_grp_sep', '.');
@@ -77,7 +77,7 @@ class CurrencyTest extends Sugar_PHPUnit_Framework_TestCase {
         
         $testValue = "$100.000,50";
         $unformattedValue = unformat_number($testValue);
-    	$this->assertEquals($unformattedValue, 100000.50, "Assert that $100.000,50 becomes 100000.50");
+    	$this->assertEquals($unformattedValue, 100000.50, "Assert that $100.000,50 becomes 100000.50. Formatted value is: ".$unformattedValue);
     }
     
     
@@ -87,7 +87,7 @@ class CurrencyTest extends Sugar_PHPUnit_Framework_TestCase {
     	$testValue = "100000.50";
     	
     	$formattedValue = format_number($testValue);
-    	$this->assertEquals($formattedValue, "100,000.50", "Assert that 100000.50 becomes 100,000.50");
+    	$this->assertEquals($formattedValue, "100,000.50", "Assert that 100000.50 becomes 100,000.50. Formatted value is: ".$formattedValue);
     	
     	//Switch the num_grp_sep and dec_sep values
         $current_user->setPreference('num_grp_sep', '.');
@@ -99,7 +99,7 @@ class CurrencyTest extends Sugar_PHPUnit_Framework_TestCase {
         
         $testValue = "100000.50";
         $formattedValue = format_number($testValue);
-    	$this->assertEquals($formattedValue, "100.000,50", "Assert that 100000.50 becomes 100.000,50");
+    	$this->assertEquals($formattedValue, "100.000,50", "Assert that 100000.50 becomes 100.000,50. Formatted value is: ".$formattedValue);
     }    
     
 } 

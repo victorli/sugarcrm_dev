@@ -35,65 +35,40 @@
  ********************************************************************************/
 
 
-require_once 'include/EditView/SubpanelQuickCreate.php';
+require_once 'modules/Home/UnifiedSearchAdvanced.php';
 
-class Bug39610Test extends Sugar_PHPUnit_Framework_TestCase
+/**
+ * @brief Try to find force_unifedsearch fields
+ * @ticket 42961
+ */
+class Bug42961Test extends Sugar_PHPUnit_Framework_TestCase
 {
-    public function setUp()
+
+    /**
+     * @brief generation of new cache file and search for force_unifiedsearch fields in it
+     * @group 42961
+     */
+    public function testBuildCache()
     {
-        global $app_strings, $app_list_strings;
-        $app_strings = return_application_language($GLOBALS['current_language']);
-        $app_list_strings = return_app_list_strings_language($GLOBALS['current_language']);
-        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-    }
-    
-    public function tearDown()
-    {
-        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-        unset($GLOBALS['current_user']);
-    }
-    
-    public function testUseCustomViewAndCustomClassName()
-    {
-        $target_module = 'Contacts';
-        sugar_mkdir('custom/modules/'. $target_module . '/views/',null,true);
-        if( $fh = @fopen('custom/modules/'. $target_module . '/views/view.edit.php', 'w') )
+        $beanList = array();
+        $beanFiles = array();
+        require('include/modules.php');
+        $GLOBALS['beanList'] = $beanList;
+        $GLOBALS['beanFiles'] = $beanFiles;
+        $unifiedSearchAdvanced = new UnifiedSearchAdvanced();
+        $unifiedSearchAdvanced->buildCache();
+        $this->assertFileExists($GLOBALS['sugar_config']['cache_dir'].'modules/unified_search_modules.php', 'Here should be cache file with data');
+        include $GLOBALS['sugar_config']['cache_dir'].'modules/unified_search_modules.php';
+        $force_unifiedsearch = 0;
+        foreach ($unified_search_modules as $moduleName=>$moduleInformation)
         {
-$string = <<<EOQ
-<?php
-class CustomContactsViewEdit extends ViewEdit
-{
-     var \$useForSubpanel = false;
-
-     public function CustomContactsViewEdit() 
-     {
-          \$GLOBALS['CustomContactsSubpanelQuickCreated'] = true;
-     }
-};
-?>
-EOQ;
-            fputs( $fh, $string);
-            fclose( $fh );
+            foreach ($moduleInformation['fields'] as $fieldName=>$fieldInformation)
+            {
+                if (key_exists('force_unifiedsearch', $fieldInformation)) {
+                    $force_unifiedsearch++;
+                }
+            }
         }
-
-        
-        $subpanelMock = new SubpanelQuickCreateMockBug39610Test($target_module, 'SubpanelQuickCreate');
-        $this->assertTrue(!empty($GLOBALS['CustomContactsSubpanelQuickCreated']), "Assert that CustomContactsEditView constructor was called");
-        @unlink('custom/modules/'. $target_module . '/views/view.subpanelquickcreate.php');
+        $this->assertGreaterThan(0, $force_unifiedsearch, 'Here should be fields with force_unifiedsearch key');
     }
-
-}
-
-
-class SubpanelQuickCreateMockBug39610Test extends SubpanelQuickCreate
-{
-	public function SubpanelQuickCreateMockBug39610Test($module, $view='QuickCreate', $proccessOverride = false)
-	{
-		parent::SubpanelQuickCreate($module, $view, $proccessOverride);	
-	}
-	
-	public function process()
-	{
-		//no-op
-	}
 }

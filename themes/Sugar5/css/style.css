@@ -774,7 +774,7 @@ margin-top: 0;
 {
     width: 5em;
 }
-.list tr th, .list tr td[scope=col], 
+.td_alt, .list tr th, .list tr td[scope=col],
 .edit .list tr th, .edit .list tr td[scope=col]
 {
     font-size: 11px;

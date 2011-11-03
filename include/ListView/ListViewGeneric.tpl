@@ -43,8 +43,8 @@
 <script type='text/javascript' src='{sugar_getjspath file='include/javascript/popup_helper.js'}'></script>
 
 {if $overlib}
-	<script type='text/javascript' src='{sugar_getjspath file='cache/include/javascript/sugar_grp_overlib.js'}'></script>
-	<div id='overDiv' style='position:absolute; visibility:hidden; z-index:1000;'></div>
+<script type='text/javascript' src='cache/include/javascript/sugar_grp_overlib.js'></script>
+<div id='overDiv' style='position:absolute; visibility:hidden; z-index:1000;'></div>
 {/if}
 
 {$multiSelectData}

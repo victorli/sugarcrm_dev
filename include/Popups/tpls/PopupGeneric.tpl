@@ -137,7 +137,6 @@
                             {capture assign="imageName"}arrow.{$arrowExt}{/capture}
 							{sugar_getimage name="$imageName" ext='gif' width="$arrowWidth" height="$arrowHeight" alt="$arrowAlt" other_attributes='align="absmiddle" border="0"'}
 						{/if}
-						</a>
 					{else}
 						{sugar_translate label=$params.label module=$pageData.bean.moduleDir}
 					{/if}

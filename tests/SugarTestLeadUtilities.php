@@ -76,7 +76,22 @@ class SugarTestLeadUtilities
         $lead_ids = self::getCreatedLeadIds();
         $GLOBALS['db']->query('DELETE FROM leads WHERE id IN (\'' . implode("', '", $lead_ids) . '\')');
     }
-    
+
+    /**
+     * removeCreatedLeadsEmailAddresses
+     *
+     * This function removes email addresses that may have been associated with the leads created
+     *
+     * @static
+     * @return void
+     */
+    public static function removeCreatedLeadsEmailAddresses(){
+    	$lead_ids = self::getCreatedLeadIds();
+        $GLOBALS['db']->query('DELETE FROM email_addresses WHERE id IN (SELECT DISTINCT email_address_id FROM email_addr_bean_rel WHERE bean_module =\'Leads\' AND bean_id IN (\'' . implode("', '", $lead_ids) . '\'))');
+        $GLOBALS['db']->query('DELETE FROM emails_beans WHERE bean_module=\'Leads\' AND bean_id IN (\'' . implode("', '", $lead_ids) . '\')');
+        $GLOBALS['db']->query('DELETE FROM email_addr_bean_rel WHERE bean_module=\'Leads\' AND bean_id IN (\'' . implode("', '", $lead_ids) . '\')');
+    }
+
     public static function removeCreatedLeadsUsersRelationships(){
     	$lead_ids = self::getCreatedLeadIds();
         $GLOBALS['db']->query('DELETE FROM leads_users WHERE lead_id IN (\'' . implode("', '", $lead_ids) . '\')');

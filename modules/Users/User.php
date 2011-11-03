@@ -413,23 +413,17 @@ class User extends Person {
         return $user->_userPreferenceFocus->getPreference($name, $category);
 	}
 
-	/**
-	 * Get WHERE clause that fetches all users counted for licensing purposes
-	 * @return string
-	 */
 	public static function getLicensedUsersWhere()
 	{
-		return "deleted=0 AND status='Active' AND user_name !='' AND user_name IS NOT NULL AND is_group=0 AND portal_only=0";
+		return "deleted=0 AND status='Active' AND user_name IS NOT NULL AND is_group=0 AND portal_only=0  AND ".$GLOBALS['db']->convert('user_name', 'length').">0";
 	    return "1<>1";
 	}
 
-	/**
-	 * (non-PHPdoc)
-	 * @see Person::save()
-	 */
 	function save($check_notify = false) {
 		$isUpdate = !empty($this->id) && !$this->new_with_id;
 
+
+		$query = "SELECT count(id) as total from users WHERE status='Active' AND deleted=0 AND is_group=0 AND portal_only=0";
 
 
 		// wp: do not save user_preferences in this table, see user_preferences module
@@ -828,10 +822,16 @@ EOQ;
 			$verified = FALSE;
 		}
 
-		if (is_admin($current_user)) {
-			$remaining_admins = $this->db->getOne("SELECT COUNT(*) as c from users where is_admin = 1 AND deleted=0");
+		if (($current_user->is_admin == "on")) {
+            if($this->db->dbType == 'mssql'){
+                $query = "SELECT user_name from users where is_admin = 1 AND deleted=0";
+            }else{
+                $query = "SELECT user_name from users where is_admin = 'on' AND deleted=0";
+            }
+			$result = $this->db->query($query, true, "Error selecting possible duplicate users: ");
+			$remaining_admins = $this->db->getRowCount($result);
 
-			if (($remaining_admins <= 1) && $this->id == $current_user->id && !is_admin($this)) {
+			if (($remaining_admins <= 1) && ($this->is_admin != "on") && ($this->id == $current_user->id)) {
 				$GLOBALS['log']->debug("Number of remaining administrator accounts: {$remaining_admins}");
 				$this->error_string .= $mod_strings['ERR_LAST_ADMIN_1'].$this->user_name.$mod_strings['ERR_LAST_ADMIN_2'];
 				$verified = FALSE;
@@ -849,14 +849,14 @@ EOQ;
 
 	function get_list_view_data() {
 
-		global $current_user, $mod_strings;
+		global $current_user;
 
 		$user_fields = $this->get_list_view_array();
 		if ($this->is_admin)
-			$user_fields['IS_ADMIN_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '',null,null,'.gif',$mod_strings['LBL_CHECKMARK']);
+			$user_fields['IS_ADMIN_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '');
 		elseif (!$this->is_admin) $user_fields['IS_ADMIN'] = '';
 		if ($this->is_group)
-			$user_fields['IS_GROUP_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '',null,null,'.gif',$mod_strings['LBL_CHECKMARK']);
+			$user_fields['IS_GROUP_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '');
 		else
 			$user_fields['IS_GROUP_IMAGE'] = '';
 		$user_fields['NAME'] = empty ($this->name) ? '' : $this->name;
@@ -1290,13 +1290,13 @@ EOQ;
      * @return string
      */
     protected function _fixupModuleForACL($module) {
-        if($module=='ContractTypes') {
+        if($module=='ContractTypes') { 
             $module = 'Contracts';
         }
         if(preg_match('/Product[a-zA-Z]*/',$module)) {
             $module = 'Products';
         }
-
+        
         return $module;
     }
     /**
@@ -1319,9 +1319,9 @@ EOQ;
         // These modules don't take kindly to the studio trying to play about with them.
         static $ignoredModuleList = array('iFrames','Feeds','Home','Dashboard','Calendar','Activities','Reports');
 
-
+        
         $actions = ACLAction::getUserActions($this->id);
-
+        
         foreach ($beanList as $module=>$val) {
             // Remap the module name
             $module = $this->_fixupModuleForACL($module);
@@ -1335,14 +1335,14 @@ EOQ;
             }
 
             $key = 'module';
-
+            
             if (($this->isAdmin() && isset($actions[$module][$key]))
                 ) {
                 $myModules[] = $module;
             }
         }
 
-        return $myModules;
+        return $myModules;        
     }
     /**
      * Is this user a system wide admin
@@ -1389,9 +1389,9 @@ EOQ;
         if ($this->isAdmin()) {
             return true;
         }
-
+        
         $devModules = $this->getDeveloperModules();
-
+        
         $module = $this->_fixupModuleForACL($module);
 
         if (in_array($module,$devModules) ) {
@@ -1421,9 +1421,9 @@ EOQ;
         if ($this->isAdmin()) {
             return true;
         }
-
+        
         $adminModules = $this->getAdminModules();
-
+        
         $module = $this->_fixupModuleForACL($module);
 
         if (in_array($module,$adminModules) ) {
@@ -1477,7 +1477,15 @@ EOQ;
 		                $alias = substr($ljVal,$spacePos,$onPos-$spacePos);
 
 		                //add null check to end of the Join statement
-		                $ljVal ='  LEFT JOIN '.$ljVal.' and '.$alias.'.id is null ';
+                        // Bug #46390 to use id_c field instead of id field for custom tables
+                        if(substr($alias, -5) != '_cstm')
+                        {
+                            $ljVal ='  LEFT JOIN '.$ljVal.' and '.$alias.'.id is null ';
+                        }
+                        else
+                        {
+                            $ljVal ='  LEFT JOIN '.$ljVal.' and '.$alias.'.id_c is null ';
+                        }
 
 		                //add statement into new string
 		                $new_left_str .= $ljVal;
@@ -1516,7 +1524,5 @@ EOQ;
 
         return $fdow;
     }
-
-
 
 }

@@ -74,7 +74,7 @@ class SugarWidgetSubPanelTopComposeEmailButton extends SugarWidgetSubPanelTopBut
     		$composeData = array("parent_id" => $parent_id, "parent_type"=>$parent_type);
             require_once('modules/Emails/EmailUI.php');
             $eUi = new EmailUI();
-            $j_quickComposeOptions = $eUi->generateComposePackageForQuickCreate($composeData, http_build_query($composeData), $defines['focus']);
+            $j_quickComposeOptions = $eUi->generateComposePackageForQuickCreate($composeData, http_build_query($composeData), false, $defines['focus']);
 
             $button = "<input title='$title'  id='".preg_replace('[ ]', '', strtolower($value))."_button' accesskey='$accesskey' onclick='SUGAR.quickCompose.init($j_quickComposeOptions);' class='button' type='submit' name='".preg_replace('[ ]', '', $value)."_button' value='$value' />";
 		}

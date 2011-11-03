@@ -60,7 +60,6 @@ class MailMergeController extends SugarController{
         if(!empty($module)){
             $where = '';
             $deleted = '0';
-
             $using_cp = false;
 
             if(!empty($term))

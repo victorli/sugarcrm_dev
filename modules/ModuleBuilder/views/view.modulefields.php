@@ -74,18 +74,11 @@ class ViewModulefields extends SugarView
             $studioClass = new stdClass;
             $studioClass->name = $module_name;
 
-            global $beanList;
-            $objectName = $beanList[$module_name];
-
-            if($objectName == 'aCase') // Bug 17614 - renamed aCase as Case in vardefs for backwards compatibililty with 451 modules
-                $objectName = 'Case';
+            $objectName = BeanFactory::getObjectName($module_name);
 
             VardefManager::loadVardef($module_name, $objectName, true);
             global $dictionary;
             $f = array($mod_strings['LBL_HCUSTOM']=>array(), $mod_strings['LBL_HDEFAULT']=>array());
-
-            // TODO: replace this section to select fields to list with the algorithm in AbstractMetaDataImplmentation::validField()
-            $def = $this->cullFields($dictionary[$objectName]['fields']);
 
             foreach($dictionary[$objectName]['fields'] as $def) {
                 if ($this->isValidStudioField($def))

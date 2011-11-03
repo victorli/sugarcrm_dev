@@ -81,6 +81,7 @@ function make_sugar_config(&$sugar_config)
 	global $list_max_entries_per_page;
 	global $lock_default_user_name;
 	global $log_memory_usage;
+    global $nameFormats;
 	global $requireAccounts;
 	global $RSS_CACHE_TIME;
 	global $session_dir;
@@ -127,6 +128,7 @@ function make_sugar_config(&$sugar_config)
 	'default_currency_symbol' => empty($default_currency_symbol) ? '$' : $default_currency_symbol,
 	'default_currency_iso4217' => empty($default_currency_iso4217) ? '$' : $default_currency_iso4217,
 	'default_date_format' => empty($defaultDateFormat) ? 'm/d/Y' : $defaultDateFormat,
+    'default_locale_name_format' => empty($defaultNameFormat) ? 's f l' : $defaultNameFormat,
 	'default_export_charset' => 'UTF-8',
 	'default_language' => empty($default_language) ? 'en_us' : $default_language,
 	'default_module' => empty($default_module) ? 'Home' : $default_module,
@@ -155,6 +157,10 @@ function make_sugar_config(&$sugar_config)
 	'list_max_entries_per_subpanel' => empty($list_max_entries_per_subpanel) ? 10 : $list_max_entries_per_subpanel,
 	'lock_default_user_name' => empty($lock_default_user_name) ? false : $lock_default_user_name,
 	'log_memory_usage' => empty($log_memory_usage) ? false : $log_memory_usage,
+    'name_formats' => empty($nameFormats) ? array(
+        's f l' => 's f l', 'f l' => 'f l', 's l' => 's l', 'l, s f' => 'l, s f',
+        'l, f' => 'l, f', 's l, f' => 's l, f', 'l s f' => 'l s f', 'l f s' => 'l f s'
+    ) : $nameFormats,
     'portal_view' => 'single_user',
 	'resource_management' => array (
 	    'special_query_limit' => 50000,
@@ -228,6 +234,10 @@ function get_sugar_config_defaults() {
 	'Y-m-d' => '2010-12-23', 'm-d-Y' => '12-23-2010', 'd-m-Y' => '23-12-2010',
 	'Y/m/d' => '2010/12/23', 'm/d/Y' => '12/23/2010', 'd/m/Y' => '23/12/2010',
 	'Y.m.d' => '2010.12.23', 'd.m.Y' => '23.12.2010', 'm.d.Y' => '12.23.2010',),
+    'name_formats' => array (
+        's f l' => 's f l', 'f l' => 'f l', 's l' => 's l', 'l, s f' => 'l, s f',
+        'l, f' => 'l, f', 's l, f' => 's l, f', 'l s f' => 'l s f', 'l f s' => 'l f s'
+    ),
 	'dbconfigoption' => array (
 	'persistent' => true,
 	'autofree' => false,
@@ -243,6 +253,7 @@ function get_sugar_config_defaults() {
 	'default_number_grouping_seperator' => return_session_value_or_default('default_number_grouping_seperator', ','),
 	'default_decimal_seperator' => return_session_value_or_default('default_decimal_seperator', '.'),
 	'default_date_format' => 'm/d/Y',
+    'default_locale_name_format' => 's f l',
 	'default_export_charset' => 'UTF-8',
 	'default_language' => return_session_value_or_default('default_language',
 	'en_us'),
@@ -333,11 +344,8 @@ function get_sugar_config_defaults() {
 	  'day_timestep' => 15,
 	  'week_timestep' => 30,
 	  'month_timestep' => 60,
-	  'default_day_start' => '08:00',
-	  'default_day_end' => '19:00',
 	  'items_draggable' => true,
 	  'mouseover_expand' => true,
-	  'item_text' => 'name',
 	),
 	'passwordsetting' => empty($passwordsetting) ? array (
 	    'SystemGeneratedPasswordON' => '',
@@ -572,7 +580,7 @@ function get_user_array($add_blank=true, $status="Active", $assigned_user="", $u
 	if($from_cache)
 		$user_array = get_register_value('user_array', $add_blank. $status . $assigned_user);
 
-	if(!isset($user_array)) {
+	if(empty($user_array)) {
 		$db = DBManagerFactory::getInstance();
 		$temp_result = Array();
 		// Including deleted users for now.
@@ -812,14 +820,23 @@ function return_app_list_strings_language($language)
 function _mergeCustomAppListStrings($file , $app_list_strings){
 	$app_list_strings_original = $app_list_strings;
 	unset($app_list_strings);
+        // FG - bug 45525 - $exemptDropdown array is defined (once) here, not inside the foreach
+        //                  This way, language file can add items to save specific standard codelist from being overwritten
+        $exemptDropdowns = array();
 	include($file);
 	if(!isset($app_list_strings) || !is_array($app_list_strings)){
 		return $app_list_strings_original;
 	}
 	//Bug 25347: We should not merge custom dropdown fields unless they relate to parent fields or the module list.
+
+        // FG - bug 45525 - Specific codelists must NOT be overwritten
+	$exemptDropdowns[] = "moduleList";
+        $exemptDropdowns[] = "parent_type_display";
+        $exemptDropdowns[] = "record_type_display";
+        $exemptDropdowns[] = "record_type_display_notes";
+   
 	foreach($app_list_strings as $key=>$value)
 	{
-		$exemptDropdowns = array("moduleList", "parent_type_display", "record_type_display", "record_type_display_notes");
 		if (!in_array($key, $exemptDropdowns) && array_key_exists($key, $app_list_strings_original))
 		{
 	   		unset($app_list_strings_original["$key"]);
@@ -966,10 +983,7 @@ function return_module_language($language, $module, $refresh=false)
 	// the vardefs file if the cached language file doesn't exist.
     if(!file_exists(sugar_cached('modules/'). $module . '/language/'.$language.'.lang.php')
 			&& !empty($GLOBALS['beanList'][$module])){
-		$object = $GLOBALS['beanList'][$module];
-		if ($object == 'aCase') {
-            $object = 'Case';
-		}
+		$object = BeanFactory::getObjectName($module);
 		VardefManager::refreshVardefs($module,$object);
 	}
 
@@ -1447,6 +1461,9 @@ function get_select_options_with_id_separate_key ($label_list, $key_list, $selec
 	//for setting null selection values to human readable --None--
 	$pattern = "/'0?'></";
 	$replacement = "''>".$app_strings['LBL_NONE']."<";
+    if($massupdate){
+        $replacement .= "/OPTION>\n<OPTION value='__SugarMassUpdateClearField__'><"; // Giving the user the option to unset a drop down list. I.e. none means that it won't get updated
+    }
 
 	if (empty($key_list)) $key_list = array();
 	//create the type dropdown domain and set the selected value if $opp value already exists
@@ -3376,6 +3393,22 @@ function getPhpInfo($level=-1) {
  */
 function string_format($format, $args){
 	$result = $format;
+    
+    /** Bug47277 fix.
+     * If args array has only one argument, and it's empty, so empty single quotes are used '' . That's because
+     * IN () fails and IN ('') works. 
+     */
+    if (count($args) == 1)
+    {
+        reset($args);
+        $singleArgument = current($args);
+        if (empty($singleArgument))
+        {
+            return str_replace("{0}", "''", $result);
+        }
+    }
+    /* End of fix */
+    
 	for($i = 0; $i < count($args); $i++){
 		$result = str_replace('{'.$i.'}', $args[$i], $result);
 	}

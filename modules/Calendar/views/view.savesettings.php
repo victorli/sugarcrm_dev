@@ -47,17 +47,16 @@ class CalendarViewSaveSettings extends SugarView {
 	}
 	
 	function display(){
-		global $current_user;
-		
-		$db_start = $this->to_db_time($_REQUEST['d_start_hours'],$_REQUEST['d_start_minutes'],$_REQUEST['d_start_meridiem']);
-		$db_end = $this->to_db_time($_REQUEST['d_end_hours'],$_REQUEST['d_end_minutes'],$_REQUEST['d_end_meridiem']);
+		global $current_user;		
 
+		$db_start = $this->to_db_time($_REQUEST['day_start_hours'],$_REQUEST['day_start_minutes'],$_REQUEST['day_start_meridiem']);
+		$db_end = $this->to_db_time($_REQUEST['day_end_hours'],$_REQUEST['day_end_minutes'],$_REQUEST['day_end_meridiem']);
+		
 		$current_user->setPreference('day_start_time', $db_start, 0, 'global', $current_user);
 		$current_user->setPreference('day_end_time', $db_end, 0, 'global', $current_user);
-
+		
 		$current_user->setPreference('show_tasks', $_REQUEST['show_tasks'], 0, 'global', $current_user);
 		$current_user->setPreference('show_calls', $_REQUEST['show_calls'], 0, 'global', $current_user);
-
 
 		if(isset($_REQUEST['day']) && !empty($_REQUEST['day']))
 			header("Location: index.php?module=Calendar&action=index&view=".$_REQUEST['view']."&hour=0&day=".$_REQUEST['day']."&month=".$_REQUEST['month']."&year=".$_REQUEST['year']);
@@ -83,6 +82,7 @@ class CalendarViewSaveSettings extends SugarView {
 			$minutes = "0".$minutes;	
 		return $hours . ":". $minutes; 
 	}	
+	
 
 }
 

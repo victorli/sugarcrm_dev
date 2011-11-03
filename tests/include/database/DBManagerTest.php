@@ -1552,14 +1552,14 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
      */
     public function test_Bug34892_MssqlNotClearingErrorResults()
     {
-        // execute a bad query
-        $this->_db->query("select dsdsdsdsdsdsdsdsdsd", false, "test_Bug34892_MssqlNotClearingErrorResults", true);
-        // assert it found an error
-        $this->assertNotEmpty($this->_db->lastError(), "lastError should return true as a result of the previous illegal query");
-        // now, execute a good query
-        $this->_db->query("select * from config");
-        // and make no error messages are asserted
-        $this->assertEmpty($this->_db->lastError(), "lastError should have cleared the previous error and return false of the last legal query");
+            // execute a bad query
+            $this->_db->query("select dsdsdsdsdsdsdsdsdsd", false, "test_Bug34892_MssqlNotClearingErrorResults", true);
+            // assert it found an error
+            $this->assertNotEmpty($this->_db->lastError(), "lastError should return true as a result of the previous illegal query");
+            // now, execute a good query
+            $this->_db->query("select * from config");
+            // and make no error messages are asserted
+            $this->assertEmpty($this->_db->lastError(), "lastError should have cleared the previous error and return false of the last legal query");
     }
 
     public function vardefProvider()

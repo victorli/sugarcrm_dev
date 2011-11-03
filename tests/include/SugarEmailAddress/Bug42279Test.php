@@ -34,45 +34,45 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-require_once('include/MVC/View/SugarView.php');
 
-class CalendarViewAjaxReschedule extends SugarView {
+require_once 'include/SugarEmailAddress/SugarEmailAddress.php';
+require_once 'SugarTestContactUtilities.php';
 
-	function CalendarViewAjaxReschedule(){
- 		parent::SugarView();
-	}
-	
-	function process(){
-		$this->display();
-	}
-	
-	function display(){
-		require_once("modules/Calls/Call.php");
-		require_once("modules/Meetings/Meeting.php");
 
-		global $beanFiles,$beanList;
-		$module = $_REQUEST['current_module'];
-		require_once($beanFiles[$beanList[$module]]);
-		$bean = new $beanList[$module]();	
-	
-		$bean->retrieve($_REQUEST['record']);
+/**
+ * 
+ * Bug 42279
+ *
+ */
 
-		if(!$bean->ACLAccess('Save')){
-			die;	
-		}
-		
-		$field = "date_start";
-		if($module == "Tasks")
-			$field = "date_due";	
-			
-		$_POST[$field] = $_REQUEST['datetime'];
-			
-		require_once('include/formbase.php');		
-		$bean = populateFromPost("",$bean);
-		
-		$bean->save();
-	}	
+class Bug42279Test extends Sugar_PHPUnit_Framework_TestCase
+{
+    private $contact;	
 
+    public function setUp() {
+    	
+    	$GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+        $this->contact = SugarTestContactUtilities::createContact();
+               
+    }
+
+    public function tearDown() {
+        SugarTestContactUtilities::removeAllCreatedContacts();
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+    }
+
+    /**
+     * @group bug42279
+     */
+    public function testEmailAddressInFetchedRow() {
+        $sea = new SugarEmailAddress();
+
+        // this will populate contact->email1
+        $sea->populateLegacyFields($this->contact);
+        $email1 = $this->contact->email1;
+
+        // this should set fetched_row['email1'] to contatc->email1
+        $sea->handleLegacyRetrieve($this->contact);
+    	$this->assertEquals($email1, $this->contact->fetched_row['email1']);
+    }
 }
-
-?>

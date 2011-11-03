@@ -60,12 +60,15 @@ public function setup()
     $this->contact1->first_name = 'Collin';
     $this->contact1->last_name = 'Lee';
     $this->contact1->save();
+    $this->contact1->emailAddress->addAddress('clee@sugarcrm.com', true, false);
+    $this->contact1->emailAddress->save($this->contact1->id, $this->contact1->module_dir);
 }
 
 public function tearDown()
 {
     SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
     SugarTestContactUtilities::removeAllCreatedContacts();
+    SugarTestContactUtilities::removeCreatedContactsEmailAddresses();
     unset($this->form);
     unset($this->contact1);
 }
@@ -95,6 +98,8 @@ public function testCreatingDuplicateContact($first_name, $last_name, $hasDuplic
 {
     $_POST['first_name'] = $first_name;
     $_POST['last_name'] = $last_name;
+    $_POST['Contacts0emailAddresss0'] = 'clee@sugarcrm.com';
+    
     $rows = $this->form->checkForDuplicates();
 
     if($hasDuplicate)

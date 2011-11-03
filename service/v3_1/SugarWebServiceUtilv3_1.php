@@ -148,8 +148,7 @@ class SugarWebServiceUtilv3_1 extends SugarWebServiceUtilv3
         if (!isset($beanFiles[$beanName]))
             return array();
 
-        if($beanName == 'aCase')
-            $beanName = 'Case';
+        $beanName = BeanFactory::getObjectName($moduleName);
 
         $manager = new VardefManager ( );
         $manager->loadVardef( $moduleName , $beanName ) ;

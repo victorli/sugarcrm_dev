@@ -69,7 +69,9 @@ class javascript{
 	}
 
     function addSpecialField($dispField, $realField, $type, $required, $prefix = '') {
+       if (isset($this->sugarbean->field_name_map[$realField]['vname'])) {
     	$this->addFieldGeneric($dispField, 'date', $this->sugarbean->field_name_map[$realField]['vname'], $required, $prefix );
+       }
     }
 
 	function addField($field,$required, $prefix='', $displayField='', $translate = false){
@@ -126,6 +128,11 @@ class javascript{
 						$this->addFieldDateBeforeAllowBlank($dispField,$this->sugarbean->field_name_map[$field]['type'],$vname,$required,$prefix, $compareTo );
 						else $this->addFieldDateBefore($dispField,$this->sugarbean->field_name_map[$field]['type'],$vname,$required,$prefix, $compareTo );
 						break;
+                    // Bug #47961 Adding new type of validation: through callback function
+                    case 'callback' :
+                        $dispField = $displayField ? $displayField : $field;
+                        $this->addFieldCallback($dispField, $this->sugarbean->field_name_map[$field]['type'], $vname, $required, $prefix, $this->sugarbean->field_name_map[$field]['validation']['callback']);
+                        break;
 					default:
 						if(!empty($displayField)){
 							$dispField = $displayField;
@@ -171,6 +178,19 @@ class javascript{
 		$this->script .= "addToValidate('".$this->formname."', '".$prefix.$field."', '".$type . "', {$this->getRequiredString($required)},'"
                        . $this->stripEndColon(translate($displayName,$this->sugarbean->module_dir)) . "' );\n";
 	}
+
+    // Bug #47961 Generator of callback validator
+    function addFieldCallback($field, $type, $displayName, $required, $prefix, $callback)
+    {
+        $this->script .= 'addToValidateCallback("'
+            . $this->formname . '", "'
+            . $prefix.$field . '", "'
+            . $type . '", '
+            . $this->getRequiredString($required) . ', "'
+            . $this->stripEndColon(translate($displayName, $this->sugarbean->module_dir)).'", '
+            .$callback
+        .');'."\n";
+    }
 
 	function addFieldRange($field, $type,$displayName, $required, $prefix='',$min, $max){
 		$this->script .= "addToValidateRange('".$this->formname."', '".$prefix.$field."', '".$type . "', {$this->getRequiredString($required)},'"

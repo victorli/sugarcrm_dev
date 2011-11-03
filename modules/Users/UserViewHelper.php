@@ -529,13 +529,16 @@ class UserViewHelper {
         ////	Date/time format
         $dformat = $locale->getPrecedentPreference($this->bean->id?'datef':'default_date_format', $this->bean);
         $tformat = $locale->getPrecedentPreference($this->bean->id?'timef':'default_time_format', $this->bean);
+        $nformat = $locale->getPrecedentPreference('default_locale_name_format', $this->bean);
         $timeOptions = get_select_options_with_id($sugar_config['time_formats'], $tformat);
         $dateOptions = get_select_options_with_id($sugar_config['date_formats'], $dformat);
+        $nameOptions = get_select_options_with_id($locale->getPrettyLocaleNameOptions($sugar_config['name_formats']), $nformat);
         $this->ss->assign('TIMEOPTIONS', $timeOptions);
         $this->ss->assign('DATEOPTIONS', $dateOptions);
+        $this->ss->assign('NAMEOPTIONS', $nameOptions);
         $this->ss->assign('DATEFORMAT', $sugar_config['date_formats'][$dformat]);
         $this->ss->assign('TIMEFORMAT', $sugar_config['time_formats'][$tformat]);
-        
+        $this->ss->assign('NAMEFORMAT', $sugar_config['name_formats'][$nformat]);
 
         //// Timezone
         if(empty($this->bean->id)) { // remove default timezone for new users(set later)

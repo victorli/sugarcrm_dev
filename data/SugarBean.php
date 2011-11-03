@@ -554,8 +554,14 @@ class SugarBean
     function getPrimaryFieldDefinition()
     {
         $def = $this->getFieldDefinition("id");
-        if (!$def)
+        if(empty($def)) {
             $def = $this->getFieldDefinition(0);
+        }
+        if (empty($def)) {
+            $defs = $this->field_defs;
+            reset($defs);
+            $def = current($defs);
+        }
         return $def;
     }
     /**
@@ -957,8 +963,19 @@ class SugarBean
     function get_linked_beans($field_name,$bean_name, $sort_array = array(), $begin_index = 0, $end_index = -1,
                               $deleted=0, $optional_where="")
     {
-        if($this->load_relationship($field_name))
-            return array_values($this->$field_name->getBeans());
+        //if bean_name is Case then use aCase
+        if($bean_name=="Case")
+            $bean_name = "aCase";
+
+        if($this->load_relationship($field_name)) {
+            if ($this->$field_name instanceof Link) {
+                // some classes are still based on Link, e.g. TeamSetLink
+                return array_values($this->$field_name->getBeans(new $bean_name(), $sort_array, $begin_index, $end_index, $deleted, $optional_where));
+            } else {
+                // Link2 style
+                return array_values($this->$field_name->getBeans());
+            }
+        }
         else
             return array();
     }
@@ -2202,7 +2219,7 @@ function save_relationship_changes($is_update, $exclude=array())
     * Internal function, do not override.
     *
     */
-    function get_list($order_by = "", $where = "", $row_offset = 0, $limit=-1, $max=-1, $show_deleted = 0, $singleSelect=false)
+    function get_list($order_by = "", $where = "", $row_offset = 0, $limit=-1, $max=-1, $show_deleted = 0, $singleSelect=false, $select_fields = array())
     {
         $GLOBALS['log']->debug("get_list:  order_by = '$order_by' and where = '$where' and limit = '$limit'");
         if(isset($_SESSION['show_deleted']))
@@ -2227,7 +2244,7 @@ function save_relationship_changes($is_update, $exclude=array())
                 }
             }
         }
-        $query = $this->create_new_list_query($order_by, $where,array(),array(), $show_deleted,'',false,null,$singleSelect);
+        $query = $this->create_new_list_query($order_by, $where,$select_fields,array(), $show_deleted,'',false,null,$singleSelect);
         return $this->process_list_query($query, $row_offset, $limit, $max, $where);
     }
 
@@ -3828,6 +3845,7 @@ function save_relationship_changes($is_update, $exclude=array())
         // We have some data.
         while (($row = $bean->db->fetchByAssoc($result)) != null)
         {
+            $row = $this->convertRow($row);
             if(!$isFirstTime)
             {
                 $bean = new $class();
@@ -4493,10 +4511,7 @@ function save_relationship_changes($is_update, $exclude=array())
 
     function getRelatedFields($module, $id, $fields, $return_array = false){
         if(empty($GLOBALS['beanList'][$module]))return '';
-        $object = $GLOBALS['beanList'][$module];
-        if ($object == 'aCase') {
-            $object = 'Case';
-        }
+        $object = BeanFactory::getObjectName($module);
 
         VardefManager::loadVardef($module, $object);
         if(empty($GLOBALS['dictionary'][$object]['table']))return '';

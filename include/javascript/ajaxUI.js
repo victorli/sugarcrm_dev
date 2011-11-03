@@ -40,11 +40,7 @@ if(r.title)
 {document.title=html_entity_decode(r.title);}
 if(r.action)
 {action_sugar_grp1=r.action;}
-var c=document.getElementById("content");c.innerHTML=cont;SUGAR.util.evalScript(cont);if(r.record)
-{DCMenu.record=r.record;}
-if(r.menu&&r.menu.module)
-{DCMenu.module=r.menu.module;}
-if(typeof(r.responseTime)!='undefined'){var rt=document.getElementById('responseTime');if(rt!=null){rt.innerHTML=r.responseTime;}}}catch(e){SUGAR.ajaxUI.showErrorMessage(o.responseText);}},showErrorMessage:function(errorMessage)
+var c=document.getElementById("content");c.innerHTML=cont;SUGAR.util.evalScript(cont);if(typeof(r.responseTime)!='undefined'){var rt=document.getElementById('responseTime');if(rt!=null){rt.innerHTML=r.responseTime;}}}catch(e){SUGAR.ajaxUI.showErrorMessage(o.responseText);}},showErrorMessage:function(errorMessage)
 {if(!SUGAR.ajaxUI.errorPanel){SUGAR.ajaxUI.errorPanel=new YAHOO.widget.Panel("ajaxUIErrorPanel",{modal:false,visible:true,constraintoviewport:true,width:"800px",height:"600px",close:true});}
 var panel=SUGAR.ajaxUI.errorPanel;panel.setHeader(SUGAR.language.get('app_strings','ERR_AJAX_LOAD'));panel.setBody('<iframe id="ajaxErrorFrame" style="width:780px;height:550px;border:none;marginheight="0" marginwidth="0" frameborder="0""></iframe>');panel.setFooter(SUGAR.language.get('app_strings','ERR_AJAX_LOAD_FOOTER'));panel.render(document.body);SUGAR.util.doWhen(function(){var f=document.getElementById("ajaxErrorFrame");return f!=null&&f.contentWindow!=null&&f.contentWindow.document!=null;},function(){document.getElementById("ajaxErrorFrame").contentWindow.document.body.innerHTML=errorMessage;window.setTimeout('throw "AjaxUI error parsing response"',300);});panel.show();panel.center();throw"AjaxUI error parsing response";},canAjaxLoadModule:function(module)
 {if(typeof(SUGAR.config.disableAjaxUI)!='undefined'&&SUGAR.config.disableAjaxUI==true){return false;}
@@ -57,8 +53,14 @@ return SUGAR.util.arrayIndexOf(bannedModules,module)==-1;},loadContent:function(
 {YAHOO.util.History.navigate('ajaxUILoc',url);}else{window.location=url;}}},go:function(url)
 {if(YAHOO.lang.trim(url)!="")
 {var con=YAHOO.util.Connect,ui=SUGAR.ajaxUI;if(ui.lastURL==url)
-return;var inAjaxUI=/action=ajaxui/.exec(window.location);if(inAjaxUI&&typeof(window.onbeforeunload)=="function"&&window.onbeforeunload()&&!confirm(window.onbeforeunload()))
-{YAHOO.util.History.navigate('ajaxUILoc',ui.lastURL);return;}
+return;var inAjaxUI=/action=ajaxui/.exec(window.location);if(typeof(window.onbeforeunload)=="function"&&window.onbeforeunload())
+{if(!confirm(window.onbeforeunload()))
+{if(!inAjaxUI)
+{window.location.hash="";}
+else
+{YAHOO.util.History.navigate('ajaxUILoc',ui.lastURL);}
+return;}
+window.onbeforeunload=null;}
 if(ui.lastCall&&con.isCallInProgress(ui.lastCall)){con.abort(ui.lastCall);}
 var mRegex=/module=([^&]*)/.exec(url);var module=mRegex?mRegex[1]:false;if(!ui.canAjaxLoadModule(module)){window.location=url;return;}
 ui.lastURL=url;ui.cleanGlobals();var loadLanguageJS='';if(module&&typeof(SUGAR.language.languages[module])=='undefined'){loadLanguageJS='&loadLanguageJS=1';}
@@ -78,7 +80,7 @@ SUGAR.ajaxUI.go(url);}
 SUGAR_callsInProgress--;},print:function()
 {var url=YAHOO.util.History.getBookmarkedState('ajaxUILoc');SUGAR.util.openWindow(url+'&print=true','printwin','menubar=1,status=0,resizable=1,scrollbars=1,toolbar=0,location=1');},showLoadingPanel:function()
 {if(!SUGAR.ajaxUI.loadingPanel)
-{SUGAR.ajaxUI.loadingPanel=new YAHOO.widget.Panel("ajaxloading",{width:"240px",fixedcenter:true,close:false,draggable:false,constraintoviewport:false,modal:true,visible:false});SUGAR.ajaxUI.loadingPanel.setBody('<div id="loadingPage" align="center" style="vertical-align:middle;"><img src="'+SUGAR.themes.image_server+'index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=img_loading.gif" align="absmiddle" /> <b>'+SUGAR.language.get('app_strings','LBL_LOADING_PAGE')+'</b></div>');SUGAR.ajaxUI.loadingPanel.render(document.body);}
+{SUGAR.ajaxUI.loadingPanel=new YAHOO.widget.Panel("ajaxloading",{width:"240px",fixedcenter:true,close:false,draggable:false,constraintoviewport:false,modal:true,visible:false});SUGAR.ajaxUI.loadingPanel.setBody('<div id="loadingPage" align="center" style="vertical-align:middle;"><img src="'+SUGAR.themes.loading_image+'" align="absmiddle" /> <b>'+SUGAR.language.get('app_strings','LBL_LOADING_PAGE')+'</b></div>');SUGAR.ajaxUI.loadingPanel.render(document.body);}
 if(document.getElementById('ajaxloading_c'))
 document.getElementById('ajaxloading_c').style.display='';SUGAR.ajaxUI.loadingPanel.show();},hideLoadingPanel:function()
 {SUGAR.ajaxUI.loadingPanel.hide();if(document.getElementById('ajaxloading_c'))

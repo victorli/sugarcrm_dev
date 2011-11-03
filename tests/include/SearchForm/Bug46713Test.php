@@ -114,7 +114,7 @@ class Bug46713Test extends Sugar_PHPUnit_Framework_TestCase
         );
 
         $where_clauses = $this->searchForm->generateSearchWhere();
-        $this->assertGreaterThan(0, strpos($where_clauses[0], "cases.case_number >= '-0.01' AND cases.case_number <= '0.01'"));
+        $this->assertEquals('cases.case_number = 0', $where_clauses[0]);
     }
 }
 ?>

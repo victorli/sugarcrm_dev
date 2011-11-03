@@ -132,7 +132,7 @@ require_once('include/EditView/EditView2.php');
                                 'name'   => 'advanced',
                                 'displayDiv' => 'display:none');
         }
-        if($this->showCustom){
+        if(isset($this->showCustom) && is_array($this->showCustom)){
             foreach($this->showCustom as $v){
                 $this->nbTabs++;
                 $this->tabs[]=array('title'  => $GLOBALS['app_strings']["LNK_" . strtoupper($v)],
@@ -540,10 +540,15 @@ require_once('include/EditView/EditView2.php');
     }
 
     /**
-     * Create WHERE clause for search query
-     * @param bool $add_custom_fields Custom fields should be added?
-     * @param string $module Module to search
-     * @return string WHERE clause
+     * generateSearchWhere
+     *
+     * This function serves as the central piece of SearchForm2.php
+     * It is responsible for creating the WHERE clause for a given search operation
+     *
+     * @param bool $add_custom_fields boolean indicating whether or not custom fields should be added
+     * @param string $module Module to search against
+     *
+     * @return string the SQL WHERE clause based on the arguments supplied in SearchForm2 instance
      */
     public function generateSearchWhere($add_custom_fields = false, $module='') {
         global $timedate;
@@ -565,6 +570,7 @@ require_once('include/EditView/EditView2.php');
             // a generic search form validation mechanism.
             $type = (!empty($this->seed->field_name_map[$field]['type']))?$this->seed->field_name_map[$field]['type']:'';
 
+            //If range search is enabled for the field, we first check if this is the starting range
             if(!empty($parms['enable_range_search']) && empty($type))
             {
                 if(preg_match('/^start_range_(.*?)$/', $field, $match))
@@ -596,7 +602,7 @@ require_once('include/EditView/EditView2.php');
                     if(in_array($parms['operator'], array('=', 'between', "not_equal", 'less_than', 'greater_than', 'less_than_equals', 'greater_than_equals')))
                     {
                        $field_type = isset($this->seed->field_name_map[$real_field]['type']) ? $this->seed->field_name_map[$real_field]['type'] : '';
-                       if($field_type == 'datetimecombo' || $field_type == 'datetime')
+                       if($field_type == 'datetimecombo' || $field_type == 'datetime' || $field_type == 'int')
                        {
                           $type = $field_type;
                        }
@@ -614,6 +620,7 @@ require_once('include/EditView/EditView2.php');
                 }
             }
 
+            //Test to mark whether or not the field is a custom field
             if(!empty($this->seed->field_name_map[$field]['source'])
                 && ($this->seed->field_name_map[$field]['source'] == 'custom_fields' ||
                     //Non-db custom fields, such as custom relates
@@ -621,10 +628,9 @@ require_once('include/EditView/EditView2.php');
                     && (!empty($this->seed->field_name_map[$field]['custom_module']) ||
                          isset($this->seed->field_name_map[$field]['ext2']))))){
                 $customField = true;
-              }
+            }
 
-            if ($type == 'int') {
-                if (!empty($parms['value'])) {
+            if ($type == 'int' && !empty($parms['value']) && strpos($parms['value'], ',') > 0) {
                     $tempVal = explode(',', $parms['value']);
                     $newVal = '';
                     foreach($tempVal as $key => $val) {
@@ -636,7 +642,6 @@ require_once('include/EditView/EditView2.php');
                             $newVal .= $val;
                     }
                     $parms['value'] = $newVal;
-                }
             } elseif($type == 'html' && $customField) {
                 continue;
             }
@@ -783,7 +788,7 @@ require_once('include/EditView/EditView2.php');
                         if($type == 'date') {
                            // The regular expression check is to circumvent special case YYYY-MM
                             $operator = '=';
-                            if(preg_match('/^\d{4}.\d{1,2}$/', $field_value) == 0) {
+                            if(preg_match('/^\d{4}.\d{1,2}$/', $field_value) != 0) { // preg_match returns number of matches
                                $db_field = $this->seed->db->convert($db_field, "date_format", array("%Y-%m"));
                            } else {
                                $field_value = $timedate->to_db_date($field_value, false);
@@ -865,9 +870,10 @@ require_once('include/EditView/EditView2.php');
 								}
                                 $values[] = $tmpfield_value;
 							}
-                            $field_value = join('<>',$values);
 
-							if(!empty($parms['enable_range_search']) && $parms['operator'] == '=')
+                            $field_value = join('<>',$values);
+								
+							if(!empty($parms['enable_range_search']) && $parms['operator'] == '=' && $type != 'int')
 							{
 								// Databases can't really search for floating point numbers, because they can't be accurately described in binary,
 								// So we have to fuzz out the math a little bit
@@ -885,6 +891,12 @@ require_once('include/EditView/EditView2.php');
                         $itr++;
                         if(!empty($where)) {
                             $where .= " OR ";
+                        }
+
+                        //Here we make a last attempt to determine the field type if possible
+                        if(empty($type) && isset($parms['db_field']) && isset($parms['db_field'][0]) && isset($this->seed->field_defs[$parms['db_field'][0]]['type']))
+                        {
+                            $type = $this->seed->field_defs[$parms['db_field'][0]]['type'];
                         }
 
                         switch(strtolower($operator)) {

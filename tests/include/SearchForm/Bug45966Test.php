@@ -80,9 +80,9 @@ class Bug45966 extends Sugar_PHPUnit_Framework_TestCase {
     public function tearDown()
     {
         unset($this->array);
-        unset($this->seed);
         unset($this->form);
-        SugarTestAccountUtilities::removeAllCreatedAccounts();
+        unset($this->seed);
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset($GLOBALS['current_user']);
     }
 

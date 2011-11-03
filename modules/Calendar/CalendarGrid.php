@@ -37,24 +37,26 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 
-
-
 global $timedate;
 
 class CalendarGrid {
 
-	var $args;
-	var $today_ts; // timestamp of today
-	var $weekday_names; // string array of names of week days
-	var $startday; // first day of week
-	var $scrollable; // srolling in calendar
-	var $time_step = 30; // time step
-	var $time_format; // user time format
-	var $date_time_format; // user date time format
+	protected $cal; // Calendar object
+	protected $today_ts; // timestamp of today
+	protected $weekday_names; // string array of names of week days
+	protected $startday; // first day of week
+	protected $scrollable; // srolling in calendar
+	protected $time_step = 30; // time step
+	protected $time_format; // user time format
+	protected $date_time_format; // user date time format
 	
-	function __construct(&$args){
+	/**
+	 * constructor
+	 * @param Calendar $cal
+	 */
+	function __construct(&$cal){
 		global $current_user;
-		$this->args = &$args;		
+		$this->cal = &$cal;		
 		$this->today_ts = $GLOBALS['timedate']->getNow()->get_day_begin()->format('U');
 
 		$this->startday = $current_user->get_first_day_of_week();
@@ -70,11 +72,11 @@ class CalendarGrid {
 		$this->weekday_names = $weekday_names;	
 		
 		$this->scrollable = false;		
-		if(in_array($this->args['cal']->view,array('day','week'))){
+		if(in_array($this->cal->view,array('day','week'))){
 			$this->scrollable = true;
 		}
 		
-		$this->time_step = $this->args['cal']->time_step;
+		$this->time_step = $this->cal->time_step;
 		$this->time_format = $GLOBALS['timedate']->get_time_format();
 		$this->date_time_format = $GLOBALS['timedate']->get_date_time_format();	
 	
@@ -84,8 +86,8 @@ class CalendarGrid {
 	/** Get html of calendar grid
 	 * @return string
 	 */
-	function display(){
-		$action = "display_".strtolower($this->args['cal']->view);		
+	public function display(){
+		$action = "display_".strtolower($this->cal->view);		
 		return $this->$action();
 	}
 	
@@ -93,10 +95,10 @@ class CalendarGrid {
 	 * @param integer $start timestamp	 
 	 * @return string
 	 */
-	function get_time_column($start){			
+	protected function get_time_column($start){			
 		$str = "";			
 		$head_content = "&nbsp;";	
-		if($this->args['cal']->view == 'month'){
+		if($this->cal->view == 'month'){
 			if($this->startday == 0)
 				$wf = 1;
 			else
@@ -119,7 +121,7 @@ class CalendarGrid {
 					}else{
 						$class = "";
 					}										
-					if($this->scrollable || !$this->check_owt($i,$j,$this->args['cal']->d_start_minutes,$this->args['cal']->d_end_minutes))											
+					if($this->scrollable || !$this->check_owt($i,$j,$this->cal->d_start_minutes,$this->cal->d_end_minutes))											
 						$str .= "<div class='left_cell".$class."'>".$innerText."</div>";
 				}
 			}	
@@ -134,7 +136,7 @@ class CalendarGrid {
 	 * @param string $prefix prefix for id of timeslot used in shared view	 
 	 * @return string
 	 */
-	function get_day_column($start,$day = 0,$prefix = ""){	
+	protected function get_day_column($start,$day = 0,$prefix = ""){	
 		$curr_time = $start;
 		$str = "";
 		$str .= "<div class='day_col'>";
@@ -147,7 +149,7 @@ class CalendarGrid {
 				}else{
 					$class = "";	
 				}				
-				if($this->scrollable || !$this->check_owt($i,$j,$this->args['cal']->d_start_minutes,$this->args['cal']->d_end_minutes))
+				if($this->scrollable || !$this->check_owt($i,$j,$this->cal->d_start_minutes,$this->cal->d_end_minutes))
 					$str .= "<div id='t_".$curr_time.$prefix."' class='slot".$class."' time='".$timestr."' datetime='".$GLOBALS['timedate']->fromTimestamp($curr_time)->format($this->date_time_format)."'></div>";
 				$curr_time += $this->time_step*60;
 			}
@@ -163,7 +165,7 @@ class CalendarGrid {
 	 * @param bulean $force force display header 
 	 * @return string
 	 */	
-	function get_day_head($start,$day = 0,$force = false){
+	protected function get_day_head($start,$day = 0,$force = false){
 		$str = "";
 		if(!$this->scrollable || $force){
 			$headstyle = ""; 
@@ -182,7 +184,7 @@ class CalendarGrid {
 	 * @param integer $r_end end of working day in minutes
 	 * @return boolean
 	 */
-	function check_owt($i,$j,$r_start,$r_end){
+	protected function check_owt($i,$j,$r_start,$r_end){
 		if($i*60+$j < $r_start || $i*60+$j >= $r_end)
 			return true;
 	}
@@ -191,9 +193,9 @@ class CalendarGrid {
 	 * Get html of week calendar grid
 	 * @return string	
 	 */	
-	function display_week(){
+	protected function display_week(){
 		
-		$current_date = $this->args['cal']->date_time;
+		$current_date = $this->cal->date_time;
 		$week_start = CalendarUtils::get_first_day_of_week($current_date);
 		$week_start_ts = $week_start->format('U') + $week_start->getOffset(); // convert to timestamp, ignore tz
 	
@@ -233,9 +235,9 @@ class CalendarGrid {
 	 * Get html of day calendar grid
 	 * @return string	
 	 */
-	function display_day(){	
+	protected function display_day(){	
 
-		$current_date = $this->args['cal']->date_time;
+		$current_date = $this->cal->date_time;
 		$day_start_ts = $current_date->format('U') + $current_date->getOffset(); // convert to timestamp, ignore tz
 
 		$str = "";
@@ -257,9 +259,9 @@ class CalendarGrid {
 	 * Get html of month calendar grid
 	 * @return string	
 	 */
-	function display_month(){
+	protected function display_month(){
 			
-		$current_date = $this->args['cal']->date_time;
+		$current_date = $this->cal->date_time;
 		$month_start = $current_date->get_day_by_index_this_month(0);	
 		$month_end = $month_start->get("+".$month_start->format('t')." days");			
 		$week_start = CalendarUtils::get_first_day_of_week($month_start);
@@ -291,20 +293,20 @@ class CalendarGrid {
 	 * Get html of week shared grid
 	 * @return string	
 	 */
-	function display_shared(){
+	protected function display_shared(){
 	
-		$current_date = $this->args['cal']->date_time;
+		$current_date = $this->cal->date_time;
 		$week_start = CalendarUtils::get_first_day_of_week($current_date);
 		$week_start_ts = $week_start->format('U') + $week_start->getOffset(); // convert to timestamp, ignore tz
 
 		$str = "";
 		$str .= "<div id='cal-grid' style='visibility: hidden;'>";
-		$un = 0;
+		$user_number = 0;
 		
 		$shared_user = new User();
-		foreach($this->args['cal']->shared_ids as $member_id){
+		foreach($this->cal->shared_ids as $member_id){
 
-			$un_str = "_".$un;
+			$user_number_str = "_".$user_number;
 		
 			$shared_user->retrieve($member_id);
 			$str .= "<div style='clear: both;'></div>";			
@@ -315,11 +317,11 @@ class CalendarGrid {
 				$str .= "<div class='week_block'>";
 				for($d = 0; $d < 7; $d++){
 					$curr_time = $week_start_ts + $d*86400;
-					$str .= $this->get_day_column($curr_time,$d,$un_str);
+					$str .= $this->get_day_column($curr_time,$d,$user_number_str);
 				}
 				$str .= "</div>";		
 			$str .= "</div>";
-			$un++;
+			$user_number++;
 		}
 		$str .= "</div>";
 		
@@ -330,7 +332,7 @@ class CalendarGrid {
 	 * Get html of year calendar
 	 * @return string	
 	 */
-	function display_year(){	
+	protected function display_year(){	
 
 		$weekEnd1 = 0 - $this->startday; 
 		$weekEnd2 = -1 - $this->startday; 
@@ -339,7 +341,7 @@ class CalendarGrid {
 		if($weekEnd2 < 0)
 			$weekEnd2 += 7;	
 
-		$year_start = SugarDateTime::createFromFormat("Y-m-d",$this->args['cal']->date_time->year.'-01-01');
+		$year_start = SugarDateTime::createFromFormat("Y-m-d",$this->cal->date_time->year.'-01-01');
 
 		$str = "";
 		$str .= '<table id="daily_cal_table" cellspacing="1" cellpadding="0" border="0" width="100%">';

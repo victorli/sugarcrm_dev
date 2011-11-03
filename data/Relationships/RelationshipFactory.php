@@ -164,7 +164,7 @@ class SugarRelationshipFactory {
         //Reload ALL the module vardefs....
         foreach($beanList as $moduleName => $beanName)
         {
-            VardefManager::loadVardef($moduleName, $beanName);
+            VardefManager::loadVardef($moduleName, BeanFactory::getObjectName($moduleName));
         }
 
         $relationships = array();

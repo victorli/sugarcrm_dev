@@ -70,7 +70,7 @@ class ViewList extends SugarView{
         if( !file_exists($metadataFile) )
             sugar_die($GLOBALS['app_strings']['LBL_NO_ACTION'] );
 
-        require_once($metadataFile);
+        require($metadataFile);
         $this->listViewDefs = $listViewDefs;
 
         if(!empty($this->bean->object_name) && isset($_REQUEST[$module.'2_'.strtoupper($this->bean->object_name).'_offset'])) {//if you click the pagination button, it will poplate the search criteria here
@@ -209,25 +209,25 @@ class ViewList extends SugarView{
 
             if (file_exists('custom/modules/'.$this->module.'/metadata/searchdefs.php'))
             {
-                require_once('custom/modules/'.$this->module.'/metadata/searchdefs.php');
+                require('custom/modules/'.$this->module.'/metadata/searchdefs.php');
             }
             elseif (!empty($metafiles[$this->module]['searchdefs']))
             {
-                require_once($metafiles[$this->module]['searchdefs']);
+                require($metafiles[$this->module]['searchdefs']);
             }
             elseif (file_exists('modules/'.$this->module.'/metadata/searchdefs.php'))
             {
-                require_once('modules/'.$this->module.'/metadata/searchdefs.php');
+                require('modules/'.$this->module.'/metadata/searchdefs.php');
             }
 
 
             if(!empty($metafiles[$this->module]['searchfields']))
-                require_once($metafiles[$this->module]['searchfields']);
+                require($metafiles[$this->module]['searchfields']);
             elseif(file_exists('modules/'.$this->module.'/metadata/SearchFields.php'))
-                require_once('modules/'.$this->module.'/metadata/SearchFields.php');
+                require('modules/'.$this->module.'/metadata/SearchFields.php');
 
             if(file_exists('custom/modules/'.$this->module.'/metadata/SearchFields.php')){
-                require_once('custom/modules/'.$this->module.'/metadata/SearchFields.php');
+                require('custom/modules/'.$this->module.'/metadata/SearchFields.php');
             }
 
 

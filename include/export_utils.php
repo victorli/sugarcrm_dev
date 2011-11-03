@@ -233,10 +233,7 @@ function export($type, $records = null, $members = false, $sample=false) {
 
     if($populate){
         //this is a sample request with no data, so create fake datarows
-
-            $content .= returnFakeDataRow($focus,$fields_array,$sampleRecordNum);
-
-
+         $content .= returnFakeDataRow($focus,$fields_array,$sampleRecordNum);
     }else{
         //process retrieved record
     	while($val = $db->fetchByAssoc($result, false)) {
@@ -245,49 +242,74 @@ function export($type, $records = null, $members = false, $sample=false) {
             $val = get_field_order_mapping($focus->module_dir,$val);
 
             $new_arr = array();
-            if($members){
-                if($pre_id == $val['id'])
-                    continue;
-                if($val['ea_deleted']==1 || $val['ear_deleted']==1){
-                    $val['primary_email_address'] = '';
-                }
-                unset($val['ea_deleted']);
-                unset($val['ear_deleted']);
-                unset($val['primary_address']);
-            }
-            $pre_id = $val['id'];
+		if($members){
+			if($pre_id == $val['id'])
+				continue;
+			if($val['ea_deleted']==1 || $val['ear_deleted']==1){
+				$val['primary_email_address'] = '';
+			}
+			unset($val['ea_deleted']);
+			unset($val['ear_deleted']);
+			unset($val['primary_address']);
+		}
+		$pre_id = $val['id'];
 
-            foreach ($val as $key => $value) {
-                //if our value is a datetime field, then apply the users locale
-                if(isset($focus->field_name_map[$fields_array[$key]]['type']) && ($focus->field_name_map[$fields_array[$key]]['type'] == 'datetime' || $focus->field_name_map[$fields_array[$key]]['type'] == 'datetimecombo')){
-                    $value = $timedate->to_display_date_time($value);
-                    $value = preg_replace('/([pm|PM|am|AM]+)/', ' \1', $value);
-                }
-                //kbrill Bug #16296
-                if(isset($focus->field_name_map[$fields_array[$key]]['type']) && $focus->field_name_map[$fields_array[$key]]['type'] == 'date'){
-                    $value = $timedate->to_display_date($value, false);
-                }
-                // Bug 32463 - Properly have multienum field translated into something useful for the client
-                if(isset($focus->field_name_map[$fields_array[$key]]['type']) && ( $focus->field_name_map[$fields_array[$key]]['type'] == 'multienum' ||  $focus->field_name_map[$fields_array[$key]]['type'] == 'enum')){
-                    $value = str_replace("^","",$value);
-                    if ( isset($focus->field_name_map[$fields_array[$key]]['options'])
-                            && isset($app_list_strings[$focus->field_name_map[$fields_array[$key]]['options']]) ) {
-                        $valueArray = explode(",",$value);
-                        foreach ( $valueArray as $multikey => $multivalue ) {
-                            if ( isset($app_list_strings[$focus->field_name_map[$fields_array[$key]]['options']][$multivalue]) ) {
-                                $valueArray[$multikey] = $app_list_strings[$focus->field_name_map[$fields_array[$key]]['options']][$multivalue];
+		foreach ($val as $key => $value)
+		{
+            //getting content values depending on their types
+            $fieldNameMapKey = $fields_array[$key];
+
+            if (isset($focus->field_name_map[$fieldNameMapKey])  && $focus->field_name_map[$fieldNameMapKey]['type'])
+            {
+                $fieldType = $focus->field_name_map[$fieldNameMapKey]['type'];
+                switch ($fieldType)
+                {
+                    //if our value is a currency field, then apply the users locale
+                    case 'currency':
+                        require_once('modules/Currencies/Currency.php');
+                        $value = currency_format_number($value);
+                        break;
+
+                    //if our value is a datetime field, then apply the users locale
+                    case 'datetime':
+                    case 'datetimecombo':
+                        $value = $timedate->to_display_date_time($value);
+                        $value = preg_replace('/([pm|PM|am|AM]+)/', ' \1', $value);
+                        break;
+
+                    //kbrill Bug #16296
+                    case 'date':
+                        $value = $timedate->to_display_date($value, false);
+                        break;
+
+                    // Bug 32463 - Properly have multienum field translated into something useful for the client
+                    case 'multienum':
+                        $value = str_replace("^","",$value);
+                        if (isset($focus->field_name_map[$fields_array[$key]]['options']) && isset($app_list_strings[$focus->field_name_map[$fields_array[$key]]['options']]) )
+                        {
+                            $valueArray = explode(",",$value);
+                            foreach ($valueArray as $multikey => $multivalue )
+                            {
+                                if (isset($app_list_strings[$focus->field_name_map[$fields_array[$key]]['options']][$multivalue]) )
+                                {
+                                    $valueArray[$multikey] = $app_list_strings[$focus->field_name_map[$fields_array[$key]]['options']][$multivalue];
+                                }
                             }
+                            $value = implode(",",$valueArray);
                         }
-                        $value = implode(",",$valueArray);
-                    }
+                        break;
                 }
-                array_push($new_arr, preg_replace("/\"/","\"\"", $value));
             }
-            $line = implode("\"".getDelimiter()."\"", $new_arr);
-            $line = "\"" .$line;
-            $line .= "\"\r\n";
-            $content .= $line;
+
+        array_push($new_arr, preg_replace("/\"/","\"\"", $value));
         }
+        $line = implode("\"".getDelimiter()."\"", $new_arr);
+        $line = "\"" .$line;
+        $line .= "\"\r\n";
+        $content .= $line;
+    }
+
+
     }
 	return $content;
 
@@ -479,7 +501,6 @@ function generateSearchWhere($module, $query) {//this function is similar with f
                          }
 
                      }
-
                     break;
                  case "relate":
                      if($field['name'] == 'team_name'){

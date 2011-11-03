@@ -206,20 +206,6 @@ else{
 		);
 	}
 	else{
-        /* BEGIN TEMP FIX:
-        This can be removed post 6.1.  As this is a new string that is introduced in 6.1, we can't
-        effectively load it into a pre 6.1 instance.  Running
-
-                global $current_language;
-                $lang = $current_language;
-                if(empty($lang))
-                    $lang = $GLOBALS['sugar_config']['default_language'];
-                require_once('include/SugarObjects/LanguageManager.php');
-                LanguageManager::clearLanguageCache('UpgradeWizard',$lang);
-                LanguageManager::loadModuleLanguage('UpgradeWizard',$lang,true);
-
-        causes strange theme issues with the Upgrade Wizard.
-        */
         if (empty($mod_strings['LBL_UW_TITLE_LAYOUTS']))
             $mod_strings['LBL_UW_TITLE_LAYOUTS'] = 'Layouts';
         /* END TEMP FIX */
@@ -288,7 +274,10 @@ if($upgradeStepFile == 'end'){
     //if(isset($_SESSION['current_db_version']) && substr($_SESSION['current_db_version'],0,1) == 4){
 	    ob_start();
 		 include('modules/ACL/install_actions.php');
+		 $old_mod_strings = $mod_strings;
+		 $mod_strings = return_module_language($current_language, 'Administration');
 		 include('modules/Administration/RebuildRelationship.php');
+		 $mod_strings = $old_mod_strings;
 		 //also add the cache cleaning here.
 		if(function_exists('deleteCache')){
 			deleteCache();
@@ -366,7 +355,7 @@ foreach($installeds as $installed) {
 
 		// cn: bug 9174 - cleared out upgrade dirs, or corrupt entries in upgrade_history give us bad file paths
 		if(is_file($target_manifest)) {
-			require_once( "$target_manifest" );
+			require_once(getUploadRelativeName($target_manifest) );
 			$name = empty($manifest['name']) ? $filename : $manifest['name'];
 			$description = empty($manifest['description']) ? $mod_strings['LBL_UW_NONE'] : $manifest['description'];
 

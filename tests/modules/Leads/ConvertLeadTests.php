@@ -53,10 +53,11 @@ class ConvertLeadTests extends Sugar_PHPUnit_Framework_TestCase
         unset($GLOBALS['current_user']);
     }
     
-	/**
-	 * @group bug39787
-	 */
-    public function testOpportunityNameValueFilled(){
+    /**
+    * @group bug39787
+    */
+    public function testOpportunityNameValueFilled()
+    {
         $lead = SugarTestLeadUtilities::createLead();
         $lead->opportunity_name = 'SBizzle Dollar Store';
         $lead->save();
@@ -98,6 +99,7 @@ class ConvertLeadTests extends Sugar_PHPUnit_Framework_TestCase
         unset($_REQUEST['record']);
         SugarTestLeadUtilities::removeAllCreatedLeads();
     }
+
     /**
      * @group bug44033
      */
@@ -436,6 +438,24 @@ class ConvertLeadTests extends Sugar_PHPUnit_Framework_TestCase
         SugarTestMeetingUtilities::removeAllCreatedMeetings();
         SugarTestAccountUtilities::removeAllCreatedAccounts();
         SugarTestLeadUtilities::removeAllCreatedLeads();
+    }
+
+    public function testMeetingsUsersRelationships()
+    {
+        global $current_user;
+
+        $bean = SugarTestMeetingUtilities::createMeeting();
+        $convert_lead = SugarTestViewConvertLeadUtilities::createViewConvertLead();
+
+        if ($bean->object_name == "Meeting")
+        {
+            $convert_lead->setMeetingsUsersRelationship($bean);
+        }
+
+        $this->assertTrue(is_object($bean->users), "Relationship wasn't set.");
+
+        SugarTestMeetingUtilities::removeMeetingUsers();
+        SugarTestMeetingUtilities::removeAllCreatedMeetings();
     }
 }
 

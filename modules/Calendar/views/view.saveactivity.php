@@ -36,9 +36,9 @@
 
 require_once('include/MVC/View/SugarView.php');
 
-class CalendarViewAjaxSave extends SugarView {
+class CalendarViewSaveActivity extends SugarView {
 
-	function CalendarViewAjaxSave(){
+	function CalendarViewSave(){
  		parent::SugarView();
 	}
 	
@@ -138,11 +138,10 @@ class CalendarViewAjaxSave extends SugarView {
 				'success' => 'yes',
 				'type' => $type,
 				'module_name' => $bean->module_dir,
-				'timestamp' => $timestamp,
-				'time_start' => $GLOBALS['timedate']->fromTimestamp($timestamp)->format($GLOBALS['timedate']->get_time_format()),
+				'user_id' => $GLOBALS['current_user']->id,
 
-				'detailview' => 1,	
-				'editview' => 1,		
+				'detail' => 1,	
+				'edit' => 1,		
 				'record_name' => html_entity_decode($bean->name,ENT_QUOTES),
 				'record' => $bean->id,
 				
@@ -150,7 +149,8 @@ class CalendarViewAjaxSave extends SugarView {
 
 			);
 	
-			$json_arr = array_merge($json_arr,$field_arr);
+			$json_arr = array_merge($json_arr,$field_arr);			
+			$json_arr = array_merge($json_arr,CalendarUtils::get_time_data($bean));
 
 		}else{
 			$json_arr = array(
@@ -164,7 +164,7 @@ class CalendarViewAjaxSave extends SugarView {
 	}
 
 	
-	function save_activity(&$bean,$notify = true){	
+	private function save_activity(&$bean,$notify = true){	
 	
 
 		if($_REQUEST['current_module'] == 'Meetings'){		

@@ -58,36 +58,41 @@ class One2MRelationship extends M2MRelationship
         if ($this->selfReferencing)
         {
             $links = VardefManager::getLinkFieldForRelationship(
-                $lhsModule, BeanFactory::getBeanName($lhsModule), $this->name
+                $lhsModule, BeanFactory::getObjectName($lhsModule), $this->name
             );
             if (empty($links))
             {
                 $GLOBALS['log']->fatal("No Links found for relationship {$this->name}");
             }
-            if (!isset($links[0])) //Only one link for a self referencing relationship, this is BAAAD
-                $this->lhsLinkDef = $this->rhsLinkDef = $links;
-            else
-            {
-                if ((!empty($links[0]['side']) && $links[0]['side'] == "right")
+            else {
+                if (!is_array($links)) //Only one link for a self referencing relationship, this is BAAAD
+                {
+                    $this->lhsLinkDef = $this->rhsLinkDef = $links;
+                }
+                else if (!empty($links[0]) && !empty($links[1]))
+                {
+
+                    if ((!empty($links[0]['side']) && $links[0]['side'] == "right")
                         || (!empty($links[0]['link_type']) && $links[0]['link_type'] == "one"))
-                {
-                    //$links[0] is the RHS
-                    $this->lhsLinkDef = $links[1];
-                    $this->rhsLinkDef = $links[0];
-                } else
-                {
-                    //$links[0] is the LHS
-                    $this->lhsLinkDef = $links[0];
-                    $this->rhsLinkDef = $links[1];
+                    {
+                        //$links[0] is the RHS
+                        $this->lhsLinkDef = $links[1];
+                        $this->rhsLinkDef = $links[0];
+                    } else
+                    {
+                        //$links[0] is the LHS
+                        $this->lhsLinkDef = $links[0];
+                        $this->rhsLinkDef = $links[1];
+                    }
                 }
             }
         } else
         {
             $this->lhsLinkDef = VardefManager::getLinkFieldForRelationship(
-                $lhsModule, BeanFactory::getBeanName($lhsModule), $this->name
+                $lhsModule, BeanFactory::getObjectName($lhsModule), $this->name
             );
             $this->rhsLinkDef = VardefManager::getLinkFieldForRelationship(
-                $rhsModule, BeanFactory::getBeanName($rhsModule), $this->name
+                $rhsModule, BeanFactory::getObjectName($rhsModule), $this->name
             );
             if (!isset($this->lhsLinkDef['name']) && isset($this->lhsLinkDef[0]))
             {
@@ -99,6 +104,38 @@ class One2MRelationship extends M2MRelationship
         }
         $this->lhsLink = $this->lhsLinkDef['name'];
         $this->rhsLink = $this->rhsLinkDef['name'];
+    }
+
+    public function getQuery($link, $params = array())
+    {
+        //Self referenceing one to many relationships use one link for subpanels and normal views.
+        //This mean we have to reverse it for normal views
+        if (($link->getSide() == REL_LHS && !$this->selfReferencing)
+            || $link->getSide() == REL_RHS && $this->selfReferencing
+        ) {
+            $knownKey = $this->def['join_key_lhs'];
+            $targetKey = $this->def['join_key_rhs'];
+        }
+        else
+        {
+            $knownKey = $this->def['join_key_rhs'];
+            $targetKey = $this->def['join_key_lhs'];
+        }
+        $rel_table = $this->getRelationshipTable();
+
+        $where = "$rel_table.$knownKey = '{$link->getFocus()->id}'" . $this->getRoleWhere();
+
+        if (empty($params['return_as_array'])) {
+            return "SELECT $targetKey id FROM $rel_table WHERE $where AND deleted=0";
+        }
+        else
+        {
+            return array(
+                'select' => "SELECT $targetKey id",
+                'from' => "FROM $rel_table",
+                'where' => "WHERE $where AND $rel_table.deleted=0",
+            );
+        }
     }
 
     /**

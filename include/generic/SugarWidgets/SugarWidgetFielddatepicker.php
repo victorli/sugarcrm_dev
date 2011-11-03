@@ -61,3 +61,5 @@ EOHTML;
         return $str;
     }
 }
+
+?>

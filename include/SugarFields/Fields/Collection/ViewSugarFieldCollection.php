@@ -209,12 +209,11 @@ class ViewSugarFieldCollection{
         // If there is extra field to show.
         if(isset($this->displayParams['collection_field_list'])){
 
-            require_once('include/SugarFields/SugarFieldHandler.php');
-            $sfh = new SugarFieldHandler();
-            vardefmanager::loadVardef($this->related_module, $GLOBALS['beanList'][$this->related_module]);
+            $relatedObject = BeanFactory::getObjectName($this->related_module);
+            vardefmanager::loadVardef($this->related_module, $relatedObject);
             foreach($this->displayParams['collection_field_list'] as $k=>$v){
                 $javascript='';
-                $collection_field_vardef = $GLOBALS['dictionary'][$GLOBALS['beanList'][$this->related_module]]['fields'][$v['name']];
+                $collection_field_vardef = $GLOBALS['dictionary'][$relatedObject]['fields'][$v['name']];
 
                 // For each extra field the params which are not displayParams will be consider as params to override the vardefs values.
                 foreach($v as $k_override=>$v_override){
@@ -541,5 +540,3 @@ FRA;
         return $tplName;
     }
 }
-
-?>

@@ -81,12 +81,7 @@ class ViewLabels extends ViewModulefields
 		$smarty->assign('available_languages',get_languages());
 
 
-        global $beanList;
-        $objectName = $beanList[$editModule];
-        if($objectName == 'aCase') {
-            $objectName = 'Case';
-        }
-
+        $objectName = BeanFactory::getObjectName($editModule);
         VardefManager::loadVardef($editModule, $objectName);
         global $dictionary;
         $vnames = array();

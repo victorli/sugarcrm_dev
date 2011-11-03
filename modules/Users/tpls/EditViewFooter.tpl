@@ -353,12 +353,10 @@
                                     type='text' maxlength='1' size='1' value='{$NUM_GRP_SEP}'
                                     onkeydown='setSigDigits();' onkeyup='setSigDigits();'>
                             </slot></td></tr>
-                        {capture name=SMARTY_LOCALE_NAME_FORMAT_DESC}&nbsp;{$MOD.LBL_LOCALE_NAME_FORMAT_DESC}<br />{$MOD.LBL_LOCALE_NAME_FORMAT_DESC_2}{/capture}
+                        {capture name=SMARTY_LOCALE_NAME_FORMAT_DESC}&nbsp;{$MOD.LBL_LOCALE_NAME_FORMAT_DESC}{/capture}
                         <tr>
                             <td  scope="row" valign="top">{$MOD.LBL_LOCALE_DEFAULT_NAME_FORMAT}:&nbsp;{sugar_help text=$smarty.capture.SMARTY_LOCALE_NAME_FORMAT_DESC }</td>
-                            <td   valign="top">
-                                <input onkeyup="setPreview();" onkeydown="setPreview();" id="default_locale_name_format" type="text" tabindex='14' name="default_locale_name_format" value="{$default_locale_name_format}">
-                            </td>
+                            <td  valign="top"><slot><select tabindex='14' id="default_locale_name_format" name="default_locale_name_format" selected="{$default_locale_name_format}">{$NAMEOPTIONS}</select></slot></td>
                              <td width="17%" scope="row"><slot>{$MOD.LBL_DECIMAL_SEP}:</slot>&nbsp;{sugar_help text=$MOD.LBL_DECIMAL_SEP_TEXT }</td>
                             <td ><slot>
                                 <input tabindex='14' name='dec_sep' id='default_decimal_seperator'
@@ -367,8 +365,6 @@
                             </slot></td>
                         </tr>
                         <tr>
-                            <td  scope="row" valign="top"><i>{$MOD.LBL_LOCALE_EXAMPLE_NAME_FORMAT}:</i> </td>
-                            <td   valign="top"><input tabindex='14' name="no_value" id="nameTarget" value="" style="border: none;" disabled size="50"></td>
                             <td width="17%" scope="row"><slot>{$MOD.LBL_FDOW}:</slot>&nbsp;{sugar_help text=$MOD.LBL_FDOW_TEXT}</td>
                             <td ><slot>
                                 <select tabindex='14' name='fdow'>{html_options options=$FDOWOPTIONS selected=$FDOWCURRENT}</select>
@@ -455,4 +451,19 @@ onUserEditView();
 	</div>
 </div>
 
-{{include file="include/EditView/footer.tpl"}}
+<table width="100%" cellpadding="0" cellspacing="0" border="0" class="actionsContainer">
+    <tr>
+        <td>
+            <input	id="Save" title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}"
+                    class="button primary" onclick="if (!set_password(document.forms['EditView'],newrules('{$PWDSETTINGS.minpwdlength}','{$PWDSETTINGS.maxpwdlength}','{$REGEX}'))) return false; if (!Admin_check()) return false; document.forms['EditView'].action.value='Save'; {$CHOOSER_SCRIPT} {$REASSIGN_JS} if(verify_data(EditView)) document.forms['EditView'].submit();"
+                    type="button" name="button" value="{$APP.LBL_SAVE_BUTTON_LABEL}" >
+            <input	title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}"
+                    class="button" onclick="document.forms['EditView'].action.value='{$RETURN_ACTION}'; document.forms['EditView'].module.value='{$RETURN_MODULE}'; document.forms['EditView'].record.value='{$RETURN_ID}'; document.forms['EditView'].submit()"
+                    type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}">
+            {$BUTTONS}
+        </td>
+        <td align="right" nowrap>
+            <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span> {$APP.NTC_REQUIRED}
+        </td>
+    </tr>
+</table>

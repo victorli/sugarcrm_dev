@@ -191,11 +191,7 @@ class DynamicField {
 
         global $beanList;
         if (! empty ( $beanList [$module] )) {
-            $object = $beanList [$module];
-
-            if ($object == 'aCase') {
-                $object = 'Case';
-            }
+            $object = BeanFactory::getObjectName($module);
 
             if(empty($GLOBALS['dictionary'][$object]['fields'])){
                 //if the vardef isn't loaded let's try loading it.
@@ -472,8 +468,10 @@ class DynamicField {
         }
         $object_name = $beanList[$this->module];
 
-        if ($object_name == 'aCase') {
-            $object_name = 'Case';
+        //Some modules like cases have a bean name that doesn't match the object name
+        if (empty($GLOBALS['dictionary'][$object_name])) {
+            $newName = BeanFactory::getObjectName($this->module);
+            $object_name = $newName != false ? $newName : $object_name;
         }
 
         $GLOBALS['db']->query("DELETE FROM fields_meta_data WHERE id='" . $this->module . $widget->name . "'");

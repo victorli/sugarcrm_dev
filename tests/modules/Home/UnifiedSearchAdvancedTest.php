@@ -72,7 +72,8 @@ class UnifiedSearchAdvancedTest extends Sugar_PHPUnit_Framework_OutputTestCase
         	$this->_hasUnifiedSearchModulesDisplay = true;
         	copy('custom/modules/unified_search_modules_display.php', 'custom/modules/unified_search_modules_display.php.bak');
         	unlink('custom/modules/unified_search_modules_display.php');
-        }        
+        }
+
         
 	}
 
@@ -95,6 +96,23 @@ class UnifiedSearchAdvancedTest extends Sugar_PHPUnit_Framework_OutputTestCase
         	unlink('custom/modules/unified_search_modules_display.php.bak');
         } else {
         	unlink('custom/modules/unified_search_modules_display.php');
+        }
+
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+
+        if(isset($_REQUEST['module']))
+        {
+            unset($_REQUEST['module']);
+        }
+
+        if(isset($_REQUEST['query_string']))
+        {
+            unset($_REQUEST['query_string']);
+        }
+
+        if(isset($_REQUEST['enabled_modules']))
+        {
+            unset($_REQUEST['enabled_modules']);
         }
 	}
 
@@ -125,7 +143,7 @@ class UnifiedSearchAdvancedTest extends Sugar_PHPUnit_Framework_OutputTestCase
 
     public function testUserPreferencesSearch()
     {
-		global $mod_strings, $modListHeader, $app_strings, $beanList, $beanFiles;
+		global $mod_strings, $modListHeader, $app_strings, $beanList, $beanFiles, $current_user;
 		require('config.php');
 		require('include/modules.php');
 
@@ -133,14 +151,20 @@ class UnifiedSearchAdvancedTest extends Sugar_PHPUnit_Framework_OutputTestCase
     	$_REQUEST['enabled_modules'] = 'Accounts,Contacts';
     	$usa->saveGlobalSearchSettings();
 
+
+        $current_user->setPreference('globalSearch', array('Accounts', 'Contacts'), 0, 'search');
+        $current_user->savePreferencesToDB();
+        
     	$_REQUEST = array();
 		$_REQUEST['query_string'] = $this->_contact->first_name.' '.$this->_contact->last_name;
     	$_REQUEST['module'] = 'Home';
     	$usa->search();
-    	global $current_user;
+
     	$modules = $current_user->getPreference('globalSearch', 'search');
     	$this->assertEquals(count($modules), 2, 'Assert that there are two modules in the user preferences as defined from the global search');
-    	$this->assertTrue(isset($modules['Accounts']) && isset($modules['Contacts']), 'Assert that the Accounts and Contacts modules have been added');
+
+        $this->assertEquals('Accounts', $modules[0], 'Assert that the Accounts module has been added');
+        $this->assertEquals('Contacts', $modules[1], 'Assert that the Contacts module has been added');
     }
 }
 

@@ -47,8 +47,6 @@ class M2MRelationship extends SugarRelationship
 
     public function __construct($def)
     {
-        global $dictionary;
-
         $this->def = $def;
         $this->name = $def['name'];
 
@@ -71,7 +69,7 @@ class M2MRelationship extends SugarRelationship
      */
     public function getLinkedDefForModuleByRelationship($module)
     {
-        $results = VardefManager::getLinkFieldForRelationship( $module, BeanFactory::getBeanName($module), $this->name);
+        $results = VardefManager::getLinkFieldForRelationship( $module, BeanFactory::getObjectName($module), $this->name);
         //Only a single link was found
         if( isset($results['name']) )
         {
@@ -98,6 +96,7 @@ class M2MRelationship extends SugarRelationship
      */
     protected function getMostAppropriateLinkedDefinition($links)
     {
+        //First priority is to find a link name that matches the relationship name
         foreach($links as $link)
         {
             if( isset($link['name']) && $link['name'] == $this->name )
@@ -105,9 +104,17 @@ class M2MRelationship extends SugarRelationship
                 return $link;
             }
         }
-        //Unable to find an appropriate link, return nothing rather an invalid link.
+        //Next would be a relationship that has a side defined
+        foreach($links as $link)
+        {
+            if( isset($link['id_name']))
+            {
+                return $link;
+            }
+        }
+        //Unable to find an appropriate link, guess and use the first one
         $GLOBALS['log']->error("Unable to determine best appropriate link for relationship {$this->name}");
-        return FALSE;
+        return $links[0];
     }
     /**
      * @param  $lhs SugarBean left side bean to add to the relationship.
@@ -240,7 +247,7 @@ class M2MRelationship extends SugarRelationship
 
         if (empty($_SESSION['disable_workflow']) || $_SESSION['disable_workflow'] != "Yes")
         {
-            if (!empty($lhs->$lhsLinkName))
+            if ($lhs->$lhsLinkName instanceof Link2)
             {
                 $lhs->$lhsLinkName->load();
                 $this->callAfterDelete($lhs, $rhs, $lhsLinkName);
