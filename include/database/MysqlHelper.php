@@ -52,6 +52,16 @@ require_once('include/database/DBHelper.php');
 class MysqlHelper extends DBHelper
 {
     /**
+     * Maximum length of identifiers
+     */
+    protected $maxNameLengths = array(
+        'table' => 64,
+        'column' => 64,
+        'index' => 64,
+        'alias' => 256
+    );
+    
+    /**
      * @see DBHelper::createTableSQL()
      */
     public function createTableSQL(

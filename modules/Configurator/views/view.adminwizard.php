@@ -58,18 +58,18 @@ class ViewAdminwizard extends SugarView
         $this->options['show_javascript'] = false;
     }
     
-	/**
-	 * @see SugarView::display()
-	 */
-	public function display()
-	{
-	    global $current_user, $mod_strings, $app_list_strings, $sugar_config, $locale, $sugar_version;
-	    
-	    if(!is_admin($current_user)){
+        /**
+         * @see SugarView::display()
+         */
+        public function display()
+        {
+            global $current_user, $mod_strings, $app_list_strings, $sugar_config, $locale, $sugar_version;
+            
+            if(!is_admin($current_user)){
             sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']); 
         }
-		
-		$themeObject = SugarThemeRegistry::current();
+                
+                $themeObject = SugarThemeRegistry::current();
         
         $configurator = new Configurator();
         $sugarConfig = SugarConfig::getInstance();
@@ -90,25 +90,25 @@ class ViewAdminwizard extends SugarView
         $this->ss->assign('SUGAR_CSS', $css);
         $this->ss->assign('MOD_USERS',return_module_language($GLOBALS['current_language'], 'Users'));
         $this->ss->assign('CSS', '<link rel="stylesheet" type="text/css" href="'.SugarThemeRegistry::current()->getCSSURL('wizard.css').'" />');
-	    $this->ss->assign('LANGUAGES', get_languages());
-	    $this->ss->assign('config', $sugar_config);
-	    $this->ss->assign('SUGAR_VERSION', $sugar_version);
-	    $this->ss->assign('settings', $focus->settings);
-	    $this->ss->assign('exportCharsets', get_select_options_with_id($locale->getCharsetSelect(), $sugar_config['default_export_charset']));
-	    $this->ss->assign('getNameJs', $locale->getNameJs());
-	    $this->ss->assign('JAVASCRIPT',get_set_focus_js(). get_configsettings_js());
-	    $this->ss->assign('company_logo', SugarThemeRegistry::current()->getImageURL('company_logo.png'));
-	    $this->ss->assign('mail_smtptype', $focus->settings['mail_smtptype']);
-	    $this->ss->assign('mail_smtpserver', $focus->settings['mail_smtpserver']);
-	    $this->ss->assign('mail_smtpport', $focus->settings['mail_smtpport']);
-	    $this->ss->assign('mail_smtpuser', $focus->settings['mail_smtpuser']);
-	    $this->ss->assign('mail_smtppass', $focus->settings['mail_smtppass']);
-	    $this->ss->assign('mail_smtpauth_req', ($focus->settings['mail_smtpauth_req']) ? "checked='checked'" : '');
-	    $this->ss->assign('MAIL_SSL_OPTIONS', get_select_options_with_id($app_list_strings['email_settings_for_ssl'], $focus->settings['mail_smtpssl']));
-		$this->ss->assign('notify_allow_default_outbound_on', (!empty($focus->settings['notify_allow_default_outbound']) && $focus->settings['notify_allow_default_outbound'] == 2) ? 'CHECKED' : '');
-		$this->ss->assign('THEME', SugarThemeRegistry::current()->__toString());	    
-	    
-	    // get javascript
+        $this->ss->assign('LANGUAGES', get_languages());
+        $this->ss->assign('config', $sugar_config);
+        $this->ss->assign('SUGAR_VERSION', $sugar_version);
+        $this->ss->assign('settings', $focus->settings);
+        $this->ss->assign('exportCharsets', get_select_options_with_id($locale->getCharsetSelect(), $sugar_config['default_export_charset']));
+        $this->ss->assign('getNameJs', $locale->getNameJs());
+        $this->ss->assign('JAVASCRIPT',get_set_focus_js(). get_configsettings_js());
+        $this->ss->assign('company_logo', SugarThemeRegistry::current()->getImageURL('company_logo.png'));
+        $this->ss->assign('mail_smtptype', $focus->settings['mail_smtptype']);
+        $this->ss->assign('mail_smtpserver', $focus->settings['mail_smtpserver']);
+        $this->ss->assign('mail_smtpport', $focus->settings['mail_smtpport']);
+        $this->ss->assign('mail_smtpuser', $focus->settings['mail_smtpuser']);
+        $this->ss->assign('mail_smtppass', $focus->settings['mail_smtppass']);
+        $this->ss->assign('mail_smtpauth_req', ($focus->settings['mail_smtpauth_req']) ? "checked='checked'" : '');
+        $this->ss->assign('MAIL_SSL_OPTIONS', get_select_options_with_id($app_list_strings['email_settings_for_ssl'], $focus->settings['mail_smtpssl']));
+        $this->ss->assign('notify_allow_default_outbound_on', (!empty($focus->settings['notify_allow_default_outbound']) && $focus->settings['notify_allow_default_outbound'] == 2) ? 'CHECKED' : '');
+        $this->ss->assign('THEME', SugarThemeRegistry::current()->__toString());            
+
+        // get javascript
         ob_start();
         $this->options['show_javascript'] = true;
         $this->renderJavascript();
@@ -117,7 +117,7 @@ class ViewAdminwizard extends SugarView
         ob_end_clean();
         
         $this->ss->assign('START_PAGE', !empty($_REQUEST['page']) ? $_REQUEST['page'] : 'welcome');
-		
-	    $this->ss->display('modules/Configurator/tpls/adminwizard.tpl');
-	}
+                
+            $this->ss->display('modules/Configurator/tpls/adminwizard.tpl');
+        }
 }

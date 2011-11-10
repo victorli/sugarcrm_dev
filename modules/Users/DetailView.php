@@ -46,6 +46,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 require_once('include/DetailView/DetailView.php');
 require_once('include/export_utils.php');
+require_once('include/SugarOAuthServer.php');
+require_once('include/SubPanel/SubPanelTiles.php');
+
 global $current_user;
 global $theme;
 global $app_strings;
@@ -88,7 +91,7 @@ if(isset($_REQUEST['reset_homepage'])){
 $params = array();
 $params[] = $locale->getLocaleFormattedName($focus->first_name,$focus->last_name);
 
-$index_url = ($is_current_admin) ? "index.php?module=Users&action=index" : "index.php?module=Users&action=DetailView&record={$focus->id}"; 
+$index_url = ($is_current_admin) ? "index.php?module=Users&action=index" : "index.php?module=Users&action=DetailView&record={$focus->id}";
 
 
 echo getClassicModuleTitle("Users", $params, true,$index_url);
@@ -127,13 +130,13 @@ if (isset($sugar_config['show_download_tab']))
 {
 	$enable_download_tab = $sugar_config['show_download_tab'];
 }else{
-	
+
 	$enable_download_tab = true;
-}	
+}
 
 $sugar_smarty->assign('SHOW_DOWNLOADS_TAB', $enable_download_tab);
-	
- 
+
+
 
 
 
@@ -471,6 +474,10 @@ $sugar_smarty->display('modules/Users/DetailView.tpl');
 if($show_roles){
     echo "<div>";
     require_once('modules/ACLRoles/DetailUserRole.php');
+    if(SugarOAuthServer::enabled()) {
+        $subpanel = new SubPanelTiles($focus, 'UserOAuth');
+        echo $subpanel->display(true,true);
+    }
     echo "</div></div>";
 }
 

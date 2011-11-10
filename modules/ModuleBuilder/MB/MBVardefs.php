@@ -61,14 +61,17 @@ class MBVardefs{
 
 		if(file_exists($file)){
 			include($file);
-			if($by_group){
-				$this->vardefs['fields'] [$template]= $vardefs['fields'];
-			}else{
-				$this->vardefs['fields']= array_merge($this->vardefs['fields'], $vardefs['fields']);
-				if(!empty($vardefs['relationships'])){
-					$this->vardefs['relationships']= array_merge($this->vardefs['relationships'], $vardefs['relationships']);
-				}
-			}
+            if (isset($vardefs))
+            {
+                if($by_group){
+                    $this->vardefs['fields'] [$template]= $vardefs['fields'];
+                }else{
+                    $this->vardefs['fields']= array_merge($this->vardefs['fields'], $vardefs['fields']);
+                    if(!empty($vardefs['relationships'])){
+                        $this->vardefs['relationships']= array_merge($this->vardefs['relationships'], $vardefs['relationships']);
+                    }
+                }
+            }
 		}
         //Bug40450 - Extra 'Name' field in a File type module in module builder
         if(array_key_exists('file', $this->templates))

@@ -341,7 +341,87 @@ class SugarFieldBase {
 
     }
 
-     /**
+    protected function getAccessKey($vardef, $fieldType = null, $module = null) {
+        global $app_strings;
+
+        $labelList = array(
+            'accessKey' => array(),
+            'accessKeySelect' => array(),
+            'accessKeyClear' => array(),
+        );
+
+        // Labels are always in uppercase
+        if ( isset($fieldType) ) {
+            $fieldType = strtoupper($fieldType);
+        }
+
+        if ( isset($module) ) {
+            $module = strtoupper($module);
+        }
+
+        // The vardef is the most specific, then the module + fieldType, then the module, then the fieldType
+        if ( isset($vardef['accessKey']) ) {
+            $labelList['accessKey'][] = $vardef['accessKey'];
+        }
+        if ( isset($vardef['accessKeySelect']) ) {
+            $labelList['accessKeySelect'][] = $vardef['accessKeySelect'];
+        }
+        if ( isset($vardef['accessKeyClear']) ) {
+            $labelList['accessKeyClear'][] = $vardef['accessKeyClear'];
+        }
+
+        if ( isset($fieldType) && isset($module) ) {
+            $labelList['accessKey'][] = 'LBL_ACCESSKEY_'.$fieldType.'_'.$module;
+            $labelList['accessKeySelect'][] = 'LBL_ACCESSKEY_SELECT_'.$fieldType.'_'.$module;
+            $labelList['accessKeyClear'][] = 'LBL_ACCESSKEY_CLEAR_'.$fieldType.'_'.$module;
+        }
+
+        if ( isset($module) ) {
+            $labelList['accessKey'][] = 'LBL_ACCESSKEY_'.$module;
+            $labelList['accessKeySelect'][] = 'LBL_ACCESSKEY_SELECT_'.$module;
+            $labelList['accessKeyClear'][] = 'LBL_ACCESSKEY_CLEAR_'.$module;
+        }
+
+        if ( isset($fieldType) ) {
+            $labelList['accessKey'][] = 'LBL_ACCESSKEY_'.$fieldType;
+            $labelList['accessKeySelect'][] = 'LBL_ACCESSKEY_SELECT_'.$fieldType;
+            $labelList['accessKeyClear'][] = 'LBL_ACCESSKEY_CLEAR_'.$fieldType;
+        }
+
+        // Attach the defaults to the ends
+        $labelList['accessKey'][] = 'LBL_ACCESSKEY';
+        $labelList['accessKeySelect'][] = 'LBL_SELECT_BUTTON';
+        $labelList['accessKeyClear'][] = 'LBL_CLEAR_BUTTON';
+
+        // Figure out the label and the key for the button.
+        // Later on we may attempt to make sure there are no two buttons with the same keys, but for now we will just use whatever is specified.
+        $keyTypes = array('accessKey','accessKeySelect','accessKeyClear');
+        $accessKeyList = array(
+            'accessKey' => '',
+            'accessKeyLabel' => '',
+            'accessKeyTitle' => '',
+            'accessKeySelect' => '',
+            'accessKeySelectLabel' => '',
+            'accessKeySelectTitle' => '',
+            'accessKeyClear' => '',
+            'accessKeyClearLabel' => '',
+            'accessKeyClearTitle' => '',
+        );
+        foreach( $keyTypes as $type ) {
+            foreach ( $labelList[$type] as $tryThis ) {
+                if ( isset($app_strings[$tryThis.'_KEY']) && isset($app_strings[$tryThis.'_TITLE']) && isset($app_strings[$tryThis.'_LABEL']) ) {
+                    $accessKeyList[$type] = $tryThis.'_KEY';
+                    $accessKeyList[$type.'Title'] = $tryThis.'_TITLE';
+                    $accessKeyList[$type.'Label'] = $tryThis.'_LABEL';
+                    break;
+                }
+            }
+        }
+
+        return $accessKeyList;
+    }
+
+	/**
      * This should be called when the bean is saved. The bean itself will be passed by reference
      * @param SugarBean bean - the bean performing the save
      * @param array params - an array of paramester relevant to the save, most likely will be $_REQUEST

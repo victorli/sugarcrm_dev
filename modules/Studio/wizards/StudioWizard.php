@@ -80,10 +80,9 @@ class StudioWizard{
                 $newWiz->display();
                 break;
             case 'RenameTabs':
-                $_REQUEST['dropdown_name'] = 'moduleList';
-                require_once('modules/Studio/wizards/EditDropDownWizard.php');
-                $newWiz = new EditDropDownWizard();
-                $newWiz->process('EditDropdown');
+                require_once('modules/Studio/wizards/RenameModules.php');
+                $newWiz = new RenameModules();
+                $newWiz->process();
                 break; 
             case 'ConfigureTabs':
                 header('Location: index.php?module=Administration&action=ConfigureTabs');

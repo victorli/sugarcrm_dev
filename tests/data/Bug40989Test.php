@@ -65,7 +65,7 @@ class Bug40989 extends Sugar_PHPUnit_Framework_TestCase
         unset($GLOBALS['current_user']);
         SugarTestContactUtilities::removeAllCreatedContacts();
 	}
-	
+
     /*
      * @group bug40989
      */

@@ -65,6 +65,11 @@ abstract class DBHelper
     public $bean;
 
     /**
+     * Maximum length of identifiers
+     */
+    protected $maxNameLengths;
+
+    /**
 	 * Generates sql for create table statement for a bean.
 	 *
 	 * @param  object $bean SugarBean instance
@@ -553,6 +558,20 @@ abstract class DBHelper
         return null;
     }
 
+    protected function getDefault($fieldDef, $type) {
+        if (isset($fieldDef['default']) && strlen($fieldDef['default']) > 0) {
+            $default = " DEFAULT '".$fieldDef['default']."'";
+        }
+        elseif (!isset($default) && $type == 'bool') {
+            $default = " DEFAULT 0 ";
+        }
+        else {
+            $default = '';
+        }
+
+        return $default;
+    }
+
     /**
      * Returns the defintion for a single column
      *
@@ -598,12 +617,7 @@ abstract class DBHelper
        }
 
 
-        if (isset($fieldDef['default']) && strlen($fieldDef['default']) > 0)
-            $default = " DEFAULT '".$fieldDef['default']."'";
-        elseif (!isset($default) && $type == 'bool')
-            $default = " DEFAULT 0 ";
-        elseif (!isset($default))
-            $default = '';
+       $default = $this->getDefault($fieldDef, $type);
 
         $auto_increment = '';
         if(!empty($fieldDef['auto_increment']) && $fieldDef['auto_increment'])
@@ -611,9 +625,14 @@ abstract class DBHelper
 
         $required = 'NULL';  // MySQL defaults to NULL, SQL Server defaults to NOT NULL -- must specify
         //Starting in 6.0, only ID and auto_increment fields will be NOT NULL in the DB.
-        if ((empty($fieldDef['isnull'])  || strtolower($fieldDef['isnull']) == 'false') &&
-		(!empty($auto_increment) || $name == 'id' || ($fieldDef['type'] == 'id' && isset($fieldDef['required']) && $fieldDef['required'])))
-		{
+        if ((empty($fieldDef['isnull']) || strtolower($fieldDef['isnull']) == 'false') &&
+		    (!empty($auto_increment) || $name == 'id' || ($fieldDef['type'] == 'id' && !empty($fieldDef['required'])))) {
+            $required =  "NOT NULL";
+        }
+        // If the field is marked both required & isnull=>false - alwqys make it not null
+        // Use this to ensure primary key fields never defined as null
+        if(isset($fieldDef['isnull']) && (strtolower($fieldDef['isnull']) == 'false' || $fieldDef['isnull'] === false)
+            && !empty($fieldDef['required'])) {
             $required =  "NOT NULL";
         }
 		if ($ignoreRequired)
@@ -968,6 +987,49 @@ abstract class DBHelper
                     || $fieldDef['required'] == 1)
                 || ($fieldDef['name'] == 'id' && !isset($fieldDef['required'])) )
             $fieldDef['required'] = 'true';
+    }
+
+    /*
+     * Return a version of $proposed that can be used as a column name in any of our supported databases
+     * Practically this means no longer than 25 characters as the smallest identifier length for our supported DBs is 30 chars for Oracle plus we add on at least four characters in some places (for indicies for example)
+     * @param string $name Proposed name for the column
+     * @param string $ensureUnique
+     * @return string Valid column name trimmed to right length and with invalid characters removed
+     */
+     public function getValidDBName ($name, $ensureUnique = false, $type = 'column', $force = false)
+    {
+        if(is_array($name))
+        {
+            $result = array();
+            foreach($name as $field)
+            {
+                $result[] = $this->getValidDBName($field, $ensureUnique, $type);
+            }
+        }else
+        {
+            // first strip any invalid characters - all but alphanumerics and -
+            $name = preg_replace ( '/[^\w-]+/i', '', $name ) ;
+            $len = strlen ( $name ) ;
+            $result = $name;
+            $maxLen = empty($this->maxNameLengths[$type]) ? $this->maxNameLengths[$type]['column'] : $this->maxNameLengths[$type];
+            if ($len <= $maxLen && !$force)
+            {
+                return strtolower($name);
+            }
+            if ($ensureUnique)
+            {
+                $md5str = md5($name);
+                $tail = substr ( $name, -11) ;
+                $temp = substr($md5str , strlen($md5str)-4 );
+                $result = substr ( $name, 0, 10) . $temp . $tail ;
+            }
+            else
+            {
+                $result = substr ( $name, 0, 11) . substr ( $name, 11 - $maxLen);
+            }
+
+            return strtolower ( $result ) ;
+        }
     }
 
     /**

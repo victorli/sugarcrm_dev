@@ -167,6 +167,7 @@ class MyMeetingsDashlet extends DashletGeneric {
                                      'title' => $GLOBALS['mod_strings']['LBL_DASHLET_CONFIGURE_TITLE'],
                                      'save' => $GLOBALS['app_strings']['LBL_SAVE_BUTTON_LABEL'],
                                      'autoRefresh' => $GLOBALS['app_strings']['LBL_DASHLET_CONFIGURE_AUTOREFRESH'],
+                                     'clear' => $GLOBALS['app_strings']['LBL_CLEAR_BUTTON_LABEL'],
                                      ));
 		
         require_once('modules/Meetings/Meeting.php');

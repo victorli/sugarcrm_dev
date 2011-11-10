@@ -369,7 +369,7 @@ class ModuleBuilderController extends SugarController
             {
                 $module = $_REQUEST [ 'view_module' ] ;
 
-                $bean = loadBean($module);
+                $bean = BeanFactory::getBean($module);
                 if(!empty($bean))
                 {
 	                $field_defs = $bean->field_defs;
@@ -391,9 +391,13 @@ class ModuleBuilderController extends SugarController
                 include_once ('modules/Administration/QuickRepairAndRebuild.php') ;
         		global $mod_strings;
                 $mod_strings['LBL_ALL_MODULES'] = 'all_modules';
+                require_once('ModuleInstall/ModuleInstaller.php');
+                $mi = new ModuleInstaller();
+                $mi->silent = true;
+                $mi->rebuild_extensions();
                 $repair = new RepairAndClear();
-		        $repair->repairAndClearAll(array('rebuildExtensions', 'clearVardefs', 'clearTpls'), array($class_name), true, false);
-		        //#28707 ,clear all the js files in cache
+		        $repair->repairAndClearAll(array('clearVardefs', 'clearTpls'), array($class_name), true, false);
+                //#28707 ,clear all the js files in cache
 		        $repair->module_list = array();
 		        $repair->clearJsFiles();
             }
@@ -423,9 +427,8 @@ class ModuleBuilderController extends SugarController
         require_once ('modules/ModuleBuilder/parsers/StandardField.php') ;
         $module = $_REQUEST [ 'view_module' ] ;
         $df = new StandardField ( $module ) ;
+        $mod = BeanFactory::getBean($module);
         $class_name = $GLOBALS [ 'beanList' ] [ $module ] ;
-        require_once ($GLOBALS [ 'beanFiles' ] [ $class_name ]) ;
-        $mod = new $class_name ( ) ;
         $df->setup ( $mod ) ;
 
         $field->module = $mod;
@@ -439,12 +442,16 @@ class ModuleBuilderController extends SugarController
         $GLOBALS [ 'mod_strings' ]['LBL_ALL_MODULES'] = 'all_modules';
         $_REQUEST['execute_sql'] = true;
 
+        require_once('ModuleInstall/ModuleInstaller.php');
+		$mi = new ModuleInstaller();
+        $mi->silent = true;
+		$mi->rebuild_extensions();
+
         $repair = new RepairAndClear();
-        $repair->repairAndClearAll(array('rebuildExtensions', 'clearVardefs', 'clearTpls'), array($class_name), true, false);
+        $repair->repairAndClearAll(array('clearVardefs', 'clearTpls'), array($class_name), true, false);
         //#28707 ,clear all the js files in cache
         $repair->module_list = array();
         $repair->clearJsFiles();
-
 
         // now clear the cache so that the results are immediately visible
         include_once ('include/TemplateHandler/TemplateHandler.php') ;
@@ -519,11 +526,9 @@ class ModuleBuilderController extends SugarController
         $GLOBALS['log']->debug("\n\nSTART BUILD");
         if (empty($_REQUEST [ 'view_package' ])) {
             $relationships->build () ;
-
             LanguageManager::clearLanguageCache($_REQUEST [ 'view_module' ]);
         }
         $GLOBALS['log']->debug("\n\nEND BUILD");
-
         $this->view = 'relationships' ;
     }
 
@@ -547,6 +552,8 @@ class ModuleBuilderController extends SugarController
             $relationships->delete ( $_REQUEST [ 'relationship_name' ] ) ;
 
             $relationships->save () ;
+            require_once("data/Relationships/RelationshipFactory.php");
+            SugarRelationshipFactory::deleteCache();
         }
         $this->view = 'relationships' ;
     }
@@ -761,11 +768,7 @@ class ModuleBuilderController extends SugarController
         $module_name = $_REQUEST [ 'view_module' ] ;
         global $beanList;
         if (isset($beanList[$module_name]) && $beanList[$module_name]!="") {
-            $objectName = $beanList[$module_name];
-            if($objectName == 'aCase') // Bug 17614 - renamed aCase as Case in vardefs for backwards compatibililty with 451 modules
-            {
-                $objectName = 'Case';
-            }
+            $objectName = BeanFactory::getObjectName($module_name);
 
             //Load the vardefs for the module to pass to TemplateRange
             VardefManager::loadVardef($module_name, $objectName, true);

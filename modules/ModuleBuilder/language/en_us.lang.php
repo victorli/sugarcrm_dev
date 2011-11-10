@@ -538,6 +538,7 @@ $mod_strings = array(
 'LBL_BTN_VIEW_FIELDS'=>'View Fields',
 'LBL_BTN_VIEW_RELATIONSHIPS'=>'View Relationships',
 'LBL_BTN_ADD_RELATIONSHIP'=>'Add Relationship',
+'LBL_BTN_RENAME_MODULE' => 'Change Module Name',
 //TABS
 
 
@@ -702,6 +703,7 @@ $mod_strings = array(
 					             "phone number, with allowance for the country code 1, and<br>" .
                                  "to apply a U.S. format to the phone number when the record<br>" .
                                  "is saved. The following format will be applied: (xxx) xxx-xxxx.",
+'LBL_ALL_MODULES'=>'All Modules',
 
 );
 

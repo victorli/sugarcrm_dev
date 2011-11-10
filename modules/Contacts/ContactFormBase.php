@@ -677,16 +677,21 @@ function handleSave($prefix, $redirect=true, $useRequired=false){
 			// for InboundEmail flow
 			if(!empty($_POST['start'])) $get .= '&start='.$_POST['start'];
 
-			//now redirect the post to modules/Contacts/ShowDuplicates.php
+
+            $_SESSION['SHOW_DUPLICATES'] = $get;
+            //now redirect the post to modules/Contacts/ShowDuplicates.php
             if (!empty($_POST['is_ajax_call']) && $_POST['is_ajax_call'] == '1')
             {
             	ob_clean();
                 $json = getJSONobj();
-                $_SESSION['SHOW_DUPLICATES'] = $get;
                 echo $json->encode(array('status' => 'dupe', 'get' => $location));
-            } else {
+            }
+            else if(!empty($_REQUEST['ajax_load']))
+            {
+                echo "<script>SUGAR.ajaxUI.loadContent('index.php?$location');</script>";
+            }
+            else {
                 if(!empty($_POST['to_pdf'])) $location .= '&to_pdf='.$_POST['to_pdf'];
-                $_SESSION['SHOW_DUPLICATES'] = $get;
                 header("Location: index.php?$location");
             }
             return null;
@@ -805,12 +810,17 @@ function handleRedirect($return_id){
 	}
 
 	//eggsurplus Bug 23816: maintain VCR after an edit/save. If it is a duplicate then don't worry about it. The offset is now worthless.
- 	$redirect_url = "Location: index.php?action=$return_action&module=$return_module&record=$return_id";
+ 	$redirect_url = "index.php?action=$return_action&module=$return_module&record=$return_id";
  	if(isset($_REQUEST['offset']) && empty($_REQUEST['duplicateSave'])) {
  	    $redirect_url .= "&offset=".$_REQUEST['offset'];
  	}
-    	
-    header($redirect_url);
+
+    if(!empty($_REQUEST['ajax_load'])){
+        echo "<script>SUGAR.ajaxUI.loadContent('$redirect_url');</script>\n";
+    }
+    else {
+        header("Location: ". $redirect_url);
+    }
 }
 
 }

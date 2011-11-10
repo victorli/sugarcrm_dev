@@ -1,4 +1,4 @@
-<?php 
+<?php
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
@@ -53,11 +53,11 @@ class ModuleScanner{
 			'install_languages'=>'language',
             'install_logichooks'=>'logic_hooks',
 			'post_execute'=>'post_execute',
-	
+
 	);
-	
+
 	private $blackListExempt = array();
-	
+
 	private $validExt = array('png', 'gif', 'jpg', 'css', 'js', 'php', 'txt', 'html', 'htm', 'tpl', 'pdf', 'md5', 'xml');
 	private $blackList = array(
     'popen',
@@ -120,9 +120,9 @@ class ModuleScanner{
 	'exec',
 	'system',
 	'shell_exec',
-	'passthru', 
+	'passthru',
 	'chgrp',
-	'chmod', 
+	'chmod',
 	'chwown',
 	'file_put_contents',
 	'file',
@@ -133,7 +133,7 @@ class ModuleScanner{
 	'filemtime',
 	'fileowner',
 	'fileperms',
-	'fopen', 
+	'fopen',
 	'is_executable',
 	'is_writable',
 	'is_writeable',
@@ -152,7 +152,7 @@ class ModuleScanner{
 	'call_user_func',
 	'call_user_func_array',
 	'create_function',
-	
+
 
 	//mutliple files per function call
 	'copy',
@@ -182,14 +182,14 @@ class ModuleScanner{
 		echo "'''Default Extensions'''<br>";
 		foreach($this->validExt as $b){
 			echo '#' . $b . '<br>';
-			
+
 		}
 		echo "'''Default Black Listed Functions'''<br>";
 		foreach($this->blackList as $b){
 			echo '#' . $b . '<br>';
-			
+
 		}
-		
+
 	}
 
 	public function __construct(){
@@ -202,42 +202,42 @@ class ModuleScanner{
 	  if(!empty($GLOBALS['sugar_config']['moduleInstaller']['validExt'])){
 			$this->validExt = array_merge($this->validExt, $GLOBALS['sugar_config']['moduleInstaller']['validExt']);
 		}
-		
+
 	}
 
 	private $issues = array();
 	private $pathToModule = '';
-	
+
 	/**
 	 *returns a list of issues
 	 */
 	public function getIssues(){
 		return $this->issues;
 	}
-	
+
 	/**
 	 *returns true or false if any issues were found
 	 */
 	public function hasIssues(){
 		return !empty($this->issues);
 	}
-	
+
 	/**
 	 *Ensures that a file has a valid extension
 	 */
 	private function isValidExtension($file){
 		$file = strtolower($file);
-		
+
 		$extPos = strrpos($file, '.');
 		//make sure they don't override the files.md5
 		if($extPos === false || $file == 'files.md5')return false;
 		$ext = substr($file, $extPos + 1);
 		return in_array($ext, $this->validExt);
-		
+
 	}
-	
+
 	/**
-	 *Scans a directory and calls on scan file for each file  
+	 *Scans a directory and calls on scan file for each file
 	 **/
 	public function scanDir($path){
 		static $startPath = '';
@@ -249,21 +249,40 @@ class ModuleScanner{
 		if(is_dir($next)){
 			if(substr($e, 0, 1) == '.')continue;
 			$this->scanDir($next);
-		}else{ 
+		}else{
 			$issues = $this->scanFile($next);
-			
-			
+
+
 		}
 		}
     	return true;
 	}
-	
-	
+
 	/**
-	 * Given a file it will open it's contents and check if it is a PHP file (not safe to just rely on extensions) if it finds <?php tags it will use the tokenizer to scan the file 
-	 * $var()  and ` are always prevented then whatever is in the blacklist. 
+	 * Check if the file contents looks like PHP
+	 * @param string $contents File contents
+	 * @return boolean
+	 */
+	protected function isPHPFile($contents)
+	{
+	    if(stripos($contents, '<?php') !== false) return true;
+	    for($tag=0;($tag = stripos($contents, '<?', $tag)) !== false;$tag++) {
+            if(strncasecmp(substr($contents, $tag, 13), '<?xml version', 13)) {
+                // <?xml version is OK, skip it
+                $tag++;
+                continue;
+            }
+            // found <?, it's PHP
+            return true;
+	    }
+	    return false;
+	}
+
+	/**
+	 * Given a file it will open it's contents and check if it is a PHP file (not safe to just rely on extensions) if it finds <?php tags it will use the tokenizer to scan the file
+	 * $var()  and ` are always prevented then whatever is in the blacklist.
 	 * It will also ensure that all files are of valid extension types
-	 * 
+	 *
 	 */
 	public function scanFile($file){
 		$issues = array();
@@ -273,8 +292,8 @@ class ModuleScanner{
 			return $issues;
 		}
 		$contents = file_get_contents($file);
-		if(stripos($contents,'<?php') === false )return $issues;
-		$tokens = token_get_all($contents);
+		if(!$this->isPHPFile($contents)) return $issues;
+		$tokens = @token_get_all($contents);
 		$checkFunction = false;
 		$possibleIssue = '';
 		$lastToken = false;
@@ -285,7 +304,7 @@ class ModuleScanner{
 						$issues['backtick'] = translate('ML_INVALID_FUNCTION') . " '`'";
 					case '(':
 						if($checkFunction)$issues[] = $possibleIssue;
-						break;	
+						break;
 				}
 				$checkFunction = false;
 				$possibleIssue = '';
@@ -301,8 +320,8 @@ class ModuleScanner{
 						$token[1] = strtolower($token[1]);
 						if(!in_array($token[1], $this->blackList))break;
 						if(in_array($token[1], $this->blackListExempt))break;
-						if ($lastToken !== false && 
-						($lastToken[0] == T_NEW || $lastToken[0] == T_OBJECT_OPERATOR ||  $lastToken[0] == T_DOUBLE_COLON)) 
+						if ($lastToken !== false &&
+						($lastToken[0] == T_NEW || $lastToken[0] == T_OBJECT_OPERATOR ||  $lastToken[0] == T_DOUBLE_COLON))
 						{
 							break;
 						}
@@ -310,7 +329,7 @@ class ModuleScanner{
 						$checkFunction = true;
 						$possibleIssue = translate('ML_INVALID_FUNCTION') . ' ' .  $token[1] . '()';
 						break;
-		
+
 					default:
 						$checkFunction = false;
 						$possibleIssue = '';
@@ -321,18 +340,18 @@ class ModuleScanner{
 					$lastToken = $token;
 				}
 			}
-			
+
 		}
 		if(!empty($issues)){
 			$this->issues['file'][$file] = $issues;
 		}
-		
-		return $issues;	
+
+		return $issues;
 	}
-	
-	
+
+
 	/*
-	 * checks files.md5 file to see if the file is from sugar 
+	 * checks files.md5 file to see if the file is from sugar
 	 * ONLY WORKS ON FILES
 	 */
 	public function sugarFileExists($path){
@@ -343,11 +362,11 @@ class ModuleScanner{
 			$md5 = $md5_string;
 		}
 		if(isset($md5['./' . $path]))return true;
-		
-		
+
+
 	}
-	
-	
+
+
 	/**
 	 *This function will scan the Manifest for disabled actions specified in $GLOBALS['sugar_config']['moduleInstaller']['disableActions']
 	 *if $GLOBALS['sugar_config']['moduleInstaller']['disableRestrictedCopy'] is set to false or not set it will call on scanCopy to ensure that it is not overriding files
@@ -364,9 +383,9 @@ class ModuleScanner{
 			return $fileIssues;
 		}
 		include($manifestPath);
-		
-			
-		//scan for disabled actions 
+
+
+		//scan for disabled actions
 		if(isset($GLOBALS['sugar_config']['moduleInstaller']['disableActions'])){
 			foreach($GLOBALS['sugar_config']['moduleInstaller']['disableActions'] as $action){
 				if(isset($installdefs[$this->manifestMap[$action]])){
@@ -374,8 +393,8 @@ class ModuleScanner{
 				}
 			}
 		}
-		
-		//now lets scan for files that will override our files 
+
+		//now lets scan for files that will override our files
 		if(empty($GLOBALS['sugar_config']['moduleInstaller']['disableRestrictedCopy']) && isset($installdefs['copy'])){
 			foreach($installdefs['copy'] as $copy){
 				$from = str_replace('<basepath>', $this->pathToModule, $copy['from']);
@@ -391,25 +410,25 @@ class ModuleScanner{
 				}
 				while(substr_count($to, '//')){
 					$to = str_replace('//', '/', $to);
-				}	
+				}
 				$this->scanCopy($from, $to);
 			}
 		}
 		if(!empty($issues)){
 			$this->issues['manifest'][$manifestPath] = $issues;
 		}
-		
-		
-		
+
+
+
 	}
-	
-	
+
+
 
 	/**
-	 * Takes in where the file will is specified to be copied from and to 
-	 * and ensures that there is no official sugar file there. If the file exists it will check 
+	 * Takes in where the file will is specified to be copied from and to
+	 * and ensures that there is no official sugar file there. If the file exists it will check
 	 * against the MD5 file list to see if Sugar Created the file
-	 * 
+	 *
 	 */
 	function scanCopy($from, $to){
 				//if the file doesn't exist for the $to then it is not overriding anything
@@ -421,28 +440,28 @@ class ModuleScanner{
 					}
 					$to .= '/'. basename($from);
 				}
-				//if the $to is a file and it is found in sugarFileExists then don't allow overriding it 
+				//if the $to is a file and it is found in sugarFileExists then don't allow overriding it
 				if(is_file($to) && $this->sugarFileExists($to)){
 					$this->issues['copy'][$from] = translate('ML_OVERRIDE_CORE_FILES') . '(' . $to . ')';
 				}
-				
+
 				if(is_dir($from)){
 					$d = dir($from);
 					while($e = $d->read()){
 						if($e == '.' || $e == '..')continue;
-						$this->scanCopy($from .'/'. $e, $to .'/' . $e);	
+						$this->scanCopy($from .'/'. $e, $to .'/' . $e);
 					}
 				}
-				
-				
-				
-				
-				
+
+
+
+
+
 			}
-	
-	
+
+
 	/**
-	 *Main external function that takes in a path to a package and then scans 
+	 *Main external function that takes in a path to a package and then scans
 	 *that package's manifest for disabled actions and then it scans the PHP files
 	 *for restricted function calls
 	 *
@@ -454,22 +473,22 @@ class ModuleScanner{
 			$this->scanDir($path);
 		}
 	}
-	
+
 	/**
-	 *This function will take all issues of the current instance and print them to the screen  
+	 *This function will take all issues of the current instance and print them to the screen
 	 **/
 	public function displayIssues($package='Package'){
-		echo '<h2>'.str_replace('{PACKAGE}' , $package ,translate('ML_PACKAGE_SCANNING')). '</h2><BR><h2 class="error">' . translate('ML_INSTALLATION_FAILED') . '</h2><br><p>' .str_replace('{PACKAGE}' , $package ,translate('ML_PACKAGE_NOT_CONFIRM')). '</p><ul><li>'. translate('ML_OBTAIN_NEW_PACKAGE') . '<li>' . translate('ML_RELAX_LOCAL'). 
+		echo '<h2>'.str_replace('{PACKAGE}' , $package ,translate('ML_PACKAGE_SCANNING')). '</h2><BR><h2 class="error">' . translate('ML_INSTALLATION_FAILED') . '</h2><br><p>' .str_replace('{PACKAGE}' , $package ,translate('ML_PACKAGE_NOT_CONFIRM')). '</p><ul><li>'. translate('ML_OBTAIN_NEW_PACKAGE') . '<li>' . translate('ML_RELAX_LOCAL').
 '</ul></p><br>' . translate('ML_SUGAR_LOADING_POLICY') .  ' <a href=" http://kb.sugarcrm.com/custom/module-loader-restrictions-for-sugar-open-cloud/">' . translate('ML_SUGAR_KB') . '</a>.'.
 '<br>' . translate('ML_AVAIL_RESTRICTION'). ' <a href=" http://developers.sugarcrm.com/wordpress/2009/08/14/module-loader-restrictions/">' . translate('ML_SUGAR_DZ') .  '</a>.<br><br>';
 
-		
+
 		foreach($this->issues as $type=>$issues){
 			echo '<div class="error"><h2>'. ucfirst($type) .' ' .  translate('ML_ISSUES') . '</h2> </div>';
-			echo '<div id="details' . $type . '" >'; 
+			echo '<div id="details' . $type . '" >';
 			foreach($issues as $file=>$issue){
 				$file = str_replace($this->pathToModule . '/', '', $file);
-				echo '<div style="position:relative;left:10px"><b>' . $file . '</b></div><div style="position:relative;left:20px">'; 
+				echo '<div style="position:relative;left:10px"><b>' . $file . '</b></div><div style="position:relative;left:20px">';
 				if(is_array($issue)){
 					foreach($issue as $i){
 						echo "$i<br>";
@@ -480,13 +499,13 @@ class ModuleScanner{
 				echo "</div>";
 			}
 			echo '</div>';
-			
+
 		}
 		echo "<br><input class='button' onclick='document.location.href=\"index.php?module=Administration&action=UpgradeWizard&view=module\"' type='button' value=\"" . translate('LBL_UW_BTN_BACK_TO_MOD_LOADER') . "\" />";
-		
+
 	}
-	
-	
+
+
 }
 
 

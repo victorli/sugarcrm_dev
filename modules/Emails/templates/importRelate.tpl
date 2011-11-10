@@ -92,7 +92,7 @@ function parent_typechangeQS() {
 <td nowrap="nowrap" width="37%">
 <input name="assigned_user_name" class="sqsEnabled" tabindex="2" id="assigned_user_name" size="" value="{$userName}" type="text">
 <input name="assigned_user_id" id="assigned_user_id" value="{$userId}" type="hidden">
-<input name="btn_assigned_user_name" tabindex="2" title="{$APP.LBL_SELECT_BUTTON_TITLE}" accesskey="{$APP.LBL_SELECT_BUTTON_KEY}" class="button" value="{$APP.LBL_SELECT_BUTTON_LABEL}" onclick='open_popup("Users", 600, 400, "", true, false, {literal}{"call_back_function":"set_return","form_name":"{$formName}","field_to_name_array":{"id":"assigned_user_id","name":"assigned_user_name"}}{/literal}, "single", true);' type="button">
+<input name="btn_assigned_user_name" tabindex="2" title="{$APP.LBL_SELECT_BUTTON_TITLE}" accesskey="{$APP.LBL_SELECT_BUTTON_KEY}" class="button" value="{$APP.LBL_SELECT_BUTTON_LABEL}" onclick='open_popup("Users", 600, 400, "", true, false, {literal}{"call_back_function":"set_return","form_name":"{/literal}{$formName}{literal}","field_to_name_array":{"id":"assigned_user_id","name":"assigned_user_name"}}{/literal}, "single", true);' type="button">
 <input name="btn_clr_assigned_user_name" tabindex="2" title="{$APP.LBL_CLEAR_BUTTON_TITLE}" accesskey="{$APP.LBL_CLEAR_BUTTON_KEY}" class="button" onclick="this.form.assigned_user_name.value = ''; this.form.assigned_user_id.value = '';" value="{$APP.LBL_CLEAR_BUTTON_LABEL}" type="button">
 </td>
 </tr>

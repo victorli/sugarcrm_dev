@@ -414,6 +414,8 @@ class User extends Person {
 	}
 
 	function save($check_notify = false) {
+		$isUpdate = !empty($this->id) && !$this->new_with_id;
+
 
 		$query = "SELECT count(id) as total from users WHERE status='Active' AND deleted=0 AND is_group=0 AND portal_only=0";
 
@@ -863,10 +865,6 @@ EOQ;
 	function list_view_parse_additional_sections(& $list_form, $xTemplateSection) {
 		return $list_form;
 	}
-
-	function save_relationship_changes($is_update) {
-	}
-
 
 
 

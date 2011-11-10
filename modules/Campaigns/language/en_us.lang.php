@@ -419,7 +419,7 @@ $mod_strings = array (
     
     'LBL_IMPORT_PROSPECTS'=>'Import Targets',
     'LBL_LEAD_FORM_WIZARD' => 'Lead Form Wizard',
-    'LBL_CAMPAIGN_INFORMATION' => 'Campaign Overview',
+    'LBL_CAMPAIGN_INFORMATION' => 'Overview',
 
 	'LBL_MONTH' => "Month",
 	'LBL_YEAR' 	=> "Year",

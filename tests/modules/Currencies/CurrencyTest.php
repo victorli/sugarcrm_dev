@@ -45,8 +45,8 @@ class CurrencyTest extends Sugar_PHPUnit_Framework_TestCase {
     	global $current_user;
     	$this->previousCurrentUser = $current_user;       
         $current_user = SugarTestUserUtilities::createAnonymousUser();
-        $current_user->setPreference('num_grp_sep', ',', 0, 'global');
-        $current_user->setPreference('dec_sep', '.', 0, 'global');
+        $current_user->setPreference('number_grouping_seperator', ',', 0, 'global');
+        $current_user->setPreference('decimal_seperator', '.', 0, 'global');
         $current_user->save();
         //Force reset on dec_sep and num_grp_sep because the dec_sep and num_grp_sep values are stored as static variables
 	    get_number_seperators(true);  

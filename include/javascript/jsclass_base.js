@@ -38,7 +38,8 @@ SugarClass.inherit=function(className,parentClassName){var str=className+".proto
 SugarClass.inherit("SugarContainer","SugarClass");function SugarContainer(root_div){GLOBAL_REGISTRY.container=this;this.init(root_div);}
 SugarContainer.prototype.init=function(root_div){this.root_div=root_div;SugarContainer.superclass.init.call(this);}
 SugarContainer.prototype.start=function(root_widget){this.root_widget=new root_widget();this.root_widget.load(this.root_div);}
-var global_request_registry=new Object();var req_count=0;SugarClass.inherit("SugarDateTime","SugarClass");function SugarDateTime(){this.init(root_div);}
+if(typeof(global_request_registry)=="undefined"){var global_request_registry=new Object();}
+var req_count=0;SugarClass.inherit("SugarDateTime","SugarClass");function SugarDateTime(){this.init(root_div);}
 SugarDateTime.prototype.init=function(root_div){this.root_div=root_div;}
 SugarDateTime.mysql2jsDateTime=function(mysql_date,mysql_time){var match=new RegExp(date_reg_format);if(((result=match.exec(mysql_date)))==null){return null;}
 var match2=new RegExp(time_reg_format);if((result2=match2.exec(mysql_time))==null){result2=[0,0,0,0];}

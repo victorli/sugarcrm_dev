@@ -42,7 +42,7 @@ class SugarCacheMemcached extends SugarCacheAbstract
     /**
      * @var Memcache server name string
      */
-    protected $_host = 'localhost';
+    protected $_host = '127.0.0.1';
     
     /**
      * @var Memcache server port int
@@ -105,7 +105,7 @@ class SugarCacheMemcached extends SugarCacheAbstract
         $value
         )
     {
-        $this->_getMemcachedObject()->set($key, $value, $this->expireTimeout);
+        $this->_getMemcachedObject()->set($key, $value, $this->_expireTimeout);
     }
     
     /**
@@ -116,10 +116,10 @@ class SugarCacheMemcached extends SugarCacheAbstract
         )
     {
         $returnValue = $this->_getMemcachedObject()->get($key);
-        if ( $this->_getMemcachedObject()->getResultCode() == Memcached::RES_NOTFOUND ) {
+        if ( $this->_getMemcachedObject()->getResultCode() != Memcached::RES_SUCCESS ) {
             return null;
         }
-        
+
         return $returnValue;
     }
     

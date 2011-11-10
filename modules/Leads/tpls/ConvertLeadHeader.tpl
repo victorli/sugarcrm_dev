@@ -35,6 +35,40 @@
  ********************************************************************************/
 
 *}
+{literal}
+<script type="text/javascript">
+function addRemoveDropdownElement(module) {
+    var accountText = document.getElementById('account_name');
+    var checkbox = document.getElementById('new'+module);
+    var dropdown = document.getElementById('lead_conv_ac_op_sel');
+    if (!checkbox || !dropdown) {
+        return;
+    }
+    var found = false;
+    var i;
+    for (i=dropdown.options.length-1; i>=0; i--) {
+        if (dropdown.options[i].value == module) {
+            found = true;
+            if (!checkbox.checked) {
+                // if this is Accounts and the text of account name is not empty, do not remove
+                if (module != 'Accounts' || !accountText || accountText.value == '') {
+                    dropdown.remove(i);
+                }
+            }
+            break;
+        }
+    }
+    if (!found && checkbox.checked) {
+        var opt = document.createElement("option");
+        opt.text = SUGAR.language.get('app_list_strings', "moduleListSingular")[module];
+        opt.value = module;
+        opt.label = opt.text;
+        dropdown.options.add(opt);
+    }
+}
+</script>
+{/literal}
+
 <form action="index.php" method="POST" name="{$form_name}" id="{$form_id}" enctype="multipart/form-data">
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr>

@@ -607,14 +607,28 @@ class SugarApplication
 		 * If the headers have been sent, then we cannot send an additional location header
 		 * so we will output a javascript redirect statement.
 		 */
-		if (headers_sent()) {
-			echo "<script>document.location.href='$url';</script>\n";
-		} else {
-			//@ob_end_clean(); // clear output buffer
-			session_write_close();
-			header( 'HTTP/1.1 301 Moved Permanently' );
-			header( "Location: ". $url );
-		}
+		if (!empty($_REQUEST['ajax_load']))
+        {
+            ob_get_clean();
+            $ajax_ret = array(
+                 'content' => "<script>SUGAR.ajaxUI.loadContent('$url');</script>\n",
+                 'menu' => array(
+                     'module' => $_REQUEST['module'],
+                     'label' => translate($_REQUEST['module']),
+                 ),
+            );
+            $json = getJSONobj();
+            echo $json->encode($ajax_ret);
+        } else {
+            if (headers_sent()) {
+                echo "<script>SUGAR.ajaxUI.loadContent('$url');</script>\n";
+            } else {
+                //@ob_end_clean(); // clear output buffer
+                session_write_close();
+                header( 'HTTP/1.1 301 Moved Permanently' );
+                header( "Location: ". $url );
+            }
+        }
 		exit();
 	}
 

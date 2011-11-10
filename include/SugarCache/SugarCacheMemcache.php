@@ -42,7 +42,7 @@ class SugarCacheMemcache extends SugarCacheAbstract
     /**
      * @var Memcache server name string
      */
-    protected $_host = 'localhost';
+    protected $_host = '127.0.0.1';
 
     /**
      * @var Memcache server port int

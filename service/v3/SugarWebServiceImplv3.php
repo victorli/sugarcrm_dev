@@ -574,8 +574,7 @@ class SugarWebServiceImplv3 extends SugarWebServiceImpl {
     * @exception 'SoapFault' -- The SOAP error, if any
     */
     function get_relationships($session, $module_name, $module_id, $link_field_name, $related_module_query, $related_fields, $related_module_link_name_to_fields_array, $deleted, $order_by = ''){
-    
-    	$GLOBALS['log']->info('Begin: SugarWebServiceImpl->get_relationships');
+        $GLOBALS['log']->info('Begin: SugarWebServiceImpl->get_relationships');
     	global  $beanList, $beanFiles;
     	$error = new SoapError();
     	if (!self::$helperObject->checkSessionAndModuleAccess($session, 'invalid_session', $module_name, 'read', 'no_access', $error)) {

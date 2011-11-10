@@ -66,6 +66,7 @@ class CampaignsViewDetail extends ViewDetail {
             $mod_strings['LBL_MODULE_NAME'] = $mod_strings['LBL_NEWSLETTERS'];
         }
         parent::preDisplay();
+        $this->options['show_subpanels'] = false;
 
     }        
 

@@ -309,7 +309,7 @@ if(document.DetailView != null &&
 
 			if (empty($this->show_tabs))
 			{
-				$show_icon_html = SugarThemeRegistry::current()->getImage( 'advanced_search', 'alt="' . translate('LBL_SHOW') . '" border="0 align="absmiddle""');
+				$show_icon_html = SugarThemeRegistry::current()->getImage( 'advanced_search', 'alt="' . translate('LBL_SHOW') . '" border="0" align="absmiddle"');
 				$hide_icon_html = SugarThemeRegistry::current()->getImage( 'basic_search', 'alt="' . translate('LBL_HIDE') . '" border="0" align="absmiddle"');
  		 		$max_min = "<a name=\"$tab\"> </a><span id=\"show_link_".$tab."\" style=\"display: $opp_display\"><a href='#' class='utilsLink' onclick=\"current_child_field = '".$tab."';showSubPanel('".$tab."',null,null,'".$layout_def_key."');document.getElementById('show_link_".$tab."').style.display='none';document.getElementById('hide_link_".$tab."').style.display='';return false;\">"
  		 			. "" . $show_icon_html . "</a></span>";
@@ -326,7 +326,7 @@ if(document.DetailView != null &&
 EOQ;
             $display_spd = '';
             if($div_display != 'none'){
-            	echo "<script>markSubPanelLoaded('$tab');</script>";
+            	echo "<script>SUGAR.util.doWhen(\"typeof(markSubPanelLoaded) != 'undefined'\", function() {markSubPanelLoaded('$tab');});</script>";
             	$old_contents = ob_get_contents();
             	@ob_end_clean();
 
@@ -390,7 +390,11 @@ EOQ;
     		YAHOO.util.DDM.mode = 1;
     	}
     	currentModule = '{$this->module}';
-    	YAHOO.util.Event.addListener(window, 'load', SubpanelInit);
+    	SUGAR.util.doWhen(
+    	    "typeof(SUGAR.subpanelUtils) == 'object' && typeof(SUGAR.subpanelUtils.onDrag) == 'function'" +
+    	        " && document.getElementById('subpanel_list')",
+    	    SubpanelInit
+    	);
     </script>
 EOQ;
         }

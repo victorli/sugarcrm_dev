@@ -114,9 +114,9 @@
 			{counter start=0 name="colCounter" print=false assign="colCounter"}
 			{foreach from=$displayColumns key=colHeader item=params}
 				<th scope='col' width='{$params.width}%' nowrap="nowrap">
-					<div style='white-space: nowrap;'width='100%' align='{$params.align|default:'left'}'>
-	                {if $params.sortable|default:true}              
-		                <a href="{$pageData.urls.orderBy}{$params.orderBy|default:$colHeader|lower}" onclick='sListView.save_checks(0, "{$moduleString}");' class='listViewThLinkS1'>{sugar_translate label=$params.label module=$pageData.bean.moduleDir}</a>&nbsp;&nbsp;
+					<div style='white-space: normal;'width='100%' align='{$params.align|default:'left'}'>
+	                {if $params.sortable|default:true}
+                                <a href="{$pageData.urls.orderBy}{$params.orderBy|default:$colHeader|lower}" onclick='sListView.save_checks(0, "{$moduleString}");' class='listViewThLinkS1'>{sugar_translate label=$params.label module=$pageData.bean.moduleDir}&nbsp;&nbsp;
 						{if $params.orderBy|default:$colHeader|lower == $pageData.ordering.orderBy}
 							{if $pageData.ordering.sortOrder == 'ASC'}
 								{capture assign="imageName"}arrow_down.{$arrowExt}{/capture}
@@ -161,7 +161,7 @@
 					<td scope='row' align='{$params.align|default:'left'}' valign=top class='{$_rowColor}S1' bgcolor='{$_bgColor}'>
 						{if $params.link && !$params.customCode}
 							
-							<{$pageData.tag.$id[$params.ACLTag]|default:$pageData.tag.$id.MAIN} href='#' onclick="send_back('{if $params.dynamic_module}{$rowData[$params.dynamic_module]}{else}{$params.module|default:$pageData.bean.moduleDir}{/if}','{$rowData[$params.id]|default:$rowData.ID}');">{$rowData.$col}</{$pageData.tag.$id[$params.ACLTag]|default:$pageData.tag.$id.MAIN}>
+							<{$pageData.tag.$id[$params.ACLTag]|default:$pageData.tag.$id.MAIN} href='javascript:void(0)' onclick="send_back('{if $params.dynamic_module}{$rowData[$params.dynamic_module]}{else}{$params.module|default:$pageData.bean.moduleDir}{/if}','{$rowData[$params.id]|default:$rowData.ID}');">{$rowData.$col}</{$pageData.tag.$id[$params.ACLTag]|default:$pageData.tag.$id.MAIN}>
 	
 						{elseif $params.customCode} 
 							{sugar_evalcolumn_old var=$params.customCode rowData=$rowData}

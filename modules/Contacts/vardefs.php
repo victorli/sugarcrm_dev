@@ -305,6 +305,16 @@ array (
 			'source' => 'non-db',
 			'vname' => 'LBL_PROJECTS',
 		),
+     'project_resource'=>
+		array (
+			'name' => 'project_resource',
+			'type' => 'link',
+			'relationship' => 'projects_contacts_resources',
+			'source' => 'non-db',
+			'vname' => 'LBL_PROJECTS',
+		),
+
+
 
 	'tasks'=>
 		array (
@@ -324,7 +334,7 @@ array (
 	),
 		'user_sync'=>
 		array (
-			'name' => 'users',
+			'name' => 'user_sync',
 			'type' => 'link',
 			'relationship' => 'contacts_users',
 			'source' => 'non-db',

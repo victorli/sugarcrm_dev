@@ -112,5 +112,5 @@ if (isset($_REQUEST['mode']) and  $_REQUEST['mode']=='Test') {
 	$focus->mark_deleted($_REQUEST['record']);
 }
 $return_id=!empty($_REQUEST['return_id'])?$_REQUEST['return_id']:$focus->id;
-header("Location: index.php?module=".$_REQUEST['return_module']."&action=".$_REQUEST['return_action']."&record=".$return_id);
-?>
+require_once ('include/formbase.php');
+handleRedirect($return_id, $_REQUEST['return_module']);

@@ -61,6 +61,11 @@ class Dashlet
      */
     var $isRefreshable = true;
     /**
+     * true if the Dashlet configuration options panel has the clear button
+     * @var bool
+     */
+    public $isConfigPanelClearShown = true;
+    /**
      * true if the Dashlet contains javascript 
      * @var bool
      */

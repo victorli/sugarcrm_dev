@@ -265,6 +265,14 @@ $dictionary['CampaignLog'] = array ('audited'=>false,
 			'type' =>'index',
 			'fields'=>array('target_id')
 		),
+        array (
+			'name' =>'idx_target_id_deleted',
+
+			'type' =>'index',
+			'fields'=>array('target_id','deleted')
+		),
+
+
 	),
 	'relationships' => array (
         'campaignlog_contact' => array( 'lhs_module'=> 'CampaignLog',

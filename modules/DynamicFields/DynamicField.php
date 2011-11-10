@@ -183,11 +183,7 @@ class DynamicField {
 
         global $beanList;
         if (! empty ( $beanList [$module] )) {
-            $object = $beanList [$module];
-
-            if ($object == 'aCase') {
-                $object = 'Case';
-            }
+            $object = BeanFactory::getObjectName($module);
 
             if(empty($GLOBALS['dictionary'][$object]['fields'])){
                 //if the vardef isn't loaded let's try loading it.
@@ -453,8 +449,10 @@ class DynamicField {
         }
         $object_name = $beanList[$this->module];
 
-        if ($object_name == 'aCase') {
-            $object_name = 'Case';
+        //Some modules like cases have a bean name that doesn't match the object name
+        if (empty($GLOBALS['dictionary'][$object_name])) {
+            $newName = BeanFactory::getObjectName($this->module);
+            $object_name = $newName != false ? $newName : $object_name;
         }
 
         $GLOBALS['db']->query("DELETE FROM fields_meta_data WHERE id='" . $this->module . $widget->name . "'");
@@ -550,7 +548,16 @@ class DynamicField {
             	//We do this so that the existing entries in the custom table don't have the default value set
             	$field->default = '';
             	$field->default_value = '';
+                // resetting default and default_value does not work for multienum and causes trouble for mssql
+                // so using a temporary variable here to indicate that we don't want default for this query
+                if ($GLOBALS['db']->dbType == 'mssql') {
+                    $field->no_default = 1;
+                }
                 $query = $field->get_db_add_alter_table($this->bean->table_name . '_cstm');
+                // unsetting temporary member variable
+                if ($GLOBALS['db']->dbType == 'mssql') {
+                    unset($field->no_default);
+                }
                 if(!empty($query)){
                 	$GLOBALS['db']->query($query);
 	                $field->default = $fmd->default_value;
@@ -558,13 +565,13 @@ class DynamicField {
 	                $query = $field->get_db_modify_alter_table($this->bean->table_name . '_cstm');
 	                if(!empty($query)){
 	                	$GLOBALS['db']->query($query);
-	            	}                   
+	            	}
                 }
             }else{
                 $query = $field->get_db_modify_alter_table($this->bean->table_name . '_cstm');
                 if(!empty($query)){
                 	$GLOBALS['db']->query($query);
-            	}                
+            	}
             }
             $this->saveExtendedAttributes($field, array_keys($fmd->field_defs));
         }
@@ -728,7 +735,7 @@ class DynamicField {
                 $GLOBALS['db']->query($query);
             $out .= $this->add_existing_custom_fields($execute);
         }
-        
+
         return $out;
     }
 
@@ -780,7 +787,7 @@ class DynamicField {
              * @bug 43471
              * @issue 43471
              * @itr 23441
-             * 
+             *
              * force the name to be lower as it needs to be lower since that is how it's put into the key
              * in the get_columns() call above.
              */
@@ -898,7 +905,7 @@ class DynamicField {
 
     }
 
-   function populateXTPL(&$xtpl, $view) {
+   function populateXTPL($xtpl, $view) {
 
         if($this->bean->hasCustomFields()){
             $results = $this->getAllFieldsView($view, 'xtpl');
@@ -917,23 +924,23 @@ class DynamicField {
 
     }
 
-    function populateAllXTPL(&$xtpl, $view){
+    function populateAllXTPL($xtpl, $view){
         $this->populateXTPL($xtpl, $view);
 
     }
 
     function getAllFieldsView($view, $type){
-        $results = array();
+         require_once ('modules/DynamicFields/FieldCases.php');
+         $results = array();
          foreach($this->bean->field_defs as $name=>$data){
             if(empty($data['source']) || $data['source'] != 'custom_fields')
             {
             	continue;
             }
-            require_once ('modules/DynamicFields/FieldCases.php');
             $field = get_widget ( $data ['type'] );
             $field->populateFromRow($data);
             $field->view = $view;
-            $field->bean =& $this->bean;
+            $field->bean = $this->bean;
             switch(strtolower($type))
             {
                 case 'xtpl':

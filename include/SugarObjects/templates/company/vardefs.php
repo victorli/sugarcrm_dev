@@ -41,7 +41,6 @@ $vardefs= array (
   array (
     'name' => 'name',
     'type' => 'name',
-  	'link' => true, // bug 39288 
     'dbType' => 'varchar',
     'vname' => 'LBL_NAME',
     'len' => 150,
@@ -318,7 +317,7 @@ $vardefs= array (
 	   'returns'	=> 'html'
     ),
 	'source'	=> 'non-db',
-    'studio' => 'false',
+    'studio' => array('editField' => true, 'searchview' => false),
 ), 
   
   'email_addresses_primary' => 
@@ -363,4 +362,3 @@ $vardefs= array (
     ),
 )
 );
-?>

@@ -245,7 +245,6 @@ abstract class source{
  		$this->config_decrypted = true; // Don't decrypt external configs
  	}
 
-
     public function setEAPM(ExternalAPIBase $eapm)
     {
         $this->_eapm = $eapm;

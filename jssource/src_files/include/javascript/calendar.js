@@ -89,7 +89,7 @@ Calendar.setup = function (params) {
                 });
                 
                 dialog.setHeader(SUGAR.language.get('app_strings', 'LBL_MASSUPDATE_DATE'));
-                var dialogBody = '<p class="callnav_today"><a href="#"  id="callnav_today">' + SUGAR.language.get('app_strings', 'LBL_EMAIL_DATE_TODAY') + '</a></p><div id="' + showButton + '_div"></div>';
+                var dialogBody = '<p class="callnav_today"><a href="javascript:void(0)"  id="callnav_today">' + SUGAR.language.get('app_strings', 'LBL_EMAIL_DATE_TODAY') + '</a></p><div id="' + showButton + '_div"></div>';
                 dialog.setBody(dialogBody);
                 dialog.render(document.body);
 
@@ -109,6 +109,8 @@ Calendar.setup = function (params) {
                         var cell = calendar.cells[cellIndex];
                         Dom.addClass(cell, calendar.Style.CSS_CELL_SELECTED);
                     }
+                    //Must return false to prevent onbeforeunload from firing in IE8
+                    return false;
                 });
                 
                 dialog.showEvent.subscribe(function() {

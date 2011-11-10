@@ -50,7 +50,7 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
 	var $acl;
 
 //TODO rename defines to layout defs and make it a member variable instead of passing it multiple layers with extra copying.
-	
+
 	/** Take the keys for the strings and look them up.  Module is literal, the rest are label keys
 	*/
 	function SugarWidgetSubPanelTopButton($module='', $title='', $access_key='', $form_value='')
@@ -61,7 +61,7 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
 		{
 			// it is really the class details from the mapping
 			$class_details = $module;
-			
+
 			// If keys were passed into the constructor, translate them from keys to values.
 			if(!empty($class_details['module']))
 				$this->module = $class_details['module'];
@@ -80,7 +80,7 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
 		else
 		{
 			$this->module = $module;
-		
+
 			// If keys were passed into the constructor, translate them from keys to values.
 			if(!empty($title))
 				$this->title = $app_strings[$title];
@@ -90,7 +90,7 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
 				$this->form_value = translate($form_value, $module);
 		}
 	}
-	
+
     function &_get_form($defines, $additionalFormFields = null, $asUrl = false)
     {
         global $app_strings;
@@ -111,8 +111,8 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
                 }
             }
         }
-        
-        
+
+
 		if(!empty($this->module))
         {
             $defines['child_module_name'] = $this->module;
@@ -124,8 +124,8 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
 
         $defines['parent_bean_name'] = get_class( $defines['focus']);
 		$relationship_name = $this->get_subpanel_relationship_name($defines);
-        
-        
+
+
         $formValues = array();
 
         //module_button is used to override the value of module name
@@ -144,9 +144,9 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
             	}
             }
         }
-        
+
         $formValues['return_module'] = $currentModule;
-        
+
         if($currentModule == 'Campaigns'){
             $formValues['return_action'] = "DetailView";
         }else{
@@ -155,7 +155,7 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
                 $formValues['return_action'] = 'DetailView';
             }
         }
-        
+
         $formValues['return_id'] = $defines['focus']->id;
         $formValues['return_relationship'] = $relationship_name;
         switch ( strtolower( $currentModule ) )
@@ -170,14 +170,14 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
                 $name = $defines['focus']->kbdocument_name ;
                 break ;
             case 'leads' :
-            case 'contacts' : 
+            case 'contacts' :
                 $name = $defines['focus']->first_name . " " .$defines['focus']->last_name ;
                 break ;
             default :
                $name = (isset($defines['focus']->name)) ? $defines['focus']->name : "";
         }
         $formValues['return_name'] = $name;
-        
+
         // TODO: move this out and get $additionalFormFields working properly
         if(empty($additionalFormFields['parent_type']))
         {
@@ -222,7 +222,7 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
             }
         }
         $formValues['action'] = "EditView";
-        
+
         if ( $asUrl ) {
             $returnLink = '';
             foreach($formValues as $key => $value ) {
@@ -232,16 +232,16 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
                 $returnLink .= $key.'='.$value.'&';
             }
             $returnLink = rtrim($returnLink,'&');
-            
+
             return $returnLink;
         } else {
-            
+
             $form = 'form' . $relationship_name;
             $button = '<form action="index.php" method="post" name="form" id="' . $form . "\">\n";
             foreach($formValues as $key => $value) {
                 $button .= "<input type='hidden' name='" . $key . "' value='" . $value . "' />\n";
             }
-            
+
             // fill in additional form fields for all but action
             foreach($additionalFormFields as $key => $value) {
                 if($key != 'action') {
@@ -259,15 +259,15 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
 	{
 		$temp='';
 		$inputID = $this->getWidgetId() . '_'.preg_replace('[ ]', '', strtolower($this->form_value)).'_button';
-		
+
 		if(!empty($this->acl) && ACLController::moduleSupportsACL($defines['module'])  &&  !ACLController::checkAccess($defines['module'], $this->acl, true)){
 			$inputID = $this->getWidgetId() . '_'.preg_replace('[ ]', '', strtolower($this->form_value)).'_button';
 			$button = "<input title='$this->title'  class='button' type='button' name='$inputID' id='$inputID' value='  $this->form_value  ' disabled/>\n</form>";
 			return $temp;
 		}
-		
+
 		global $app_strings;
-		
+
         if ( isset($_REQUEST['layout_def_key']) && $_REQUEST['layout_def_key'] == 'UserEAPM' ) {
             // Subpanels generally don't go on the editview, so we have to handle this special
             $megaLink = $this->_get_form($defines, $additionalFormFields,true);
@@ -286,7 +286,7 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
 	function _create_json_encoded_popup_request($popup_request_data)
 	{
 		$popup_request_array = array();
-		
+
 		if(!empty($popup_request_data['call_back_function']))
 		{
 			$popup_request_array[] = '"call_back_function":"' . $popup_request_data['call_back_function'] . '"';
@@ -296,7 +296,7 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
 		{
 			$popup_request_array[] = '"form_name":"' . $popup_request_data['form_name'] . '"';
 		}
-		
+
 		if(!empty($popup_request_data['field_to_name_array']))
 		{
 			$field_to_name_array = array();
@@ -304,7 +304,7 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
 			{
 				$field_to_name_array[] = '"' . $field . '":"' . $name . '"';
 			}
-			
+
 			$popup_request_array[] = '"field_to_name_array":{' . implode(',', $field_to_name_array) . '}';
 		}
 
@@ -315,15 +315,15 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
 			{
 				$passthru_array[] = '"' . $field . '":"' . $name . '"';
 			}
-			
+
 			$popup_request_array[] = '"passthru_data":{' . implode(',', $passthru_array) . '}';
 		}
 
 		$encoded_popup_request = '{' . implode(',', $popup_request_array) . '}';
-		
+
 		return $encoded_popup_request;
 	}
-	
+
 	/**
 	 * get_subpanel_relationship_name
 	 * Get the relationship name based on the subapnel definition
@@ -346,6 +346,6 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
 		 }
 		 return $relationship_name;
 	}
-	
+
 }
 ?>

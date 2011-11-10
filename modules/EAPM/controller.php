@@ -59,6 +59,10 @@ class EAPMController extends SugarController
         SugarApplication::appendErrorMessage($error);
         $GLOBALS['log']->error("Login error: $error");
         $url = 'index.php?module=EAPM&action=EditView&record='.$this->bean->id;
+
+        if($this->return_module == 'Import'){
+            $url .= "&application={$this->bean->application}&return_module={$this->return_module}&return_action={$this->return_action}";
+        }
         return $this->set_redirect($url);
     }
 
@@ -100,6 +104,10 @@ class EAPMController extends SugarController
             $this->return_action = 'EditView';
         }
         parent::post_save();
+
+        if($this->return_module == 'Import'){
+            $this->set_redirect("index.php?module=Import&action=Step1&import_module=". $this->return_action . "&application=" . $this->bean->application);
+        }
         // Override the redirect location to add the hash
         $this->redirect_url = $this->redirect_url.'#tab5';
         if ( $this->api->authMethod == 'oauth' && !$this->bean->deleted ) {

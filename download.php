@@ -65,11 +65,9 @@ else {
 	    if(!file_exists('modules/' . $module . '/' . $bean_name . '.php')) {
 	         die($app_strings['ERROR_TYPE_NOT_VALID']);
 	    }
-	    require_once('modules/' . $module . '/' . $bean_name . '.php');
-	    $focus = new $bean_name();
-	    $focus->retrieve($_REQUEST['id']);
-	    if(!$focus->ACLAccess('view')){
-	        die($mod_strings['LBL_NO_ACCESS']);
+	    $focus = BeanFactory::getBean($module, $_REQUEST['id']);
+        if(!$focus->ACLAccess('view')){
+            die($mod_strings['LBL_NO_ACCESS']);
 	    } // if
 
         // Pull up the document revision, if it's of type Document
@@ -79,11 +77,9 @@ else {
             $focusRevision->retrieve($_REQUEST['id']);
 
             if ( empty($focusRevision->id) ) {
-                // This wasn't a document revision id, it's probably actually a document id, we need to grab that, get the latest revision and use that
-                $focusDocument = new Document();
-                $focusDocument->retrieve($_REQUEST['id']);
-
-                $focusRevision->retrieve($focusDocument->document_revision_id);
+                // This wasn't a document revision id, it's probably actually a document id,
+                // we need to grab the latest revision and use that
+                $focusRevision->retrieve($focus->document_revision_id);
 
                 if ( !empty($focusRevision->id) ) {
                     $_REQUEST['id'] = $focusRevision->id;
@@ -142,7 +138,7 @@ else {
 		}
 
 		if($doQuery && isset($query)) {
-			$rs = $GLOBALS['db']->query($query);
+            $rs = $GLOBALS['db']->query($query);
 			$row = $GLOBALS['db']->fetchByAssoc($rs);
 
 			if(empty($row)){

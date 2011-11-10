@@ -470,52 +470,59 @@ SugarWidgetScheduleRow.prototype.load = function (thetableid) {
 }
 
 SugarWidgetScheduleRow.prototype.display = function() {
-	var self = this;
-	var tr;
-	this.thetable = document.getElementById(this.thetableid);
-	
-	if(typeof (this.element) != 'undefined') {
-	    if (this.element.parentNode != null)
-			this.thetable.deleteRow(this.element.rowIndex);
+	SUGAR.util.doWhen("document.getElementById('" + this.thetableid + "') != null", function(){
+        var tr;
+        this.thetable = document.getElementById(this.thetableid);
 
-		tr = document.createElement('tr'); 
-		this.thetable.appendChild(tr);
-	} else {
-		tr = this.thetable.insertRow(this.thetable.rows.length);
-	}
-	tr.className = "schedulerAttendeeRow";
+        if(typeof (this.element) != 'undefined') {
+            if (this.element.parentNode != null)
+                this.thetable.deleteRow(this.element.rowIndex);
 
-	td = document.createElement('td');
-	tr.appendChild(td);
-	//insertCell(tr.cells.length);
+            tr = document.createElement('tr');
+            this.thetable.appendChild(tr);
+        } else {
+            tr = this.thetable.insertRow(this.thetable.rows.length);
+        }
+        tr.className = "schedulerAttendeeRow";
 
-	// icon + full name
-	td.scope = 'row';
-	var img = '<img align="absmiddle" src="index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName='+self.focus_bean.module+'s.gif"/>&nbsp;';
-	td.innerHTML = img;
+        td = document.createElement('td');
+        tr.appendChild(td);
+        //insertCell(tr.cells.length);
 
-	td.innerHTML = td.innerHTML;
+        // icon + full name
+        td.scope = 'row';
+        var img = '<img align="absmiddle" src="index.php?entryPoint=getImage&themeName='
+                + SUGAR.themes.theme_name+'&imageName='+this.focus_bean.module+'s.gif"/>&nbsp;';
+        td.innerHTML = img;
 
-	if (self.focus_bean.fields.full_name)
-		td.innerHTML += ' ' + self.focus_bean.fields.full_name;
-	else
-		td.innerHTML += ' ' + self.focus_bean.fields.name;
+        td.innerHTML = td.innerHTML;
 
-	// add freebusy tds here:
-	this.add_freebusy_nodes(tr);
+        if (this.focus_bean.fields.full_name)
+            td.innerHTML += ' ' + this.focus_bean.fields.full_name;
+        else
+            td.innerHTML += ' ' + this.focus_bean.fields.name;
 
-	// delete button
-	var td = document.createElement('td');
-	tr.appendChild(td);
-	//var td = tr.insertCell(tr.cells.length);
-	td.className = 'schedulerAttendeeDeleteCell';
-	td.noWrap = true;
-	//CCL - Remove check to disallow removal of assigned user or current user
-	//if ( GLOBAL_REGISTRY.focus.fields.assigned_user_id != self.focus_bean.fields.id && GLOBAL_REGISTRY.current_user.fields.id != self.focus_bean.fields.id) {
-       td.innerHTML = '<a title="'+ GLOBAL_REGISTRY['meeting_strings']['LBL_REMOVE'] +'" class="listViewTdToolsS1" style="text-decoration:none;" href="javascript:SugarWidgetScheduleRow.deleteRow(\''+self.focus_bean.fields.id+'\');">&nbsp;<img src="index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=delete_inline.gif" align="absmiddle" alt="'+ GLOBAL_REGISTRY['meeting_strings']['LBL_REMOVE'] +'" border="0"> '+ GLOBAL_REGISTRY['meeting_strings']['LBL_REMOVE'] +'</a>';
-	//}
-	this.element = tr;
-	this.element_index = this.thetable.rows.length - 1;
+        // add freebusy tds here:
+        this.add_freebusy_nodes(tr);
+
+        // delete button
+        var td = document.createElement('td');
+        tr.appendChild(td);
+        //var td = tr.insertCell(tr.cells.length);
+        td.className = 'schedulerAttendeeDeleteCell';
+        td.noWrap = true;
+        //CCL - Remove check to disallow removal of assigned user or current user
+        //if ( GLOBAL_REGISTRY.focus.fields.assigned_user_id != this.focus_bean.fields.id && GLOBAL_REGISTRY.current_user.fields.id != this.focus_bean.fields.id) {
+       td.innerHTML = '<a title="'+ GLOBAL_REGISTRY['meeting_strings']['LBL_REMOVE']
+                    + '" class="listViewTdToolsS1" style="text-decoration:none;" '
+                    + 'href="javascript:SugarWidgetScheduleRow.deleteRow(\''+this.focus_bean.fields.id+'\');">&nbsp;'
+                    + '<img src="index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=delete_inline.gif" '
+                    + 'align="absmiddle" alt="'+ GLOBAL_REGISTRY['meeting_strings']['LBL_REMOVE'] +'" border="0"> '
+                    + GLOBAL_REGISTRY['meeting_strings']['LBL_REMOVE'] +'</a>';
+        //}
+        this.element = tr;
+        this.element_index = this.thetable.rows.length - 1;
+    }, null, this);
 }
 
 SugarWidgetScheduleRow.deleteRow = function(bean_id) {

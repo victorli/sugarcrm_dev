@@ -222,4 +222,5 @@ switch ($_REQUEST['view']) {
 			//$sugar_smarty->assign('iframeURL', $iframe_url);
 		}
 		break;
+
 }

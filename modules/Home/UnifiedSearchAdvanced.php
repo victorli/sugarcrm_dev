@@ -374,7 +374,7 @@ class UnifiedSearchAdvanced {
 			if (!isset($beanFiles[$beanName]))
 				continue;
 
-			if($beanName == 'aCase') $beanName = 'Case';
+			$beanName = BeanFactory::getObjectName($moduleName);
 			
 			$manager = new VardefManager ( );
 			$manager->loadVardef( $moduleName , $beanName ) ;

@@ -32,10 +32,12 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by SugarCRM".
  ********************************************************************************/
-if(typeof(SUGAR)=="undefined")SUGAR={};if(typeof(SUGAR.themes)=="undefined")SUGAR.themes={};SUGAR.sugarHome={};SUGAR.subpanelUtils={};SUGAR.ajaxStatusClass={};SUGAR.tabChooser={};SUGAR.util={};SUGAR.savedViews={};SUGAR.dashlets={};SUGAR.unifiedSearchAdvanced={};SUGAR.searchForm={};SUGAR.language={};SUGAR.Studio={};SUGAR.contextMenu={};SUGAR.config={};var nameIndex=0;var typeIndex=1;var requiredIndex=2;var msgIndex=3;var jstypeIndex=5;var minIndex=10;var maxIndex=11;var altMsgIndex=15;var compareToIndex=7;var arrIndex=12;var operatorIndex=13;var allowblank=8;var validate=new Array();var maxHours=24;var requiredTxt='Missing Required Field:'
+if(typeof(SUGAR)=="undefined"){SUGAR={namespace:function(ns){SUGAR[ns]=SUGAR[ns]||{};return((typeof SUGAR[ns]==="object")&&(SUGAR[ns]!==null))?SUGAR[ns]:false;},append:function(target,obj){for(var prop in obj){if(obj[prop]!==void 0)target[prop]=obj[prop];}
+return target;}};}
+SUGAR.namespace("themes");SUGAR.namespace("sugarHome");SUGAR.namespace("subpanelUtils");SUGAR.namespace("ajaxStatusClass");SUGAR.namespace("tabChooser");SUGAR.namespace("utils");SUGAR.namespace("savedViews");SUGAR.namespace("dashlets");SUGAR.namespace("unifiedSearchAdvanced");SUGAR.namespace("searchForm");SUGAR.namespace("language");SUGAR.namespace("Studio");SUGAR.namespace("contextMenu");SUGAR.namespace("config");var nameIndex=0;var typeIndex=1;var requiredIndex=2;var msgIndex=3;var jstypeIndex=5;var minIndex=10;var maxIndex=11;var altMsgIndex=15;var compareToIndex=7;var arrIndex=12;var operatorIndex=13;var allowblank=8;var validate=new Array();var maxHours=24;var requiredTxt='Missing Required Field:'
 var invalidTxt='Invalid Value:'
-var secondsSinceLoad=0;var inputsWithErrors=new Array();var tabsWithErrors=new Array();var lastSubmitTime=0;var alertList=new Array();var oldStartsWith='';function isSupportedIE(){var userAgent=navigator.userAgent.toLowerCase();if(userAgent.indexOf("msie")!=-1&&userAgent.indexOf("mac")==-1&&userAgent.indexOf("opera")==-1){var version=navigator.appVersion.match(/MSIE (.\..)/)[1];if(version>=5.5&&version<9){return true;}else{return false;}}}
-SUGAR.isIE=isSupportedIE();SUGAR.isIE7=(navigator.userAgent.toLowerCase().indexOf('msie 7')!=-1);var isSafari=(navigator.userAgent.toLowerCase().indexOf('safari')!=-1);RegExp.escape=function(text){if(!arguments.callee.sRE){var specials=['/','.','*','+','?','|','(',')','[',']','{','}','\\'];arguments.callee.sRE=new RegExp('(\\'+specials.join('|\\')+')','g');}
+var secondsSinceLoad=0;var inputsWithErrors=new Array();var tabsWithErrors=new Array();var lastSubmitTime=0;var alertList=new Array();var oldStartsWith='';function isSupportedIE(){var userAgent=navigator.userAgent.toLowerCase();if(userAgent.indexOf("msie")!=-1&&userAgent.indexOf("mac")==-1&&userAgent.indexOf("opera")==-1){var version=navigator.appVersion.match(/MSIE (.\..)/)[1];if(version>=5.5&&version<10){return true;}else{return false;}}}
+SUGAR.isIE=isSupportedIE();var isSafari=(navigator.userAgent.toLowerCase().indexOf('safari')!=-1);RegExp.escape=function(text){if(!arguments.callee.sRE){var specials=['/','.','*','+','?','|','(',')','[',']','{','}','\\'];arguments.callee.sRE=new RegExp('(\\'+specials.join('|\\')+')','g');}
 return text.replace(arguments.callee.sRE,'\\$1');}
 function addAlert(type,name,subtitle,description,time,redirect){var addIndex=alertList.length;alertList[addIndex]=new Array();alertList[addIndex]['name']=name;alertList[addIndex]['type']=type;alertList[addIndex]['subtitle']=subtitle;alertList[addIndex]['description']=description.replace(/<br>/gi,"\n").replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');alertList[addIndex]['time']=time;alertList[addIndex]['done']=0;alertList[addIndex]['redirect']=redirect;}
 function checkAlerts(){secondsSinceLoad+=1;var mj=0;var alertmsg='';for(mj=0;mj<alertList.length;mj++){if(alertList[mj]['done']==0){if(alertList[mj]['time']<secondsSinceLoad&&alertList[mj]['time']>-1){alertmsg=alertList[mj]['type']+":"+alertList[mj]['name']+"\n"+alertList[mj]['subtitle']+"\n"+alertList[mj]['description']+"\n\n";alertList[mj]['done']=1;if(alertList[mj]['redirect']==''){alert(alertmsg);}
@@ -161,7 +163,8 @@ function clear_all_errors(){for(var wp=0;wp<inputsWithErrors.length;wp++){if(typ
 {inputsWithErrors[wp].parentNode.parentNode.removeChild(inputsWithErrors[wp].parentNode.parentNode.lastChild);}
 else
 {inputsWithErrors[wp].parentNode.removeChild(inputsWithErrors[wp].parentNode.lastChild);}}}
-if(inputsWithErrors.length==0)return;if(YAHOO.util.Dom.getAncestorByTagName(inputsWithErrors[0],"form")){var formname=YAHOO.util.Dom.getAncestorByTagName(inputsWithErrors[0],"form").getAttribute("name");if(typeof(window[formname+"_tabs"])!="undefined"){var tabView=window[formname+"_tabs"];if(tabView.get){var tabs=tabView.get("tabs");for(var i in tabs){tabs[i].get("labelEl").style.color="";}}}
+if(inputsWithErrors.length==0)return;if(YAHOO.util.Dom.getAncestorByTagName(inputsWithErrors[0],"form")){var formname=YAHOO.util.Dom.getAncestorByTagName(inputsWithErrors[0],"form").getAttribute("name");if(typeof(window[formname+"_tabs"])!="undefined"){var tabView=window[formname+"_tabs"];if(tabView.get){var tabs=tabView.get("tabs");for(var i in tabs){if(typeof tabs[i]=="object")
+tabs[i].get("labelEl").style.color="";}}}
 inputsWithErrors=new Array();}}
 function get_current_bgcolor(input){if(input.currentStyle){style=input.currentStyle.backgroundColor;return style.substring(1,7);}
 else{style='';styleRGB=document.defaultView.getComputedStyle(input,'').getPropertyValue("background-color");comma=styleRGB.indexOf(',');style+=dec2hex(styleRGB.substring(4,comma));commaPrevious=comma;comma=styleRGB.indexOf(',',commaPrevious+1);style+=dec2hex(styleRGB.substring(commaPrevious+2,comma));style+=dec2hex(styleRGB.substring(comma+2,styleRGB.lastIndexOf(')')));return style;}}
@@ -178,20 +181,20 @@ function validate_form(formname,startsWith){requiredTxt=SUGAR.language.get('app_
 if(typeof(validate[formname])=='undefined')
 {disableOnUnloadEditView(document.forms[formname]);return true;}
 var form=document.forms[formname];var isError=false;var errorMsg="";var _date=new Date();if(_date.getTime()<(lastSubmitTime+2000)&&startsWith==oldStartsWith){return false;}
-lastSubmitTime=_date.getTime();oldStartsWith=startsWith;clear_all_errors();inputsWithErrors=new Array();for(var i=0;i<validate[formname].length;i++){if(validate[formname][i][nameIndex].indexOf(startsWith)==0){if(typeof form[validate[formname][i][nameIndex]]!='undefined'){var bail=false;if(!validate[formname][i][requiredIndex]&&trim(form[validate[formname][i][nameIndex]].value)==''&&(typeof(validate[formname][i][jstypeIndex])!='undefined'&&validate[formname][i][jstypeIndex]!='binarydep'))
+lastSubmitTime=_date.getTime();oldStartsWith=startsWith;clear_all_errors();inputsWithErrors=new Array();for(var i=0;i<validate[formname].length;i++){if(validate[formname][i][nameIndex].indexOf(startsWith)==0){if(typeof form[validate[formname][i][nameIndex]]!='undefined'&&typeof form[validate[formname][i][nameIndex]].value!='undefined'){var bail=false;if(!validate[formname][i][requiredIndex]&&trim(form[validate[formname][i][nameIndex]].value)==''&&(typeof(validate[formname][i][jstypeIndex])!='undefined'&&validate[formname][i][jstypeIndex]!='binarydep'))
 {continue;}
 if(validate[formname][i][requiredIndex]&&!isFieldTypeExceptFromEmptyCheck(validate[formname][i][typeIndex])){if(typeof form[validate[formname][i][nameIndex]]=='undefined'||trim(form[validate[formname][i][nameIndex]].value)==""){add_error_style(formname,validate[formname][i][nameIndex],requiredTxt+' '+validate[formname][i][msgIndex]);isError=true;}}
 if(!bail){switch(validate[formname][i][typeIndex]){case'email':if(!isValidEmail(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
 break;case'time':if(!isTime(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}break;case'date':if(!isDate(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}break;case'alpha':break;case'DBName':if(!isDBName(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
-break;case'alphanumeric':break;case'file':if(validate[formname][i][requiredIndex]&&typeof(form[validate[formname][i][nameIndex]+'_file'])!='undefined'&&trim(form[validate[formname][i][nameIndex]+'_file'].value)==""&&!form[validate[formname][i][nameIndex]+'_file'].disabled){isError=true;add_error_style(formname,validate[formname][i][nameIndex],requiredTxt+" "+validate[formname][i][msgIndex]);}
+break;case'alphanumeric':break;case'file':var file_input=form[validate[formname][i][nameIndex]+'_file'];if(file_input&&validate[formname][i][requiredIndex]&&trim(file_input.value)==""&&!file_input.disabled){isError=true;add_error_style(formname,validate[formname][i][nameIndex],requiredTxt+" "+validate[formname][i][msgIndex]);}
 break;case'int':if(!isInteger(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
 break;case'decimal':if(!isDecimal(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
 break;case'currency':case'float':if(!isFloat(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
-break;case'teamset_mass':div_element_id=formname+'_'+form[validate[formname][i][nameIndex]].name+'_operation_div';input_elements=YAHOO.util.Selector.query('input',document.getElementById(div_element_id));primary_field_id='';validation_passed=false;replace_selected=false;for(t in input_elements){if(input_elements[t].type&&input_elements[t].type=='radio'&&input_elements[t].checked==true&&input_elements[t].value=='replace'){radio_elements=YAHOO.util.Selector.query('input[type=radio]',document.getElementById(formname+'_team_name_table'));for(x in radio_elements){if(radio_elements[x].name!='team_name_type'){primary_field_id='team_name_collection_'+radio_elements[x].value;if(radio_elements[x].checked){replace_selected=true;if(trim(document.forms[formname].elements[primary_field_id].value)!=''){validation_passed=true;break;}}else if(trim(document.forms[formname].elements[primary_field_id].value)!=''){replace_selected=true;}}}}}
+break;case'teamset_mass':var div_element_id=formname+'_'+form[validate[formname][i][nameIndex]].name+'_operation_div';var input_elements=YAHOO.util.Selector.query('input',document.getElementById(div_element_id));var primary_field_id='';var validation_passed=false;var replace_selected=false;for(t in input_elements){if(input_elements[t].type&&input_elements[t].type=='radio'&&input_elements[t].checked==true&&input_elements[t].value=='replace'){var radio_elements=YAHOO.util.Selector.query('input[type=radio]',document.getElementById(formname+'_team_name_table'));for(var x=0;x<radio_elements.length;x++){if(radio_elements[x].name!='team_name_type'){primary_field_id='team_name_collection_'+radio_elements[x].value;if(radio_elements[x].checked){replace_selected=true;if(trim(document.forms[formname].elements[primary_field_id].value)!=''){validation_passed=true;break;}}else if(trim(document.forms[formname].elements[primary_field_id].value)!=''){replace_selected=true;}}}}}
 if(replace_selected&&!validation_passed){add_error_style(formname,primary_field_id,SUGAR.language.get('app_strings','ERR_NO_PRIMARY_TEAM_SPECIFIED'));isError=true;}
-break;case'teamset':table_element_id=formname+'_'+form[validate[formname][i][nameIndex]].name+'_table';if(document.getElementById(table_element_id)){input_elements=YAHOO.util.Selector.query('input[type=radio]',document.getElementById(table_element_id));has_primary=false;primary_field_id=form[validate[formname][i][nameIndex]].name+'_collection_0';for(t in input_elements){primary_field_id=form[validate[formname][i][nameIndex]].name+'_collection_'+input_elements[t].value;if(input_elements[t].type&&input_elements[t].type=='radio'&&input_elements[t].checked==true){if(document.forms[formname].elements[primary_field_id].value!=''){has_primary=true;}
+break;case'teamset':var table_element_id=formname+'_'+form[validate[formname][i][nameIndex]].name+'_table';if(document.getElementById(table_element_id)){var input_elements=YAHOO.util.Selector.query('input[type=radio]',document.getElementById(table_element_id));var has_primary=false;var primary_field_id=form[validate[formname][i][nameIndex]].name+'_collection_0';for(t in input_elements){primary_field_id=form[validate[formname][i][nameIndex]].name+'_collection_'+input_elements[t].value;if(input_elements[t].type&&input_elements[t].type=='radio'&&input_elements[t].checked==true){if(document.forms[formname].elements[primary_field_id].value!=''){has_primary=true;}
 break;}}
-if(!has_primary){isError=true;field_id=form[validate[formname][i][nameIndex]].name+'_collection_'+input_elements[0].value;add_error_style(formname,field_id,SUGAR.language.get('app_strings','ERR_NO_PRIMARY_TEAM_SPECIFIED'));}}
+if(!has_primary){isError=true;var field_id=form[validate[formname][i][nameIndex]].name+'_collection_'+input_elements[0].value;add_error_style(formname,field_id,SUGAR.language.get('app_strings','ERR_NO_PRIMARY_TEAM_SPECIFIED'));}}
 break;case'error':isError=true;add_error_style(formname,validate[formname][i][nameIndex],validate[formname][i][msgIndex]);break;}
 if(typeof validate[formname][i][jstypeIndex]!='undefined'){switch(validate[formname][i][jstypeIndex]){case'range':if(!inRange(trim(form[validate[formname][i][nameIndex]].value),validate[formname][i][minIndex],validate[formname][i][maxIndex])){isError=true;var lbl_validate_range=SUGAR.language.get('app_strings','LBL_VALIDATE_RANGE');add_error_style(formname,validate[formname][i][nameIndex],validate[formname][i][msgIndex]+" value "+form[validate[formname][i][nameIndex]].value+" "+lbl_validate_range+" ("+validate[formname][i][minIndex]+" - "+validate[formname][i][maxIndex]+") ");}
 break;case'isbefore':compareTo=form[validate[formname][i][compareToIndex]];if(typeof compareTo!='undefined'){if(trim(compareTo.value)!=''||(validate[formname][i][allowblank]!='true')){date2=trim(compareTo.value);date1=trim(form[validate[formname][i][nameIndex]].value);if(trim(date1).length!=0&&!isBefore(date1,date2)){isError=true;add_error_style(formname,validate[formname][i][nameIndex],validate[formname][i][msgIndex]+"("+date1+") "+SUGAR.language.get('app_strings','MSG_IS_NOT_BEFORE')+' '+date2);}}}
@@ -244,7 +247,7 @@ catch(e){try{xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");}
 catch(E){xmlhttp=false;}}}}
 if(!xmlhttp&&typeof XMLHttpRequest!='undefined'){xmlhttp=new XMLHttpRequest();}
 return xmlhttp;}
-var global_xmlhttp=getXMLHTTPinstance();function http_fetch_sync(url,post_data){global_xmlhttp=getXMLHTTPinstance();var method=(typeof(post_data)!='undefined')?'POST':'GET';try{global_xmlhttp.open(method,url,false);}
+var global_xmlhttp=getXMLHTTPinstance();function http_fetch_sync(url,post_data){global_xmlhttp=getXMLHTTPinstance();var method='GET';if(typeof(post_data)!='undefined')method='POST';try{global_xmlhttp.open(method,url,false);}
 catch(e){alert('message:'+e.message+":url:"+url);}
 if(method=='POST'){global_xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded');}
 global_xmlhttp.send(post_data);if(SUGAR.util.isLoginPage(global_xmlhttp.responseText))
@@ -303,8 +306,8 @@ return snapshotTxt;}
 function initEditView(theForm){if(SUGAR.util.ajaxCallInProgress()){window.setTimeout(function(){initEditView(theForm);},100);return;}
 if(theForm==null||theForm.id==null){return;}
 if(theForm.id=='popup_query_form'||theForm.id=='MassUpdate'){return;}
-if(typeof editViewSnapshots=='undefined'){editViewSnapshots=new Object();}
-if(typeof SUGAR.loadedForms=='undefined'){SUGAR.loadedForms=new Object();}
+if(typeof editViewSnapshots=='undefined'||editViewSnapshots==null){editViewSnapshots=new Object();}
+if(typeof SUGAR.loadedForms=='undefined'||SUGAR.loadedForms==null){SUGAR.loadedForms=new Object();}
 editViewSnapshots[theForm.id]=snapshotForm(theForm);SUGAR.loadedForms[theForm.id]=true;}
 function onUnloadEditView(theForm){var dataHasChanged=false;if(typeof editViewSnapshots=='undefined'){return;}
 if(typeof theForm=='undefined'){for(var idx in editViewSnapshots){theForm=document.getElementById(idx);if(theForm==null||typeof editViewSnapshots[theForm.id]=='undefined'||editViewSnapshots[theForm.id]==null||!SUGAR.loadedForms[theForm.id]){continue;}
@@ -421,11 +424,11 @@ function formatNumber(n,num_grp_sep,dec_sep,round,precision){if(typeof num_grp_s
 if(round<=0){n[0]=Math.round(parseInt(n[0],10)*Math.pow(10,round))/ Math.pow(10,round);n[1]='';}}
 if(typeof precision!='undefined'&&precision>=0){if(n.length>1&&typeof n[1]!='undefined')n[1]=n[1].substring(0,precision);else n[1]='';if(n[1].length<precision){for(var wp=n[1].length;wp<precision;wp++)n[1]+='0';}}
 regex=/(\d+)(\d{3})/;while(num_grp_sep!=''&&regex.test(n[0]))n[0]=n[0].toString().replace(regex,'$1'+num_grp_sep+'$2');return n[0]+(n.length>1&&n[1]!=''?dec_sep+n[1]:'');}
-SUGAR.ajaxStatusClass=function(){};SUGAR.ajaxStatusClass.prototype.statusDiv=null;SUGAR.ajaxStatusClass.prototype.oldOnScroll=null;SUGAR.ajaxStatusClass.prototype.shown=false;SUGAR.ajaxStatusClass.prototype.positionStatus=function(){this.statusDiv.style.top=document.body.scrollTop+8+'px';statusDivRegion=YAHOO.util.Dom.getRegion(this.statusDiv);statusDivWidth=statusDivRegion.right-statusDivRegion.left;this.statusDiv.style.left=YAHOO.util.Dom.getViewportWidth()/ 2-statusDivWidth / 2+'px';}
+SUGAR.ajaxStatusClass=function(){};SUGAR.ajaxStatusClass.prototype.statusDiv=null;SUGAR.ajaxStatusClass.prototype.oldOnScroll=null;SUGAR.ajaxStatusClass.prototype.shown=false;SUGAR.ajaxStatusClass.prototype.positionStatus=function(){statusDivRegion=YAHOO.util.Dom.getRegion(this.statusDiv);statusDivWidth=statusDivRegion.right-statusDivRegion.left;this.statusDiv.style.left=YAHOO.util.Dom.getViewportWidth()/ 2-statusDivWidth / 2+'px';}
 SUGAR.ajaxStatusClass.prototype.createStatus=function(text){statusDiv=document.createElement('div');statusDiv.className='dataLabel';statusDiv.id='ajaxStatusDiv';document.body.appendChild(statusDiv);this.statusDiv=document.getElementById('ajaxStatusDiv');}
 SUGAR.ajaxStatusClass.prototype.showStatus=function(text){if(!this.statusDiv){this.createStatus(text);}
 else{this.statusDiv.style.display='';}
-this.statusDiv.style.zIndex=20;this.statusDiv.innerHTML='&nbsp;<b>'+text+'</b>&nbsp;';this.positionStatus();if(!this.shown){this.shown=true;this.statusDiv.style.display='';if(window.onscroll)this.oldOnScroll=window.onscroll;window.onscroll=this.positionStatus;}}
+this.statusDiv.innerHTML='&nbsp;<b>'+text+'</b>&nbsp;';this.positionStatus();if(!this.shown){this.shown=true;this.statusDiv.style.display='';if(window.onscroll)this.oldOnScroll=window.onscroll;window.onscroll=this.positionStatus;}}
 SUGAR.ajaxStatusClass.prototype.hideStatus=function(text){if(!this.shown)return;this.shown=false;if(this.oldOnScroll)window.onscroll=this.oldOnScroll;else window.onscroll='';this.statusDiv.style.display='none';}
 SUGAR.ajaxStatusClass.prototype.flashStatus=function(text,time){this.showStatus(text);window.setTimeout('ajaxStatus.hideStatus();',time);}
 var ajaxStatus=new SUGAR.ajaxStatusClass();SUGAR.unifiedSearchAdvanced=function(){var usa_div;var usa_img;var usa_open;var usa_content;var anim_open;var anim_close;return{init:function(){SUGAR.unifiedSearchAdvanced.usa_div=document.getElementById('unified_search_advanced_div');SUGAR.unifiedSearchAdvanced.usa_img=document.getElementById('unified_search_advanced_img');if(!SUGAR.unifiedSearchAdvanced.usa_div||!SUGAR.unifiedSearchAdvanced.usa_img)return;var attributes={height:{to:300}};SUGAR.unifiedSearchAdvanced.anim_open=new YAHOO.util.Anim('unified_search_advanced_div',attributes);SUGAR.unifiedSearchAdvanced.anim_open.duration=0.75;SUGAR.unifiedSearchAdvanced.anim_close=new YAHOO.util.Anim('unified_search_advanced_div',{height:{to:0}});SUGAR.unifiedSearchAdvanced.anim_close.duration=0.75;SUGAR.unifiedSearchAdvanced.usa_img._x=YAHOO.util.Dom.getX(SUGAR.unifiedSearchAdvanced.usa_img);SUGAR.unifiedSearchAdvanced.usa_img._y=YAHOO.util.Dom.getY(SUGAR.unifiedSearchAdvanced.usa_img);SUGAR.unifiedSearchAdvanced.usa_open=false;SUGAR.unifiedSearchAdvanced.usa_content=null;YAHOO.util.Event.addListener('unified_search_advanced_img','click',SUGAR.unifiedSearchAdvanced.get_content);},get_content:function(e)
@@ -444,8 +447,9 @@ tmpElem.addEventListener('load',waitUntilLoaded);SUGAR.evalScript_waitCount++;he
 SUGAR.evalScript_waitCount++;waitUntilLoaded();return;}
 var objRegex=/<\s*script([^>]*)>((.|\s|\v|\0)*?)<\s*\/script\s*>/igm;var lastIndex=-1;var result=objRegex.exec(text);while(result&&result.index>lastIndex){lastIndex=result.index
 try{var script=document.createElement('script');script.type='text/javascript';if(result[1].indexOf("src=")>-1){var srcRegex=/.*src=['"]([a-zA-Z0-9_\&\/\.\?=:]*)['"].*/igm;var srcResult=result[1].replace(srcRegex,'$1');script.src=srcResult;}else{script.text=result[2];}
-document.body.appendChild(script)}
-catch(e){}
+document.body.appendChild(script);}
+catch(e){if(typeof(console)!="undefined"&&typeof(console.log)=="function")
+{console.log("error adding script");console.log(e);console.log(result);}}
 result=objRegex.exec(text);}},getLeftColObj:function(){leftColObj=document.getElementById('leftCol');while(leftColObj.nodeName!='TABLE'){leftColObj=leftColObj.firstChild;}
 leftColTable=leftColObj;leftColTd=leftColTable.getElementsByTagName('td')[0];leftColTdRegion=YAHOO.util.Dom.getRegion(leftColTd);leftColTd.style.width=(leftColTdRegion.right-leftColTdRegion.left)+'px';return leftColTd;},fillShortcuts:function(e,shortcutContent){return;},retrieveAndFill:function(url,theDiv,postForm,callback,callbackParam,appendMode){if(typeof theDiv=='string'){try{theDiv=document.getElementById(theDiv);}
 catch(e){return;}}
@@ -463,14 +467,25 @@ if(typeof SUGAR.util.additionalDetailsCache[spanId]!='undefined')
 return oReturn(SUGAR.util.additionalDetailsCache[spanId]['body'],SUGAR.util.additionalDetailsCache[spanId]['caption'],SUGAR.util.additionalDetailsCache[spanId]['width'],SUGAR.util.additionalDetailsCache[spanId]['theme']);if(typeof SUGAR.util.additionalDetailsCalls[spanId]!='undefined')
 return;ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_LOADING'));url='index.php?to_pdf=1&module=Home&action=AdditionalDetailsRetrieve&bean='+bean+'&id='+id;SUGAR.util.additionalDetailsCalls[spanId]=YAHOO.util.Connect.asyncRequest('GET',url,{success:success,failure:success});return false;}
 SUGAR.util.additionalDetailsRpcCall=window.setTimeout('go()',250);},clearAdditionalDetailsCall:function(){if(typeof SUGAR.util.additionalDetailsRpcCall=='number')window.clearTimeout(SUGAR.util.additionalDetailsRpcCall);},extend:function(subc,superc,overrides){subc.prototype=new superc;if(overrides){for(var i in overrides)subc.prototype[i]=overrides[i];}},hrefURL:function(url){if(SUGAR.isIE){var trampoline=document.createElement('a');trampoline.href=url;document.body.appendChild(trampoline);trampoline.click();document.body.removeChild(trampoline);}else{document.location.href=url;}},openWindow:function(URL,windowName,windowFeatures){if(SUGAR.isIE){win=window.open('',windowName,windowFeatures);var trampoline=document.createElement('a');trampoline.href=URL;trampoline.target=windowName;document.body.appendChild(trampoline);trampoline.click();document.body.removeChild(trampoline);}else{win=window.open(URL,windowName,windowFeatures);}
-return win;}};}();SUGAR.util.additionalDetailsCache=new Array();SUGAR.util.additionalDetailsCalls=new Array();if(typeof YAHOO!='undefined')YAHOO.util.Event.addListener(window,'load',SUGAR.util.setMaxLength);SUGAR.savedViews=function(){var selectedOrderBy;var selectedSortOrder;var displayColumns;var hideTabs;var columnsMeta;return{setChooser:function(){var displayColumnsDef=new Array();var hideTabsDef=new Array();var left_td=document.getElementById('display_tabs_td');if(typeof left_td=='undefined'||left_td==null)return;var right_td=document.getElementById('hide_tabs_td');var displayTabs=left_td.getElementsByTagName('select')[0];var hideTabs=right_td.getElementsByTagName('select')[0];for(i=0;i<displayTabs.options.length;i++){displayColumnsDef.push(displayTabs.options[i].value);}
+return win;},top:function(){window.scroll(0,0);},doWhen:function(condition,fn,params,scope)
+{this._doWhenStack.push({check:condition,fn:fn,obj:params,overrideContext:scope});this._doWhenretryCount=50;this._startDoWhenInterval();},_startDoWhenInterval:function(){if(!this._doWhenInterval){this._doWhenInterval=YAHOO.lang.later(50,this,this._doWhenCheck,null,true);}},_doWhenStack:[],_doWhenInterval:false,_doWhenCheck:function(){if(this._doWhenStack.length===0){this._doWhenretryCount=0;if(this._doWhenInterval){this._doWhenInterval.cancel();this._doWhenInterval=null;}
+return;}
+if(this._doWhenLocked){return;}
+if(SUGAR.isIE){if(!YAHOO.util.Event.DOMReady){this._startDoWhenInterval();return;}}
+this._doWhenLocked=true;var tryAgain=YAHOO.util.Event.DOMReady;if(!tryAgain){tryAgain=(this._doWhenretryCount>0&&this._doWhenStack.length>0);}
+var notAvail=[];var executeItem=function(context,item){if(item.overrideContext){if(item.overrideContext===true){context=item.obj;}else{context=item.overrideContext;}}
+item.fn.call(context,item.obj);};var i,len,item,test;for(i=0,len=this._doWhenStack.length;i<len;i=i+1){item=this._doWhenStack[i];if(item){test=item.check;if((typeof(test)=="string"&&eval(test))||(typeof(test)=="function"&&test())){executeItem(this,item);this._doWhenStack[i]=null;}
+else{notAvail.push(item);}}}
+this._doWhenretryCount--;if(tryAgain){for(i=this._doWhenStack.length-1;i>-1;i--){item=this._doWhenStack[i];if(!item||!item.check){this._doWhenStack.splice(i,1);}}
+this._startDoWhenInterval();}else{if(this._doWhenInterval){this._doWhenInterval.cancel();this._doWhenInterval=null;}}
+this._doWhenLocked=false;}};}();SUGAR.util.additionalDetailsCache=new Array();SUGAR.util.additionalDetailsCalls=new Array();if(typeof YAHOO!='undefined')YAHOO.util.Event.addListener(window,'load',SUGAR.util.setMaxLength);SUGAR.savedViews=function(){var selectedOrderBy;var selectedSortOrder;var displayColumns;var hideTabs;var columnsMeta;return{setChooser:function(){var displayColumnsDef=new Array();var hideTabsDef=new Array();var left_td=document.getElementById('display_tabs_td');if(typeof left_td=='undefined'||left_td==null)return;var right_td=document.getElementById('hide_tabs_td');var displayTabs=left_td.getElementsByTagName('select')[0];var hideTabs=right_td.getElementsByTagName('select')[0];for(i=0;i<displayTabs.options.length;i++){displayColumnsDef.push(displayTabs.options[i].value);}
 if(typeof hideTabs!='undefined'){for(i=0;i<hideTabs.options.length;i++){hideTabsDef.push(hideTabs.options[i].value);}}
 if(!SUGAR.savedViews.clearColumns)
 document.getElementById('displayColumnsDef').value=displayColumnsDef.join('|');document.getElementById('hideTabsDef').value=hideTabsDef.join('|');},select:function(saved_search_select){for(var wp=0;wp<document.search_form.saved_search_select.options.length;wp++){if(typeof document.search_form.saved_search_select.options[wp].value!='undefined'&&document.search_form.saved_search_select.options[wp].value==saved_search_select){document.search_form.saved_search_select.selectedIndex=wp;document.search_form.ss_delete.style.display='';document.search_form.ss_update.style.display='';}}},saved_search_action:function(action,delete_lang){if(action=='delete'){if(!confirm(delete_lang))return;}
 if(action=='save'){if(document.search_form.saved_search_name.value.replace(/^\s*|\s*$/g,'')==''){alert(SUGAR.language.get('app_strings','LBL_SAVED_SEARCH_ERROR'));return;}}
 if(document.search_form.saved_search_action)
 {document.search_form.saved_search_action.value=action;document.search_form.search_module.value=document.search_form.module.value;document.search_form.module.value='SavedSearch';document.search_form.action.value='index';}
-document.search_form.submit();},shortcut_select:function(selectBox,module){selecturl='index.php?module=SavedSearch&search_module='+module+'&action=index&saved_search_select='+selectBox.options[selectBox.selectedIndex].value
+SUGAR.ajaxUI.submitForm(document.search_form);},shortcut_select:function(selectBox,module){selecturl='index.php?module=SavedSearch&search_module='+module+'&action=index&saved_search_select='+selectBox.options[selectBox.selectedIndex].value
 if(typeof(document.getElementById('searchFormTab'))!='undefined'){selecturl=selecturl+'&searchFormTab='+document.search_form.searchFormTab.value;}
 if(document.getElementById('showSSDIV')&&typeof(document.getElementById('showSSDIV')!='undefined')){selecturl=selecturl+'&showSSDIV='+document.getElementById('showSSDIV').value;}
 document.location.href=selecturl;},handleForm:function(){SUGAR.tabChooser.movementCallback=function(left_side,right_side){while(document.getElementById('orderBySelect').childNodes.length!=0){document.getElementById('orderBySelect').removeChild(document.getElementById('orderBySelect').lastChild);}
@@ -488,7 +503,9 @@ handleDisplay();enableQS(true);ajaxStatus.hideStatus();}
 url='index.php?module='+module+'&action=index&search_form_only=true&to_pdf=true&search_form_view='+theView;var tpl='';if(document.getElementById('search_tpl')!=null&&typeof(document.getElementById('search_tpl'))!='undefined'){tpl=document.getElementById('search_tpl').value;if(tpl!=''){url+='&search_tpl='+tpl;}}
 if(theView=='saved_views')
 url+='&displayColumns='+SUGAR.savedViews.displayColumns+'&hideTabs='+SUGAR.savedViews.hideTabs+'&orderBy='+SUGAR.savedViews.selectedOrderBy+'&sortOrder='+SUGAR.savedViews.selectedSortOrder;var cObj=YAHOO.util.Connect.asyncRequest('GET',url,{success:success,failure:success});}
-else{handleDisplay();}},copyElement:function(inputName,copyFromElement){switch(copyFromElement.type){case'select-one':case'text':document.search_form[inputName].value=copyFromElement.value;break;}},clear_form:function(form){var elemList=form.elements;var elem;var elemType;for(var i=0;i<elemList.length;i++){elem=elemList[i];if(typeof(elem.type)=='undefined'){continue;}
+else{handleDisplay();}},copyElement:function(inputName,copyFromElement){switch(copyFromElement.type){case'select-one':case'text':document.search_form[inputName].value=copyFromElement.value;break;}},clear_form:function(form,skipElementNames){var elemList=form.elements;var elem;var elemType;for(var i=0;i<elemList.length;i++){elem=elemList[i];if(typeof(elem.type)=='undefined'){continue;}
+if(typeof(elem.type)!='undefined'&&typeof(skipElementNames)!='undefined'&&SUGAR.util.arrayIndexOf(skipElementNames,elem.name)!=-1)
+{continue;}
 elemType=elem.type.toLowerCase();if(elemType=='text'||elemType=='textarea'||elemType=='password'){elem.value='';}
 else if(elemType=='select'||elemType=='select-one'||elemType=='select-multiple'){var optionList=elem.options;for(var ii=0;ii<optionList.length;ii++){optionList[ii].selected=false;}}
 else if(elemType=='radio'||elemType=='checkbox'){elem.checked=false;elem.selected=false;}
@@ -549,7 +566,7 @@ document.location=loc;},createOpportunity:function(itemClicked,metaData){loc='in
 document.location=loc;},createCase:function(itemClicked,metaData){loc='index.php?module=Cases&action=EditView';for(i in metaData){if(i!='module')loc+='&'+i+'='+metaData[i];}
 document.location=loc;},addToFavorites:function(itemClicked,metaData){success=function(data){}
 var cObj=YAHOO.util.Connect.asyncRequest('GET','index.php?to_pdf=true&module=Home&action=AddToFavorites&target_id='+metaData['id']+'&target_module='+metaData['module'],{success:success,failure:success});}};}();var popup_request_data;var close_popup;function get_popup_request_data()
-{return window.document.popup_request_data;}
+{return YAHOO.lang.JSON.stringify(window.document.popup_request_data);}
 function get_close_popup()
 {return window.document.close_popup;}
 function open_popup(module_name,width,height,initial_filter,close_popup,hide_clear_button,popup_request_data,popup_mode,create,metadata)
@@ -571,7 +588,7 @@ var from_popup_return=false;function set_return_basic(popup_reply_data,filter)
 {if(the_key=='toJSON')
 {}
 else if(the_key.match(filter))
-{var displayValue=name_to_value_array[the_key].replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');;if(window.document.forms[form_name]&&window.document.forms[form_name].elements[the_key]){if(window.document.forms[form_name].elements[the_key].tagName=='SELECT'){var selectField=window.document.forms[form_name].elements[the_key];for(var i=0;i<selectField.options.length;i++){if(selectField.options[i].text==displayValue){selectField.options[i].selected=true;break;}}}else{window.document.forms[form_name].elements[the_key].value=displayValue;}}}}}
+{var displayValue=name_to_value_array[the_key].replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');;if(window.document.forms[form_name]&&window.document.forms[form_name].elements[the_key]){if(window.document.forms[form_name].elements[the_key].tagName=='SELECT'){var selectField=window.document.forms[form_name].elements[the_key];for(var i=0;i<selectField.options.length;i++){if(selectField.options[i].text==displayValue){selectField.options[i].selected=true;SUGAR.util.callOnChangeListers(selectField);break;}}}else{window.document.forms[form_name].elements[the_key].value=displayValue;SUGAR.util.callOnChangeListers(window.document.forms[form_name].elements[the_key]);}}}}}
 function set_return(popup_reply_data)
 {from_popup_return=true;var form_name=popup_reply_data.form_name;var name_to_value_array=popup_reply_data.name_to_value_array;if(typeof name_to_value_array!='undefined'&&name_to_value_array['account_id'])
 {var label_str='';var label_data_str='';var current_label_data_str='';for(var the_key in name_to_value_array)
@@ -581,6 +598,7 @@ else
 {var displayValue=name_to_value_array[the_key].replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');if(window.document.forms[form_name]&&document.getElementById(the_key+'_label')&&!the_key.match(/account/)){var data_label=document.getElementById(the_key+'_label').innerHTML.replace(/\n/gi,'');label_str+=data_label+' \n';label_data_str+=data_label+' '+displayValue+'\n';if(window.document.forms[form_name].elements[the_key]){current_label_data_str+=data_label+' '+window.document.forms[form_name].elements[the_key].value+'\n';}}}}
 if(label_data_str!=label_str&&current_label_data_str!=label_str){if(confirm(SUGAR.language.get('app_strings','NTC_OVERWRITE_ADDRESS_PHONE_CONFIRM')+'\n\n'+label_data_str))
 {set_return_basic(popup_reply_data,/\S/);}else{set_return_basic(popup_reply_data,/account/);}}else if(label_data_str!=label_str&&current_label_data_str==label_str){set_return_basic(popup_reply_data,/\S/);}else if(label_data_str==label_str){set_return_basic(popup_reply_data,/account/);}}else{set_return_basic(popup_reply_data,/\S/);}}
+function set_return_lead_conv(popup_reply_data){set_return(popup_reply_data);if(document.getElementById('lead_conv_ac_op_sel')&&typeof onBlurKeyUpHandler=='function'){onBlurKeyUpHandler();}}
 function set_return_and_save(popup_reply_data)
 {var form_name=popup_reply_data.form_name;var name_to_value_array=popup_reply_data.name_to_value_array;for(var the_key in name_to_value_array)
 {if(the_key=='toJSON')
@@ -598,25 +616,123 @@ SUGAR.image={remove_upload_imagefile:function(field_name){var field=document.get
 else{field.value=null;alert(SUGAR.language.get('app_strings','LBL_UPLOAD_IMAGE_FILE_INVALID'));}},lightbox:function(image)
 {if(typeof(SUGAR.image.lighboxWindow)=="undefined")
 SUGAR.image.lighboxWindow=new YAHOO.widget.SimpleDialog('sugarImageViewer',{type:'message',modal:true,id:'sugarMsgWindow',close:true,title:"Alert",msg:"<img src='"+image+"'> </img>",buttons:[]});SUGAR.image.lighboxWindow.setBody("<img src='"+image+"'> </img>");SUGAR.image.lighboxWindow.render(document.body);SUGAR.image.lighboxWindow.show();SUGAR.image.lighboxWindow.center()}}
-SUGAR.util.isTouchScreen=function()
-{if(Get_Cookie("touchscreen")=='1'){return true;}
+SUGAR.append(SUGAR.util,{isTouchScreen:function(){if(Get_Cookie("touchscreen")=='1'){return true;}
 if((navigator.userAgent.match(/iPad/i)!=null)){return true;}
-return false;}
-SUGAR.util.isLoginPage=function(content)
-{if(SUGAR.util.isPackageManager()){return false;}
-var loginPageStart="<!DOCTYPE";if(content.substr(0,loginPageStart.length)==loginPageStart&&content.indexOf("<html>")!=-1&&content.indexOf("login_module")!=-1){window.location.href=window.location.protocol+window.location.pathname;return true;}}
-SUGAR.util.isPackageManager=function(){if(typeof(document.the_form)!='undefined'&&typeof(document.the_form.language_pack_escaped)!='undefined'){return true;}else{return false;}}
-SUGAR.util.ajaxCallInProgress=function(){return SUGAR_callsInProgress!=0;}
-SUGAR.util.callOnChangeListers=function(field){var listeners=YAHOO.util.Event.getListeners(field,'change');if(listeners!=null){for(var i=0;i<listeners.length;i++){var l=listeners[i];l.fn.call(l.scope?l.scope:this,l.obj);}}}
-SUGAR.util.closeActivityPanel={show:function(module,id,new_status,viewType,parentContainerId){if(SUGAR.util.closeActivityPanel.panel)
+return false;},isLoginPage:function(content){if(SUGAR.util.isPackageManager()){return false;}
+var loginPageStart="<!DOCTYPE";if(content.substr(0,loginPageStart.length)==loginPageStart&&content.indexOf("<html>")!=-1&&content.indexOf("login_module")!=-1){window.location.href=window.location.protocol+window.location.pathname;return true;}},isPackageManager:function(){if(typeof(document.the_form)!='undefined'&&typeof(document.the_form.language_pack_escaped)!='undefined'){return true;}else{return false;}},ajaxCallInProgress:function(){var t=true;if(typeof(send_back)!="function"){var c=document.getElementById("content");if(!c)return true;t=YAHOO.lang.trim(SUGAR.util.innerText(c));}
+return SUGAR_callsInProgress!=0||t=="";},innerText:function(el){if(el.tagName=="SCRIPT")
+return"";if(typeof(el.innerText)=="string")
+return el.innerText;var t="";for(var i in el.childNodes){var c=el.childNodes[i];if(typeof(c)!="object")
+continue;if(typeof(c.nodeName)=="string"&&c.nodeName=="#text")
+t+=c.nodeValue;else
+t+=SUGAR.util.innerText(c);}
+return t;},callOnChangeListers:function(field){var listeners=YAHOO.util.Event.getListeners(field,'change');if(listeners!=null){for(var i=0;i<listeners.length;i++){var l=listeners[i];l.fn.call(l.scope?l.scope:this,l.obj);}}},closeActivityPanel:{show:function(module,id,new_status,viewType,parentContainerId){if(SUGAR.util.closeActivityPanel.panel)
 SUGAR.util.closeActivityPanel.panel.destroy();var singleModule=SUGAR.language.get("app_list_strings","moduleListSingular")[module];singleModule=typeof(singleModule!='undefined')?singleModule.toLowerCase():'';var closeText=SUGAR.language.get("app_strings","LBL_CLOSE_ACTIVITY_CONFIRM").replace("#module#",singleModule);SUGAR.util.closeActivityPanel.panel=new YAHOO.widget.SimpleDialog("closeActivityDialog",{width:"300px",fixedcenter:true,visible:false,draggable:false,close:true,text:closeText,constraintoviewport:true,buttons:[{text:SUGAR.language.get("app_strings","LBL_EMAIL_OK"),handler:function(){if(SUGAR.util.closeActivityPanel.panel)
 SUGAR.util.closeActivityPanel.panel.hide();ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_SAVING'));var args="action=save&id="+id+"&record="+id+"&status="+new_status+"&module="+module;var callback={success:function(o)
-{window.setTimeout("window.location.reload(true);",0);},argument:{'parentContainerId':parentContainerId}};YAHOO.util.Connect.asyncRequest('POST','index.php',callback,args);},isDefault:true},{text:SUGAR.language.get("app_strings","LBL_EMAIL_CANCEL"),handler:function(){SUGAR.util.closeActivityPanel.panel.hide();}}]});SUGAR.util.closeActivityPanel.panel.setHeader(SUGAR.language.get("app_strings","LBL_CLOSE_ACTIVITY_HEADER"));SUGAR.util.closeActivityPanel.panel.render(document.body);SUGAR.util.closeActivityPanel.panel.show();}}
-SUGAR.util.setEmailPasswordDisplay=function(id,exists){link=document.getElementById(id+'_link');pwd=document.getElementById(id);if(!pwd||!link)return;if(exists){pwd.style.display='none';link.style.display='';}else{pwd.style.display='';link.style.display='none';}}
-SUGAR.util.setEmailPasswordEdit=function(id){link=document.getElementById(id+'_link');pwd=document.getElementById(id);if(!pwd||!link)return;pwd.style.display='';link.style.display='none';}
-SUGAR.util.validateFileExt=function(fileName,allowedTypes){var ext=fileName.split('.').pop();for(var i=allowedTypes.length;i>=0;i--){if(ext===allowedTypes[i]){return true;}}
-return false;}
+{window.setTimeout("window.location.reload(true);",0);},argument:{'parentContainerId':parentContainerId}};YAHOO.util.Connect.asyncRequest('POST','index.php',callback,args);},isDefault:true},{text:SUGAR.language.get("app_strings","LBL_EMAIL_CANCEL"),handler:function(){SUGAR.util.closeActivityPanel.panel.hide();}}]});SUGAR.util.closeActivityPanel.panel.setHeader(SUGAR.language.get("app_strings","LBL_CLOSE_ACTIVITY_HEADER"));SUGAR.util.closeActivityPanel.panel.render(document.body);SUGAR.util.closeActivityPanel.panel.show();}},setEmailPasswordDisplay:function(id,exists){link=document.getElementById(id+'_link');pwd=document.getElementById(id);if(!pwd||!link)return;if(exists){pwd.style.display='none';link.style.display='';}else{pwd.style.display='';link.style.display='none';}},setEmailPasswordEdit:function(id){link=document.getElementById(id+'_link');pwd=document.getElementById(id);if(!pwd||!link)return;pwd.style.display='';link.style.display='none';},validateFileExt:function(fileName,allowedTypes){var ext=fileName.split('.').pop().toLowerCase();for(var i=allowedTypes.length;i>0;i--){if(ext===allowedTypes[i]){return true;}}
+return false;},arrayIndexOf:function(arr,val,start){if(typeof arr.indexOf=="function")
+return arr.indexOf(val,start);for(var i=(start||0),j=arr.length;i<j;i++){if(arr[i]===val){return i;}}
+return-1;}});SUGAR.clearRelateField=function(form,name,id)
+{if(typeof form[name]=="object"){form[name].value='';SUGAR.util.callOnChangeListers(form[name]);}
+if(typeof form[id]=="object"){form[id].value='';SUGAR.util.callOnChangeListers(form[id]);}};if(typeof(SUGAR.AutoComplete)=='undefined')SUGAR.AutoComplete={};SUGAR.AutoComplete.getOptionsArray=function(options_index){var return_arr=[];var opts=SUGAR.language.get('app_list_strings',options_index);if(typeof(opts)!='undefined'){for(key in opts){if(key!=''&&opts[key]!=''){var item=[];item['key']=key;item['text']=opts[key];return_arr.push(item);}}}
+return return_arr;}
+if(typeof(SUGAR.MultiEnumAutoComplete)=='undefined')SUGAR.MultiEnumAutoComplete={};SUGAR.MultiEnumAutoComplete.getMultiSelectKeysFromValues=function(options_index,val_string){var opts=SUGAR.language.get('app_list_strings',options_index);var selected_values=val_string.split(", ");if(selected_values.length>0&&selected_values.indexOf('')==selected_values.length-1){selected_values.pop();}
+var final_arr=new Array();for(idx in selected_values){for(o_idx in opts){if(selected_values[idx]==opts[o_idx]){final_arr.push(o_idx);}}}
+return final_arr;}
+SUGAR.MultiEnumAutoComplete.getMultiSelectValuesFromKeys=function(options_index,val_string){var opts=SUGAR.language.get('app_list_strings',options_index);val_string=val_string.replace(/^\^/,'').replace(/\^$/,'')
+var selected_values=val_string.split("^,^");if(selected_values.length>0&&selected_values.indexOf('')==selected_values.length-1){selected_values.pop();}
+var final_arr=new Array();for(idx in selected_values){for(o_idx in opts){if(selected_values[idx]==o_idx){final_arr.push(opts[o_idx]);}}}
+return final_arr;}
 // End of File include/javascript/sugar_3.js
+                                
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ *
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ *
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+SUGAR.ajaxUI={loadingWindow:false,callback:function(o)
+{var cont;if(typeof window.onbeforeunload=="function")
+window.onbeforeunload=null;scroll(0,0);SUGAR.ajaxUI.hideLoadingPanel();try{var r=YAHOO.lang.JSON.parse(o.responseText);cont=r.content;if(r.moduleList)
+{SUGAR.themes.setModuleTabs(r.moduleList);}
+if(r.title)
+{document.title=html_entity_decode(r.title);}
+if(r.action)
+{action_sugar_grp1=r.action;}
+var c=document.getElementById("content");c.innerHTML=cont;SUGAR.util.evalScript(cont);if(typeof(r.responseTime)!='undefined'){var rt=document.getElementById('responseTime');if(rt!=null){rt.innerHTML=r.responseTime;}}}catch(e){SUGAR.ajaxUI.showErrorMessage(o.responseText);}},showErrorMessage:function(errorMessage)
+{if(!SUGAR.ajaxUI.errorPanel){SUGAR.ajaxUI.errorPanel=new YAHOO.widget.Panel("ajaxUIErrorPanel",{modal:false,visible:true,constraintoviewport:true,width:"800px",height:"600px",close:true});}
+var panel=SUGAR.ajaxUI.errorPanel;panel.setHeader(SUGAR.language.get('app_strings','ERR_AJAX_LOAD'));panel.setBody('<iframe id="ajaxErrorFrame" style="width:780px;height:550px;border:none;marginheight="0" marginwidth="0" frameborder="0""></iframe>');panel.setFooter(SUGAR.language.get('app_strings','ERR_AJAX_LOAD_FOOTER'));panel.render(document.body);SUGAR.util.doWhen(function(){var f=document.getElementById("ajaxErrorFrame");return f!=null&&f.contentWindow!=null&&f.contentWindow.document!=null;},function(){document.getElementById("ajaxErrorFrame").contentWindow.document.body.innerHTML=errorMessage;window.setTimeout('throw "AjaxUI error parsing response"',300);});panel.show();panel.center();throw"AjaxUI error parsing response";},canAjaxLoadModule:function(module)
+{if(typeof(SUGAR.config.disableAjaxUI)!='undefined'&&SUGAR.config.disableAjaxUI==true){return false;}
+var bannedModules=SUGAR.config.stockAjaxBannedModules;if(typeof(bannedModules)=='undefined')
+return false;if(typeof(SUGAR.config.addAjaxBannedModules)!='undefined'){bannedModules.concat(SUGAR.config.addAjaxBannedModules);}
+if(typeof(SUGAR.config.overrideAjaxBannedModules)!='undefined'){bannedModules=SUGAR.config.overrideAjaxBannedModules;}
+return SUGAR.util.arrayIndexOf(bannedModules,module)==-1;},loadContent:function(url,params)
+{if(YAHOO.lang.trim(url)!="")
+{var mRegex=/module=([^&]*)/.exec(url);var module=mRegex?mRegex[1]:false;if(module&&SUGAR.ajaxUI.canAjaxLoadModule(module))
+{YAHOO.util.History.navigate('ajaxUILoc',url);}else{window.location=url;}}},go:function(url)
+{if(YAHOO.lang.trim(url)!="")
+{var con=YAHOO.util.Connect,ui=SUGAR.ajaxUI;if(ui.lastURL==url)
+return;var inAjaxUI=/action=ajaxui/.exec(window.location);if(typeof(window.onbeforeunload)=="function"&&window.onbeforeunload())
+{if(!confirm(window.onbeforeunload()))
+{if(!inAjaxUI)
+{window.location.hash="";}
+else
+{YAHOO.util.History.navigate('ajaxUILoc',ui.lastURL);}
+return;}
+window.onbeforeunload=null;}
+if(ui.lastCall&&con.isCallInProgress(ui.lastCall)){con.abort(ui.lastCall);}
+var mRegex=/module=([^&]*)/.exec(url);var module=mRegex?mRegex[1]:false;if(!ui.canAjaxLoadModule(module)){window.location=url;return;}
+ui.lastURL=url;ui.cleanGlobals();var loadLanguageJS='';if(module&&typeof(SUGAR.language.languages[module])=='undefined'){loadLanguageJS='&loadLanguageJS=1';}
+if(!inAjaxUI){if(!SUGAR.isIE)
+window.location.replace("index.php?action=ajaxui#ajaxUILoc="+encodeURIComponent(url));else{window.location.hash="#";window.location.assign("index.php?action=ajaxui#ajaxUILoc="+encodeURIComponent(url));}}
+else{SUGAR.ajaxUI.showLoadingPanel();ui.lastCall=YAHOO.util.Connect.asyncRequest('GET',url+'&ajax_load=1'+loadLanguageJS,{success:SUGAR.ajaxUI.callback,failure:function(){SUGAR.ajaxUI.hideLoadingPanel();SUGAR.ajaxUI.showErrorMessage(SUGAR.language.get('app_strings','ERR_AJAX_LOAD_FAILURE'));}});}}},submitForm:function(formname,params)
+{var con=YAHOO.util.Connect,SA=SUGAR.ajaxUI;if(SA.lastCall&&con.isCallInProgress(SA.lastCall)){con.abort(SA.lastCall);}
+SA.cleanGlobals();var form=YAHOO.util.Dom.get(formname)||document.forms[formname];if(SA.canAjaxLoadModule(form.module.value)&&typeof(YAHOO.util.Selector.query("input[type=file]",form)[0])=="undefined"&&/action=ajaxui/.exec(window.location))
+{var string=con.setForm(form);var baseUrl="index.php?action=ajaxui#ajaxUILoc=";SA.lastURL="";if(string.length>200)
+{SUGAR.ajaxUI.showLoadingPanel();form.onsubmit=function(){return true;};form.submit();}else{con.resetFormState();window.location=baseUrl+encodeURIComponent("index.php?"+string);}
+return true;}else{form.submit();return false;}},cleanGlobals:function()
+{sqs_objects={};QSProcessedFieldsArray={};collection={};if(SUGAR.EmailAddressWidget){SUGAR.EmailAddressWidget.instances={};SUGAR.EmailAddressWidget.count={};}
+YAHOO.util.Event.removeListener(window,'resize');if(typeof(dialog)!='undefined'&&typeof(dialog.destroy)=='function'){dialog.destroy();delete dialog;}},firstLoad:function()
+{var url=YAHOO.util.History.getBookmarkedState('ajaxUILoc');var aRegex=/action=([^&#]*)/.exec(window.location);var action=aRegex?aRegex[1]:false;var mRegex=/module=([^&#]*)/.exec(window.location);var module=mRegex?mRegex[1]:false;if(module!="ModuleBuilder")
+{var go=url!=null||action=="ajaxui";url=url?url:'index.php?module=Home&action=index';YAHOO.util.History.register('ajaxUILoc',url,SUGAR.ajaxUI.go);YAHOO.util.History.initialize("ajaxUI-history-field","ajaxUI-history-iframe");SUGAR.ajaxUI.hist_loaded=true;if(go)
+SUGAR.ajaxUI.go(url);}
+SUGAR_callsInProgress--;},print:function()
+{var url=YAHOO.util.History.getBookmarkedState('ajaxUILoc');SUGAR.util.openWindow(url+'&print=true','printwin','menubar=1,status=0,resizable=1,scrollbars=1,toolbar=0,location=1');},showLoadingPanel:function()
+{if(!SUGAR.ajaxUI.loadingPanel)
+{SUGAR.ajaxUI.loadingPanel=new YAHOO.widget.Panel("ajaxloading",{width:"240px",fixedcenter:true,close:false,draggable:false,constraintoviewport:false,modal:true,visible:false});SUGAR.ajaxUI.loadingPanel.setBody('<div id="loadingPage" align="center" style="vertical-align:middle;"><img src="'+SUGAR.themes.loading_image+'" align="absmiddle" /> <b>'+SUGAR.language.get('app_strings','LBL_LOADING_PAGE')+'</b></div>');SUGAR.ajaxUI.loadingPanel.render(document.body);}
+if(document.getElementById('ajaxloading_c'))
+document.getElementById('ajaxloading_c').style.display='';SUGAR.ajaxUI.loadingPanel.show();},hideLoadingPanel:function()
+{SUGAR.ajaxUI.loadingPanel.hide();if(document.getElementById('ajaxloading_c'))
+document.getElementById('ajaxloading_c').style.display='none';}};
+// End of File include/javascript/ajaxUI.js
                                 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
@@ -801,8 +917,9 @@ Calendar=function(){};Calendar.getHighestZIndex=function(containerEl)
 {var highestIndex=0;var currentIndex=0;var els=Array();els=containerEl?containerEl.getElementsByTagName('*'):document.getElementsByTagName('*');for(var i=0;i<els.length;i++)
 {currentIndex=YAHOO.util.Dom.getStyle(els[i],"zIndex");if(!isNaN(currentIndex)&&currentIndex>highestIndex)
 {highestIndex=parseInt(currentIndex);}}
-return(highestIndex==Number.MAX_VALUE)?Number.MAX_VALUE:highestIndex+1;};Calendar.setup=function(params){YAHOO.util.Event.onDOMReady(function(){var Event=YAHOO.util.Event;var Dom=YAHOO.util.Dom;var dialog;var calendar;var showButton=params.button?params.button:params.buttonObj;var userDateFormat=params.ifFormat?params.ifFormat:(params.daFormat?params.daFormat:"m/d/Y");var inputField=params.inputField?params.inputField:params.inputFieldObj;var dateFormat=userDateFormat.substr(0,10);var date_field_delimiter=/([-.\\/])/.exec(dateFormat)[0];dateFormat=dateFormat.replace(/[^a-zA-Z]/g,'');var monthPos=dateFormat.search(/m/);var dayPos=dateFormat.search(/d/);var yearPos=dateFormat.search(/Y/);Event.on(Dom.get(showButton),"click",function(){if(!dialog){dialog=new YAHOO.widget.SimpleDialog("container_"+showButton,{visible:false,context:[showButton,"tl","bl"],buttons:[],draggable:false,close:true,zIndex:Calendar.getHighestZIndex(document.body)});dialog.setHeader(SUGAR.language.get('app_strings','LBL_MASSUPDATE_DATE'));var dialogBody='<p class="callnav_today"><a href="#"  id="callnav_today">'+SUGAR.language.get('app_strings','LBL_EMAIL_DATE_TODAY')+'</a></p><div id="'+showButton+'_div"></div>';dialog.setBody(dialogBody);dialog.render(document.body);Dom.addClass("container_"+showButton,"cal_panel");Event.addListener("callnav_today","click",function(){calendar.clear();var now=new Date();Dom.get(inputField).value=formatSelectedDate(now);var cellIndex=calendar.getCellIndex(now);if(cellIndex>-1)
-{var cell=calendar.cells[cellIndex];Dom.addClass(cell,calendar.Style.CSS_CELL_SELECTED);}});dialog.showEvent.subscribe(function(){if(YAHOO.env.ua.ie){dialog.fireEvent("changeContent");}});Event.on(document,"click",function(e){if(!dialog)
+return(highestIndex==Number.MAX_VALUE)?Number.MAX_VALUE:highestIndex+1;};Calendar.setup=function(params){YAHOO.util.Event.onDOMReady(function(){var Event=YAHOO.util.Event;var Dom=YAHOO.util.Dom;var dialog;var calendar;var showButton=params.button?params.button:params.buttonObj;var userDateFormat=params.ifFormat?params.ifFormat:(params.daFormat?params.daFormat:"m/d/Y");var inputField=params.inputField?params.inputField:params.inputFieldObj;var dateFormat=userDateFormat.substr(0,10);var date_field_delimiter=/([-.\\/])/.exec(dateFormat)[0];dateFormat=dateFormat.replace(/[^a-zA-Z]/g,'');var monthPos=dateFormat.search(/m/);var dayPos=dateFormat.search(/d/);var yearPos=dateFormat.search(/Y/);Event.on(Dom.get(showButton),"click",function(){if(!dialog){dialog=new YAHOO.widget.SimpleDialog("container_"+showButton,{visible:false,context:[showButton,"tl","bl"],buttons:[],draggable:false,close:true,zIndex:Calendar.getHighestZIndex(document.body)});dialog.setHeader(SUGAR.language.get('app_strings','LBL_MASSUPDATE_DATE'));var dialogBody='<p class="callnav_today"><a href="javascript:void(0)"  id="callnav_today">'+SUGAR.language.get('app_strings','LBL_EMAIL_DATE_TODAY')+'</a></p><div id="'+showButton+'_div"></div>';dialog.setBody(dialogBody);dialog.render(document.body);Dom.addClass("container_"+showButton,"cal_panel");Event.addListener("callnav_today","click",function(){calendar.clear();var now=new Date();Dom.get(inputField).value=formatSelectedDate(now);var cellIndex=calendar.getCellIndex(now);if(cellIndex>-1)
+{var cell=calendar.cells[cellIndex];Dom.addClass(cell,calendar.Style.CSS_CELL_SELECTED);}
+return false;});dialog.showEvent.subscribe(function(){if(YAHOO.env.ua.ie){dialog.fireEvent("changeContent");}});Event.on(document,"click",function(e){if(!dialog)
 {return;}
 var el=Event.getTarget(e);var dialogEl=dialog.element;if(el!=dialogEl&&!Dom.isAncestor(dialogEl,el)&&el!=Dom.get(showButton)&&!Dom.isAncestor(Dom.get(showButton),el)){dialog.hide();}});}
 if(!calendar){var navConfig={strings:{month:SUGAR.language.get('app_strings','LBL_CHOOSE_MONTH'),year:SUGAR.language.get('app_strings','LBL_ENTER_YEAR'),submit:SUGAR.language.get('app_strings','LBL_EMAIL_OK'),cancel:SUGAR.language.get('app_strings','LBL_CANCEL_BUTTON_LABEL'),invalidYear:SUGAR.language.get('app_strings','LBL_ENTER_VALID_YEAR')},monthFormat:YAHOO.widget.Calendar.SHORT,initialFocus:"year"};calendar=new YAHOO.widget.Calendar(showButton+'_div',{iframe:false,hide_blank_weeks:true,navigator:navConfig});calendar.cfg.setProperty('DATE_FIELD_DELIMITER',date_field_delimiter);calendar.cfg.setProperty('MDY_DAY_POSITION',dayPos+1);calendar.cfg.setProperty('MDY_MONTH_POSITION',monthPos+1);calendar.cfg.setProperty('MDY_YEAR_POSITION',yearPos+1);if(typeof SUGAR.language.languages['app_list_strings']!='undefined'&&SUGAR.language.languages['app_list_strings']['dom_cal_month_long']!='undefined')
@@ -846,19 +963,19 @@ calendar.render();dialog.show();});});};
 // End of File include/javascript/calendar.js
                                 
 
-JSON=YAHOO.lang.JSON;SUGAR.quickCompose={};SUGAR.quickCompose=function(){return{parentPanel:null,dceMenuPanel:null,options:null,loadingMessgPanl:null,frameLoaded:false,resourcesLoaded:false,tinyLoaded:false,initComposePackage:function(c)
+(function(){var JSON=YAHOO.lang.JSON;SUGAR.quickCompose={};SUGAR.quickCompose=function(){return{parentPanel:null,dceMenuPanel:null,options:null,loadingMessgPanl:null,frameLoaded:false,resourcesLoaded:false,tinyLoaded:false,initComposePackage:function(c)
 {SUGAR.email2.addressBook.initFixForDatatableSort();SUGAR.quickCompose.resourcesLoaded=true;var callback={success:function(o)
-{var responseData=YAHOO.lang.JSON.parse(o.responseText);var scriptTag=document.createElement('script');scriptTag.id='quickComposeScript';scriptTag.setAttribute('type','text/javascript');if(YAHOO.env.ua.ie>0)
+{var responseData=JSON.parse(o.responseText);var scriptTag=document.createElement('script');scriptTag.id='quickComposeScript';scriptTag.setAttribute('type','text/javascript');if(YAHOO.env.ua.ie>0)
 scriptTag.text=responseData.jsData;else
 scriptTag.appendChild(document.createTextNode(responseData.jsData));document.getElementsByTagName("head")[0].appendChild(scriptTag);var divTag=document.createElement("div");divTag.innerHTML=responseData.divData;divTag.id='quickCompose';YAHOO.util.Dom.insertBefore(divTag,'footer');SUGAR.quickCompose.frameLoaded=true;SUGAR.quickCompose.initUI(c.data);}}
 if(!SUGAR.quickCompose.frameLoaded)
 YAHOO.util.Connect.asyncRequest('GET','index.php?entryPoint=GenerateQuickComposeFrame',callback,null);else
 SUGAR.quickCompose.initUI(c.data);},initUI:function(options)
-{var SQ=SUGAR.quickCompose;this.options=options;loadingMessgPanl.hide();dce_mode=(typeof this.dceMenuPanel!='undefined'&&this.dceMenuPanel!=null)?true:false;if(SQ.parentPanel!=null)
+{var SQ=SUGAR.quickCompose;this.options=options;loadingMessgPanl.hide();var dce_mode=(typeof this.dceMenuPanel!='undefined'&&this.dceMenuPanel!=null)?true:false;if(SQ.parentPanel!=null)
 {tinyMCE.execCommand('mceRemoveControl',false,SUGAR.email2.tinyInstances.currentHtmleditor);SUGAR.email2.tinyInstances[SUGAR.email2.tinyInstances.currentHtmleditor]=null;SUGAR.email2.tinyInstances.currentHtmleditor="";SQ.parentPanel.destroy();SQ.parentPanel=null;}
-theme=SUGAR.themes.theme_name;var idx=0;if(!SE.composeLayout.composeTemplate)
-SE.composeLayout.composeTemplate=new YAHOO.SUGAR.Template(SE.templates['compose']);panel_modal=dce_mode?false:true;panel_width='880px';panel_constrain=dce_mode?false:true;panel_height=dce_mode?'450px':'400px';panel_shadow=dce_mode?false:true;panel_draggable=dce_mode?false:true;panel_resize=dce_mode?false:true;panel_close=dce_mode?false:true;SQ.parentPanel=new YAHOO.widget.Panel("container1",{modal:panel_modal,visible:true,constraintoviewport:panel_constrain,width:panel_width,height:panel_height,shadow:panel_shadow,draggable:panel_draggable,resize:panel_resize,close:panel_close});if(!dce_mode){SQ.parentPanel.setHeader(SUGAR.language.get('app_strings','LBL_EMAIL_QUICK_COMPOSE'));}
-SQ.parentPanel.setBody("<div class='email'><div id='htmleditordiv"+idx+"'></div></div>");var composePanel=SE.composeLayout.getQuickComposeLayout(SQ.parentPanel,this.options);if(!dce_mode){var resize=new YAHOO.util.Resize('container1',{handles:['br'],autoRatio:false,minWidth:400,minHeight:350,status:false});resize.on('resize',function(args){var panelHeight=args.height;this.cfg.setProperty("height",panelHeight+"px");var layout=SE.composeLayout[SE.composeLayout.currentInstanceId];layout.set("height",panelHeight-50);layout.resize(true);SE.composeLayout.resizeEditor(SE.composeLayout.currentInstanceId);},SQ.parentPanel,true);}
+var theme=SUGAR.themes.theme_name;var idx=0;if(!SE.composeLayout.composeTemplate)
+SE.composeLayout.composeTemplate=new YAHOO.SUGAR.Template(SE.templates['compose']);var panel_modal=dce_mode?false:true,panel_width='880px',panel_constrain=dce_mode?false:true,panel_height=dce_mode?'auto':'400px',panel_shadow=dce_mode?false:true,panel_draggable=dce_mode?false:true,panel_resize=dce_mode?false:true,panel_close=dce_mode?false:true;SQ.parentPanel=new YAHOO.widget.Panel("container1",{modal:panel_modal,visible:true,constraintoviewport:panel_constrain,width:panel_width,height:panel_height,shadow:panel_shadow,draggable:panel_draggable,resize:panel_resize,close:panel_close});if(!dce_mode){SQ.parentPanel.setHeader(SUGAR.language.get('app_strings','LBL_EMAIL_QUICK_COMPOSE'));}
+SQ.parentPanel.setBody("<div class='email'><div id='htmleditordiv"+idx+"'></div></div>");var composePanel=SE.composeLayout.getQuickComposeLayout(SQ.parentPanel,this.options);if(!dce_mode){var resize=new YAHOO.util.Resize('container1',{handles:['br'],autoRatio:false,minWidth:400,minHeight:350,status:false});resize.on('resize',function(args){var panelHeight=args.height;this.cfg.setProperty("height",panelHeight+"px");var layout=SE.composeLayout[SE.composeLayout.currentInstanceId];layout.set("height",panelHeight-50);layout.resize(true);SE.composeLayout.resizeEditor(SE.composeLayout.currentInstanceId);},SQ.parentPanel,true);}else{SUGAR.util.doWhen("typeof SE.composeLayout[SE.composeLayout.currentInstanceId] != 'undefined'",function(){var panelHeight=400;SQ.parentPanel.cfg.setProperty("height",panelHeight+"px");var layout=SE.composeLayout[SE.composeLayout.currentInstanceId];layout.set("height",panelHeight);layout.resize(true);SE.composeLayout.resizeEditor(SE.composeLayout.currentInstanceId);});}
 YAHOO.util.Dom.setStyle("container1","z-index",1);if(!SQ.tinyLoaded)
 {tinymce.dom.Event.domLoaded=true;tinyMCE.init({convert_urls:false,theme_advanced_toolbar_align:tinyConfig.theme_advanced_toolbar_align,width:tinyConfig.width,theme:tinyConfig.theme,theme_advanced_toolbar_location:tinyConfig.theme_advanced_toolbar_location,theme_advanced_buttons1:tinyConfig.theme_advanced_buttons1,theme_advanced_buttons2:tinyConfig.theme_advanced_buttons2,theme_advanced_buttons3:tinyConfig.theme_advanced_buttons3,plugins:tinyConfig.plugins,elements:tinyConfig.elements,language:tinyConfig.language,extended_valid_elements:tinyConfig.extended_valid_elements,mode:tinyConfig.mode,strict_loading_mode:true});SQ.tinyLoaded=true;}
 SQ.parentPanel.show();SUGAR.email2.composeLayout.forceCloseCompose=function(o){SUGAR.quickCompose.parentPanel.hide();}
@@ -866,7 +983,7 @@ if(!dce_mode){SQ.parentPanel.center();}},init:function(o){if(typeof o.menu_id!='
 loadingMessgPanl=new YAHOO.widget.SimpleDialog('loading',{width:'200px',close:true,modal:true,visible:true,fixedcenter:true,constraintoviewport:true,draggable:false});loadingMessgPanl.setHeader(SUGAR.language.get('app_strings','LBL_EMAIL_PERFORMING_TASK'));loadingMessgPanl.setBody(SUGAR.language.get('app_strings','LBL_EMAIL_ONE_MOMENT'));loadingMessgPanl.render(document.body);loadingMessgPanl.show();if(!SUGAR.quickCompose.resourcesLoaded)
 this.loadResources(o);else
 this.initUI(o);},loadResources:function(o)
-{window.skipTinyMCEInitPhase=true;var require=["layout","element","tabview","menu","cookie","tinymce","sugarwidgets","sugarquickcompose","sugarquickcomposecss"];var loader=new YAHOO.util.YUILoader({require:require,loadOptional:true,skin:{base:'blank',defaultSkin:''},data:o,onSuccess:this.initComposePackage,allowRollup:true,base:"include/javascript/yui/build/"});loader.addModule({name:"tinymce",type:"js",varName:"TinyMCE",fullpath:"include/javascript/tiny_mce/tiny_mce.js"});loader.addModule({name:"sugarwidgets",type:"js",fullpath:"include/javascript/sugarwidgets/SugarYUIWidgets.js",varName:"YAHOO.SUGAR",requires:["datatable","dragdrop","treeview","tabview"]});loader.addModule({name:"sugarquickcompose",type:"js",varName:"SUGAR.email2.complexLayout",requires:["layout","sugarwidgets","tinymce"],fullpath:"include/javascript/sugar_grp_quickcomp.js"});loader.addModule({name:"sugarquickcomposecss",type:"css",fullpath:"modules/Emails/EmailUI.css"});loader.insert();}};}();
+{window.skipTinyMCEInitPhase=true;var require=["layout","element","tabview","menu","cookie","tinymce","sugarwidgets","sugarquickcompose","sugarquickcomposecss"];var loader=new YAHOO.util.YUILoader({require:require,loadOptional:true,skin:{base:'blank',defaultSkin:''},data:o,onSuccess:this.initComposePackage,allowRollup:true,base:"include/javascript/yui/build/"});loader.addModule({name:"tinymce",type:"js",varName:"TinyMCE",fullpath:"include/javascript/tiny_mce/tiny_mce.js"});loader.addModule({name:"sugarwidgets",type:"js",fullpath:"include/javascript/sugarwidgets/SugarYUIWidgets.js",varName:"YAHOO.SUGAR",requires:["datatable","dragdrop","treeview","tabview"]});loader.addModule({name:"sugarquickcompose",type:"js",varName:"SUGAR.email2.complexLayout",requires:["layout","sugarwidgets","tinymce"],fullpath:"include/javascript/sugar_grp_quickcomp.js"});loader.addModule({name:"sugarquickcomposecss",type:"css",fullpath:"modules/Emails/EmailUI.css"});loader.insert();}};}();})();
 // End of File include/javascript/quickCompose.js
                                 
 /*
@@ -880,4 +997,386 @@ if(typeof YAHOO=="undefined"||!YAHOO){var YAHOO={};}YAHOO.namespace=function(){v
 i<a.length;i=i+1){o[a[i]]=true;}}},keys:function(o,ordered){var a=[],i;for(i in o){if(lang.hasOwnProperty(o,i)){a.push(i);}}return a;}},ArrayUtil:{appendArray:function(a1,a2){Array.prototype.push.apply(a1,a2);},indexOf:function(a,val){for(var i=0;i<a.length;i=i+1){if(a[i]===val){return i;}}return -1;},toObject:function(a){var o={};for(var i=0;i<a.length;i=i+1){o[a[i]]=true;}return o;},uniq:function(a){return YUI.ObjectUtil.keys(YUI.ArrayUtil.toObject(a));}}};YAHOO.util.YUILoader=function(o){this._internalCallback=null;this._useYahooListener=false;this.onSuccess=null;this.onFailure=Y.log;this.onProgress=null;this.onTimeout=null;this.scope=this;this.data=null;this.insertBefore=null;this.charset=null;this.varName=null;this.base=YUI.info.base;this.comboBase=YUI.info.comboBase;this.combine=false;this.root=YUI.info.root;this.timeout=0;this.ignore=null;this.force=null;this.allowRollup=true;this.filter=null;this.required={};this.moduleInfo=lang.merge(YUI.info.moduleInfo);this.rollups=null;this.loadOptional=false;this.sorted=[];this.loaded={};this.dirty=true;this.inserted={};var self=this;env.listeners.push(function(m){if(self._useYahooListener){self.loadNext(m.name);}});this.skin=lang.merge(YUI.info.skin);this._config(o);};Y.util.YUILoader.prototype={FILTERS:{RAW:{"searchExp":"-min\\.js","replaceStr":".js"},DEBUG:{"searchExp":"-min\\.js","replaceStr":"-debug.js"}},SKIN_PREFIX:"skin-",_config:function(o){if(o){for(var i in o){if(lang.hasOwnProperty(o,i)){if(i=="require"){this.require(o[i]);}else{this[i]=o[i];}}}}var f=this.filter;if(lang.isString(f)){f=f.toUpperCase();if(f==="DEBUG"){this.require("logger");}if(!Y.widget.LogWriter){Y.widget.LogWriter=function(){return Y;};}this.filter=this.FILTERS[f];}},addModule:function(o){if(!o||!o.name||!o.type||(!o.path&&!o.fullpath)){return false;}o.ext=("ext" in o)?o.ext:true;o.requires=o.requires||[];this.moduleInfo[o.name]=o;this.dirty=true;return true;},require:function(what){var a=(typeof what==="string")?arguments:what;this.dirty=true;YUI.ObjectUtil.appendArray(this.required,a);},_addSkin:function(skin,mod){var name=this.formatSkin(skin),info=this.moduleInfo,sinf=this.skin,ext=info[mod]&&info[mod].ext;if(!info[name]){this.addModule({"name":name,"type":"css","path":sinf.base+skin+"/"+sinf.path,"after":sinf.after,"rollup":sinf.rollup,"ext":ext});}if(mod){name=this.formatSkin(skin,mod);if(!info[name]){var mdef=info[mod],pkg=mdef.pkg||mod;this.addModule({"name":name,"type":"css","after":sinf.after,"path":pkg+"/"+sinf.base+skin+"/"+mod+".css","ext":ext});}}return name;},getRequires:function(mod){if(!mod){return[];}if(!this.dirty&&mod.expanded){return mod.expanded;}mod.requires=mod.requires||[];var i,d=[],r=mod.requires,o=mod.optional,info=this.moduleInfo,m;for(i=0;i<r.length;i=i+1){d.push(r[i]);m=info[r[i]];YUI.ArrayUtil.appendArray(d,this.getRequires(m));}if(o&&this.loadOptional){for(i=0;i<o.length;i=i+1){d.push(o[i]);YUI.ArrayUtil.appendArray(d,this.getRequires(info[o[i]]));}}mod.expanded=YUI.ArrayUtil.uniq(d);return mod.expanded;},getProvides:function(name,notMe){var addMe=!(notMe),ckey=(addMe)?PROV:SUPER,m=this.moduleInfo[name],o={};if(!m){return o;}if(m[ckey]){return m[ckey];}var s=m.supersedes,done={},me=this;var add=function(mm){if(!done[mm]){done[mm]=true;lang.augmentObject(o,me.getProvides(mm));}};if(s){for(var i=0;i<s.length;i=i+1){add(s[i]);}}m[SUPER]=o;m[PROV]=lang.merge(o);m[PROV][name]=true;return m[ckey];},calculate:function(o){if(o||this.dirty){this._config(o);this._setup();this._explode();if(this.allowRollup){this._rollup();}this._reduce();this._sort();this.dirty=false;}},_setup:function(){var info=this.moduleInfo,name,i,j;for(name in info){if(lang.hasOwnProperty(info,name)){var m=info[name];if(m&&m.skinnable){var o=this.skin.overrides,smod;if(o&&o[name]){for(i=0;i<o[name].length;i=i+1){smod=this._addSkin(o[name][i],name);}}else{smod=this._addSkin(this.skin.defaultSkin,name);}if(YUI.ArrayUtil.indexOf(m.requires,smod)==-1){m.requires.push(smod);}}}}var l=lang.merge(this.inserted);if(!this._sandbox){l=lang.merge(l,env.modules);}if(this.ignore){YUI.ObjectUtil.appendArray(l,this.ignore);}if(this.force){for(i=0;i<this.force.length;i=i+1){if(this.force[i] in l){delete l[this.force[i]];}}}for(j in l){if(lang.hasOwnProperty(l,j)){lang.augmentObject(l,this.getProvides(j));}}this.loaded=l;},_explode:function(){var r=this.required,i,mod;for(i in r){if(lang.hasOwnProperty(r,i)){mod=this.moduleInfo[i];if(mod){var req=this.getRequires(mod);if(req){YUI.ObjectUtil.appendArray(r,req);}}}}},_skin:function(){},formatSkin:function(skin,mod){var s=this.SKIN_PREFIX+skin;if(mod){s=s+"-"+mod;}return s;},parseSkin:function(mod){if(mod.indexOf(this.SKIN_PREFIX)===0){var a=mod.split("-");return{skin:a[1],module:a[2]};}return null;},_rollup:function(){var i,j,m,s,rollups={},r=this.required,roll,info=this.moduleInfo;if(this.dirty||!this.rollups){for(i in info){if(lang.hasOwnProperty(info,i)){m=info[i];if(m&&m.rollup){rollups[i]=m;}}}this.rollups=rollups;}for(;;){var rolled=false;for(i in rollups){if(!r[i]&&!this.loaded[i]){m=info[i];s=m.supersedes;roll=false;if(!m.rollup){continue;}var skin=(m.ext)?false:this.parseSkin(i),c=0;if(skin){for(j in r){if(lang.hasOwnProperty(r,j)){if(i!==j&&this.parseSkin(j)){c++;roll=(c>=m.rollup);if(roll){break;}}}}}else{for(j=0;j<s.length;j=j+1){if(this.loaded[s[j]]&&(!YUI.dupsAllowed[s[j]])){roll=false;break;}else{if(r[s[j]]){c++;roll=(c>=m.rollup);if(roll){break;}}}}}if(roll){r[i]=true;rolled=true;this.getRequires(m);}}}if(!rolled){break;}}},_reduce:function(){var i,j,s,m,r=this.required;for(i in r){if(i in this.loaded){delete r[i];}else{var skinDef=this.parseSkin(i);if(skinDef){if(!skinDef.module){var skin_pre=this.SKIN_PREFIX+skinDef.skin;for(j in r){if(lang.hasOwnProperty(r,j)){m=this.moduleInfo[j];var ext=m&&m.ext;if(!ext&&j!==i&&j.indexOf(skin_pre)>-1){delete r[j];}}}}}else{m=this.moduleInfo[i];s=m&&m.supersedes;if(s){for(j=0;j<s.length;j=j+1){if(s[j] in r){delete r[s[j]];}}}}}}},_onFailure:function(msg){YAHOO.log("Failure","info","loader");
 var f=this.onFailure;if(f){f.call(this.scope,{msg:"failure: "+msg,data:this.data,success:false});}},_onTimeout:function(){YAHOO.log("Timeout","info","loader");var f=this.onTimeout;if(f){f.call(this.scope,{msg:"timeout",data:this.data,success:false});}},_sort:function(){var s=[],info=this.moduleInfo,loaded=this.loaded,checkOptional=!this.loadOptional,me=this;var requires=function(aa,bb){var mm=info[aa];if(loaded[bb]||!mm){return false;}var ii,rr=mm.expanded,after=mm.after,other=info[bb],optional=mm.optional;if(rr&&YUI.ArrayUtil.indexOf(rr,bb)>-1){return true;}if(after&&YUI.ArrayUtil.indexOf(after,bb)>-1){return true;}if(checkOptional&&optional&&YUI.ArrayUtil.indexOf(optional,bb)>-1){return true;}var ss=info[bb]&&info[bb].supersedes;if(ss){for(ii=0;ii<ss.length;ii=ii+1){if(requires(aa,ss[ii])){return true;}}}if(mm.ext&&mm.type=="css"&&!other.ext&&other.type=="css"){return true;}return false;};for(var i in this.required){if(lang.hasOwnProperty(this.required,i)){s.push(i);}}var p=0;for(;;){var l=s.length,a,b,j,k,moved=false;for(j=p;j<l;j=j+1){a=s[j];for(k=j+1;k<l;k=k+1){if(requires(a,s[k])){b=s.splice(k,1);s.splice(j,0,b[0]);moved=true;break;}}if(moved){break;}else{p=p+1;}}if(!moved){break;}}this.sorted=s;},toString:function(){var o={type:"YUILoader",base:this.base,filter:this.filter,required:this.required,loaded:this.loaded,inserted:this.inserted};lang.dump(o,1);},_combine:function(){this._combining=[];var self=this,s=this.sorted,len=s.length,js=this.comboBase,css=this.comboBase,target,startLen=js.length,i,m,type=this.loadType;YAHOO.log("type "+type);for(i=0;i<len;i=i+1){m=this.moduleInfo[s[i]];if(m&&!m.ext&&(!type||type===m.type)){target=this.root+m.path;target+="&";if(m.type=="js"){js+=target;}else{css+=target;}this._combining.push(s[i]);}}if(this._combining.length){YAHOO.log("Attempting to combine: "+this._combining,"info","loader");var callback=function(o){var c=this._combining,len=c.length,i,m;for(i=0;i<len;i=i+1){this.inserted[c[i]]=true;}this.loadNext(o.data);},loadScript=function(){if(js.length>startLen){YAHOO.util.Get.script(self._filter(js),{data:self._loading,onSuccess:callback,onFailure:self._onFailure,onTimeout:self._onTimeout,insertBefore:self.insertBefore,charset:self.charset,timeout:self.timeout,scope:self});}else{this.loadNext();}};if(css.length>startLen){YAHOO.util.Get.css(this._filter(css),{data:this._loading,onSuccess:loadScript,onFailure:this._onFailure,onTimeout:this._onTimeout,insertBefore:this.insertBefore,charset:this.charset,timeout:this.timeout,scope:self});}else{loadScript();}return;}else{this.loadNext(this._loading);}},insert:function(o,type){this.calculate(o);this._loading=true;this.loadType=type;if(this.combine){return this._combine();}if(!type){var self=this;this._internalCallback=function(){self._internalCallback=null;self.insert(null,"js");};this.insert(null,"css");return;}this.loadNext();},sandbox:function(o,type){var self=this,success=function(o){var idx=o.argument[0],name=o.argument[2];self._scriptText[idx]=o.responseText;if(self.onProgress){self.onProgress.call(self.scope,{name:name,scriptText:o.responseText,xhrResponse:o,data:self.data});}self._loadCount++;if(self._loadCount>=self._stopCount){var v=self.varName||"YAHOO";var t="(function() {\n";var b="\nreturn "+v+";\n})();";var ref=eval(t+self._scriptText.join("\n")+b);self._pushEvents(ref);if(ref){self.onSuccess.call(self.scope,{reference:ref,data:self.data});}else{self._onFailure.call(self.varName+" reference failure");}}},failure=function(o){self.onFailure.call(self.scope,{msg:"XHR failure",xhrResponse:o,data:self.data});};self._config(o);if(!self.onSuccess){throw new Error("You must supply an onSuccess handler for your sandbox");}self._sandbox=true;if(!type||type!=="js"){self._internalCallback=function(){self._internalCallback=null;self.sandbox(null,"js");};self.insert(null,"css");return;}if(!util.Connect){var ld=new YAHOO.util.YUILoader();ld.insert({base:self.base,filter:self.filter,require:"connection",insertBefore:self.insertBefore,charset:self.charset,onSuccess:function(){self.sandbox(null,"js");},scope:self},"js");return;}self._scriptText=[];self._loadCount=0;self._stopCount=self.sorted.length;self._xhr=[];self.calculate();var s=self.sorted,l=s.length,i,m,url;for(i=0;i<l;i=i+1){m=self.moduleInfo[s[i]];if(!m){self._onFailure("undefined module "+m);for(var j=0;j<self._xhr.length;j=j+1){self._xhr[j].abort();}return;}if(m.type!=="js"){self._loadCount++;continue;}url=m.fullpath;url=(url)?self._filter(url):self._url(m.path);var xhrData={success:success,failure:failure,scope:self,argument:[i,url,s[i]]};self._xhr.push(util.Connect.asyncRequest("GET",url,xhrData));}},loadNext:function(mname){if(!this._loading){return;}var self=this,donext=function(o){self.loadNext(o.data);},successfn,s=this.sorted,len=s.length,i,fn,m,url;if(mname){if(mname!==this._loading){return;}this.inserted[mname]=true;if(this.onProgress){this.onProgress.call(this.scope,{name:mname,data:this.data});}}for(i=0;i<len;i=i+1){if(s[i] in this.inserted){continue;}if(s[i]===this._loading){return;}m=this.moduleInfo[s[i]];if(!m){this.onFailure.call(this.scope,{msg:"undefined module "+m,data:this.data});return;}if(!this.loadType||this.loadType===m.type){successfn=donext;this._loading=s[i];fn=(m.type==="css")?util.Get.css:util.Get.script;url=m.fullpath;url=(url)?this._filter(url):this._url(m.path);if(env.ua.webkit&&env.ua.webkit<420&&m.type==="js"&&!m.varName){successfn=null;this._useYahooListener=true;}fn(url,{data:s[i],onSuccess:successfn,onFailure:this._onFailure,onTimeout:this._onTimeout,insertBefore:this.insertBefore,charset:this.charset,timeout:this.timeout,varName:m.varName,scope:self});return;}}this._loading=null;if(this._internalCallback){var f=this._internalCallback;this._internalCallback=null;f.call(this);}else{if(this.onSuccess){this._pushEvents();this.onSuccess.call(this.scope,{data:this.data});}}},_pushEvents:function(ref){var r=ref||YAHOO;if(r.util&&r.util.Event){r.util.Event._load();}},_filter:function(str){var f=this.filter;return(f)?str.replace(new RegExp(f.searchExp,"g"),f.replaceStr):str;
 },_url:function(path){return this._filter((this.base||"")+path);}};})();YAHOO.register("yuiloader",YAHOO.util.YUILoader,{version:"2.9.0",build:"2800"});// End of File include/javascript/yui/build/yuiloader/yuiloader-min.js
+                                
+/*
+ * More info at: http://phpjs.org
+ *
+ * This is version: 3.25
+ * php.js is copyright 2011 Kevin van Zonneveld.
+ *
+ * Portions copyright Brett Zamir (http://brett-zamir.me), Kevin van Zonneveld
+ * (http://kevin.vanzonneveld.net), Onno Marsman, Theriault, Michael White
+ * (http://getsprink.com), Waldo Malqui Silva, Paulo Freitas, Jonas Raoni
+ * Soares Silva (http://www.jsfromhell.com), Jack, Philip Peterson, Legaev
+ * Andrey, Ates Goral (http://magnetiq.com), Ratheous, Alex, Rafa? Kukawski
+ * (http://blog.kukawski.pl), Martijn Wieringa, lmeyrick
+ * (https://sourceforge.net/projects/bcmath-js/), Nate, Enrique Gonzalez,
+ * Philippe Baumann, Webtoolkit.info (http://www.webtoolkit.info/), Jani
+ * Hartikainen, Ole Vrijenhoek, Ash Searle (http://hexmen.com/blog/), Carlos
+ * R. L. Rodrigues (http://www.jsfromhell.com), travc, Michael Grier,
+ * Erkekjetter, Johnny Mast (http://www.phpvrouwen.nl), Rafa? Kukawski
+ * (http://blog.kukawski.pl/), GeekFG (http://geekfg.blogspot.com), Andrea
+ * Giammarchi (http://webreflection.blogspot.com), WebDevHobo
+ * (http://webdevhobo.blogspot.com/), d3x, marrtins,
+ * http://stackoverflow.com/questions/57803/how-to-convert-decimal-to-hex-in-javascript,
+ * pilus, stag019, T.Wild, Martin (http://www.erlenwiese.de/), majak, Marc
+ * Palau, Mirek Slugen, Chris, Diplom@t (http://difane.com/), Breaking Par
+ * Consulting Inc
+ * (http://www.breakingpar.com/bkp/home.nsf/0/87256B280015193F87256CFB006C45F7),
+ * gettimeofday, Arpad Ray (mailto:arpad@php.net), Oleg Eremeev, Josh Fraser
+ * (http://onlineaspect.com/2007/06/08/auto-detect-a-time-zone-with-javascript/),
+ * Steve Hilder, mdsjack (http://www.mdsjack.bo.it), Kevin van Zonneveld
+ * (http://kevin.vanzonneveld.net/), gorthaur, Aman Gupta, Sakimori, Joris,
+ * Robin, Kankrelune (http://www.webfaktory.info/), Alfonso Jimenez
+ * (http://www.alfonsojimenez.com), David, Felix Geisendoerfer
+ * (http://www.debuggable.com/felix), Lars Fischer, Karol Kowalski, Imgen Tata
+ * (http://www.myipdf.com/), Steven Levithan (http://blog.stevenlevithan.com),
+ * Tim de Koning (http://www.kingsquare.nl), Dreamer, AJ, Paul Smith, KELAN,
+ * Pellentesque Malesuada, felix, Michael White, Mailfaker
+ * (http://www.weedem.fr/), Thunder.m, Tyler Akins (http://rumkin.com),
+ * saulius, Public Domain (http://www.json.org/json2.js), Caio Ariede
+ * (http://caioariede.com), Steve Clay, David James, madipta, Marco, Ole
+ * Vrijenhoek (http://www.nervous.nl/), class_exists, T. Wild, noname, Arno,
+ * Frank Forte, Francois, Scott Cariss, Slawomir Kaniecki, date, Itsacon
+ * (http://www.itsacon.net/), Billy, vlado houba, Jalal Berrami,
+ * ReverseSyntax, Mateusz "loonquawl" Zalega, john (http://www.jd-tech.net),
+ * mktime, Douglas Crockford (http://javascript.crockford.com), ger, Nick
+ * Kolosov (http://sammy.ru), Nathan, nobbler, Fox, marc andreu, Alex Wilson,
+ * Raphael (Ao RUDLER), Bayron Guevara, Adam Wallner
+ * (http://web2.bitbaro.hu/), paulo kuong, jmweb, Lincoln Ramsay, djmix,
+ * Pyerre, Jon Hohle, Thiago Mata (http://thiagomata.blog.com), lmeyrick
+ * (https://sourceforge.net/projects/bcmath-js/this.), Linuxworld, duncan,
+ * Gilbert, Sanjoy Roy, Shingo, sankai, Oskar Larsson Hšgfeldt
+ * (http://oskar-lh.name/), Denny Wardhana, 0m3r, Everlasto, Subhasis Deb,
+ * josh, jd, Pier Paolo Ramon (http://www.mastersoup.com/), P, merabi, Soren
+ * Hansen, EdorFaus, Eugene Bulkin (http://doubleaw.com/), Der Simon
+ * (http://innerdom.sourceforge.net/), echo is bad, JB, LH, kenneth, J A R,
+ * Marc Jansen, Stoyan Kyosev (http://www.svest.org/), Francesco, XoraX
+ * (http://www.xorax.info), Ozh, Brad Touesnard, MeEtc
+ * (http://yass.meetcweb.com), Peter-Paul Koch
+ * (http://www.quirksmode.org/js/beat.html), Olivier Louvignes
+ * (http://mg-crea.com/), T0bsn, Tim Wiel, Bryan Elliott, nord_ua, Martin, JT,
+ * David Randall, Thomas Beaucourt (http://www.webapp.fr), Tim de Koning,
+ * stensi, Pierre-Luc Paour, Kristof Coomans (SCK-CEN Belgian Nucleair
+ * Research Centre), Martin Pool, Kirk Strobeck, Rick Waldron, Brant Messenger
+ * (http://www.brantmessenger.com/), Devan Penner-Woelk, Saulo Vallory, Wagner
+ * B. Soares, Artur Tchernychev, Valentina De Rosa, Jason Wong
+ * (http://carrot.org/), Christoph, Daniel Esteban, strftime, Mick@el, rezna,
+ * Simon Willison (http://simonwillison.net), Anton Ongson, Gabriel Paderni,
+ * Marco van Oort, penutbutterjelly, Philipp Lenssen, Bjorn Roesbeke
+ * (http://www.bjornroesbeke.be/), Bug?, Eric Nagel, Tomasz Wesolowski,
+ * Evertjan Garretsen, Bobby Drake, Blues (http://tech.bluesmoon.info/), Luke
+ * Godfrey, Pul, uestla, Alan C, Ulrich, Rafal Kukawski, Yves Sucaet,
+ * sowberry, Norman "zEh" Fuchs, hitwork, Zahlii, johnrembo, Nick Callen,
+ * Steven Levithan (stevenlevithan.com), ejsanders, Scott Baker, Brian Tafoya
+ * (http://www.premasolutions.com/), Philippe Jausions
+ * (http://pear.php.net/user/jausions), Aidan Lister
+ * (http://aidanlister.com/), Rob, e-mike, HKM, ChaosNo1, metjay, strcasecmp,
+ * strcmp, Taras Bogach, jpfle, Alexander Ermolaev
+ * (http://snippets.dzone.com/user/AlexanderErmolaev), DxGx, kilops, Orlando,
+ * dptr1988, Le Torbi, James (http://www.james-bell.co.uk/), Pedro Tainha
+ * (http://www.pedrotainha.com), James, Arnout Kazemier
+ * (http://www.3rd-Eden.com), Chris McMacken, Yannoo, jakes, gabriel paderni,
+ * FGFEmperor, Greg Frazier, baris ozdil, 3D-GRAF, daniel airton wermann
+ * (http://wermann.com.br), Howard Yeend, Diogo Resende, Allan Jensen
+ * (http://www.winternet.no), Benjamin Lupton, Atli ?—r, Maximusya, davook,
+ * Tod Gentille, Ryan W Tenney (http://ryan.10e.us), Nathan Sepulveda, Cord,
+ * fearphage (http://http/my.opera.com/fearphage/), Victor, Rafa? Kukawski
+ * (http://kukawski.pl), Matteo, Manish, Matt Bradley, Riddler
+ * (http://www.frontierwebdev.com/), Alexander M Beedie, T.J. Leahy, Rafa?
+ * Kukawski, taith, Luis Salazar (http://www.freaky-media.com/), FremyCompany,
+ * Rival, Luke Smith (http://lucassmith.name), Andrej Pavlovic, Garagoth, Le
+ * Torbi (http://www.letorbi.de/), Dino, Josep Sanz (http://www.ws3.es/), rem,
+ * Russell Walker (http://www.nbill.co.uk/), Jamie Beck
+ * (http://www.terabit.ca/), setcookie, Michael, YUI Library:
+ * http://developer.yahoo.com/yui/docs/YAHOO.util.DateLocale.html, Blues at
+ * http://hacks.bluesmoon.info/strftime/strftime.js, Ben
+ * (http://benblume.co.uk/), DtTvB
+ * (http://dt.in.th/2008-09-16.string-length-in-bytes.html), Andreas, William,
+ * meo, incidence, Cagri Ekin, Amirouche, Amir Habibi
+ * (http://www.residence-mixte.com/), Kheang Hok Chin
+ * (http://www.distantia.ca/), Jay Klehr, Lorenzo Pisani, Tony, Yen-Wei Liu,
+ * Greenseed, mk.keck, Leslie Hoare, dude, booeyOH, Ben Bryan
+ *
+ * Dual licensed under the MIT (MIT-LICENSE.txt)
+ * and GPL (GPL-LICENSE.txt) licenses.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL KEVIN VAN ZONNEVELD BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+// End of File include/javascript/phpjs/license.js
+                                
+/*
+ * More info at: http://phpjs.org
+ *
+ * This is version: 3.25
+ * php.js is copyright 2011 Kevin van Zonneveld.
+ *
+ * Portions copyright Brett Zamir (http://brett-zamir.me), Kevin van Zonneveld
+ * (http://kevin.vanzonneveld.net), Onno Marsman, Theriault, Michael White
+ * (http://getsprink.com), Waldo Malqui Silva, Paulo Freitas, Jonas Raoni
+ * Soares Silva (http://www.jsfromhell.com), Jack, Philip Peterson, Legaev
+ * Andrey, Ates Goral (http://magnetiq.com), Ratheous, Alex, Rafa? Kukawski
+ * (http://blog.kukawski.pl), Martijn Wieringa, lmeyrick
+ * (https://sourceforge.net/projects/bcmath-js/), Nate, Enrique Gonzalez,
+ * Philippe Baumann, Webtoolkit.info (http://www.webtoolkit.info/), Jani
+ * Hartikainen, Ole Vrijenhoek, Ash Searle (http://hexmen.com/blog/), Carlos
+ * R. L. Rodrigues (http://www.jsfromhell.com), travc, Michael Grier,
+ * Erkekjetter, Johnny Mast (http://www.phpvrouwen.nl), Rafa? Kukawski
+ * (http://blog.kukawski.pl/), GeekFG (http://geekfg.blogspot.com), Andrea
+ * Giammarchi (http://webreflection.blogspot.com), WebDevHobo
+ * (http://webdevhobo.blogspot.com/), d3x, marrtins,
+ * http://stackoverflow.com/questions/57803/how-to-convert-decimal-to-hex-in-javascript,
+ * pilus, stag019, T.Wild, Martin (http://www.erlenwiese.de/), majak, Marc
+ * Palau, Mirek Slugen, Chris, Diplom@t (http://difane.com/), Breaking Par
+ * Consulting Inc
+ * (http://www.breakingpar.com/bkp/home.nsf/0/87256B280015193F87256CFB006C45F7),
+ * gettimeofday, Arpad Ray (mailto:arpad@php.net), Oleg Eremeev, Josh Fraser
+ * (http://onlineaspect.com/2007/06/08/auto-detect-a-time-zone-with-javascript/),
+ * Steve Hilder, mdsjack (http://www.mdsjack.bo.it), Kevin van Zonneveld
+ * (http://kevin.vanzonneveld.net/), gorthaur, Aman Gupta, Sakimori, Joris,
+ * Robin, Kankrelune (http://www.webfaktory.info/), Alfonso Jimenez
+ * (http://www.alfonsojimenez.com), David, Felix Geisendoerfer
+ * (http://www.debuggable.com/felix), Lars Fischer, Karol Kowalski, Imgen Tata
+ * (http://www.myipdf.com/), Steven Levithan (http://blog.stevenlevithan.com),
+ * Tim de Koning (http://www.kingsquare.nl), Dreamer, AJ, Paul Smith, KELAN,
+ * Pellentesque Malesuada, felix, Michael White, Mailfaker
+ * (http://www.weedem.fr/), Thunder.m, Tyler Akins (http://rumkin.com),
+ * saulius, Public Domain (http://www.json.org/json2.js), Caio Ariede
+ * (http://caioariede.com), Steve Clay, David James, madipta, Marco, Ole
+ * Vrijenhoek (http://www.nervous.nl/), class_exists, T. Wild, noname, Arno,
+ * Frank Forte, Francois, Scott Cariss, Slawomir Kaniecki, date, Itsacon
+ * (http://www.itsacon.net/), Billy, vlado houba, Jalal Berrami,
+ * ReverseSyntax, Mateusz "loonquawl" Zalega, john (http://www.jd-tech.net),
+ * mktime, Douglas Crockford (http://javascript.crockford.com), ger, Nick
+ * Kolosov (http://sammy.ru), Nathan, nobbler, Fox, marc andreu, Alex Wilson,
+ * Raphael (Ao RUDLER), Bayron Guevara, Adam Wallner
+ * (http://web2.bitbaro.hu/), paulo kuong, jmweb, Lincoln Ramsay, djmix,
+ * Pyerre, Jon Hohle, Thiago Mata (http://thiagomata.blog.com), lmeyrick
+ * (https://sourceforge.net/projects/bcmath-js/this.), Linuxworld, duncan,
+ * Gilbert, Sanjoy Roy, Shingo, sankai, Oskar Larsson Hï¿½gfeldt
+ * (http://oskar-lh.name/), Denny Wardhana, 0m3r, Everlasto, Subhasis Deb,
+ * josh, jd, Pier Paolo Ramon (http://www.mastersoup.com/), P, merabi, Soren
+ * Hansen, EdorFaus, Eugene Bulkin (http://doubleaw.com/), Der Simon
+ * (http://innerdom.sourceforge.net/), echo is bad, JB, LH, kenneth, J A R,
+ * Marc Jansen, Stoyan Kyosev (http://www.svest.org/), Francesco, XoraX
+ * (http://www.xorax.info), Ozh, Brad Touesnard, MeEtc
+ * (http://yass.meetcweb.com), Peter-Paul Koch
+ * (http://www.quirksmode.org/js/beat.html), Olivier Louvignes
+ * (http://mg-crea.com/), T0bsn, Tim Wiel, Bryan Elliott, nord_ua, Martin, JT,
+ * David Randall, Thomas Beaucourt (http://www.webapp.fr), Tim de Koning,
+ * stensi, Pierre-Luc Paour, Kristof Coomans (SCK-CEN Belgian Nucleair
+ * Research Centre), Martin Pool, Kirk Strobeck, Rick Waldron, Brant Messenger
+ * (http://www.brantmessenger.com/), Devan Penner-Woelk, Saulo Vallory, Wagner
+ * B. Soares, Artur Tchernychev, Valentina De Rosa, Jason Wong
+ * (http://carrot.org/), Christoph, Daniel Esteban, strftime, Mick@el, rezna,
+ * Simon Willison (http://simonwillison.net), Anton Ongson, Gabriel Paderni,
+ * Marco van Oort, penutbutterjelly, Philipp Lenssen, Bjorn Roesbeke
+ * (http://www.bjornroesbeke.be/), Bug?, Eric Nagel, Tomasz Wesolowski,
+ * Evertjan Garretsen, Bobby Drake, Blues (http://tech.bluesmoon.info/), Luke
+ * Godfrey, Pul, uestla, Alan C, Ulrich, Rafal Kukawski, Yves Sucaet,
+ * sowberry, Norman "zEh" Fuchs, hitwork, Zahlii, johnrembo, Nick Callen,
+ * Steven Levithan (stevenlevithan.com), ejsanders, Scott Baker, Brian Tafoya
+ * (http://www.premasolutions.com/), Philippe Jausions
+ * (http://pear.php.net/user/jausions), Aidan Lister
+ * (http://aidanlister.com/), Rob, e-mike, HKM, ChaosNo1, metjay, strcasecmp,
+ * strcmp, Taras Bogach, jpfle, Alexander Ermolaev
+ * (http://snippets.dzone.com/user/AlexanderErmolaev), DxGx, kilops, Orlando,
+ * dptr1988, Le Torbi, James (http://www.james-bell.co.uk/), Pedro Tainha
+ * (http://www.pedrotainha.com), James, Arnout Kazemier
+ * (http://www.3rd-Eden.com), Chris McMacken, Yannoo, jakes, gabriel paderni,
+ * FGFEmperor, Greg Frazier, baris ozdil, 3D-GRAF, daniel airton wermann
+ * (http://wermann.com.br), Howard Yeend, Diogo Resende, Allan Jensen
+ * (http://www.winternet.no), Benjamin Lupton, Atli ?ï¿½r, Maximusya, davook,
+ * Tod Gentille, Ryan W Tenney (http://ryan.10e.us), Nathan Sepulveda, Cord,
+ * fearphage (http://http/my.opera.com/fearphage/), Victor, Rafa? Kukawski
+ * (http://kukawski.pl), Matteo, Manish, Matt Bradley, Riddler
+ * (http://www.frontierwebdev.com/), Alexander M Beedie, T.J. Leahy, Rafa?
+ * Kukawski, taith, Luis Salazar (http://www.freaky-media.com/), FremyCompany,
+ * Rival, Luke Smith (http://lucassmith.name), Andrej Pavlovic, Garagoth, Le
+ * Torbi (http://www.letorbi.de/), Dino, Josep Sanz (http://www.ws3.es/), rem,
+ * Russell Walker (http://www.nbill.co.uk/), Jamie Beck
+ * (http://www.terabit.ca/), setcookie, Michael, YUI Library:
+ * http://developer.yahoo.com/yui/docs/YAHOO.util.DateLocale.html, Blues at
+ * http://hacks.bluesmoon.info/strftime/strftime.js, Ben
+ * (http://benblume.co.uk/), DtTvB
+ * (http://dt.in.th/2008-09-16.string-length-in-bytes.html), Andreas, William,
+ * meo, incidence, Cagri Ekin, Amirouche, Amir Habibi
+ * (http://www.residence-mixte.com/), Kheang Hok Chin
+ * (http://www.distantia.ca/), Jay Klehr, Lorenzo Pisani, Tony, Yen-Wei Liu,
+ * Greenseed, mk.keck, Leslie Hoare, dude, booeyOH, Ben Bryan
+ *
+ * Dual licensed under the MIT (MIT-LICENSE.txt)
+ * and GPL (GPL-LICENSE.txt) licenses.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL KEVIN VAN ZONNEVELD BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+function get_html_translation_table(table,quote_style){var entities={},hash_map={},decimal=0,symbol='';var constMappingTable={},constMappingQuoteStyle={};var useTable={},useQuoteStyle={};constMappingTable[0]='HTML_SPECIALCHARS';constMappingTable[1]='HTML_ENTITIES';constMappingQuoteStyle[0]='ENT_NOQUOTES';constMappingQuoteStyle[2]='ENT_COMPAT';constMappingQuoteStyle[3]='ENT_QUOTES';useTable=!isNaN(table)?constMappingTable[table]:table?table.toUpperCase():'HTML_SPECIALCHARS';useQuoteStyle=!isNaN(quote_style)?constMappingQuoteStyle[quote_style]:quote_style?quote_style.toUpperCase():'ENT_COMPAT';if(useTable!=='HTML_SPECIALCHARS'&&useTable!=='HTML_ENTITIES'){throw new Error("Table: "+useTable+' not supported');}
+entities['38']='&amp;';if(useTable==='HTML_ENTITIES'){entities['160']='&nbsp;';entities['161']='&iexcl;';entities['162']='&cent;';entities['163']='&pound;';entities['164']='&curren;';entities['165']='&yen;';entities['166']='&brvbar;';entities['167']='&sect;';entities['168']='&uml;';entities['169']='&copy;';entities['170']='&ordf;';entities['171']='&laquo;';entities['172']='&not;';entities['173']='&shy;';entities['174']='&reg;';entities['175']='&macr;';entities['176']='&deg;';entities['177']='&plusmn;';entities['178']='&sup2;';entities['179']='&sup3;';entities['180']='&acute;';entities['181']='&micro;';entities['182']='&para;';entities['183']='&middot;';entities['184']='&cedil;';entities['185']='&sup1;';entities['186']='&ordm;';entities['187']='&raquo;';entities['188']='&frac14;';entities['189']='&frac12;';entities['190']='&frac34;';entities['191']='&iquest;';entities['192']='&Agrave;';entities['193']='&Aacute;';entities['194']='&Acirc;';entities['195']='&Atilde;';entities['196']='&Auml;';entities['197']='&Aring;';entities['198']='&AElig;';entities['199']='&Ccedil;';entities['200']='&Egrave;';entities['201']='&Eacute;';entities['202']='&Ecirc;';entities['203']='&Euml;';entities['204']='&Igrave;';entities['205']='&Iacute;';entities['206']='&Icirc;';entities['207']='&Iuml;';entities['208']='&ETH;';entities['209']='&Ntilde;';entities['210']='&Ograve;';entities['211']='&Oacute;';entities['212']='&Ocirc;';entities['213']='&Otilde;';entities['214']='&Ouml;';entities['215']='&times;';entities['216']='&Oslash;';entities['217']='&Ugrave;';entities['218']='&Uacute;';entities['219']='&Ucirc;';entities['220']='&Uuml;';entities['221']='&Yacute;';entities['222']='&THORN;';entities['223']='&szlig;';entities['224']='&agrave;';entities['225']='&aacute;';entities['226']='&acirc;';entities['227']='&atilde;';entities['228']='&auml;';entities['229']='&aring;';entities['230']='&aelig;';entities['231']='&ccedil;';entities['232']='&egrave;';entities['233']='&eacute;';entities['234']='&ecirc;';entities['235']='&euml;';entities['236']='&igrave;';entities['237']='&iacute;';entities['238']='&icirc;';entities['239']='&iuml;';entities['240']='&eth;';entities['241']='&ntilde;';entities['242']='&ograve;';entities['243']='&oacute;';entities['244']='&ocirc;';entities['245']='&otilde;';entities['246']='&ouml;';entities['247']='&divide;';entities['248']='&oslash;';entities['249']='&ugrave;';entities['250']='&uacute;';entities['251']='&ucirc;';entities['252']='&uuml;';entities['253']='&yacute;';entities['254']='&thorn;';entities['255']='&yuml;';}
+if(useQuoteStyle!=='ENT_NOQUOTES'){entities['34']='&quot;';}
+if(useQuoteStyle==='ENT_QUOTES'){entities['39']='&#39;';}
+entities['60']='&lt;';entities['62']='&gt;';for(decimal in entities){symbol=String.fromCharCode(decimal);hash_map[symbol]=entities[decimal];}
+return hash_map;}
+// End of File include/javascript/phpjs/get_html_translation_table.js
+                                
+/*
+ * More info at: http://phpjs.org
+ *
+ * This is version: 3.25
+ * php.js is copyright 2011 Kevin van Zonneveld.
+ *
+ * Portions copyright Brett Zamir (http://brett-zamir.me), Kevin van Zonneveld
+ * (http://kevin.vanzonneveld.net), Onno Marsman, Theriault, Michael White
+ * (http://getsprink.com), Waldo Malqui Silva, Paulo Freitas, Jonas Raoni
+ * Soares Silva (http://www.jsfromhell.com), Jack, Philip Peterson, Legaev
+ * Andrey, Ates Goral (http://magnetiq.com), Ratheous, Alex, Rafa? Kukawski
+ * (http://blog.kukawski.pl), Martijn Wieringa, lmeyrick
+ * (https://sourceforge.net/projects/bcmath-js/), Nate, Enrique Gonzalez,
+ * Philippe Baumann, Webtoolkit.info (http://www.webtoolkit.info/), Jani
+ * Hartikainen, Ole Vrijenhoek, Ash Searle (http://hexmen.com/blog/), Carlos
+ * R. L. Rodrigues (http://www.jsfromhell.com), travc, Michael Grier,
+ * Erkekjetter, Johnny Mast (http://www.phpvrouwen.nl), Rafa? Kukawski
+ * (http://blog.kukawski.pl/), GeekFG (http://geekfg.blogspot.com), Andrea
+ * Giammarchi (http://webreflection.blogspot.com), WebDevHobo
+ * (http://webdevhobo.blogspot.com/), d3x, marrtins,
+ * http://stackoverflow.com/questions/57803/how-to-convert-decimal-to-hex-in-javascript,
+ * pilus, stag019, T.Wild, Martin (http://www.erlenwiese.de/), majak, Marc
+ * Palau, Mirek Slugen, Chris, Diplom@t (http://difane.com/), Breaking Par
+ * Consulting Inc
+ * (http://www.breakingpar.com/bkp/home.nsf/0/87256B280015193F87256CFB006C45F7),
+ * gettimeofday, Arpad Ray (mailto:arpad@php.net), Oleg Eremeev, Josh Fraser
+ * (http://onlineaspect.com/2007/06/08/auto-detect-a-time-zone-with-javascript/),
+ * Steve Hilder, mdsjack (http://www.mdsjack.bo.it), Kevin van Zonneveld
+ * (http://kevin.vanzonneveld.net/), gorthaur, Aman Gupta, Sakimori, Joris,
+ * Robin, Kankrelune (http://www.webfaktory.info/), Alfonso Jimenez
+ * (http://www.alfonsojimenez.com), David, Felix Geisendoerfer
+ * (http://www.debuggable.com/felix), Lars Fischer, Karol Kowalski, Imgen Tata
+ * (http://www.myipdf.com/), Steven Levithan (http://blog.stevenlevithan.com),
+ * Tim de Koning (http://www.kingsquare.nl), Dreamer, AJ, Paul Smith, KELAN,
+ * Pellentesque Malesuada, felix, Michael White, Mailfaker
+ * (http://www.weedem.fr/), Thunder.m, Tyler Akins (http://rumkin.com),
+ * saulius, Public Domain (http://www.json.org/json2.js), Caio Ariede
+ * (http://caioariede.com), Steve Clay, David James, madipta, Marco, Ole
+ * Vrijenhoek (http://www.nervous.nl/), class_exists, T. Wild, noname, Arno,
+ * Frank Forte, Francois, Scott Cariss, Slawomir Kaniecki, date, Itsacon
+ * (http://www.itsacon.net/), Billy, vlado houba, Jalal Berrami,
+ * ReverseSyntax, Mateusz "loonquawl" Zalega, john (http://www.jd-tech.net),
+ * mktime, Douglas Crockford (http://javascript.crockford.com), ger, Nick
+ * Kolosov (http://sammy.ru), Nathan, nobbler, Fox, marc andreu, Alex Wilson,
+ * Raphael (Ao RUDLER), Bayron Guevara, Adam Wallner
+ * (http://web2.bitbaro.hu/), paulo kuong, jmweb, Lincoln Ramsay, djmix,
+ * Pyerre, Jon Hohle, Thiago Mata (http://thiagomata.blog.com), lmeyrick
+ * (https://sourceforge.net/projects/bcmath-js/this.), Linuxworld, duncan,
+ * Gilbert, Sanjoy Roy, Shingo, sankai, Oskar Larsson Hï¿½gfeldt
+ * (http://oskar-lh.name/), Denny Wardhana, 0m3r, Everlasto, Subhasis Deb,
+ * josh, jd, Pier Paolo Ramon (http://www.mastersoup.com/), P, merabi, Soren
+ * Hansen, EdorFaus, Eugene Bulkin (http://doubleaw.com/), Der Simon
+ * (http://innerdom.sourceforge.net/), echo is bad, JB, LH, kenneth, J A R,
+ * Marc Jansen, Stoyan Kyosev (http://www.svest.org/), Francesco, XoraX
+ * (http://www.xorax.info), Ozh, Brad Touesnard, MeEtc
+ * (http://yass.meetcweb.com), Peter-Paul Koch
+ * (http://www.quirksmode.org/js/beat.html), Olivier Louvignes
+ * (http://mg-crea.com/), T0bsn, Tim Wiel, Bryan Elliott, nord_ua, Martin, JT,
+ * David Randall, Thomas Beaucourt (http://www.webapp.fr), Tim de Koning,
+ * stensi, Pierre-Luc Paour, Kristof Coomans (SCK-CEN Belgian Nucleair
+ * Research Centre), Martin Pool, Kirk Strobeck, Rick Waldron, Brant Messenger
+ * (http://www.brantmessenger.com/), Devan Penner-Woelk, Saulo Vallory, Wagner
+ * B. Soares, Artur Tchernychev, Valentina De Rosa, Jason Wong
+ * (http://carrot.org/), Christoph, Daniel Esteban, strftime, Mick@el, rezna,
+ * Simon Willison (http://simonwillison.net), Anton Ongson, Gabriel Paderni,
+ * Marco van Oort, penutbutterjelly, Philipp Lenssen, Bjorn Roesbeke
+ * (http://www.bjornroesbeke.be/), Bug?, Eric Nagel, Tomasz Wesolowski,
+ * Evertjan Garretsen, Bobby Drake, Blues (http://tech.bluesmoon.info/), Luke
+ * Godfrey, Pul, uestla, Alan C, Ulrich, Rafal Kukawski, Yves Sucaet,
+ * sowberry, Norman "zEh" Fuchs, hitwork, Zahlii, johnrembo, Nick Callen,
+ * Steven Levithan (stevenlevithan.com), ejsanders, Scott Baker, Brian Tafoya
+ * (http://www.premasolutions.com/), Philippe Jausions
+ * (http://pear.php.net/user/jausions), Aidan Lister
+ * (http://aidanlister.com/), Rob, e-mike, HKM, ChaosNo1, metjay, strcasecmp,
+ * strcmp, Taras Bogach, jpfle, Alexander Ermolaev
+ * (http://snippets.dzone.com/user/AlexanderErmolaev), DxGx, kilops, Orlando,
+ * dptr1988, Le Torbi, James (http://www.james-bell.co.uk/), Pedro Tainha
+ * (http://www.pedrotainha.com), James, Arnout Kazemier
+ * (http://www.3rd-Eden.com), Chris McMacken, Yannoo, jakes, gabriel paderni,
+ * FGFEmperor, Greg Frazier, baris ozdil, 3D-GRAF, daniel airton wermann
+ * (http://wermann.com.br), Howard Yeend, Diogo Resende, Allan Jensen
+ * (http://www.winternet.no), Benjamin Lupton, Atli ?ï¿½r, Maximusya, davook,
+ * Tod Gentille, Ryan W Tenney (http://ryan.10e.us), Nathan Sepulveda, Cord,
+ * fearphage (http://http/my.opera.com/fearphage/), Victor, Rafa? Kukawski
+ * (http://kukawski.pl), Matteo, Manish, Matt Bradley, Riddler
+ * (http://www.frontierwebdev.com/), Alexander M Beedie, T.J. Leahy, Rafa?
+ * Kukawski, taith, Luis Salazar (http://www.freaky-media.com/), FremyCompany,
+ * Rival, Luke Smith (http://lucassmith.name), Andrej Pavlovic, Garagoth, Le
+ * Torbi (http://www.letorbi.de/), Dino, Josep Sanz (http://www.ws3.es/), rem,
+ * Russell Walker (http://www.nbill.co.uk/), Jamie Beck
+ * (http://www.terabit.ca/), setcookie, Michael, YUI Library:
+ * http://developer.yahoo.com/yui/docs/YAHOO.util.DateLocale.html, Blues at
+ * http://hacks.bluesmoon.info/strftime/strftime.js, Ben
+ * (http://benblume.co.uk/), DtTvB
+ * (http://dt.in.th/2008-09-16.string-length-in-bytes.html), Andreas, William,
+ * meo, incidence, Cagri Ekin, Amirouche, Amir Habibi
+ * (http://www.residence-mixte.com/), Kheang Hok Chin
+ * (http://www.distantia.ca/), Jay Klehr, Lorenzo Pisani, Tony, Yen-Wei Liu,
+ * Greenseed, mk.keck, Leslie Hoare, dude, booeyOH, Ben Bryan
+ *
+ * Dual licensed under the MIT (MIT-LICENSE.txt)
+ * and GPL (GPL-LICENSE.txt) licenses.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL KEVIN VAN ZONNEVELD BE LIABLE FOR ANY CLAIM, DAMAGES
+ * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+function html_entity_decode(string,quote_style){var hash_map={},symbol='',tmp_str='',entity='';tmp_str=string.toString();if(false===(hash_map=this.get_html_translation_table('HTML_ENTITIES',quote_style))){return false;}
+delete(hash_map['&']);hash_map['&']='&amp;';for(symbol in hash_map){entity=hash_map[symbol];tmp_str=tmp_str.split(entity).join(symbol);}
+tmp_str=tmp_str.split('&#039;').join("'");return tmp_str;}
+// End of File include/javascript/phpjs/html_entity_decode.js
                                 

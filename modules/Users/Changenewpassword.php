@@ -112,7 +112,7 @@ if (isset($_REQUEST['guid']))
 	    if($pwd_settings['linkexpiration']){
 	    	$delay=$pwd_settings['linkexpirationtime']*$pwd_settings['linkexpirationtype'];
 			$stim = strtotime($row['date_generated']);
-			$expiretime = TimeDate::getInstance()->fromTimestamp($stim)->get("+"+$delay+" minutes")->asDb();
+			$expiretime = TimeDate::getInstance()->fromTimestamp($stim)->get("+$delay  minutes")->asDb();
 	    	$timenow = TimeDate::getInstance()->nowDb();
 	    	if ($timenow > $expiretime)
 	    		$expired='1';	

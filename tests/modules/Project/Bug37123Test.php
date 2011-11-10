@@ -35,6 +35,7 @@
  ********************************************************************************/
 
 
+
 class Bug37123Test extends Sugar_PHPUnit_Framework_TestCase
 {
     public function setUp()

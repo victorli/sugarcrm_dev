@@ -341,8 +341,9 @@ class SavedSearch extends SugarBean {
 	function handleRedirect($return_module, $search_query, $saved_search_id, $advanced = 'false') {
         $_SESSION['LastSavedView'][$return_module] = $saved_search_id;
         $return_action = 'index';
+        $ajaxLoad = empty($_REQUEST['ajax_load']) ? "" : "&ajax_load=" . $_REQUEST['ajax_load'];
         //Reduce the params to avoid the problems caused by URL max length in IE ( the reduced params can be get from saved search according to saved_search_id).
-        header("Location: index.php?action=$return_action&module=$return_module&saved_search_select={$saved_search_id}{$search_query}&advanced={$advanced}");
+        header("Location: index.php?action=$return_action&module=$return_module&saved_search_select={$saved_search_id}{$search_query}&advanced={$advanced}$ajaxLoad");
         die();
 	}
 	

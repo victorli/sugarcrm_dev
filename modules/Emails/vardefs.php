@@ -427,6 +427,16 @@ $dictionary['Email'] = array(
 			'bean_name'		=> 'Note',
 			'source'		=> 'non-db',
 		),
+		// SNIP
+		'meetings' => array(
+            'name'			=> 'meetings',
+            'vname'			=> 'LBL_EMAILS_MEETINGS_REL',
+            'type'			=> 'link',
+            'relationship'  => 'emails_meetings_rel',
+            'module'		=> 'Meetings',
+            'bean_name'		=> 'Meeting',
+            'source'		=> 'non-db',
+		),
 		/* end relationship collections */
 
 	), /* end fields() array */
@@ -466,6 +476,17 @@ $dictionary['Email'] = array(
 			'rhs_table'			=> 'notes',
 			'rhs_key'			=> 'parent_id',
 			'relationship_type'	=> 'one-to-many',
+		),
+
+		// SNIP
+		'emails_meetings_rel' => array(
+			'lhs_module'    		 => 'Emails',
+			'lhs_table'          => 'emails',
+			'lhs_key'            => 'id',
+			'rhs_module'         => 'Meetings',
+			'rhs_table'          => 'meetings',
+			'rhs_key'            => 'parent_id',
+			'relationship_type'  => 'one-to-many',
 		),
 	), // end relationships
 	'indices' => array (

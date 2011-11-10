@@ -118,6 +118,20 @@ function checkLoggerSettings(){
 	 }
 }
 
+function checkLeadConversionSettings() {
+    if (file_exists(getcwd().'/config.php')) {
+         require(getcwd().'/config.php');
+    }
+    global $sugar_config;
+    if (!isset($sugar_config['lead_conv_activity_opt'])) {
+        $sugar_config['lead_conv_activity_opt'] = 'copy';
+        ksort($sugar_config);
+        if (is_writable('config.php') && write_array_to_file("sugar_config", $sugar_config,'config.php')) {
+            //writing to the file
+        }
+    }
+}
+
 function checkResourceSettings(){
 	if(file_exists(getcwd().'/config.php')){
          require(getcwd().'/config.php');
@@ -791,6 +805,11 @@ if(!didThisStepRunBefore('commit')){
 		set_upgrade_progress('commit','in_progress','commitMakeBackupFiles','done');
 	}
 
+	//Need to make sure we have the matching copy of SetValueAction for static/instance method matching
+    if(file_exists("include/Expressions/Actions/SetValueAction.php")){
+        require_once("include/Expressions/Actions/SetValueAction.php");
+    }
+
 	///////////////////////////////////////////////////////////////////////////////
 	////	HANDLE PREINSTALL SCRIPTS
 	if(empty($errors)) {
@@ -906,6 +925,10 @@ if(!didThisStepRunBefore('commit')){
 	    logThis('begin check logger settings .', $path);
 	    	checkLoggerSettings();
 	    logThis('begin check logger settings .', $path);
+
+            logThis('begin check lead conversion settings .', $path);
+            checkLeadConversionSettings();
+	    logThis('end check lead conversion settings .', $path);
 
 	    logThis('begin check resource settings .', $path);
 			checkResourceSettings();

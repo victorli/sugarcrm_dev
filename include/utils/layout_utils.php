@@ -208,11 +208,12 @@ function get_module_title(
     if ($show_create) {
         $the_title .= "<span class='utils'>";
         $createRecordURL = SugarThemeRegistry::current()->getImageURL('create-record.gif');
+        $url = ajaxLink("index.php?module=$module&action=EditView&return_module=$module&return_action=DetailView");
         $the_title .= <<<EOHTML
 &nbsp;
-<a href="index.php?module={$module}&action=EditView&return_module={$module}&return_action=DetailView" class="utilsLink">
+<a href="{$url}" class="utilsLink">
 <img src='{$createRecordURL}' alt='{$GLOBALS['app_strings']['LNK_CREATE']}'></a>
-<a href="index.php?module={$module}&action=EditView&return_module={$module}&return_action=DetailView" class="utilsLink">
+<a href="{$url}" class="utilsLink">
 {$GLOBALS['app_strings']['LNK_CREATE']}
 </a>
 EOHTML;
@@ -239,7 +240,9 @@ EOHTML;
  *    );
  * </code>
  * would display as:
+ * <code>
  * <a href='index.php?module=Contacts&action=index'>Contacts</a> >> <a href='index.php?module=Contacts&action=DetailView&record=123'>John Smith</a> >> Edit   
+ * </code>
  * @param  $show_help    boolean which determines if the print and help links are shown.
  * @return string HTML
  */
@@ -262,7 +265,11 @@ function getClassicModuleTitle(
     $iconPath = "";
     $the_title = "<div class='moduleTitle'>\n<h2>";
     
-    
+    if(!empty($GLOBALS['app_list_strings']['moduleList'][$module]))
+        $moduleName = $GLOBALS['app_list_strings']['moduleList'][$module];
+    else
+        $moduleName = $module;
+
     if(is_file(SugarThemeRegistry::current()->getImageURL('icon_'.$module.'_32.png',false)))
     {
     	$iconPath = SugarThemeRegistry::current()->getImageURL('icon_'.$module.'_32.png');
@@ -273,7 +280,7 @@ function getClassicModuleTitle(
     if (!empty($iconPath)) {
     	$url = (!empty($index_url_override)) ? $index_url_override : "index.php?module={$module}&action=index";
     	array_unshift ($params,"<a href='{$url}'><img src='{$iconPath}' " 
-	                    . "alt='".$module."' title='".$module."' align='absmiddle'></a>");
+	                    . "alt='".$moduleName."' title='".$moduleName."' align='absmiddle'></a>");
 	}
 	
 	$new_params = array();
@@ -299,11 +306,12 @@ function getClassicModuleTitle(
     if ($show_create) {
         $the_title .= "<span class='utils'>";
         $createRecordURL = SugarThemeRegistry::current()->getImageURL('create-record.gif');
+        $url = ajaxLink("index.php?module=$module&action=EditView&return_module=$module&return_action=DetailView");
         $the_title .= <<<EOHTML
 &nbsp;
-<a href="index.php?module={$module}&action=EditView&return_module={$module}&return_action=DetailView" class="utilsLink">
+<a href="{$url}" class="utilsLink">
 <img src='{$createRecordURL}' alt='{$GLOBALS['app_strings']['LNK_CREATE']}'></a>
-<a href="index.php?module={$module}&action=EditView&return_module={$module}&return_action=DetailView" class="utilsLink">
+<a href="{$url}" class="utilsLink">
 {$GLOBALS['app_strings']['LNK_CREATE']}
 </a>
 EOHTML;

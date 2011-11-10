@@ -46,6 +46,7 @@ require_once('modules/Configurator/Forms.php');
 require_once('modules/Administration/Forms.php');
 require_once('modules/Configurator/Configurator.php');
 require_once('include/SugarLogger/SugarLogger.php');
+require_once('modules/Leads/Lead.php');
 
 class ConfiguratorViewEdit extends ViewEdit
 {
@@ -113,6 +114,11 @@ class ConfiguratorViewEdit extends ViewEdit
             $this->ss->assign('log_levels', get_select_options_with_id(  LoggerManager::getLoggerLevels(), $configurator->config['logger']['level']));
         } else {
             $this->ss->assign('log_levels', get_select_options_with_id(  LoggerManager::getLoggerLevels(), ''));
+        }
+        if (!empty($configurator->config['lead_conv_activity_opt'])) {
+            $this->ss->assign('lead_conv_activities', get_select_options_with_id(  Lead::getActivitiesOptions(), $configurator->config['lead_conv_activity_opt']));
+        } else {
+            $this->ss->assign('lead_conv_activities', get_select_options_with_id(  Lead::getActivitiesOptions(), ''));
         }
         if (!empty($configurator->config['logger']['file']['suffix'])) {
             $this->ss->assign('filename_suffix', get_select_options_with_id(  SugarLogger::$filename_suffix,$configurator->config['logger']['file']['suffix']));

@@ -181,6 +181,12 @@ $dictionary['ProspectList'] = array (
     		'relationship' => 'prospect_list_users',
     		'source'=>'non-db',
   		),
+        'email_marketing'=> array (
+            'name' => 'email_marketing',
+            'type' => 'link',
+            'relationship' => 'email_marketing_prospect_lists',
+            'source'=>'non-db',
+        ),
 		'marketing_id' => array (
 			'name' => 'marketing_id',
 			'vname' => 'LBL_MARKETING_ID',

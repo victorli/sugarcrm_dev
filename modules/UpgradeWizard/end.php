@@ -133,6 +133,10 @@ if(!isset($sugar_config['logger'])){
 	  	  ),
 	);
 }
+//for upgraded version, set default lead conversion activity option to 'copy'
+if(!isset($sugar_config['lead_conv_activity_opt'])) {
+    $sugar_config['lead_conv_activity_opt'] = 'copy';
+}
 
 if(!rebuildConfigFile($sugar_config, $sugar_version)) {
 	logThis('*** WARNING: could not write config.php!', $path);
@@ -256,6 +260,9 @@ logThis('Cleaning up the session.  Goodbye.');
 resetUwSession();
 // flag to say upgrade has completed
 $_SESSION['upgrade_complete'] = true;
+
+//Clear any third party caches
+sugar_cache_reset_full();
 
 //add the clean vardefs here
 if(!class_exists('VardefManager')){

@@ -45,27 +45,17 @@ function unzip( $zip_archive, $zip_dir)
 
 function unzip_file( $zip_archive, $archive_file, $zip_dir)
 {
-    if( !is_dir( $zip_dir ) ) {
-        if (defined('SUGAR_PHPUNIT_RUNNER') || defined('SUGARCRM_INSTALL'))
-        {
-        	$GLOBALS['log']->fatal("Specified directory '$zip_dir' for zip file '$zip_archive' extraction does not exist.");
-        	return false;
-        } else {
+    if( !is_dir( $zip_dir ) ){
+        if (!defined('SUGAR_PHPUNIT_RUNNER'))
             die( "Specified directory '$zip_dir' for zip file '$zip_archive' extraction does not exist." );
-        }
+        return false;
     }
-    
     $zip = new ZipArchive;
     $res = $zip->open($zip_archive);
-    
-    if($res !== TRUE) {
-        if (defined('SUGAR_PHPUNIT_RUNNER') || defined('SUGARCRM_INSTALL'))
-        {
-        	$GLOBALS['log']->fatal(sprintf("ZIP Error(%d): Status(%s): Arhive(%s): Directory(%s)", $res, $zip->status, $zip_archive, $zip_dir));
-            return false;
-        } else {
-        	die(sprintf("ZIP Error(%d): Status(%s): Arhive(%s): Directory(%s)", $res, $zip->status, $zip_archive, $zip_dir));
-        }
+    if($res !== true) {
+        if (!defined('SUGAR_PHPUNIT_RUNNER'))
+            die(sprintf("ZIP Error(%d): %s", $res, $zip->status));
+        return false;
     }
 
     if($archive_file !== null) {
@@ -73,15 +63,10 @@ function unzip_file( $zip_archive, $archive_file, $zip_dir)
     } else {
         $res = $zip->extractTo($zip_dir);
     }
-    
-    if($res !== TRUE) {
-        if (defined('SUGAR_PHPUNIT_RUNNER') || defined('SUGARCRM_INSTALL'))
-        {
-        	$GLOBALS['log']->fatal(sprintf("ZIP Error(%d): Status(%s): Arhive(%s): Directory(%s)", $res, $zip->status, $zip_archive, $zip_dir));
-            return false;
-        } else {
-        	die(sprintf("ZIP Error(%d): Status(%s): Arhive(%s): Directory(%s)", $res, $zip->status, $zip_archive, $zip_dir));
-        }
+    if($res !== true) {
+        if (!defined('SUGAR_PHPUNIT_RUNNER'))
+            die(sprintf("ZIP Error(%d): %s", $res, $zip->status));
+        return false;
     }
     return true;
 }
@@ -105,10 +90,10 @@ function zip_dir( $zip_dir, $zip_archive )
         // CENT OS and others will fail when deploying module
         $fileName = $fileinfo->getFilename();
         if ($fileName == "." || $fileName == "..")
-            continue; 
-        $localname = substr($fileinfo->getPathname(), $chop);
+            continue;
+        $localname = str_replace("\\", "/",substr($fileinfo->getPathname(), $chop)); // ensure file
         if($fileinfo->isDir()) {
-            $zip->addEmptyDir($localname);
+            $zip->addEmptyDir($localname."/");
         } else {
             $zip->addFile($fileinfo->getPathname(), $localname);
         }

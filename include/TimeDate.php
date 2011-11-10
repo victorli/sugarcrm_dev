@@ -1513,8 +1513,8 @@ class TimeDate
     protected function parseFromTemplate($template, $daystart, User $user = null)
 	{
         $now = $this->tzUser($this->getNow(), $user);
-        if(!empty($template[0])) {
-            $now->modify($template[0]);
+        if(!empty($template)) {
+            $now->modify($template);
         }
         if($daystart) {
             return $now->get_day_begin();
@@ -1526,7 +1526,7 @@ class TimeDate
 	/**
 	 * Get month-long range mdiff months from now
 	 */
-	protected function diffMon($mdiff, User $user)
+	protected function diffMon($mdiff, User $user = null)
 	{
         $now = $this->tzUser($this->getNow(), $user);
 	    $now->setDate($now->year, $now->month+$mdiff, 1);
@@ -1538,7 +1538,7 @@ class TimeDate
 	/**
 	 * Get year-long range ydiff years from now
 	 */
-	protected function diffYear($ydiff, User $user)
+	protected function diffYear($ydiff, User $user = null)
 	{
         $now = $this->tzUser($this->getNow(), $user);
 	    $now->setDate($now->year+$ydiff, 1, 1);
@@ -1722,24 +1722,40 @@ class TimeDate
      * @deprecated for public use
 	 * get timezone start & end
 	 */
-    public function getDSTRange($year, $zone)
+    public function getDSTRange($year, $zone = null)
     {
+    	if(!empty($zone)) {
+    		$tz = timezone_open($zone);
+    	}
+    	if(empty($tz)) {
+    		$tz = $this->_getUserTZ();
+    	}
+
         $year_date = SugarDateTime::createFromFormat("Y", $year, self::$gmtTimezone);
         $year_end = clone $year_date;
         $year_end->setDate((int) $year, 12, 31);
         $year_end->setTime(23, 59, 59);
         $year_date->setDate((int) $year, 1, 1);
         $year_date->setTime(0, 0, 0);
-        $tz = $this->_getUserTZ();
-        $transitions = $tz->getTransitions($year_date->getTimestamp(), $year_end->getTimestamp());
+		$result = array();
+        $transitions = $tz->getTransitions($year_date->ts, $year_end->ts);
         $idx = 0;
-        while (! $transitions[$idx]["isdst"])
-            $idx ++;
-        $startdate = new DateTime("@" . $transitions[$idx]["ts"], self::$gmtTimezone);
-        while ($transitions[$idx]["isdst"])
-            $idx ++;
-        $enddate = new DateTime("@" . $transitions[$idx]["ts"], self::$gmtTimezone);
-        return array("start" => $this->asDb($startdate), "end" => $this->asDb($enddate));
+        if(version_compare(PHP_VERSION, '5.3.0', '<')) {
+        	// <5.3.0 ignores parameters, advance manually to current year
+        	$start_ts = $year_date->ts;
+        	while(isset($transitions[$idx]) && $transitions[$idx]["ts"] < $start_ts) $idx++;
+        }
+        // get DST start
+        while (isset($transitions[$idx]) && !$transitions[$idx]["isdst"]) $idx++;
+        if(isset($transitions[$idx])) {
+        	$result["start"] = $this->fromTimestamp($transitions[$idx]["ts"])->asDb();
+        }
+        // get DST end
+        while (isset($transitions[$idx]) && $transitions[$idx]["isdst"]) $idx++;
+        if(isset($transitions[$idx])) {
+        	$result["end"] = $this->fromTimestamp($transitions[$idx]["ts"])->asDb();
+        }
+        return $result;
     }
 
 /****************** GUI stuff that really shouldn't be here, will be moved ************/

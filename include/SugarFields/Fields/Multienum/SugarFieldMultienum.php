@@ -106,8 +106,12 @@ class SugarFieldMultienum extends SugarFieldEnum
         // parse to see if all the values given are valid
         foreach ( $enum_list as $key => $enum_value ) {
             $enum_list[$key] = $enum_value = trim($enum_value);
-            if ( parent::importSanitize($enum_value,$vardef,$focus,$settings) === false ) {
+            $sanitizedValue = parent::importSanitize($enum_value,$vardef,$focus,$settings);
+            if ($sanitizedValue  === false ) {
                 return false;
+            }
+            else {
+                $enum_list[$key] = $sanitizedValue;
             }
         }
         $value = encodeMultienumValue($enum_list);

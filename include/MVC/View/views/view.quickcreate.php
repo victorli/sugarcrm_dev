@@ -132,6 +132,7 @@ class ViewQuickcreate extends ViewAjax
 
 		if(file_exists('modules/'.$module.'/views/view.edit.php')) {
             include('modules/'.$module.'/views/view.edit.php'); 
+
             $c = $module . 'ViewEdit';
             
             if(class_exists($c)) {

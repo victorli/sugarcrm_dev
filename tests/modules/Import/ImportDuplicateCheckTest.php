@@ -34,7 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 require_once 'modules/Import/ImportDuplicateCheck.php';
 
 class ImportDuplicateCheckTest extends Sugar_PHPUnit_Framework_TestCase
@@ -104,7 +104,7 @@ class ImportDuplicateCheckTest extends Sugar_PHPUnit_Framework_TestCase
         
         $idc = new ImportDuplicateCheck($focus);
         
-        $this->assertTrue($idc->isADuplicateRecord(array('idx_contacts_del_last')));
+        $this->assertTrue($idc->isADuplicateRecord(array('idx_contacts_del_last::last_name')));
         
         $focus->mark_deleted($id);
     }
@@ -136,7 +136,7 @@ class ImportDuplicateCheckTest extends Sugar_PHPUnit_Framework_TestCase
         
         $idc = new ImportDuplicateCheck($focus);
         
-        $this->assertFalse($idc->isADuplicateRecord(array('idx_contacts_del_last')));
+        $this->assertFalse($idc->isADuplicateRecord(array('idx_contacts_del_last::'.$last_name)));
     }
     
     public function testIsADuplicateRecordEmailNotFound()
@@ -150,4 +150,77 @@ class ImportDuplicateCheckTest extends Sugar_PHPUnit_Framework_TestCase
         
         $this->assertFalse($idc->isADuplicateRecord(array('special_idx_email1')));
     }
+
+    //make sure exclusion array is respected when displaying the list of available indexes for dupe checking
+    public function testExcludeIndexesFromDupeCheck()
+    {
+        //create the bean to test on
+        $focus = loadBean('Contacts');
+
+        //create the importDuplicateCheck object and get the list of duplicateCheckIndexes
+        $idc = new ImportDuplicateCheck($focus);
+
+        //get the list of importable indexes
+        $indexes = $import_indexes = $focus->getIndices();
+
+
+        //grab any custom indexes if they exist
+        if($focus->hasCustomFields()){
+            $custmIndexes = $focus->db->helper->get_indices($focus->table_name.'_cstm');
+            $indexes = array_merge($custmIndexes,$indexes);
+        }
+
+        //get list indexes to be displayed
+        $dupe_check_indexes = $idc->getDuplicateCheckIndexedFiles();
+
+        //Make sure that the indexes used for dupe checking honors the exclusion array.  At a minimum, all beans will have
+        //their id and teamset indexes excluded.
+        $this->assertTrue(count($indexes) > count($dupe_check_indexes), 'Indexes specified for exclusion are not getting excluded from getDuplicateCheckIndexedFiles()');
+    }
+
+
+    //make sure only selected indexes are checked for dupes
+    public function testCompareOnlySelectedIndexesFromDupeCheck()
+    {
+        //create a bean, values, populate and save
+        $focus = loadBean('Contacts');
+        $focus->first_name = 'first '.date("YmdHis");
+        $focus->last_name = 'last '.date("YmdHis");
+        $focus->assigned_user_id = '1';
+        $focus->save();
+
+
+        //create the importDuplicateCheck object and get the list of duplicateCheckIndexes
+        $idc = new ImportDuplicateCheck($focus);
+
+        //we are going to test agains the first name, last name, full name, and assigned to indexes
+        //to prove that only selected indexes are being used.
+
+        //lets do a straight dupe check with the same bean on first name, should return true
+        $this->assertTrue($idc->isADuplicateRecord(array('idx_cont_last_first::first_name')),'simulated check against first name index (idx_cont_last_first::first_name) failed  (returned false instead of true).');
+
+        //now lets test on full name index should also return true
+        $this->assertTrue($idc->isADuplicateRecord(array('full_name::full_name')),'first simulated check against full name index (full_name::full_name) failed (returned false instead of true).  This check means BOTH first AND last name must match.');
+
+        //now lets remove the first name and redo the check, should return false
+        $focus->first_name = '';
+        $idc = new ImportDuplicateCheck($focus);
+        $this->assertFalse($idc->isADuplicateRecord(array('idx_cont_last_first::first_name')),'simulated check against first name index (idx_cont_last_first::first_name) failed (returned true instead of false).  This is wrong because we removed the first name so there should be no match.');
+
+        //lets retest on full name index should return false now as first AND last do not match the original
+        $this->assertFalse($idc->isADuplicateRecord(array('full_name::full_name')),'second simulated check against full name index (full_name::full_name) failed (returned true instead of false).  This check means BOTH first AND last name must match and is wrong because we removed the first name so there should be no match.');
+
+        //now lets rename the contact and test on assigned user, should return true
+        $focus->first_name = 'first '.date("YmdHis");
+        $focus->last_name = 'last '.date("YmdHis");
+        $idc = new ImportDuplicateCheck($focus);
+        $this->assertTrue($idc->isADuplicateRecord(array('idx_del_id_user::assigned_user_id')),'simulated check against assigned user index (idx_del_id_user::assigned_user_id) failed (returned false instead of true).  This is wrong because we have not changed this field and it should remain a duplicate');
+
+        //we're done, lets delete the focus bean now
+        $focus->mark_deleted($focus->id);
+
+    }
+
+
+
 }

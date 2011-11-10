@@ -279,8 +279,12 @@ $uwMain = $upgrade_directories_not_found;
 		    }
 		}
 
-         //COPY ALL FILES FROM UPLOADED UPGRADE PACKAGE
+        //Bug #47110
+        if(file_exists("include/Expressions/Actions/SetValueAction.php")){
+            require_once("include/Expressions/Actions/SetValueAction.php");
+        }
 
+         //COPY ALL FILES FROM UPLOADED UPGRADE PACKAGE
          if(!didThisStepRunBefore('commit','commitCopyNewFiles')){
 				set_upgrade_progress('commit','in_progress','commitCopyNewFiles','in_progress');
 				$split = commitCopyNewFiles($unzip_dir, $zip_from_dir);
@@ -385,7 +389,7 @@ if($_SESSION['current_db_version'] == $_SESSION['target_db_version']){
            	}
        }
     }
-    
+
 }
 logThis('finished check to see if current_db_version in $_SESSION equals target_db_version in $_SESSION');
 
@@ -656,12 +660,27 @@ $stepRecheck = $_REQUEST['step'];
 $_SESSION['step'][$steps['files'][$_REQUEST['step']]] =($stop) ? 'failed' : 'success';
 
 // clear out the theme cache
-// clear out the theme cache
 if(!class_exists('SugarThemeRegistry')){
     require_once('include/SugarTheme/SugarTheme.php');
 }
+
+$themeObject = SugarThemeRegistry::current();
+
+$styleJSFilePath = $GLOBALS['sugar_config']['cache_dir']. $themeObject->getJSPath() . DIRECTORY_SEPARATOR .  'style-min.js';
+if( file_exists($styleJSFilePath) )
+{
+    logThis("Rebuilding style js file: $styleJSFilePath");
+    unlink($styleJSFilePath);
+    SugarThemeRegistry::current()->clearJSCache();
+    SugarThemeRegistry::current()->getJS();
+}
 SugarThemeRegistry::buildRegistry();
 SugarThemeRegistry::clearAllCaches();
+
+//Clean out the language files
+logThis("Rebuilding language cache");
+sugar_cache_reset_full();
+LanguageManager::clearLanguageCache();
 
 // re-minify the JS source files
 $_REQUEST['root_directory'] = getcwd();

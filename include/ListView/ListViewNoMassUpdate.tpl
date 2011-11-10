@@ -51,11 +51,11 @@
 
 	<tr height='20'>
 	    {if !empty($quickViewLinks)}
-		<th scope='col' nowrap="nowrap" width='1%'>&nbsp;</th>
+		<th scope='col' width='1%'>&nbsp;</th>
 		{/if}
 		{counter start=0 name="colCounter" print=false assign="colCounter"}
 		{foreach from=$displayColumns key=colHeader item=params}
-			<th scope='col' width='{$params.width}%' nowrap="nowrap">
+			<th scope='col' width='{$params.width}%' >
 				<span sugar="sugar{$colCounter}"><div style='white-space: nowrap;'width='100%' align='{$params.align|default:'left'}'>
                 {if $params.sortable|default:true}
 	                <a href='{$pageData.urls.orderBy}{$params.orderBy|default:$colHeader|lower}' class='listViewThLinkS1'>{sugar_translate label=$params.label module=$pageData.bean.moduleDir}</a>&nbsp;&nbsp;

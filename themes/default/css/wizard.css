@@ -53,9 +53,10 @@ color: #C60C30;
 	height: auto;
 	padding: 0;
 	float: none;
+	border: 0px none;
 }
 
-.dashletPanelMenu .bd .bd-center .screen {
+.dashletPanelMenu .bd .screen {
 
 	border: 0px none;
 	background-color: transparent;

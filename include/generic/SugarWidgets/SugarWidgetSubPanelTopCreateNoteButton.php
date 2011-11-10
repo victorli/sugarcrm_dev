@@ -99,6 +99,7 @@ class SugarWidgetSubPanelTopCreateNoteButton extends SugarWidgetSubPanelTopButto
 		$button .= '<input type="hidden" name="return_module" value="' . $currentModule . "\" />\n";
 		$button .= '<input type="hidden" name="return_action" value="' . $defines['action'] . "\" />\n";
 		$button .= '<input type="hidden" name="return_id" value="' . $defines['focus']->id . "\" />\n";
+		$button .= '<input type="hidden" name="record" value="" />';
 
 		// TODO: move this out and get $additionalFormFields working properly
 		if(empty($additionalFormFields['parent_type']))
@@ -154,7 +155,7 @@ class SugarWidgetSubPanelTopCreateNoteButton extends SugarWidgetSubPanelTopButto
 		if ( !$focus->ACLAccess('EditView') ) {
 		    return '';
 	    }
-		
+
 		return parent::display($defines, $additionalFormFields);
 	}
 }

@@ -226,12 +226,14 @@ class DashletGeneric extends Dashlet {
                                      'displayRows' => $GLOBALS['mod_strings']['LBL_DASHLET_CONFIGURE_DISPLAY_ROWS'],
                                      'title' => $GLOBALS['mod_strings']['LBL_DASHLET_CONFIGURE_TITLE'],
                                      'save' => $GLOBALS['app_strings']['LBL_SAVE_BUTTON_LABEL'],
+                                     'clear' => $GLOBALS['app_strings']['LBL_CLEAR_BUTTON_LABEL'],
                                      'autoRefresh' => $GLOBALS['app_strings']['LBL_DASHLET_CONFIGURE_AUTOREFRESH'],
                                      ));
         $this->configureSS->assign('id', $this->id);
         $this->configureSS->assign('showMyItemsOnly', $this->showMyItemsOnly);
         $this->configureSS->assign('myItemsOnly', $this->myItemsOnly);
         $this->configureSS->assign('searchFields', $this->currentSearchFields);
+        $this->configureSS->assign('showClearButton', $this->isConfigPanelClearShown);
         // title
         $this->configureSS->assign('dashletTitle', $this->title);
 

@@ -58,6 +58,11 @@ class Sugar_Smarty extends Smarty
 		$this->config_dir = SUGAR_SMARTY_DIR . 'configs';
 		$this->cache_dir = SUGAR_SMARTY_DIR . 'cache';
 		$this->request_use_auto_globals = true; // to disable Smarty from using long arrays
+
+		$plugins_dir = array('include/Smarty/plugins');
+		if(file_exists('custom/include/Smarty/plugins'))
+			$plugins_dir[] = 'custom/include/Smarty/plugins';
+		$this->plugins_dir = $plugins_dir;
 		
 	}
 	

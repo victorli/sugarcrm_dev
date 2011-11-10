@@ -43,12 +43,12 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 * Contributor(s): ______________________________________..
 ********************************************************************************/
 
-require_once('data/Link.php');
+require_once('data/Link2.php');
 
 /**
  * @brief Bug #40166. Campaign Log Report will not display Contact/Account Names
  */
-class ProspectLink extends Link
+class ProspectLink extends Link2
 {
 
     /**

@@ -34,6 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
+
 require_once('include/SugarFields/Fields/Currency/SugarFieldCurrency.php');
 
 class Bug38424CurrencyTest extends Sugar_PHPUnit_Framework_TestCase

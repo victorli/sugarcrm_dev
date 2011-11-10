@@ -88,6 +88,7 @@ class Meeting extends SugarBean {
 	var $case_id;
 	var $assigned_user_name;
 	var $outlook_id;
+	var $sequence;
 
 	var $update_vcal = true;
 	var $contacts_arr;
@@ -140,6 +141,7 @@ class Meeting extends SugarBean {
 	function save($check_notify = FALSE) {
 		global $timedate;
 		global $current_user;
+
 		global $disable_date_format;
 		
 	    if(isset($this->date_start) && isset($this->duration_hours) && isset($this->duration_minutes)) 
@@ -152,7 +154,7 @@ class Meeting extends SugarBean {
 		        	$this->date_end = $td->modify("+{$this->duration_hours} hours {$this->duration_minutes} mins")->asDb();
 	    	    }	
 	        }
-		}			
+		}
 
 		$check_notify =(!empty($_REQUEST['send_invites']) && $_REQUEST['send_invites'] == '1') ? true : false;
 		if(empty($_REQUEST['send_invites'])) {
@@ -197,7 +199,7 @@ class Meeting extends SugarBean {
 			$this->type = 'Sugar';
 		}
 
-        if ( isset($api) && is_a($api,'WebMeeting') ) {
+        if ( isset($api) && is_a($api,'WebMeeting') && empty($this->in_relationship_update) ) {
             // Make sure the API initialized and it supports Web Meetings
             // Also make suer we have an ID, the external site needs something to reference
             if ( !isset($this->id) || empty($this->id) ) {
@@ -257,20 +259,21 @@ class Meeting extends SugarBean {
 		$contact_required = stristr($where, "contacts");
 
 		if($contact_required) {
-			$query = "SELECT meetings.*, contacts.first_name, contacts.last_name, contacts.assigned_user_id contact_name_owner ";
+			$query = "SELECT meetings.*, contacts.first_name, contacts.last_name, contacts.assigned_user_id contact_name_owner, users.user_name as assigned_user_name   ";
 			if($custom_join) {
 				$query .= $custom_join['select'];
 			}
 			$query .= " FROM contacts, meetings, meetings_contacts ";
 			$where_auto = " meetings_contacts.contact_id = contacts.id AND meetings_contacts.meeting_id = meetings.id AND meetings.deleted=0 AND contacts.deleted=0";
 		} else {
-			$query = 'SELECT meetings.*';
+			$query = 'SELECT meetings.*, users.user_name as assigned_user_name  ';
 			if($custom_join) {
 				$query .= $custom_join['select'];
 			}
 			$query .= ' FROM meetings ';
 			$where_auto = "meetings.deleted=0";
 		}
+		$query .= "  LEFT JOIN users ON meetings.assigned_user_id=users.id ";
 
 		if($custom_join) {
 			$query .= $custom_join['join'];
@@ -424,7 +427,7 @@ class Meeting extends SugarBean {
 		}
 		global $timedate;
 		$today = $timedate->nowDb();
-		$nextday = $timedate->asDbDate($timedate->getNow()->get("+1 day")); 
+		$nextday = $timedate->asDbDate($timedate->getNow()->get("+1 day"));
 		$mergeTime = $meeting_fields['DATE_START']; //$timedate->merge_date_time($meeting_fields['DATE_START'], $meeting_fields['TIME_START']);
 		$date_db = $timedate->to_db($mergeTime);
 		if($date_db	< $today	) {
@@ -743,8 +746,11 @@ function getMeetingsExternalApiDropDown($focus = null, $name = null, $value = nu
 	{
 		$apiList[$value] = $value;
     }
-	//bug 46294: adding list of options to dropdown list
-    $apiList = array_merge(getMeetingTypeOptions($dictionary, $app_list_strings), $apiList);
+	//bug 46294: adding list of options to dropdown list (if it is not the default list)
+    if ($dictionary['Meeting']['fields']['type']['options'] != "eapm_list")
+    {
+        $apiList = array_merge(getMeetingTypeOptions($dictionary, $app_list_strings), $apiList);
+    }
 
 	return $apiList;
 }

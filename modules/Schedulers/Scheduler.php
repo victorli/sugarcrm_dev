@@ -202,10 +202,13 @@ class Scheduler extends SugarBean {
 				$r2 = $this->db->query($q2);
 				if($r2 != null) {
 					$a2 = $this->db->fetchByAssoc($r2); // we only care about the newest
+                    $a2['execute_time'] = $this->db->fromConvert($a2['execute_time'],'datetime');
 					if($a2 != null) {
 						$GLOBALS['log']->debug("-----> Scheduler found [ {$a['name']} ] 'In Progress' with most recent Execute Time at [ {$a2['execute_time']} GMT-0 ]");
 
 						$execTime = TimeDate::getInstance()->fromDB($a2['execute_time'])->ts;
+                        
+                        $GLOBALS['log']->debug("-----> Checking if Scheduler execTime ($execTime) is higher than lowerLimit ($lowerLimit)");
 
 						if($execTime > $lowerLimit) {
 							if(($now - $execTime) >= (60 * $this->timeOutMins)) {

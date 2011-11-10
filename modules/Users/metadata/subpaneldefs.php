@@ -35,7 +35,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 
 
 $layout_defs['Users'] = array(
@@ -137,5 +137,3 @@ $layout_defs['UserEAPM'] = array(
 
     ),
 );
-
-

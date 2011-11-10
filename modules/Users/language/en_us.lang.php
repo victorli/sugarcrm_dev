@@ -88,7 +88,7 @@ $mod_strings = array (
 	'ERR_RECIPIENT_EMAIL'				=> 'Recipient Email Address',
 	'ERR_SERVER_STATUS'					=> 'Your server status',
 	'ERR_SERVER_SMTP_EMPTY'				=> 'The system is unable to send an email to the user. Please check the Outgoing Mail Configuration in <a href="index.php?module=EmailMan&action=config">Email Settings</a>.',
-	
+
 	'LBL_ADDRESS_CITY'					=> 'Address City',
 	'LBL_ADDRESS_COUNTRY'				=> 'Address Country',
 	'LBL_ADDRESS_INFORMATION'			=> 'Address Information',
@@ -103,7 +103,7 @@ $mod_strings = array (
 	'LBL_REGULAR_DESC'					=> 'User can access modules and records based on roles.',
 
 
-	
+
 	'LBL_ADMIN'							=> 'System Administrator',
 	'LBL_ADVANCED'                     => 'Advanced',
     'LBL_ANY_ADDRESS'                  => 'Any Address:',
@@ -277,7 +277,7 @@ $mod_strings = array (
     'LBL_PASSWORD_EXPIRATION_LOGIN'     => 'Your password has expired. Please provide a new password.',
     'LBL_PASSWORD_EXPIRATION_GENERATED' => 'Your password is system-generated',
     'LBL_PASSWORD_EXPIRATION_TIME'      => 'Your password has expired. Please provide a new password.',
-    
+
 	'LBL_PSW_MODIFIED'                  => 'password last changed',
     'LBL_PHONE'							=> 'Phone',
 	'LBL_PICK_TZ_WELCOME'				=> 'Welcome to Sugar.',
@@ -290,7 +290,7 @@ $mod_strings = array (
 	'LBL_PROMPT_TIMEZONE'				=> 'User Wizard Prompt',
 	'LBL_PROVIDE_USERNAME_AND_EMAIL' 	=> 'Provide both a User Name and an Email Address.',
 	'LBL_PUBLISH_KEY'					=> 'Publish Key',
-	
+
 	'LBL_RECAPTCHA_NEW_CAPTCHA'         => 'Get another CAPTCHA',
 	'LBL_RECAPTCHA_SOUND'				=> 'Switch to Sound',
 	'LBL_RECAPTCHA_IMAGE'				=> 'Switch to Image',
@@ -300,7 +300,7 @@ $mod_strings = array (
 	'LBL_RECAPTCHA_INVALID_PRIVATE_KEY'	=> 'Invalid Recaptcha Private Key',
 	'LBL_RECAPTCHA_INVALID_REQUEST_COOKIE'=> 'The challenge parameter of the verify Recaptcha script was incorrect.',
 	'LBL_RECAPTCHA_UNKNOWN'				=> 'Unknown Recaptcha Error',
-	
+
 	'LBL_RECEIVE_NOTIFICATIONS_TEXT'	=> 'Receive an email notification when a record is assigned to you.',
 	'LBL_RECEIVE_NOTIFICATIONS'			=> 'Notify on Assignment',
 	'LBL_REGISTER'                      => 'New user? Please register',
@@ -317,9 +317,9 @@ $mod_strings = array (
     'LBL_RESET_PREFERENCES_WARNING'     => 'Are you sure you want reset all of your user preferences? Warning: This will also log you out of the application.',
     'LBL_RESET_PREFERENCES_WARNING_USER' => 'Are you sure you want reset all of the preferences for this user?',
     'LBL_RESET_HOMEPAGE'                => 'Reset Homepage',
-    'LBL_RESET_DASHBOARD'               => 'Reset Dashboard',    
+    'LBL_RESET_DASHBOARD'               => 'Reset Dashboard',
     'LBL_RESET_HOMEPAGE_WARNING'        => 'Are you sure you want reset your Homepage?',
-    'LBL_RESET_HOMEPAGE_WARNING_USER'   => 'Are you sure you want reset the Homepage for this user?',    
+    'LBL_RESET_HOMEPAGE_WARNING_USER'   => 'Are you sure you want reset the Homepage for this user?',
 	'LBL_SALUTATION'                    => 'Salutation',
     'LBL_ROLES_SUBPANEL_TITLE'			=> 'Roles',
 	'LBL_SEARCH_FORM_TITLE'				=> 'User Search',
@@ -430,7 +430,7 @@ $mod_strings = array (
 	'LBL_LDAP_ERROR' => 'LDAP Error: Please contact an Admin',
 	'LBL_LDAP_EXTENSION_ERROR' => 'LDAP Error: Extensions not loaded',
 
-// PROJECT RESOURCES STRINGS	
+// PROJECT RESOURCES STRINGS
 	'LBL_USER_HOLIDAY_SUBPANEL_TITLE' => 'User Holidays',
 	'LBL_RESOURCE_NAME' => 'Name',
 	'LBL_RESOURCE_TYPE' => 'Type',
@@ -499,16 +499,26 @@ $mod_strings = array (
     'LBL_WIZARD_FINISH_BUTTON' => 'Finish',
     'LBL_WIZARD_FINISH_TAB' => 'Finish',
     'LBL_WIZARD_FINISH_TITLE' => 'You are ready to use Sugar!',
-    'LBL_WIZARD_FINISH' => 'Click <b>Finish</b> below to save your settings and to begin using Sugar. For more information on using Sugar:<br /><br />
-<table cellpadding=0 cellspacing=0>
-<tr><td><img src=include/images/university.png style="margin-right: 5px;"></td><td><a href="http://www.sugarcrm.com/university" target="_blank"><b>Sugar University</b></a><br>End-user and System Administrator Training and Resources</td></tr>
-<tr><td colspan=2><hr style="margin: 5px 0px;"></td></tr>
-<tr><td><img src=include/images/docs.png style="margin-right: 5px;"></td><td><a href="http://docs.sugarcrm.com/" target="_blank"><b>Documentation</b></a><br>Product Guides and Release Notes</td></tr>
-<tr><td colspan=2><hr style="margin: 5px 0px;"></td></tr>
-<tr><td><img src=include/images/kb.png style="margin-right: 5px;"></td><td><a href="http://kb.sugarcrm.com/" target="_blank"><b>Knowledge Base</b></a><br>Tips from SugarCRM Support for performing common tasks and processes in Sugar</td></tr>
-<tr><td colspan=2><hr style="margin: 5px 0px;"></td></tr>
-<tr><td><img src=include/images/forums.png style="margin-right: 5px;"></td><td><a href="http://www.sugarcrm.com/forums" target="_blank"><b>Forums</b></a><br>Forums dedicated to the Sugar Community to discuss topics of interest with each other and with SugarCRM Developers</td></tr>
-</table>',
+
+    'LBL_WIZARD_FINISH1' => 'What would you like to do next?',
+    'LBL_WIZARD_FINISH2' => 'Start Using Sugar',
+    'LBL_WIZARD_FINISH3' => 'Import Data ',
+    'LBL_WIZARD_FINISH4' => 'Import data from external sources into the application.',
+    'LBL_WIZARD_FINISH5' => 'Create Users',
+    'LBL_WIZARD_FINISH6' => 'Create new user accounts for people to use to access the application.',
+    'LBL_WIZARD_FINISH7' => 'View and Manage Application Settings',
+    'LBL_WIZARD_FINISH8' => 'Manage advanced settings, including default application settings.',
+    'LBL_WIZARD_FINISH9' => 'Configure the Application ',
+    'LBL_WIZARD_FINISH10' => 'Use Studio to create and manage application fields and layouts.',
+    'LBL_WIZARD_FINISH11' => 'Visit Sugar University ',
+    'LBL_WIZARD_FINISH12' => 'Find training materials and classes that will help you get started as a system administrator or end user of the application.',
+    'LBL_WIZARD_FINISH14' => 'Documentation ',
+    'LBL_WIZARD_FINISH15' => 'Product Guides and Release Notes ',
+    'LBL_WIZARD_FINISH16' => 'Knowledge Base ',
+    'LBL_WIZARD_FINISH17' => 'Tips from SugarCRM Support for performing common tasks and processes in Sugar ',
+    'LBL_WIZARD_FINISH18' => 'Forums ',
+    'LBL_WIZARD_FINISH19' => 'Forums dedicated to the Sugar Community to discuss topics of interest with each other and with SugarCRM Developers ',
+    'LBL_WIZARD_FINISH2DESC' => 'Go directly to the application Home page.',
     'LBL_WIZARD_PERSONALINFO' => 'Your Information',
     'LBL_WIZARD_LOCALE' => 'Your Locale',
     'LBL_WIZARD_SMTP' => 'Your Email Account',
@@ -516,6 +526,19 @@ $mod_strings = array (
     'LBL_WIZARD_LOCALE_DESC' => 'Specify your time zone and how you would like dates, currencies and names to appear in Sugar.',
     'LBL_WIZARD_SMTP_DESC' => 'Provide your email account username and password for the default outbound email server.',
 	'LBL_EAPM_SUBPANEL_TITLE' => 'External Accounts',
+    'LBL_OAUTH_TOKENS' => 'OAuth Tokens',
+    'LBL_OAUTH_TOKENS_SUBPANEL_TITLE' => "OAuth Access Tokens",
+
+    //For export labels
+    'LBL_MODIFIED_USER_ID' => 'Modified User ID',
+    'LBL_PHONE_HOME' => 'Phone Home',
+    'LBL_PHONE_MOBILE' => 'Phone Mobile',
+    'LBL_PHONE_WORK' => 'Phone Work',
+    'LBL_PHONE_OTHER' => 'Phone Other',
+    'LBL_PHONE_FAX' => 'Phone Fax',
+    'LBL_PORTAL_ONLY' => 'Portal Only',
+    'LBL_IS_GROUP' => 'Is Group',
+    'LBL_EXPORT_CREATED_BY' => 'Created By ID',
 ); // END STRINGS DEFS
 
 ?>

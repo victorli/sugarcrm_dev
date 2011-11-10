@@ -54,11 +54,6 @@ class SugarEmailAddress extends SugarBean {
 
     //bug 40068, According to rules in page 6 of http://www.apps.ietf.org/rfc/rfc3696.html#sec-3,
 	//allowed special characters ! # $ % & ' * + - / = ?  ^ _ ` . { | } ~ in local part
-    // FG - Bug 44338 - Changed RegEx for optimizations
-    // Old Regex : var $regex = "/^(['\.\-\+&'#!\$\*=\?\^_`\{\}~\/\w]+)*@((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|\w+([\.-]?\w+)*(\.[\w-]{2,})+)\$/";
-    // Changes : 1) Removed character "'", since it appears twice
-    //           2) Added "?:" after every open parenthesis, since we don't need to catch groups
-    //           3) Removed the "*" just before "@", since it double the work of the previous "+", slowing down the evaluation
     var $regex = "/^(?:['\.\-\+&#!\$\*=\?\^_`\{\}~\/\w]+)@(?:(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|\w+(?:[\.-]*\w+)*(?:\.[\w-]{2,})+)\$/";
     var $disable_custom_fields = true;
     var $db;
@@ -119,11 +114,10 @@ class SugarEmailAddress extends SugarBean {
         $module_dir = $this->getCorrectedModule($bean->module_dir);
         $this->addresses = $this->getAddressesByGUID($bean->id, $module_dir);
         $this->populateLegacyFields($bean);
-        // add email1 to fetched_row so it can be audited properly later (by DBHelper::getDataChanges)
         if (isset($bean->email1) && !isset($bean->fetched_row['email1'])) {
             $bean->fetched_row['email1'] = $bean->email1;
         }
-        
+
         return;
     }
 
@@ -188,6 +182,8 @@ class SugarEmailAddress extends SugarBean {
             $current_links[$row2['email_address_id']]=$row2;
         }
 
+        $isConversion = (isset($_REQUEST) && isset($_REQUEST['action']) && $_REQUEST['action'] == 'ConvertLead') ? true : false;
+
         if (!empty($this->addresses)) {
             // insert new relationships and create email address record, if they don't exist
             foreach($this->addresses as $address) {
@@ -198,14 +194,26 @@ class SugarEmailAddress extends SugarBean {
                     //verify linkage and flags.
                     $upd_eabr="";
                     if (isset($current_links[$emailId])) {
-                        if ($address['primary_address'] != $current_links[$emailId]['primary_address'] or $address['reply_to_address'] != $current_links[$emailId]['reply_to_address'] ) {
-                            $upd_eabr="UPDATE email_addr_bean_rel SET primary_address='{$address['primary_address']}', reply_to_address='{$address['reply_to_address']}' WHERE id='{$current_links[$emailId]['id']}'";
-                        }
+                        if (!$isConversion) { // do not update anything if this is for lead conversion
+                            if ($address['primary_address'] != $current_links[$emailId]['primary_address'] or $address['reply_to_address'] != $current_links[$emailId]['reply_to_address'] ) {
+                                $upd_eabr="UPDATE email_addr_bean_rel SET primary_address='{$address['primary_address']}', reply_to_address='{$address['reply_to_address']}' WHERE id='{$current_links[$emailId]['id']}'";
+                            }
 
-                        unset($current_links[$emailId]);
+                            unset($current_links[$emailId]);
+                        }
                     } else {
+                        $primary = $address['primary_address'];
+                        if (!empty($current_links) && $isConversion) {
+                            foreach ($current_links as $eabr) {
+                                if ($eabr['primary_address'] == 1) {
+                                    // for lead conversion, if there is already a primary email, do not insert another primary email
+                                    $primary = 0;
+                                    break;
+                                }
+                            }
+                        }
                         $now = TimeDate::getInstance()->nowDb();
-                        $upd_eabr = "INSERT INTO email_addr_bean_rel (id, email_address_id,bean_id, bean_module,primary_address,reply_to_address,date_created,date_modified,deleted) VALUES('{$guid}', '{$emailId}', '{$id}', '{$module}', {$address['primary_address']}, {$address['reply_to_address']}, '$now', '$now', 0)";
+                        $upd_eabr = "INSERT INTO email_addr_bean_rel (id, email_address_id,bean_id, bean_module,primary_address,reply_to_address,date_created,date_modified,deleted) VALUES('{$guid}', '{$emailId}', '{$id}', '{$module}', {$primary}, {$address['reply_to_address']}, '$now', '$now', 0)";
                     }
 
                     if (!empty($upd_eabr)) {
@@ -216,7 +224,8 @@ class SugarEmailAddress extends SugarBean {
         }
 
         //delete link to dropped email address.
-        if (!empty($current_links)) {
+        // for lead conversion, do not delete email addresses
+        if (!empty($current_links) && !$isConversion) {
 
             $delete="";
             foreach ($current_links as $eabr) {
@@ -780,8 +789,14 @@ class SugarEmailAddress extends SugarBean {
         $this->smarty->assign('addDefaultAddress', (isset($_REQUEST['module']) && $_REQUEST['module'] == 'Emails') ? 'false' : 'true');
         $form = $this->view;
 
-        if ($this->view == "QuickCreate")
-        $form = 'form_'.$this->view .'_'.$module;
+        //determine if this should be a quickcreate form, or a quick create form under subpanels
+        if ($this->view == "QuickCreate"){
+            $form = 'form_DC'.$this->view .'_'.$module;
+            if(isset($_REQUEST['action']) && $_REQUEST['action']=='SubpanelCreates' ||  $_REQUEST['action']=='SubpanelEdits'){
+                $form = 'form_Subpanel'.$this->view .'_'.$module;
+            }
+        }
+
         $this->smarty->assign('emailView', $form);
 
         if($module == 'Users') {
@@ -997,5 +1012,3 @@ function getEmailAddressWidget($focus, $field, $value, $view, $tabindex='') {
 
     return $sea->getEmailAddressWidgetDetailView($focus);
 }
-
-?>

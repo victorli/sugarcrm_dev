@@ -77,7 +77,7 @@
 <!-- BEGIN: row -->
  <tr height="20" class="{ROW_COLOR}S1">
 	<td valign="top">{PREROW}</td>
-	<td scope='row' valign=TOP><slot><{TAG_TYPE} href="#"  onclick="send_back('CampaignLog','{CAMPAIGNLOG.ID}');">{CAMPAIGNLOG.ID}</{TAG_TYPE}></slot></td>
+	<td scope='row' valign=TOP><slot><{TAG_TYPE} href="javascript:void(0)"  onclick="send_back('CampaignLog','{CAMPAIGNLOG.ID}');">{CAMPAIGNLOG.ID}</{TAG_TYPE}></slot></td>
 	<td valign=TOP><slot>{CAMPAIGNLOG.ACTIVITY_DATE}</slot></td>
 	<td nowrap="nowrap" valign="top"><slot>{CAMPAIGNLOG.CAMPAIGN_NAME1}</slot></td>
  </tr>

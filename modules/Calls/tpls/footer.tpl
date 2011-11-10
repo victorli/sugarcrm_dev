@@ -51,24 +51,35 @@ require_once("'".$externalJSFile."'");
 
 <script type="text/javascript">
 {literal}
-function fill_invitees() { 
-	if (typeof(GLOBAL_REGISTRY) != 'undefined')  {    
-		SugarWidgetScheduler.fill_invitees(document.EditView);
-	} 
-}
-{/literal}
-
-var root_div = document.getElementById('scheduler');
-var sugarContainer_instance = new SugarContainer(document.getElementById('scheduler'));
-sugarContainer_instance.start(SugarWidgetScheduler);
-{literal}
-if ( document.getElementById('save_and_continue') ) {
-    var oldclick = document.getElementById('save_and_continue').attributes['onclick'].nodeValue;
-    document.getElementById('save_and_continue').onclick = function(){
-        fill_invitees();
-        eval(oldclick);
-    }
-}
+SUGAR.calls = {};
+var callsLoader = new YAHOO.util.YUILoader({
+    require : ["sugar_grp_jsolait"],
+    onSuccess: function(){
+		SUGAR.calls.fill_invitees = function() {
+			if (typeof(GLOBAL_REGISTRY) != 'undefined')  {
+				SugarWidgetScheduler.fill_invitees(document.EditView);
+			}
+		}
+		var root_div = document.getElementById('scheduler');
+		var sugarContainer_instance = new SugarContainer(document.getElementById('scheduler'));
+		sugarContainer_instance.start(SugarWidgetScheduler);
+		if ( document.getElementById('save_and_continue') ) {
+			var oldclick = document.getElementById('save_and_continue').attributes['onclick'].nodeValue;
+			document.getElementById('save_and_continue').onclick = function(){
+				SUGAR.calls.fill_invitees();
+				eval(oldclick);
+			}
+		}
+	}
+});
+callsLoader.addModule({
+    name :"sugar_grp_jsolait",
+    type : "js",
+    fullpath: "include/javascript/sugar_grp_jsolait.js",
+    varName: "global_rpcClient",
+    requires: []
+});
+callsLoader.insert();
 {/literal}
 </script>
 </form>

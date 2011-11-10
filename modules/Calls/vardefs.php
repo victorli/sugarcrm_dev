@@ -185,7 +185,7 @@ $dictionary['Call'] = array('table' => 'calls', 'comment' => 'A Call is an activ
   ),
   'accept_status' => array (
     'name' => 'accept_status',
-    'vname' => 'LBL_SUBJECT',
+    'vname' => 'LBL_ACCEPT_STATUS',
     'dbType' => 'varchar',
     'type' => 'varchar',
     'len' => '20',
@@ -194,7 +194,7 @@ $dictionary['Call'] = array('table' => 'calls', 'comment' => 'A Call is an activ
   //bug 39559 
   'set_accept_links' => array (
     'name' => 'accept_status',
-    'vname' => 'LBL_SUBJECT',
+    'vname' => 'LBL_ACCEPT_LINK',
     'dbType' => 'varchar',
     'type' => 'varchar',
     'len' => '20',
@@ -219,15 +219,6 @@ $dictionary['Call'] = array('table' => 'calls', 'comment' => 'A Call is an activ
     'len' => 36,
     'importable' => 'false',
     'studio' => array('required' => false, 'listview'=>true, 'visible' => false),
-  ),
-  'account' =>
-  array (
-  	'name' => 'account',
-    'type' => 'link',
-    'relationship' => 'account_calls',
-		'link_type'=>'one',
-    'source'=>'non-db',
-		'vname'=>'LBL_OLD_ACCOUNT_LINK',
   ),
   'opportunity' =>
   array (
@@ -351,7 +342,11 @@ $dictionary['Call'] = array('table' => 'calls', 'comment' => 'A Call is an activ
     	'name' => 'idx_calls_par_del',
     	'type' => 'index',
     	'fields' => array('parent_id','parent_type','deleted')
-    )
+    ),
+    array(
+        'name' =>'idx_calls_assigned_del',
+        'type' =>'index',
+        'fields'=>array( 'deleted', 'assigned_user_id')),
 ),
 'relationships' => array (
 		'calls_assigned_user' => array(

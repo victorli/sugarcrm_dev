@@ -75,7 +75,9 @@ SugarContainer.prototype.start = function(root_widget) {
       this.root_widget.load(this.root_div);
 }
 
-var global_request_registry = new Object();
+if(typeof(global_request_registry) == "undefined") {
+    var global_request_registry = new Object();
+}
 var req_count = 0;
 
 //////////////////////////////////////////////////

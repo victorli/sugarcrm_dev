@@ -51,6 +51,11 @@
         {$COPYRIGHT}
     </div>
 </div>
-
+<script>
+	SUGAR_callsInProgress++;
+	SUGAR._ajax_hist_loaded = true;
+    if(SUGAR.ajaxUI)
+    	YAHOO.util.Event.onContentReady('ajaxUI-history-field', SUGAR.ajaxUI.firstLoad);
+</script>
 </body>
 </html>

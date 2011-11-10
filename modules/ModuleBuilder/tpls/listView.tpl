@@ -48,6 +48,7 @@ studiotabs.reset();
 <input type='hidden' name='view' value={$view}>
 <input type='hidden' name='module' value='{$module}'>
 <input type='hidden' name='subpanel' value='{$subpanel}'>
+<input type='hidden' name='subpanelLabel' value='{$subpanelLabel}'>
 <input type='hidden' name='local' value='{$local}'>
 <input type='hidden' name='view_module' value='{$view_module}'>
 {if $fromPortal}
@@ -179,6 +180,8 @@ function dragDropInit(){
 
 resizeDDLists = function() {
 	var Dom = YAHOO.util.Dom;
+	if (!Dom.get('ul0'))
+            return;
     var body = document.getElementById('mbtabs');
     for(var msi = 0; msi < studiotabs.slotCount ; msi++){
         var targetHeight =  body.offsetHeight - (Dom.getY("ul" + msi) - Dom.getY(body)) - 20;
@@ -189,6 +192,10 @@ resizeDDLists = function() {
         if (targetHeight > 0 )
         	Dom.setStyle("ul" + msi, "height", targetHeight + "px");
     }
+	Studio2.scrollZones = {}
+	for (var i = 0; Dom.get("ul" + i); i++){
+		Studio2.scrollZones["ul" + i] = Studio2.getScrollZones("ul" + i);
+	}
 };
 
 function countListFields() {

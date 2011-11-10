@@ -420,7 +420,10 @@ function portal_set_entry($session,$module_name, $name_value_list){
             }
             $id = $seed->save();
         }else{
-            $seed->contact_id = $_SESSION['user_id'];
+            $contact = new Contact();
+            $contact->disable_row_level_security = TRUE;
+            $contact->retrieve($_SESSION['user_id']);
+            $seed->contact_id = $contact;
 
             if(isset( $_SESSION['account_id'])){
                 $seed->account_id = $_SESSION['account_id'];

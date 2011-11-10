@@ -108,7 +108,9 @@ class SugarWidgetSubPanelTopButtonQuickCreate extends SugarWidgetSubPanelTopButt
 		$button .= '<input type="hidden" name="return_module" value="' . $currentModule . "\" />\n";
 		$button .= '<input type="hidden" name="return_action" value="' . $defines['action'] . "\" />\n";
 		$button .= '<input type="hidden" name="return_id" value="' . $defines['focus']->id . "\" />\n";
-		$button .= '<input type="hidden" name="return_relationship" value="' . $relationship_name . "\" />\n";   
+		$button .= '<input type="hidden" name="return_relationship" value="' . $relationship_name . "\" />\n";
+		$button .= '<input type="hidden" name="record" value="" />';
+
 		// TODO: move this out and get $additionalFormFields working properly
 		if(empty($additionalFormFields['parent_type']))
 		{
@@ -171,7 +173,7 @@ class SugarWidgetSubPanelTopButtonQuickCreate extends SugarWidgetSubPanelTopButt
 
 		return $button;
 	}
-	
+
 	/**
 	 * get_subpanel_relationship_name
 	 * Get the relationship name based on the subapnel definition

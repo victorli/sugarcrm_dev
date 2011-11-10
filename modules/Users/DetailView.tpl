@@ -56,7 +56,7 @@ var user_detailview_tabs = new YAHOO.widget.TabView("user_detailview_tabs");
 user_detailview_tabs.on('contentReady', function(e){
 {/literal}
 });
-</script> 
+</script>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="actionsContainer">
 <tr>
@@ -95,7 +95,7 @@ user_detailview_tabs.on('contentReady', function(e){
         {if $SHOW_ROLES}
         <li><a id="tab3" href="#tab3"><em>{$MOD.LBL_USER_ACCESS}</em></a></li>
         {/if}
-    </ul>            
+    </ul>
     <div class="yui-content">
         <div>
             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="detail view">
@@ -112,7 +112,7 @@ user_detailview_tabs.on('contentReady', function(e){
                     <td valign="top" ><slot>{$USER_TYPE_LABEL}&nbsp;</slot></td>
                 </tr>
             </table>
-            
+
             <div id='information'>
                 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="detail view">
                 <tr>
@@ -143,7 +143,7 @@ user_detailview_tabs.on('contentReady', function(e){
                 <td valign="top" scope="row"><slot>{$MOD.LBL_FAX}:</slot></td>
                 <td valign="top"><slot>{$PHONE_FAX}&nbsp;</slot></td>
                 </tr><tr>
-            
+
                 <td valign="top" scope="row"><slot>{$MOD.LBL_HOME_PHONE}:</slot></td>
                 <td valign="top"><slot>{$PHONE_HOME}&nbsp;</slot></td>
                 <td valign="top" scope="row"><slot>&nbsp;</slot></td>
@@ -172,7 +172,7 @@ user_detailview_tabs.on('contentReady', function(e){
                 <td width="35%" valign="top"><slot>&nbsp;</slot></td>
             </tr></table>
             </div>
-            
+
             <div id='email_options'>
                 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="detail view">
                     <tr>
@@ -232,7 +232,7 @@ user_detailview_tabs.on('contentReady', function(e){
                 <td scope="row" valign="top"><slot>{$MOD.LBL_REMINDER}:</td>
                 <td valign="top" nowrap><slot><input name='should_remind' tabindex='1' size='2' maxlength='2'  disabled type="checkbox" class="checkbox" value='1' {$REMINDER_CHECKED}>&nbsp;{$REMINDER_TIME}</slot></td>
                 <td ><slot>{$MOD.LBL_REMINDER_TEXT}&nbsp;</slot></td>
-            
+
                 </tr>
                 <tr>
                 <td valign="top" scope="row"><slot>{$MOD.LBL_MAILMERGE}:</slot></td>
@@ -262,7 +262,7 @@ user_detailview_tabs.on('contentReady', function(e){
                 {$EXTERNAL_AUTH}
             </table>
         </div>
-        
+
         <div id='locale'>
             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="detail view">
                 <tr>
@@ -310,8 +310,8 @@ user_detailview_tabs.on('contentReady', function(e){
                 </tr>
             </table>
         </div>
-        
-        
+
+
         <div id='calendar_options'>
             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="detail view">
             <tr>
@@ -356,6 +356,9 @@ user_detailview_tabs.on('contentReady', function(e){
         </div>
         <div id="user_holidays">
         {$USER_HOLIDAYS_SUBPANEL}
+        </div>
+        <div id="oauth_tokens">
+        {$OAUTH_TOKENS_SUBPANEL}
         </div>
     </div>
 {if !$SHOW_ROLES}

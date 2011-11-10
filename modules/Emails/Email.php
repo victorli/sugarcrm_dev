@@ -111,6 +111,7 @@ class Email extends SugarBean {
 	var $new_schema = true;
 	var $table_name = 'emails';
 	var $module_dir = 'Emails';
+    var $module_name = 'Emails';
 	var $object_name = 'Email';
 	var $db;
 
@@ -1047,9 +1048,6 @@ class Email extends SugarBean {
                         if($this->load_relationship($rel) ) {
                             $this->$rel->delete($this->id, $this->fetched_row['parent_id']);
                         }
-                    } else {
-                        // we already have this relationship, don't add it
-                        return;
                     }
                 }
                 $mod = strtolower($this->parent_type);
@@ -1059,6 +1057,7 @@ class Email extends SugarBean {
                 }
 			}
 		}
+		$GLOBALS['log']->debug('-------------------------------> Email save() done');
 	}
 
 	/**

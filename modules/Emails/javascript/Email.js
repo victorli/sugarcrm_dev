@@ -462,7 +462,7 @@ function docUpload() {
     eai.setAttribute('value', lbl_remove);
     eai.onclick=function(){
     	var filename = this.parentNode.childNodes[4].value;
-	    	if(filename != null){
+	    	if(filename){
                 var tiny = tinyMCE.getInstanceById('body_text');
 				var currValTiny = tiny.getContent();
 	            while(currValTiny.indexOf(unescape(filename)) != -1){

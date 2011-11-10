@@ -45,7 +45,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 ********************************************************************************/
 
 
-
 class Link {
 
 	/* Private variables.*/
@@ -81,11 +80,13 @@ class Link {
 	 * 		$_key_name: optional, name of the primary key column for _table_name
 	 */
 	function Link($_rel_name, &$_bean, $fieldDef, $_table_name='', $_key_name=''){
-		$GLOBALS['log']->debug("Link Constructor, relationship name: ".$_rel_name);
+		global $dictionary;
+        require_once("modules/TableDictionary.php");
+        $GLOBALS['log']->debug("Link Constructor, relationship name: ".$_rel_name);
 		$GLOBALS['log']->debug("Link Constructor, Table name: ".$_table_name);
 		$GLOBALS['log']->debug("Link Constructor, Key name: ".$_key_name);
-		//_pp(func_get_args());
-		$this->_relationship_name=$_rel_name;
+
+        $this->_relationship_name=$_rel_name;
 		$this->relationship_fields = (!empty($fieldDef['rel_fields']))?$fieldDef['rel_fields']: array();
 		$this->_bean=&$_bean;
 		$this->_relationship=new Relationship();
@@ -142,6 +143,10 @@ class Link {
 		else $GLOBALS['log']->debug("Link Constructor, No relationship record.") ;
 
 	}
+
+    function loadedSuccesfully() {
+        return !empty($this->_relationship->id);
+    }
 
 	/* This method will return the following based on cardinality of the relationship.
 	 *  # one-to-many, many-to-many: empty array if not data is found else array of keys.
@@ -624,7 +629,7 @@ class Link {
 		}
 		$query.=' WHERE '.$this->_relationship->rhs_table.".id='".$where_key_value."'";
 
-		$GLOBALS['log']->debug("Relationship Query ".$query);
+		$GLOBALS['log']->fatal("Relationship Query ".$query);
 
 		$result=$this->_db->query($query, true);
 	}
@@ -642,6 +647,7 @@ class Link {
 	   	if (!empty($this->_relationship->relationship_role_column)) {
 	   		$bean->{$this->_relationship->relationship_role_column}=$this->_relationship->relationship_role_column_value;
 	   	}
+	   	$GLOBALS['log']->fatal("Adding many to one bean based {$bean->module_dir} {$bean->id}");
 	   	$bean->save();
 	}
 
@@ -656,13 +662,13 @@ class Link {
 	function add($rel_keys,$additional_values=array()) {
 
 		if (!isset($rel_keys) or empty($rel_keys)) {
-			$GLOBALS['log']->debug("Link.add, Null key passed, no-op, returning... ");
+			$GLOBALS['log']->fatal("Link.add, Null key passed, no-op, returning... ");
 			return;
 		}
 
 		//check to ensure that we do in fact have an id on the bean.
 		if(empty($this->_bean->id)){
-			$GLOBALS['log']->debug("Link.add, No id on the bean... ");
+			$GLOBALS['log']->fatal("Link.add, No id on the bean... ");
 			return;
 		}
 
@@ -674,7 +680,7 @@ class Link {
 
 		$bean_is_lhs=$this->_get_bean_position();
 		if (!isset($bean_is_lhs)) {
-			$GLOBALS['log']->debug("Invalid relationship parameters. Exiting..");
+			$GLOBALS['log']->fatal("Invalid relationship parameters. Exiting..");
 			return null;
 		}
 		//if multiple keys are passed then check for unsupported relationship types.
@@ -682,16 +688,16 @@ class Link {
 			if (($this->_relationship->relationship_type == 'one-to-one')
 				or ($this->_relationship->relationship_type == 'one-to-many' and !$bean_is_lhs)
 				or ($this->_relationship->relationship_type == 'many-to-one')) {
-					$GLOBALS['log']->error("Invalid parameters passed to function, the relationship does not support addition of multiple records.");
+					$GLOBALS['log']->fatal("Invalid parameters passed to function, the relationship does not support addition of multiple records.");
 					return;
 				}
 		}
-        $GLOBALS['log']->debug("Relationship type = {$this->_relationship->relationship_type}");
+        $GLOBALS['log']->fatal("Relationship type = {$this->_relationship->relationship_type}");
         foreach($keys as $key) {
 
 			//fetch the related record using the key and update.
-			if ($this->_relationship->relationship_type=='one-to-one' or $this->_relationship->relationship_type == 'one-to-many') {
-				$this->_add_one_to_many_table_based($key,$bean_is_lhs);
+			if ($this->_relationship->relationship_type=='one-to-one' || $this->_relationship->relationship_type == 'one-to-many' ) {
+                $this->_add_one_to_many_table_based($key,$bean_is_lhs);
 			}
 
 			//updates the bean passed to the instance....
@@ -702,6 +708,17 @@ class Link {
 
 		    //insert record in the link table.
 			if ($this->_relationship->relationship_type=='many-to-many' ) {
+                //replace existing relationships for one-to-one
+                if(!empty($GLOBALS['dictionary'][$this->_relationship_name]['true_relationship_type']) &&
+					($GLOBALS['dictionary'][$this->_relationship_name]['true_relationship_type'] == 'one-to-one'))
+                {
+                    //Remove all existing links with either bean. 
+                    $old_rev = isset($this->_relationship->reverse) ? false : $this->_relationship->reverse;
+                    $this->_relationship->reverse = true;
+                    $this->delete($key);
+                    $this->delete($this->_bean->id);
+                    $this->_relationship->reverse = $old_rev;
+                }
 
 				//Swap the bean positions for self relationships not coming from subpanels.
 				//such as one-to-many relationship fields generated in studio/MB
@@ -931,7 +948,7 @@ class Link {
 		}
 		//if query string is not empty execute it.
 		if (isset($query)) {
-			$GLOBALS['log']->debug('Link.Delete:Delete Query: '.$query);
+            $GLOBALS['log']->fatal('Link.Delete:Delete Query: '.$query);
 			$this->_db->query($query,true);
 		}
 		$custom_logic_arguments = array();

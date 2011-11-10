@@ -107,9 +107,9 @@
     </tr>
     <tr height='20'>
         {foreach from=$displayColumns key=colHeader item=params}
-	        <th scope='col' width='{$params.width}%' nowrap="nowrap">
-				<div style='white-space: nowrap;'width='100%' align='{$params.align|default:'left'}'>
-                {if $params.sortable|default:true}
+	        <th scope='col' width='{$params.width}%'>
+				<div style='white-space: normal;'width='100%' align='{$params.align|default:'left'}'>
+                {if $params.sortable|default:true} 
 	                <a href='#' onclick='return SUGAR.mySugar.retrieveDashlet("{$dashletId}", "{$pageData.urls.orderBy}{$params.orderBy|default:$colHeader|lower}&sugar_body_only=1&id={$dashletId}")' class='listViewThLinkS1'>{sugar_translate label=$params.label module=$pageData.bean.moduleDir}</a>&nbsp;&nbsp;
 	                {if $params.orderBy|default:$colHeader|lower == $pageData.ordering.orderBy}
 	                    {if $pageData.ordering.sortOrder == 'ASC'}
@@ -135,7 +135,7 @@
 		<th scope='col' nowrap="nowrap" width='1%'>&nbsp;</th>
 		{/if}
     </tr>
-
+        
 	{foreach name=rowIteration from=$data key=id item=rowData}
 		{if $smarty.foreach.rowIteration.iteration is odd}
 			{assign var='_rowColor' value=$rowColor[0]}
@@ -173,7 +173,8 @@
 			{if !empty($quickViewLinks)}
 			<td width='1%' class='{$_rowColor}S1' bgcolor='{$_bgColor}' nowrap>
 				{if $pageData.access.edit}
-					<a title='{$editLinkString}' id="dashedit-{$rowData.ID}" href='index.php?action=EditView&module={$pageData.bean.moduleDir}&record={$rowData.ID}&offset={$pageData.offsets.current+$smarty.foreach.rowIteration.iteration}&stamp={$pageData.stamp}&return_module=Home&return_action=index'><img border="0" src="{sugar_getimagepath file="edit_inline.png"}"></a>
+					<a
+                        title='{$editLinkString}' href='index.php?action=EditView&module={$pageData.bean.moduleDir}&record={$rowData.ID}&offset={$pageData.offsets.current+$smarty.foreach.rowIteration.iteration}&stamp={$pageData.stamp}&return_module=Home&return_action=index'><img border="0" src="{sugar_getimagepath file="edit_inline.png"}"></a>
 				{/if}
 				{if $pageData.access.view}
 					<a title='{$viewLinkString}' href='index.php?action=DetailView&module={$pageData.bean.moduleDir}&record={$rowData.ID}&offset={$pageData.offsets.current+$smarty.foreach.rowIteration.iteration}&stamp={$pageData.stamp}&return_module=Home&return_action=index'><img border="0" src="{sugar_getimagepath file="view_inline.png"}"></a>

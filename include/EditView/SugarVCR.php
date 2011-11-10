@@ -104,7 +104,7 @@
 				if(!empty($menu['NEXT'])){
 					$return_action = 'EditView';
 					$return_id = $menu['NEXT'];
-					$list_URL = 'index.php?action=EditView&module='.$module.'&record='.$return_id.'&offset='.($offset+1);
+					$list_URL = ajaxLink('index.php?action=EditView&module='.$module.'&record='.$return_id.'&offset='.($offset+1));
 					$list_link = "<button type='button' id='save_and_continue' class='button' title='{$GLOBALS['app_strings']['LBL_SAVE_AND_CONTINUE']}' onClick='this.form.action.value=\"Save\";if(check_form(\"EditView\")){sendAndRedirect(\"EditView\", \"{$GLOBALS['app_strings']['LBL_SAVING']} {$module}...\", \"$list_URL\");}'>".$GLOBALS['app_strings']['LBL_SAVE_AND_CONTINUE']."</button>";
 				}else
 					$list_link = "";
@@ -115,7 +115,7 @@
 	 		$next_link = "";
 	 		if(!empty($menu['PREV'])) {
 	 			//$previous_link = "<a href='index.php?module=$module&action=$action&offset=".($offset-1)."&record=".$menu['PREV']."' >".SugarThemeRegistry::current()->getImage("previous","alt='".$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'").'&nbsp;'.$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']."</a>";
-				$href = "index.php?module=$module&action=$action&offset=".($offset-1)."&record=".$menu['PREV'];
+				$href = ajaxLink("index.php?module=$module&action=$action&offset=".($offset-1)."&record=".$menu['PREV']);
 				$previous_link = "<button type='button' class='button' title='{$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']}' onClick='document.location.href=\"$href\";'>".SugarThemeRegistry::current()->getImage("previous","alt='".$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'")."</button>";
 	 		}
 	 		else 
@@ -123,7 +123,7 @@
 
 	 		if(!empty($menu['NEXT'])) {
 	 			//$next_link = "<a href='index.php?module=$module&action=$action&offset=".($offset+1)."&record=".$menu['NEXT']."' >".$GLOBALS['app_strings']['LNK_LIST_NEXT'].'&nbsp;'.SugarThemeRegistry::current()->getImage("next","alt='".$GLOBALS['app_strings']['LNK_LIST_NEXT']."'  border='0' align='absmiddle'")."</a>";
-				$href = "index.php?module=$module&action=$action&offset=".($offset+1)."&record=".$menu['NEXT'];
+				$href = ajaxLink("index.php?module=$module&action=$action&offset=".($offset+1)."&record=".$menu['NEXT']);
 				$next_link = "<button type='button' class='button' title='{$GLOBALS['app_strings']['LNK_LIST_NEXT']}' onClick='document.location.href=\"$href\";'>".SugarThemeRegistry::current()->getImage("next","alt='".$GLOBALS['app_strings']['LNK_LIST_NEXT']."'  border='0' align='absmiddle'")."</button>";
 	 		}
 	 		else

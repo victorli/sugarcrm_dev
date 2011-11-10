@@ -34,6 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
+
 require_once('include/SugarFields/Fields/Float/SugarFieldFloat.php');
 
 class Bug38424FloatTest extends Sugar_PHPUnit_Framework_TestCase

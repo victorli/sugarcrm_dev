@@ -966,7 +966,6 @@ SE.composeLayout = {
 	                	SE.composeLayout.composeTemplate.exec({
 	                        'app_strings':app_strings,
 	                        'mod_strings':mod_strings,
-	                        'theme': theme,
 	                        'linkbeans_options' : linkBeans,
 	                        'idx' : SE.composeLayout.currentInstanceId
 	                	})
@@ -1119,7 +1118,7 @@ SE.composeLayout = {
     	var instance = SE.util.getTiny(SE.tinyInstances.currentHtmleditor);
 
         if(typeof(instance) == 'undefined' || (typeof(SE.composeLayout.loadedTinyInstances[idx]) != 'undefined' && SE.composeLayout.loadedTinyInstances[idx] == false)) {
-            setTimeout("SE.composeLayout.resizeEditorSetSignature(" + idx + ",'"+isReplyForward+"');",500);
+            setTimeout("SE.composeLayout.resizeEditorSetSignature(" + idx + ",'"+setSignature+"');",500);
 		    return;
 		}
 
@@ -1759,7 +1758,7 @@ SE.composeLayout = {
 
         if( typeof(SUGAR.email2.composeLayout.outboundAccountErrors[obAccountID]) != 'undefined' )
         {
-            overlay(app_strings.LBL_EMAIL_ERROR_DESC, SUGAR.email2.composeLayout.outboundAccountErrors[obAccountID], 'alert');
+            SUGAR.showMessageBox(app_strings.LBL_EMAIL_ERROR_DESC, SUGAR.email2.composeLayout.outboundAccountErrors[obAccountID], 'alert');
             return false;
         }
 
@@ -1827,7 +1826,7 @@ SE.composeLayout = {
         SE.util.clearHiddenFieldValues('emailCompose' + idx);
 		document.getElementById('data_parent_id' + idx).value = parentIdValue;
 		var title = (isDraft) ? app_strings.LBL_EMAIL_SAVE_DRAFT : app_strings.LBL_EMAIL_SENDING_EMAIL;
-        overlay(title, app_strings.LBL_EMAIL_ONE_MOMENT);
+        SUGAR.showMessageBox(title, app_strings.LBL_EMAIL_ONE_MOMENT);
         html = html.replace(/&lt;/ig, "sugarLessThan");
         html = html.replace(/&gt;/ig, "sugarGreaterThan");
 
@@ -2211,7 +2210,7 @@ SE.composeLayout = {
      */
     replyForwardEmailStage2 : function() {
         SE.util.clearHiddenFieldValues('emailUIForm');
-        overlay(app_strings.LBL_EMAIL_RETRIEVING_MESSAGE, app_strings.LBL_EMAIL_ONE_MOMENT);
+        SUGAR.showMessageBox(app_strings.LBL_EMAIL_RETRIEVING_MESSAGE, app_strings.LBL_EMAIL_ONE_MOMENT);
 
         var ieId = SE.composeLayout.replyForwardObj.ieId;
         var uid = SE.composeLayout.replyForwardObj.uid;

@@ -117,7 +117,10 @@ YAHOO.SUGAR.DragDropTable.groups = {
 
 YAHOO.extend(YAHOO.SUGAR.DragDropTable, YAHOO.widget.ScrollingDataTable, {
 	sugarfunc : function () {console.log("at sugar func")},
-	addRowAt : function(record, index){console.log(record);},
+	addRowAt : function(record, index){
+        if (typeof(console) != "undefined" && typeof(console.log) == "function")
+            console.log(record);
+    },
 	_addTrEl : function (oRecord) {
 		var elTr = YAHOO.SUGAR.DragDropTable.superclass._addTrEl.call(this, oRecord);
 		var _rowDD = new YAHOO.SUGAR.RowDD(this, oRecord, elTr);

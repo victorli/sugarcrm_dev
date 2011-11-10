@@ -546,80 +546,37 @@ function validate_user($user_name, $password){
 	function getRelationshipResults($bean, $link_field_name, $link_module_fields, $optional_where = '') {
 		$GLOBALS['log']->info('Begin: SoapHelperWebServices->getRelationshipResults');
 		require_once('include/TimeDate.php');
-		global  $beanList, $beanFiles, $current_user;
-		global $disable_date_format;
+		global $current_user, $disable_date_format,  $timedate;;
 
 		$bean->load_relationship($link_field_name);
 		if (isset($bean->$link_field_name)) {
-			// get the query object for this link field
-			$query_array = $bean->$link_field_name->getQuery(true,array(),0,'',true);
-			if (isset($query_array['where'])) {
-				$query_array['where'] = str_ireplace("where", "", $query_array['where']);
-				if (!empty($optional_where)) {
-					$optional_where = $query_array['where'] . " and " . $optional_where;
-				} else {
-					$optional_where = $query_array['where'];
-				} // else
-			} // if
-
-			$params = array();
-			$params['joined_tables'] = $query_array['join_tables'];
-
-			// get the related module name and instantiate a bean for that.
-			$submodulename = $bean->$link_field_name->getRelatedModuleName();
-			$submoduleclass = $beanList[$submodulename];
-			require_once($beanFiles[$submoduleclass]);
-			$submodule = new $submoduleclass();
+			//First get all the related beans
+            $related_beans = $bean->$link_field_name->getBeans();
 			$filterFields = $this->filter_fields($submodule, $link_module_fields);
-			$relFields = $bean->$link_field_name->getRelatedFields();
-			$roleSelect = '';
-
-			$idSetInSubModule = false;
-			if($submodulename == 'Users' && !in_array('id', $link_module_fields)){
-				$link_module_fields[] = 'id';
-				$idSetInSubModule = true;
-			}
-
-			if(!empty($relFields)){
-				foreach($link_module_fields as $field){
-					if(!empty($relFields[$field])){
-						$roleSelect .= ', ' . $query_array['join_tables'][0] . '.'. $field;
-					}
-				}
-			}
-			// create a query
-			$subquery = $submodule->create_new_list_query('',$optional_where ,$filterFields,$params, 0,'', true,$bean);
-			$query =  $subquery['select'].$roleSelect .   $subquery['from'].$query_array['join']. $subquery['where'];
-			$GLOBALS['log']->info('SoapHelperWebServices->getRelationshipResults query = ' . $query);
-
-			$result = $submodule->db->query($query, true);
+            //Create a list of field/value rows based on $link_module_fields
 			$list = array();
-			while($row = $submodule->db->fetchByAssoc($result)) {
-				if (!$disable_date_format) {
-					foreach ($filterFields as $field) {
-						if (isset($submodule->field_defs[$field]) &&
-							isset($submodule->field_defs[$field]['type']) &&
-							isset($row[$field])) {
-
-								if ($submodule->field_defs[$field]['type'] == 'date') {
-									global $timedate;
-									$row[$field] = $timedate->to_display_date_time($row[$field]);
-								}
-								if ($submodule->field_defs[$field]['type'] == 'currency') {
-									// TODO: convert data from db to user preferred format absed on the community input
-								} // if
-						} // if
-
-					} // foreach
-				}
-				if($submodulename == 'Users' && $current_user->id != $row['id']) {
-					$row['user_hash'] = "";
-				} // if
-				if ($idSetInSubModule) {
-					unset($row['id']);
-				} // if
-				$list[] = $row;
-			}
+            foreach($related_beans as $id => $bean)
+            {
+                $row = array();
+                foreach ($filterFields as $field) {
+                    if (isset($bean->$field))
+                    {
+                        if (isset($bean->field_defs[$field]['type']) && $bean->field_defs[$field]['type'] == 'date') {
+                            $row[$field] = $timedate->to_display_date_time($bean->$field);
+                        }
+                        $row[$field] = $bean->$field;
+                    }
+                    else
+                    {
+                        $row[$field] = "";
+                    }
+                }
+                //Users can't see other user's hashes
+                if(is_a($bean, 'User') && $current_user->id != $bean->id && isset($row['user_hash'])) {
+                    $row['user_hash'] = "";
+                }
+                $list[] = $row;
+            }
 			$GLOBALS['log']->info('End: SoapHelperWebServices->getRelationshipResults');
 			return array('rows' => $list, 'fields_set_on_rows' => $filterFields);
 		} else {

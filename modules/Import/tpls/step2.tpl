@@ -39,74 +39,146 @@
 
 
 *}
-{$MODULE_TITLE}
+{literal}
+
+<style>
+
+.link {
+    text-decoration:underline
+}
+
+</style>
+{/literal}
+
+
+{$INSTRUCTION}
+
+<div class="hr"></div>
+
 <form enctype="multipart/form-data" name="importstep2" method="POST" action="index.php" id="importstep2">
 <input type="hidden" name="module" value="Import">
 <input type="hidden" name="custom_delimiter" value="{$CUSTOM_DELIMITER}">
 <input type="hidden" name="custom_enclosure" value="{$CUSTOM_ENCLOSURE}">
-<input type="hidden" name="type" value="{$TYPE}">
 <input type="hidden" name="source" value="{$SOURCE}">
 <input type="hidden" name="source_id" value="{$SOURCE_ID}">
-<input type="hidden" name="action" value="Step3">
+<input type="hidden" name="action" value="Confirm">
+<input type="hidden" name="current_step" value="{$CURRENT_STEP}">
 <input type="hidden" name="import_module" value="{$IMPORT_MODULE}">
-{foreach from=$instructions key=key item=item name=instructions}
-{if $smarty.foreach.instructions.first}          
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr>
-	<td align="left"><p>{$INSTRUCTIONS_TITLE}</p></td>
-</tr>
-<tr>
-	<td>
-	<table width="50%">
-{/if}
-	<tr>
-		<td valign="top"><b>{$item.STEP_NUM}</b></td>
-		<td>{$item.INSTRUCTION_STEP}</td>
-	</tr>
-{if $smarty.foreach.instructions.last}
-    </table>
-	</td>
-</tr>
-</table>
-{/if}
-{/foreach}
-
-<br>
-
-<table width="100%" border="0" cellspacing="0" cellpadding="0" class="edit view">
+<input type="hidden" name="from_admin_wizard" value="{$smarty.request.from_admin_wizard}">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr>
 <td>
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
-	<tr>
-	<td align="left" scope="row" colspan="4">{$MOD.LBL_SELECT_FILE}</td>
-	</tr>
-	<tr>
-	<td scope="row">
-	<input type="hidden" />
-	<input size="60" name="userfile" type="file"/>
-	</td>
-	</tr>
-	<tr>
-	<td scope="row">
-	{$MOD.LBL_HAS_HEADER}&nbsp;<input class="checkBox" value='on' type="checkbox" name="has_header"{$HAS_HEADER_CHECKED}>
-	</td>
-	</tr>
+        <tr>
+            <td align="left" scope="row" colspan="4" style="padding-left: 10px;">{$SAMPLE_URL} &nbsp;{sugar_help text=$MOD.LBL_SAMPLE_URL_HELP}</td>
+        </tr>
+        <tr>
+            <td scope="row" colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td scope="row" colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td align="left" scope="row" colspan="3">{$MOD.LBL_SELECT_FILE} <input type="hidden" /><input size="20" name="userfile" type="file"/> &nbsp;{sugar_help text=$MOD.LBL_FILE_UPLOAD_WIDGET_HELP}</td>
+        </tr>
+        <tr>
+            <td scope="row" colspan="4"><div class="hr">&nbsp;</div></td>
+        </tr>
+        <tr>
+            <td scope="row" colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td scope="row" colspan="3">
+                <h3>{$MOD.LBL_IMPORT_TYPE}&nbsp;</h3></td>
+          </tr>
+          <tr>
+            <td scope="row" colspan="3">
+                <input id="import_create" class="radio" type="radio" name="type" value="import" checked="checked" />
+                &nbsp;{$MOD.LBL_IMPORT_BUTTON} &nbsp;{sugar_help text=$MOD.LBL_CREATE_BUTTON_HELP}
+            </td>
+          </tr>
+          <tr>
+            <td scope="row" colspan="3">
+                <input id="import_update" class="radio" type="radio" name="type" value="update" />
+                &nbsp;{$MOD.LBL_UPDATE_BUTTON} &nbsp;{sugar_help text=$MOD.LBL_UPDATE_BUTTON_HELP}
+            </td>
+          </tr>
 	</table>
+    <br>
+    <table border="0" cellspacing="0" cellpadding="0" width="100%">
+          {foreach from=$custom_mappings item=item name=custommappings}
+          {capture assign=mapping_label}{$MOD.LBL_CUSTOM_MAPPING_}{$item|upper}{/capture}
+          <tr>
+            <td colspan="3" scope="row"><input class="radio" type="radio" name="source" value="{$item}" />
+              &nbsp;{$mapping_label}</td>
+          </tr>
+          {/foreach}
 
+          {if !empty($custom_imports) || !empty($published_imports)}
+          <tr>
+            <td scope="row" colspan="3">
+                <h3>{$MOD.LBL_PUBLISHED_SOURCES}&nbsp;{sugar_help text=$savedMappingHelpText}</h3></td>
+          </tr>
+          
+          <tr id="custom_import_{$smarty.foreach.saved.index}">
+            <td scope="row" colspan="4">
+                <input class="radio" type="radio" name="source" value=""/>
+                &nbsp;{$MOD.LBL_NONE}
+            </td>
 
+          </tr>
+          {/if}
+          {foreach from=$custom_imports key=key item=item name=saved}
+          <tr id="custom_import_{$smarty.foreach.saved.index}">
+            <td scope="row" colspan="2" width="10%" style="padding-right: 10px;">
+                <input class="radio" type="radio" name="source" value="custom:{$item.IMPORT_ID}"/>
+                &nbsp;{$item.IMPORT_NAME}
+            </td>
+            <td scope="row">
+                {if $is_admin}
+                <input type="button" name="publish" value="{$MOD.LBL_PUBLISH}" class="button" publish="yes"
+                    onclick="publishMapping(this, 'yes','{$item.IMPORT_ID}');">
+                {/if}
+                <input type="button" name="delete" value="{$MOD.LBL_DELETE}" class="button"
+					onclick="if(confirm('{$MOD.LBL_DELETE_MAP_CONFIRMATION}')){literal}{{/literal} deleteMapping('custom_import_{$smarty.foreach.saved.index}', '{$item.IMPORT_ID}' );{literal}}{/literal}">
+            </td>
+          </tr>
+          {/foreach}
+
+          {foreach from=$published_imports key=key item=item name=published}
+          <tr id="published_import_{$smarty.foreach.published.index}">
+            <td scope="row" colspan="2">
+                <input class="radio" type="radio" name="source" value="custom:{$item.IMPORT_ID}"/>
+                &nbsp;{$item.IMPORT_NAME}
+            </td>
+            <td scope="row">
+                {if $is_admin}
+                <input type="button" name="publish" value="{$MOD.LBL_UNPUBLISH}" class="button" publish="no"
+                    onclick="publishMapping(this, 'no','{$item.IMPORT_ID}');">
+                <input type="button" name="delete" value="{$MOD.LBL_DELETE}" class="button"
+                    onclick="if(confirm('{$MOD.LBL_DELETE_MAP_CONFIRMATION}')){literal}{{/literal}deleteMapping('published_import_{$smarty.foreach.published.index}','{$item.IMPORT_ID}' );{literal}}{/literal}">
+                {/if}
+            </td>
+          </tr>
+          {/foreach}
+    </table>
 </td>
 </tr>
 </table>
 
 <br>
+
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr>
-	<td align="left">
-        <input title="{$MOD.LBL_BACK}" accessKey="" class="button" type="submit" name="button" value="  {$MOD.LBL_BACK}  " id="goback">&nbsp;
-	    <input title="{$MOD.LBL_NEXT}" accessKey="" class="button" type="submit" name="button" value="  {$MOD.LBL_NEXT}  " id="gonext">
+  <td align="left">
+        {if $displayBackBttn}
+            <input title="{$MOD.LBL_BACK}" accessKey="" class="button" type="submit" name="button" value="  {$MOD.LBL_BACK}  " id="goback">&nbsp;
+        {/if}
+      <input title="{$MOD.LBL_NEXT}" accessKey="" class="button" type="submit" name="button" value="  {$MOD.LBL_NEXT}  " id="gonext">
     </td>
 </tr>
 </table>
-
-</form>
+<script>
 {$JAVASCRIPT}
+</script>  
+</form>

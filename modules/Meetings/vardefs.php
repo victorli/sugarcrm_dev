@@ -53,7 +53,7 @@ $dictionary['Meeting'] = array('table' => 'meetings',
   ),
   'accept_status' => array (
     'name' => 'accept_status',
-    'vname' => 'LBL_SUBJECT',
+    'vname' => 'LBL_ACCEPT_STATUS',
     'type' => 'varchar',
     'dbType' => 'varchar',
     'len' => '20',
@@ -62,7 +62,7 @@ $dictionary['Meeting'] = array('table' => 'meetings',
   //bug 39559 
   'set_accept_links' => array (
     'name' => 'accept_status',
-    'vname' => 'LBL_SUBJECT',
+    'vname' => 'LBL_ACCEPT_LINK',
     'type' => 'varchar',
     'dbType' => 'varchar',
     'len' => '20',
@@ -98,7 +98,7 @@ $dictionary['Meeting'] = array('table' => 'meetings',
   'host_url' =>
   array (
     'name' => 'host_url',
-    'vname' => 'LBL_URL',
+    'vname' => 'LBL_HOST_URL',
     'type' => 'varchar',
     'len' => '400',
     'comment' => 'Host URL',
@@ -108,7 +108,7 @@ $dictionary['Meeting'] = array('table' => 'meetings',
   'displayed_url' =>
   array (
     'name' => 'displayed_url',
-    'vname' => 'LBL_URL',
+    'vname' => 'LBL_DISPLAYED_URL',
     'type' => 'url',
     'len' => '400',
     'comment' => 'Meeting URL',
@@ -178,7 +178,7 @@ $dictionary['Meeting'] = array('table' => 'meetings',
   'parent_type' =>
   array (
     'name' => 'parent_type',
-    'vname'=>'LBL_LIST_RELATED_TO',
+    'vname'=>'LBL_PARENT_TYPE',
     'type' =>'parent_type',
     'dbType' => 'varchar',
     'group'=>'parent_name',
@@ -227,7 +227,7 @@ $dictionary['Meeting'] = array('table' => 'meetings',
   'parent_id' =>
   array (
     'name' => 'parent_id',
-    'vname'=>'LBL_LIST_RELATED_TO',
+    'vname'=>'LBL_PARENT_ID',
     'type' => 'id',
     'group'=>'parent_name',
     'reportable'=>false,
@@ -261,6 +261,16 @@ $dictionary['Meeting'] = array('table' => 'meetings',
     'len' => '255',
     'reportable' => false,
     'comment' => 'When the Sugar Plug-in for Microsoft Outlook syncs an Outlook appointment, this is the Outlook appointment item ID'
+  ),
+   'sequence' =>
+  array (
+    'name' => 'sequence',
+    'vname' => 'LBL_SEQUENCE',
+    'type' => 'int',
+    'len' => '11',
+    'reportable' => false,
+    'default'=>0,
+    'comment' => 'Meeting update sequence for meetings as per iCalendar standards'
   ),
 
   'contact_name' =>
@@ -385,6 +395,7 @@ $dictionary['Meeting'] = array('table' => 'meetings',
        array('name' =>'idx_mtg_name', 'type'=>'index', 'fields'=>array('name')),
        array('name' =>'idx_meet_par_del', 'type'=>'index', 'fields'=>array('parent_id','parent_type','deleted')),
        array('name' => 'idx_meet_stat_del', 'type' => 'index', 'fields'=> array('assigned_user_id', 'status', 'deleted')),
+       array('name' => 'idx_meet_date_start', 'type' => 'index', 'fields'=> array('date_start')),
 
                                                    )
 //This enables optimistic locking for Saves From EditView

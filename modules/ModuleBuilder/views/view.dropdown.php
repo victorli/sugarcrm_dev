@@ -104,6 +104,9 @@ class ViewDropdown extends SugarView
             $smarty->assign('module_name', $module->name);
 		}
 
+        $module_name = !empty($module->name) ?  $module->name : '';
+        $module_name = (empty($module_name) && !empty($_REQUEST['view_module'])) ?  $_REQUEST['view_module'] : $module_name;
+
 		foreach($my_list_strings as $key=>$value){
 			if(!is_array($value)){
 				unset($my_list_strings[$key]);
@@ -150,6 +153,7 @@ class ViewDropdown extends SugarView
 			$smarty->assign('prepopulated_name', $use_name);
 		}
 
+		$smarty->assign('module_name', $module_name);
 		$smarty->assign('APP', $GLOBALS['app_strings']);
 		$smarty->assign('MOD', $GLOBALS['mod_strings']);
 		$smarty->assign('selected_lang', $selected_lang);

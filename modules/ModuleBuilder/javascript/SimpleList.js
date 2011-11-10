@@ -49,6 +49,11 @@ if(typeof(SimpleList) == 'undefined'){
         SimpleList.editImage = editImage;
         SimpleList.deleteImage = deleteImage;
         new YAHOO.util.DDTarget("ul1");
+
+        Studio2.scrollZones = {}
+        for (var i = 0; Dom.get("ul" + i); i++){
+            Studio2.scrollZones["ul" + i] = Studio2.getScrollZones("ul" + i);
+        }
            
         for (i=0;i<SimpleList.ul_list.length;i++){
             if ( typeof SimpleList.ul_list[i] != "number" && SimpleList.ul_list[i] == "" ) {

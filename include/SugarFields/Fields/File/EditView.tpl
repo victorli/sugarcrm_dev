@@ -101,7 +101,6 @@ type="file" title='{{$vardef.help}}' size="{{$displayParams.size|default:30}}"
 {{/if}}
 {{$displayParams.field}}>
 
-
 {{if isset($vardef.allowEapm) && $vardef.allowEapm}}
 <span id="{{$idName}}_externalApiSelector" style="display:none;">
 <br><h4 id="{{$idName}}_externalApiLabel">
@@ -120,10 +119,10 @@ type="file" title='{{$vardef.help}}' size="{{$displayParams.size|default:30}}"
 
 {{if empty($displayParams.hideButtons) }}
 <span class="id-ff multiple">
-<button type="button" name="{{$idName}}_remoteSelectBtn" id="{{$idName}}_remoteSelectBtn" tabindex="{{$tabindex}}" title="{$APP.LBL_SELECT_BUTTON_TITLE}" accessKey="{$APP.LBL_SELECT_BUTTON_KEY}" class="button firstChild" value="{$APP.LBL_SELECT_BUTTON_LABEL}"
+<button type="button" name="{{$idName}}_remoteSelectBtn" id="{{$idName}}_remoteSelectBtn" tabindex="{{$tabindex}}" title="{sugar_translate label="{{$displayParams.accessKeySelectTitle}}"}" accessKey="{sugar_translate label="{{$displayParams.accessKeySelect}}"}" class="button firstChild" value="{sugar_translate label="{{$displayParams.accessKeySelectLabel}}"}"
 onclick="SUGAR.field.file.openPopup('{{$idName}}'); return false;"
 ><img src="{sugar_getimagepath file="id-ff-select.png"}"></button
-><button type="button" name="{{$idName}}_remoteClearBtn" id="{{$idName}}_remoteClearBtn" tabindex="{{$tabindex}}" title="{$APP.LBL_CLEAR_BUTTON_TITLE}" accessKey="{$APP.LBL_CLEAR_BUTTON_KEY}" class="button lastChild" value="{$APP.LBL_CLEAR_BUTTON_LABEL}"
+><button type="button" name="{{$idName}}_remoteClearBtn" id="{{$idName}}_remoteClearBtn" tabindex="{{$tabindex}}" title="{sugar_translate label="{{$displayParams.accessKeyClearTitle}}"}" accessKey="{sugar_translate label="{{$displayParams.accessKeyClear}}"}" class="button lastChild" value="{sugar_translate label="{{$displayParams.accessKeyClearLabel}}"}"
 onclick="SUGAR.field.file.clearRemote('{{$idName}}'); return false;"
 ><img src="{sugar_getimagepath file="id-ff-clear.png"}"></button>
 </span>

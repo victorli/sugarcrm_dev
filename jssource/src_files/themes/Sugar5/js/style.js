@@ -67,10 +67,7 @@ YAHOO.util.Event.onAvailable('sitemapLinkSpan',function()
     }
 });
 
-/**
- * Handles changing the sub menu items when using grouptabs
- */
-YAHOO.util.Event.onAvailable('subModuleList',IKEADEBUG);
+
 function IKEADEBUG()
 {
     var moduleLinks = document.getElementById('moduleList').getElementsByTagName("a");
@@ -216,3 +213,71 @@ YAHOO.util.Event.onDOMReady(function()
     }
 	////////////////////////////////////////////////////////////////////////////////////////
 });
+
+/**
+ * For the module list menu
+ */
+SUGAR.themes = SUGAR.namespace("themes");
+
+SUGAR.append(SUGAR.themes, {
+    allMenuBars: {},
+    setModuleTabs: function(html) {
+        var el = document.getElementById('ajaxHeader');
+
+        if (el) {
+            try {
+                //This can fail hard if multiple events fired at the same time
+                YAHOO.util.Event.purgeElement(el, true);
+                for (var i in this.allMenuBars) {
+                    if (this.allMenuBars[i].destroy)
+                        this.allMenuBars[i].destroy();
+                }
+            } catch (e) {
+                //If the menu fails to load, we can get leave the user stranded, reload the page instead.
+                window.location.reload();
+            }
+
+            if (el.hasChildNodes()) {
+                while (el.childNodes.length >= 1) {
+                    el.removeChild(el.firstChild);
+                }
+            }
+
+            el.innerHTML += html;
+            this.loadModuleList();
+        }
+    },
+    
+    loadModuleList: function() {
+        var nodes = YAHOO.util.Selector.query('#moduleList>div'),
+            currMenuBar;
+        this.allMenuBars = {};
+
+        for (var i = 0 ; i < nodes.length ; i++) {
+            currMenuBar = SUGAR.themes.currMenuBar = new YAHOO.widget.MenuBar(nodes[i].id, {
+                autosubmenudisplay: true,
+                visible: false,
+                hidedelay: 750,
+                lazyload: true
+            });
+
+            /*
+              Call the "render" method with no arguments since the
+              markup for this MenuBar already exists in the page.
+            */
+            currMenuBar.render();
+            this.allMenuBars[nodes[i].id.substr(nodes[i].id.indexOf('_')+1)] = currMenuBar;
+
+            if (typeof YAHOO.util.Dom.getChildren(nodes[i]) == 'object' && YAHOO.util.Dom.getChildren(nodes[i]).shift().style.display != 'none') {
+                // This is the currently displayed menu bar
+                oMenuBar = currMenuBar;
+            }
+        }
+        /**
+         * Handles changing the sub menu items when using grouptabs
+         */
+        YAHOO.util.Event.onAvailable('subModuleList',IKEADEBUG);
+    }
+});
+
+YAHOO.util.Event.onDOMReady(SUGAR.themes.loadModuleList, SUGAR.themes, true);

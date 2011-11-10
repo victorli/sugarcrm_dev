@@ -55,7 +55,7 @@
 {{/foreach}}
 {{/if}}
 {if !$def.required || !empty($def.select)}
-<input class="checkbox" type="checkbox" name="new{{$module}}" id="new{{$module}}" onclick="toggleDisplay('create{{$module}}');{{if !empty($def.select)}}toggle{{$module}}Select();{{/if}}">
+<input class="checkbox" type="checkbox" name="new{{$module}}" id="new{{$module}}" onclick="toggleDisplay('create{{$module}}');if (typeof(addRemoveDropdownElement) == 'function') addRemoveDropdownElement('{{$module}}');{{if !empty($def.select)}}toggle{{$module}}Select();{{/if}}">
 <script type="text/javascript">
  {{if !empty($def.select)}}
  toggle{{$module}}Select = function(){ldelim} 
@@ -66,9 +66,15 @@
  {rdelim}
  {{/if}}
  {if !empty($def.default_action) && $def.default_action == "create"}
-    YAHOO.util.Event.onContentReady('create{{$module}}', function(){ldelim}
+     {if $lead_conv_activity_opt == 'move' || $lead_conv_activity_opt == 'copy' || $lead_conv_activity_opt == ''}
+        YAHOO.util.Event.onContentReady('lead_conv_ac_op_sel', function(){ldelim}
+     {else}
+        YAHOO.util.Event.onContentReady('create{{$module}}', function(){ldelim}
+     {/if}
 		toggleDisplay('create{{$module}}');
 		document.getElementById('new{{$module}}').checked = true;
+                if (typeof(addRemoveDropdownElement) == 'function')
+                    addRemoveDropdownElement('{{$module}}');
 		{{if !empty($def.select)}}
 		toggle{{$module}}Select();
 		{{/if}}
@@ -85,7 +91,7 @@
         <span class="required">{{$APP.LBL_REQUIRED_SYMBOL}}</span>
     {/if}
 </td><td id ="select{{$module}}">
-{{sugar_field parentFieldArray='contact_def' vardef=$contact_def[$def.select] displayType='EditView' formName=$form_name form_name=$form_name}}
+{{sugar_field parentFieldArray='contact_def' vardef=$contact_def[$def.select] displayType='EditView' formName=$form_name call_back_function='set_return_lead_conv'}}
 <script>
 if (typeof(sqs_objects) == "undefined") sqs_objects = [];
 sqs_objects['{{$form_name}}_{{$def.select}}'] = {ldelim}

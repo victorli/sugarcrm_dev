@@ -177,6 +177,15 @@ function sugar_cache_reset()
 }
 
 /**
+ * Flush the cache in its entirety including the local and external store along with the opcodes.
+ */
+function sugar_cache_reset_full()
+{
+    SugarCache::instance()->resetFull();
+    SugarCache::cleanOpcodes();
+}
+
+/**
  * Clean out whatever opcode cache we may have out there.
  */
 function sugar_clean_opcodes()

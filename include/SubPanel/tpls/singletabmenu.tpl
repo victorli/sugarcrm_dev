@@ -61,7 +61,7 @@
 {/foreach}
 
 {assign var='notFirst' value='0'}
-	SUGAR.subpanelUtils.subpanelTitles = {ldelim}{foreach from=$othertabs.All.tabs item=subtab}{if $notFirst != 0}, {else}{assign var='notFirst' value='1'}{/if}'{$subtab.key}':'{$subtab.label}'{/foreach}{foreach from=$otherMoreSubMenu.All.tabs item=subtab}, '{$subtab.key}':'{$subtab.label}'{/foreach}{rdelim};
+	SUGAR.subpanelUtils.subpanelTitles = {$subpanelTitlesJSON};
 
 	SUGAR.subpanelUtils.tabCookieName = get_module_name() + '_sp_tab';
 	

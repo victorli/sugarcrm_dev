@@ -189,12 +189,12 @@ function run_sql_file( $filename )
     if ($ensureUnique)
     {
         $md5str = md5($name);
-        $tail = substr ( $name, -8) ;
+        $tail = substr ( $name, -11) ;
         $temp = substr($md5str , strlen($md5str)-4 );
-        $result = substr ( $name, 0, 7) . $temp . $tail ;
+        $result = substr ( $name, 0, 10) . $temp . $tail ;
     }else if ($len > ($maxLen - 5))
     {
-        $result = substr ( $name, 0, 8) . substr ( $name, 8 - $maxLen + 5);
+        $result = substr ( $name, 0, 11) . substr ( $name, 11 - $maxLen + 5);
     }
     return strtolower ( $result ) ;
 }

@@ -122,7 +122,7 @@ class Task extends SugarBean {
                 $contact_required = stristr($where,"contacts");
                 if($contact_required)
                 {
-                        $query = "SELECT tasks.*, contacts.first_name, contacts.last_name";
+                        $query = "SELECT tasks.*, contacts.first_name, contacts.last_name, users.user_name as assigned_user_name ";
                         if($custom_join){
    							$query .= $custom_join['select'];
  						}
@@ -131,7 +131,7 @@ class Task extends SugarBean {
                 }
                 else
                 {
-                        $query = 'SELECT tasks.*';
+                        $query = 'SELECT tasks.*, users.user_name as assigned_user_name ';
                         if($custom_join){
    							$query .= $custom_join['select'];
  						}
@@ -143,6 +143,7 @@ class Task extends SugarBean {
 				if($custom_join){
    					$query .= $custom_join['join'];
  				}
+		$query .= "  LEFT JOIN users ON tasks.assigned_user_id=users.id ";
 
                 if($where != "")
                         $query .= "where $where AND ".$where_auto;
@@ -336,7 +337,8 @@ class Task extends SugarBean {
 		$xtpl->assign("TASK_SUBJECT", $task->name);
 		//MFH #13507
 		$xtpl->assign("TASK_PRIORITY", (isset($task->priority)?$app_list_strings['task_priority_dom'][$task->priority]:""));
-		$xtpl->assign("TASK_DUEDATE", $timedate->to_display_date_time($task->date_due . " " . $task->time_due,true,true,$notifyUser)." ".$prefDate['userGmt']);
+        $userGMT = !empty($prefDate['userGmt']) ? $prefDate['userGmt'] : '';
+		$xtpl->assign("TASK_DUEDATE", $timedate->to_display_date_time($task->date_due . " " . $task->time_due,true,true,$notifyUser)." ".$userGMT);
 		$xtpl->assign("TASK_STATUS", (isset($task->status)?$app_list_strings['task_status_dom'][$task->status]:""));
 		$xtpl->assign("TASK_DESCRIPTION", $task->description);
 

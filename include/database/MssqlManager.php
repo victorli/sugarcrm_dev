@@ -421,7 +421,7 @@ class MssqlManager extends DBManager
             $GLOBALS['log']->debug(print_r(func_get_args(),true));
             $this->lastsql = $sql;
             $matches = array();
-            preg_match('/^(.*SELECT )(.*?FROM.*WHERE)(.*)$/isU',$sql, $matches);
+            preg_match('/^(.*SELECT )(.*?FROM.*WHERE)(.*)$/isxU',$sql, $matches);
             if (!empty($matches[3])) {
                 if ($start == 0) {
                     $match_two = strtolower($matches[2]);

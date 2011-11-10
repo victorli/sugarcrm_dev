@@ -255,7 +255,10 @@ $dictionary['Bug'] = array('table' => 'bugs',    'audited'=>true, 'comment' => '
                                                       , 'indices' => array (
       array('name' =>'bug_number', 'type' =>'index', 'fields'=>array('bug_number')),
 
-         array('name' =>'idx_bug_name', 'type' =>'index', 'fields'=>array('name'))
+       array('name' =>'idx_bug_name', 'type' =>'index', 'fields'=>array('name')),
+
+       array('name' => 'idx_bugs_assigned_user', 'type' => 'index', 'fields'=> array('assigned_user_id')),
+
                                                       )
 
 , 'relationships' => array (

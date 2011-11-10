@@ -35,7 +35,7 @@
  ********************************************************************************/
 
  
-require_once 'modules/Import/ImportFile.php';
+require_once('modules/Import/sources/ImportFile.php');
 require_once 'modules/Import/ImportFileSplitter.php';
 
 class ImportFileSplitterTest extends Sugar_PHPUnit_Framework_TestCase
@@ -123,8 +123,6 @@ class ImportFileSplitterTest extends Sugar_PHPUnit_Framework_TestCase
     {
         $splitter = new ImportFileSplitter($this->_whiteSpaceFile);
         $splitter->splitSourceFile(',',' ',false);
-        
-        $csvString = file_get_contents("{$this->_whiteSpaceFile}-0");
         
         $this->assertEquals(
             trim(file_get_contents("{$this->_whiteSpaceFile}-0")),

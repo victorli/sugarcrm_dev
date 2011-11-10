@@ -104,6 +104,7 @@ array( 'table' => 'emailman', 'comment' => 'Email campaign queue', 'fields' => a
 		'name' => 'in_queue',
 		'vname' => 'LBL_IN_QUEUE',
 		'type' => 'bool',
+        'default' => '0',
 		'comment' => 'Flag indicating if item still in queue',
 	),
 	'in_queue_date' => array(
@@ -125,6 +126,7 @@ array( 'table' => 'emailman', 'comment' => 'Email campaign queue', 'fields' => a
 		'type' => 'bool',
 		'reportable' =>false,
 		'comment' => 'Record deletion indicator',
+                'default' => '0',
 	),
 	'related_id' => array(
 		'name' => 'related_id',

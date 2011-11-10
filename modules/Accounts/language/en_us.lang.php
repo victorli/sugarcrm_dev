@@ -59,7 +59,7 @@ $mod_strings = array (
 
 	'ACCOUNT_REMOVE_PROJECT_CONFIRM' => 'Are you sure you want to remove this account from the project?',
 	'ERR_DELETE_RECORD' => 'You must specify a record number in order to delete the account.',
-	'LBL_ACCOUNT_INFORMATION' => 'Account Overview',
+	'LBL_ACCOUNT_INFORMATION' => 'Overview',
 	'LBL_ACCOUNT_NAME' => 'Account Name:',
 	'LBL_ACCOUNT' => 'Account:',
 	'LBL_ACTIVITIES_SUBPANEL_TITLE'=>'Activities',
@@ -81,7 +81,7 @@ $mod_strings = array (
 	'LBL_BILLING_ADDRESS' => 'Billing Address:',
 	'LBL_BUG_FORM_TITLE' => 'Accounts',
 	'LBL_BUGS_SUBPANEL_TITLE' => 'Bugs',
-	'LBL_CALLS_SUBPANEL_TITLE' => 'Calls',	
+	'LBL_CALLS_SUBPANEL_TITLE' => 'Calls',
 	'LBL_CAMPAIGN_ID' => 'Campaign ID',
 	'LBL_CASES_SUBPANEL_TITLE' => 'Cases',
 	'LBL_CITY' => 'City:',
@@ -96,7 +96,7 @@ $mod_strings = array (
 	'LBL_DUPLICATE' => 'Possible Duplicate Account',
 	'LBL_EMAIL' => 'Email Address:',
 	'LBL_EMAIL_OPT_OUT' => 'Email Opt Out:',
-	//'LBL_EMAIL_ADDRESSES' => 'Email Addresses',
+	'LBL_EMAIL_ADDRESSES' => 'Email Addresses',
 	'LBL_EMPLOYEES' => 'Employees:',
 	'LBL_FAX' => 'Fax:',
 	'LBL_HISTORY_SUBPANEL_TITLE'=>'History',
@@ -105,7 +105,7 @@ $mod_strings = array (
 	'LBL_INVALID_EMAIL'=>'Invalid Email:',
 	'LBL_INVITEE' => 'Contacts',
 	'LBL_LEADS_SUBPANEL_TITLE' => 'Leads',
-	'LBL_LIST_ACCOUNT_NAME' => 'Account Name',
+	'LBL_LIST_ACCOUNT_NAME' => 'Name',
 	'LBL_LIST_CITY' => 'City',
 	'LBL_LIST_CONTACT_NAME' => 'Contact Name',
 	'LBL_LIST_EMAIL_ADDRESS' => 'Email Address',
@@ -179,5 +179,13 @@ $mod_strings = array (
     'LBL_PROSPECT_LIST' => 'Prospect List',
     'LBL_ACCOUNTS_SUBPANEL_TITLE'=>'Accounts',
     'LBL_PROJECT_SUBPANEL_TITLE' => 'Projects',
+    //For export labels
+    'LBL_ACCOUNT_TYPE' => 'Account Type',
+    'LBL_CAMPAIGN_ID' => 'Campaign ID',
+    'LBL_PARENT_ID' => 'Parent ID',
+    'LBL_PHONE_ALTERNATE' => 'Phone Alternate',
+    'LBL_EXPORT_ASSIGNED_USER_NAME' => 'Assigned User Name',
+    // SNIP
+    'LBL_CONTACT_HISTORY_SUBPANEL_TITLE' => 'Related Contacts\' Emails',
 );
 ?>

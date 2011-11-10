@@ -353,7 +353,7 @@ eoq;
 		global $app_strings;
 		global $current_user;
 
-		if($this->sugarbean->bean_implements('ACL') && !ACLController::checkAccess($this->sugarbean->module_dir, 'edit', true)){
+		if($this->sugarbean->bean_implements('ACL') && ( !ACLController::checkAccess($this->sugarbean->module_dir, 'edit', true) || !ACLController::checkAccess($this->sugarbean->module_dir, 'massupdate', true) ) ){
 			return '';
 		}
 		

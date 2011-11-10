@@ -106,7 +106,7 @@ foreach ( $GLOBALS['beanFiles'] as $bean => $file )
     $rel_dictionary = $dictionary ;
     foreach ( $rel_dictionary as $rel_name => $rel_data )
     {
-        $table = $rel_data [ 'table' ] ;
+        $table = isset($rel_data [ 'table' ]) ? $rel_data [ 'table' ] : "" ;
 
         if (empty ( $_REQUEST [ 'silent' ] ))
             echo $mod_strings [ 'LBL_REBUILD_REL_PROC_C_META' ] . $rel_name . "..." ;
@@ -139,6 +139,10 @@ $date_entered = db_convert ( "'$gmdate'", 'datetime' ) ;
 $query = 'INSERT INTO versions (id, deleted, date_entered, date_modified, modified_user_id, created_by, name, file_version, db_version) ' . "VALUES ('$id', '0', $date_entered, $date_entered, '1', '1', 'Rebuild Relationships', '4.0.0', '4.0.0')" ;
 $log->info ( $query ) ;
 $db->query ( $query ) ;
+
+$rel = new Relationship();
+Relationship::delete_cache();
+$rel->build_relationship_cache();
 
 // unset the session variable so it is not picked up in DisplayWarnings.php
 if (isset ( $_SESSION [ 'rebuild_relationships' ] ))

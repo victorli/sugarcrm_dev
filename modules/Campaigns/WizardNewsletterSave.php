@@ -195,6 +195,8 @@ global $mod_strings;
                 //load relationship and add to the list
                 $campaign_focus->load_relationship('tracked_urls');
                 $campaign_focus->tracked_urls->add($ct_focus->id);          
+                // save campaign_trkrs after populating campaign id
+                $ct_focus->save();
             }
         }
     }

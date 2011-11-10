@@ -50,7 +50,7 @@ if (document.getElementById("{$dashletId}_interval").value > 0) {ldelim}
 function refreshDashlet{$strippedDashletId}() 
 {ldelim}
     //refresh only if offset is 0
-    if ( document.getElementById("{$dashletId}_offset").value == '0' ) {ldelim}
+    if ( SUGAR.mySugar && document.getElementById("{$dashletId}_offset").value == '0' ) {ldelim}
         SUGAR.mySugar.retrieveDashlet("{$dashletId}","{$url}");
     {rdelim}
 {rdelim}

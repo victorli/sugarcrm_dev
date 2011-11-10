@@ -279,7 +279,6 @@ class EditView
         $panelCount = 0;
         static $itemCount = 100; //Start the generated tab indexes at 100 so they don't step on custom ones.
 
-
         /* loop all the panels */
         foreach ($this->defs['panels'] as $key=>$p)
         {
@@ -290,34 +289,46 @@ class EditView
             }
             else
             {
-			    	foreach($p as $row=>$rowDef) {
-			            $columnsInRows = count($rowDef);
-			            $columnsUsed = 0;
-			            foreach($rowDef as $col => $colDef) {
-			                $panel[$row][$col] = is_array($p[$row][$col]) ? array('field' => $p[$row][$col]) : array('field' => array('name'=>$p[$row][$col]));
-                            $panel[$row][$col]['field']['tabindex'] = (isset($p[$row][$col]['tabindex']) && is_numeric($p[$row][$col]['tabindex'])) ? $p[$row][$col]['tabindex'] : $itemCount;
+                foreach ($p as $row=>$rowDef)
+                {
+                    $columnsInRows = count($rowDef);
+                    $columnsUsed = 0;
+                    foreach ($rowDef as $col => $colDef)
+                    {
+                        $panel[$row][$col] = is_array($p[$row][$col])
+                            ? array('field' => $p[$row][$col])
+                            : array('field' => array('name'=>$p[$row][$col]));
 
-			                if($columnsInRows < $maxColumns) {
-			                    if($col == $columnsInRows - 1) {
-			                        $panel[$row][$col]['colspan'] = 2 * $maxColumns - ($columnsUsed + 1);
-			                    } else {
-			                        $panel[$row][$col]['colspan'] = floor(($maxColumns * 2 - $columnsInRows) / $columnsInRows);
-			                        $columnsUsed = $panel[$row][$col]['colspan'];
-			                    }
-			                }
+                        $panel[$row][$col]['field']['tabindex'] =
+                            (isset($p[$row][$col]['tabindex']) && is_numeric($p[$row][$col]['tabindex']))
+                                ? $p[$row][$col]['tabindex']
+                                : $itemCount;
 
-			                //Set address types to have colspan value of 2 if colspan is not already defined
-			                if(is_array($colDef) && !empty($colDef['hideLabel']) && !isset($panel[$row][$col]['colspan'])) {
-			                    $panel[$row][$col]['colspan'] = 2;
-			                }
+                        if ($columnsInRows < $maxColumns)
+                        {
+                            if ($col == $columnsInRows - 1)
+                            {
+                                $panel[$row][$col]['colspan'] = 2 * $maxColumns - ($columnsUsed + 1);
+                            }
+                            else
+                            {
+                                $panel[$row][$col]['colspan'] = floor(($maxColumns * 2 - $columnsInRows) / $columnsInRows);
+                                $columnsUsed = $panel[$row][$col]['colspan'];
+                            }
+                        }
 
-			                $itemCount++;
+                        //Set address types to have colspan value of 2 if colspan is not already defined
+                        if (is_array($colDef) && !empty($colDef['hideLabel']) && !isset($panel[$row][$col]['colspan']))
+                        {
+                            $panel[$row][$col]['colspan'] = 2;
+                        }
 
-			            } //foreach
-			    	} //foreach
+                        $itemCount++;
 
-					$panel = $this->getPanelWithFillers($panel);
+                    }
+                }
 
+			    	$panel = $this->getPanelWithFillers($panel);
 
 			    	$this->sectionPanels[strtoupper($key)] = $panel;
 		        }
@@ -429,6 +440,12 @@ class EditView
                 if (isset($this->fieldDefs[$name]['options']) && isset($app_list_strings[$this->fieldDefs[$name]['options']]))
                 {
                     $this->fieldDefs[$name]['options'] = $app_list_strings[$this->fieldDefs[$name]['options']];
+                    if(isset($GLOBALS['sugar_config']['enable_autocomplete']) && $GLOBALS['sugar_config']['enable_autocomplete'] == true){
+						$this->fieldDefs[$name]['autocomplete'] = true;
+	                	$this->fieldDefs[$name]['autocomplete_options'] = $this->fieldDefs[$name]['options']; // we need the name for autocomplete
+					} else {
+                        $this->fieldDefs[$name]['autocomplete'] = false;
+                   }
                 }
 
                 if (isset($this->fieldDefs[$name]['function']))
@@ -454,14 +471,30 @@ class EditView
                     }
                 }
 
-                if (isset($this->fieldDefs[$name]['type']) && $this->fieldDefs[$name]['type'] == 'function' && isset($this->fieldDefs[$name]['function_name']))
-                {
-                    $value = $this->callFunction($this->fieldDefs[$name]);
-                    $valueFormatted = true;
-                }
+	       	 	if(isset($this->fieldDefs[$name]['function'])) {
+	       	 		$function = $this->fieldDefs[$name]['function'];
+	       			if(is_array($function) && isset($function['name'])){
+	       				$function = $this->fieldDefs[$name]['function']['name'];
+	       			}else{
+	       				$function = $this->fieldDefs[$name]['function'];
+	       			}
+	       	 		if(!empty($this->fieldDefs[$name]['function']['returns']) && $this->fieldDefs[$name]['function']['returns'] == 'html'){
+						if(!empty($this->fieldDefs[$name]['function']['include'])){
+								require_once($this->fieldDefs[$name]['function']['include']);
+						}
+						$value = $function($this->focus, $name, $value, $this->view);
+						$valueFormatted = true;
+					}else{
+						$this->fieldDefs[$name]['options'] = $function($this->focus, $name, $value, $this->view);
+					}
+	       	 	}
 
-                if (!$valueFormatted)
-                {
+	       	 	if(isset($this->fieldDefs[$name]['type']) && $this->fieldDefs[$name]['type'] == 'function' && isset($this->fieldDefs[$name]['function_name'])){
+	       	 		$value = $this->callFunction($this->fieldDefs[$name]);
+	       	 		$valueFormatted = true;
+	       	 	}
+
+	       	 	if(!$valueFormatted) {
                     // $this->focus->format_field($this->focus->field_defs[$name]);
                    $value = isset($this->focus->$name) ? $this->focus->$name : '';
                 }
@@ -472,11 +505,10 @@ class EditView
                 }
 
 
-                //This code is used for QuickCreates that go to Full Form view
-                if ($this->populateBean && empty($this->focus->id)
-                    && (isset($this->fieldDefs[$name]['function']['returns'])
-                        ? $this->fieldDefs[$name]['function']['returns'] != 'html'
-                        : true)
+                //This code is used for QuickCreates that go to Full Form view.  We want to overwrite the values from the bean
+                //with values from the request if they are set and either the bean is brand new (such as a create from a subpanels) or the 'full form' button has been clicked
+                if ((($this->populateBean && empty($this->focus->id)) || (isset($_REQUEST['full_form'])))
+                    && (!isset($this->fieldDefs[$name]['function']['returns']) || $this->fieldDefs[$name]['function']['returns'] != 'html')
                     && isset($_REQUEST[$name]))
                 {
                     $this->fieldDefs[$name]['value'] = $this->getValueFromRequest($_REQUEST, $name);
@@ -526,10 +558,9 @@ class EditView
             }
         }
     }
-
     /**
      * display
-     * This method makes the Smarty variable assignments and then displays the
+     * This method makes the Smarty variable assignments and theautocomplete_ajax'vars the
      * generated view.
      * @param $showTitle boolean value indicating whether or not to show a title on the resulting page
      * @param $ajaxSave boolean value indicating whether or not the operation is an Ajax save request
@@ -558,6 +589,7 @@ class EditView
         $this->th->ss->assign('MOD', $mod_strings);
         $this->th->ss->assign('fields', $this->fieldDefs);
         $this->th->ss->assign('sectionPanels', $this->sectionPanels);
+        $this->th->ss->assign('config', $sugar_config);
         $this->th->ss->assign('returnModule', $this->returnModule);
         $this->th->ss->assign('returnAction', $this->returnAction);
         $this->th->ss->assign('returnId', $this->returnId);

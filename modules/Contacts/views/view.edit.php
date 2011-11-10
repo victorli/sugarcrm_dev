@@ -70,8 +70,7 @@ class ContactsViewEdit extends ViewEdit
 		   echo '<script language="javascript">';
 		   echo 'addToValidateComparison(\'EditView\', \'portal_password\', \'varchar\', false, SUGAR.language.get(\'app_strings\', \'ERR_SQS_NO_MATCH_FIELD\') + SUGAR.language.get(\'Contacts\', \'LBL_PORTAL_PASSWORD\'), \'portal_password1\');';	
            echo 'addToValidateVerified(\'EditView\', \'portal_name_verified\', \'bool\', false, SUGAR.language.get(\'app_strings\', \'ERR_EXISTING_PORTAL_USERNAME\'));';
-           echo 'YAHOO.util.Event.on(\'portal_name\', \'blur\', validatePortalName);';
-		   echo 'YAHOO.util.Event.on(\'portal_name\', \'keydown\', handleKeyDown);';
+           echo 'YAHOO.util.Event.onDOMReady(function() {YAHOO.util.Event.on(\'portal_name\', \'blur\', validatePortalName);YAHOO.util.Event.on(\'portal_name\', \'keydown\', handleKeyDown);});';
 		   echo '</script>';
 		}
 			

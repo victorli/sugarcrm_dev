@@ -244,11 +244,13 @@ function toggleMore(spanId, img_id, module, action, params){
 }
 
 // The following line of code was copy / pasted in a whole bunch of modules.
-
-YAHOO.util.Event.onDOMReady(function() {
-    /* initialize the popup request from the parent */
-    if(window.document.forms['popup_query_form'].request_data.value == "") {
-    	window.document.forms['popup_query_form'].request_data.value
-    		= YAHOO.lang.JSON.stringify(window.opener.get_popup_request_data());
+SUGAR.util.doWhen("window.document.forms['popup_query_form'] != null "
+        + "&& typeof(window.document.forms['popup_query_form'].request_data) != 'undefined'",
+    function() {
+        /* initialize the popup request from the parent */
+        if(window.document.forms['popup_query_form'].request_data.value == "")
+        {
+            window.document.forms['popup_query_form'].request_data.value = window.opener.get_popup_request_data();
+        }
     }
-});
+);

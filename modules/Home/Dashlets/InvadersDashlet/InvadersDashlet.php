@@ -107,6 +107,7 @@ class InvadersDashlet extends Dashlet {
         $ss->assign('titleLbl', $this->dashletStrings['LBL_CONFIGURE_TITLE']);
         $ss->assign('heightLbl', $this->dashletStrings['LBL_CONFIGURE_HEIGHT']);
         $ss->assign('saveLbl', $app_strings['LBL_SAVE_BUTTON_LABEL']);
+        $ss->assign('clearLbl', $app_strings['LBL_CLEAR_BUTTON_LABEL']);
         $ss->assign('title', $this->title);
         $ss->assign('height', $this->height);
         $ss->assign('id', $this->id);

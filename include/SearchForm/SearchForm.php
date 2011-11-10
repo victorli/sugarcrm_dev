@@ -131,7 +131,7 @@ class SearchForm {
     function populateFromArray(&$array, $switchVar = null, $addAllBeanFields = true) {
 
        //CL Bug:33176
-       if(empty($array['searchFormTab']) && empty($switchvar)) {
+       if(empty($array['searchFormTab']) && empty($switchVar)) {
        	  $array['searchFormTab'] = 'advanced_search';
        }
 
@@ -260,7 +260,7 @@ class SearchForm {
             if(isset($parms['value']) && $parms['value'] != "") {
                 $operator = 'like';
                 if(!empty($parms['operator'])) {
-                    $operator = $parms['operator'];
+                    $operator = strtolower($parms['operator']);
                 }
 
                 if(is_array($parms['value'])) {
@@ -362,7 +362,7 @@ class SearchForm {
                         if(!empty($where)) {
                             $where .= " OR ";
                         }
-                        switch(strtolower($operator)) {
+                        switch($operator) {
                         	case 'subquery':
                                 $in = 'IN';
                                 if ( isset($parms['subquery_in_clause']) ) {

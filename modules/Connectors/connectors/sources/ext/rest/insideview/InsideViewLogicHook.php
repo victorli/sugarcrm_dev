@@ -140,6 +140,7 @@ class InsideViewLogicHook {
         if ( $GLOBALS['app']->controller->action != 'DetailView' ) {
             return;
         }
+        require_once('include/connectors/utils/ConnectorUtils.php');
 
         $bean = $GLOBALS['app']->controller->bean;
 

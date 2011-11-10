@@ -121,10 +121,21 @@
 		        var savePressed = false;
 		        if(event) {
 		           var elm = document.activeElement || event.explicitOriginalTarget;
-		           if(typeof elm.type != 'undefined' && !(/_email_widget_add/.test(elm.id.toLowerCase())) && /submit|button/.test(elm.type.toLowerCase())) {
-			          savePressed = true;
-		           }
+		           if(typeof elm.type != 'undefined' && /submit|button/.test(elm.type.toLowerCase())) {
+                        //if we are in here, then the element has been recognized as a button or submit type, so check the id
+                        //to make sure it is related to a submit button that should lead to a form submit
+
+                        //note that the document.activeElement and explicitOriginalTarget calls do not work consistantly across
+                        // all browsers, so we have to include this check after we are sure that the calls returned something as opposed to in the coindition above.
+                        // Also, since this function is called on blur of the email widget, we can't rely on a third object as a flag (a var or hidden form input)
+                        // since this function will fire off before the click event from a button is executed, which means the 3rd object will not get updated prior to this function running.
+                        if(/save|full|cancel|change/.test(elm.value.toLowerCase())){
+                           //this is coming from either a save, full form, cancel, or view change log button, we should set savePressed = true;
+                            savePressed = true;
+                        }
+                   }
 		        }
+
 		        
 		        if(savePressed || this.enterPressed) {
 		           setTimeout("SUGAR.EmailAddressWidget.instances." + this.id + ".forceSubmit()", 2100);
@@ -137,7 +148,13 @@
 		    var targetEl = this.getEventElement(event);
 		    var index = /[a-z]*\d?emailAddress(\d+)/i.exec(targetEl.id)[1];
 			var verifyElementFlag = Dom.get(this.id + 'emailAddressVerifiedFlag' + index);
-		    this.verifyElementValue = Dom.get(this.id + 'emailAddressVerifiedValue' + index);
+
+            if(this.verifyElementValue == null || typeof(this.verifyElementValue)=='undefined'){
+                //we can't do anything without this value, so just return
+                return false;
+            }
+
+            this.verifyElementValue = Dom.get(this.id + 'emailAddressVerifiedValue' + index);
 		    verifyElementFlag.value = (trim(targetEl.value) == '' || targetEl.value == this.verifyElementValue.value) ? "true" : "false"
 		    
 		    //Remove the span element if it is present
@@ -155,7 +172,7 @@
 					'index.php?module=Contacts&action=RetrieveEmail&target=' + targetEl.id + '&email=' + targetEl.value, 
 					{success: callbackFunction, failure: callbackFunction, scope: this}
 				);
-		    }             
+		    }
 	    },
 
         handleKeyDown: function (event) {
@@ -199,8 +216,8 @@
 		    var parentObj = insertInto.parentNode;
 		    var newContent = document.createElement("input");
 		    var nav = new String(navigator.appVersion);
-		    var newContentPrimaryFlag;
-            newContentPrimaryFlag = document.createElement("input");
+
+		    var newContentPrimaryFlag = document.createElement("input");
 		    var newContentReplyToFlag = document.createElement("input");
 		    var newContentOptOutFlag = document.createElement("input");
 		    var newContentInvalidFlag = document.createElement("input");
@@ -217,7 +234,7 @@
 		    var td6 = document.createElement("td");
 		    var td7 = document.createElement("td");
 		    var td8 = document.createElement("td");
-		
+
 		    // set input field attributes
 		    newContent.setAttribute("type", "text");
 		    newContent.setAttribute("name", this.id + "emailAddress" + this.numberEmailAddresses);
@@ -243,7 +260,7 @@
 		    newContentPrimaryFlag.setAttribute("id", this.id + "emailAddressPrimaryFlag" + this.numberEmailAddresses);
 		    newContentPrimaryFlag.setAttribute("value", this.id + "emailAddress" + this.numberEmailAddresses);
 		    newContentPrimaryFlag.setAttribute("enabled", "true");
-		
+
 		    // set reply-to flag
 		    newContentReplyToFlag.setAttribute("type", "radio");
 		    newContentReplyToFlag.setAttribute("name", this.id + "emailAddressReplyToFlag");
@@ -280,7 +297,7 @@
 		            this.checked = true;
 		        } // else
 		    }
-		
+
 		    // set opt-out flag
 		    newContentOptOutFlag.setAttribute("type", "checkbox");
 		    newContentOptOutFlag.setAttribute("name", this.id + "emailAddressOptOutFlag[]");
@@ -309,7 +326,7 @@
 		    newContentVerifiedValue.setAttribute("name", this.id + "emailAddressVerifiedValue" + this.numberEmailAddresses);
 		    newContentVerifiedValue.setAttribute("id", this.id + "emailAddressVerifiedValue" + this.numberEmailAddresses);
 		    newContentVerifiedValue.setAttribute("value", address);
-		
+
 		    //Add to validation
 		    this.emailView = (this.emailView == '') ? 'EditView' : this.emailView;
 		    addToValidateVerified(this.emailView, this.id + "emailAddressVerifiedFlag" + this.numberEmailAddresses, 'bool', false, SUGAR.language.get('app_strings', 'LBL_VERIFY_EMAIL_ADDRESS'));
@@ -321,7 +338,7 @@
 		    td4.setAttribute("align", "center");
 		    td5.setAttribute("align", "center");
 		    td6.setAttribute("align", "center");
-		    
+
 		    td1.appendChild(newContent);
 		    td1.appendChild(document.createTextNode(" "));
 		    spanNode = document.createElement('span');
@@ -353,7 +370,7 @@
 		    tbody.appendChild(tr);
 		
 		    
-		    
+
 		    insertInto.appendChild(tbody);
 		    
 		    // insert the new div->input into the DOM
@@ -384,24 +401,26 @@
 		    newContent.eaw = this;
 		    newContent.onblur = function(e){this.eaw.retrieveEmailAddress(e)};
 		    newContent.onkeydown = function(e){this.eaw.handleKeyDown(e)};
-            if (YAHOO.env.ua.ie) {
-                // IE doesn't bubble up "change" events through the DOM. So we need to find events that are looking at our parent and manually push them down to here
+            if (YAHOO.env.ua.ie > 0) {
+                // IE doesn't bubble up "change" events through the DOM.
+                // So we need to fire onChange events on the parent span when the input changes
                 var emailcontainer = Dom.getAncestorByTagName(insertInto,'span');
-                var listeners = YAHOO.util.Event.getListeners(emailcontainer);
-                if (typeof listeners != 'undefined' && listeners instanceof Array) {
-                    for (var i=0; i<listeners.length; ++i) {
-                        var listener = listeners[i];
-                        YAHOO.util.Event.addListener(newContent, listener.type, listener.fn, listener.obj, listener.adjust);
-                    }
-                }
+                YAHOO.util.Event.addListener(newContent, "change",
+                        function(ev, el){SUGAR.util.callOnChangeListers(el);}, emailcontainer
+                );
             }
 		    
 		    // Add validation to field
-		    addToValidate(this.emailView, this.id + 'emailAddress' + this.numberEmailAddresses, 'email', this.emailIsRequired, SUGAR.language.get('app_strings', 'LBL_EMAIL_ADDRESS_BOOK_EMAIL_ADDR'));  
+            this.EmailAddressValidation(this.emailView, this.id+ 'emailAddress' + this.numberEmailAddresses,this.emailIsRequired, SUGAR.language.get('app_strings', 'LBL_EMAIL_ADDRESS_BOOK_EMAIL_ADDR'));
 		    this.numberEmailAddresses++;
 			this.addInProgress = false;
 		}, //addEmailAddress
-		
+
+        EmailAddressValidation : function(ev,fn,r,stR) {
+            YAHOO.util.Event.onContentReady(fn,
+    function () { addToValidate(ev, fn, 'email', r, stR);});
+        },
+
 		removeEmailAddress : function(index) {
 			removeFromValidate(this.emailView, this.id + 'emailAddress' + index);
             var oNodeToRemove = Dom.get(this.id +  'emailAddressRow' + index);
@@ -478,20 +497,23 @@
 		
 		forceSubmit : function () {
 		    var theForm = Dom.get(this.emailView);
-		    if(theForm) {
-		       theForm.action.value = 'Save';
-		       
-		       if(!check_form(this.emailView)) {
-		          return false;
-		       }
-		       
-		       if(this.emailView == 'EditView') {
-		          theForm.submit();
-		       } else if(this.emailView == 'QuickCreate') {
-		          SUGAR.subpanelUtils.inlineSave(theForm.id, theForm.module.value.toLowerCase());
-		       }
-		    } 
-		} //forceSubmit
-	};
-	emailAddressWidgetLoaded = true;
+            if(theForm) {
+               theForm.action.value = 'Save';
+               if(!check_form(this.emailView)) {
+                  return false;
+               }
+               if(this.emailView == 'EditView') {
+                   //this is coming from regular edit view form
+                  theForm.submit();
+               } else if (this.emailView.indexOf('DCQuickCreate')>0){
+                   //this is coming from the DC Quick Create Tool Bar, so call save on form
+                  DCMenu.save(theForm.id);
+               } else if(this.emailView.indexOf('QuickCreate')>=0) {
+                   //this is a subpanel create or edit form
+                  SUGAR.subpanelUtils.inlineSave(theForm.id, theForm.module.value+'_subpanel_save_button');
+               }
+            }
+        } //forceSubmit
+    };
+    emailAddressWidgetLoaded = true;
 })();

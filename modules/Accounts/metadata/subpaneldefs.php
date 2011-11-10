@@ -38,7 +38,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 $layout_defs['Accounts'] = array(
-	// list of what Subpanels to show in the DetailView 
+	// list of what Subpanels to show in the DetailView
 	'subpanel_setup' => array(
 
 		'activities' => array(
@@ -50,15 +50,15 @@ $layout_defs['Accounts'] = array(
 			'subpanel_name' => 'activities',   //this values is not associated with a physical file.
 			'header_definition_from_subpanel'=> 'meetings',
 			'module'=>'Activities',
-			
+
 			'top_buttons' => array(
 				array('widget_class' => 'SubPanelTopCreateTaskButton'),
 				array('widget_class' => 'SubPanelTopScheduleMeetingButton'),
 				array('widget_class' => 'SubPanelTopScheduleCallButton'),
 				array('widget_class' => 'SubPanelTopComposeEmailButton'),
-			),	
-					
-			'collection_list' => array(	
+			),
+
+			'collection_list' => array(
 				'tasks' => array(
 					'module' => 'Tasks',
 					'subpanel_name' => 'ForActivities',
@@ -74,7 +74,7 @@ $layout_defs['Accounts'] = array(
 					'subpanel_name' => 'ForActivities',
 					'get_subpanel_data' => 'calls',
 				),
-			)			
+			)
 		),
 		'history' => array(
 			'order' => 20,
@@ -85,14 +85,14 @@ $layout_defs['Accounts'] = array(
 			'subpanel_name' => 'history',   //this values is not associated with a physical file.
 			'header_definition_from_subpanel'=> 'meetings',
 			'module'=>'History',
-			
+
 			'top_buttons' => array(
 				array('widget_class' => 'SubPanelTopCreateNoteButton'),
 				array('widget_class' => 'SubPanelTopArchiveEmailButton'),
             	array('widget_class' => 'SubPanelTopSummaryButton'),
-			),	
-					
-			'collection_list' => array(	
+			),
+
+			'collection_list' => array(
 				'tasks' => array(
 					'module' => 'Tasks',
 					'subpanel_name' => 'ForHistory',
@@ -112,20 +112,20 @@ $layout_defs['Accounts'] = array(
 					'module' => 'Notes',
 					'subpanel_name' => 'ForHistory',
 					'get_subpanel_data' => 'notes',
-				),	
+				),
 				'emails' => array(
 					'module' => 'Emails',
 					'subpanel_name' => 'ForHistory',
 					'get_subpanel_data' => 'emails',
-				),	
+				),
 				'linkedemails' => array(
 	                'module' => 'Emails',
 	                'subpanel_name' => 'ForUnlinkedEmailHistory',
 	                'get_subpanel_data' => 'function:get_unlinked_email_query',
 	                'generate_select'=>true,
 	                'function_parameters' => array('return_as_array'=>'true'),
-	    		),          
-			)			
+	    		),
+			)
 		),
         'documents' => array(
             'order' => 25,
@@ -135,13 +135,13 @@ $layout_defs['Accounts'] = array(
             'sort_by' => 'id',
             'title_key' => 'LBL_DOCUMENTS_SUBPANEL_TITLE',
             'get_subpanel_data' => 'documents',
-            'top_buttons' => 
+            'top_buttons' =>
             array (
-                0 => 
+                0 =>
                 array (
                     'widget_class' => 'SubPanelTopButtonQuickCreate',
                     ),
-                1 => 
+                1 =>
                 array (
                     'widget_class' => 'SubPanelTopSelectButton',
                     'mode' => 'MultiSelect',
@@ -162,7 +162,7 @@ $layout_defs['Accounts'] = array(
 				array('widget_class' => 'SubPanelTopSelectButton', 'mode'=>'MultiSelect')
 			),
 
-		),		
+		),
 		'opportunities' => array(
 			'order' => 40,
 			'module' => 'Opportunities',
@@ -189,10 +189,10 @@ $layout_defs['Accounts'] = array(
 				array('widget_class' => 'SubPanelTopCreateLeadNameButton'),
 				array('widget_class' => 'SubPanelTopSelectButton',
 					'popup_module' => 'Opportunities',
-					'mode' => 'MultiSelect', 
+					'mode' => 'MultiSelect',
 				),
 			),
-			
+
 		),
 		'cases' => array(
 			'order' => 100,
@@ -257,8 +257,8 @@ $layout_defs['Accounts'] = array(
 			'sort_by' => 'activity_date',
 			'get_subpanel_data'=>'campaigns',
 			'subpanel_name' => 'ForTargets',
-			'title_key' => 'LBL_CAMPAIGNS',	
-		),		
+			'title_key' => 'LBL_CAMPAIGNS',
+		),
 	),
 );
 ?>

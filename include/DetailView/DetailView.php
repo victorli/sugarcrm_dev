@@ -252,7 +252,7 @@ class DetailView extends ListView {
 		    );
             $json = getJSONobj();
             $encoded_popup_request_data = $json->encode($popup_request_data);
-            $audit_link = "<a href='#' onclick='open_popup(\"Audit\", \"600\", \"400\", \"&record=".$_REQUEST['record']."&module_name=".$_REQUEST['module']."\", true, false, $encoded_popup_request_data);'>".$this->local_app_strings['LNK_VIEW_CHANGE_LOG']."</a>";
+            $audit_link = "<a href='javascript:void(0)' onclick='open_popup(\"Audit\", \"600\", \"400\", \"&record=".$_REQUEST['record']."&module_name=".$_REQUEST['module']."\", true, false, $encoded_popup_request_data);'>".$this->local_app_strings['LNK_VIEW_CHANGE_LOG']."</a>";
         }
         
         $html_text = "";

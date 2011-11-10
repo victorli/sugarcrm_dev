@@ -190,7 +190,7 @@ function getAnyToForm($ignore='', $usePostAsAuthority = false)
 
 }
 
-function handleRedirect($return_id='', $return_module='')
+function handleRedirect($return_id='', $return_module='', $additionalFlags = false)
 {
 	if(isset($_REQUEST['return_url']) && $_REQUEST['return_url'] != "")
 	{
@@ -260,31 +260,51 @@ function buildRedirectURL($return_id='', $return_module='')
 	{
 		$return_id = $_REQUEST['return_id'];
 	}
+
+    $add = "";
+    if(isset($additionalFlags) && !empty($additionalFlags)) {
+        foreach($additionalFlags as $k => $v) {
+            $add .= "&{$k}={$v}";
+        }
+    }
     
     if (!isset($isDuplicate) || !$isDuplicate)
     {
-        //eggsurplus Bug 23816: maintain VCR after an edit/save. If it is a duplicate then don't worry about it. The offset is now worthless.
-        $redirect_url = "Location: index.php?action=$return_action&module=$return_module&record=$return_id&return_module=$return_module&return_action=$return_action";
+        $url="index.php?action=$return_action&module=$return_module&record=$return_id&return_module=$return_module&return_action=$return_action{$add}";
         if(isset($_REQUEST['offset']) && empty($_REQUEST['duplicateSave'])) {
-            $redirect_url .= "&offset=".$_REQUEST['offset'];
+            $url .= "&offset=".$_REQUEST['offset'];
         }
-        return $redirect_url;
+        if(!empty($_REQUEST['ajax_load']))
+        {
+            $ajax_ret = array(
+                'content' => "<script>SUGAR.ajaxUI.loadContent('$url');</script>\n",
+                'menu' => array(
+                    'module' => $return_module,
+                    'label' => translate($return_module),
+                ),
+            );
+            $json = getJSONobj();
+            echo $json->encode($ajax_ret);
+        } else {
+            return "Location: $url";
+        }
     } else {
     	$standard = "action=$return_action&module=$return_module&record=$return_id&isDuplicate=true&return_module=$return_module&return_action=$return_action&status=$status";
-   		$add = '';
-
-    	if(isset($additionalFlags) && !empty($additionalFlags)) {
-    		foreach($additionalFlags as $k => $v) {
-    			if(!empty($add)) {
-    				$add .= "&";
-    			}
-    			$add .= "{$k}={$v}";
-    		}
-    	}
-    	if(!empty($add)) {
-    		$add = "&" . $add;
-    	}
-        return "Location: index.php?{$standard}{$add}";
+        $url="index.php?{$standard}{$add}";
+        if(!empty($_REQUEST['ajax_load']))
+        {
+            $ajax_ret = array(
+                 'content' => "<script>SUGAR.ajaxUI.loadContent('$url');</script>\n",
+                 'menu' => array(
+                     'module' => $return_module,
+                     'label' => translate($return_module),
+                 ),
+            );
+            $json = getJSONobj();
+            echo $json->encode($ajax_ret);
+        } else {
+            return "Location: $url";
+        }
     }
 }
 

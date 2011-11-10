@@ -76,7 +76,7 @@ class SchedulersJob extends SugarBean {
             if (false === $adminId) {//retrive other admin
                 $adminId = $this->db->getOne(
                     'SELECT id FROM users WHERE is_admin=1 AND deleted=0 AND status=\'Active\'',
-                    true, 
+                    true,
                     'Error retrieving Admin account info'
                 );
                 if ($adminId) {
@@ -204,13 +204,11 @@ class SchedulersJob extends SugarBean {
 		$trackerManager->pause();
 		$GLOBALS['log']->debug('----->SchedulersJob updating Job Status and finishing Job execution.');
 		$this->scheduler->retrieve($this->scheduler->id);
-
 		$this->scheduler->last_run = gmdate($GLOBALS['timedate']->get_db_date_time_format());
 		if($this->scheduler->last_run == gmdate($GLOBALS['timedate']->get_db_date_time_format(), strtotime('Jan 01 2000 00:00:00'))) {
 			$this->scheduler->last_run = $this->handleDateFormat('now');
 			$GLOBALS['log']->fatal('Scheduler applying bogus date for "Last Run": '.$this->scheduler->last_run);
 		}
-
 		$this->scheduler->save();
 		$trackerManager->unPause();
 	}

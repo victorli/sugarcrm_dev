@@ -87,13 +87,13 @@ $setup_site_host_name               = $parsed_url['host'];
 $setup_site_log_dir                 = isset($_SESSION['setup_site_custom_log_dir']) ? $_SESSION['setup_site_log_dir'] : '.';
 $setup_site_log_file                = 'sugarcrm.log';  // may be an option later
 $setup_site_session_path            = isset($_SESSION['setup_site_custom_session_path']) ? $_SESSION['setup_site_session_path'] : '';
-$setup_site_log_level				='fatal';		
+$setup_site_log_level				='fatal';
 
 sugar_cache_clear('TeamSetsCache');
 if ( file_exists($cache_dir .'modules/Teams/TeamSetCache.php') ) {
 	unlink($cache_dir.'modules/Teams/TeamSetCache.php');
 }
-        
+
 sugar_cache_clear('TeamSetsMD5Cache');
 if ( file_exists($cache_dir.'modules/Teams/TeamSetMD5Cache.php') ) {
 	unlink($cache_dir.'modules/Teams/TeamSetMD5Cache.php');
@@ -200,13 +200,13 @@ if ($GLOBALS['db']->dbType=='mssql') {
  VardefManager::clearVardef();
 foreach( $beanFiles as $bean => $file ) {
 	$doNotInit = array('Scheduler', 'SchedulersJob', 'ProjectTask');
-	
+
 	if(in_array($bean, $doNotInit)) {
 		$focus = new $bean(false);
 	} else {
 	    $focus = new $bean();
 	}
-	
+
 	if ( $bean == 'Configurator' )
 	    continue;
 
@@ -225,17 +225,17 @@ foreach( $beanFiles as $bean => $file ) {
         } else {
         	continue; //no further processing needed for ignored beans.
         }
-        
+
         // table has not been setup...we will do it now and remember that
         $processed_tables[] = $table_name;
-    
+
         $focus->db->database = $db->database; // set db connection so we do not need to reconnect
-            
+
         if($setup_db_drop_tables) {
             drop_table_install($focus);
             installLog("dropping table ".$focus->table_name);
         }
-        
+
         if(create_table_if_not_exist($focus)) {
             installLog("creating table ".$focus->table_name);
             if( $bean == "User" ){
@@ -261,7 +261,7 @@ echo "<br>";
 ////    START RELATIONSHIP CREATION
 
     ksort($rel_dictionary);
-    foreach( $rel_dictionary as $rel_name => $rel_data ){  
+    foreach( $rel_dictionary as $rel_name => $rel_data ){
         $table = $rel_data['table'];
 
         if( $setup_db_drop_tables ){
@@ -314,11 +314,11 @@ echo "<br>";
     echo $line_entry_format.$mod_strings['LBL_PERFORM_DEFAULT_SCHEDULER'].$line_exit_format;
     installLog($mod_strings['LBL_PERFORM_DEFAULT_SCHEDULER']);
     $scheduler = new Scheduler();
-    if(isset($sugar_config['demoData']) && $sugar_config['demoData'] != 'no' && $_SESSION['setup_db_type'] == 'mssql') {    
+    if(isset($sugar_config['demoData']) && $sugar_config['demoData'] != 'no' && $_SESSION['setup_db_type'] == 'mssql') {
         $db->query('DELETE FROM schedulers');
         $db->query('DELETE FROM schedulers_times');
-        
-                
+
+
         $sched3 = new Scheduler();
         $sched3->name               = 'Prune the User History Table';
         $sched3->job                = 'function::trimTracker';
@@ -376,22 +376,23 @@ echo "<br>";
         $sched7->created_by         = '1';
         $sched7->modified_user_id   = '1';
         $sched7->catch_up           = '0';
-        $sched7->save();    
+        $sched7->save();
 
 
 
     } else {
-        $scheduler->rebuildDefaultSchedulers();     
+        $scheduler->rebuildDefaultSchedulers();
     }
 
-    
+
     echo $mod_strings['LBL_PERFORM_DONE'];
-    
+
 
 
 // Enable Sugar Feeds and add all feeds by default
 installLog("Enable SugarFeeds");
 enableSugarFeeds();
+
 
 // Enable the InsideView connector and add all modules
 installLog("Enable InsideView Connector");
@@ -399,7 +400,7 @@ enableInsideViewConnector();
 
 ///////////////////////////////////////////////////////////////////////////////
 ////    START DEMO DATA
-    
+
     // populating the db with seed data
     installLog("populating the db with seed data");
     if( $_SESSION['demoData'] != 'no' ){
@@ -420,9 +421,9 @@ enableInsideViewConnector();
 
     $endTime = microtime(true);
     $deltaTime = $endTime - $startTime;
-    
 
-                    
+
+
 ///////////////////////////////////////////////////////////////////////////
 ////    FINALIZE LANG PACK INSTALL
     if(isset($_SESSION['INSTALLED_LANG_PACKS']) && is_array($_SESSION['INSTALLED_LANG_PACKS']) && !empty($_SESSION['INSTALLED_LANG_PACKS'])) {
@@ -434,7 +435,7 @@ enableInsideViewConnector();
     require_once('modules/Versions/InstallDefaultVersions.php');
 
 
-    
+
     require_once('modules/Connectors/InstallDefaultConnectors.php');
 
 
@@ -488,25 +489,25 @@ FP;
      </table>
 FP;
    }
-    
+
     if( isset($_SESSION['setup_site_sugarbeet_automatic_checks']) && $_SESSION['setup_site_sugarbeet_automatic_checks'] == true){
         set_CheckUpdates_config_setting('automatic');
     }else{
         set_CheckUpdates_config_setting('manual');
-    } 
+    }
     if(!empty($_SESSION['setup_system_name'])){
         $admin=new Administration();
-        $admin->saveSetting('system','name',$_SESSION['setup_system_name']);  
+        $admin->saveSetting('system','name',$_SESSION['setup_system_name']);
     }
-    
-    
+
+
     // Bug 28601 - Set the default list of tabs to show
     $enabled_tabs = array();
     $enabled_tabs[] = 'Home';
-    
+
     $enabled_tabs[] = 'Accounts';
     $enabled_tabs[] = 'Contacts';
-    $enabled_tabs[] = 'Opportunities';    
+    $enabled_tabs[] = 'Opportunities';
     $enabled_tabs[] = 'Leads';
     $enabled_tabs[] = 'Calendar';
     $enabled_tabs[] = 'Documents';
@@ -519,12 +520,12 @@ FP;
     $enabled_tabs[] = 'Cases';
     $enabled_tabs[] = 'Prospects';
     $enabled_tabs[] = 'ProspectLists';
-    
-    
+
+
     require_once('modules/MySettings/TabController.php');
     $tabs = new TabController();
     $tabs->set_system_tabs($enabled_tabs);
-    
+
 post_install_modules();
 if( count( $bottle ) > 0 ){
     foreach( $bottle as $bottle_message ){

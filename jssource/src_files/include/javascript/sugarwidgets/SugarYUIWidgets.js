@@ -169,7 +169,8 @@ sw.Template.prototype = {
 	append: function (target, args) {
 		var tEl = Dom.get(target);
 		if (tEl) tEl.innerHTML += this.exec(args);
-		else if (!SUGAR.isIE) console.log("Warning, unable to find target:" + target);
+		else if (typeof(console) != "undefined" && typeof(console.log) == "function")
+            console.log("Warning, unable to find target:" + target);
 	},
 	exec : function (args) {
 		var out = this.content;
@@ -381,12 +382,20 @@ YAHOO.extend(sw.RowDD, YAHOO.util.DDProxy, {
     		this.getEl().style.display = "none";
     		this.table.appendChild(this.getEl());
     		this.newTable.addRow(this.row.getData(), this.newIndex);
-    		this.ddtable.deleteRow(this.row);
+    		try{
+                //This method works, but throws an error under IE8
+                this.ddtable.deleteRow(this.row);
+            }catch(e){
+                if(typeof(console) != "undefined" && console.log)
+                {
+                    console.log(e);
+                }
+            }
     		this.ddtable.render();
     	}
     	this.newTable = this.newIndex = null
-        
-		var clickEl = this.getEl(); 
+
+		var clickEl = this.getEl();
         Dom.setStyle(clickEl, "opacity", "");
     }
 });

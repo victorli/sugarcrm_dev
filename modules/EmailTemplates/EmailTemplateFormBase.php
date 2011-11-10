@@ -358,6 +358,8 @@ EOQ;
 	////	END ATTACHMENT HANDLING
 	///////////////////////////////////////////////////////////////////////////////
 
+        clear_register_value('select_array', $focus->object_name);
+        
 		if($redirect) {
 		$GLOBALS['log']->debug("Saved record with id of ".$return_id);
 			handleRedirect($return_id, "EmailTemplates");

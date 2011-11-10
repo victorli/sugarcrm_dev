@@ -41,50 +41,50 @@ abstract class SugarCacheAbstract
      * @var set to false if you don't want to use the local store, true by default.
      */
     public $useLocalStore = true;
-    
+
     /**
      * @var timeout in seconds used for cache item expiration
      */
     protected $_expireTimeout = 300;
-    
+
     /**
      * @var prefix to use for all cache key entries
      */
     protected $_keyPrefix = 'sugarcrm_';
-    
+
     /**
      * @var stores locally any cached items so we don't have to hit the external cache as much
      */
     protected $_localStore = array();
-    
+
     /**
      * @var records the number of get requests made against the cache
      */
     protected $_cacheRequests = 0;
-    
+
     /**
      * @var records the number of hits made against the cache that have been resolved without hitting the
      * external cache
      */
     protected $_cacheLocalHits = 0;
-    
+
     /**
      * @var records the number of hits made against the cache that are resolved using the external cache
      */
     protected $_cacheExternalHits = 0;
-    
+
     /**
      * @var records the number of get requests that aren't in the cache
      */
     protected $_cacheMisses = 0;
-    
+
     /**
      * @var indicates the priority level for using this cache; the lower number indicates the highest
      * priority ( 1 would be the highest priority, but we should never ship a backend with this number
      * so we don't bump out custom backends. ) Shipping backends use priorities in the range of 900-999.
      */
     protected $_priority = 899;
-    
+
     /**
      * Constructor
      */
@@ -95,14 +95,14 @@ abstract class SugarCacheAbstract
         if ( isset($GLOBALS['sugar_config']['unique_key']) )
             $this->_keyPrefix = $GLOBALS['sugar_config']['unique_key'];
     }
-    
+
     /**
      * Destructor
      */
     public function __destruct()
     {
     }
-    
+
     /**
      * PHP's magic __get() method, used here for getting the current value from the cache.
      *
@@ -114,8 +114,8 @@ abstract class SugarCacheAbstract
         )
     {
         if ( SugarCache::$isCacheReset )
-            return;
-        
+            return null;
+
         $this->_cacheRequests++;
         if ( !$this->useLocalStore || !isset($this->_localStore[$key]) ) {
             $this->_localStore[$key] = $this->_getExternal($this->_keyPrefix.$key);
@@ -129,14 +129,14 @@ abstract class SugarCacheAbstract
         elseif ( isset($this->_localStore[$key]) ) {
             $this->_cacheLocalHits++;
         }
-        
+
         if ( isset($this->_localStore[$key]) ) {
             return $this->_localStore[$key];
         }
-        
+
         return null;
     }
-    
+
     /**
      * PHP's magic __set() method, used here for setting a value for a key in the cache.
      *
@@ -151,13 +151,13 @@ abstract class SugarCacheAbstract
         if ( is_null($value) ) {
             $value = SugarCache::EXTERNAL_CACHE_NULL_VALUE;
         }
-        
+
         if ( $this->useLocalStore ) {
             $this->_localStore[$key] = $value;
         }
         $this->_setExternal($this->_keyPrefix.$key,$value);
     }
-    
+
     /**
      * PHP's magic __isset() method, used here for checking for a key in the cache.
      *
@@ -170,7 +170,7 @@ abstract class SugarCacheAbstract
     {
         return !is_null($this->__get($key));
     }
-    
+
     /**
      * PHP's magic __unset() method, used here for clearing a key in the cache.
      *
@@ -184,7 +184,7 @@ abstract class SugarCacheAbstract
         unset($this->_localStore[$key]);
         $this->_clearExternal($this->_keyPrefix.$key);
     }
-    
+
     /**
      * Reset the cache for this request
      */
@@ -193,7 +193,7 @@ abstract class SugarCacheAbstract
         $this->_localStore = array();
         SugarCache::$isCacheReset = true;
     }
-    
+
     /**
      * Reset the cache fully
      */
@@ -202,7 +202,7 @@ abstract class SugarCacheAbstract
         $this->reset();
         $this->_resetExternal();
     }
-    
+
     /**
      * Flush the contents of the cache
      */
@@ -211,7 +211,7 @@ abstract class SugarCacheAbstract
         $this->_localStore = array();
         $this->_resetExternal();
     }
-    
+
     /**
      * Returns the number of cache hits made
      *
@@ -226,7 +226,7 @@ abstract class SugarCacheAbstract
             'misses'       => $this->_cacheMisses,
             );
     }
-    
+
     /**
      * Returns what backend is used for caching, uses normalized class name for lookup
      *
@@ -236,7 +236,7 @@ abstract class SugarCacheAbstract
     {
         return strtolower(str_replace('SugarCache','',get_class($this)));
     }
-    
+
     /**
      * Hook for the child implementations of the individual backends to provide thier own logic for
      * setting a value from cache
@@ -248,7 +248,7 @@ abstract class SugarCacheAbstract
         $key,
         $value
         );
-    
+
     /**
      * Hook for the child implementations of the individual backends to provide thier own logic for
      * getting a value from cache
@@ -259,7 +259,7 @@ abstract class SugarCacheAbstract
     abstract protected function _getExternal(
         $key
         );
-    
+
     /**
      * Hook for the child implementations of the individual backends to provide thier own logic for
      * clearing a value out of thier cache
@@ -269,13 +269,13 @@ abstract class SugarCacheAbstract
     abstract protected function _clearExternal(
         $key
         );
-    
+
     /**
      * Hook for the child implementations of the individual backends to provide thier own logic for
      * clearing thier cache out fully
      */
     abstract protected function _resetExternal();
-    
+
     /**
      * Hook for testing if the backend should be used or not. Typically we'll extend this for backend specific
      * checks as well.
@@ -284,23 +284,23 @@ abstract class SugarCacheAbstract
      */
     public function useBackend()
     {
-        if ( !empty($GLOBALS['sugar_config']['external_cache_disabled']) 
+        if ( !empty($GLOBALS['sugar_config']['external_cache_disabled'])
                 && $GLOBALS['sugar_config']['external_cache_disabled'] == true ) {
             return false;
         }
-        
+
         if (defined('SUGARCRM_IS_INSTALLING')) {
             return false;
         }
-        
+
         if ( isset($GLOBALS['sugar_config']['external_cache_force_backend'])
                 && ( $GLOBALS['sugar_config']['external_cache_force_backend'] != (string) $this ) ) {
             return false;
         }
-        
+
         return true;
     }
-    
+
     /**
      * Returns the priority level for this backend
      *

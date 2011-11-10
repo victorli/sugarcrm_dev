@@ -1564,8 +1564,8 @@ table.reportlistView{
     padding: 4px 5px 4px 5px;
     border-left: none;
     border-right: none;
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
+    border-top: 1px solid Blackccc;
+    border-bottom: 1px solid Blackccc;
     background:Gainsboro;
 }
 
@@ -2279,6 +2279,23 @@ embed
 	padding-right: 0px;
 }
 
+.dashletPanelMenu.wizard.import .bd .screen {
+    padding: 20px;
+    border: 0px none;
+    border-radius: 0px;
+    height: 487px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: auto;
+    display: block;
+    background-color: #fff;
+}
+div.confirmTable {
+	    overflow: auto;
+	    width: 1056px;
+	    position: relative;
+	    margin-bottom: 20px;
+	}
 /* Bug 19728 - Email Templates detail view is different with edit view */
 #html_div p 
 {

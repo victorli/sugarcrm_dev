@@ -48,6 +48,7 @@ Studio2.PanelDD = function(id, sGroup) {
 YAHOO.extend(Studio2.PanelDD, YAHOO.util.DDProxy, {
 
     startDrag: function(x, y) { 	
+		var Dom = YAHOO.util.Dom;
 		// make the proxy look like the source element
 		var dragEl = this.getDragEl();
 		var clickEl = this.getEl();
@@ -63,15 +64,18 @@ YAHOO.extend(Studio2.PanelDD, YAHOO.util.DDProxy, {
 			var copy = Studio2.newPanel();
 			Studio2.setCopy(copy);
 			clickEl.parentNode.insertBefore(copy,clickEl.nextSibling);
-			YAHOO.util.Dom.setStyle(copy, 'display','block'); // must make it visible - the css sets rows outside of panel to invisible
-			YAHOO.util.Dom.setStyle(clickEl, "display","none");
-		}
+            // must make it visible - the css sets rows outside of panel to invisible
+            Dom.setStyle(copy, 'display','block');
+            Dom.setStyle(clickEl, "display","none");
+        }
 
-		YAHOO.util.Dom.setStyle(clickEl, "visibility", "hidden");
+		Dom.setStyle(clickEl, "visibility", "hidden");
+        Studio2.setScrollObj(this);
     },
 
     endDrag: function(e) {
 		ModuleBuilder.state.isDirty=true;
+        Studio2.clearScrollObj();
 //  	alert("endDrag");
      
         var srcEl = this.getEl();
@@ -80,10 +84,17 @@ YAHOO.extend(Studio2.PanelDD, YAHOO.util.DDProxy, {
         var thisid = this.id;
         
         if (this.deletePanel) {
-			Studio2.removeElement(srcEl);
+            Studio2.removeElement(srcEl);
 			// If we've just removed the last panel then we need to put an empty panel back in
 			proxy.innerHTML = '';
         	Studio2.tidyPanels();
+            //Check if this is the toolbox panel which must be re-activitated
+            if (Studio2.isSpecial(srcEl))
+            {
+                Studio2.setSpecial(Studio2.copy());
+				Studio2.activateCopy();
+				YAHOO.util.Dom.setStyle(Studio2.copy(), "display", "block");
+            }
         } else {
         
 	        // Show the proxy element and animate it to the src element's location
@@ -144,6 +155,8 @@ YAHOO.extend(Studio2.PanelDD, YAHOO.util.DDProxy, {
 		var srcEl = this.getEl();
 		var dragEl = this.getDragEl();
 		dragEl.innerHTML = '';
+        Studio2.clearScrollObj();
+
 	},
 	
     onDragDrop: function(e, id) {
@@ -159,25 +172,14 @@ YAHOO.extend(Studio2.PanelDD, YAHOO.util.DDProxy, {
 		}
     },
 
-    onDrag: function(e) {
-        // Keep track of the direction of the drag for use during onDragOver
-        var y = e.pageY;
-
-        if (y < this.lastY) {
-            this.goingUp = true;
-        } else if (y > this.lastY) {
-            this.goingUp = false;
-        }
-
-        this.lastY = y;
-    },
+    onDrag: Studio2.onDrag,
 
     onDragOver: function(e, id) {
         var srcEl = this.getEl();
 		var destEl = YAHOO.util.Dom.get(id);
 		var dragEl = this.getDragEl();
-
-        if ((Studio2.establishLocation(destEl) == 'panels') && (destEl.className.indexOf('le_panel') != -1)) {
+        var loc = Studio2.establishLocation(destEl);
+        if ((loc == 'panels') && (destEl.className.indexOf('le_panel') != -1)) {
         	YAHOO.util.Dom.setStyle(srcEl, 'visibility','hidden');
         	YAHOO.util.Dom.setStyle(srcEl, 'display','block');
         	var orig_p = srcEl.parentNode;

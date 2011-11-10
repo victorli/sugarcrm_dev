@@ -1,6 +1,7 @@
-JSON = YAHOO.lang.JSON;
+(function(){
+var JSON = YAHOO.lang.JSON;
 
-SUGAR.quickCompose= {};
+SUGAR.quickCompose = {};
 
 SUGAR.quickCompose = function() {
 	return {
@@ -31,7 +32,7 @@ SUGAR.quickCompose = function() {
 	        { 
 	           success: function(o) 
 	           {
-	               var responseData = YAHOO.lang.JSON.parse(o.responseText);
+	               var responseData = JSON.parse(o.responseText);
 	               //Create and insert the necessary script tag
 	               var scriptTag = document.createElement('script');
 	               scriptTag.id = 'quickComposeScript';
@@ -78,7 +79,7 @@ SUGAR.quickCompose = function() {
 			//Hide the loading div
 			loadingMessgPanl.hide();
 			
-    		dce_mode = (typeof this.dceMenuPanel != 'undefined' && this.dceMenuPanel != null) ? true : false;			
+    		var dce_mode = (typeof this.dceMenuPanel != 'undefined' && this.dceMenuPanel != null) ? true : false;
 			
 			//Destroy the previous quick compose panel to get a clean slate
     		if (SQ.parentPanel != null)
@@ -91,7 +92,7 @@ SUGAR.quickCompose = function() {
     			SQ.parentPanel = null;
     		}
     		
-			theme = SUGAR.themes.theme_name;
+			var theme = SUGAR.themes.theme_name;
 	
 			//The quick compose utalizes the EmailUI compose functionality which allows for multiple compose
 			//tabs.  Quick compose always has only one compose screen with an index of 0.
@@ -101,14 +102,14 @@ SUGAR.quickCompose = function() {
     		if (!SE.composeLayout.composeTemplate) 
     			SE.composeLayout.composeTemplate = new YAHOO.SUGAR.Template(SE.templates['compose']);
     		
-    		panel_modal = dce_mode ? false : true;
-    		panel_width = '880px';
-			panel_constrain = dce_mode ? false : true;
-    		panel_height = dce_mode ? '450px' : '400px';
-    		panel_shadow = dce_mode ? false : true;
-    		panel_draggable = dce_mode ? false : true;
-    		panel_resize = dce_mode ? false : true;
-    		panel_close = dce_mode ? false : true;
+    		var panel_modal = dce_mode ? false : true,
+    		    panel_width = '880px',
+			    panel_constrain = dce_mode ? false : true,
+    		    panel_height = dce_mode ? 'auto' : '400px',
+    		    panel_shadow = dce_mode ? false : true,
+    		    panel_draggable = dce_mode ? false : true,
+    		    panel_resize = dce_mode ? false : true,
+    		    panel_close = dce_mode ? false : true;
     		
         	SQ.parentPanel = new YAHOO.widget.Panel("container1", {
                 modal: panel_modal,
@@ -147,7 +148,16 @@ SUGAR.quickCompose = function() {
 					layout.resize(true);
 					SE.composeLayout.resizeEditor(SE.composeLayout.currentInstanceId);
                 }, SQ.parentPanel, true);
-			}
+			} else {
+                SUGAR.util.doWhen("typeof SE.composeLayout[SE.composeLayout.currentInstanceId] != 'undefined'", function(){
+                    var panelHeight = 400;
+                    SQ.parentPanel.cfg.setProperty("height", panelHeight + "px");
+                    var layout = SE.composeLayout[SE.composeLayout.currentInstanceId];
+                    layout.set("height", panelHeight);
+                    layout.resize(true);
+                    SE.composeLayout.resizeEditor(SE.composeLayout.currentInstanceId);
+                });
+            }
 			
 			YAHOO.util.Dom.setStyle("container1", "z-index", 1);
 			
@@ -281,3 +291,4 @@ SUGAR.quickCompose = function() {
 	    }
 	};
 }();
+})();

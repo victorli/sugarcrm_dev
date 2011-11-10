@@ -37,8 +37,7 @@
 
 class Bug43653Test extends Sugar_PHPUnit_Framework_OutputTestCase
 {
-
-    public function setUp() 
+    public function setUp()
     {
 		$GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
 		if(file_exists($GLOBALS['sugar_config']['cache_dir']. 'modules/unified_search_modules.php'))
@@ -46,15 +45,15 @@ class Bug43653Test extends Sugar_PHPUnit_Framework_OutputTestCase
 			copy($GLOBALS['sugar_config']['cache_dir']. 'modules/unified_search_modules.php', $GLOBALS['sugar_config']['cache_dir']. 'modules/unified_search_modules.php.bak');
 			unlink($GLOBALS['sugar_config']['cache_dir']. 'modules/unified_search_modules.php');
 		}
-		
+
     	if(file_exists('custom/modules/unified_search_modules_display.php'))
 		{
 			copy('custom/modules/unified_search_modules_display.php', 'custom/modules/unified_search_modules_display.php.bak');
 			unlink('custom/modules/unified_search_modules_display.php');
-		}		
+		}
     }
-    
-    public function tearDown() 
+
+    public function tearDown()
     {
 		SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset($GLOBALS['current_user']);
@@ -64,17 +63,17 @@ class Bug43653Test extends Sugar_PHPUnit_Framework_OutputTestCase
 			copy($GLOBALS['sugar_config']['cache_dir']. 'modules/unified_search_modules.php.bak', $GLOBALS['sugar_config']['cache_dir']. 'modules/unified_search_modules.php');
 			unlink($GLOBALS['sugar_config']['cache_dir']. 'modules/unified_search_modules.php.bak');
 		}
-		
+
     	if(file_exists('custom/modules/unified_search_modules_display.php.bak'))
 		{
 			copy('custom/modules/unified_search_modules_display.php.bak', 'custom/modules/unified_search_modules_display.php');
 			unlink('custom/modules/unified_search_modules_display.php.bak');
-		}	        
-		
+		}
+
 		SugarTestTaskUtilities::removeAllCreatedTasks();
 		SugarTestAccountUtilities::removeAllCreatedAccounts();
     }
-	
+
 	public function testFisrtUnifiedSearchWithoutUserPreferences()
 	{
 		 //Enable the Tasks, Accounts and Contacts modules
@@ -82,20 +81,20 @@ class Bug43653Test extends Sugar_PHPUnit_Framework_OutputTestCase
     	 $_REQUEST = array();
     	 $_REQUEST['enabled_modules'] = 'Tasks,Accounts,Contacts';
     	 $unifiedSearchAdvanced = new UnifiedSearchAdvanced();
-    	 $unifiedSearchAdvanced->saveGlobalSearchSettings();	
-    	 
+    	 $unifiedSearchAdvanced->saveGlobalSearchSettings();
+
     	 $_REQUEST = array();
     	 $_REQUEST['advanced'] = 'false';
     	 $unifiedSearchAdvanced->query_stirng = 'blah';
 
-    	 $unifiedSearchAdvanced->search();
+         $unifiedSearchAdvanced->search();
     	 global $current_user;
     	 $users_modules = $current_user->getPreference('globalSearch', 'search');
     	 $this->assertTrue(!empty($users_modules), 'Assert we have set the user preferences properly');
     	 $this->assertTrue(isset($users_modules['Tasks']), 'Assert that we have added the Tasks module');
     	 $this->assertEquals(count($users_modules), 3, 'Assert that we have 3 modules in user preferences for global search');
 	}
-	
+
 }
 
 ?>

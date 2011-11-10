@@ -79,6 +79,15 @@ class SugarFieldParent extends SugarFieldRelate {
 		$displayParams['popupData'] = '{literal}'.$json->encode($popup_request_data).'{/literal}';
     	$displayParams['disabled_parent_types'] = '<script>var disabledModules='. $json->encode($disabled_parent_types).';</script>';
     	$this->ss->assign('quickSearchCode', $this->createQuickSearchCode($form_name, $vardef));
+
+        $keys = $this->getAccessKey($vardef,'PARENT',$vardef['module']);
+        $displayParams['accessKeySelect'] = $keys['accessKeySelect'];
+        $displayParams['accessKeySelectLabel'] = $keys['accessKeySelectLabel'];
+        $displayParams['accessKeySelectTitle'] = $keys['accessKeySelectTitle'];
+        $displayParams['accessKeyClear'] = $keys['accessKeyClear'];
+        $displayParams['accessKeyClearLabel'] = $keys['accessKeyClearLabel'];
+        $displayParams['accessKeyClearTitle'] = $keys['accessKeyClearTitle'];
+
     	$this->setup($parentFieldArray, $vardef, $displayParams, $tabindex);        
         return $this->fetch($this->findTemplate('EditView'));
     }

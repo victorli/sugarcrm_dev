@@ -106,6 +106,14 @@ $mod_strings = array (
   'LBL_ACTIVITIES_REPORTS' => 'Activities Report',
   'LBL_TASK_INFORMATION' => 'Task Overview',
   'LBL_HISTORY_SUBPANEL_TITLE' => 'Notes',
+  //For export labels
+  'LBL_DATE_DUE' => 'Date Due',
+  'LBL_EXPORT_ASSIGNED_USER_NAME' => 'Assigned User Name',
+  'LBL_EXPORT_ASSIGNED_USER_ID' => 'Assigned User ID',
+  'LBL_EXPORT_MODIFIED_USER_ID' => 'Modified By ID',
+  'LBL_EXPORT_CREATED_BY' => 'Created By ID',
+  'LBL_EXPORT_PARENT_TYPE' => 'Related To Module',
+  'LBL_EXPORT_PARENT_ID' => 'Related To ID',
 );
 
 

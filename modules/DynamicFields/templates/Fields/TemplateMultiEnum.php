@@ -134,13 +134,13 @@ class TemplateMultiEnum extends TemplateEnum{
 
 			// if we have a new error, then unserialize must have failed => we don't have a packed ext4
 			// safe to assume that false means the unpack failed, as ext4 will either contain an imploded string of default values, or an array, not a boolean false value
-			if ( $unpacked === false ) {
+			if ( $unpacked === false && !isset($this->no_default) ) {
 				$def [ 'default' ] = $this->ext4 ;
 			}
 			else
 			{
 				// we have a packed representation containing one or both of default and dependency
-				if ( isset ( $unpacked [ 'default' ] ) )
+                                if ( isset ( $unpacked [ 'default' ] ) && !isset($this->no_default))
 					$def [ 'default' ] = $unpacked [ 'default' ] ;
 				if ( isset ( $unpacked [ 'dependency' ] ) )
 					$def [ 'dependency' ] = $unpacked [ 'dependency' ] ;

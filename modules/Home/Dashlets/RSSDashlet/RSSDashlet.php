@@ -105,6 +105,7 @@ class RSSDashlet extends Dashlet
         $ss->assign('heightLbl', $this->dashletStrings['LBL_CONFIGURE_HEIGHT']);
         $ss->assign('rssUrlLbl', $this->dashletStrings['LBL_CONFIGURE_RSSURL']);
         $ss->assign('saveLbl', $app_strings['LBL_SAVE_BUTTON_LABEL']);
+        $ss->assign('clearLbl', $app_strings['LBL_CLEAR_BUTTON_LABEL']);
         $ss->assign('title', $this->title);
         $ss->assign('height', $this->height);
         $ss->assign('url', $this->url);
@@ -168,10 +169,14 @@ EOHTML;
         }
         else {
             foreach ( $rssdoc->entry as $entry ) {
+                $link = trim($entry->link);
+                if ( empty($link) ) {
+                    $link = $entry->link[0]['href'];
+                }
                 $output .= <<<EOHTML
 <tr>
 <td>
-    <h3><a href="{$entry->link}" target="_child">{$entry->title}</a></h3>
+    <h3><a href="{$link}" target="_child">{$entry->title}</a></h3>
     {$entry->summary}
 </td>
 </tr>

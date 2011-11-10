@@ -121,7 +121,8 @@ function ie_test_open_popup_with_submit(module_name, action, pageTarget, width, 
 		return;
 	}
 
-	ie_id = (typeof document.getElementById(formName).ie_id != 'undefined') ? document.getElementById(formName).ie_id : '';
+    if(typeof(ie_id) == 'undefined' || ie_id == '')
+    	ie_id = (typeof document.getElementById(formName).ie_id != 'undefined') ? document.getElementById(formName).ie_id.value : '';
 
 	// launch the popup
 	URL = 'index.php?'

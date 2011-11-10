@@ -65,8 +65,6 @@ $moduleList[] = 'Project';
 $moduleList[] = 'Bugs';
 
 
-
-
 // this list defines all of the module names and bean names in the app
 // to create a new module's bean class, add the bean definition here
 $beanList = array();
@@ -177,7 +175,7 @@ $beanFiles['User']          = 'modules/Users/User.php';
 $beanFiles['Employee']      = 'modules/Employees/Employee.php';
 $beanFiles['Currency']          = 'modules/Currencies/Currency.php';
 $beanFiles['Tracker']          = 'modules/Trackers/Tracker.php';
-$beanFiles['ImportMap']     = 'modules/Import/ImportMap.php';
+$beanFiles['ImportMap']     = 'modules/Import/maps/ImportMap.php';
 $beanFiles['UsersLastImport']= 'modules/Import/UsersLastImport.php';
 $beanFiles['Administration']= 'modules/Administration/Administration.php';
 $beanFiles['UpgradeHistory']= 'modules/Administration/UpgradeHistory.php';
@@ -258,6 +256,19 @@ $modInvisList[] = 'SavedSearch';
 $modInvisList[] = 'Studio';
 $modInvisList[] = 'Connectors';
 
+$report_include_modules = array();
+$report_include_modules['Currencies']='Currency';
+//add prospects
+$report_include_modules['Prospects']='Prospect';
+$report_include_modules['DocumentRevisions'] = 'DocumentRevision';
+$report_include_modules['ProductCategories'] = 'ProductCategory';
+$report_include_modules['ProductTypes'] = 'ProductType';
+//add Tracker modules
+
+$report_include_modules['Trackers']         = 'Tracker';
+
+
+
 $beanList['SugarFeed'] = 'SugarFeed';
 $beanFiles['SugarFeed'] = 'modules/SugarFeed/SugarFeed.php';
 $modInvisList[] = 'SugarFeed';
@@ -280,7 +291,24 @@ $beanList['EAPM'] = 'EAPM';
 $beanFiles['EAPM'] = 'modules/EAPM/EAPM.php';
 $modules_exempt_from_availability_check['EAPM'] = 'EAPM';
 $modInvisList[] = 'EAPM';
+$beanList['OAuthKeys'] = 'OAuthKey';
+$beanFiles['OAuthKey'] = 'modules/OAuthKeys/OAuthKey.php';
+$modules_exempt_from_availability_check['OAuthKeys'] = 'OAuthKeys';
+$modInvisList[] = 'OAuthKeys';
+$beanList['OAuthTokens'] = 'OAuthToken';
+$beanFiles['OAuthToken'] = 'modules/OAuthTokens/OAuthToken.php';
+$modules_exempt_from_availability_check['OAuthTokens'] = 'OAuthTokens';
+$modInvisList[] = 'OAuthTokens';
 
+
+
+//Object list is only here to correct for modules that break
+//the bean class name == dictionary entry/object name convention
+//No future module should need an entry here.
+$objectList = array();
+$objectList['Cases'] =  'Case';
+$objectList['Groups'] =  'User';
+$objectList['Schedulers'] =  'schedulers';
 
 if (file_exists('include/modules_override.php'))
 {

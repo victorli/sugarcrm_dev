@@ -133,9 +133,11 @@ if (is_admin($current_user) || isset ($from_sync_client) || is_admin_for_any_mod
 		include ('modules/TableDictionary.php');
 
 		foreach ($dictionary as $meta) {
-			$tablename = $meta['table'];
-			if (isset($repairedTables[$tablename])) continue;
 
+			if ( !isset($meta['table']) || isset($repairedTables[$meta['table']]))
+                continue;
+            
+            $tablename = $meta['table'];
 			$fielddefs = $meta['fields'];
 			$indices = $meta['indices'];
 			$engine = isset($meta['engine'])?$meta['engine']:null;

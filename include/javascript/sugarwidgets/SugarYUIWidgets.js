@@ -43,7 +43,8 @@ sw.MessageBox.panel.render(document.body);sw.MessageBox.panel.show();},updatePro
 var barEl=Dom.getElementsByClassName("sugar-progress-bar",null,YAHOO.SUGAR.MessageBox.panel.element)[0];if(percent>100)
 percent=100;else if(percent<0)
 percent=0;barEl.style.width=percent+"%";},hide:function(){if(sw.MessageBox.panel)
-sw.MessageBox.panel.hide();}};sw.Template=function(content){this._setContent(content);};sw.Template.prototype={regex:/\{([\w\.]*)\}/gim,append:function(target,args){var tEl=Dom.get(target);if(tEl)tEl.innerHTML+=this.exec(args);else if(!SUGAR.isIE)console.log("Warning, unable to find target:"+target);},exec:function(args){var out=this.content;for(var i in this.vars){var val=this._getValue(i,args);var reg=new RegExp("\\{"+i+"\\}","g");out=out.replace(reg,val);}
+sw.MessageBox.panel.hide();}};sw.Template=function(content){this._setContent(content);};sw.Template.prototype={regex:/\{([\w\.]*)\}/gim,append:function(target,args){var tEl=Dom.get(target);if(tEl)tEl.innerHTML+=this.exec(args);else if(typeof(console)!="undefined"&&typeof(console.log)=="function")
+console.log("Warning, unable to find target:"+target);},exec:function(args){var out=this.content;for(var i in this.vars){var val=this._getValue(i,args);var reg=new RegExp("\\{"+i+"\\}","g");out=out.replace(reg,val);}
 return out;},_setContent:function(content){this.content=content;var lastIndex=-1;var result=this.regex.exec(content);this.vars={};while(result&&result.index>lastIndex){lastIndex=result.index;this.vars[result[1]]=true;result=this.regex.exec(content);}},_getValue:function(v,scope){return function(e){return eval("this."+e);}.call(scope,v);}};sw.SelectionGrid=function(containerEl,columns,dataSource,config){sw.SelectionGrid.superclass.constructor.call(this,containerEl,columns,dataSource,config);this.subscribe("rowMouseoverEvent",this.onEventHighlightRow);this.subscribe("rowMouseoutEvent",this.onEventUnhighlightRow);this.subscribe("rowClickEvent",this.onEventSelectRow);this.selectRow(this.getTrEl(0));this.focus();}
 YAHOO.extend(sw.SelectionGrid,YAHOO.widget.ScrollingDataTable,{getColumn:function(column){var oColumn=this._oColumnSet.getColumn(column);if(!oColumn){var elCell=this.getTdEl(column);if(elCell&&(!column.tagName||column.tagName.toUpperCase()!="TH")){oColumn=this._oColumnSet.getColumn(elCell.cellIndex);}
 else{elCell=this.getThEl(column);if(elCell){var allColumns=this._oColumnSet.flat;for(var i=0,len=allColumns.length;i<len;i++){if(allColumns[i].getThEl().id===elCell.id){oColumn=allColumns[i];}}}}}
@@ -58,7 +59,9 @@ return false;var target=Event.getTarget(e);return(this.isValidHandleChild(target
 continue;if(targetTable.getContainerEl().id==id){if(targetTable!=this.newTable){this.newIndex=targetTable.getRecordSet().getLength()-1;var destEl=Dom.get(targetTable.getLastTrEl());destEl.parentNode.insertBefore(this.getEl(),destEl);}
 this.newTable=targetTable
 return true;}}
-if(this.newTable&&this.newTable.getRecord(id)){var targetRow=this.newTable.getRecord(id);var destEl=Dom.get(id);destEl.parentNode.insertBefore(this.getEl(),destEl);this.newIndex=this.newTable.getRecordIndex(targetRow);}},endDrag:function(){if(this.newTable!=null&&this.newIndex!=null){this.getEl().style.display="none";this.table.appendChild(this.getEl());this.newTable.addRow(this.row.getData(),this.newIndex);this.ddtable.deleteRow(this.row);this.ddtable.render();}
+if(this.newTable&&this.newTable.getRecord(id)){var targetRow=this.newTable.getRecord(id);var destEl=Dom.get(id);destEl.parentNode.insertBefore(this.getEl(),destEl);this.newIndex=this.newTable.getRecordIndex(targetRow);}},endDrag:function(){if(this.newTable!=null&&this.newIndex!=null){this.getEl().style.display="none";this.table.appendChild(this.getEl());this.newTable.addRow(this.row.getData(),this.newIndex);try{this.ddtable.deleteRow(this.row);}catch(e){if(typeof(console)!="undefined"&&console.log)
+{console.log(e);}}
+this.ddtable.render();}
 this.newTable=this.newIndex=null
 var clickEl=this.getEl();Dom.setStyle(clickEl,"opacity","");}});sw.AsyncPanel=function(el,params){if(params)
 sw.AsyncPanel.superclass.constructor.call(this,el,params);else
