@@ -68,7 +68,7 @@ var sortName = function(a, b, desc)
 var editFieldFormatter = function(elCell, oRecord, oColumn, oData)
 {
   var label = customFieldsData[oData] ? '* ' + oData : oData;
-  elCell.innerHTML = "<a class='mbLBLL' href='javascript:void(0)' onclick='ModuleBuilder.moduleLoadField(\"" + oData + "\");'>" + label + "</a>";
+  elCell.innerHTML = "<a class='mbLBLL' href='javascript:void(0)' id='" + oData + "' onclick='ModuleBuilder.moduleLoadField(\"" + oData + "\");'>" + label + "</a>";
 };
 
 var labelFormatter = function(elCell, oRecord, oColumn, oData)

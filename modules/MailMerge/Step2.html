@@ -356,17 +356,12 @@ function displayKeyCode(evt)
 function search(searchText)
 {
 	var searchInput = document.getElementById("searchText");
-	searchText = searchInput.value;
-	var where = '';
-	if(searchText != '')
-	{
-        mTerm = searchText;
-		if(module == 'CampaignProspects'){
+	mTerm = searchInput.value;
+    if(module == 'CampaignProspects'){
 			var prospectType = document.getElementById("campaign_prospect_type");
 			var lmodule = prospectType.value.toLowerCase();
             relModule = lmodule;
-		}
-	}
+    }
     mOffset = 0;
 	getObjects();
 }
@@ -374,13 +369,18 @@ function search(searchText)
 function getOrderBy()
 {
 	var order = '';
-	if(module == 'Contacts' || module == 'Leads')
+    var tmpModule = module.toLowerCase();
+    if(module == 'CampaignProspects'){
+        tmpModule = document.getElementById("campaign_prospect_type").value.toLowerCase();
+    }
+
+	if(tmpModule == 'contacts' || tmpModule == 'leads' || tmpModule == 'prospects')
 	{
-		order = module+".last_name";
+		order = tmpModule+".last_name";
 	}
 	else
 	{
-		order = module+".name";
+		order = tmpModule+".name";
 	}
 	
 	orderBy = order.toLowerCase();

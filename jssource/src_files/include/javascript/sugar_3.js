@@ -2182,7 +2182,7 @@ sugarListView.get_checks_count = function() {
 // saves the checks on the current page into the uid textarea
 sugarListView.get_checks = function() {
 	ar = new Array();
-
+	if(typeof document.MassUpdate != 'undefined' ){
 	if(document.MassUpdate.uid.value != '') {
 		oldUids = document.MassUpdate.uid.value.split(',');
 		for(uid in oldUids) {
@@ -2212,6 +2212,8 @@ sugarListView.get_checks = function() {
 
 	if(uids.length == 0) return false; // return false if no checks to get
 	return true; // there are saved checks
+	}
+	else return false;
 }
 
 sugarListView.prototype.order_checks = function(order,orderBy,moduleString){
@@ -2232,6 +2234,7 @@ sugarListView.prototype.order_checks = function(order,orderBy,moduleString){
 }
 sugarListView.prototype.save_checks = function(offset, moduleString) {
 	checks = sugarListView.get_checks();
+	if(typeof document.MassUpdate != 'undefined'){
 	eval('document.MassUpdate.' + moduleString + '.value = offset');
 
 	if(typeof document.MassUpdate.massupdate != 'undefined') {
@@ -2246,6 +2249,8 @@ sugarListView.prototype.save_checks = function(offset, moduleString) {
 
 
 	return !checks;
+	}
+	else return false;
 }
 
 sugarListView.prototype.check_item = function(cb, form) {
@@ -2806,7 +2811,7 @@ SUGAR.util = function () {
 					var script = document.createElement('script');
                   	script.type= 'text/javascript';
                   	if(result[1].indexOf("src=") > -1){
-						var srcRegex = /.*src=['"]([a-zA-Z0-9_\&\/\.\?=:]*)['"].*/igm;
+						var srcRegex = /.*src=['"]([a-zA-Z0-9_\&\/\.\?=:-]*)['"].*/igm;
 						var srcResult =  result[1].replace(srcRegex, '$1');
 						script.src = srcResult;
                   	}else{
@@ -4081,7 +4086,7 @@ function set_return(popup_reply_data)
 			{
 				var displayValue=name_to_value_array[the_key].replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');
 				if(window.document.forms[form_name] && document.getElementById(the_key+'_label') && !the_key.match(/account/)) {
-					var data_label = document.getElementById(the_key+'_label').innerHTML.replace(/\n/gi,'');
+                    var data_label = document.getElementById(the_key+'_label').innerHTML.replace(/\n/gi,'').replace(/<\/?[^>]+(>|$)/g, "");
 					label_str += data_label + ' \n';
 					label_data_str += data_label  + ' ' + displayValue + '\n';
 					if(window.document.forms[form_name].elements[the_key]) {

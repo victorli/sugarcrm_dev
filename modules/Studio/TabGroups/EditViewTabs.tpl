@@ -40,7 +40,6 @@
 *}
 
 {overlib_includes}
-{literal}
 <br />
 <script type="text/javascript" src="{sugar_getjspath file='modules/Studio/JSTransaction.js'}" ></script>
 <script>
@@ -50,6 +49,7 @@
 <script type="text/javascript" src="{sugar_getjspath file='modules/Studio/ygDDListStudio.js'}"></script>
 <script type="text/javascript" src="{sugar_getjspath file='modules/Studio/studiodd.js'}" ></script>
 <script type="text/javascript" src="{sugar_getjspath file='modules/Studio/studio.js'}" ></script>
+{literal}
 <style type='text/css'>
 .slot {
 	border-width:1px;border-color:#999999;border-style:solid;padding:0px 1px 0px 1px;margin:2px;cursor:move;

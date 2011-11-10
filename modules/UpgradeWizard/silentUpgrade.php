@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
@@ -38,11 +38,11 @@ function build_argument_string($arguments=array()) {
    if(!is_array($arguments)) {
    	  return '';
    }
-   
+
    $argument_string = '';
    $count = 0;
    foreach($arguments as $arg) {
-   	   if($count != 0) 
+   	   if($count != 0)
    	   {
    	   	  //If current directory or parent directory is specified, substitute with full path
    	   	  if($arg == '.')
@@ -52,11 +52,11 @@ function build_argument_string($arguments=array()) {
    	   	  	 $dir = getcwd();
 			 $arg = substr($dir, 0, strrpos($dir, DIRECTORY_SEPARATOR));
    	   	  }
-          $argument_string .= ' ' . escapeshellarg($arg);	 
-   	   } 
+          $argument_string .= ' ' . escapeshellarg($arg);
+   	   }
    	   $count++;
    }
-   
+
    return $argument_string;
 }
 
@@ -79,7 +79,9 @@ $php_dir = (isset($p_info['dirname']) && $p_info['dirname'] != '.') ?  $p_info['
 
 $step1 = $php_path."php -f {$php_dir}silentUpgrade_step1.php " . build_argument_string($argv);
 passthru($step1, $output);
-
+if($output != 0) {
+    echo "***************         step1 failed         ***************: $output\n";
+}
 $has_error = $output == 0 ? false : true;
 
 if(!$has_error) {
@@ -88,7 +90,7 @@ if(!$has_error) {
 		passthru($step2, $output);
 	} else {
 		$step2 = "php -f {$php_dir}silentUpgrade_step2.php " . build_argument_string($argv);
-		passthru($step2, $output);	
+		passthru($step2, $output);
 	}
 }
 
@@ -96,11 +98,11 @@ if($run_dce_upgrade) {
 	$has_error = $output == 0 ? false : true;
 	if(!$has_error) {
 	   $step3 = $php_path."php -f {$php_dir}silentUpgrade_dce_step2.php " . build_argument_string($argv);
-	   passthru($step3, $output);	
+	   passthru($step3, $output);
 	}
 }
 
 if($output != 0) {
-   echo "***************         silentupgrade failed         ***************\n";
+   echo "***************         silentupgrade failed         ***************: $output\n";
 }
 ?>

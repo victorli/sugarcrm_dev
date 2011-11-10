@@ -65,11 +65,11 @@ else {
 	    if(!file_exists('modules/' . $module . '/' . $bean_name . '.php')) {
 	         die($app_strings['ERROR_TYPE_NOT_VALID']);
 	    }
-	    $focus = BeanFactory::getBean($module, $_REQUEST['id']);
-        if(!$focus->ACLAccess('view')){
+	    $focus = BeanFactory::newBean($module);
+        if(!empty($focus) && !$focus->ACLAccess('view')){
             die($mod_strings['LBL_NO_ACCESS']);
 	    } // if
-
+        $focus->retrieve($_REQUEST['id']);
         // Pull up the document revision, if it's of type Document
         if ( isset($focus->object_name) && $focus->object_name == 'Document' ) {
             // It's a document, get the revision that really stores this file

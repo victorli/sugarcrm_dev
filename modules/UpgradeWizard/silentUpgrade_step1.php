@@ -52,8 +52,8 @@ function prepSystemForUpgradeSilent() {
 
 	// make sure dirs exist
 	foreach($subdirs as $subdir) {
-		if(!is_dir("upload://upgrades/{$subdir}")) {
-	    	mkdir_recursive("upload://upgrades/{$subdir}");
+		if(!is_dir($sugar_config['upload_dir']."/upgrades/{$subdir}")) {
+	    	mkdir_recursive($sugar_config['upload_dir']."/upgrades/{$subdir}");
 		}
 	}
 }
@@ -502,7 +502,7 @@ prepSystemForUpgradeSilent();
 repairTableDictionaryExtFile();
 
 $unzip_dir = sugar_cached("upgrades/temp");
-$install_file = "upload://upgrades/patch/".basename($argv[1]);
+$install_file = $sugar_config['upload_dir']."/upgrades/patch/".basename($argv[1]);
 
 $_SESSION['unzip_dir'] = $unzip_dir;
 $_SESSION['install_file'] = $install_file;
@@ -568,7 +568,7 @@ if(is_file("$unzip_dir/manifest.php")) {
 		fwrite(STDERR,"\nThe patch did not contain a proper manifest.php file.  Cannot continue.\n\n");
 	    exit(1);
 	} else {
-		copy("$unzip_dir/manifest.php", "upload://upgrades/patch/{$zip_from_dir}-manifest.php");
+		copy("$unzip_dir/manifest.php", $sugar_config['upload_dir']."/upgrades/patch/{$zip_from_dir}-manifest.php");
 
 		$error = validate_manifest($manifest);
 		if(!empty($error)) {

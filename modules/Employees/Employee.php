@@ -225,6 +225,20 @@ class Employee extends Person {
 		parent::preprocess_fields_on_save();
 
 	}
+    function create_new_list_query($order_by, $where,$filter=array(),$params=array(), $show_deleted = 0,$join_type='', $return_array = false,$parentbean=null, $singleSelect = false)
+     {
+        //create the filter for portal only users, as they should not be showing up query results
+        if(empty($where)){
+            $where = ' users.portal_only = 0 ';
+        }else{
+            $where .= ' and users.portal_only = 0 ';
+        }
+
+        //return parent method, specifying for array to be returned
+        return parent::create_new_list_query($order_by, $where,$filter,$params, $show_deleted,$join_type, true,$parentbean, $singleSelect);
+
+
+     }
 }
 
 ?>

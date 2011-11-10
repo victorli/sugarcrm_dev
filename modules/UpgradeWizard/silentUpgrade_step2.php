@@ -299,8 +299,8 @@ $errors = array();
 /////retrieve admin user
 
 $unzip_dir = sugar_cached("upgrades/temp");
-$install_file = "upload://upgrades/patch/".basename($argv[1]);
-UploadStream::ensureDir("upload://upgrades/patch/");
+$install_file = $sugar_config['upload_dir']."/upgrades/patch/".basename($argv[1]);
+sugar_mkdir($sugar_config['upload_dir']."/upgrades/patch", 0775, true);
 
 $_SESSION['unzip_dir'] = $unzip_dir;
 $_SESSION['install_file'] = $install_file;

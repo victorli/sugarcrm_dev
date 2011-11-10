@@ -39,7 +39,7 @@ $searchFields['Employees'] =
 	array (
 		'first_name' => array( 'query_type'=>'default'),
 		'last_name'=> array('query_type'=>'default'),	
-		'search_name'=> array('query_type'=>'default','db_field'=>array('first_name','last_name')),
+		'search_name'=> array('query_type'=>'default','db_field'=>array('first_name','last_name'),'force_unifiedsearch'=>true),
         'email'=> array(
 			'query_type' => 'default',
 			'operator' => 'subquery',

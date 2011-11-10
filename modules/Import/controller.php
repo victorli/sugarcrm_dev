@@ -129,6 +129,9 @@ class ImportController extends SugarController
         $v = new ImportViewConfirm();
         $fileName = $_REQUEST['importFile'];
         $delim = $_REQUEST['delim'];
+        if ($delim == '\t') {
+            $delim = "\t";
+        }
         $enclosure = $_REQUEST['qualif'];
         $enclosure = html_entity_decode($enclosure, ENT_QUOTES);
         $hasHeader = isset($_REQUEST['header']) && !empty($_REQUEST['header']) ? TRUE : FALSE;

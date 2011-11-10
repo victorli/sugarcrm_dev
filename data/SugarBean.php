@@ -3431,9 +3431,10 @@ function save_relationship_changes($is_update, $exclude=array())
                 $next_offset--;
                 $previous_offset++;
             }
-        } else {
-            $rows_found = $index - $row_offset;
+        } else if(!isset($rows_found)){
+            $rows_found = $row_offset + count($list);
         }
+
         $response = Array();
         $response['list'] = $list;
         $response['row_count'] = $rows_found;
@@ -3462,7 +3463,7 @@ function save_relationship_changes($is_update, $exclude=array())
 
         $result = $this->db->query($count_query, true, "Error running count query for $this->object_name List: ");
         $row_num = 0;
-        while($row = $this->db->fetchByAssoc($result, false))
+        while($row = $this->db->fetchByAssoc($result, true))
         {
             $num_rows_in_query += current($row);
         }
@@ -4970,7 +4971,9 @@ function save_relationship_changes($is_update, $exclude=array())
 		{
 		    // skip empty fields and non-db fields
 		    if(empty($row[$name])) continue;
-		    if(isset($fieldDef['source']) && $fieldDef['source'] != 'db') continue;
+            if(isset($fieldDef['source']) &&
+               !in_array($fieldDef['source'], array('db', 'custom_fields')))
+                continue;
 		    // fromConvert other fields
 		    $row[$name] = $this->db->fromConvert($row[$name], $this->db->getFieldType($fieldDef));
 		}

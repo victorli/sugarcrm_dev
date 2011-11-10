@@ -302,6 +302,11 @@ $afterCurrentStep = $_REQUEST['step'] + 1;
 
 ///////////////////////////////////////////////////////////////////////////////
 ////	UPGRADE HISTORY
+// Reload language strings after copy
+if(empty($GLOBALS['current_language'])) {
+    $GLOBALS['current_language'] = 'en_us';
+}
+LanguageManager::loadModuleLanguage('UpgradeWizard', $GLOBALS['current_language'], true);
 // display installed pieces and versions
 $installeds = $uh->getAll();
 $upgrades_installed = 0;

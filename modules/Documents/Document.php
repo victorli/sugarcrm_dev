@@ -274,7 +274,7 @@ class Document extends SugarBean {
 		if (!empty ($row)) {
 			$this->last_rev_created_name = $locale->getLocaleFormattedName($row['first_name'], $row['last_name']);
 
-			$this->last_rev_create_date = $timedate->to_display_date_time($row['rev_date']);
+			$this->last_rev_create_date = $timedate->to_display_date_time($this->db->fromConvert($row['rev_date'], 'datetime'));
 			$this->last_rev_mime_type = $row['file_mime_type'];
 		}
 

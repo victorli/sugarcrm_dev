@@ -73,9 +73,27 @@ class UsersViewEdit extends ViewEdit {
     function display() {
         global $current_user, $app_list_strings;
 
+
+        //lets set the return values
+        if(isset($_REQUEST['return_module'])){
+            $this->ss->assign('RETURN_MODULE',$_REQUEST['return_module']);
+        }
+
+        //Set the return_action if it is provided
+        if(!empty($_REQUEST['return_action'])){
+            $this->ss->assign('RETURN_ACTION',$_REQUEST['return_action']);
+            //Set the return_id form value if record entry was provided
+            if(!empty($_REQUEST['record']))
+            {
+                $this->ss->assign('RETURN_ID', $_REQUEST['record']);
+            }
+        }
+
+        //reset the id if this is a duplicate bean
         if(isset($_REQUEST['isDuplicate']) && $_REQUEST['isDuplicate'] == 'true') {
             $this->bean->id = "";
             $this->bean->user_name = "";
+            $this->ss->assign('ID','');
         }
 
         ///////////////////////////////////////////////////////////////////////////////

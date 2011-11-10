@@ -1952,7 +1952,7 @@ EOQ;
         }
 
         if(!empty($or_condition)) {
-            $condition[] = " AND (".join(" | ", $or_condition).")";
+            $condition[] = "(".join(" | ", $or_condition).")";
         }
 
         foreach($exclude_terms as $term) {

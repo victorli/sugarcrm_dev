@@ -110,5 +110,13 @@ if($timestamp[0] <= strtotime(date('H:i'))) {
 }
 $exit_on_cleanup = true;
 
-sugar_cleanup($exit_on_cleanup);
-?>
+sugar_cleanup(false);
+// some jobs have annoying habit of calling sugar_cleanup(), and it can be called only once
+// but job results can be written to DB after job is finished, so we have to disconnect here again
+// just in case we couldn't call cleanup
+if(class_exists('DBManagerFactory')) {
+	$db = DBManagerFactory::getInstance();
+	$db->disconnect();
+}
+
+if($exit_on_cleanup) exit;

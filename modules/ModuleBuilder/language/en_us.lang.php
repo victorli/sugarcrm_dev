@@ -710,6 +710,7 @@ $mod_strings = array(
 					             "phone number, with allowance for the country code 1, and<br>" .
                                  "to apply a U.S. format to the phone number when the record<br>" .
                                  "is saved. The following format will be applied: (xxx) xxx-xxxx.",
+'LBL_ALL_MODULES'=>'All Modules',
 
 );
 

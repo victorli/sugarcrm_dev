@@ -1254,6 +1254,10 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testAlterColumn($i, $target, $temp)
     {
+        if($this->_db->dbType == "oci8" && ($i == 4 || $i == 6)) {
+            $this->markTestSkipped("Cannot reliably shrink columns in Oracle");
+        }
+
         $foo_col = array ('name' => 'foo', 'type' => 'varchar', 'len' => '255'); // Common column between tables
 
         $tablebase = 'testac_'. mt_rand() . '_';
@@ -1941,4 +1945,26 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
 
         $this->assertTrue(is_array($DBstub->canInstall()), "Apparently we do support version 0.0.0 in " . $DBManagerClass);
     }
+
+    public function providerValidateQuery()
+    {
+        return array(
+            array(true, 'SELECT * FROM accounts'),
+            array(false, 'SELECT * FROM blablabla123'),
+        );
+    }
+
+    /**
+     * Test query validation
+     * @dataProvider providerValidateQuery
+     * @param $good
+     * @param $sql
+     * @return void
+     */
+    public function testValidateQuery($good, $sql)
+    {
+        $check = $this->_db->validateQuery($sql);
+        $this->assertEquals($good, $check);
+    }
+
 }

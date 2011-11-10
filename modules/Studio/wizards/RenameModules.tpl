@@ -70,8 +70,8 @@
     <tr><td>&nbsp;</td></tr>
     <tr>
         <td colspan="3">
-            <input type="button" class="button primary" value="{$MOD.LBL_BTN_SAVE}"  onclick='validateForm();'name="{$MOD.LBL_BTN_SAVE}" />
-            <input type="button" class="button" value="{$MOD.LBL_BTN_CANCEL}"  name="{$MOD.LBL_BTN_CANCEL}" onclick="document.editdropdown.action.value='index'; document.editdropdown.module.value='Administration';document.editdropdown.submit()" />
+            <input type="button" class="button primary" value="{$MOD.LBL_BTN_SAVE}" id="renameSaveBttn" onclick='validateForm();'name="{$MOD.LBL_BTN_SAVE}" />
+            <input type="button" class="button" value="{$MOD.LBL_BTN_CANCEL}"  id="renameCancelBttn" name="{$MOD.LBL_BTN_CANCEL}" onclick="document.editdropdown.action.value='index'; document.editdropdown.module.value='Administration';document.editdropdown.submit()" />
         </td>
     </tr>
 </table>

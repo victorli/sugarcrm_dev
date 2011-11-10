@@ -63,10 +63,10 @@ class PipelineBySalesStageDashlet extends DashletGenericChart
         global $timedate;
 
         if(empty($options['pbss_date_start']))
-            $options['pbss_date_start'] = date($timedate->get_db_date_time_format(), time());
+            $options['pbss_date_start'] = $timedate->nowDbDate();
 
         if(empty($options['pbss_date_end']))
-            $options['pbss_date_end'] = date($timedate->get_db_date_time_format(), strtotime("+6 months", time()));
+            $options['pbss_date_end'] = $timedate->asDbDate($timedate->getNow()->modify("+6 months"));
 
         if(empty($options['title']))
         	$options['title'] = translate('LBL_PIPELINE_FORM_TITLE', 'Home');

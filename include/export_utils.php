@@ -689,8 +689,11 @@ function generateSearchWhere($module, $query) {//this function is similar with f
 //if you pass in an array, it will reorder the array and send back to you.  It expects the array
 //to have the db names as key values, or as labels
 function get_field_order_mapping($name='',$reorderArr = '', $exclude = true){
-
-
+/*
+    $exemptModuleList = array('ProspectLists');
+    if(in_array($name, $exemptModuleList))
+        return $reorderArr;
+ */   
     //define the ordering of fields, note that the key value is what is important, and should be the db field name
     $field_order_array = array();
     $field_order_array['accounts'] = array( 'name'=>'Name', 'id'=>'ID', 'website'=>'Website', 'email_address' =>'Email Address', 'phone_office' =>'Office Phone', 'phone_alternate' => 'Alternate Phone', 'phone_fax' => 'Fax', 'billing_address_street' => 'Billing Street', 'billing_address_city' => 'Billing City', 'billing_address_state' => 'Billing State', 'billing_address_postalcode' => 'Billing Postal Code', 'billing_address_country' => 'Billing Country', 'shipping_address_street' => 'Shipping Street', 'shipping_address_city' => 'Shipping City', 'shipping_address_state' => 'Shipping State', 'shipping_address_postalcode' => 'Shipping Postal Code', 'shipping_address_country' => 'Shipping Country', 'description' => 'Description', 'account_type' => 'Type', 'industry' =>'Industry', 'annual_revenue' => 'Annual Revenue', 'employees' => 'Employees', 'sic_code' => 'SIC Code', 'ticker_symbol' => 'Ticker Symbol', 'parent_id' => 'Parent Account ID', 'ownership' =>'Ownership', 'campaign_id' =>'Campaign ID', 'rating' =>'Rating', 'assigned_user_name' =>'Assigned to',  'assigned_user_id' =>'Assigned User ID', 'team_id' =>'Team Id', 'team_name' =>'Teams', 'team_set_id' =>'Team Set ID', 'date_entered' =>'Date Created', 'date_modified' =>'Date Modified', 'modified_user_id' =>'Modified By', 'created_by' =>'Created By', 'deleted' =>'Deleted');

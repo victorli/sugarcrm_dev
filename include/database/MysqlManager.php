@@ -638,6 +638,8 @@ class MysqlManager extends DBManager
 	 */
 	protected function isEngineEnabled($engine)
 	{
+		if(!is_string($engine)) return false;
+
 		$engine = strtoupper($engine);
 
 		$r = $this->query("SHOW ENGINES");

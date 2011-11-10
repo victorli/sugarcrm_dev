@@ -138,8 +138,7 @@ class UserViewHelper {
         $edit_self = $current_user->id == $this->bean->id;
         $admin_edit_self = is_admin($current_user) && $edit_self;
 
-
-        $this->ss->assign('IS_FOCUS_ADMIN', is_admin($this->bean));
+        $this->ss->assign('IS_FOCUS_ADMIN', is_admin($this->bean) ? 'true' : 'false');
         
         if($edit_self) {
             $this->ss->assign('EDIT_SELF','1');

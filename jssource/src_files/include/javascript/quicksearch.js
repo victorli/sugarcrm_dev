@@ -229,7 +229,7 @@ function enableQS(noReload){
 	                	        	   this.qs_obj.populate_list[key].match(filter)) {
 	                	        	   
 	                	        	    var displayValue = data[i].replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');
-		   	        					var data_label =  document.getElementById(this.qs_obj.populate_list[key]+'_label').innerHTML.replace(/\n/gi,'');
+                                        var data_label =  document.getElementById(this.qs_obj.populate_list[key]+'_label').innerHTML.replace(/\n/gi,'').replace(/<\/?[^>]+(>|$)/g, "");
 			        					
 			        					label_and_data = data_label  + ' ' + displayValue;
 			        					

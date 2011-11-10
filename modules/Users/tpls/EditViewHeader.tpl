@@ -60,7 +60,7 @@ var ERR_REENTER_PASSWORDS = '{$MOD.ERR_REENTER_PASSWORDS}';
 	<input type="hidden" name="record" id="record" value="{$ID}">
 	<input type="hidden" name="module" value="Users">
 	<input type="hidden" name="return_module" value="Users">
-	<input type="hidden" name="return_id" value="{$ID}">
+	<input type="hidden" name="return_id" value="{$RETURN_ID}">
 	<input type="hidden" name="return_action" value="EditView">
 </form>
 
@@ -85,6 +85,7 @@ var ERR_REENTER_PASSWORDS = '{$MOD.ERR_REENTER_PASSWORDS}';
 	<input type="hidden" name="is_current_admin" id="is_current_admin" value='{$IS_ADMIN}' >
 	<input type="hidden" name="edit_self" id="edit_self" value='{$EDIT_SELF}' >
 	<input type="hidden" name="required_email_address" id="required_email_address" value='{$REQUIRED_EMAIL_ADDRESS}' >
+    <input type="hidden" name="isDuplicate" id="isDuplicate" value="{$isDuplicate}">
 	<div id="popup_window"></div>
 
 <script type="text/javascript">

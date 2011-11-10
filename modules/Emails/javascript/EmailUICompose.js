@@ -1990,11 +1990,37 @@ SE.composeLayout = {
             composePackage.body = decodeURI(encodeURI(composePackage.body)).replace(/<BR>/ig, '\n').replace(/<br>/gi, "\n").replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');
         } // if
         //Flag determines if we should clear the tiny contents or just append
-        if (typeof(composePackage.clearBody) != 'undefined' && composePackage.clearBody)
+        if (typeof(composePackage.clearBody) != 'undefined' && composePackage.clearBody){
             SE.composeLayout.tinyHTML = '';
-        else
-            SE.composeLayout.tinyHTML = tinyHTML + composePackage.body;
+        }else{
 
+            htmlBeg = '';
+            htmlEnd = '';
+            htmlBod = tinyHTML;
+            //process if html is not empty
+            if(typeof(htmlBod)!='undefined' && htmlBod != null && htmlBod !=''){
+                //search for ending body tag
+                if (htmlBod.indexOf('</body>') < 0 ){
+                    //if not found, search for ending html tag
+                        if (htmlBod.indexOf('</html>') >= 0 ){
+                            htmlBeg = htmlBod.substr(0,htmlBod.indexOf('</html>') );
+                            htmlEnd = htmlBod.substr(htmlBod.indexOf('</html>') );
+
+                        }
+                }else{
+                    //html tag was found, append right before the tag
+                    htmlBeg = htmlBod.substr(0,htmlBod.indexOf('</body>') );
+                    htmlEnd = htmlBod.substr(htmlBod.indexOf('</body>') );
+                }
+                if(htmlBeg == ''){
+                    //html and body tags were not found, so append to end
+                    htmlBeg = htmlBod;
+                }
+
+            }
+            SE.composeLayout.tinyHTML = htmlBeg + composePackage.body + htmlEnd;
+            //SE.composeLayout.tinyHTML = tinyHTML + composePackage.body;
+        }
          tiny.setContent(SE.composeLayout.tinyHTML);
          //Indicate that the contents has been loaded successfully.
          SE.composeLayout.loadedTinyInstances[SE.composeLayout.currentInstanceId] = true;

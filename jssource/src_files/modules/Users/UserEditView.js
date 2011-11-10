@@ -59,7 +59,7 @@ function user_status_display(field){
         case 'PORTAL_ONLY':
             document.getElementById('is_admin').value='0';
             document.getElementById('is_group').value='0';
-            document.getElementById('is_portal').value='0';
+            document.getElementById('portal_only').value='1';
             document.getElementById('UserTypeDesc').innerHTML=SUGAR.language.get('Users','LBL_PORTAL_ONLY_DESC');
         break;
 	}

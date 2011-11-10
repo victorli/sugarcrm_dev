@@ -37,17 +37,17 @@
 
 
 require_once 'include/database/DBManagerFactory.php';
- 
+
 class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
 {
     private $_db;
-	
-	
+
+
 /*
 	public static function setUpBeforeClass()
 	{
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-       
+
 	}
 
 	public static function tearDownAfterClass()
@@ -68,9 +68,9 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
         unset($GLOBALS['current_user']);
         SugarTestContactUtilities::removeAllCreatedContacts();
 	}
-	
+
     /*
-     * @group bug43466 
+     * @group bug43466
      */
 
 	public function providerRepairTableParams()
@@ -220,7 +220,7 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
 					'reportable' => false,
 					'comment' => 'When the Sugar Plug-in for Microsoft Outlook syncs an Outlook appointment, this is the Outlook appointment item ID'
 				),
-			'accept_status' => 
+			'accept_status' =>
 				array (
 					'name' => 'accept_status',
 					'vname' => 'LBL_SUBJECT',
@@ -229,8 +229,8 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
 					'len' => '20',
 					'source'=>'non-db',
 				 ),
-			  
-			'set_accept_links' => 
+
+			'set_accept_links' =>
 				array (
 					'name' => 'accept_status',
 					'vname' => 'LBL_SUBJECT',
@@ -363,7 +363,7 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
 					'bean_name'=>'User',
 					'source'=>'non-db',
 				),
-			'contact_id' => 
+			'contact_id' =>
 				array(
 					'name' => 'contact_id',
 					'type' => 'id',
@@ -371,8 +371,8 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
 					'importable' => false,
 				)
 			);
-		
-	
+
+
 		$returnArray = array (
 			array(
 				"calls",
@@ -392,13 +392,13 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
 						'name' => 'idx_CALLS_date_Start',
 						'type' => 'index',
 						'fields' => array('date_start'),
-					) 
+					)
 				),
 				true
 			),
 			array(
 				"calls",
-				$fieldDefs,				
+				$fieldDefs,
 				array(
 					array(
 						'name' => 'idx_call_name2',
@@ -414,13 +414,13 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
 						'name' => 'idx_CALLS_date_Start',
 						'type' => 'index',
 						'fields' => array('date_start'),
-					) 
+					)
 				),
 				false
 			),
 			array(
 				"calls",
-				$fieldDefs,				
+				$fieldDefs,
 				array(
 					array(
 						'name' => 'iDX_cAll_NAMe',
@@ -436,13 +436,13 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
 						'name' => 'idx_CALLS_date_Start',
 						'type' => 'index',
 						'fields' => array('date_start'),
-					) 
+					)
 				),
 				true
 			),
 			array(
 				"calls",
-				$fieldDefs,				
+				$fieldDefs,
 				array(
 					array(
 						'name' => 'idx_call_name',
@@ -458,27 +458,27 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
 						'name' => 'idx_calls_date_start2',
 						'type' => 'index',
 						'fields' => array('date_start'),
-					) 
+					)
 				),
 				false
-			)		
-			
-		);			
-        return $returnArray;		
+			)
+
+		);
+        return $returnArray;
 	}
-    
+
 	static function isEmpty($result){
 		if(trim($result) == ""){
 			return true;
 		}
 		return false;
 	}
-	
+
 	/**
      * @dataProvider providerRepairTableParams
-     */	
-	
-	
+     */
+
+
     public function testRepairTableParams(
 	    $tablename,
         $fielddefs,
@@ -486,16 +486,16 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
 		$expectedResult
 		)
     {
-	
+
 		if ( $expectedResult ) {
             $this->assertTrue($this->isEmpty($this->_db->repairTableParams($tablename, $fielddefs, $indices, false)));
         }
         else {
             $this->assertFalse($this->isEmpty($this->_db->repairTableParams($tablename, $fielddefs, $indices, false)));
-        }	
-    }	 
+        }
+    }
 
-		
+
 	public function providerCompareVardefs()
     {
         $returnArray = array(
@@ -534,7 +534,7 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
                     'type' => 'varchar',
                     'len' => '255',
                     ),
-                false),            
+                false),
             array(
                 array(
                     'name' => 'foo',
@@ -558,23 +558,26 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
                     'type' => 'varchar',
                     'len' => '123',
                     ),
-                false)				
+                false)
            );
-        
+
         return $returnArray;
-    }	
-	
+    }
+
     /**
      * @dataProvider providerCompareVarDefs
-     */	
-	
+     */
+
     public function testCompareVarDefs($fieldDef1,$fieldDef2,$expectedResult)
     {
+        if($this->_db->dbType=="oci8" && $fieldDef1['len'] > $fieldDef2['len']) {
+            $this->markTestSkipped("Oracle does not allow shrinking columns");
+        }
         if ( $expectedResult ) {
             $this->assertTrue($this->_db->compareVarDefs($fieldDef1,$fieldDef2));
         }
         else {
             $this->assertFalse($this->_db->compareVarDefs($fieldDef1,$fieldDef2));
         }
-    }	 
+    }
 }

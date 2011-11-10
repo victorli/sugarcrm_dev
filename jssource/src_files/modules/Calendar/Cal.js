@@ -188,7 +188,7 @@
 					});
 				}								
 				
-				if(CAL.items_draggable && item.module_name != "Tasks" && item.edit == 1){
+				if(CAL.items_draggable && item.edit == 1){
 				
 					var border = 'cal-grid';
 					if(CAL.view != "shared" && CAL.view != "month")
@@ -196,9 +196,8 @@
 						
 					var dd = new YAHOO.util.DDCAL(elm_id,"cal",{isTarget: false,cont: border}); 									
 													
-					dd.onInvalidDrop = function(e){ 
-						this.el.style.left = "-1px";
-						this.el.style.top = "-1px";
+					dd.onInvalidDrop = function(e){
+						CAL.arrange_slot(this.el.parentNode.getAttribute("id"));
 						if(CAL.dropped == 0){
 							this.el.childNodes[0].innerHTML = CAL.old_caption;
 						}				 

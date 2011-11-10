@@ -180,7 +180,7 @@ do {
 
  		//if the query fails to execute.. terminate campaign email process.
  		$lock_result=$db->query($lock_query,true,'Error acquiring a lock for emailman entry.');
-		$lock_count=$db->getAffectedRowCount();
+		$lock_count=$db->getAffectedRowCount($lock_result);
 
 		//do not process the message if unable to acquire lock.
 		if ($lock_count!= 1) {
