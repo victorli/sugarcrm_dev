@@ -45,8 +45,12 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 require_once('include/phpmailer/class.phpmailer.php');
 require_once('include/OutboundEmail/OutboundEmail.php');
 
-
-class SugarPHPMailer extends PHPMailer {
+/**
+ * Sugar mailer
+ * @api
+ */
+class SugarPHPMailer extends PHPMailer
+{
 	var $oe; // OutboundEmail
 	var $protocol = "tcp://";
 	var $preppedForOutbound = false;

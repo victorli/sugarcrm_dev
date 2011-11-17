@@ -36,6 +36,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 require_once('include/EditView/SugarVCR.php');
+/**
+ * ListView - list of many objects
+ * @api
+ */
 class ListView
 {
     var $local_theme= null;
@@ -535,7 +539,7 @@ function getOrderBy($varName, $defaultOrderBy='', $force_sortorder='') {
     if($sortBy == 'amount_usdollar') {
         $sortBy = 'amount_usdollar*1';
     }
-    
+
     $desc = $this->getSessionVariable($varName, $sortBy."S");
 
     if(empty($desc))
@@ -892,18 +896,18 @@ function getUserVariable($localVarName, $varName) {
         } else {
             $this->query_orderby = 'id';
         }
-		
+
         $this->getOrderBy($html_var,$this->query_orderby, $this->sort_order);
 
         $_SESSION['last_sub' .$this->subpanel_module. '_order'] = $this->sort_order;
         $_SESSION['last_sub' .$this->subpanel_module. '_url'] = $this->getBaseURL($html_var);
 
 		// Bug 8139 - Correct Subpanel sorting on 'name', when subpanel sorting default is 'last_name, first_name'
-		if (($this->sortby == 'name' || $this->sortby == 'last_name') && 
+		if (($this->sortby == 'name' || $this->sortby == 'last_name') &&
 			str_replace(' ', '', trim($subpanel_def->_instance_properties['sort_by'])) == 'last_name,first_name') {
 			$this->sortby = 'last_name '.$this->sort_order.', first_name ';
 		}
-		
+
         if(!empty($this->response)){
             $response =& $this->response;
             echo 'cached';
@@ -1629,7 +1633,7 @@ $close_inline_img = SugarThemeRegistry::current()->getImage('close_inline', 'bor
 
 		return '.'.$imgFileParts['extension']."' width='$width' height='$height' align='absmiddle' alt=".translate('LBL_SORT').">";
     }
-    
+
     function getArrowUpDownEnd($upDown) {
         if (!isset($upDown) || empty($upDown)) {
             $upDown = "";
@@ -1664,7 +1668,7 @@ $close_inline_img = SugarThemeRegistry::current()->getImage('close_inline', 'bor
         sugar_cache_put($cache_key, $result);
         return $result;
     }
-    
+
     function getArrowUpDownImageSize($upDown) {
         // just get the non-sort image's size.. the up and down have be the same.
         $image = SugarThemeRegistry::current()->getImageURL("arrow{$upDown}.gif",false);

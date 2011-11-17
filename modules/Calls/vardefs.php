@@ -185,7 +185,7 @@ $dictionary['Call'] = array('table' => 'calls', 'comment' => 'A Call is an activ
   ),
   'accept_status' => array (
     'name' => 'accept_status',
-    'vname' => 'LBL_SUBJECT',
+    'vname' => 'LBL_ACCEPT_STATUS',
     'dbType' => 'varchar',
     'type' => 'varchar',
     'len' => '20',
@@ -194,7 +194,7 @@ $dictionary['Call'] = array('table' => 'calls', 'comment' => 'A Call is an activ
   //bug 39559 
   'set_accept_links' => array (
     'name' => 'accept_status',
-    'vname' => 'LBL_SUBJECT',
+    'vname' => 'LBL_ACCEPT_LINK',
     'dbType' => 'varchar',
     'type' => 'varchar',
     'len' => '20',

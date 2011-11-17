@@ -40,6 +40,7 @@ require_once("data/Relationships/One2MRelationship.php");
 
 /**
  * Represents a one to many relationship that is table based.
+ * @api
  */
 class One2MBeanRelationship extends One2MRelationship
 {
@@ -136,7 +137,7 @@ class One2MBeanRelationship extends One2MRelationship
             $rhs->in_relationship_update = TRUE;
             $rhs->save();
         }
-        
+
         if (empty($_SESSION['disable_workflow']) || $_SESSION['disable_workflow'] != "Yes")
         {
             $this->callAfterDelete($lhs, $rhs);
@@ -238,7 +239,7 @@ class One2MBeanRelationship extends One2MRelationship
         //First join the relationship table
         $join .= "$join_type $targetTableWithAlias ON $startingTable.$startingKey=$targetTable.$targetKey AND $targetTable.deleted=0\n"
         //Next add any role filters
-               . $this->getRoleWhere(($linkIsLHS) ? $targetTable : $startingTable) . "\n"; 
+               . $this->getRoleWhere(($linkIsLHS) ? $targetTable : $startingTable) . "\n";
 
         if($return_array){
             return array(

@@ -35,13 +35,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description:
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc. All Rights
- * Reserved. Contributor(s): ______________________________________..
- *********************************************************************************/
-
+/**
+ * Outbuound email management
+ * @api
+ */
 class OutboundEmail {
 	/**
 	 * Necessary
@@ -462,8 +459,8 @@ class OutboundEmail {
 				}else{
 					$values .= "'{$this->$def}'";
 				}
-			
-				
+
+
 			}
 
 			$q  = "INSERT INTO outbound_email ($cols) VALUES ({$values})";

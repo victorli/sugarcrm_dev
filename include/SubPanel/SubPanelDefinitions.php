@@ -45,6 +45,10 @@ if (! defined ( 'sugarEntry' ) || ! sugarEntry)
 //constructor
 //	open the layout_definitions file.
 //
+/**
+ * Subpanel implementation
+ * @api
+ */
 class aSubPanel
 {
 

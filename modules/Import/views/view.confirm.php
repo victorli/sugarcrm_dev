@@ -149,7 +149,7 @@ class ImportViewConfirm extends ImportView
         {
             $impotMapSeed = $this->getImportMap($importSource);
             $importFile->setImportFileMap($impotMapSeed);
-            $importFileMap = $impotMapSeed->getMapping();
+            $importFileMap = $impotMapSeed->getMapping($_REQUEST['import_module']);
         }
 
         $delimeter = $importFile->getFieldDelimeter();

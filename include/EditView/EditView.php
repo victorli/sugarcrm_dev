@@ -35,9 +35,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-
-
-
+/**
+ * Old EditView
+ * @deprecated
+ */
 class EditView {
     /**
      * smarty object

@@ -61,6 +61,7 @@
 		CAL.item_text = "{$item_text}";
 		CAL.mouseover_expand = "{$mouseover_expand}";		
 		
+		CAL.celcount = {$celcount};
 		CAL.cells_per_day = {$cells_per_day};	
 		CAL.current_params = {literal}{}{/literal};
 		CAL.dashlet = "{$dashlet}";	
@@ -75,8 +76,6 @@
 		CAL.lbl_confirm_remove = "{$MOD.LBL_CONFIRM_REMOVE}";
 		CAL.lbl_error_saving = "{$MOD.LBL_ERROR_SAVING}";
 		CAL.lbl_error_loading = "{$MOD.LBL_ERROR_LOADING}";
-		CAL.lbl_another_browser = "{$MOD.LBL_ANOTHER_BROWSER}";
-		CAL.lbl_remove_participants = "{$MOD.LBL_REMOVE_PARTICIPANTS}";	
 		CAL.lbl_desc = "{$MOD.LBL_INFO_DESC}";
 		CAL.lbl_start = "{$MOD.LBL_INFO_START_DT}";
 		CAL.lbl_due = "{$MOD.LBL_INFO_DUE_DT}";

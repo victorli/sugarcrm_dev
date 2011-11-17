@@ -94,7 +94,7 @@ class SugarModule
         if ( !isset($beanList) || !isset($beanFiles) ) {
             require('include/modules.php');
         }
-        
+
         if ( isset($beanList[$this->_moduleName]) ) {
             $bean = $beanList[$this->_moduleName];
             if (isset($beanFiles[$bean])) {
@@ -114,7 +114,7 @@ class SugarModule
         else {
             return false;
         }
-    
+
         return $focus;
     }
 }

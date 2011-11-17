@@ -36,13 +36,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
-
-
 require_once('include/utils/activity_utils.php');
 require_once('modules/Calendar/CalendarUtils.php');
 require_once('modules/Calendar/CalendarActivity.php');
-
 
 class Calendar {
 	
@@ -58,6 +54,7 @@ class Calendar {
 	public $acts_arr = array(); // Array of activities objects	
 	public $items = array(); // Array of activities data to be displayed	
 	public $shared_ids = array(); // ids of users for shared view
+	
 	
 	public $cells_per_day; // entire 24h day count of slots 	
 	public $grid_start_ts; // start timestamp of calendar grid
@@ -110,27 +107,25 @@ class Calendar {
 		if(empty($_REQUEST['year']))
 			$_REQUEST['year'] = "";
 
-		// if date is not set in request set current date
+		// if date is not set in request use current date
 		if(empty($date_arr) || !isset($date_arr['year']) || !isset($date_arr['month']) || !isset($date_arr['day']) ){	
-			$user_today = $timedate->nowDb();
-			preg_match('/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/',$user_today,$matches);
+			$today = $timedate->getNow(true);
 			$date_arr = array(
-			      'year' => $matches[1],
-			      'month' => $matches[2],
-			      'day' => $matches[3],
+			      'year' => $today->year,
+			      'month' => $today->month,
+			      'day' => $today->day,
 			);
 		}
 		
 		$current_date_db = $date_arr['year']."-".str_pad($date_arr['month'],2,"0",STR_PAD_LEFT)."-".str_pad($date_arr['day'],2,"0",STR_PAD_LEFT);
-		$this->date_time = SugarDateTime::createFromFormat("Y-m-d",$current_date_db);	
+		$this->date_time = $GLOBALS['timedate']->fromString($current_date_db);
 				
 		$this->show_tasks = $current_user->getPreference('show_tasks');
 		if(is_null($this->show_tasks))
 			$this->show_tasks = SugarConfig::getInstance()->get('calendar.show_tasks_by_default',true);		
 		$this->show_calls = $current_user->getPreference('show_calls');
 		if(is_null($this->show_calls))
-			$this->show_calls = SugarConfig::getInstance()->get('calendar.show_calls_by_default',true);
-	
+			$this->show_calls = SugarConfig::getInstance()->get('calendar.show_calls_by_default',true);	
 
 		$this->day_start_time = $current_user->getPreference('day_start_time');
 		if(is_null($this->day_start_time))
@@ -264,6 +259,8 @@ class Calendar {
 	 */	
 	public function init_shared(){
 		global $current_user;
+		
+		
 		$user_ids = $current_user->getPreference('shared_ids');
 		if(!empty($user_ids) && count($user_ids) != 0 && !isset($_REQUEST['shared_ids'])) {
 			$this->shared_ids = $user_ids;
@@ -282,13 +279,13 @@ class Calendar {
 	
 		if($this->view == "week" || $this->view == "shared"){
 			$week_start = CalendarUtils::get_first_day_of_week($this->date_time);
-			$this->grid_start_ts = $week_start->format('U') + $week_start->getOffset(); 
+			$this->grid_start_ts = $week_start->format('U') + $week_start->getOffset();		
 		}else if($this->view == "month"){
 			$month_start = $this->date_time->get_day_by_index_this_month(0);
 			$week_start = CalendarUtils::get_first_day_of_week($month_start);
 			$this->grid_start_ts = $week_start->format('U') + $week_start->getOffset(); // convert to timestamp, ignore tz
 		}else if($this->view == "day"){
-			$this->grid_start_ts = $this->date_time->format('U') + $this->date_time->getOffset();
+			$this->grid_start_ts = $this->date_time->format('U') + $this->date_time->getOffset();		
 		}else
 			$this->grid_start_ts = 0;
 	}
@@ -355,8 +352,8 @@ class Calendar {
 		else 
 			$sign = "+";
 			
-		if($this->view == 'month'){
-			$day = $this->date_time->get($sign."1 month")->get_day_begin(1);
+		if($this->view == 'month'){			
+			$day = $this->date_time->get($sign."1 month")->get_day_begin(1);			
 		}else if($this->view == 'week' || $this->view == 'shared'){
 			$day = CalendarUtils::get_first_day_of_week($this->date_time);
 			$day = $day->get($sign."7 days");

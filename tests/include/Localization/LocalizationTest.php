@@ -159,32 +159,6 @@ class LocalizationTest extends Sugar_PHPUnit_Framework_TestCase
             );
     }
     
-    public function testGetNameJsCorrectlySpecifiesMissingOrEmptyParameters()
-    {
-        global $app_strings;
-        
-        $app_strings = return_application_language($GLOBALS['current_language']);
-        
-        $first = 'First';
-        $last = 'Last';
-        $salutation = 'Sal';
-        $title = 'Title';
-        
-        $ret = $this->_locale->getNameJs($first,$last,$salutation);
-        
-        $this->assertRegExp("/stuff\['s'\] = '$salutation';/",$ret);
-        $this->assertRegExp("/stuff\['f'\] = '$first';/",$ret);
-        $this->assertRegExp("/stuff\['l'\] = '$last';/",$ret);
-        $this->assertRegExp("/stuff\['t'\] = '{$app_strings['LBL_LOCALE_NAME_EXAMPLE_TITLE']}';/",$ret);
-        
-        $ret = $this->_locale->getNameJs('',$last,$salutation);
-        
-        $this->assertRegExp("/stuff\['s'\] = '$salutation';/",$ret);
-        $this->assertRegExp("/stuff\['f'\] = '{$app_strings['LBL_LOCALE_NAME_EXAMPLE_FIRST']}';/",$ret);
-        $this->assertRegExp("/stuff\['l'\] = '$last';/",$ret);
-        $this->assertRegExp("/stuff\['t'\] = '{$app_strings['LBL_LOCALE_NAME_EXAMPLE_TITLE']}';/",$ret);
-    }
-    
     public function testGetPrecedentPreferenceWithUserPreference()
     {
         $backup = $GLOBALS['sugar_config']['export_delimiter'];

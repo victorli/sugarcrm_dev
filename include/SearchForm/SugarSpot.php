@@ -36,6 +36,10 @@
  ********************************************************************************/
 
 
+/**
+ * Global search
+ * @api
+ */
 class SugarSpot
 {
 	/**
@@ -137,19 +141,19 @@ class SugarSpot
 	{
 		$searchFields = array();
 
-		if(file_exists("modules/{$moduleName}/metadata/SearchFields.php")) 
+		if(file_exists("modules/{$moduleName}/metadata/SearchFields.php"))
 		{
 		    require("modules/{$moduleName}/metadata/SearchFields.php");
 		}
-		
-		if(file_exists("custom/modules/{$moduleName}/metadata/SearchFields.php")) 
+
+		if(file_exists("custom/modules/{$moduleName}/metadata/SearchFields.php"))
 		{
 		    require("custom/modules/{$moduleName}/metadata/SearchFields.php");
 		}
-		
+
 		return $searchFields;
 	}
-	
+
 
 	/**
 	 * Get count from query
@@ -190,16 +194,16 @@ class SugarSpot
 			$limit = ( !empty($GLOBALS['sugar_config']['max_spotresults_more']) ? $GLOBALS['sugar_config']['max_spotresults_more'] : 20 );
 		}
     	$totalCounted = empty($GLOBALS['sugar_config']['disable_count_query']);
- 	
-			
+
+
 	    foreach($modules as $moduleName){
 		    if (empty($primary_module))
 		    {
 		    	$primary_module=$moduleName;
-		    } 
+		    }
 
-			$searchFields = SugarSpot::getSearchFields($moduleName);         			
-			
+			$searchFields = SugarSpot::getSearchFields($moduleName);
+
 			if (empty($searchFields[$moduleName]))
 			{
 				continue;
@@ -213,7 +217,7 @@ class SugarSpot
 			if ($class == 'aCase') {
 		            $class = 'Case';
 			}
-			
+
 			foreach($searchFields[$moduleName] as $k=>$v){
 				$keep = false;
 				$searchFields[$moduleName][$k]['value'] = $query;
@@ -312,7 +316,7 @@ class SugarSpot
 			$searchForm = new SearchForm ( $seed, $moduleName ) ;
 			$searchForm->setup (array ( $moduleName => array() ) , $searchFields , '' , 'saved_views' /* hack to avoid setup doing further unwanted processing */ ) ;
 			$where_clauses = $searchForm->generateSearchWhere() ;
-			
+
 			if(empty($where_clauses)) {
 			    continue;
 			}

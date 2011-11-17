@@ -55,9 +55,6 @@ class CalendarViewRemove extends SugarView {
 		$module = $_REQUEST['current_module'];
 		require_once($beanFiles[$beanList[$module]]);
 		$bean = new $beanList[$module]();
-		//$type = strtolower($beanList[$module]);
-		//$table_name = $bean->table_name;
-		//$jn = $type."_id_c";
 
 		$bean->retrieve($_REQUEST['record']);
 
@@ -66,10 +63,6 @@ class CalendarViewRemove extends SugarView {
 		}
 
 		$bean->mark_deleted($_REQUEST['record']);
-
-		/*if($_REQUEST['delete_recurring']){
-			remove_recurrence($bean,$table_name,$jn,$_REQUEST['record']);
-		}*/
 
 		$json_arr = array(
 			'success' => 'yes',

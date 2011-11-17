@@ -39,6 +39,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 require_once("data/Relationships/SugarRelationship.php");
 
+/**
+ * Create relationship objects
+ * @api
+ */
 class SugarRelationshipFactory {
     static $rfInstance;
 

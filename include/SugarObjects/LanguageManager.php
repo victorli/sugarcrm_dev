@@ -34,7 +34,12 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-class LanguageManager{
+/**
+ * Language files management
+ * @api
+ */
+class LanguageManager
+{
 
 	/**
 	 * Called from VardefManager to allow for caching a lang file for a module

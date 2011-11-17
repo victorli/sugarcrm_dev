@@ -581,7 +581,7 @@ function handleDbCreateSugarUser() {
     echo $mod_strings['LBL_PERFORM_CREATE_DB_USER'];
 
     $db = getDbConnection();
-    $db->createDbUser($setup_db_database_name, $setup_site_host_name, $setup_db_sugarsales_user, setup_db_sugarsales_password);
+    $db->createDbUser($setup_db_database_name, $setup_site_host_name, $setup_db_sugarsales_user, $setup_db_sugarsales_password);
     $err = $db->lastError();
     if($err == '')  {
         echo $mod_strings['LBL_PERFORM_DONE'];

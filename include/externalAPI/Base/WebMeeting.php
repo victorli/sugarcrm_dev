@@ -35,6 +35,10 @@
  ********************************************************************************/
 
 
+/**
+ * External API to meeting system
+ * @api
+ */
 interface WebMeeting {
 	public function scheduleMeeting($bean);
 	public function unscheduleMeeting($bean);

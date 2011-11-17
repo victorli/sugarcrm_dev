@@ -37,11 +37,21 @@
 
     require_once 'Zend/Oauth/Consumer.php';
     // use ZF oauth
+    /**
+     * Sugar Oauth consumer
+     * @api
+     */
     class SugarOAuth extends Zend_Oauth_Consumer
     {
         protected $_last = '';
         protected $_oauth_config = array();
 
+        /**
+         * Create OAuth client
+         * @param string $consumer_key
+         * @param string $consumer_secret
+         * @param array $params OAuth options
+         */
         public function __construct($consumer_key , $consumer_secret, $params = null)
         {
             $this->_oauth_config = array(
@@ -54,16 +64,29 @@
             parent::__construct($this->_oauth_config);
         }
 
+        /**
+         * Enable debugging
+         * @return SugarOAuth
+         */
         public function enableDebug()
         {
             return $this;
         }
 
+        /**
+         * Set token
+         * @param string $token
+         * @param string $secret
+         */
         public function setToken($token, $secret)
         {
             $this->token = array($token, $secret);
         }
 
+        /**
+         * Create request token object for current token
+         * @return Zend_Oauth_Token_Request
+         */
         public function makeRequestToken()
         {
             $token = new Zend_Oauth_Token_Request();
@@ -72,6 +95,10 @@
             return $token;
         }
 
+        /**
+         * Create access token object for current token
+         * @return Zend_Oauth_Token_Access
+         */
         public function makeAccessToken()
         {
             $token = new Zend_Oauth_Token_Access();
@@ -80,6 +107,14 @@
             return $token;
         }
 
+        /**
+         * Retrieve request token from URL
+         * @param string $url
+         * @param string $callback Callback URL
+         * @param array $params Query params
+         * @return array
+         * @see Zend_Oauth_Consumer::getRequestToken()
+         */
         public function getRequestToken($url, $callback = null, $params = array())
         {
             if(!empty($callback)) {
@@ -100,6 +135,12 @@
             }
         }
 
+        /**
+         * Retrieve access token from url
+         * @param string $url
+         * @see Zend_Oauth_Consumer::getAccessToken()
+         * @return array
+         */
         public function getAccessToken($url)
         {
             $this->setAccessTokenUrl($url);
@@ -107,6 +148,14 @@
             return array('oauth_token' => $token->getToken(), 'oauth_token_secret' => $token->getTokenSecret());
         }
 
+       /**
+        * Fetch URL with OAuth
+        * @param string $url
+        * @param string $params Query params
+        * @param string $method HTTP method
+        * @param array $headers HTTP headers
+        * @return string
+        */
        public function fetch($url, $params = null, $method = 'GET', $headers = null)
        {
            $acc = $this->makeAccessToken();
@@ -135,17 +184,29 @@
             return $resp->getBody();
        }
 
+       /**
+        * Get HTTP client
+        * @return Zend_Oauth_Client
+        */
        public function getClient()
        {
             $acc = $this->makeAccessToken();
             return $acc->getHttpClient($this->_oauth_config);
        }
 
+       /**
+        * Get last response
+        * @return string
+        */
        public function getLastResponse()
        {
             return $this->_last;
        }
 
+       /**
+        * Get last request
+        * @return string
+        */
        public function getLastRequest()
        {
             return $this->_lastReq;

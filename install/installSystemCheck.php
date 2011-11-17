@@ -223,31 +223,6 @@ if(!make_writable('./custom')) {
  installLog("/custom directory and subdirectory check passed");
 }
 
-// data dir
-if(!make_writable('./data') || !make_writable('./data/upload')) {
-    $dataStatus = "<b><span class='stop'>{$mod_strings['ERR_CHECKSYS_FILES_NOT_WRITABLE']}</span></b>";
-    installLog("ERROR:: {$mod_strings['ERR_CHECKSYS_FILES_NOT_WRITABLE']}");
-    $error_found = true;
-    $error_txt .= '
-      <tr>
-        <td><strong>'.$mod_strings['LBL_CHECKSYS_DATA'].'</strong></td>
-        <td class="error">'.$dataStatus
-        .'</td>
-      </tr><tr>
-       <td colspan="2">
-            <b>'.$mod_strings['LBL_CHECKSYS_FIX_FILES'].'</b>';
-        if(!make_writable('./data')) {
-                $error_txt .='<br>'.getcwd().'/data';
-            }
-        if(!make_writable('./data/upload')) {
-                $error_txt .='<br>'.getcwd().'/data/upload';
-            }
-        $error_txt .= '</td>
-      </tr>';
-}else{
- installLog("/data/upoad directory and subdirectory check passed");
-}
-
 
 // cache dir
     $cache_files[] = '';

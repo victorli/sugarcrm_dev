@@ -43,7 +43,7 @@ require_once('include/nusoap/nusoap.php');
  * This class is the soap implementation for the connector framework.
  * Connectors that use SOAP calls should subclass this class and provide
  * a getList and getItem method override to return results from the connector
- *
+ * @api
  */
 abstract class ext_soap extends source {
 

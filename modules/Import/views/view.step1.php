@@ -232,12 +232,13 @@ YAHOO.util.Event.onDOMReady(function(){
             {
                 externalSourceBttns[i].set("checked", true, true);
             }
+            selectedExternalSource = '';
         }
         else
         {
             trEl.style.display = '';
             document.getElementById('gonext').disabled = true;
-
+            
             //Highlight the first selection by default
             if(externalSourceBttns.length >= 1)
             {

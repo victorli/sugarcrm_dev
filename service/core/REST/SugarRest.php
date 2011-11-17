@@ -37,10 +37,10 @@ if(!defined('sugarEntry'))define('sugarEntry', true);
 
 /**
  * This class is a base class implementation of REST protocol
- *
+ * @api
  */
  class SugarRest{
-	
+
  	/**
  	 * Constructor
  	 *
@@ -49,17 +49,17 @@ if(!defined('sugarEntry'))define('sugarEntry', true);
 	function __construct($implementation){
 		$this->implementation = $implementation;
 	} // fn
-	
+
 	/**
 	 * It will json encode version of the input object
-	 * 
+	 *
 	 * @param array $input - assoc array of input values: key = param name, value = param type
 	 * @return String - print's $input object
-	 */	
+	 */
 	function generateResponse($input){
 		print_r($input);
 	} // fn
-	
+
 	/**
 	 * This method calls functions on the implementation class and returns the output or Fault object in case of error to client
 	 *
@@ -83,7 +83,7 @@ if(!defined('sugarEntry'))define('sugarEntry', true);
 			return  $this->implementation->$method();
 		} // else
 	} // fn
-	
+
 	/**
 	 * This function sends response to client containing error object
 	 *
@@ -92,9 +92,9 @@ if(!defined('sugarEntry'))define('sugarEntry', true);
 	 */
 	function fault($errorObject){
 		$this->faultServer->generateFaultResponse($errorObject);
-		
+
 	} // fn
-	
+
 	function generateFaultResponse($errorObject){
 		//ob_clean();
 		$GLOBALS['log']->info('In SugarRest->fault. Setting fault object on response');
@@ -110,5 +110,5 @@ if(!defined('sugarEntry'))define('sugarEntry', true);
 			print_r($errorObject);
 		} // else
 	}
-	
+
 } // clazz

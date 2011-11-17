@@ -466,17 +466,8 @@
 			e.value = "";
 			
 		if(e = CAL.get("list_div_win"))
-			e.style.display = "none";
-			
-		/*if(e = CAL.get("edit_all_recurrences_btn"))
-			e.style.display = "none"; 		
- 		 		 		
- 		var nodes = CAL.query("#repeat_type option[value='']");
- 		CAL.each(nodes,function(i,v){
- 			nodes[i].setAttribute("selected","selected");
- 		});*/
- 		
- 		//CAL.repeat_type_selected(); 		
+			e.style.display = "none";			
+
 	
  		CAL.GR_update_focus("Meetings",""); 
  		CAL.select_tab("cal-tab-1");
@@ -602,31 +593,6 @@
 	}	
 				
 	
-	CAL.repeat_type_selected = function (){
-		var rt;
-		if(rt = CAL.get("repeat_type")){
-			if(rt.value == 'Weekly'){
-				var nodes = CAL.query(".weeks_checks_div");
-				CAL.each(nodes,function (i,v){
-					nodes[i].style.display = "block";				
-				});
-			}else{
-				var nodes = CAL.query(".weeks_checks_div");
-				CAL.each(nodes,function (i,v){
-					nodes[i].style.display = "none";				
-				});
-			}
-		
-			if(rt.value == ''){
-				CAL.get("repeat_interval").setAttribute("disabled","disabled");
-				CAL.get("repeat_end_date").setAttribute("disabled","disabled");
-			}else{
-				CAL.get("repeat_interval").removeAttribute("disabled");
-				CAL.get("repeat_end_date").removeAttribute("disabled");	
-			}
-		}
-	}
-		
 	CAL.load_from = function (module_name,record,run_one_time){
 	
 		var e;
@@ -940,9 +906,9 @@
 							e.setAttribute("disabled","disabled");
 						if(e = CAL.get("radio_meeting"))
 							e.setAttribute("disabled","disabled");													
-
-						CAL.get("btn-apply").setAttribute("disabled","disabled");
 						
+
+
 						var callback = {
 								success: function(o){
 									res = eval('('+o.responseText+')');	
@@ -956,6 +922,7 @@
 										CAL.get("title-cal-edit").innerHTML = CAL.lbl_edit;
 										if(e = CAL.get("send_invites"))
 											e.removeAttribute("checked");
+
 										ajaxStatus.hideStatus();											
 									}else{
 										alert(CAL.lbl_error_saving);

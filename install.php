@@ -556,10 +556,6 @@ EOQ;
         // modules dir
         recursive_make_writable('./modules');
 
-        // data dir
-        make_writable('./data');
-        create_writable_dir('./data/upload');
-
         // cache dir
         create_writable_dir(sugar_cached('custom_fields'));
         create_writable_dir(sugar_cached('dyn_lay'));

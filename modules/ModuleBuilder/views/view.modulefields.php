@@ -69,6 +69,11 @@ class ViewModulefields extends SugarView
         $fieldsData = array();
         $customFieldsData = array();
 
+        //use fieldTypes variable to map field type to displayed field type
+        $fieldTypes = $mod_strings['fieldTypes'];
+        //add datetimecombo type field from the vardef overrides to point to Datetime type
+        $fieldTypes['datetime'] = $fieldTypes['datetimecombo'];
+
         if(!isset($_REQUEST['view_package']) || $_REQUEST['view_package'] == 'studio') {
             //$this->loadPackageHelp($module_name);
             $studioClass = new stdClass;
@@ -83,7 +88,7 @@ class ViewModulefields extends SugarView
             foreach($dictionary[$objectName]['fields'] as $def) {
                 if ($this->isValidStudioField($def))
                 {
-                    $def['label'] = isset($module_strings[$def['vname']]) ? $module_strings[$def['vname']] : $def['vname'];
+                    $def['label'] = translate($def['vname'], $module_name);
 					//Custom relate fields will have a non-db source, but custom_module set
                 	if(isset($def['source']) && $def['source'] == 'custom_fields' || isset($def['custom_module'])) {
                        $f[$mod_strings['LBL_HCUSTOM']][$def['name']] = $def;
@@ -93,6 +98,7 @@ class ViewModulefields extends SugarView
                        $def['custom'] = false;
                     }
 
+                    $def['type'] = isset($fieldTypes[$def['type']]) ? $fieldTypes[$def['type']] : ucfirst($def['type']);
                     $fieldsData[] = $def;
                     $customFieldsData[$def['name']] = $def['custom'];
                 }
@@ -156,6 +162,9 @@ class ViewModulefields extends SugarView
                        $this->mbModule->mbvardefs->vardefs['fields'][$k][$field]['label'] = isset($def['vname']) && isset($this->mbModule->mblanguage->strings[$current_language][$def['vname']]) ? $this->mbModule->mblanguage->strings[$current_language][$def['vname']] : $field;
                        $customFieldsData[$field] = ($k == $this->mbModule->name) ? true : false;
                        $loadedFields[$field] = true;
+                        
+                       $type = $this->mbModule->mbvardefs->vardefs['fields'][$k][$field]['type'];
+                       $this->mbModule->mbvardefs->vardefs['fields'][$k][$field]['type'] = isset($fieldTypes[$type]) ? $fieldTypes[$type] : ucfirst($type);
                        $fieldsData[] = $this->mbModule->mbvardefs->vardefs['fields'][$k][$field];
                     }
                 }

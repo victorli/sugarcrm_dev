@@ -35,6 +35,10 @@
  ********************************************************************************/
 
 
+/**
+ * External API based on Oauth
+ * @api
+ */
 interface ExternalOAuthAPIPlugin {
     /**
      * Get OAuth parameters, to create OAuth client

@@ -138,7 +138,8 @@ class UserViewHelper {
         $edit_self = $current_user->id == $this->bean->id;
         $admin_edit_self = is_admin($current_user) && $edit_self;
 
-        $this->ss->assign('IS_FOCUS_ADMIN', is_admin($this->bean) ? 'true' : 'false');
+
+        $this->ss->assign('IS_FOCUS_ADMIN', is_admin($this->bean));
         
         if($edit_self) {
             $this->ss->assign('EDIT_SELF','1');
@@ -187,7 +188,16 @@ class UserViewHelper {
         }
         
     }
-    protected function setupUserTypeDropdown() {
+
+
+    /**
+     * setupUserTypeDropdown
+     *
+     * This function handles setting up the user type dropdown field.  It determines which user types are available for the current user.
+     * At the end of the function two Smarty variables (USER_TYPE_DROPDOWN and USER_TYPE_READONLY) are assigned.
+     *
+     */
+    public function setupUserTypeDropdown() {
         global $current_user;
         
 
@@ -251,7 +261,7 @@ class UserViewHelper {
         $userTypeDropdown .= '</select><div id="UserTypeDesc">&nbsp;</div>';
         
         $this->ss->assign('USER_TYPE_DROPDOWN',$userTypeDropdown);
-        $this->ss->assign('USER_TYPE_READONLY',$userTypes[$userType]['label']);
+        $this->ss->assign('USER_TYPE_READONLY',$userTypes[$userType]['label'] . "<input type='hidden' id='UserType' value='{$userType}'><div id='UserTypeDesc'>&nbsp;</div>");
         
     }
 

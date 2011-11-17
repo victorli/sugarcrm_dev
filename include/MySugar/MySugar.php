@@ -36,7 +36,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
+/**
+ * Homepage dashlet manager
+ * @api
+ */
 class MySugar{
 	var $type;
 

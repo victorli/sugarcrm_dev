@@ -124,6 +124,8 @@ $mod_strings = array (
     'NOTICE_DURATION_TIME' => 'Duration time must be greater than 0',
     'LBL_CALL_INFORMATION' => 'Overview',
     'LBL_REMOVE' => 'rem',
+    'LBL_ACCEPT_STATUS' => 'Accept Status',
+    'LBL_ACCEPT_LINK' => 'Accept Link',
     //For export labels
     'LBL_PARENT_ID' => 'Parent ID',
     'LBL_EXPORT_MODIFIED_USER_ID' => 'Modified By ID',

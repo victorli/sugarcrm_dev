@@ -39,6 +39,10 @@
 require_once('include/TemplateHandler/TemplateHandler.php');
 require_once('include/EditView/SugarVCR.php');
 
+/**
+ * New EditView
+ * @api
+ */
 class EditView
 {
     public $th;
@@ -371,7 +375,7 @@ class EditView
         }
 
         return $panel;
-    }    
+    }
 
     function process($checkFormName = false, $formName = '')
     {

@@ -70,7 +70,7 @@ class CalendarDashlet extends Dashlet {
 		require_once('modules/Calendar/CalendarDisplay.php');
 		require_once("modules/Calendar/CalendarGrid.php");
 		
-		global $cal_strings, $app_strings, $app_list_strings, $current_language, $timedate, $sugarConfig;
+		global $cal_strings, $current_language;
 		$cal_strings = return_module_language($current_language, 'Calendar');
 		
 		if(!ACLController::checkAccess('Calendar', 'list', true))
@@ -81,9 +81,9 @@ class CalendarDashlet extends Dashlet {
 		$cal->add_activities($GLOBALS['current_user']);
 		$cal->load_activities();
 		
-		$ed = new CalendarDisplay($cal,$this->id);
-		$ed->display_calendar_header(false);		
-		$ed->display();
+		$display = new CalendarDisplay($cal,$this->id);
+		$display->display_calendar_header(false);		
+		$display->display();
 			
 		$str = ob_get_contents();	
 		ob_end_clean();

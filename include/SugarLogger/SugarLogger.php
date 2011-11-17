@@ -44,7 +44,11 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 require_once('include/SugarLogger/LoggerManager.php');
 require_once('include/SugarLogger/LoggerTemplate.php');
- 
+
+/**
+ * Default SugarCRM Logger
+ * @api
+ */
 class SugarLogger implements LoggerTemplate
 {
     /**
@@ -58,33 +62,33 @@ class SugarLogger implements LoggerTemplate
 	protected $filesuffix = "";
 	protected $log_dir = '.';
 
-	
+
 	/**
 	 * used for config screen
 	 */
 	public static $filename_suffix = array(
-	    "%m_%Y"    => "Month_Year", 
+	    "%m_%Y"    => "Month_Year",
 	    "%w_%m"    => "Week_Month",
 	    "%m_%d_%y" => "Month_Day_Year",
 	    );
-	
+
 	/**
 	 * Let's us know if we've initialized the logger file
 	 */
     protected $initialized = false;
-    
+
     /**
      * Logger file handle
      */
     protected $fp = false;
-    
+
     public function __get(
         $key
         )
     {
         return $this->$key;
     }
-	
+
     /**
      * Used by the diagnostic tools to get SugarLogger log file information
      */
@@ -92,7 +96,7 @@ class SugarLogger implements LoggerTemplate
     {
         return $this->full_log_file;
     }
-	
+
     /**
      * Used by the diagnostic tools to get SugarLogger log file information
      */
@@ -100,13 +104,13 @@ class SugarLogger implements LoggerTemplate
     {
         return ltrim($this->full_log_file, "./");
     }
-    
+
     /**
      * Constructor
      *
      * Reads the config file for logger settings
      */
-    public function __construct() 
+    public function __construct()
     {
         $config = SugarConfig::getInstance();
         $this->ext = $config->get('logger.file.ext', $this->ext);
@@ -115,13 +119,13 @@ class SugarLogger implements LoggerTemplate
         $this->logSize = $config->get('logger.file.maxSize', $this->logSize);
         $this->maxLogs = $config->get('logger.file.maxLogs', $this->maxLogs);
         $this->filesuffix = $config->get('logger.file.suffix', $this->filesuffix);
-        $log_dir = $config->get('log_dir' , $this->log_dir); 
+        $log_dir = $config->get('log_dir' , $this->log_dir);
         $this->log_dir = $log_dir . (empty($log_dir)?'':'/');
         unset($config);
         $this->_doInitialization();
         LoggerManager::setLogger('default','SugarLogger');
 	}
-	
+
 	/**
 	 * Handles the SugarLogger initialization
 	 */
@@ -151,14 +155,14 @@ class SugarLogger implements LoggerTemplate
         }
         @touch($this->full_log_file);
     }
-    
+
     /**
      * see LoggerTemplate::log()
      */
 	public function log(
 	    $level,
 	    $message
-	    ) 
+	    )
 	{
         if (!$this->initialized) {
             return;
@@ -169,26 +173,26 @@ class SugarLogger implements LoggerTemplate
 		//if we haven't opened a file pointer yet let's do that
 		if (! $this->fp)$this->fp = fopen ($this->full_log_file , 'a' );
 
-		
+
 		// change to a string if there is just one entry
 	    if ( is_array($message) && count($message) == 1 )
 	        $message = array_shift($message);
 	    // change to a human-readable array output if it's any other array
 	    if ( is_array($message) )
 		    $message = print_r($message,true);
-		
+
 		//write out to the file including the time in the dateFormat the process id , the user id , and the log level as well as the message
-		fwrite($this->fp, 
-		    strftime($this->dateFormat) . ' [' . getmypid () . '][' . $userID . '][' . strtoupper($level) . '] ' . $message . "\n" 
+		fwrite($this->fp,
+		    strftime($this->dateFormat) . ' [' . getmypid () . '][' . $userID . '][' . strtoupper($level) . '] ' . $message . "\n"
 		    );
 	}
-	
+
 	/**
 	 * rolls the logger file to start using a new file
 	 */
 	protected function rollLog(
 	    $force = false
-	    ) 
+	    )
 	{
         if (!$this->initialized || empty($this->logSize)) {
             return;
@@ -217,13 +221,13 @@ class SugarLogger implements LoggerTemplate
 
 		}
 	}
-	
+
 	/**
 	 * Destructor
 	 *
 	 * Closes the SugarLogger file handle
      */
-	public function __destruct() 
+	public function __destruct()
 	{
 		if ($this->fp)
 			fclose($this->fp);

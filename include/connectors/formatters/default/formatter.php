@@ -35,18 +35,21 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-
+/**
+ * Generic formatter
+ * @api
+ */
 class default_formatter {
-   
+
    protected $_ss;
    protected $_component;
    protected $_tplFileName;
    protected $_module;
    protected $_hoverField;
-	
+
    public function __construct() {}
-   
-   public function getDetailViewFormat() { 
+
+   public function getDetailViewFormat() {
    	  $source = $this->_component->getSource();
    	  $class = get_class($source);
    	  $dir = str_replace('_', '/', $class);
@@ -72,19 +75,19 @@ class default_formatter {
       	 return $this->_ss->fetch("include/connectors/formatters/ext/rest/tpls/default.tpl");
       }
    }
-   
+
    public function getEditViewFormat() {
    	  return '';
    }
-   
+
    public function getListViewFormat() {
    	  return '';
    }
-   
+
    public function getSearchFormFormat() {
    	  return '';
    }
-   
+
    protected function fetchSmarty(){
    	  $source = $this->_component->getSource();
    	  $class = get_class($source);
@@ -103,7 +106,7 @@ class default_formatter {
 	   	return $this->_ss->fetch("modules/Connectors/connectors/formatters/{$dir}/tpls/default.tpl");
 	  }
    }
-   
+
    public function getSourceMapping(){
    	  $source = $this->_component->getSource();
       $mapping = $source->getMapping();
@@ -113,37 +116,37 @@ class default_formatter {
    public function setSmarty($smarty) {
    	   $this->_ss = $smarty;
    }
-   
+
    public function getSmarty() {
    	   return $this->_ss;
    }
-   
+
    public function setComponent($component) {
    	   $this->_component = $component;
    }
-   
+
    public function getComponent() {
    	   return $this->_component;
    }
-   
+
    public function getTplFileName(){
    		return $this->tplFileName;
    }
-   
+
    public function setTplFileName($tplFileName){
    		$this->tplFileName = $tplFileName;
    }
-   
+
    public function setModule($module) {
    	    $this->_module = $module;
    }
-   
+
    public function getModule() {
    	    return $this->_module;
    }
-   
+
    public function getIconFilePath() {
    	    return '';
-   }    
+   }
 }
 ?>

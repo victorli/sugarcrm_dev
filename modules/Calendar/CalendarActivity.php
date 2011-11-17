@@ -103,10 +103,7 @@ class CalendarActivity {
 	 */
 	function get_occurs_within_where_clause($table_name, $rel_table, $start_ts_obj, $end_ts_obj, $field_name='date_start', $view){
 		global $timedate;
-        	// ensure we're working with user TZ
-		$start_ts_obj = $timedate->tzUser($start_ts_obj);
-		$end_ts_obj = $timedate->tzUser($end_ts_obj);
-
+	
 		$start = clone $start_ts_obj;
 		$end = clone $end_ts_obj;
 

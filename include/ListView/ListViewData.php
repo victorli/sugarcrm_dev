@@ -37,6 +37,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 require_once('include/EditView/SugarVCR.php');
+/**
+ * Data set for ListView
+ * @api
+ */
 class ListViewData {
 
 	var $additionalDetails = true;
@@ -292,11 +296,11 @@ class ListViewData {
             if (isset($params['custom_order_by_override']['ori_code']) && $order['orderBy'] == $params['custom_order_by_override']['ori_code'])
                 $orderBy = $params['custom_order_by_override']['custom_code'] . ' ' . $order['sortOrder'];
         }
-        
+
         if (empty($params['skipOrderSave'])) { // don't save preferences if told so
             $current_user->setPreference('listviewOrder', $order, 0, $this->var_name); // save preference
         }
-		
+
 		// If $params tells us to override for the special last_name, first_name sorting
 		if (!empty($params['overrideLastNameOrder']) && $order['orderBy'] == 'last_name') {
 			$orderBy = 'last_name '.$order['sortOrder'].', first_name '.$order['sortOrder'];
@@ -558,7 +562,7 @@ class ListViewData {
         {
             $extra .=  "<a title=\'{$app_strings['LBL_EDIT_BUTTON']}\' href={$results['editLink']}><img style=\'margin-left: 2px;\' border=\'0\' src=\'".SugarThemeRegistry::current()->getImageURL('edit_inline.gif')."\'></a>";
         }
-        
+
         $extra .= (!empty($results['viewLink']) ? "<a title=\'{$app_strings['LBL_VIEW_BUTTON']}\' href={$results['viewLink']}><img style=\'margin-left: 2px;\' border=\'0\' src=".SugarThemeRegistry::current()->getImageURL('view_inline.gif')."></a>" : '')
             . "', DELAY, 200, STICKY, MOUSEOFF, 1000, WIDTH, "
             . (empty($results['width']) ? '300' : $results['width'])
@@ -580,12 +584,12 @@ class ListViewData {
         $extra = "<span onmouseover=\"return overlib('" .
             str_replace(array("\rn", "\r", "\n"), array('','','<br />'), $results['string'])
             . "', CAPTION, '<div style=\'float:left\'>{$app_strings['LBL_ADDITIONAL_DETAILS']}</div><div style=\'float: right\'>";
-        
+
         if($editAccess && !empty($results['editLink']))
         {
             $extra .=  "<a title=\'{$app_strings['LBL_EDIT_BUTTON']}\' href={$results['editLink']}><img style=\'margin-left: 2px;\' border=\'0\' src=\'".SugarThemeRegistry::current()->getImageURL('edit_inline.gif')."\'></a>";
         }
-        
+
         $extra .= (!empty($results['viewLink']) ? "<a title=\'{$app_strings['LBL_VIEW_BUTTON']}\' href={$results['viewLink']}><img style=\'margin-left: 2px;\' border=\'0\' src=".SugarThemeRegistry::current()->getImageURL('view_inline.gif')."></a>" : '')
             . "', DELAY, 200, STICKY, MOUSEOFF, 1000, WIDTH, "
             . (empty($results['width']) ? '300' : $results['width'])

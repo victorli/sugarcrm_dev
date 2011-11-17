@@ -57,7 +57,7 @@ class="yui-navset detailview_tabs"
 {{counter name="panelCount" print=false start=0 assign="panelCount"}}
 {{foreach name=section from=$sectionPanels key=label item=panel}}
 {{assign var='panel_id' value=$panelCount}}
-<div id='{{$label}}' class='detail view'>
+<div id='{{$label}}' class='detail view  detail508'>
 {counter name="panelFieldCount" start=0 print=false assign="panelFieldCount"}
 {{* Print out the panel title if one exists*}}
 

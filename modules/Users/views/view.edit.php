@@ -41,7 +41,7 @@ require_once('modules/Users/UserViewHelper.php');
 
 
 class UsersViewEdit extends ViewEdit {
-
+var $useForSubpanel = true;
  	function UsersViewEdit(){
  		parent::ViewEdit();
  	}
@@ -79,22 +79,48 @@ class UsersViewEdit extends ViewEdit {
             $this->ss->assign('RETURN_MODULE',$_REQUEST['return_module']);
         }
 
-        //Set the return_action if it is provided
-        if(!empty($_REQUEST['return_action'])){
-            $this->ss->assign('RETURN_ACTION',$_REQUEST['return_action']);
-            //Set the return_id form value if record entry was provided
-            if(!empty($_REQUEST['record']))
-            {
-                $this->ss->assign('RETURN_ID', $_REQUEST['record']);
-            }
+        //lets set the return values
+        $this->ss->assign('IS_ADMIN',false);
+        if($current_user->is_admin){
+            $this->ss->assign('IS_ADMIN',true);
         }
 
-        //reset the id if this is a duplicate bean
+        //make sure we can populate user type dropdown.  This usually gets populated in predisplay unless this is a quickeditform
+        if(!isset($this->fieldHelper)){
+            $this->fieldHelper = new UserViewHelper($this->ss, $this->bean, 'EditView');
+            $this->fieldHelper->setupUserTypeDropdown();
+        }
+
         if(isset($_REQUEST['isDuplicate']) && $_REQUEST['isDuplicate'] == 'true') {
+            $this->ss->assign('RETURN_MODULE', $_REQUEST['return_module']);
+            $this->ss->assign('RETURN_ACTION', $_REQUEST['return_action']);
+            $this->ss->assign('RETURN_ID', $_REQUEST['record']);
             $this->bean->id = "";
             $this->bean->user_name = "";
             $this->ss->assign('ID','');
+        } else {
+            if(isset($_REQUEST['return_module']))
+            {
+                $this->ss->assign('RETURN_MODULE', $_REQUEST['return_module']);
+            } else {
+                $this->ss->assign('RETURN_MODULE', $this->bean->module_dir);
+            }
+
+            if(isset($_REQUEST['return_id']))
+            {
+                $this->ss->assign('RETURN_ID', $_REQUEST['return_id']);
+            } else {
+                $this->ss->assign('RETURN_ID', $this->bean->id);
+            }
+
+            if(isset($_REQUEST['return_action']))
+            {
+                $this->ss->assign('RETURN_ACTION', $_REQUEST['return_action']);
+            } else {
+                $this->ss->assign('RETURN_ACTION', 'DetailView');
+            }
         }
+
 
         ///////////////////////////////////////////////////////////////////////////////
         ////	REDIRECTS FROM COMPOSE EMAIL SCREEN
@@ -118,9 +144,6 @@ class UsersViewEdit extends ViewEdit {
         ///////////////////////////////////////////////////////////////////////////////
 
 
-
-
-
         // FIXME: Translate error prefix
         if(isset($_REQUEST['error_string'])) $this->ss->assign('ERROR_STRING', '<span class="error">Error: '.$_REQUEST['error_string'].'</span>');
         if(isset($_REQUEST['error_password'])) $this->ss->assign('ERROR_PASSWORD', '<span id="error_pwd" class="error">Error: '.$_REQUEST['error_password'].'</span>');
@@ -136,14 +159,23 @@ class UsersViewEdit extends ViewEdit {
                 $this->ss->assign('EMPLOYEE_STATUS_READONLY', $app_list_strings['employee_status_dom'][$this->bean->employee_status]);
             }
             if( !empty($this->bean->reports_to_id) ) {
-                $this->ss->assign('REPORTS_TO_READONLY', get_assigned_user_name($this->bean->reports_to_id));
+                $reportsToUser = get_assigned_user_name($this->bean->reports_to_id);
+                $reportsToUserField = "<input type='text' name='reports_to_name' id='reports_to_name' value='{$reportsToUser}' disabled>\n";
+                $reportsToUserField .= "<input type='hidden' name='reports_to_id' id='reports_to_id' value='{$this->bean->reports_to_id}'>";
+                $this->ss->assign('REPORTS_TO_READONLY', $reportsToUserField);
+            }
+            if( !empty($this->bean->title) ) {
+                $this->ss->assign('TITLE_READONLY', $this->bean->title);
+            }
+            if( !empty($this->bean->department) ) {
+                $this->ss->assign('DEPT_READONLY', $this->bean->department);
             }
         }
 
         $processSpecial = false;
         $processFormName = '';
-        if ( $this->fieldHelper->usertype == 'GROUP'
-            ) {
+        if ( isset($this->fieldHelper->usertype) && ($this->fieldHelper->usertype == 'GROUP'
+            )) {
             $this->ev->formName = 'EditViewGroup';
             
             $processSpecial = true;
@@ -156,4 +188,33 @@ class UsersViewEdit extends ViewEdit {
         
     }
 
+
+    /**
+     * getHelpText
+     *
+     * This is a protected function that returns the help text portion.  It is called from getModuleTitle.
+     * We override the function from SugarView.php to make sure the create link only appears if the current user
+     * meets the valid criteria.
+     *
+     * @param $module String the formatted module name
+     * @return $theTitle String the HTML for the help text
+     */
+    protected function getHelpText($module)
+    {
+        $theTitle = '';
+
+        if($GLOBALS['current_user']->isAdminForModule('Users')
+        ) {
+        $createImageURL = SugarThemeRegistry::current()->getImageURL('create-record.gif');
+        $url = ajaxLink("index.php?module=$module&action=EditView&return_module=$module&return_action=DetailView");
+        $theTitle = <<<EOHTML
+&nbsp;
+<img src='{$createImageURL}' alt='{$GLOBALS['app_strings']['LNK_CREATE']}'>
+<a href="{$url}" class="utilsLink">
+{$GLOBALS['app_strings']['LNK_CREATE']}
+</a>
+EOHTML;
+        }
+        return $theTitle;
+    }
 }

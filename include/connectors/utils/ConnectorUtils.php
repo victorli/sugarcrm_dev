@@ -38,6 +38,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 define('CONNECTOR_DISPLAY_CONFIG_FILE', 'custom/modules/Connectors/metadata/display_config.php');
 require_once('include/connectors/ConnectorFactory.php');
 
+/**
+ * Source sorting by order value
+ * @internal
+ */
 function sources_sort_function($a, $b) {
 	if(isset($a['order']) && isset($b['order'])) {
 	   if($a['order'] == $b['order']) {
@@ -50,6 +54,10 @@ function sources_sort_function($a, $b) {
 	return 0;
 }
 
+/**
+ * Connector utilities
+ * @api
+ */
 class ConnectorUtils
 {
     /**

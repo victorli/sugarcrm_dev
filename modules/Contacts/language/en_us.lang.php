@@ -233,6 +233,8 @@ $mod_strings = array (
     'LBL_EXPORT_ASSIGNED_USER_ID' => 'Assigned User ID',
     'LBL_EXPORT_MODIFIED_USER_ID' => 'Modified By ID',
     'LBL_EXPORT_CREATED_BY' => 'Created By ID',
+    'LBL_EXPORT_PHONE_HOME' => 'Home Phone',
+    'LBL_EXPORT_PHONE_MOBILE' => 'Mobile Phone',
     // SNIP
     'LBL_CONTACT_HISTORY_SUBPANEL_TITLE' => 'Related Contacts\' Emails',
     'LBL_USER_SYNC' => 'User Sync'

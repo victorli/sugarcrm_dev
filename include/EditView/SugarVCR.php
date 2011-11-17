@@ -34,30 +34,27 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*
- * Created on Jul 24, 2007
- *
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
- */
  define('VCREND', '50');
  define('VCRSTART', '10');
+ /**
+  * @api
+  */
  class SugarVCR{
- 	
+
  	/**
  	 * records the query in the session for later retrieval
  	 */
  	function store($module, $query){
  		$_SESSION[$module .'2_QUERY'] = $query;
  	}
- 	
+
  	/**
  	 * This function retrieves a query from the session
  	 */
  	function retrieve($module){
  		return (!empty($_SESSION[$module .'2_QUERY']) ? $_SESSION[$module .'2_QUERY'] : '');
  	}
- 	
+
  	/**
  	 * return the start, prev, next, end
  	 */
@@ -78,7 +75,7 @@
  		}
  		return $menu;
  	}
- 	
+
  	function menu($module, $offset, $isAuditEnabled, $saveAndContinue = false ){
  		$html_text = "";
  		if($offset < 0) {
@@ -94,11 +91,11 @@
 			//$html_text .= "<tr class='pagination'>\n";
 			//$html_text .= "<td COLSPAN=\"20\" style='padding: 0px;'>\n";
 	        $html_text .= "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr>\n";
-	 		
+
 	 		$list_URL = 'index.php?action=index&module='.$module;
 	 		$current_page = floor($offset / 20) * 20;
 	 		$list_URL .= '&offset='.$current_page;
-	 		
+
 			$menu = SugarVCR::play($module, $offset);
 			if($saveAndContinue){
 				if(!empty($menu['NEXT'])){
@@ -110,7 +107,7 @@
 					$list_link = "";
 			}else
 				$list_link = "";
-	 		
+
 	 		$previous_link = "";
 	 		$next_link = "";
 	 		if(!empty($menu['PREV'])) {
@@ -120,7 +117,7 @@
 				$previous_link = "<button type='button' class='button' title='{$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']}' onClick='document.location.href=\"$href\";'>".SugarThemeRegistry::current()->getImage("previous","border='0' align='absmiddle'",null,null,'.gif',$GLOBALS['app_strings']['LNK_LIST_PREVIOUS'])."</button>";
 
 	 		}
-	 		else 
+	 		else
 				$previous_link = "<button type='button' class='button' title='{$GLOBALS['app_strings']['LNK_LIST_PREVIOUS']}' disabled>".SugarThemeRegistry::current()->getImage("previous_off","border='0' align='absmiddle'",null,null,'.gif',$GLOBALS['app_strings']['LNK_LIST_PREVIOUS'])."</button>";
 
 
@@ -134,10 +131,10 @@
 	 		else
 				$next_link = "<button type='button' class='button' title='{$GLOBALS['app_strings']['LNK_LIST_NEXT']}' disabled>".SugarThemeRegistry::current()->getImage("next_off","border='0' align='absmiddle'",null,null,'.gif',$GLOBALS['app_strings']['LNK_LIST_NEXT'])."</button>";
 
-	 		
+
 	 		if(!empty($_SESSION[$module. 'total'])){
 	 			$count = $offset .' '. $GLOBALS['app_strings']['LBL_LIST_OF'] . ' ' . $_SESSION[$module. 'total'];
-                if(!empty($GLOBALS['sugar_config']['disable_count_query']) 
+                if(!empty($GLOBALS['sugar_config']['disable_count_query'])
                         && ( ($_SESSION[$module. 'total']-1) % $GLOBALS['sugar_config']['list_max_entries_per_page'] == 0 ) ) {
                     $count .= '+';
                 }
@@ -145,14 +142,14 @@
 	 			$count = $offset;
 	 		}
 	 		$html_text .= "<td nowrap align='right' >".$list_link."&nbsp;&nbsp;&nbsp;&nbsp;<span class='pagination'>".$previous_link."&nbsp;&nbsp;(".$count.")&nbsp;&nbsp;".$next_link."</span>&nbsp;&nbsp;</td>";
-	 		
-	 		
-	 			
+
+
+
 	 		$html_text .= "</tr></table>";//</td></tr>";
  		}
  		return $html_text;
  	}
- 	
+
  	function record($module, $offset){
  		$GLOBALS['log']->debug('SUGARVCR is recording more records');
  		$start = max(0, $offset - VCRSTART);
@@ -171,23 +168,23 @@
  		$_SESSION[$module.'QUERY_ARRAY'] = $ids;
  		return $ids;
  	}
- 	
+
  	function recordIDs($module, $rids, $offset, $totalCount){
  		$index = $offset;
  		$index++;
  		$ids = array();
- 		foreach($rids as $id){ 
+ 		foreach($rids as $id){
  			$ids[$index] = $id;
- 			$index++;	
+ 			$index++;
  		}
  		//now that we have the array of ids, store this in the session
  		$_SESSION[$module.'QUERY_ARRAY'] = $ids;
  		$_SESSION[$module.'total'] = $totalCount;
  	}
- 	
+
  	function erase($module){
  		unset($_SESSION[$module. 'QUERY_ARRAY']);
  	}
- 	
+
  }
 ?>

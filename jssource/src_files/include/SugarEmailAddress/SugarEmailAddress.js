@@ -235,11 +235,17 @@
 		    var td7 = document.createElement("td");
 		    var td8 = document.createElement("td");
 
+            //use the value if the tabindex value for email has been passed in from metadata (defined in include/EditView/EditView.tpl
+            //else default to 0 
+            var tabIndexCount = 0;
+            if(typeof(SUGAR.TabFields) !='undefined' && typeof(SUGAR.TabFields['email1']) != 'undefined'){
+                tabIndexCount = SUGAR.TabFields['email1'];
+            }
 		    // set input field attributes
 		    newContent.setAttribute("type", "text");
 		    newContent.setAttribute("name", this.id + "emailAddress" + this.numberEmailAddresses);
 		    newContent.setAttribute("id", this.id + "emailAddress" + this.numberEmailAddresses);
-		    newContent.setAttribute("tabindex", "0");
+		    newContent.setAttribute("tabindex", tabIndexCount);
 		    newContent.setAttribute("size", "30");
             newContent.setAttribute("title", SUGAR.language.get('app_strings', 'LBL_EMAIL_TITLE'));
 		
@@ -253,6 +259,7 @@
 		    removeButton.setAttribute("name", this.numberEmailAddresses);
 			removeButton.eaw = this;
 		    removeButton.setAttribute("src", "index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=id-ff-remove.png");
+            removeButton.setAttribute("tabindex", tabIndexCount);
 		    removeButton.onclick = function(){this.eaw.removeEmailAddress(this.name);};
 		    
 		    // set primary flag
@@ -261,6 +268,7 @@
 		    newContentPrimaryFlag.setAttribute("id", this.id + "emailAddressPrimaryFlag" + this.numberEmailAddresses);
 		    newContentPrimaryFlag.setAttribute("value", this.id + "emailAddress" + this.numberEmailAddresses);
 		    newContentPrimaryFlag.setAttribute("enabled", "true");
+            newContentPrimaryFlag.setAttribute("tabindex", tabIndexCount);
 
 		    // set reply-to flag
 		    newContentReplyToFlag.setAttribute("type", "radio");
@@ -268,6 +276,7 @@
 		    newContentReplyToFlag.setAttribute("id", this.id + "emailAddressReplyToFlag" + this.numberEmailAddresses);
 		    newContentReplyToFlag.setAttribute("value", this.id + "emailAddress" + this.numberEmailAddresses);
 		    newContentReplyToFlag.setAttribute("enabled", "true");
+            newContentReplyToFlag.setAttribute("tabindex", tabIndexCount);
 		    newContentReplyToFlag.eaw = this;
 		    newContentReplyToFlag['onclick']= function() {
 		    	var form = document.forms[this.eaw.emailView];
@@ -306,6 +315,7 @@
 		    newContentOptOutFlag.setAttribute("value", this.id + "emailAddress" + this.numberEmailAddresses);
 		    newContentOptOutFlag.setAttribute("enabled", "true");
 			newContentOptOutFlag.eaw = this;
+            newContentOptOutFlag.setAttribute("tabindex", tabIndexCount);
 		    newContentOptOutFlag['onClick'] = function(){this.eaw.toggleCheckbox(this)};
 	
 		    // set invalid flag
@@ -315,6 +325,7 @@
 		    newContentInvalidFlag.setAttribute("value", this.id + "emailAddress" + this.numberEmailAddresses);
 		    newContentInvalidFlag.setAttribute("enabled", "true");
 			newContentInvalidFlag.eaw = this;
+            newContentInvalidFlag.setAttribute("tabindex", tabIndexCount);
 		    newContentInvalidFlag['onClick']= function(){this.eaw.toggleCheckbox(this)};
 		    
 		    // set the verified flag and verified email value
@@ -327,6 +338,7 @@
 		    newContentVerifiedValue.setAttribute("name", this.id + "emailAddressVerifiedValue" + this.numberEmailAddresses);
 		    newContentVerifiedValue.setAttribute("id", this.id + "emailAddressVerifiedValue" + this.numberEmailAddresses);
 		    newContentVerifiedValue.setAttribute("value", address);
+            newContentVerifiedValue.setAttribute("tabindex", tabIndexCount);
 
 		    //Add to validation
 		    this.emailView = (this.emailView == '') ? 'EditView' : this.emailView;

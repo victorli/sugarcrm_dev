@@ -36,8 +36,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
-
 class CalendarDisplay {	
 
 	/** 
@@ -362,7 +360,7 @@ class CalendarDisplay {
 
 	/**
 	 * display header
-	 * @param boolean $controls display ui contol itmes 
+	 * @param boolean $controls display ui contol elements 
 	 */
 	public function display_calendar_header($controls = true){
 		global $cal_strings;
@@ -427,25 +425,26 @@ class CalendarDisplay {
 	}
 	
 	/**
-	 * display html used in shared view (legacy code from old calendar)
+	 * display html used in shared view
 	 */
 	public function display_shared_html(){
-			global $app_strings,$cal_strings,$action;
-			
-			if(empty($_SESSION['shared_ids']))
-				$_SESSION['shared_ids'] = "";
-				
+			global $app_strings,$cal_strings,$action;			
+							
 			$ss = new Sugar_Smarty();
 			$ss->assign("APP",$app_strings);
 			$ss->assign("MOD",$cal_strings);
 			$ss->assign("UP",SugarThemeRegistry::current()->getImage('uparrow_big', 'border="0" style="margin-bottom: 1px;"', null, null, '.gif', $app_strings['LBL_SORT']));
 			$ss->assign("DOWN",SugarThemeRegistry::current()->getImage('downarrow_big', 'border="0" style="margin-top: 1px;"', null, null, '.gif', $app_strings['LBL_SORT']));
-			$ss->assign("options",get_select_options_with_id(get_user_array(false), $this->cal->shared_ids));
+			
+			if(empty($_REQUEST['edit_shared'])){
+				$ss->assign("style","display: none");
+			}
+			
+			
+			$ss->assign("users_options",get_select_options_with_id(get_user_array(false), $this->cal->shared_ids));
 			
 			$tpl = "modules/Calendar/tpls/shared_users.tpl";	
 			echo $ss->fetch($tpl);
-			
-			return;	
 	}	
 	
 }

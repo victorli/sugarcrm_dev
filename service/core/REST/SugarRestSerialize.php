@@ -40,7 +40,7 @@ require_once('service/core/REST/SugarRest.php');
 
 /**
  * This class is a serialize implementation of REST protocol
- *
+ * @api
  */
 class SugarRestSerialize extends SugarRest{
 
@@ -89,7 +89,7 @@ class SugarRestSerialize extends SugarRest{
 	function fault($errorObject){
 		$this->faultServer->faultObject = $errorObject;
 	} // fn
-	
+
 	function generateFaultResponse($errorObject){
 		$error = $errorObject->number . ': ' . $errorObject->name . '<br>' . $errorObject->description;
 		$GLOBALS['log']->error($error);

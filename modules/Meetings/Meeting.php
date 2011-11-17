@@ -746,8 +746,11 @@ function getMeetingsExternalApiDropDown($focus = null, $name = null, $value = nu
 	{
 		$apiList[$value] = $value;
     }
-	//bug 46294: adding list of options to dropdown list
-    $apiList = array_merge(getMeetingTypeOptions($dictionary, $app_list_strings), $apiList);
+	//bug 46294: adding list of options to dropdown list (if it is not the default list)
+    if ($dictionary['Meeting']['fields']['type']['options'] != "eapm_list")
+    {
+        $apiList = array_merge(getMeetingTypeOptions($dictionary, $app_list_strings), $apiList);
+    }
 
 	return $apiList;
 }

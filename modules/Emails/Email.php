@@ -161,7 +161,8 @@ class Email extends SugarBean {
 		$this->safe->whiteProtocols[] = "cid";
 		$this->safe->clear();
 		$this->emailAddress = new SugarEmailAddress();
-		$this->imagePrefix = "{$GLOBALS['sugar_config']['site_url']}cache/images/";
+
+		$this->imagePrefix = rtrim($GLOBALS['sugar_config']['site_url'], "/")."/cache/images/";
 	}
 
 	function email2init() {
@@ -2034,7 +2035,7 @@ class Email extends SugarBean {
 		$mail->replaceImageByRegex("(?:{$sugar_config['site_url']})?/?cache/images/", sugar_cached("images/"));
 
 		//Replace any embeded images using the secure entryPoint for src url.
-		$mail->replaceImageByRegex("(?:{$sugar_config['site_url']})?index.php[?]entryPoint=download&(?:amp;)?[^\"]+?id=", "upload://", true);
+		$mail->replaceImageByRegex("(?:{$sugar_config['site_url']})?/?index.php[?]entryPoint=download&(?:amp;)?[^\"]+?id=", "upload://", true);
 
 		$mail->Body = from_html($mail->Body);
 	}
@@ -2280,7 +2281,7 @@ class Email extends SugarBean {
 
 
 	function fill_in_additional_list_fields() {
-		global $timedate;
+		global $timedate, $mod_strings;
 		$this->fill_in_additional_detail_fields();
 
 		$this->link_action = 'DetailView';

@@ -341,6 +341,12 @@ include('include/modules.php');
 require_once('modules/Administration/upgrade_custom_relationships.php');
 upgrade_custom_relationships();
 
+logThis('Upgrading user preferences start .', $path);
+if(function_exists('upgradeUserPreferences')){
+   upgradeUserPreferences();
+}
+logThis('Upgrading user preferences finish .', $path);
+
 // clear out the theme cache
 if(is_dir($GLOBALS['sugar_config']['cache_dir'].'themes')){
     $allModFiles = array();

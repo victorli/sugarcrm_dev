@@ -223,12 +223,21 @@ class ImportViewStep3 extends ImportView
             $fields  = $this->bean->get_importable_fields();
             $options = array();
             $defaultField = '';
+            global $current_language;
+		    $moduleStrings = return_module_language($current_language, $this->bean->module_dir);
+
             foreach ( $fields as $fieldname => $properties ) {
                 // get field name
-                if (!empty ($properties['vname']))
-					$displayname = str_replace(":","",translate($properties['vname'] ,$this->bean->module_dir));
+                if (!empty($moduleStrings['LBL_EXPORT_'.strtoupper($fieldname)]) )
+                {
+                     $displayname = str_replace(":","", $moduleStrings['LBL_EXPORT_'.strtoupper($fieldname)] );
+                }
+                else if (!empty ($properties['vname']))
+                {
+                    $displayname = str_replace(":","",translate($properties['vname'] ,$this->bean->module_dir));
+                }
                 else
-					$displayname = str_replace(":","",translate($properties['name'] ,$this->bean->module_dir));
+                    $displayname = str_replace(":","",translate($properties['name'] ,$this->bean->module_dir));
                 // see if this is required
                 $req_mark  = "";
                 $req_class = "";

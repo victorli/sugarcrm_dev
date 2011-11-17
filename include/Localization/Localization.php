@@ -35,14 +35,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description:
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc. All Rights
- * Reserved. Contributor(s): ______________________________________..
- * *******************************************************************************/
-
-
+/**
+ * Localization manager
+ * @api
+ */
 class Localization {
 	var $availableCharsets = array(
 		'BIG-5',        //Taiwan and Hong Kong
@@ -196,7 +192,7 @@ class Localization {
             $this->currencies = $load;
         }
 
-		
+
 	}
 
 	/**
@@ -671,27 +667,7 @@ eoq;
 
 		$ret = "
 		function setPreview() {
-			format = document.getElementById('default_locale_name_format').value;
-			field = document.getElementById('nameTarget');
 
-			stuff = new Object();
-
-			stuff['s'] = '{$salutation}';
-			stuff['f'] = '{$first}';
-			stuff['l'] = '{$last}';
-			stuff['t'] = '{$title}';
-
-			var name = '';
-			for(i=0; i<format.length; i++) {
-                if(stuff[format.substr(i,1)] != undefined) {
-                    name += stuff[format.substr(i,1)];
-				} else {
-                    name += format.substr(i,1);
-				}
-			}
-
-			//alert(name);
-			field.value = name;
 		}
 
         ";

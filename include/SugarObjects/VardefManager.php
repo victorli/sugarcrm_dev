@@ -35,7 +35,10 @@
  ********************************************************************************/
 
 
-
+/**
+ * Vardefs management
+ * @api
+ */
 class VardefManager{
     static $custom_disabled_modules = array();
     static $linkFields;
@@ -88,7 +91,7 @@ class VardefManager{
               $custom_disabled_modules[$module] = true;
         }
     }
-    
+
     static function addTemplate($module, $object, $template, $object_name=false){
         if($template == 'default')$template = 'basic';
         $templates = array();
@@ -100,7 +103,7 @@ class VardefManager{
         }else{
             $table_name = strtolower($module);
         }
-        
+
         if(empty($templates[$template])){
             $path = 'include/SugarObjects/templates/' . $template . '/vardefs.php';
             if(file_exists($path)){
@@ -125,7 +128,7 @@ class VardefManager{
             // maintain a record of this objects inheritance from the SugarObject templates...
             $GLOBALS['dictionary'][$object]['templates'][ $template ] = $template ;
         }
-        
+
     }
 
 
@@ -147,14 +150,14 @@ class VardefManager{
 
         return $fieldDefs;
     }
-    
+
     /**
      * Save the dictionary object to the cache
      * @param string $module the name of the module
      * @param string $object the name of the object
      */
     static function saveCache($module,$object, $additonal_objects= array()){
-        
+
         if (empty($GLOBALS['dictionary'][$object]))
             $object = BeanFactory::getObjectName($module);
         $file = create_cache_directory('modules/' . $module . '/' . $object . 'vardefs.php');
@@ -162,14 +165,14 @@ class VardefManager{
         if ( sugar_is_file($file) && is_readable($file)) {
             include($file);
         }
-        
+
         // put the item in the sugar cache.
         $key = "VardefManager.$module.$object";
         //Sometimes bad definitions can get in from left over extensions or file system lag(caching). We need to clean those.
         $data = self::cleanVardefs($GLOBALS['dictionary'][$object]);
         sugar_cache_put($key,$data);
     }
-    
+
     /**
      * clear out the vardef cache. If we receive a module name then just clear the vardef cache for that module
      * otherwise clear out the cache for every module
@@ -189,7 +192,7 @@ class VardefManager{
             }
         }
     }
-    
+
     /**
      * PRIVATE function used within clearVardefCache so we do not repeat logic
      * @param string module_dir the module_dir to clear
@@ -197,7 +200,7 @@ class VardefManager{
      */
     static function _clearCache($module_dir = '', $object_name = ''){
         if(!empty($module_dir) && !empty($object_name)){
-            
+
             //Some modules like cases have a bean name that doesn't match the object name
             if (empty($GLOBALS['dictionary'][$object_name])) {
                 $newName = BeanFactory::getObjectName($module_dir);
@@ -213,11 +216,11 @@ class VardefManager{
             }
         }
     }
-    
+
     /**
      * Given a module, search all of the specified locations, and any others as specified
      * in order to refresh the cache file
-     * 
+     *
      * @param string $module the given module we want to load the vardefs for
      * @param string $object the given object we wish to load the vardefs for
      * @param array $additional_search_paths an array which allows a consumer to pass in additional vardef locations to search
@@ -343,7 +346,7 @@ class VardefManager{
         return $matches;
     }
 
-    
+
     /**
      * apply global "account_required" setting if possible
      * @param array    $vardef
@@ -380,7 +383,7 @@ class VardefManager{
         }
         // Retrieve the vardefs from cache.
         $key = "VardefManager.$module.$object";
-        
+
         if(!$refresh)
         {
             $return_result = sugar_cache_retrieve($key);
@@ -392,7 +395,7 @@ class VardefManager{
                 return;
             }
         }
-                
+
         // Some of the vardefs do not correctly define dictionary as global.  Declare it first.
         global $dictionary;
         if(empty($GLOBALS['dictionary'][$object]) || $refresh){
@@ -403,7 +406,7 @@ class VardefManager{
 			if($refresh || !file_exists($cachedfile)){
 				VardefManager::refreshVardefs($module, $object, null, true, $params);
 			}
-            
+
             //at this point we should have the cache/modules/... file
             //which was created from the refreshVardefs so let's try to load it.
             if(file_exists($cachedfile))

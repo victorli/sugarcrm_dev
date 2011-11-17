@@ -186,7 +186,6 @@ $mod_strings = array (
     'LBL_PARENT_ID' => 'Parent ID',
     'LBL_PHONE_ALTERNATE' => 'Phone Alternate',
     'LBL_EXPORT_ASSIGNED_USER_NAME' => 'Assigned User Name',
-    'LBL_EXPORT_PARENT_ID' => 'Member of',
     // SNIP
     'LBL_CONTACT_HISTORY_SUBPANEL_TITLE' => 'Related Contacts\' Emails',
 );

@@ -47,10 +47,17 @@ $viewdefs['Users']['EditView'] = array(
                       ),
     'panels' => array (
         'LBL_USER_INFORMATION' => array (
-            array('user_name','first_name'),
+            array(
+                array(
+                    'name'=>'user_name',
+                    'displayParams' => array('required'=>true),
+                    ),
+                'first_name'
+            ),
             array(array(
                       'name' => 'status',
                       'customCode' => '{if $IS_ADMIN}@@FIELD@@{else}{$STATUS_READONLY}{/if}',
+                      'displayParams' => array('required'=>true),
                   ),
                   'last_name'),
             array(array(
@@ -66,8 +73,16 @@ $viewdefs['Users']['EditView'] = array(
                       'customCode'=>'{if $IS_ADMIN}@@FIELD@@{else}{$EMPLOYEE_STATUS_READONLY}{/if}',
                   ),
                   'show_on_employees'),
-            array('title','phone_work'),
-            array('department','phone_mobile'),
+            array(array(
+                      'name'=>'title',
+                      'customCode'=>'{if $IS_ADMIN}@@FIELD@@{else}{$TITLE_READONLY}{/if}',
+                  ),
+                  'phone_work'),
+            array(array(
+                      'name'=>'department',
+                      'customCode'=>'{if $IS_ADMIN}@@FIELD@@{else}{$DEPT_READONLY}{/if}',
+                  ),
+                  'phone_mobile'),
             array(array(
                       'name'=>'reports_to_name',
                       'customCode'=>'{if $IS_ADMIN}@@FIELD@@{else}{$REPORTS_TO_READONLY}{/if}',

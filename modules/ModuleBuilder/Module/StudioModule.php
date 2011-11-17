@@ -35,6 +35,7 @@
  ********************************************************************************/
 
 
+require_once 'data/BeanFactory.php';
 require_once 'modules/ModuleBuilder/parsers/relationships/DeployedRelationships.php' ;
 require_once 'modules/ModuleBuilder/parsers/constants.php' ;
 

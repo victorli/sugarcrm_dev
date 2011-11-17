@@ -39,6 +39,10 @@ require_once('include/Dashlets/Dashlet.php');
 require_once('include/ListView/ListViewSmarty.php');
 require_once('include/generic/LayoutManager.php');
 
+/**
+ * Generic Dashlet class
+ * @api
+ */
 class DashletGeneric extends Dashlet {
    /**
      * Fields that are searchable

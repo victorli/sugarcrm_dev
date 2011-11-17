@@ -4972,7 +4972,8 @@ function save_relationship_changes($is_update, $exclude=array())
 		    // skip empty fields and non-db fields
 		    if(empty($row[$name])) continue;
             if(isset($fieldDef['source']) &&
-               !in_array($fieldDef['source'], array('db', 'custom_fields')))
+               !in_array($fieldDef['source'], array('db', 'custom_fields', 'relate'))
+               && !isset($fieldDef['dbType']))
                 continue;
 		    // fromConvert other fields
 		    $row[$name] = $this->db->fromConvert($row[$name], $this->db->getFieldType($fieldDef));

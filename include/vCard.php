@@ -35,15 +35,14 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description:
- ********************************************************************************/
-
+/**
+ * vCard implementation
+ * @api
+ */
 class vCard
 {
 	protected $properties = array();
-	
+
 	protected $name = 'no_name';
 
 	public function clear()

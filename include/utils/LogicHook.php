@@ -56,6 +56,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * after_login
  * login_failed
  *
+ * @api
  */
 class LogicHook{
 

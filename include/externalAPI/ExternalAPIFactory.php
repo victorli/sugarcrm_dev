@@ -42,7 +42,8 @@ require_once('include/connectors/sources/SourceFactory.php');
  * Provides a factory to list, discover and create external API calls
  *
  * Main features are to list available external API's by supported features, modules and which ones have access for the user.
- **/
+ * @api
+ */
 class ExternalAPIFactory
 {
     /**

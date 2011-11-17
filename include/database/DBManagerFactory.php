@@ -101,8 +101,6 @@ class DBManagerFactory
         // sanitize the name
         $my_db_manager = preg_replace("/[^A-Za-z0-9_-]/", "", $my_db_manager);
 
-        $GLOBALS['log']->info("using $my_db_manager DBManager backend");
-
         if(!empty($config['db_manager_class'])){
             $my_db_manager = $config['db_manager_class'];
         } else {

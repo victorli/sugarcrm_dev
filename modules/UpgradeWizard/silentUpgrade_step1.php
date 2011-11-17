@@ -433,6 +433,26 @@ if($upgradeType != constant('DCE_INSTANCE')) {
 	require_once('include/utils/zip_utils.php');
 
 
+if(!function_exists('sugar_cached'))
+{
+    /**
+     * sugar_cached
+     *
+     * @param $file The path to retrieve cache lookup information for
+     * @return string The cached path according to $GLOBALS['sugar_config']['cache_dir'] or just appended with cache if not defined
+     */
+    function sugar_cached($file)
+    {
+        static $cdir = null;
+        if(empty($cdir) && !empty($GLOBALS['sugar_config']['cache_dir'])) {
+            $cdir = rtrim($GLOBALS['sugar_config']['cache_dir'], '/\\');
+        }
+        if(empty($cdir)) {
+            $cdir = "cache";
+        }
+        return "$cdir/$file";
+    }
+}
 
 	require('config.php');
 	//require_once('modules/UpgradeWizard/uw_utils.php'); // must upgrade UW first
@@ -973,12 +993,6 @@ require_once('modules/Administration/Administration.php');
 $admin = new Administration();
 $admin->saveSetting('system','adminwizard',1);
 
-logThis('Upgrading user preferences start .', $path);
-if(function_exists('upgradeUserPreferences')){
-   upgradeUserPreferences();
-}
-logThis('Upgrading user preferences finish .', $path);
-
 
 if($ce_to_pro_ent)
 {
@@ -1145,27 +1159,6 @@ function repairTableDictionaryExtFile()
 			} //while
 		} //if
 	}
-}
-
-
-/**
- * sugar_cached
- *
- * Inline this method here since it is not yet defined in utils.php
- *
- * @param $file The path to retrieve cache lookup information for
- * @return string The cached path according to $GLOBALS['sugar_config']['cache_dir'] or just appended with cache if not defined
- */
-function sugar_cached($file)
-{
-    static $cdir = null;
-    if(empty($cdir) && !empty($GLOBALS['sugar_config']['cache_dir'])) {
-        $cdir = rtrim($GLOBALS['sugar_config']['cache_dir'], '/\\');
-    }
-    if(empty($cdir)) {
-        $cdir = "cache";
-    }
-    return "$cdir/$file";
 }
 
 

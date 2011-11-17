@@ -422,7 +422,7 @@ function isDecimal(s) {
 	{
 		s = unformatNumberNoParse(s, num_grp_sep, dec_sep).toString();
 	}
-	return  /^[+-]?[0-9]+\.?[0-9]*$/.test(s) ;
+	return  /^[+-]?[0-9]*\.?[0-9]*$/.test(s) ;
 }
 
 function isNumeric(s) {

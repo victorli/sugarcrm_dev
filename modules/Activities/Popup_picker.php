@@ -336,7 +336,7 @@ class Popup_Picker
 									 'date_modified' => $note->date_modified,
 									 'description' => $this->formatDescription($note->description),
 									 'date_type' => $app_strings['DATA_TYPE_MODIFIED'],
-									 'sort_value' => $timedate->fromDb($task->fetched_row['date_modified'])->ts,
+									 'sort_value' => $timedate->fromDb($note->fetched_row['date_modified'])->ts,
 									 );
 			if(!empty($note->filename)) {
 				$count = count($history_list);

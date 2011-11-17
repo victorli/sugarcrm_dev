@@ -283,71 +283,37 @@ function pruneDatabase() {
 	if(!empty($tables)) {
 		foreach($tables as $kTable => $table) {
 			// find tables with deleted=1
-			$qDel = 'SELECT * FROM '.$table.' WHERE deleted = 1';
-			$rDel = $db->query($qDel);// OR continue; // continue if no 'deleted' column
+			$columns = $db->get_columns($table);
+			// no deleted - won't delete
+			if(empty($columns['deleted'])) continue;
+
+			$custom_columns = array();
+			if(array_search($table.'_cstm', $tables)) {
+			    $custom_columns = $db->get_columns($table.'_cstm');
+			    if(empty($custom_columns['id_c'])) {
+			        $custom_columns = array();
+			    }
+			}
+
+			$qDel = "SELECT * FROM $table WHERE deleted = 1";
+			$rDel = $db->query($qDel);
 
 			// make a backup INSERT query if we are deleting.
-			while($aDel = $db->fetchByAssoc($rDel)) {
+			while($aDel = $db->fetchByAssoc($rDel, false)) {
 				// build column names
-				$rCols = $db->query('SHOW COLUMNS FROM '.$table);
-				$colName = array();
 
-				while($aCols = $db->fetchByAssoc($rCols)) {
-					$colName[] = $aCols['Field'];
-				}
+				$queryString[] = $db->insertParams($table, $columns, $rDel, null, false);
 
-				$query = 'INSERT INTO '.$table.' (';
-				$values = '';
-				foreach($colName as $kC => $column) {
-					$query .= $column.', ';
-					$values .= '"'.$aDel[$column].'", ';
-				}
-
-				$query  = substr($query, 0, (strlen($query) - 2));
-				$values = substr($values, 0, (strlen($values) - 2));
-				$query .= ') VALUES ('.str_replace("'", "&#039;", $values).');';
-
-				$queryString[] = $query;
-
-				if(empty($colName)) {
-					$GLOBALS['log']->fatal('pruneDatabase() could not get the columns for table ('.$table.')');
-				}
-				
-				if(array_search($table.'_cstm', $tables) !== FALSE && array_search('id', $colName) !== FALSE && array_key_exists('id', $aDel)) {
-                    // build custom column names
-                    $rColsCstm = $db->query('SHOW COLUMNS FROM '.$table.'_cstm');
-                    $colNameCstm = array();
-
-                    while($aColsCstm = $db->fetchByAssoc($rColsCstm)) {
-                        $colNameCstm[] = $aColsCstm['Field'];
-                    }
-
-                    $qDelCstm = 'SELECT * FROM '.$table.'_cstm WHERE id_c = "'.$db->quote($aDel['id']).'"';
-                    $rDelCstm = $db->query($qDelCstm);// OR continue; // continue if no 'deleted' column
+				if(!empty($custom_columns) && !empty($rDel['id'])) {
+                    $qDelCstm = 'SELECT * FROM '.$table.'_cstm WHERE id_c = '.$db->quoted($aDel['id']);
+                    $rDelCstm = $db->query($qDelCstm);
 
                     // make a backup INSERT query if we are deleting.
                     while($aDelCstm = $db->fetchByAssoc($rDelCstm)) {
+                        $queryString[] = $db->insertParams($table, $custom_columns, $aDelCstm, null, false);
+                    } // end aDel while()
 
-                        $query = 'INSERT INTO '.$table.'_cstm (';
-                        $values = '';
-
-                        foreach($colNameCstm as $kC => $column) {
-                            $query .= $column.', ';
-                            $values .= '"'.$aDelCstm[$column].'", ';
-                        }
-
-                        $query  = substr($query, 0, (strlen($query) - 2));
-                        $values = substr($values, 0, (strlen($values) - 2));
-                        $query .= ') VALUES ('.str_replace("'", "&#039;", $values).');';
-
-                        $queryString[] = $query;
-
-                        if(empty($colNameCstm)) {
-                            $GLOBALS['log']->fatal('pruneDatabase() could not get the columns for table ('.$table.'_cstm)');
-                        }
-                    } // end aDel while()                
-
-                    $db->query('DELETE FROM '.$table.'_cstm WHERE id_c = "'.$db->quote($aDel['id']).'"');
+                    $db->query('DELETE FROM '.$table.'_cstm WHERE id_c = '.$db->quoted($aDel['id']));
                 }
 			} // end aDel while()
 			// now do the actual delete

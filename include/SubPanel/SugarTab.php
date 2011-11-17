@@ -35,17 +35,18 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-
-
-
+/**
+ * Tab representation
+ * @api
+ */
 class SugarTab
-{    
+{
     function SugarTab($type='singletabmenu')
     {
         $this->type = $type;
         $this->ss = new Sugar_Smarty();
     }
-    
+
     function setup($mainTabs, $otherTabs=array(), $subTabs=array(), $selected_group='All')
     {
         global $sugar_version, $sugar_config, $current_user;
@@ -67,7 +68,7 @@ class SugarTab
         {
             $subpanelTitles[$subtab['key']] = $subtab['label'];
         }
-        
+
         $this->ss->assign('showLinks', 'false');
         $this->ss->assign('sugartabs', array_slice($mainTabs, 0, $max_tabs));
         $this->ss->assign('moreMenu', array_slice($mainTabs, $max_tabs));
@@ -81,16 +82,16 @@ class SugarTab
             $this->ss->assign('moreTab', $mainTabs[$mtak[min(count($mtak)-1, $max_tabs-1)]]['label']);
         }
     }
-    
+
     function fetch()
     {
         return $this->ss->fetch('include/SubPanel/tpls/' . $this->type . '.tpl');
     }
-    
+
     function display()
     {
        $this->ss->display('include/SubPanel/tpls/' . $this->type . '.tpl');
-    }  
+    }
 }
 
 

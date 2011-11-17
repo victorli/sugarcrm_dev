@@ -38,6 +38,7 @@
 {{include file=$headerTpl}}
 {sugar_include include=$includes}
 
+<span id='tabcounterJS'><script>SUGAR.TabFields=new Array();//this will be used to track tabindexes for references</script></span>
 
 <div id="{{$form_name}}_tabs"
 {{if $useTabs}}
@@ -75,7 +76,7 @@ class="yui-navset"
     {sugar_include type='php' file='{{$panel}}'}
 {{else}}
 
-<table width="100%" border="0" cellspacing="1" cellpadding="0"  class="yui3-skin-sam {$def.templateMeta.panelClass|default:'edit view dcQuickEdit'}">
+<table width="100%" border="0" cellspacing="1" cellpadding="0"  class="yui3-skin-sam {$def.templateMeta.panelClass|default:'edit view dcQuickEdit edit508'}">
 {{* Only show header if it is not default or an int value *}}
 {{if !empty($label) && !is_int($label) && $label != 'DEFAULT' && !$useTabs && $showSectionPanelsTitles}}
 <tr>
@@ -86,11 +87,14 @@ class="yui-navset"
 {{/if}}
 
 {{assign var='rowCount' value=0}}
+{{assign var='tabIndexVal' value=0}}
 {{foreach name=rowIteration from=$panel key=row item=rowData}}
 {counter name="fieldsUsed" start=0 print=false assign="fieldsUsed"}
 {capture name="tr" assign="tableRow"}
 <tr>
 
+	{{math assign="rowCount" equation="$rowCount + 1"}}
+	
 	{{assign var='columnsInRow' value=$rowData|@count}}
 	{{assign var='columnsUsed' value=0}}
 
@@ -100,7 +104,7 @@ class="yui-navset"
 	{{foreach name=colIteration from=$rowData key=col item=colData}}
 
 	{{counter name="colCount" print=false}}
-	{{math assign="tabIndex" equation="$panelCount * $maxColumns + $colCount"}}
+
 	{{if count($rowData) == $colCount}}
 		{{assign var="colCount" value=0}}
 	{{/if}}
@@ -138,6 +142,18 @@ class="yui-navset"
 		</td>
 		{{/if}}
 		{counter name="fieldsUsed"}
+		{{math assign="tabIndexVal" equation="$tabIndexVal + 1"}}
+		{{if !empty($colData.field.tabindex)  && $colData.field.tabindex !=0}}
+		    {{assign var='tabindex' value=$colData.field.tabindex}}
+		{{else}}
+		    {** if not explicitly assigned, we will default to 0 for 508 compliance reasons, instead of the calculated tabIndexVal value **}
+		    {{assign var='tabindex' value=0}}
+		{{/if}}
+		{** instead of tracking tabindex values for all fields, just track for email as email does not get created directly from
+		    a tpl that has access to smarty values.  Email gets created through addEmailAddress() function in SugarEmailAddress.js
+		    which will use the value in tabFields array
+		 **}
+		<script>SUGAR.TabFields['{{$colData.field.name}}'] = '{{$tabindex}}';//set field and tabindex in array</script>
 		<td valign="top" width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].field}}%' {{if $colData.colspan}}colspan='{{$colData.colspan}}'{{/if}}>
 			{{if !empty($def.templateMeta.labelsOnTop)}}
 				{{if isset($colData.field.label)}}
@@ -163,20 +179,20 @@ class="yui-navset"
 			    {{foreach from=$colData.field.fields item=subField}}
 			        {{if $fields[$subField.name]}}
 			        	{counter name="panelFieldCount"}
-			            {{sugar_field parentFieldArray='fields' tabindex=$colData.field.tabindex vardef=$fields[$subField.name] displayType='EditView' displayParams=$subField.displayParams formName=$form_name}}&nbsp;
+			            {{sugar_field parentFieldArray='fields' tabindex=$tabindex vardef=$fields[$subField.name] displayType='EditView' displayParams=$subField.displayParams formName=$form_name}}&nbsp;
 			        {{/if}}
 			    {{/foreach}}
 			{{elseif !empty($colData.field.customCode) && empty($colData.field.customCodeRenderField)}}
 				{counter name="panelFieldCount"}
-				{{sugar_evalcolumn var=$colData.field.customCode colData=$colData tabindex=$colData.field.tabindex}}
+				{{sugar_evalcolumn var=$colData.field.customCode colData=$colData tabindex=$tabindex}}
 			{{elseif $fields[$colData.field.name]}}
 				{counter name="panelFieldCount"}
 			    {{$colData.displayParams}}
-				{{sugar_field parentFieldArray='fields' tabindex=$colData.field.tabindex vardef=$fields[$colData.field.name] displayType='EditView' displayParams=$colData.field.displayParams typeOverride=$colData.field.type formName=$form_name}}
+				{{sugar_field parentFieldArray='fields' tabindex=$tabindex vardef=$fields[$colData.field.name] displayType='EditView' displayParams=$colData.field.displayParams typeOverride=$colData.field.type formName=$form_name}}
 			{{/if}}
 	{{if !empty($colData.field.customCode) && !empty($colData.field.customCodeRenderField)}}
 	    {counter name="panelFieldCount"}
-	    {{sugar_evalcolumn var=$colData.field.customCode colData=$colData tabindex=$colData.field.tabindex}}
+	    {{sugar_evalcolumn var=$colData.field.customCode colData=$colData tabindex=$tabindex}}
     {{/if}}
     {{if !empty($colData.field.hideIf)}}
 		{else}

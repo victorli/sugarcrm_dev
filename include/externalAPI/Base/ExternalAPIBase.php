@@ -39,6 +39,10 @@ require_once ('include/externalAPI/Base/ExternalAPIPlugin.php');
 require_once ('include/externalAPI/Base/ExternalOAuthAPIPlugin.php');
 require_once('include/connectors/sources/SourceFactory.php');
 
+/**
+ * Base implementation for external API
+ * @api
+ */
 abstract class ExternalAPIBase implements ExternalAPIPlugin
 {
     public $account_name;
@@ -46,10 +50,10 @@ abstract class ExternalAPIBase implements ExternalAPIPlugin
     public $authMethod = 'password';
     public $useAuth = true;
     public $requireAuth = true;
-    
+
     const APP_STRING_ERROR_PREFIX = 'ERR_EXTERNAL_API_';
     protected $_appStringErrorPrefix = self::APP_STRING_ERROR_PREFIX;
-    
+
     /**
      * Authorization data
      * @var EAPM
@@ -177,16 +181,16 @@ abstract class ExternalAPIBase implements ExternalAPIPlugin
         if(empty($connector)) return null;
         return $connector->getProperty($name);
 	}
-	
-	
+
+
 	/**
 	 * formatCallbackURL
-	 * 
+	 *
 	 * This function takes a callback_url and checks the $_REQUEST variable to see if
 	 * additional parameters should be appended to the callback_url value.  The $_REQUEST variables
 	 * that are being checked deal with handling the behavior of closing/hiding windows/tabs that
 	 * are displayed when prompting for OAUTH validation
-	 * 
+	 *
 	 * @param $callback_url String value of callback URL
 	 * @return String value of URL with applicable formatting
 	 */
@@ -202,22 +206,22 @@ abstract class ExternalAPIBase implements ExternalAPIPlugin
          {
              $callback_url .= '&callbackFunction=' . $_REQUEST['callbackFunction'];
          }
-            
+
          //Pass back the id of the application that triggered this oauth login
          if (!empty($_REQUEST['application']))
          {
              $callback_url .= '&application=' . $_REQUEST['application'];
-         }		
-            
+         }
+
 	     //Pass back the id of the application that triggered this oauth login
          if (!empty($_REQUEST['refreshParentWindow']))
          {
              $callback_url .= '&refreshParentWindow=' . $_REQUEST['refreshParentWindow'];
-         }         
-         
+         }
+
          return $callback_url;
-	}	
-	
+	}
+
 	/**
 	 * Allow API clients to provide translated language strings for a given error code
 	 *
@@ -228,8 +232,8 @@ abstract class ExternalAPIBase implements ExternalAPIPlugin
 	    $language_key = $this->_appStringErrorPrefix . $error_numb;
 	    if( isset($GLOBALS['app_strings'][$language_key]) )
 	       return $GLOBALS['app_strings'][$language_key];
-	    else 
-	       return $GLOBALS['app_strings']['ERR_EXTERNAL_API_SAVE_FAIL'];	    
+	    else
+	       return $GLOBALS['app_strings']['ERR_EXTERNAL_API_SAVE_FAIL'];
 	}
 
     /**

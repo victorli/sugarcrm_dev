@@ -1343,7 +1343,7 @@ class MysqlManager extends DBManager
 							TO \"$user\"@\"$host_name\"
 							IDENTIFIED BY '{$qpassword}';", true);
 
-		$this->query("SET PASSWORD FOR \"{$user}\"@\"{$host_name}\" = old_password('{$qpassword}');", true);
+		$this->query("SET PASSWORD FOR \"{$user}\"@\"{$host_name}\" = password('{$qpassword}');", true);
 		if($host_name != 'localhost') {
 			$this->createDbUser($database_name, "localhost", $user, $password);
 		}

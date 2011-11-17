@@ -57,8 +57,8 @@ class CalendarGrid {
 	function __construct(&$cal){
 		global $current_user;
 		$this->cal = &$cal;		
-		$this->today_ts = $GLOBALS['timedate']->getNow()->get_day_begin()->format('U');
-
+		$today = $GLOBALS['timedate']->getNow(true)->get_day_begin();
+		$this->today_ts = $today->format('U') + $today->getOffset();		
 		$this->startday = $current_user->get_first_day_of_week();
 		
 		$weekday_names = array();
@@ -239,7 +239,7 @@ class CalendarGrid {
 
 		$current_date = $this->cal->date_time;
 		$day_start_ts = $current_date->format('U') + $current_date->getOffset(); // convert to timestamp, ignore tz
-
+		
 		$str = "";
 		$str .= "<div id='cal-grid' style=' min-width: 300px; visibility: hidden;'>";
 			$str .= "<div id='cal-scrollable' style='overflow-y: scroll; height: 479px;'>";			

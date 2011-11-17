@@ -43,6 +43,10 @@ if(!defined('SUGAR_SMARTY_DIR'))
 	define('SUGAR_SMARTY_DIR', sugar_cached('smarty/'));
 }
 
+/**
+ * Smarty wrapper for Sugar
+ * @api
+ */
 class Sugar_Smarty extends Smarty
 {
 
@@ -63,7 +67,7 @@ class Sugar_Smarty extends Smarty
 		if(file_exists('custom/include/Smarty/plugins'))
 			$plugins_dir[] = 'custom/include/Smarty/plugins';
 		$this->plugins_dir = $plugins_dir;
-		
+
 		$this->assign("VERSION_MARK", getVersionedPath(''));
 	}
 

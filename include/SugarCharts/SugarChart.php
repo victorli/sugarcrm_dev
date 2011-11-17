@@ -36,6 +36,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
+/**
+ * Generic chart
+ * @api
+ */
 class SugarChart {
 
 	private $db;
@@ -57,7 +61,7 @@ class SugarChart {
 	var $supports_image_export = false;
 	var $print_html_legend_pdf = false;
 	var $image_export_type = "";
-	
+
 	public function __construct() {
 		$this->db = &DBManagerFactory::getInstance();
 		$this->ss = new Sugar_Smarty();
@@ -280,14 +284,14 @@ class SugarChart {
 	}
 	/**
      * returns text with tabs appended before it
-	 * 
+	 *
      * @param 	string $str xml tag
      			int $tagFormat 2 = open and close tag, 1 = close, 0 = open
      			sting $value input string
 	 *			int $depth number of times to tab
      * @return	string with tabs appended before it
-     */		
-	
+     */
+
 	function tabValue($tag,$value,$depth) {
 
 			return $this->tab("<{$tag}>".htmlspecialchars($value,ENT_QUOTES)."</{$tag}>",$depth);
@@ -609,7 +613,7 @@ class SugarChart {
     public function nullGroup($superSetValue, $url) {
         return $this->processDataGroup(4, $superSetValue, 'NULL', '', $url);
     }
-    
+
 
     /**
      * returns a name for the XML File
@@ -744,33 +748,33 @@ class SugarChart {
 
 		// generate strings for chart if it does not exist
 		global $current_language, $theme, $sugar_config,$app_strings;
-		
+
 		$this->app_strings = $app_strings;
 		$this->chartStringsXML = sugar_cached("xml/").'chart_strings.' . $current_language .'.lang.xml';
 		if (!file_exists($this->chartStringsXML)){
 			$this->generateChartStrings($this->chartStringsXML);
 		}
-				
-		$templateFile = "";			
+
+		$templateFile = "";
 		return $templateFile;
 	}
 
 	function getDashletScript($id,$xmlFile="") {
-		
+
 	$xmlFile = (!$xmlFile) ? sugar_cached("xml/"). $current_user->id . '_' . $this->id . '.xml' : $xmlFile;
-	$chartStringsXML = sugar_cached("xml/").'chart_strings.' . $current_language .'.lang.xml'; 
-	
+	$chartStringsXML = sugar_cached("xml/").'chart_strings.' . $current_language .'.lang.xml';
+
 	$this->ss->assign('chartName', $id);
     $this->ss->assign('chartXMLFile', $xmlFile);
     $this->ss->assign('chartStyleCSS', SugarThemeRegistry::current()->getCSSURL('chart.css'));
     $this->ss->assign('chartColorsXML', SugarThemeRegistry::current()->getImageURL('sugarColors.xml'));
     $this->ss->assign('chartLangFile', sugar_cached("xml/").'chart_strings.' . $GLOBALS['current_language'] .'.lang.xml');
- 	        
+
 		$templateFile = "";
 		return $templateFile;
 	}
-	
-	
+
+
   /**
          This function is used for localize all the characters in the Chart. And it can also sort all the dom_values by the sequence defined in the dom, but this may produce a lot of extra empty data in the xml file, when the chart is sorted by two key cols.
          If the data quantity is large, it maybe a little slow.
@@ -868,21 +872,21 @@ class SugarChart {
         }
         return $data;
     }
-    
+
     function getChartResources() {
-		
+
 		$resources = "";
 		return $resources;
 	}
-	
+
 	function getMySugarChartResources() {
 		$mySugarResources = "";
 		return $mySugarResources;
 	}
-	
+
 	/**
      * wrapper function to return chart array after any additional processing
-	 * 
+	 *
      * @param 	array $chartsArray 	array of chart config items that need processing
      * @return	array $chartArray after it has been process
      */

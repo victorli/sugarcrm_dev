@@ -38,9 +38,8 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 require_once 'include/SugarDateTime.php';
 
 /**
-  *
   * New Time & Date handling class
- * @api
+  * @api
   * Migration notes:
   * - to_db_time() requires either full datetime or time, won't work with just date
   * 	The reason is that it's not possible to know if short string has only date or only time,

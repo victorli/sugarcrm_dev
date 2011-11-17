@@ -45,7 +45,7 @@ require_once('modules/Calendar/Calendar.php');
 require_once('modules/Calendar/CalendarDisplay.php');
 require_once("modules/Calendar/CalendarGrid.php");
 
-global $cal_strings, $app_strings, $app_list_strings, $current_language, $timedate, $sugarConfig;
+global $cal_strings, $current_language;
 $cal_strings = return_module_language($current_language, 'Calendar');
 
 if(empty($_REQUEST['view'])){
@@ -54,9 +54,9 @@ if(empty($_REQUEST['view'])){
 
 $cal = new Calendar($_REQUEST['view']);
 
-if($_REQUEST['view'] == 'day' || $_REQUEST['view'] == 'week' || $_REQUEST['view'] == 'month'){
+if(in_array($cal->view,array('day','week','month'))){
 	$cal->add_activities($GLOBALS['current_user']);	
-}else if($_REQUEST['view'] == 'shared'){
+}else if($cal->view == 'shared'){
 	$cal->init_shared();	
 	global $shared_user;				
 	$shared_user = new User();	
@@ -72,13 +72,10 @@ if(in_array($cal->view, array("day","week","month","shared"))){
 
 $display = new CalendarDisplay($cal);
 $display->display_title();
-
-if(in_array($cal->view, array("day","week","month","shared","year"))){
-	if($cal->view == "shared")
-		$display->display_shared_html();
-	$display->display_calendar_header();
-	$display->display();
-	$display->display_calendar_footer();
-}	
+if($cal->view == "shared")
+	$display->display_shared_html();
+$display->display_calendar_header();
+$display->display();
+$display->display_calendar_footer();
 
 ?>

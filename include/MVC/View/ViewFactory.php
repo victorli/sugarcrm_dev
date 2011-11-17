@@ -42,6 +42,10 @@
   */
 require_once('include/MVC/View/SugarView.php');
 
+/**
+ * Sugar view factory
+ * @api
+ */
 class ViewFactory{
 	/**
 	 * load the correct view
@@ -50,22 +54,22 @@ class ViewFactory{
 	 */
 	function loadView($type = 'default', $module, $bean = null, $view_object_map = array(), $target_module=''){
 		$type = strtolower($type);
-		
+
 		//first let's check if the module handles this view
 
 		$view = null;
 
         //Check to see if we should load a custom parent view instance
         loadParentView($type);
-        
+
 		if(!empty($target_module)) {
 			if(file_exists('custom/modules/'.$target_module.'/views/view.'.$type.'.php')){
 				$view = ViewFactory::_buildFromFile('custom/modules/'.$target_module.'/views/view.'.$type.'.php', $bean, $view_object_map, $type, $target_module);
 			}else if(file_exists('modules/'.$target_module.'/views/view.'.$type.'.php')){
 				$view = ViewFactory::_buildFromFile('modules/'.$target_module.'/views/view.'.$type.'.php', $bean, $view_object_map, $type, $target_module);
-			}		
-		} 	
-		
+			}
+		}
+
 		if(!isset($view)) {
 			if(file_exists('custom/modules/'.$module.'/views/view.'.$type.'.php')){
 				$view = ViewFactory::_buildFromFile('custom/modules/'.$module.'/views/view.'.$type.'.php', $bean, $view_object_map, $type, $module);
@@ -80,15 +84,15 @@ class ViewFactory{
 					//it appears Sugar does have the proper logic for this file.
 					$view = ViewFactory::_buildFromFile($file, $bean, $view_object_map, $type, $module);
 				}
-			}	
+			}
 		}
 		// Default to SugarView if still nothing found/built
-		if (!isset($view)) 
+		if (!isset($view))
 			$view = new SugarView();
 		ViewFactory::_loadConfig($view, $type);
 		return $view;
 	}
-	
+
 	/**
 	 * Load the view_<view>_config.php file which holds options used by the view.
 	 */
@@ -116,13 +120,13 @@ class ViewFactory{
 			if(file_exists('include/MVC/View/views/'.$config_file_name)){
 				require_once('include/MVC/View/views/'.$config_file_name);
 				$view_config_root = $view_config;
-			}	
+			}
 			if(file_exists('include/MVC/View/views/view.config.php')){
 				require_once('include/MVC/View/views/view.config.php');
 				$view_config_app = $view_config;
 			}
 			$view_config = array('actions' => array(), 'req_params' => array(),);
-			
+
 			//actions
 			if(!empty($view_config_app) && !empty($view_config_app['actions']))
 				$view_config['actions'] = array_merge($view_config['actions'], $view_config_app['actions']);
@@ -133,8 +137,8 @@ class ViewFactory{
 			if(!empty($view_config_module) && !empty($view_config_module['actions']))
 				$view_config['actions'] = array_merge($view_config['actions'], $view_config_module['actions']);
 			if(!empty($view_config_custom) && !empty($view_config_custom['actions']))
-				$view_config['actions'] = array_merge($view_config['actions'], $view_config_custom['actions']);	
-			
+				$view_config['actions'] = array_merge($view_config['actions'], $view_config_custom['actions']);
+
 			//req_params
 			if(!empty($view_config_app) && !empty($view_config_app['req_params']))
 				$view_config['req_params'] = array_merge($view_config['req_params'], $view_config_app['req_params']);
@@ -145,39 +149,39 @@ class ViewFactory{
 			if(!empty($view_config_module) && !empty($view_config_module['req_params']))
 				$view_config['req_params'] = array_merge($view_config['req_params'], $view_config_module['req_params']);
 			if(!empty($view_config_custom) && !empty($view_config_custom['req_params']))
-				$view_config['req_params'] = array_merge($view_config['req_params'], $view_config_custom['req_params']);	
-		
+				$view_config['req_params'] = array_merge($view_config['req_params'], $view_config_custom['req_params']);
+
 			sugar_cache_put("VIEW_CONFIG_FILE_".$view->module."_TYPE_".$type, $view_config);
 		}
 		$action = strtolower($view->action);
 		$config = null;
 		if(!empty($view_config['req_params'])){
-			//try the params first	
+			//try the params first
 			foreach($view_config['req_params'] as $key => $value){
 			    if(!empty($_REQUEST[$key]) && $_REQUEST[$key] == "false") {
 			        $_REQUEST[$key] = false;
 			    }
 				if(!empty($_REQUEST[$key])){
-					
+
 					if(!is_array($value['param_value'])){
 						if($value['param_value'] ==  $_REQUEST[$key]){
 							$config = $value['config'];
 							break;
 						}
 					}else{
-						
+
 						foreach($value['param_value'] as $v){
 							if($v ==  $_REQUEST[$key]){
 								$config = $value['config'];
 								break;
 							}
-							
+
 						}
-						
+
 					}
-					
-					
-					
+
+
+
 				}
 			}
 		}
@@ -186,12 +190,12 @@ class ViewFactory{
 		}
 		if($config != null)
 			$view->options = $config;
-	}	
-	
+	}
+
 	/**
 	 * This is a private function which just helps the getView function generate the
 	 * proper view object
-	 * 
+	 *
 	 * @return a valid SugarView
 	 */
 	function _buildFromFile($file, &$bean, $view_object_map, $type, $module){
@@ -199,7 +203,7 @@ class ViewFactory{
 		//try ModuleViewType first then try ViewType if that fails then use SugarView
 		$class = ucfirst($module).'View'.ucfirst($type);
 		$customClass = 'Custom' . $class;
-		
+
 		if(class_exists($customClass)){
 			return ViewFactory::_buildClass($customClass, $bean, $view_object_map);
 		}
@@ -224,18 +228,18 @@ class ViewFactory{
 		}
 		//if all else fails return SugarView
 		return new SugarView($bean, $view_object_map);
-		
+
 	}
-	
+
 	/**
 	 * instantiate the correct view and call init to pass on any obejcts we need to
 	 * from the controller.
-	 * 
+	 *
 	 * @param string class - the name of the class to instantiate
 	 * @param object bean = the bean to pass to the view
 	 * @param array view_object_map - the array which holds obejcts to pass between the
 	 *                                controller and the view.
-	 * 
+	 *
 	 * @return SugarView
 	 */
 	function _buildClass($class, $bean, $view_object_map){

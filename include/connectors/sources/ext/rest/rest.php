@@ -38,6 +38,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 require_once('include/connectors/sources/default/source.php');
 
+/**
+ * REST generic connector
+ * @api
+ */
 abstract class ext_rest extends source{
 
 	protected $_url;

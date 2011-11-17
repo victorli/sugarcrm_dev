@@ -51,7 +51,7 @@ $dictionary['User'] = array(
             'dbType' => 'varchar',
             'len' => '60',
             'importable' => 'required',
-            'required' => true,
+            'required' => false,
         ) ,
         'user_hash' => array(
             'name' => 'user_hash',
@@ -65,7 +65,7 @@ $dictionary['User'] = array(
             'name' => 'system_generated_password',
             'vname' => 'LBL_SYSTEM_GENERATED_PASSWORD',
             'type' => 'bool',
-            'required' => true,
+            'required' => false,
             'reportable' => false,
             'massupdate' => false,
         ) ,
@@ -178,13 +178,13 @@ $dictionary['User'] = array(
             'name' => 'date_entered',
             'vname' => 'LBL_DATE_ENTERED',
             'type' => 'datetime',
-            'required' => true,
+            'required' => false,
         ) ,
         'date_modified' => array(
             'name' => 'date_modified',
             'vname' => 'LBL_DATE_MODIFIED',
             'type' => 'datetime',
-            'required' => true,
+            'required' => false,
         ) ,
         'modified_user_id' => array(
             'name' => 'modified_user_id',
@@ -272,7 +272,7 @@ $dictionary['User'] = array(
             'len' => 100,
             'options' => 'user_status_dom',
             'importable' => 'required',
-            'required' => true,
+            'required' => false,
         ) ,
         'address_street' => array(
             'name' => 'address_street',

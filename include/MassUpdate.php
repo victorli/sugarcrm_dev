@@ -36,12 +36,12 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
+require_once('include/EditView/EditView2.php');
 
 /**
  * MassUpdate class for updating multiple records at once
+ * @api
  */
- require_once('include/EditView/EditView2.php');
 class MassUpdate
 {
 	/*

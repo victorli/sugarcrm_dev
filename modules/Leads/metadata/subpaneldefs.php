@@ -80,7 +80,7 @@ $layout_defs['Leads'] = array(
 					'subpanel_name' => 'ForActivities',
 					'get_subpanel_data' => 'calls',
 				),
-				'oldcalls' => array(
+                'oldcalls' => array(
 					'module' => 'Calls',
 					'subpanel_name' => 'ForActivities',
 					'get_subpanel_data' => 'function:get_old_related_calls',
