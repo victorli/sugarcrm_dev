@@ -109,6 +109,11 @@
 		<td>
             {html_options name='default_locale_name_format' id="default_locale_name_format" selected=$config.default_locale_name_format options=$NAMEFORMATS}
 		</td>
+        {if isset($upgradeInvalidLocaleNameFormat)}
+        <td>
+            {$MOD.ERR_INVALID_LOCALE_NAME_FORMAT_UPGRADE}
+        </td>
+        {/if}
 	</tr>
 
 	</table>
@@ -199,7 +204,6 @@
 </table>
 
 
-
 {/if}
 <div style="padding-top: 2px;">
 <input title="{$APP.LBL_SAVE_BUTTON_TITLE}" class="button primary"  type="submit" name="save" value="  {$APP.LBL_SAVE_BUTTON_LABEL}  " />
@@ -207,3 +211,7 @@
 </div>
 {$JAVASCRIPT}
 </form>
+
+<script language="Javascript" type="text/javascript">
+{$getNameJs}
+</script>

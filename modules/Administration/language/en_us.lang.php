@@ -83,6 +83,8 @@ $mod_strings = array (
     'LBL_PUBLIC_KEY'=>'Public Key',
     'LBL_PRIVATE_KEY'=>'Private Key',
 
+    'ERR_INVALID_LOCALE_NAME_FORMAT_UPGRADE' => 'The "Name Format" that was set before the upgrade is no longer supported.  The format has been automatically set to the default.  Please select a new format and click "Save" to remove this message.',
+
     'ERR_CANNOT_CREATE_RESTORE_FILE' => 'Error: Could not create restore file',
     'ERR_CREDENTIALS_MISSING'   => 'Your sugarcrm.com credentials are missing.',
     'ERR_DELETE_RECORD' => 'A record number must be specified to delete the account.',

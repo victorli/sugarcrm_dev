@@ -75,6 +75,7 @@ class Localization {
 	var $default_export_charset = 'UTF-8';
 	var $default_email_charset = 'UTF-8';
 	var $currencies = array(); // array loaded with current currencies
+    var $invalidNameFormatUpgradeFilename = 'upgradeInvalidLocaleNameFormat.php';
 
 
 	/**
@@ -99,6 +100,8 @@ class Localization {
 			'default_currency_symbol'				=> '$',
 			'default_export_charset'				=> $this->default_export_charset,
 			'default_locale_name_format'			=> 's f l',
+            'name_formats'                          => array('s f l' => 's f l', 'f l' => 'f l', 's l' => 's l', 'l, s f' => 'l, s f',
+                                                            'l, f' => 'l, f', 's l, f' => 's l, f', 'l s f' => 'l s f', 'l f s' => 'l f s'),
 			'default_number_grouping_seperator'		=> ',',
 			'default_decimal_seperator'				=> '.',
 			'export_delimiter'						=> ',',
@@ -667,7 +670,27 @@ eoq;
 
 		$ret = "
 		function setPreview() {
+			format = document.getElementById('default_locale_name_format').value;
+			field = document.getElementById('nameTarget');
 
+			stuff = new Object();
+
+			stuff['s'] = '{$salutation}';
+			stuff['f'] = '{$first}';
+			stuff['l'] = '{$last}';
+			stuff['t'] = '{$title}';
+
+			var name = '';
+			for(i=0; i<format.length; i++) {
+                if(stuff[format.substr(i,1)] != undefined) {
+                    name += stuff[format.substr(i,1)];
+				} else {
+                    name += format.substr(i,1);
+		}
+			}
+
+			//alert(name);
+			field.value = name;
 		}
 
         ";
@@ -676,30 +699,71 @@ eoq;
 	}
 
     /**
-     * Creates dropdown items that have localized example names, instead of cryptic strings like 's f l'
+     * Checks to see that the characters in $name_format are allowed:  s, f, l, space/tab or punctuation
+     * @param $name_format
+     * @return bool
+     */
+    public function isAllowedNameFormat($name_format) {
+        // will result in a match as soon as a disallowed char is hit in $name_format
+        $match = preg_match('/[^sfl[:punct:][:^alnum:]\s]/', $name_format);
+        if ($match !== false && $match === 0) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks to see if there was an invalid Name Format encountered during the upgrade
+     * @return bool true if there was an invalid name, false if all went well.
+     */
+    public function invalidLocaleNameFormatUpgrade() {
+        return file_exists($this->invalidNameFormatUpgradeFilename);
+    }
+
+    /**
+     * Creates the file that is created when there is an invalid name format during an upgrade
+     */
+    public function createInvalidLocaleNameFormatUpgradeNotice() {
+        $fh = fopen($this->invalidNameFormatUpgradeFilename,'w');
+        fclose($fh);
+    }
+
+    /**
+     * Removes the file that is created when there is an invalid name format during an upgrade
+     */
+    public function removeInvalidLocaleNameFormatUpgradeNotice() {
+        if ($this->invalidLocaleNameFormatUpgrade()) {
+            unlink($this->invalidNameFormatUpgradeFilename);
+        }
+    }
+
+
+    /**
+     * Creates dropdown items that have localized example names while filtering out invalid formats
      *
      * @param array un-prettied dropdown list
      * @return array array of dropdown options
      */
-    public function getPrettyLocaleNameOptions($options) {
+    public function getUsableLocaleNameOptions($options) {
         global $app_strings;
 
         $examples = array('s' => $app_strings['LBL_LOCALE_NAME_EXAMPLE_SALUTATION'],
                         'f' => $app_strings['LBL_LOCALE_NAME_EXAMPLE_FIRST'],
-                        'l' => $app_strings['LBL_LOCALE_NAME_EXAMPLE_LAST'],
-                        't' =>  $app_strings['LBL_LOCALE_NAME_EXAMPLE_TITLE']);
+                        'l' => $app_strings['LBL_LOCALE_NAME_EXAMPLE_LAST']);
         $newOpts = array();
         foreach ($options as $key => $val) {
-            $newVal = '';
-            $pieces = str_split($val);
-            foreach ($pieces as $piece) {
-                if (isset($examples[$piece])) {
-                    $newVal .= $examples[$piece];
-                } else {
-                    $newVal .= $piece;
+            if ($this->isAllowedNameFormat($key) && $this->isAllowedNameFormat($val)) {
+                $newVal = '';
+                $pieces = str_split($val);
+                foreach ($pieces as $piece) {
+                    if (isset($examples[$piece])) {
+                        $newVal .= $examples[$piece];
+                    } else {
+                        $newVal .= $piece;
+                    }
                 }
+                $newOpts[$key] = $newVal;
             }
-            $newOpts[$key] = $newVal;
         }
         return $newOpts;
     }

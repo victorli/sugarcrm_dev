@@ -211,8 +211,8 @@ abstract class DBManager
 			'double'   => 'float',
 			'float'    => 'float',
 			'uint'     => 'int',
-			'ulong'    => 'int',
-			'long'     => 'int',
+			'ulong'    => 'bigint',
+			'long'     => 'bigint',
 			'short'    => 'int',
 			'date'     => 'date',
 			'datetime' => 'date',
@@ -1869,9 +1869,9 @@ protected function checkQuery($sql, $object_name = false)
 	{
 		$primaryField = $bean->getPrimaryFieldDefinition();
 		$columns = array();
-
+        $fields = $bean->getFieldDefinitions();
 		// get column names and values
-		foreach ($bean->getFieldDefinitions() as $field => $fieldDef) {
+		foreach ($fields as $field => $fieldDef) {
 			if (isset($fieldDef['source']) && $fieldDef['source'] != 'db')  continue;
 			// Do not write out the id field on the update statement.
     		// We are not allowed to change ids.
@@ -1883,6 +1883,9 @@ protected function checkQuery($sql, $object_name = false)
 
     		//custom fields handle their save seperatley
     		if(isset($bean->field_name_map) && !empty($bean->field_name_map[$field]['custom_type']))  continue;
+
+    		// no need to clear deleted since we only update not deleted records anyway
+    		if($fieldDef['name'] == 'deleted' && empty($bean->deleted)) continue;
 
     		if(isset($bean->$field)) {
     			$val = from_html($bean->$field);
@@ -1916,10 +1919,13 @@ protected function checkQuery($sql, $object_name = false)
 
 		// build where clause
 		$where = $this->getWhereClause($bean, $this->updateWhereArray($bean, $where));
+		if(isset($fields['deleted'])) {
+		    $where .= " AND deleted=0";
+		}
 
 		return "UPDATE ".$bean->getTableName()."
 					SET ".implode(",", $columns)."
-					$where AND deleted=0";
+					$where";
 	}
 
 	/**
@@ -1991,7 +1997,7 @@ protected function checkQuery($sql, $object_name = false)
 	 */
 	protected function getWhereClause(SugarBean $bean, array $whereArray=array())
 	{
-	return " WHERE " . $this->getColumnWhereClause($bean->getTableName(), $whereArray);
+	    return " WHERE " . $this->getColumnWhereClause($bean->getTableName(), $whereArray);
 	}
 
 	/**
@@ -2017,6 +2023,15 @@ protected function checkQuery($sql, $object_name = false)
 						return 0;
 					}
 					return intval($val);
+                case 'bigint' :
+                    $val = (float)$val;
+					if (!empty($fieldDef['required']) && $val == false){
+						if (isset($fieldDef['default'])){
+							return $fieldDef['default'];
+						}
+						return 0;
+					}
+                    return $val;
 				case 'float':
 					if (!empty($fieldDef['required'])  && $val == ''){
 						if (isset($fieldDef['default'])){

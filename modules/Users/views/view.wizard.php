@@ -209,7 +209,11 @@ eoq;
 		$this->ss->assign("NEW_EMAIL", $current_user->emailAddress->getEmailAddressWidgetEditView($current_user->id, $current_user->module_dir));
 		$this->ss->assign('EMAIL_LINK_TYPE', get_select_options_with_id($app_list_strings['dom_email_link_type'], $current_user->getPreference('email_link_type')));
 
-        $this->ss->assign('NAMEOPTIONS', get_select_options_with_id($locale->getPrettyLocaleNameOptions($sugar_config['name_formats']), $current_user->_userPreferenceFocus->getDefaultPreference('default_locale_name_format')));
+        $selectedLocaleNameFormat = $current_user->_userPreferenceFocus->getDefaultPreference('default_locale_name_format');
+        if (array_key_exists($selectedLocaleNameFormat, $sugar_config['name_formats'])) {
+            $selectedLocaleNameFormat = $sugar_config['default_locale_name_format'];
+        }
+        $this->ss->assign('NAMEOPTIONS', get_select_options_with_id($locale->getUsableLocaleNameOptions($sugar_config['name_formats']), $selectedLocaleNameFormat));
 
 		// email smtp
 		$systemOutboundEmail = new OutboundEmail();

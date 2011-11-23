@@ -1264,11 +1264,38 @@ class SugarThemeRegistry
         // default to setting the default theme as the current theme
         if ( !isset($GLOBALS['sugar_config']['default_theme']) || !self::set($GLOBALS['sugar_config']['default_theme']) ) {
             if ( count(self::availableThemes()) == 0 )
+            {
                 sugar_die('No valid themes are found on this instance');
-            else
-                self::set(array_pop(array_keys(self::availableThemes())));
+            } else {
+                self::set(self::getDefaultThemeKey());
+            }
         }
     }
+
+
+    /**
+     * getDefaultThemeKey
+     *
+     * This function returns the default theme key.  It takes into account string casing issues that may arise
+     * from upgrades.  It attempts to look for the Sugar theme and if not found, defaults to return the name of the last theme
+     * in the array of available themes loaded.
+     *
+     * @return $defaultThemeKey String value of the default theme key to use
+     */
+    private static function getDefaultThemeKey()
+    {
+        $availableThemes = self::availableThemes();
+        foreach($availableThemes as $key=>$theme)
+        {
+            if(strtolower($key) == 'sugar')
+            {
+                return $key;
+            }
+        }
+
+        return array_pop(array_keys($availableThemes));
+    }
+
 
     /**
      * Returns an array of available themes. Designed to be absorbed into get_select_options_with_id()

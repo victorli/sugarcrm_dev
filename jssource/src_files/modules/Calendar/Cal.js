@@ -145,7 +145,10 @@
 			el.setAttribute("duration_coef",duration_coef);
 			el.style.backgroundColor = CAL.activity_colors[item.module_name]['body'];
 			el.style.borderColor = CAL.activity_colors[item.module_name]['border'];	
-			el.style.height = parseInt(15 * duration_coef - 1) + "px";
+			el.style.height = parseInt(15 * duration_coef - 1) + "px";						
+			if(item.module_name == "Tasks")
+				el.setAttribute("date_due",item.date_due);				
+			
 			YAHOO.util.Event.on(el,"click",function(){
 					if(this.getAttribute('detail') == "1")
 						CAL.load_from(this.getAttribute('module_name'),this.getAttribute('record'),false);
@@ -749,7 +752,10 @@
 						CAL.arrange_slot(ex_slot_id);
 						CAL.cut_record(box_id);					
 						var start_text = CAL.get_header_text(CAL.act_types[u.getAttribute('module_name')],s.getAttribute('time'),u.getAttribute('status'),u.getAttribute('record'));
-						u.setAttribute("date_start",s.getAttribute("datetime"));				
+						var date_field = "date_start";
+						if(u.getAttribute('module_name') == "Tasks")
+							date_field = "date_due";							
+						u.setAttribute(date_field,s.getAttribute("datetime"));				
 						u.childNodes[0].childNodes[1].innerHTML = start_text;
 					}
 				}
@@ -989,10 +995,22 @@
 		var duration = obj.getAttribute("dur");	
 		var desc = obj.getAttribute("desc");	
 		var detail = parseInt(obj.getAttribute("detail"));
-		var edit = parseInt(obj.getAttribute("edit"));				
+		var edit = parseInt(obj.getAttribute("edit"));
+		
+		var date_str = "";
+		if(date_start != "")
+			date_str += '<b>'+CAL.lbl_start+':</b> ' +  date_start;			
+		if(mod == "Tasks"){
+			var date_due = obj.getAttribute("date_due");
+			if(date_due != ""){
+				if(date_str != "")
+					date_str += "<br>";
+				date_str += '<b>'+CAL.lbl_due+':</b> ' +  date_due;
+			}		
+		}				
 		
 		var related = "";
-		if(obj.getAttribute("parent_id") != '')
+		if(obj.getAttribute("parent_id") != '' && obj.getAttribute("parent_name") != '')
 			related = "<b>" + CAL.lbl_related + ":</b> <a href='index.php?module="+obj.getAttribute("parent_type")+"&action=DetailView&record="+obj.getAttribute("parent_id")+"'>"+obj.getAttribute("parent_name")+"</a>" + "<br>";
 
 		if(desc != '')
@@ -1020,7 +1038,7 @@
 		caption += "<a title=\'"+SUGAR.language.get('app_strings', 'LBL_ADDITIONAL_DETAILS_CLOSE_TITLE')+"\' href=\'javascript:return cClick();\' onclick=\'javascript:return cClick();\'><img border=0  style=\'margin-left:2px;margin-right:2px;\' src=\'"+CAL.img_close+"\'></a></div>";
 
 		
-		var body = '<b>'+CAL.lbl_name+':</b> ' + subj + ' <br><b>'+date_lbl+':</b> ' + date_start + '<br>' + duration_text + related + desc;
+		var body = '<b>'+CAL.lbl_name+':</b> ' + subj + '<br>' + date_str + '<br>' + duration_text + related + desc;
 		return overlib(body, CAPTION, caption, DELAY, 200, STICKY, MOUSEOFF, 200, WIDTH, 300, CLOSETEXT, '', CLOSETITLE, SUGAR.language.get('app_strings','LBL_ADDITIONAL_DETAILS_CLOSE_TITLE'), CLOSECLICK, FGCLASS, 'olFgClass', CGCLASS, 'olCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olCapFontClass ecCapFontClass', CLOSEFONTCLASS, 'olCloseFontClass');
 	}		
 	

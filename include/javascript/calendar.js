@@ -72,8 +72,8 @@ else if(dayPos==2)
 {selDate+=date_field_delimiter+dateVal;}
 else
 {selDate+=date_field_delimiter+yearVal;}
-return selDate;};calendar.selectEvent.subscribe(function(){var input=Dom.get(inputField);if(calendar.getSelectedDates().length>0){input.value=formatSelectedDate(calendar.getSelectedDates()[0]);if(params.comboObject)
-{params.comboObject.update();}}else{input.value="";}
+return selDate;};calendar.selectEvent.subscribe(function(type,args,obj){var input=Dom.get(inputField);if(calendar.getSelectedDates().length>0){input.value=formatSelectedDate(calendar.getSelectedDates()[0]);if(params.comboObject)
+{params.comboObject.update();}}else if(typeof args[0][0]=='object'){selDate=args[0][0];input.value=formatSelectedDate(new Date(selDate[0],selDate[1],selDate[2]));}else{input.value='';}
 if(input.onchange)
 input.onchange();dialog.hide();SUGAR.util.callOnChangeListers(input);});calendar.renderEvent.subscribe(function(){dialog.fireEvent("changeContent");});}
 var seldate=calendar.getSelectedDates();var fieldVal=Dom.get(inputField).value;var defaultToToday=function(){var today=new Date();calendar.cfg.setProperty("selected",(today.getMonth()+1)+date_field_delimiter+today.getFullYear());calendar.cfg.setProperty("pagedate",(today.getMonth()+1)+calendar.cfg.getProperty("DATE_FIELD_DELIMITER")+today.getFullYear());};if(fieldVal.length>0){val=new Date(fieldVal);if(!isNaN(val.getTime())&&fieldVal.indexOf(date_field_delimiter)!==-1){seldate=fieldVal.split(date_field_delimiter);var temp=new Date(seldate[yearPos],seldate[monthPos]);var tm=temp.getTime();if(!isNaN(temp.getTime())){calendar.cfg.setProperty("selected",fieldVal);calendar.cfg.setProperty("pagedate",seldate[monthPos]+calendar.cfg.getProperty("DATE_FIELD_DELIMITER")+seldate[yearPos]);}else{defaultToToday();}}else{defaultToToday();}}else if(seldate.length>0){calendar.cfg.setProperty("selected",seldate[0]);var month=seldate[0].getMonth()+1;var year=seldate[0].getFullYear();calendar.cfg.setProperty("pagedate",month+calendar.cfg.getProperty("DATE_FIELD_DELIMITER")+year);}

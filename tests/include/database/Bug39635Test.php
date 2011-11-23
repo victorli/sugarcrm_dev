@@ -1,4 +1,5 @@
-{*
+<?php
+
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
@@ -34,10 +35,31 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-*}
-<style>
-{literal}
-.yui-navset .yui-content, .yui-navset .yui-navset-top .yui-content  {
-	padding: 5px 10px 5px 10px;
-{/literal}
-</style>
+
+/**
+ * Bug #39635
+ * max length error for Forcasting fields
+ *
+ * @author mgusev@sugarcrm.com
+ * @ticket 39635
+ */
+class Bug39635Test extends Sugar_PHPUnit_Framework_TestCase
+{
+
+    /**
+     * @group 39635
+     */
+
+    public function testRepairTableParams()
+    {
+        $bigInt = 9876543210;
+        $fieldDef = array(
+            'dbType' => 'long'
+        );
+
+        $oDB = DBManagerFactory::getInstance();
+        $result = $oDB->massageValue($bigInt, $fieldDef);
+
+        $this->assertEquals($bigInt, $result);
+    }
+}

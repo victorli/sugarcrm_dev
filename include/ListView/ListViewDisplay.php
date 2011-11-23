@@ -350,21 +350,50 @@ EOHTML;
 		    return '';
 
 		return <<<EOHTML
+<a id='$id' href="javascript:void(0)">
+    {$app_strings['LBL_LINK_ACTIONS']}&nbsp;<img src='{$moreDetailImage}' border='0' />
+</a>
 <script type="text/javascript">
-<!--
-function actions_overlib()
+var actionLinkSelector = "#$id";
+var userHoveredOverMenu = false;
+
+function actions_overlib(e)
 {
-    return overlib("{$menuItems}", CENTER, '', STICKY, MOUSEOFF, 3000, CLOSETEXT, '{$closeText}', WIDTH, 150,
+    overlib("{$menuItems}", CENTER, '', STICKY, MOUSEOFF, 3000, CLOSETEXT, '{$closeText}', WIDTH, 150,
         CLOSETITLE, "{$app_strings['LBL_ADDITIONAL_DETAILS_CLOSE_TITLE']}", CLOSECLICK,
         FGCLASS, 'olOptionsFgClass', CGCLASS, 'olOptionsCgClass', BGCLASS, 'olBgClass',
         TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olOptionsCapFontClass',
         CLOSEFONTCLASS, 'olOptionsCloseFontClass');
+        
+    e.currentTarget.focus();
+        
+    YUI().use('node', 'event-base', function(Y) {
+        e.currentTarget.on('blur', actions_overlib_close);
+        Y.all('#overDiv').on('mouseover', function(e) {
+            userHoveredOverMenu = true;
+        });
+        Y.all('#overDiv').on('mouseout', function(e) {
+            userHoveredOverMenu = false;
+        });
+    });
 }
--->
+        
+function actions_overlib_close(e) {
+    if (userHoveredOverMenu == false) {
+        YUI().use('node', function(Y) {
+            var overDiv = Y.one("#overDiv");
+            if (overDiv != null) overDiv.remove();
+        });
+    }
+}
+        
+// event delegations
+YUI().use('node', 'event-base', function(Y) {
+    if (typeof alClickEventHandler != 'undefined') alClickEventHandler.detach();
+    var alClickEventHandler = Y.one('div.listViewBody').delegate('click', actions_overlib, actionLinkSelector);
+});
+
 </script>
-<a id='$id' onclick='return actions_overlib();' href="#">
-    {$app_strings['LBL_LINK_ACTIONS']}&nbsp;<img src='{$moreDetailImage}' border='0' />
-</a>
 EOHTML;
 	}
 

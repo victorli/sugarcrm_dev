@@ -1957,7 +1957,7 @@ SE.composeLayout = {
             if (composePackage.body != null && composePackage.body.length > 0) {
 		        var tiny = SE.util.getTiny('htmleditor' + SE.composeLayout.currentInstanceId);
 		        SE.composeLayout.loadedTinyInstances[SE.composeLayout.currentInstanceId] = false;
-        		setTimeout("SE.composeLayout.setContentOnThisTiny();", 3000);
+        		setTimeout("SE.composeLayout.setContentOnThisTiny();", 4000);
             } // if
             if (composePackage.attachments != null) {
 				SE.composeLayout.loadAttachments(composePackage.attachments);
@@ -1983,7 +1983,7 @@ SE.composeLayout = {
 
     setContentOnThisTiny : function() {
     	var tiny = SE.util.getTiny('htmleditor' + SE.composeLayout.currentInstanceId);
-        var tinyHTML = tiny.getContent();
+
         composePackage.body = decodeURI(encodeURI(composePackage.body));
         // cn: bug 14361 - text-only templates don't fill compose screen
         if(composePackage.body == '') {
@@ -1993,7 +1993,7 @@ SE.composeLayout = {
         if (typeof(composePackage.clearBody) != 'undefined' && composePackage.clearBody){
             SE.composeLayout.tinyHTML = '';
         }else{
-
+            var tinyHTML = tiny.getContent();
             htmlBeg = '';
             htmlEnd = '';
             htmlBod = tinyHTML;

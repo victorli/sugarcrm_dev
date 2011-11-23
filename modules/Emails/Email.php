@@ -2293,7 +2293,7 @@ class Email extends SugarBean {
 		$row = $this->db->fetchByAssoc($result);
 
 		if ($row !=null) {
-			$this->attachment_image = SugarThemeRegistry::current()->getImage('attachment',"","","",'.gif',$mod_strings['LBL_ATTACHMENT']);
+			$this->attachment_image = SugarThemeRegistry::current()->getImage('attachment',"","","",'.gif',translate('LBL_ATTACHMENT', 'Emails'));
 		} else {
 			$this->attachment_image = SugarThemeRegistry::current()->getImage('blank',"","","",'.gif'," ");
 		}

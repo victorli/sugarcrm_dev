@@ -297,7 +297,7 @@ function pruneDatabase() {
 
 			$qDel = "SELECT * FROM $table WHERE deleted = 1";
 			$rDel = $db->query($qDel);
-
+			$queryString = array();
 			// make a backup INSERT query if we are deleting.
 			while($aDel = $db->fetchByAssoc($rDel, false)) {
 				// build column names

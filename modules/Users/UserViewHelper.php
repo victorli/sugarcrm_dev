@@ -176,7 +176,13 @@ class UserViewHelper {
                 $reset_pref_warning = translate('LBL_RESET_PREFERENCES_WARNING_USER','Users');
                 $reset_home_warning = translate('LBL_RESET_HOMEPAGE_WARNING_USER','Users');
             }
-            $buttons .="<input type='button' class='button' onclick='if(confirm(\"{$reset_pref_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$the_query_string."&reset_preferences=true\";' value='".translate('LBL_RESET_PREFERENCES','Users')."' />";
+
+            //bug 48170
+            $user_preference_url = "module=Users&action=resetPreferences";
+            if(isset($_REQUEST['record'])){
+                $user_preference_url .= "&record=".$_REQUEST['record'];
+            }
+            $buttons .="<input type='button' class='button' onclick='if(confirm(\"{$reset_pref_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$user_preference_url."&reset_preferences=true\";' value='".translate('LBL_RESET_PREFERENCES','Users')."' />";
             $buttons .="&nbsp;<input type='button' class='button' onclick='if(confirm(\"{$reset_home_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$the_query_string."&reset_homepage=true\";' value='".translate('LBL_RESET_HOMEPAGE','Users')."' />";
         }
         if (isset($buttons)) $this->ss->assign("BUTTONS", $buttons);
@@ -539,9 +545,12 @@ class UserViewHelper {
         $dformat = $locale->getPrecedentPreference($this->bean->id?'datef':'default_date_format', $this->bean);
         $tformat = $locale->getPrecedentPreference($this->bean->id?'timef':'default_time_format', $this->bean);
         $nformat = $locale->getPrecedentPreference('default_locale_name_format', $this->bean);
+        if (!array_key_exists($nformat, $sugar_config['name_formats'])) {
+            $nformat = $sugar_config['default_locale_name_format'];
+        }
         $timeOptions = get_select_options_with_id($sugar_config['time_formats'], $tformat);
         $dateOptions = get_select_options_with_id($sugar_config['date_formats'], $dformat);
-        $nameOptions = get_select_options_with_id($locale->getPrettyLocaleNameOptions($sugar_config['name_formats']), $nformat);
+        $nameOptions = get_select_options_with_id($locale->getUsableLocaleNameOptions($sugar_config['name_formats']), $nformat);
         $this->ss->assign('TIMEOPTIONS', $timeOptions);
         $this->ss->assign('DATEOPTIONS', $dateOptions);
         $this->ss->assign('NAMEOPTIONS', $nameOptions);

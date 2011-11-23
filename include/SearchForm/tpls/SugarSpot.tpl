@@ -44,12 +44,10 @@ cursor:pointer;
 }
 .SpanQuickView {
 visibility:hidden;
+padding-right:5px;
 }
 .gs_link {
-padding-left:15px;
-}
-.gs_div {
-white-space: nowrap;
+border:0;
 }
 </style>
 {/literal}
@@ -67,11 +65,18 @@ white-space: nowrap;
     <small class='more' onclick="DCMenu.spotZoom('{$more.query}', '{$module}', '{$more.offset}');">({$more.countRemaining} {$appStrings.LBL_SEARCH_MORE})</small>
     {/if}
 </div>
-<ul>
+<table class="gs_table">
 {foreach from=$data key=id item=name}
-<li><div onmouseover="DCMenu.showQuickViewIcon('{$id}')" onmouseout="DCMenu.hideQuickViewIcon('{$id}')" class="gs_div"><span id="gs_div_{$id}" class="SpanQuickView"><img id="gs_img_{$id}" class="QuickView" src="themes/default/images/Search.gif" alt="quick_view_{$id}" onclick="DCMenu.showQuickView('{$module}', '{$id}');"></span><a href="index.php?module={$module}&action=DetailView&record={$id}" class="gs_link">{$name}</a></div></li>
+<tr onmouseover="DCMenu.showQuickViewIcon('{$id}')" onmouseout="DCMenu.hideQuickViewIcon('{$id}')">
+<td>
+<span id="gs_div_{$id}" class="SpanQuickView">
+<img id="gs_img_{$id}" class="QuickView" src="themes/default/images/Search.gif" alt="quick_view_{$id}" onclick="DCMenu.showQuickView('{$module}', '{$id}');">
+</span>
+</td>
+<td><a href="index.php?module={$module}&action=DetailView&record={$id}" class="gs_link">{$name}</a></td>
+</tr>
 {/foreach}
-</ul>
+</table>
 {/foreach}
 {else}
 {$appStrings.LBL_EMAIL_SEARCH_NO_RESULTS}

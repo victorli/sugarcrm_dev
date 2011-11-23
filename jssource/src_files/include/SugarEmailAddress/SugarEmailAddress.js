@@ -450,10 +450,12 @@
                    Dom.get(this.id + 'emailAddress' + x).setAttribute("id", this.id +"emailAddress" + (x-1));
                    
                    if(Dom.get(this.id + 'emailAddressInvalidFlag' + x)) {
+                       Dom.get(this.id + 'emailAddressInvalidFlag' + x).setAttribute("value", this.id + "emailAddress" + (x-1));
                        Dom.get(this.id + 'emailAddressInvalidFlag' + x).setAttribute("id", this.id + "emailAddressInvalidFlag" + (x-1));
                    }
                    
                    if(Dom.get(this.id + 'emailAddressOptOutFlag' + x)){
+                       Dom.get(this.id + 'emailAddressOptOutFlag' + x).setAttribute("value", this.id + "emailAddress" + (x-1));
                        Dom.get(this.id + 'emailAddressOptOutFlag' + x).setAttribute("id", this.id + "emailAddressOptOutFlag" + (x-1));
                    }
                    

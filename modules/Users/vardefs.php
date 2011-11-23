@@ -391,7 +391,7 @@ $dictionary['User'] = array(
         ) ,
         'reports_to_name' => array(
             'name' => 'reports_to_name',
-            'rname' => 'id',
+            'rname' => 'last_name',
             'id_name' => 'reports_to_id',
             'vname' => 'LBL_REPORTS_TO_NAME',
             'type' => 'relate',

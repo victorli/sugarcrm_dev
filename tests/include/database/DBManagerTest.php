@@ -1891,6 +1891,10 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
                     'type' => 'id',
                     'required'=>true,
                   );
+        $vardefs['fields']['deleted'] = array (
+                    'name' => 'deleted',
+                    'type' => 'bool',
+                  );
 
         $obj = new TestSugarBean($name, $vardefs);
         // regular fields
@@ -1909,7 +1913,7 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
         }
         $names_i = array();
         foreach($result as $k => $v) {
-            if($k == "id") continue;
+            if($k == "id" || $k == 'deleted') continue;
             $names_i[] = preg_quote("$k=$v");
         }
         if(empty($names_i)) {
@@ -1918,6 +1922,59 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
         }
         $names = join('\s*,\s*',$names_i);
         $this->assertRegExp("/UPDATE $name\s+SET\s+$names\s+WHERE\s+$name.id\s*=\s*'test_ID' AND deleted=0/is", $sql, "Bad sql: $sql");
+    }
+
+     /**
+    * Test UpdateSQL functions
+    * @dataProvider vardefProvider
+    * @param string $name
+    * @param array $defs
+    * @param array $data
+    * @param array $_
+    * @param array $result
+    */
+    public function testUpdateSQLNoDeleted($name, $defs, $data, $_, $result = null)
+    {
+        $name = "updatenodel$name";
+        $vardefs = array(
+			'table' => $name,
+            'fields' => $defs,
+        );
+        // ensure it has an ID
+        $vardefs['fields']['id'] = array (
+                    'name' => 'id',
+                    'type' => 'id',
+                    'required'=>true,
+                  );
+        unset($vardefs['fields']['deleted']);
+
+        $obj = new TestSugarBean($name, $vardefs);
+        // regular fields
+        foreach($defs as $k => $v) {
+            if(isset($data[$k])) {
+                $obj->$k = $data[$k];
+            } else {
+                $obj->$k = null;
+            }
+        }
+        // set fixed ID
+        $obj->id = 'test_ID';
+        $sql = $this->_db->updateSQL($obj);
+        if(is_null($result)) {
+            $result = $_;
+        }
+        $names_i = array();
+        foreach($result as $k => $v) {
+            if($k == "id" || $k == 'deleted') continue;
+            $names_i[] = preg_quote("$k=$v");
+        }
+        if(empty($names_i)) {
+            $this->assertEquals("", $sql, "Bad sql: $sql");
+            return;
+        }
+        $names = join('\s*,\s*',$names_i);
+        $this->assertRegExp("/UPDATE $name\s+SET\s+$names\s+WHERE\s+$name.id\s*=\s*'test_ID'/is", $sql, "Bad sql: $sql");
+        $this->assertNotContains(" AND deleted=0", $sql, "Bad sql: $sql");
     }
 
     /**

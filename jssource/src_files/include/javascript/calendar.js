@@ -243,8 +243,9 @@ Calendar.setup = function (params) {
 
                     return selDate;
                 };
-                
-                calendar.selectEvent.subscribe(function() {
+
+                calendar.selectEvent.subscribe(function(type, args, obj) {
+
                     var input = Dom.get(inputField);
 					if (calendar.getSelectedDates().length > 0) {
 
@@ -254,8 +255,12 @@ Calendar.setup = function (params) {
                         {
                            params.comboObject.update();
                         }
+                    } else if(typeof args[0][0] == 'object') {
+                        //We resort to using the args parameter to set the date should calendar.getSelectedDates return an empty array
+                        selDate = args[0][0];
+                        input.value = formatSelectedDate(new Date(selDate[0], selDate[1], selDate[2]));
                     } else {
-                        input.value = "";
+                        input.value = '';
                     }
 					
 					//bug 44147 fix
@@ -306,7 +311,7 @@ Calendar.setup = function (params) {
                 var month = seldate[0].getMonth() + 1;
                 var year = seldate[0].getFullYear();
                 calendar.cfg.setProperty("pagedate", month + calendar.cfg.getProperty("DATE_FIELD_DELIMITER") + year);         	
-            }      
+            }
 
             calendar.render();
             dialog.show();
