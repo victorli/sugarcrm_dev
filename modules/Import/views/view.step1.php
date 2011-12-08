@@ -91,7 +91,7 @@ class ImportViewStep1 extends ImportView
         global $mod_strings, $app_strings, $current_user;
         global $sugar_config;
 
-        $this->ss->assign("MODULE_TITLE", $this->getModuleTitle());
+        $this->ss->assign("MODULE_TITLE", $this->getModuleTitle(false));
         $this->ss->assign("DELETE_INLINE_PNG",  SugarThemeRegistry::current()->getImage('delete_inline','align="absmiddle" border="0"',null,null,'.gif',$app_strings['LNK_DELETE']));
         $this->ss->assign("PUBLISH_INLINE_PNG",  SugarThemeRegistry::current()->getImage('publish_inline','align="absmiddle" border="0"', null,null,'.gif',$mod_strings['LBL_PUBLISH']));
         $this->ss->assign("UNPUBLISH_INLINE_PNG",  SugarThemeRegistry::current()->getImage('unpublish_inline','align="absmiddle" border="0"', null,null,'.gif',$mod_strings['LBL_UNPUBLISH']));

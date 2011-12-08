@@ -71,7 +71,8 @@ if(isset( $_POST['Users0emailAddress0'])){
 }
 
     $usr= new user();
-    if(isset( $username) && isset($useremail)){
+    if(isset($username) && $username != '' && isset($useremail) && $useremail != '')
+    {
         if ($username != '' && $useremail != ''){
             $usr_id=$usr->retrieve_user_id($username);
             $usr->retrieve($usr_id);
@@ -124,21 +125,7 @@ if(isset( $_POST['Users0emailAddress0'])){
 
 	// if i need to generate a password (not a link)
     if (!isset($_POST['link'])){
-	    $charBKT='';
-	    //chars to select from
-	    $LOWERCASE = "abcdefghijklmnpqrstuvwxyz";
-	    $NUMBER = "0123456789";
-	    $UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	    $SPECIAL = '~!@#$%^&*()_+=-{}|'; 
-	    $condition = 0;
-	    $charBKT.=$UPPERCASE.$LOWERCASE.$NUMBER;
-	    $password="";
-
-	    	$lenght='6';
-	    // Create random characters for the ones that doesnt have requirements
-	    for ($i=0;$i<$lenght-$condition;$i++)  // loop and create password
-	       $password = $password . substr ($charBKT, rand() % strlen($charBKT), 1);
-
+        $password = User::generatePassword();
     }
 
 ///////////////////////////////////////////////////
@@ -159,120 +146,34 @@ if (isset($_POST['link']) && $_POST['link'] == '1'){
 ///////////////////////////////////////////////////
 
 ///////  Email creation
-	global $sugar_config, $current_user;
+	global $current_user;
     if (isset($_POST['link']) && $_POST['link'] == '1')
     	$emailTemp_id = $res['lostpasswordtmpl'];
     else
     	$emailTemp_id = $res['generatepasswordtmpl'];
 
-    $emailTemp = new EmailTemplate();
-    $emailTemp->disable_row_level_security = true;
-    if ($emailTemp->retrieve($emailTemp_id) == ''){
-        echo $mod_strings['LBL_EMAIL_TEMPLATE_MISSING'];
-        $new_pwd='4';
-        return;}
-
-    //replace instance variables in email templates
-    $htmlBody = $emailTemp->body_html;
-    $body = $emailTemp->body;
-    if (isset($_POST['link']) && $_POST['link'] == '1'){
-    	$htmlBody = str_replace('$contact_user_link_guid', $url, $htmlBody);
-    	$body = str_replace('$contact_user_link_guid', $url, $body);
+    $additionalData = array(
+        'link' => isset($_POST['link']) && $_POST['link'] == '1',
+        'password' => $password
+    );
+    if (isset($url))
+    {
+        $additionalData['url'] = $url;
     }
-    else{
-    	$htmlBody = str_replace('$contact_user_user_hash', $password, $htmlBody);
-    	$body = str_replace('$contact_user_user_hash', $password, $body);
-    }
-    // Bug 36833 - Add replacing of special value $instance_url
-    $htmlBody = str_replace('$config_site_url',$sugar_config['site_url'], $htmlBody);
-    $body = str_replace('$config_site_url',$sugar_config['site_url'], $body);
-    
-    $htmlBody = str_replace('$contact_user_user_name', $usr->user_name, $htmlBody);
-    $htmlBody = str_replace('$contact_user_pwd_last_changed', TimeDate::getInstance()->nowDb(), $htmlBody);
-    $body = str_replace('$contact_user_user_name', $usr->user_name, $body);
-    $body = str_replace('$contact_user_pwd_last_changed', TimeDate::getInstance()->nowDb(), $body);
-    $emailTemp->body_html = $htmlBody;
-    $emailTemp->body = $body;
-    require_once('include/SugarPHPMailer.php');
-
-    $itemail=$usr->emailAddress->getPrimaryAddress($usr);
-    //retrieve IT Admin Email
-    //_ppd( $emailTemp->body_html);
-    //retrieve email defaults
-    $emailObj = new Email();
-    $defaults = $emailObj->getSystemDefaultEmail();
-    $mail = new SugarPHPMailer();
-    $mail->setMailerForSystem();
-    //$mail->IsHTML(true);
-    $mail->From = $defaults['email'];
-    $mail->FromName = $defaults['name'];
-    $mail->ClearAllRecipients();
-    $mail->ClearReplyTos();
-    $mail->Subject=from_html($emailTemp->subject);
-    if($emailTemp->text_only != 1){
-        $mail->IsHTML(true);
-        $mail->Body=from_html($emailTemp->body_html);
-        $mail->AltBody=from_html($emailTemp->body);
-    }
-    else {
-        $mail->Body_html=from_html($emailTemp->body_html);
-        $mail->Body=from_html($emailTemp->body);
-    }
-    if($mail->Body == '' && $current_user->is_admin){
-    	echo $app_strings['LBL_EMAIL_TEMPLATE_EDIT_PLAIN_TEXT'];
-        $new_pwd='4';
-    	return;}
-    if($mail->Mailer == 'smtp' && $mail->Host ==''&& $current_user->is_admin){
-    	echo $mod_strings['ERR_SERVER_SMTP_EMPTY'];
-        $new_pwd='4';
-    	return;}
-
-    $mail->prepForOutbound();
-    $hasRecipients = false;
-
-    if (!empty($itemail)){
-        if($hasRecipients){
-            $mail->AddBCC($itemail);
-        }else{
-            $mail->AddAddress($itemail);
-        }
-        $hasRecipients = true;
-    }
-    $success = false;
-    if($hasRecipients){
-    	$success = @$mail->Send();
+    $result = $usr->sendEmailForPassword($emailTemp_id, $additionalData);
+    if ($result['status'] == false && $result['message'] != '')
+    {
+        echo $result['message'];
+        $new_pwd = '4';
+        return;
     }
 
-    //now create email
-    if($success){
-
-        $emailObj->team_id = 1;
-        $emailObj->to_addrs= '';
-        $emailObj->type= 'archived';
-        $emailObj->deleted = '0';
-        $emailObj->name = $mail->Subject ;
-        $emailObj->description = $mail->Body;
-        $emailObj->description_html =null;
-        $emailObj->from_addr = $mail->From;
-        $emailObj->parent_type = 'User';
-        $emailObj->date_sent =TimeDate::getInstance()->nowDb();
-        $emailObj->modified_user_id = '1';
-        $emailObj->created_by = '1';
-        $emailObj->status='sent';
-        $retId = $emailObj->save();
+    if ($result['status'] == true)
+    {
         echo '1';
-        if (!isset($_POST['link'])){
-	        $user_hash = strtolower(md5($password));
-	        $usr->setPreference('loginexpiration','0');
-	        $usr->setPreference('lockout','');
-		$usr->setPreference('loginfailed','0');
-		$usr->savePreferencesToDB();
-	        //set new password
-	        $now=TimeDate::getInstance()->nowDb();
-	        $query = "UPDATE $usr->table_name SET user_hash='$user_hash', system_generated_password='1', pwd_last_changed='$now' where id='$usr->id'";
-	        $usr->db->query($query, true, "Error setting new password for $usr->user_name: ");
-        }
-    }else{
+    }
+    else
+    {
     	$new_pwd='4';
     	if ($current_user->is_admin){
     		$email_errors=$mod_strings['ERR_EMAIL_NOT_SENT_ADMIN'];

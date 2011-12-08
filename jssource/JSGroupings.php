@@ -61,6 +61,12 @@
                 'include/javascript/phpjs/html_entity_decode.js' => 'include/javascript/sugar_grp1.js',
             ),
 
+           $sugar_field_grp = array(
+               'include/SugarFields/Fields/Collection/SugarFieldCollection.js' => 'include/javascript/sugar_field_grp.js',
+               'include/SugarFields/Fields/Teamset/Teamset.js' => 'include/javascript/sugar_field_grp.js',
+               'include/SugarFields/Fields/Datetimecombo/Datetimecombo.js' => 'include/javascript/sugar_field_grp.js',
+           ),
+
             $sugar_grp1_yui = array(
 			//YUI scripts loaded on first page
             'include/javascript/yui3/build/yui/yui-min.js'              => 'include/javascript/sugar_grp1_yui.js',

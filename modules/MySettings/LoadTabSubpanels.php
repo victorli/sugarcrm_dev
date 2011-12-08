@@ -63,9 +63,10 @@ if(!function_exists('get_form_header')) {
 
 // set up data for subpanels
 global $currentModule;
-if (!empty($_REQUEST['loadModule']))
-    $currentModule = $_REQUEST['loadModule'];
+$currentModule = $_REQUEST['loadModule'];
 $_REQUEST['action'] = 'DetailView';
 
+//This line of code is critical.  We need to ensure that the global controller bean is set to the $currentModule global variable
+$GLOBALS['app']->controller->bean = $focus;
 echo $subpanel->display(false);
 ?>

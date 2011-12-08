@@ -596,7 +596,7 @@ class SugarEmailAddress extends SugarBean {
      * @return string $id email_addresses ID
      */
     function getEmailGUID($addr) {
-        $address = $this->_cleanAddress($addr);
+        $address = $this->db->quote($this->_cleanAddress($addr));
         $addressCaps = strtoupper($address);
 
         $q = "SELECT id FROM email_addresses WHERE email_address_caps = '{$addressCaps}'";
@@ -610,7 +610,6 @@ class SugarEmailAddress extends SugarBean {
             if(!empty($address)){
                 $guid = create_guid();
                 $address = $GLOBALS['db']->quote($address);
-                $addressCaps = $GLOBALS['db']->quote($addressCaps);
                 $now = TimeDate::getInstance()->nowDb();
                 $qa = "INSERT INTO email_addresses (id, email_address, email_address_caps, date_created, date_modified, deleted)
                         VALUES('{$guid}', '{$address}', '{$addressCaps}', '$now', '$now', 0)";
@@ -620,10 +619,10 @@ class SugarEmailAddress extends SugarBean {
         }
     }
 
-    function AddUpdateEmailAddress($addr,$invalid=0,$opt_out=0) {
-
-        $address = $this->_cleanAddress($addr);
-        $addressCaps = strtoupper($this->db->quote($address));
+    function AddUpdateEmailAddress($addr,$invalid=0,$opt_out=0)
+    {
+        $address = $this->db->quote($this->_cleanAddress($addr));
+        $addressCaps = strtoupper($address);
 
         $q = "SELECT * FROM email_addresses WHERE email_address_caps = '{$addressCaps}' and deleted=0";
         $r = $this->db->query($q);
@@ -640,8 +639,6 @@ class SugarEmailAddress extends SugarBean {
             $guid = '';
             if(!empty($address)){
                 $guid = create_guid();
-                $address = $GLOBALS['db']->quote($address);
-                $addressCaps = $GLOBALS['db']->quote($addressCaps);
                 $now = TimeDate::getInstance()->nowDb();
                 $qa = "INSERT INTO email_addresses (id, email_address, email_address_caps, date_created, date_modified, deleted, invalid_email, opt_out)
                         VALUES('{$guid}', '{$address}', '{$addressCaps}', '$now', '$now', 0 , $invalid, $opt_out)";

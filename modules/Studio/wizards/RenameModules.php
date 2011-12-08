@@ -396,7 +396,7 @@ class RenameModules
         //Get the subpanel def
         $subpanelDefs = $this->getSubpanelDefs($bean);
 
-        if( count($subpanelDefs) <= 0)
+        if(empty($subpanelDefs))
         {
             $GLOBALS['log']->debug("Found empty subpanel defs for $moduleName");
             return;

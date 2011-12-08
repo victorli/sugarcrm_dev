@@ -50,15 +50,8 @@ class SugarWidgetFieldEnum extends SugarWidgetReportField
 
     public function queryFilterNot_Empty($layout_def)
 	{
-	    $reporter = $this->layout_manager->getAttribute("reporter");
-        if( $this->reporter->db->dbType == 'mysql') {
-			return '( '.$this->_get_column_select($layout_def).' IS NOT NULL'.
-				' AND '.$this->_get_column_select($layout_def)." <> ''".
-				' AND '.$this->_get_column_select($layout_def)." != '^^' )\n";
-        } else {
-			return '( '.$this->_get_column_select($layout_def).' IS NOT NULL'.
-				' AND '.$this->_get_column_select($layout_def)." != '^^' )\n";
-        }
+	    $column = $this->_get_column_select($layout_def);
+		return "( $column IS NOT NULL AND $column <> '' AND $column != '^^' )\n";
 	}
 
 	public function queryFilteris($layout_def) {
@@ -124,7 +117,7 @@ class SugarWidgetFieldEnum extends SugarWidgetReportField
                         "edit_inline",
                         "border='0' alt='Edit Layout' align='bottom' onClick='SUGAR.reportsInlineEdit.inlineEdit(" .
                         "\"$div_id\",\"$cell\",\"$module\",\"$record\",\"$field_name\",\"$field_type\");'"
-                       ) 
+                       )
                      . "</div>";
             }
         }

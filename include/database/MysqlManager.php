@@ -242,7 +242,9 @@ class MysqlManager extends DBManager
 	 */
 	public function limitQuery($sql, $start, $count, $dieOnError = false, $msg = '', $execute = true)
 	{
-		if ($start < 0)
+        $start = (int)$start;
+        $count = (int)$count;
+	    if ($start < 0)
 			$start = 0;
 		$GLOBALS['log']->debug('Limit Query:' . $sql. ' Start: ' .$start . ' count: ' . $count);
 

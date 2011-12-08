@@ -389,8 +389,15 @@ function actions_overlib_close(e) {
         
 // event delegations
 YUI().use('node', 'event-base', function(Y) {
-    if (typeof alClickEventHandler != 'undefined') alClickEventHandler.detach();
-    var alClickEventHandler = Y.one('div.listViewBody').delegate('click', actions_overlib, actionLinkSelector);
+    if (typeof alClickEventHandler != 'undefined')
+    {
+        alClickEventHandler.detach();
+    }
+
+    if (Y.one('div.listViewBody') != null)
+    {
+        var alClickEventHandler = Y.one('div.listViewBody').delegate('click', actions_overlib, actionLinkSelector);
+    }
 });
 
 </script>

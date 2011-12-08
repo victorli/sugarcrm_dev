@@ -43,7 +43,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * Contributor(s): ______________________________________..
  ********************************************************************************/
 
-class CallFormBase{
+require_once('include/SugarObjects/forms/FormBase.php');
+
+class CallFormBase extends FormBase {
 
 function getFormBody($prefix, $mod='', $formname='',$cal_date='',$cal_time=''){
 if(!ACLController::checkAccess('Calls', 'edit', true)){
@@ -274,10 +276,10 @@ function handleSave($prefix,$redirect=true,$useRequired=false) {
         $return_id = $focus->id;
     }else{
 
-	    if(empty($_REQUEST['return_module']) && empty($_REQUEST['return_action']) && $focus->status == 'Held'){
-    		//if we are closing the call, and the request does not have a return module AND return action set, then
-    		//the request is coming from a dashlet or subpanel close icon and there is no need to process user invitees,
-    		//just save the current values.
+        if($focus->status == 'Held' && $this->isEmptyReturnModuleAndAction() && !$this->isSaveFromDCMenu()){
+    		//if we are closing the meeting, and the request does not have a return module AND return action set and it is not a save
+            //being triggered by the DCMenu (shortcut bar) then the request is coming from a dashlet or subpanel close icon and there is no
+            //need to process user invitees, just save the current values.
     		$focus->save(true);
 	    }else{
 	    	///////////////////////////////////////////////////////////////////////////

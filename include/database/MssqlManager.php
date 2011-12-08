@@ -424,6 +424,8 @@ class MssqlManager extends DBManager
      */
     public function limitQuery($sql, $start, $count, $dieOnError = false, $msg = '', $execute = true)
     {
+        $start = (int)$start;
+        $count = (int)$count;
         $newSQL = $sql;
         $distinctSQLARRAY = array();
         if (strpos($sql, "UNION") && !preg_match("/(')(UNION).?(')/i", $sql))

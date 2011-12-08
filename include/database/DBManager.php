@@ -867,7 +867,7 @@ protected function checkQuery($sql, $object_name = false)
 				continue;
 
 
-			$validDBName = $this->helper->getValidDBName($value['name'], true, 'index', true);
+			$validDBName = $this->getValidDBName($value['name'], true, 'index', true);
 			if (isset($compareIndices[$validDBName])) {
 				$value['name'] = $validDBName;
 			}
@@ -2606,8 +2606,8 @@ protected function checkQuery($sql, $object_name = false)
 			}
 			return $result;
 		} else {
-			// first strip any invalid characters - all but word chars and -
-			$name = preg_replace( '/[^\w-]+/i', '', $name ) ;
+			// first strip any invalid characters - all but word chars (which is alphanumeric and _)
+			$name = preg_replace( '/[^\w]+/i', '', $name ) ;
 			$len = strlen( $name ) ;
 			$maxLen = empty($this->maxNameLengths[$type]) ? $this->maxNameLengths[$type]['column'] : $this->maxNameLengths[$type];
 			if ($len <= $maxLen && !$force) {

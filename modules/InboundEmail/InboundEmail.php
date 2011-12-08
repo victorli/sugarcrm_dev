@@ -5977,7 +5977,7 @@ eoq;
 			$from		= $this->handleMimeHeaderDecode($msg->from);
 			$subject	= $this->handleMimeHeaderDecode($msg->subject);
 			//$date		= date($tPref['date']." ".$tPref['time'], $msg->date);
-			$date		= $timedate->to_display_date_time($msg->date);
+			$date		= $timedate->to_display_date_time($this->db->fromConvert($msg->date, 'datetime'));
 			//$date		= date($tPref['date'], $this->getUnixHeaderDate($msg->date));
 
 			$temp = array();

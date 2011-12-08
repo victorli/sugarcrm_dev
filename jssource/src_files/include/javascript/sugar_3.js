@@ -4428,7 +4428,7 @@ setEmailPasswordEdit: function(id) {
     validateFileExt: function(fileName, allowedTypes) {
         var ext = fileName.split('.').pop().toLowerCase();
 
-        for (var i = allowedTypes.length; i > 0; i--) {
+        for (var i = allowedTypes.length; i >= 0; i--) {
             if (ext === allowedTypes[i]) {
                 return true;
             }

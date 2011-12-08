@@ -93,6 +93,7 @@ function subp_nav(m,i,a,t,r){
 * This is done to minimize page size
 * */
 function sub_p_rem(sp,lf,li,rp){
+
 	return_url = "index.php?module="+get_module_name()+"&action=SubPanelViewer&subpanel="+sp+"&record="+get_record_id()+"&sugar_body_only=1&inline=1";
 
 	remove_url = "index.php?module="+ get_module_name()
@@ -615,9 +616,11 @@ SUGAR.subpanelUtils = function() {
 
 		loadSubpanelGroup: function(group){
 			if(group == SUGAR.subpanelUtils.currentSubpanelGroup) return;
+
 			if(SUGAR.subpanelUtils.loadedGroups[group]){
 				SUGAR.subpanelUtils.updateSubpanel(group);
 			}else{
+
 				SUGAR.subpanelUtils.loadedGroups.push(group);
 				var needed = Array();
 				for(group_sp in SUGAR.subpanelUtils.subpanelGroups[group]){
@@ -632,6 +635,7 @@ SUGAR.subpanelUtils = function() {
 				/* needed to retrieve each of the specified subpanels and install them ...*/
 				/* load them in bulk, insert via innerHTML, then sort nodes later. */
 				if(needed.length){
+
 					ajaxStatus.showStatus(SUGAR.language.get('app_strings', 'LBL_LOADING'));
 					SUGAR.util.retrieveAndFill(SUGAR.subpanelUtils.requestUrl + needed.join(','),'subpanel_list', null, success, null, true);
 				}else{
@@ -657,9 +661,18 @@ SUGAR.subpanelUtils = function() {
 				}
 			}
 			for(group_sp in SUGAR.subpanelUtils.subpanelGroups[group]){
-                if ( typeof(SUGAR.subpanelUtils.subpanelGroups[group][group_sp]) != 'string' ) continue;
+                if ( typeof(SUGAR.subpanelUtils.subpanelGroups[group][group_sp]) != 'string' )
+                {
+                    continue;
+                }
 				var cur = document.getElementById('whole_subpanel_'+SUGAR.subpanelUtils.subpanelGroups[group][group_sp]);
-				cur.style.display = 'block';
+			    
+                if(cur == null)
+                {
+                    continue;
+                }
+
+                cur.style.display = 'block';
 				/* use YDD swapNodes this and first, second, etc. */
 				try{
 					YAHOO.util.DDM.swapNode(cur, sp_list.getElementsByTagName('LI')[group_sp]);

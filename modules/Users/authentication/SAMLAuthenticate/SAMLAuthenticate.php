@@ -45,8 +45,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  *
  */
 
-if(empty($_REQUEST['user_name']))$_REQUEST['user_name'] = 'onelogin';
-if(empty($_REQUEST['user_password']))$_REQUEST['user_password'] = 'onelogin';
+
 require_once('modules/Users/authentication/SugarAuthenticate/SugarAuthenticate.php');
 class SAMLAuthenticate extends SugarAuthenticate {
 	var $userAuthenticateClass = 'SAMLAuthenticateUser';
@@ -60,5 +59,20 @@ class SAMLAuthenticate extends SugarAuthenticate {
 	function SAMLAuthenticate(){
 		parent::SugarAuthenticate();
 	}
+
+    /**
+     * pre_login
+     * 
+     * Override the pre_login function from SugarAuthenticate so that we can set a default user_name/user_password $_REQUEST values
+     * if none are supplied
+     */
+    function pre_login()
+    {
+        if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'Authenticate')
+        {
+            if(empty($_REQUEST['user_name']))$_REQUEST['user_name'] = 'onelogin';
+            if(empty($_REQUEST['user_password']))$_REQUEST['user_password'] = 'onelogin';
+        }
+    }
 
 }

@@ -93,36 +93,55 @@ class ViewGS extends SugarWirelessView
  	    if (empty($this->bean->id)){
  	        sugar_die($GLOBALS['app_strings']['ERROR_NO_RECORD']);
  	    }	    
-        
- 	    $unmatchedFields = $this->get_field_defs();
- 	    $matchedFields = $this->setMatchedFields($unmatchedFields);
-		$this->ss->assign('fields', $matchedFields);
- 	    
+
  	    // set up Smarty variables 	    
 		$this->ss->assign('BEAN_ID', $this->bean->id);
 		$this->ss->assign('BEAN_NAME', $this->bean->name);		
 	   	$this->ss->assign('MODULE', $this->module);
 	   	$this->ss->assign('MODULE_NAME', translate('LBL_MODULE_NAME',$this->module));
-	   	$this->ss->assign('DETAILS', $this->bean_details('WirelessDetailView'));
+
+        //Get the fields to display
+        $detailFields = $this->bean_details('WirelessDetailView');
+	   	$this->ss->assign('DETAILS', $detailFields);
+
+        //Of the fields to display, highlight text based on match
+ 	    $matchedFields = $this->setMatchedFields($detailFields);
+		$this->ss->assign('fields', $matchedFields);
+
 	   	$this->ss->assign('ENABLE_FORM', $this->checkEditPermissions());
 	   	$this->ss->assign('LBL_GS_HELP', $GLOBALS['app_strings']['LBL_GS_HELP']);
 	   	
 	   	// display the detail view
-		$this->ss->display('include/MVC/View/tpls/gsdetail.tpl');
-		
+        $file = 'include/MVC/View/tpls/gsdetail.tpl';
+
+        if(file_exists('custom/'.$file))
+        {
+            $this->ss->display('custom/'.$file);
+        } else {
+		    $this->ss->display($file);
+        }
 
     }
     
     protected function setMatchedFields($fields)
     {
         if($this->searchString == null)
+        {
             return $fields;
-            
+        }
+
+
         foreach ($fields as &$field)
         {
+            if($field['value'] == '')
+            {
+                continue;
+            }
+
             //Check if we have a search match and set the highlight flag
             $matchReplace = $this->matchHitStart . '${0}' . $this->matchHitEnd;
-            if($field['name'] == 'email1' || $field['name'] == 'email2')
+
+            if(isset($field['name']) && ($field['name'] == 'email1' || $field['name'] == 'email2'))
             {
                 if(preg_match_all("/\<a.*?\>(.*?)\<\/a\>/is", $field['value'], $matches))
                 {
@@ -140,7 +159,6 @@ class ViewGS extends SugarWirelessView
                 {
                     continue;
                 }
-                    
                 $field['value'] = preg_replace($this->searchRegex, $matchReplace, $field['value']);
             }
         }
@@ -153,13 +171,15 @@ class ViewGS extends SugarWirelessView
 	 */
  	public function bean_details($view)
 	{
- 	    
+
  	    require_once 'modules/ModuleBuilder/parsers/views/GridLayoutMetaDataParser.php' ;
+        global $current_user;
 
 		// traverse through the wirelessviewdefs metadata to get the fields and values
 		$bean_details = array();
 
-        	foreach($this->searchFields as $field){
+        	foreach($this->searchFields as $field)
+            {
 	            // handle empty assigned_user_name
                 if(empty($this->bean->assigned_user_name)) {
 				   if(!empty($this->bean->assigned_user_id)){
@@ -168,22 +188,15 @@ class ViewGS extends SugarWirelessView
                        $this->bean->assigned_user_name = $GLOBALS['current_user']->user_name;
 				   }
 				}
-	            // handle empty team_name
-	            if(empty($this->bean->team_name)) {
-				   if(!empty($this->bean->team_id)){
-				       $this->bean->team_name = Team::getTeamName($this->bean->team_id);
-				   }else{
-				       $this->bean->team_name = $GLOBALS['current_user']->default_team_name;
-				   }
-				}
+
 				
 				$field_info = $this->setup_detail_field($field);
-				
-				if (is_array($field_info)){
-					if (is_array($field)){
-						$field = $field['name'];
-					}
-					$bean_details[$field] = $field_info;
+
+				if (is_array($field_info))
+                {
+                    $name = is_array($field) ? $field['name'] : $field;
+
+					$bean_details[$name] = $field_info;
 				}				
         	}
         

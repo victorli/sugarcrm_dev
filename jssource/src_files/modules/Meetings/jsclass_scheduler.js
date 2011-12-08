@@ -246,6 +246,10 @@ SugarWidgetScheduler.update_time = function() {
 		form_name = "CalendarEditView";
 	else
 		return;
+    
+   //check for field value, we can't do anything if it doesnt exist.
+    if(typeof document.forms[form_name].date_start == 'undefined')
+		return;
 
 	var date_start = document.forms[form_name].date_start.value;
 	if(date_start.length < 16) {

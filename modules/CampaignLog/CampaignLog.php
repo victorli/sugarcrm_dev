@@ -35,17 +35,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description:
- ********************************************************************************/
-
-
-
-
-
-
-
 
 class CampaignLog extends SugarBean {
 
@@ -86,15 +75,6 @@ class CampaignLog extends SugarBean {
         }
 
         $table = strtolower($temp_array['TARGET_TYPE']);
-
-        if ( ( $this->db->dbType == 'mysql' ) or ( $this->db->dbType == 'oci8' ) )
-        {
-            $query="select first_name, last_name, CONCAT(CONCAT(first_name, ' '), last_name) name from ".strtolower($temp_array['TARGET_TYPE']) .  " where id ='{$temp_array['TARGET_ID']}'";
-        }
-        if($this->db->dbType == 'mssql')
-        {
-            $query="select first_name, last_name, (first_name + ' ' + last_name) name from ".strtolower($temp_array['TARGET_TYPE']) .  " where id ='{$temp_array['TARGET_ID']}'";
-        }
 
         if($temp_array['TARGET_TYPE']=='Accounts'){
             $query = "select name from $table where id = ".$this->db->quoted($temp_array['TARGET_ID']);

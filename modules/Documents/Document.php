@@ -89,8 +89,6 @@ class Document extends SugarBean {
 	var $new_schema = true;
 	var $module_dir = 'Documents';
 
-	var $save_file;
-
 	var $relationship_fields = Array(
 		'contract_id'=>'contracts',
 	 );
@@ -256,15 +254,15 @@ class Document extends SugarBean {
 		} else {
 			$img_name = "def_image_inline"; //todo change the default image.
 		}
-		if($this->ACLAccess('DetailView')){
-
-			$file_url = "<a href='index.php?entryPoint=download&id=".basename(UploadFile :: get_url($this->filename, $this->document_revision_id))."&type=Documents' target='_blank'>".SugarThemeRegistry::current()->getImage($img_name, 'border="0"', null,null,'.gif',$mod_strings['LBL_LIST_VIEW_DOCUMENT'])."</a>";
-
-			if(!empty($this->doc_type) && $this->doc_type != 'Sugar' && !empty($this->doc_url))
+		if($this->ACLAccess('DetailView')) {
+			if(!empty($this->doc_type) && $this->doc_type != 'Sugar' && !empty($this->doc_url)) {
                 $file_url= "<a href='".$this->doc_url."' target='_blank'>".SugarThemeRegistry::current()->getImage($this->doc_type.'_image_inline', 'border="0"',null,null,'.png',$mod_strings['LBL_LIST_VIEW_DOCUMENT'])."</a>";
+			} else {
+			    $file_url = "<a href='index.php?entryPoint=download&id={$this->document_revision_id}&type=Documents' target='_blank'>".SugarThemeRegistry::current()->getImage($img_name, 'border="0"', null,null,'.gif',$mod_strings['LBL_LIST_VIEW_DOCUMENT'])."</a>";
+			}
 
     		$this->file_url = $file_url;
-    		$this->file_url_noimage = "index.php?entryPoint=download&type=Documents&&id={$this->document_revision_id}";
+    		$this->file_url_noimage = "index.php?entryPoint=download&type=Documents&id={$this->document_revision_id}";
 		}else{
             $this->file_url = "";
             $this->file_url_noimage = "";
@@ -287,8 +285,6 @@ class Document extends SugarBean {
             $this->related_doc_name = Document::get_document_name($this->related_doc_id);
             $this->related_doc_rev_number = DocumentRevision::get_document_revision_name($this->related_doc_rev_id);
         }
-        $this->save_file = basename($this->file_url_noimage);
-
 	}
 
 	function list_view_parse_additional_sections(& $list_form, $xTemplateSection) {

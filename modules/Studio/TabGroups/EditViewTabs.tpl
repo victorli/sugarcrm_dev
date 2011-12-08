@@ -80,6 +80,18 @@
 	margin-right: 10px;
 	padding-left: 0;
 }
+
+div.noBullet li, .nobullet
+{
+    list-style-type: none;
+}
+
+ul#trash
+{
+    padding: 0px;
+    margin: 0px;
+}
+
 .tdContainer{
 	border: thin solid gray;
 	padding: 10;
@@ -122,7 +134,7 @@
 						</td></tr></table>
 
 
-<div class='noBullet'><h2>{$MOD.LBL_MODULES}</h2>
+<div class='noBullet' style="padding-left: 20px;"><h2>{$MOD.LBL_MODULES}</h2>
 <ul class='listContainer'>
 {counter start=0 name="modCounter" print=false assign="modCounter"}
 {foreach from=$availableModuleList key='key' item='value'}

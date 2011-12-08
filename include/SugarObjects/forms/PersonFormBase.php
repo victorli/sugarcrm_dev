@@ -48,8 +48,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  *
  * @see LeadFormBase.php, ContactFormBase.php, ProspectFormBase.php
  */
+require_once('include/SugarObjects/forms/FormBase.php');
 
-abstract class PersonFormBase {
+abstract class PersonFormBase extends FormBase {
 
 var $moduleName;
 var $objectName;
@@ -238,7 +239,7 @@ function checkForDuplicates($prefix='')
 			   $query2 = "SELECT id, first_name, last_name, title FROM {$focus->table_name} WHERE deleted=0 AND id = '" . $row['id'] . "'";
 			   $result2 = $db->query($query2);
 			   $r = $db->fetchByAssoc($result2);
-			   if(isset($r['id']) && !array_key_exists('id', $r)) {
+               if(isset($r['id'])) {
 			   	  $rows[]=$r;
 			   }
 			} //if

@@ -105,7 +105,7 @@ class SugarCache
     public static function cleanOpcodes()
     {
         // APC
-        if ( function_exists('apc_clear_cache') ) {
+        if ( function_exists('apc_clear_cache') && ini_get('apc.stat') == 0 ) {
             apc_clear_cache();
         }
         // Wincache

@@ -61,6 +61,7 @@ class Calendar {
 	
 	public $day_start_time; // working day start time in format '11:00'
 	public $day_end_time; // working day end time in format '11:00'
+	public $scroll_slot; // first slot of working day
 	public $celcount; // count of slots in a working day
 	
 	/**
@@ -299,16 +300,10 @@ class Calendar {
 		list($hour_end,$minute_end) =  explode(":",$this->day_end_time);		
 
 		$this->d_start_minutes = $hour_start * 60 + $minute_start;
-		$this->d_end_minutes = $hour_end * 60 + $minute_end;		
-
-		$this->celcount = 0;
-		for($i = $hour_start; $i < $hour_end; $i++){
-				for($j = 0; $j < 60; $j += $this->time_step){
-					if($i*60+$j >= $hour_end*60 + $minute_end)
-						break;
-					$this->celcount++;
-				}
-		}
+		$this->d_end_minutes = $hour_end * 60 + $minute_end;	
+		
+		$this->scroll_slot = intval($hour_start * (60 / $this->time_step) + ($minute_start / $this->time_step));
+		$this->celcount = (($hour_end * 60 + $minute_end) - ($hour_start * 60 + $minute_start)) / $this->time_step;
 	}	
 	
 	/**

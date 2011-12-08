@@ -96,6 +96,18 @@ class SugarCacheFile extends SugarCacheAbstract
     }
 
     /**
+	 * This is needed to prevent unserialize vulnerability
+     */
+    public function __wakeup()
+    {
+        // clean all properties
+        foreach(get_object_vars($this) as $k => $v) {
+            $this->$k = null;
+        }
+        throw new Exception("Not a serializable object");
+    }
+
+    /**
      * @see SugarCacheAbstract::_setExternal()
      *
      * Does nothing; we write to cache on destroy

@@ -71,6 +71,12 @@ class CalendarViewReschedule extends SugarView {
 		$bean = populateFromPost("",$bean);
 		
 		$bean->save();
+		
+		$json_arr = array(
+				'success' => 'yes',
+		);			
+		ob_clean();		
+		echo json_encode($json_arr);
 	}	
 
 }

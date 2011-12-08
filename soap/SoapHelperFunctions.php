@@ -934,12 +934,9 @@ function add_create_account($seed)
 
 function check_for_duplicate_contacts($seed){
 
-
 	if(isset($seed->id)){
 		return null;
 	}
-
-	$query = '';
 
 	$trimmed_email = trim($seed->email1);
     $trimmed_email2 = trim($seed->email2);
@@ -970,7 +967,20 @@ function check_for_duplicate_contacts($seed){
 			}
 			return null;
 		}
-	}
+	} else {
+        //This section of code is executed if no emails are supplied in the $seed instance
+
+        //This query is looking for the id of Contact records that do not have a primary email address based on the matching
+        //first and last name and the record being not deleted.  If any such records are found we will take the first one and assume
+        //that it is the duplicate record
+	    $query = "SELECT c.id as id FROM contacts c
+LEFT OUTER JOIN email_addr_bean_rel eabr ON eabr.bean_id = c.id
+WHERE c.first_name = '{$trimmed_first}' AND c.last_name = '{$trimmed_last}' AND c.deleted = 0 AND eabr.id IS NULL";
+
+        //Apply the limit query filter to this since we only need the first record
+        $result = $GLOBALS['db']->getOne($query);
+        return !empty($result) ? $result : null;
+    }
 }
 
 /*
@@ -1059,6 +1069,40 @@ function canViewPath( $path, $base ){
   $base = realpath( $base );
   return 0 !== strncmp( $path, $base, strlen( $base ) );
 }
+
+
+/**
+ * apply_values
+ *
+ * This function applies the given values to the bean object.  If it is a first time sync
+ * then empty values will not be copied over.
+ *
+ * @param Mixed $seed Object representing SugarBean instance
+ * @param Array $dataValues Array of fields/values to set on the SugarBean instance
+ * @param boolean $firstSync Boolean indicating whether or not this is a first time sync
+ */
+function apply_values($seed, $dataValues, $firstSync)
+{
+    if(!$seed instanceof SugarBean || !is_array($dataValues))
+    {
+        return;
+    }
+
+    foreach($dataValues as $field=>$value)
+    {
+        if($firstSync)
+        {
+            //If this is a first sync AND the value is not empty then we set it
+            if(!empty($value))
+            {
+                $seed->$field = $value;
+            }
+        } else {
+            $seed->$field = $value;
+        }
+    }
+}
+
 /*END HELPER*/
 
 ?>

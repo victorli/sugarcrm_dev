@@ -43,6 +43,13 @@ class Bug43395Test extends Sugar_PHPUnit_Framework_OutputTestCase
 	static function setUpBeforeClass()
     {
     	global $app_strings, $app_list_strings;
+
+        $beanList = array();
+        $beanFiles = array();
+        require('include/modules.php');
+        $GLOBALS['beanList'] = $beanList;
+        $GLOBALS['beanFiles'] = $beanFiles;
+
         $app_strings = return_application_language($GLOBALS['current_language']);
         $app_list_strings = return_app_list_strings_language($GLOBALS['current_language']);
     	$user = new User();
@@ -60,6 +67,9 @@ class Bug43395Test extends Sugar_PHPUnit_Framework_OutputTestCase
         unset($_REQUEST['data']);
         unset($_REQUEST['query']);
         SugarTestContactUtilities::removeAllCreatedContacts();
+
+        unset($GLOBALS['beanList']);
+        unset($GLOBALS['beanFiles']);
     }
 
     public function testFormatResults()

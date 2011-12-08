@@ -62,6 +62,7 @@ SugarWidgetScheduler.fill_invitees=function(form){for(var i=0;i<GLOBAL_REGISTRY.
 SugarWidgetScheduler.update_time=function(){var form_name;if(typeof document.EditView!='undefined')
 form_name="EditView";else if(typeof document.CalendarEditView!='undefined')
 form_name="CalendarEditView";else
+return;if(typeof document.forms[form_name].date_start=='undefined')
 return;var date_start=document.forms[form_name].date_start.value;if(date_start.length<16){return;}
 var hour_start=parseInt(date_start.substring(11,13),10);var minute_start=parseInt(date_start.substring(14,16),10);var has_meridiem=/am|pm/i.test(date_start);if(has_meridiem){var meridiem=trim(date_start.substring(16));}
 GLOBAL_REGISTRY.focus.fields.date_start=date_start;if(has_meridiem){GLOBAL_REGISTRY.focus.fields.time_start=hour_start+time_separator+minute_start+meridiem;}else{GLOBAL_REGISTRY.focus.fields.time_start=hour_start+time_separator+minute_start;}

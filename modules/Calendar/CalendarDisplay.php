@@ -103,10 +103,7 @@ class CalendarDisplay {
 		}				
 		$ss->assign('activity_colors',$this->activity_colors);	
 		
-		$scroll_hour = 5;
-		if($cal->time_step < 30)
-			$scroll_hour = 8;
-		$ss->assign('scroll_slot',intval(60 / $cal->time_step) * $scroll_hour);	
+		$ss->assign('scroll_slot',$this->cal->scroll_slot);	
 		
 		$ss->assign('editview_width',SugarConfig::getInstance()->get('calendar.editview_width',800));
 		$ss->assign('editview_height',SugarConfig::getInstance()->get('calendar.editview_height',600));	
@@ -211,12 +208,12 @@ class CalendarDisplay {
 				$end_m = strtoupper($end_m);
 			}
 			$options = strpos($time_pref, 'a') ? $app_list_strings['dom_meridiem_lowercase'] : $app_list_strings['dom_meridiem_uppercase'];
-			$TIME_MERIDIEM1 = get_select_options_with_id($options, $start_m);  
-			$TIME_MERIDIEM2 = get_select_options_with_id($options, $end_m);  
-			$TIME_MERIDIEM1 = "<select id='day_start_meridiem' name='day_start_meridiem' tabindex='2'>".$TIME_MERIDIEM1."</select>";
-			$TIME_MERIDIEM2 = "<select id='day_end_meridiem' name='day_end_meridiem' tabindex='2'>".$TIME_MERIDIEM2."</select>";			
+			$TIME_START_MERIDIEM = get_select_options_with_id($options, $start_m);  
+			$TIME_END_MERIDIEM = get_select_options_with_id($options, $end_m);  
+			$TIME_START_MERIDIEM = "<select id='day_start_meridiem' name='day_start_meridiem' tabindex='2'>".$TIME_START_MERIDIEM."</select>";
+			$TIME_END_MERIDIEM = "<select id='day_end_meridiem' name='day_end_meridiem' tabindex='2'>".$TIME_END_MERIDIEM."</select>";			
 		}else{
-			$TIME_MERIDIEM1 = $TIME_MERIDIEM2 = "";
+			$TIME_START_MERIDIEM = $TIME_END_MERIDIEM = "";
 		}	
 		for($i = $start_at; $i <= $num_of_hours; $i ++){
 			$i = $i."";
@@ -224,21 +221,21 @@ class CalendarDisplay {
 				$i = "0".$i;			
 			$hours_arr[$i] = $i;
 		}
-		$TIME_START_HOUR_OPTIONS1 = get_select_options_with_id($hours_arr, $d_start_hour);
-		$TIME_START_MINUTES_OPTIONS1 = get_select_options_with_id(array('0'=>'00','15'=>'15','30'=>'30','45'=>'45'), $d_start_min);
-		$TIME_START_HOUR_OPTIONS2 = get_select_options_with_id($hours_arr, $d_end_hour);
-		$TIME_START_MINUTES_OPTIONS2 = get_select_options_with_id(array('0'=>'00','15'=>'15','30'=>'30','45'=>'45'), $d_end_min);
+		$TIME_START_HOUR_OPTIONS = get_select_options_with_id($hours_arr, $d_start_hour);
+		$TIME_START_MINUTES_OPTIONS = get_select_options_with_id(array('0'=>'00','15'=>'15','30'=>'30','45'=>'45'), $d_start_min);
+		$TIME_END_HOUR_OPTIONS = get_select_options_with_id($hours_arr, $d_end_hour);
+		$TIME_END_MINUTES_OPTIONS = get_select_options_with_id(array('0'=>'00','15'=>'15','30'=>'30','45'=>'45'), $d_end_min);
 		
 		$ss->assign('day',$_REQUEST['day']);
 		$ss->assign('week',$_REQUEST['week']);
 		$ss->assign('month',$_REQUEST['month']);
 		$ss->assign('year',$_REQUEST['year']);
-		$ss->assign('TIME_START_HOUR_OPTIONS1',$TIME_START_HOUR_OPTIONS1);		
-		$ss->assign('TIME_START_MINUTES_OPTIONS1',$TIME_START_MINUTES_OPTIONS1);
-		$ss->assign('TIME_MERIDIEM1',$TIME_MERIDIEM1);
-		$ss->assign('TIME_START_HOUR_OPTIONS2',$TIME_START_HOUR_OPTIONS2);		
-		$ss->assign('TIME_START_MINUTES_OPTIONS2',$TIME_START_MINUTES_OPTIONS2);
-		$ss->assign('TIME_MERIDIEM2',$TIME_MERIDIEM2);
+		$ss->assign('TIME_START_HOUR_OPTIONS',$TIME_START_HOUR_OPTIONS);		
+		$ss->assign('TIME_START_MINUTES_OPTIONS',$TIME_START_MINUTES_OPTIONS);
+		$ss->assign('TIME_START_MERIDIEM',$TIME_START_MERIDIEM);
+		$ss->assign('TIME_END_HOUR_OPTIONS',$TIME_END_HOUR_OPTIONS);		
+		$ss->assign('TIME_END_MINUTES_OPTIONS',$TIME_END_MINUTES_OPTIONS);
+		$ss->assign('TIME_END_MERIDIEM',$TIME_END_MERIDIEM);
 		$ss->assign('show_calls',$this->cal->show_calls);
 		$ss->assign('show_tasks',$this->cal->show_tasks);
 	}

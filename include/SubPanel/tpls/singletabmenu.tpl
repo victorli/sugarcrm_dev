@@ -41,18 +41,20 @@
 *}
 
 
-<script>
+<script type="text/javascript">
+SUGAR.util.doWhen("typeof get_module_name != 'undefined'", function()
+{ldelim}
 	SUGAR.subpanelUtils.currentSubpanelGroup = '{$startSubPanel}';
-	
+
 	SUGAR.subpanelUtils.subpanelMoreTab = '{$moreTab}';
-	
+
 	SUGAR.subpanelUtils.subpanelMaxSubtabs = '{$maxSubtabs}';
-	
+
 	SUGAR.subpanelUtils.subpanelHtml = new Array();
-	
+
 	SUGAR.subpanelUtils.loadedGroups = Array();
 	SUGAR.subpanelUtils.loadedGroups.push('{$startSubPanel}');
-	
+
 	SUGAR.subpanelUtils.subpanelSubTabs = new Array();
 	SUGAR.subpanelUtils.subpanelGroups = new Array();
 {foreach from=$othertabs item=tab}
@@ -64,10 +66,11 @@
 	SUGAR.subpanelUtils.subpanelTitles = {$subpanelTitlesJSON};
 
 	SUGAR.subpanelUtils.tabCookieName = get_module_name() + '_sp_tab';
-	
+
 	SUGAR.subpanelUtils.showLinks = {$showLinks};
-	
+
 	SUGAR.subpanelUtils.requestUrl = 'index.php?to_pdf=1&module=MySettings&action=LoadTabSubpanels&loadModule={$smarty.request.module}&record={$smarty.request.record}&subpanels=';
+{rdelim});
 </script>
 
 

@@ -605,6 +605,7 @@ class SugarView
                         "MODULE_NAME" => $menu_item[2],
                         "IMAGE"       => $themeObject
                         ->getImage($menu_item[2],"border='0' align='absmiddle'",null,null,'.gif',$menu_item[1]),
+                        "ID"          => $menu_item[2]."_link",
                         );
                 }
             }

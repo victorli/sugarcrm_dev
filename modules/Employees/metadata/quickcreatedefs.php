@@ -50,11 +50,11 @@ $viewdefs['Employees']['QuickCreate'] = array(
             array(
                 array(
                       'name'=>'employee_status',
-                      'customCode'=>'{if $IS_ADMIN}@@FIELD@@{else}{$EMPLOYEE_STATUS_READONLY}{/if}',
+                      'customCode'=>'{if $EDIT_REPORTS_TO || $IS_ADMIN}@@FIELD@@{else}{$EMPLOYEE_STATUS_READONLY}{/if}',
                 ),
                 array(
                       'name'=>'title',
-                      'customCode'=>'{if $IS_ADMIN}@@FIELD@@{else}{$TITLE_READONLY}{/if}',
+                      'customCode'=>'{if  $EDIT_REPORTS_TO || $IS_ADMIN}@@FIELD@@{else}{$TITLE_READONLY}{/if}',
                 ),
             ),
             array(
@@ -67,18 +67,18 @@ $viewdefs['Employees']['QuickCreate'] = array(
             array(
                 array(
                     'name'=>'department',
-                    'customCode'=>'{if $IS_ADMIN}@@FIELD@@{else}{$DEPT_READONLY}{/if}',
+                    'customCode'=>'{if  $EDIT_REPORTS_TO || $IS_ADMIN}@@FIELD@@{else}{$DEPT_READONLY}{/if}',
                 ),
                 'phone_work'
             ),
             array(
                 array(
                     'name'=>'reports_to_name',
-                    'customCode'=>'{if $IS_ADMIN}@@FIELD@@{else}{$REPORTS_TO_READONLY}{/if}',
+                    'customCode'=>'{if  $EDIT_REPORTS_TO || $IS_ADMIN}@@FIELD@@{else}{$REPORTS_TO_READONLY}{/if}',
                 ),
                 array(
                     'name'=>'email1',
-                    'displayParams' => array('required'=>true),
+                    'displayParams' => array('required'=>false),
                 ),
             ),
         ),

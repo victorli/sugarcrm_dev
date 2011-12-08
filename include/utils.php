@@ -339,7 +339,7 @@ function get_sugar_config_defaults() {
 	  'default_view' => 'week',
 	  'show_calls_by_default' => true,
 	  'show_tasks_by_default' => true,
-	  'editview_width' => 960,
+	  'editview_width' => 990,
 	  'editview_height' => 480,
 	  'day_timestep' => 15,
 	  'week_timestep' => 30,
@@ -834,7 +834,7 @@ function _mergeCustomAppListStrings($file , $app_list_strings){
         $exemptDropdowns[] = "parent_type_display";
         $exemptDropdowns[] = "record_type_display";
         $exemptDropdowns[] = "record_type_display_notes";
-   
+
 	foreach($app_list_strings as $key=>$value)
 	{
 		if (!in_array($key, $exemptDropdowns) && array_key_exists($key, $app_list_strings_original))
@@ -1753,45 +1753,37 @@ function clean_xss($str, $cleanImg=true) {
 	if(empty($sugar_config['email_xss']))
 	$sugar_config['email_xss'] = getDefaultXssTags();
 
-	$arr = unserialize(base64_decode($sugar_config['email_xss']));
-
-	$regex = '';
-	foreach($arr as $v) {
-		if(!empty($regex)) {
-			$regex .= "|";
-		}
-		$regex .= $v;
-	}
-
-	$tag_regex        = "#<({$regex})[^>]*>?#sim";
+	$xsstags = unserialize(base64_decode($sugar_config['email_xss']));
 
 	// cn: bug 13079 - "on\w" matched too many non-events (cONTact, strONG, etc.)
 	$jsEvents  = "onblur|onfocus|oncontextmenu|onresize|onscroll|onunload|ondblclick|onclick|";
 	$jsEvents .= "onmouseup|onmouseover|onmousedown|onmouseenter|onmouseleave|onmousemove|onload|onchange|";
 	$jsEvents .= "onreset|onselect|onsubmit|onkeydown|onkeypress|onkeyup|onabort|onerror|ondragdrop";
 
-	$attribute_regex	= "#<.+({$jsEvents})[^=>]*=[^>]*>#sim";
+	$attribute_regex	= "#\b({$jsEvents})\s*=\s*(?|(?!['\"])\S+|['\"].+?['\"])#sim";
 	$javascript_regex	= '@<[^/>][^>]+(expression\(|j\W*a\W*v\W*a|v\W*b\W*s\W*c\W*r|&#|/\*|\*/)[^>]*>@sim';
 	$imgsrc_regex		= '#<[^>]+src[^=]*=([^>]*?http(s)?://[^>]*)>#sim';
 	$css_url			= '#url\(.*\.\w+\)#';
 
+	$tagsrex = '#<\/?(\w+)((?:\s+(?:\w|\w[\w-]*\w)(?:\s*=\s*(?:\".*?\"|\'.*?\'|[^\'\">\s]+))?)+\s*|\s*)\/?>#im';
 
-	$str = str_replace("\t", "", $str);
-
-	$matches = array_merge(
-	xss_check_pattern($tag_regex, $str),
-	xss_check_pattern($javascript_regex, $str)
-	);
-
-
-    $jsMatches = xss_check_pattern($attribute_regex, $str);
-    if(!empty($jsMatches)){
-        preg_match_all($attribute_regex, $str, $newMatches, PREG_PATTERN_ORDER);
-        if(!empty($newMatches[0][0])){
-            $matches2 = array_merge(xss_check_pattern("#({$jsEvents})#sim", $newMatches[0][0]));
-            $matches = array_merge($matches, $matches2);
+	$tagmatches = array();
+	$matches = array();
+	preg_match_all($tagsrex, $str, $tagmatches, PREG_PATTERN_ORDER);
+    foreach($tagmatches[1] as $no => $tag) {
+        if(in_array($tag, $xsstags)) {
+            // dangerous tag - take out whole
+            $matches[] = $tagmatches[0][$no];
+            continue;
+        }
+        $attrmatch = array();
+        preg_match_all($attribute_regex, $tagmatches[2][$no], $attrmatch, PREG_PATTERN_ORDER);
+        if(!empty($attrmatch[0])) {
+            $matches = array_merge($matches, $attrmatch[0]);
         }
     }
+
+	$matches = array_merge($matches, xss_check_pattern($javascript_regex, $str));
 
 	if($cleanImg) {
 		$matches = array_merge($matches,
@@ -1872,7 +1864,7 @@ function clean_string($str, $filter = "STANDARD", $dieOnBadData = true)
 
 	if (preg_match($filters[$filter], $str)) {
 		if (isset($GLOBALS['log']) && is_object($GLOBALS['log'])) {
-			$GLOBALS['log']->fatal("SECURITY: bad data passed in; string: {$str}");
+			$GLOBALS['log']->fatal("SECURITY[$filter]: bad data passed in; string: {$str}");
 		}
 		if ( $dieOnBadData ) {
 			die("Bad data passed in; <a href=\"{$sugar_config['site_url']}\">Return to Home</a>");
@@ -1929,6 +1921,9 @@ function set_superglobals($key, $val){
 // Works in conjunction with clean_string() to defeat SQL injection, file inclusion attacks, and XSS
 function clean_incoming_data() {
 	global $sugar_config;
+    global $RAW_REQUEST;
+
+    $RAW_REQUEST = $_REQUEST;
 
 	if (get_magic_quotes_gpc() == 1) {
 		$req  = array_map("preprocess_param", $_REQUEST);
@@ -2010,7 +2005,7 @@ function securexss($value) {
 function securexsskey($value, $die=true){
 	global $sugar_config;
 	$matches = array();
-	preg_match("/[\'\"\<\>]/", $value, $matches);
+	preg_match('/[\'"<>]/', $value, $matches);
 	if(!empty($matches)){
 		if($die){
 			die("Bad data passed in; <a href=\"{$sugar_config['site_url']}\">Return to Home</a>");
@@ -3393,10 +3388,10 @@ function getPhpInfo($level=-1) {
  */
 function string_format($format, $args){
 	$result = $format;
-    
+
     /** Bug47277 fix.
      * If args array has only one argument, and it's empty, so empty single quotes are used '' . That's because
-     * IN () fails and IN ('') works. 
+     * IN () fails and IN ('') works.
      */
     if (count($args) == 1)
     {
@@ -3408,7 +3403,7 @@ function string_format($format, $args){
         }
     }
     /* End of fix */
-    
+
 	for($i = 0; $i < count($args); $i++){
 		$result = str_replace('{'.$i.'}', $args[$i], $result);
 	}

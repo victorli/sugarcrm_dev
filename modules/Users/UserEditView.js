@@ -59,7 +59,7 @@ function verify_data(form)
 if(trim(form.user_name.value)==""){add_error_style('EditView',form.user_name.name,SUGAR.language.get('app_strings','ERR_MISSING_REQUIRED_FIELDS')+SUGAR.language.get('Users','LBL_USER_NAME'));isError=true;}
 if(document.getElementById("required_password").value=='1'&&document.getElementById("new_password").value==""){add_error_style('EditView',form.new_password.name,SUGAR.language.get('app_strings','ERR_MISSING_REQUIRED_FIELDS')+SUGAR.language.get('Users','LBL_NEW_PASSWORD'));isError=true;}
 if(isError==true){return false;}
-if(document.EditView.return_id.value!=''&&(document.EditView.return_id.value==form.reports_to_id.value)){alert(SUGAR.language.get('app_strings','ERR_SELF_REPORTING'));return false;}
+if(document.EditView.return_id.value!=''&&(typeof(form.reports_to_id)!="undefined")&&(document.EditView.return_id.value==form.reports_to_id.value)){alert(SUGAR.language.get('app_strings','ERR_SELF_REPORTING'));return false;}
 if(document.EditView.dec_sep.value!=''&&(document.EditView.dec_sep.value=="'")){alert(SUGAR.language.get('app_strings','ERR_NO_SINGLE_QUOTE')+SUGAR.language.get('Users','LBL_DECIMAL_SEP'));return false;}
 if(document.EditView.num_grp_sep.value!=''&&(document.EditView.num_grp_sep.value=="'")){alert(SUGAR.language.get('app_strings','ERR_NO_SINGLE_QUOTE')+SUGAR.language.get('Users','LBL_NUMBER_GROUPING_SEP'));return false;}
 if(document.EditView.num_grp_sep.value==document.EditView.dec_sep.value){alert(SUGAR.language.get('app_strings','ERR_DECIMAL_SEP_EQ_THOUSANDS_SEP'));return false;}

@@ -103,12 +103,6 @@ class DynamicField {
             return false;
         if($module == '../data')return false;
 
-        // Employees is a fake module that actually loads it's fields from the
-        // Users module
-        if ($module == 'Employees') {
-            $module = 'Users';
-        }
-
         static $results = array ( ) ;
 
         $where = '';
@@ -569,14 +563,10 @@ class DynamicField {
             	$field->default_value = '';
                 // resetting default and default_value does not work for multienum and causes trouble for mssql
                 // so using a temporary variable here to indicate that we don't want default for this query
-                if ($GLOBALS['db']->dbType == 'mssql') {
-                    $field->no_default = 1;
-                }
+                $field->no_default = 1;
                 $query = $field->get_db_add_alter_table($this->bean->table_name . '_cstm');
                 // unsetting temporary member variable
-                if ($GLOBALS['db']->dbType == 'mssql') {
-                    unset($field->no_default);
-                }
+                unset($field->no_default);
                 if(!empty($query)){
                 	$GLOBALS['db']->query($query);
 	                $field->default = $fmd->default_value;

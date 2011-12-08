@@ -162,7 +162,7 @@ foreach ($_POST['mass'] as $message_id) {
 if (!$test) {
     $delete_query =  "DELETE FROM emailman WHERE emailman.campaign_id='{$campaign->id}' AND (emailman.related_id, emailman.related_type) IN
     	(SELECT plp.related_id, plp.related_type FROM prospect_lists_prospects plp
-    		INNER JOIN prospect_lists pl ON pl.id = plp.prospect_list_id AND
+    		INNER JOIN prospect_lists pl ON pl.id = plp.prospect_list_id
     		INNER JOIN prospect_list_campaigns plc ON plp.prospect_list_id = plc.prospect_list_id
     		WHERE plp.deleted = 0 AND plc.deleted = 0 AND pl.deleted = 0 AND pl.list_type = 'exempt' AND  plc.campaign_id = '{$campaign->id}')
     	";

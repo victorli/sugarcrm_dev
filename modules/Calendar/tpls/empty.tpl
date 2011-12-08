@@ -35,9 +35,3 @@
  ********************************************************************************/
 
 *}
-<style>
-{literal}
-.yui-navset .yui-content, .yui-navset .yui-navset-top .yui-content  {
-	padding: 5px 10px 5px 10px;
-{/literal}
-</style>

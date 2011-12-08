@@ -15,7 +15,6 @@ function ygDDList(id, sGroup) {
 	if (id) {
 		this.init(id, sGroup);
 		this.initFrame();
-		//this.logger = new ygLogger("ygDDList");
 	}
 
 	var s = this.getDragEl().style;

@@ -169,7 +169,9 @@ class SugarSpot
 	}
 
 	/**
-	 * Performs the search
+     * _performSearch
+     *
+	 * Performs the search from the global search field.
 	 *
 	 * @param  $query   string what we are searching for
 	 * @param  $modules array  modules we are searching in
@@ -182,19 +184,26 @@ class SugarSpot
 	    $offset = -1
 	    )
 	{
-	    if(empty($query)) return array();
+        //Return an empty array if no query string is given
+	    if(empty($query))
+        {
+            return array();
+        }
+
 		$primary_module='';
 		$results = array();
 		require_once 'include/SearchForm/SearchForm2.php' ;
 		$where = '';
         $searchEmail = preg_match('/^([^%]|%)*@([^%]|%)*$/', $query);
 
-        $limit = ( !empty($GLOBALS['sugar_config']['max_spotresults_initial']) ? $GLOBALS['sugar_config']['max_spotresults_initial'] : 5 );
+        $limit = !empty($GLOBALS['sugar_config']['max_spotresults_initial']) ? $GLOBALS['sugar_config']['max_spotresults_initial'] : 5;
 		if($offset !== -1){
-			$limit = ( !empty($GLOBALS['sugar_config']['max_spotresults_more']) ? $GLOBALS['sugar_config']['max_spotresults_more'] : 20 );
+			$limit = !empty($GLOBALS['sugar_config']['max_spotresults_more']) ? $GLOBALS['sugar_config']['max_spotresults_more'] : 20;
 		}
     	$totalCounted = empty($GLOBALS['sugar_config']['disable_count_query']);
 
+
+        global $current_user;
 
 	    foreach($modules as $moduleName){
 		    if (empty($primary_module))
@@ -204,19 +213,21 @@ class SugarSpot
 
 			$searchFields = SugarSpot::getSearchFields($moduleName);
 
+            //Continue on to the next module if no search fields found for module
 			if (empty($searchFields[$moduleName]))
 			{
 				continue;
 			}
 
-			$class = $GLOBALS['beanList'][$moduleName];
 			$return_fields = array();
-			$seed = new $class();
-            if(!$seed->ACLAccess('ListView')) continue;
+			$seed = SugarModule::get($moduleName)->loadBean();
 
-			if ($class == 'aCase') {
-		            $class = 'Case';
-			}
+            //Continue on to next module if we don't have ListView ACLAccess for module
+            if(!$seed->ACLAccess('ListView')) {
+               continue;
+            }
+
+            $class = $seed->object_name;
 
 			foreach($searchFields[$moduleName] as $k=>$v){
 				$keep = false;
@@ -263,45 +274,58 @@ class SugarSpot
 						    }
 					}
 				}
-			}
+			} //foreach
 
-			if (empty($searchFields[$moduleName])) continue;
+            //If no search field criteria matched then continue to next module
+			if (empty($searchFields[$moduleName]))
+            {
+                continue;
+            }
 
-			if(isset($seed->field_defs['name'])) {
+			if(isset($seed->field_defs['name'])
+            ) {
 			    $return_fields['name'] = $seed->field_defs['name'];
 			}
 
+
 			foreach($seed->field_defs as $k => $v) {
-			    if(isset($seed->field_defs[$k]['type']) && ($seed->field_defs[$k]['type'] == 'name') && !isset($return_fields[$k])) {
+			    if(isset($seed->field_defs[$k]['type']) && ($seed->field_defs[$k]['type'] == 'name') && !isset($return_fields[$k])
+                ) {
 				    $return_fields[$k] = $seed->field_defs[$k];
 				}
 			}
+
 
 			if(!isset($return_fields['name'])) {
 			    // if we couldn't find any name fields, try search fields that have name in it
 			    foreach($searchFields[$moduleName] as $k => $v) {
 			        if(strpos($k, 'name') != -1 && isset($seed->field_defs[$k])
-			            && !isset($seed->field_defs[$k]['source'])) {
+			            && !isset($seed->field_defs[$k]['source'])
+                    ) {
 				        $return_fields[$k] = $seed->field_defs[$k];
 				        break;
 				    }
 			    }
 			}
 
-			if(!isset($return_fields['name'])) {
+
+			if(!isset($return_fields['name']))
+            {
 			    // last resort - any fields that have 'name' in their name
 			    foreach($seed->field_defs as $k => $v) {
 			        if(strpos($k, 'name') != -1 && isset($seed->field_defs[$k])
-			            && !isset($seed->field_defs[$k]['source'])) {
+			            && !isset($seed->field_defs[$k]['source'])
+                    ) {
 				        $return_fields[$k] = $seed->field_defs[$k];
 				        break;
 				    }
 			    }
 			}
 
-			if(!isset($return_fields['name'])) {
-			    // FAIL: couldn't find id & name for the module
-			    $GLOBALS['log']->error("Unable to find name for module $moduleName");
+
+			if(empty($return_fields)) {
+			    // FAIL: couldn't find a name field to display a result label
+			    $GLOBALS['log']->error("Unable to find name field for module $moduleName");
 			    continue;
 			}
 
@@ -310,8 +334,7 @@ class SugarSpot
 			    foreach($return_fields['name']['fields'] as $field) {
 			        $return_fields[$field] = $seed->field_defs[$field];
 			    }
-			}
-
+			} 
 
 			$searchForm = new SearchForm ( $seed, $moduleName ) ;
 			$searchForm->setup (array ( $moduleName => array() ) , $searchFields , '' , 'saved_views' /* hack to avoid setup doing further unwanted processing */ ) ;

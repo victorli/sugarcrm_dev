@@ -52,14 +52,14 @@
 					<td>
 						<div id="d_start_time_section">
 							<select size="1" id="day_start_hours" name="day_start_hours" tabindex="102">
-								{$TIME_START_HOUR_OPTIONS1}
+								{$TIME_START_HOUR_OPTIONS}
 							</select>&nbsp;:
 							
 							<select size="1" id="day_start_minutes" name="day_start_minutes"  tabindex="102">
-								{$TIME_START_MINUTES_OPTIONS1}
+								{$TIME_START_MINUTES_OPTIONS}
 							</select>
 								&nbsp;
-							{$TIME_MERIDIEM1}
+							{$TIME_START_MERIDIEM}
 						</div>
 					</td>
 				</tr>
@@ -70,14 +70,14 @@
 					<td>
 						<div id="d_end_time_section">
 							<select size="1" id="day_end_hours" name="day_end_hours" tabindex="102">
-								{$TIME_START_HOUR_OPTIONS2}
+								{$TIME_END_HOUR_OPTIONS}
 							</select>&nbsp;:
 							
 							<select size="1" id="day_end_minutes" name="day_end_minutes"  tabindex="102">
-								{$TIME_START_MINUTES_OPTIONS2}
+								{$TIME_END_MINUTES_OPTIONS}
 							</select>
 								&nbsp;
-							{$TIME_MERIDIEM2}
+							{$TIME_END_MERIDIEM}
 						</div>
 					</td>
 				</tr>

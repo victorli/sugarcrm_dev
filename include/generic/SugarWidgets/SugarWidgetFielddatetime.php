@@ -82,12 +82,32 @@ class SugarWidgetFieldDateTime extends SugarWidgetReportField
         return $this->queryDateOp($this->_get_column_select($layout_def), $begin, '=', "datetime");
 	}
 
+    /**
+     * expandDate
+     *
+     * This function helps to convert a date only value to have a time value as well.  It first checks
+     * to see if a time value exists.  If a time value exists, the function just returns the date value
+     * passed in.  If the date value is the 'Today' macro then some special processing occurs as well.
+     * Finally the time portion is applied depending on whether or not this date should be for the end
+     * in which case the 23:59:59 time value is applied otherwise 00:00:00 is used.
+     *
+     * @param $date String value of the date value to expand
+     * @param bool $end Boolean value indicating whether or not this is for an end time period or not
+     * @return $date TimeDate object with time value applied
+     */
 	protected function expandDate($date, $end = false)
 	{
 	    global $timedate;
 	    if($this->hasTime($date)) {
 	        return $date;
 	    }
+
+        //C.L. Bug 48616 - If the $date is set to the Today macro, then adjust accordingly
+        if(strtolower($date) == 'today')
+        {
+           $startEnd = $timedate->getDayStartEndGMT($timedate->getNow(true));
+           return $end ? $startEnd['end'] : $startEnd['start'];
+        }
 
 	    $date = $timedate->tzUser($timedate->fromDbDate($date));
 
@@ -576,4 +596,5 @@ class SugarWidgetFieldDateTime extends SugarWidgetReportField
     {
         return strlen(trim($date)) < 11 ? false : true;
     }
+
 }

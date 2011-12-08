@@ -353,8 +353,13 @@ class Task extends SugarBean {
 		$xtpl->assign("TASK_SUBJECT", $task->name);
 		//MFH #13507
 		$xtpl->assign("TASK_PRIORITY", (isset($task->priority)?$app_list_strings['task_priority_dom'][$task->priority]:""));
-		$duedate = $timedate->fromDb($task->date_due);
-		$xtpl->assign("TASK_DUEDATE", $timedate->asUser($duedate, $notifyUser)." ".TimeDate::userTimezoneSuffix($duedate, $notifyUser));
+        if(!empty($task->date_due))
+        {
+		    $duedate = $timedate->fromDb($task->date_due);
+            $xtpl->assign("TASK_DUEDATE", $timedate->asUser($duedate, $notifyUser)." ".TimeDate::userTimezoneSuffix($duedate, $notifyUser));
+        } else {
+            $xtpl->assign("TASK_DUEDATE", '');
+        }
 		$xtpl->assign("TASK_STATUS", (isset($task->status)?$app_list_strings['task_status_dom'][$task->status]:""));
 		$xtpl->assign("TASK_DESCRIPTION", $task->description);
 

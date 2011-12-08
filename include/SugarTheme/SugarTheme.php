@@ -318,6 +318,18 @@ class SugarTheme
     }
 
     /**
+	 * This is needed to prevent unserialize vulnerability
+     */
+    public function __wakeup()
+    {
+        // clean all properties
+        foreach(get_object_vars($this) as $k => $v) {
+            $this->$k = null;
+        }
+        throw new Exception("Not a serializable object");
+    }
+
+    /**
      * Destructor
      * Here we'll write out the internal file path caches to an external cache of some sort.
      */

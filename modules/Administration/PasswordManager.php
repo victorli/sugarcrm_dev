@@ -96,13 +96,15 @@ if(!empty($_POST['saveConfig'])){
 		else 
 			$_POST['system_ldap_enabled'] = 0;
 
-			
-	   
-		if (isset($_REQUEST['authenticationClass'])) {
-			
-			$configurator->useAuthenticationClass = true;
-		}
-	  
+
+        if(isset($_REQUEST['authenticationClass']))
+        {
+	        $configurator->useAuthenticationClass = true;
+        } else {
+	        $configurator->useAuthenticationClass = false;
+            $_POST['authenticationClass'] = '';
+        }
+
 
 		if (isset($_REQUEST['ldap_group_checkbox']) && $_REQUEST['ldap_group_checkbox'] == 'on') 
 			$_POST['ldap_group'] = 1;

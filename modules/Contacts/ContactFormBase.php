@@ -467,7 +467,7 @@ function handleSave($prefix, $redirect=true, $useRequired=false){
 	}
 
     
-	if (empty($_POST['dup_checked'])) {
+	if (empty($_POST['record']) && empty($_POST['dup_checked'])) {
 
 		$duplicateContacts = $this->checkForDuplicates($prefix);
 		if(isset($duplicateContacts)){

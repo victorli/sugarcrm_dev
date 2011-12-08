@@ -216,7 +216,7 @@ function verify_data(form)
         return false;
     }
 	
-	if (document.EditView.return_id.value != '' && (document.EditView.return_id.value == form.reports_to_id.value)) {
+	if (document.EditView.return_id.value != '' && (typeof(form.reports_to_id)!="undefined") && (document.EditView.return_id.value == form.reports_to_id.value)) {
 		alert(SUGAR.language.get('app_strings','ERR_SELF_REPORTING'));
 		return false;
 	}

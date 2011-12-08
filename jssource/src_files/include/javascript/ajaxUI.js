@@ -109,8 +109,10 @@ SUGAR.ajaxUI = {
     },
     canAjaxLoadModule : function(module)
     {
-        // Return false if ajax ui is completely disabled
-        if(typeof(SUGAR.config.disableAjaxUI) != 'undefined' && SUGAR.config.disableAjaxUI == true){
+        var checkLS = /&LicState=check/.exec(window.location.search);
+
+        // Return false if ajax ui is completely disabled, or if license state is set to check
+        if( checkLS || (typeof(SUGAR.config.disableAjaxUI) != 'undefined' && SUGAR.config.disableAjaxUI == true)){
             return false;
         }
         

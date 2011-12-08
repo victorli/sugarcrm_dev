@@ -273,13 +273,13 @@ function export($type, $records = null, $members = false, $sample=false) {
                     //if our value is a datetime field, then apply the users locale
                     case 'datetime':
                     case 'datetimecombo':
-                        $value = $timedate->to_display_date_time($value);
+                        $value = $timedate->to_display_date_time($db->fromConvert($value, 'datetime'));
                         $value = preg_replace('/([pm|PM|am|AM]+)/', ' \1', $value);
                         break;
 
                     //kbrill Bug #16296
                     case 'date':
-                        $value = $timedate->to_display_date($value, false);
+                        $value = $timedate->to_display_date($db->fromConvert($value, 'date'), false);
                         break;
 
                     // Bug 32463 - Properly have multienum field translated into something useful for the client

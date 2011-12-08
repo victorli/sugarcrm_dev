@@ -54,8 +54,12 @@ $title=getClassicModuleTitle($mod_strings['LBL_MODULE_NAME'], array($mod_strings
 #30205
 $selectedAppLanguages = return_application_language($tabGroupSelected_lang);
 require_once('include/GroupedTabs/GroupedTabStructure.php');
+$availableModules = $tg->getAvailableModules($tabGroupSelected_lang);
+$smarty->assign('availableModuleList',$availableModules);
+$modList = array_keys($availableModules);
+$modList = array_combine($modList, $modList); // Bug #48693 We need full list of modules here instead of displayed modules
 $groupedTabsClass = new GroupedTabStructure();
-$groupedTabStructure = $groupedTabsClass->get_tab_structure('', '', true,true);
+$groupedTabStructure = $groupedTabsClass->get_tab_structure($modList, '', true,true);
 foreach($groupedTabStructure as $mainTab => $subModules){
  	$groupedTabStructure[$mainTab]['label'] = $mainTab;
  	$groupedTabStructure[$mainTab]['labelValue'] = $selectedAppLanguages[$mainTab];
@@ -71,8 +75,6 @@ $selected_lang = (!empty($_REQUEST['dropdown_lang'])?$_REQUEST['dropdown_lang']:
 if(empty($selected_lang)){
     $selected_lang = $GLOBALS['sugar_config']['default_language'];
 }
-$availableModules = $tg->getAvailableModules($tabGroupSelected_lang);
-$smarty->assign('availableModuleList',$availableModules);
 
 $smarty->assign('dropdown_languages', get_languages());
 
