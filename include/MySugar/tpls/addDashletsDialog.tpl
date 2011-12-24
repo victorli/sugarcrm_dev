@@ -64,7 +64,7 @@
 {if $moduleName == 'Home'}
 <div id="moduleDashlets" style="height:400px;display:;">
 	<h3>{sugar_translate label='LBL_MODULES' module='Home'}</h3>
-	<div id="moduleDashletsList">
+	<div id="moduleDashletsList" style="height:394px;overflow:auto;display:;">
 	<table width="95%">
 		{counter assign=rowCounter start=0 print=false}
 		{foreach from=$modules item=module}

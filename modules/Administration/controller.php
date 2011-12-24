@@ -35,13 +35,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description:  TODO: To be written.
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
- * All Rights Reserved.
- * Contributor(s): ______________________________________..
- ********************************************************************************/
 
 class AdministrationController extends SugarController
 {
@@ -50,9 +43,9 @@ class AdministrationController extends SugarController
         require_once('include/SubPanel/SubPanelDefinitions.php');
         require_once('modules/MySettings/TabController.php');
 
-        
+
         global $current_user, $app_strings;
-        
+
         if (!is_admin($current_user)) sugar_die($app_strings['ERR_NOT_ADMIN']);
 
         // handle the tabs listing
@@ -93,7 +86,7 @@ class AdministrationController extends SugarController
         global $app_strings, $current_user, $moduleList;
 
         if (!is_admin($current_user)) sugar_die($app_strings['ERR_NOT_ADMIN']);
-        
+
         require_once('modules/Configurator/Configurator.php');
         $configurator = new Configurator();
         $configurator->saveConfig();
@@ -150,12 +143,12 @@ class AdministrationController extends SugarController
     public function action_saveglobalsearchsettings()
     {
 		 global $current_user, $app_strings;
-		 
-		 if (!is_admin($current_user)) 
+
+		 if (!is_admin($current_user))
 		 {
-		     sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);	
+		     sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);
 		 }
-		 
+
     	 try {
 	    	 require_once('modules/Home/UnifiedSearchAdvanced.php');
 	    	 $unifiedSearchAdvanced = new UnifiedSearchAdvanced();

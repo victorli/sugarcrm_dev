@@ -109,7 +109,9 @@ class SugarWidgetFieldDateTime extends SugarWidgetReportField
            return $end ? $startEnd['end'] : $startEnd['start'];
         }
 
-	    $date = $timedate->tzUser($timedate->fromDbDate($date));
+        $parsed = $timedate->fromDbDate($date);
+        $date = $timedate->tzUser(new SugarDateTime());
+        $date->setDate($parsed->year, $parsed->month, $parsed->day);
 
 	    if($end) {
 	        return $date->setTime(23, 59, 59);

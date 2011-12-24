@@ -1,4 +1,4 @@
- <?php
+<?php
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
@@ -46,7 +46,7 @@ var $objectName = 'Lead';
  * getDuplicateQuery
  *
  * This function returns the SQL String used for initial duplicate Leads check
- * 
+ *
  * @see checkForDuplicates (method), ContactFormBase.php, LeadFormBase.php, ProspectFormBase.php
  * @param $prefix String value of prefix that may be present in $_POST variables
  * @return SQL String of the query that should be used for the initial duplicate lookup check
@@ -200,7 +200,7 @@ return $the_form;
 
 
 function handleSave($prefix,$redirect=true, $useRequired=false, $do_save=true, $exist_lead=null){
-	
+
     require_once('modules/Campaigns/utils.php');
 	require_once('include/formbase.php');
 
@@ -322,7 +322,7 @@ function handleSave($prefix,$redirect=true, $useRequired=false, $do_save=true, $
 
 	if (!isset($_POST[$prefix.'email_opt_out'])) $focus->email_opt_out = 0;
 	if (!isset($_POST[$prefix.'do_not_call'])) $focus->do_not_call = 0;
-    
+
     if($do_save) {
     	if(!empty($GLOBALS['check_notify'])) {
     		$focus->save($GLOBALS['check_notify']);
@@ -331,9 +331,9 @@ function handleSave($prefix,$redirect=true, $useRequired=false, $do_save=true, $
     		$focus->save(FALSE);
     	}
     }
-    
+
     $return_id = $focus->id;
-    
+
 	if (isset($_POST[$prefix.'prospect_id']) &&  !empty($_POST[$prefix.'prospect_id'])) {
 		$prospect=new Prospect();
 		$prospect->retrieve($_POST[$prefix.'prospect_id']);
@@ -358,10 +358,10 @@ function handleSave($prefix,$redirect=true, $useRequired=false, $do_save=true, $
 	if(isset($_REQUEST['inbound_email_id']) && !empty($_REQUEST['inbound_email_id'])) {
 		if(!isset($current_user)) {
 			global $current_user;
-		} 
-			
+		}
+
 		// fake this case like it's already saved.
-		
+
 		$email = new Email();
 		$email->retrieve($_REQUEST['inbound_email_id']);
 		$email->parent_type = 'Leads';
@@ -371,13 +371,13 @@ function handleSave($prefix,$redirect=true, $useRequired=false, $do_save=true, $
 		$email->save();
 		$email->load_relationship('leads');
 		$email->leads->add($focus->id);
-		
+
 		header("Location: index.php?&module=Emails&action=EditView&type=out&inbound_email_id=".$_REQUEST['inbound_email_id']."&parent_id=".$email->parent_id."&parent_type=".$email->parent_type.'&start='.$_REQUEST['start']);
 		exit();
 	}
 	////	END INBOUND EMAIL HANDLING
-	///////////////////////////////////////////////////////////////////////////////	
-	
+	///////////////////////////////////////////////////////////////////////////////
+
 	$GLOBALS['log']->debug("Saved record with id of ".$return_id);
 	if($redirect){
 		handleRedirect($return_id, 'Leads');

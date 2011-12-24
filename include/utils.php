@@ -1923,7 +1923,12 @@ function clean_incoming_data() {
 	global $sugar_config;
     global $RAW_REQUEST;
 
-    $RAW_REQUEST = $_REQUEST;
+    if(get_magic_quotes_gpc()) {
+        // magic quotes screw up data, we'd have to clean up
+        $RAW_REQUEST = array_map("cleanup_slashes", $_REQUEST);
+    } else {
+        $RAW_REQUEST = $_REQUEST;
+    }
 
 	if (get_magic_quotes_gpc() == 1) {
 		$req  = array_map("preprocess_param", $_REQUEST);
@@ -1996,7 +2001,7 @@ function securexss($value) {
         }
         return $new;
     }
-	static $xss_cleanup=  array('"' =>'&quot;', "'" =>  '&#039;' , '<' =>'&lt;' , '>'=>'&gt;');
+	static $xss_cleanup=  array("&quot;" => "&#38;", '"' =>'&quot;', "'" =>  '&#039;' , '<' =>'&lt;' , '>'=>'&gt;');
 	$value = preg_replace(array('/javascript:/i', '/\0/'), array('java script:', ''), $value);
 	$value = preg_replace('/javascript:/i', 'java script:', $value);
 	return str_replace(array_keys($xss_cleanup), array_values($xss_cleanup), $value);
@@ -2026,11 +2031,15 @@ function preprocess_param($value){
 		$value = securexss($value);
 	}
 
-
 	return $value;
-
-
 }
+
+function cleanup_slashes($value)
+{
+    if(is_string($value)) return stripslashes($value);
+    return $value;
+}
+
 
 function set_register_value($category, $name, $value){
     return sugar_cache_put("{$category}:{$name}", $value);
@@ -4449,6 +4458,28 @@ function sanitize($input, $quotes = ENT_QUOTES, $charset = 'UTF-8', $remove = fa
     return htmlentities($input, $quotes, $charset);
 }
 
+
+/**
+ * utf8_recursive_encode
+ * 
+ * This function walks through an Array and recursively calls utf8_encode on the
+ * values of each of the elements.
+ *
+ * @param $data Array of data to encode
+ * @return utf8 encoded Array data
+ */
+function utf8_recursive_encode($data)
+{
+    $result = array();
+    foreach($data as $key=>$val) {
+        if(is_array($val)) {
+           $result[$key] = utf8_recursive_encode($val);
+        } else {
+           $result[$key] = utf8_encode($val);
+        }
+    }
+    return $result;
+}
 
 /**
  * get_language_header

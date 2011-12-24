@@ -207,14 +207,12 @@ class UserViewHelper {
         global $current_user;
         
 
-        if ( !isset($this->bean->user_type) ) {
-            $this->bean->user_type = 'RegularUser';
-        }
-        $userType = $this->bean->user_type;
-        if ( $this->usertype == 'GROUP' || $this->usertype == 'PORTAL_ONLY' ) {
-            $userType = $this->usertype;
+        if (!isset($this->bean->user_type))
+        {
+            $this->setUserType($this->bean);
         }
 
+        $userType = $this->bean->user_type;
 
         $availableUserTypes = array();
         $userTypes = array(
@@ -734,5 +732,33 @@ class UserViewHelper {
         }
         $this->ss->assign('HIDE_IF_CAN_USE_DEFAULT_OUTBOUND',$hide_if_can_use_default );
         
+    }
+
+
+    /**
+     * setUserType
+     * This function is used to set the user_type variable for a given User instance
+     *
+     * @param Mixed $user The user instance to set the user_type variable on
+     * @return String value representing the user type
+     */
+    function setUserType($user)
+    {
+        //bug #49175: user's always regular
+        //need to get user_type from bean
+        $user->user_type = '';
+
+        if ($user->is_admin)
+        {
+            $user->user_type = 'Administrator';
+        }
+        else if ($user->is_group)
+        {
+            $user->user_type = 'GROUP';
+        }
+        else
+        {
+            $user->user_type = 'RegularUser';
+        }
     }
 }

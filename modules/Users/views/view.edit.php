@@ -36,7 +36,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-require_once('include/MVC/View/views/view.edit.php');
 require_once('modules/Users/UserViewHelper.php');
 
 
@@ -88,7 +87,7 @@ var $useForSubpanel = true;
         //make sure we can populate user type dropdown.  This usually gets populated in predisplay unless this is a quickeditform
         if(!isset($this->fieldHelper)){
             $this->fieldHelper = new UserViewHelper($this->ss, $this->bean, 'EditView');
-            $this->fieldHelper->setupUserTypeDropdown();
+            $this->fieldHelper->setupAdditionalFields();
         }
 
         if(isset($_REQUEST['isDuplicate']) && $_REQUEST['isDuplicate'] == 'true') {
@@ -106,18 +105,11 @@ var $useForSubpanel = true;
                 $this->ss->assign('RETURN_MODULE', $this->bean->module_dir);
             }
 
-            if(isset($_REQUEST['return_id']))
-            {
-                $this->ss->assign('RETURN_ID', $_REQUEST['return_id']);
-            } else {
-                $this->ss->assign('RETURN_ID', $this->bean->id);
-            }
-
-            if(isset($_REQUEST['return_action']))
-            {
-                $this->ss->assign('RETURN_ACTION', $_REQUEST['return_action']);
-            } else {
-                $this->ss->assign('RETURN_ACTION', 'DetailView');
+            $return_id = isset($_REQUEST['return_id'])?$_REQUEST['return_id']:$this->bean->id;
+            if (isset($return_id)) {
+                $return_action = isset($_REQUEST['return_action'])?$_REQUEST['return_action']:'DetailView';
+                $this->ss->assign('RETURN_ID', $return_id);
+                $this->ss->assign('RETURN_ACTION', $return_action);
             }
         }
 

@@ -577,7 +577,13 @@ class JsChart extends SugarChart {
 		$this->chartType = $xml->properties->type;
 		$html = "<table align=\"left\" cellpadding=\"2\" cellspacing=\"2\">";
 
-		if ($this->chartType == "group by chart" || $this->chartType == "horizontal group by chart") {
+        if (
+            $this->chartType == "group by chart"
+            || $this->chartType == "horizontal group by chart"
+            || $this->chartType == 'line chart'
+            || $this->chartType == 'stacked group by chart'
+        )
+        {
 			$groups = $xml->data->group[0]->subgroups->group;
 			$items = (sizeof($xml->data->group[0]->subgroups->group) <= 5) ? 5 : sizeof($xml->data->group[0]->subgroups->group);
 		} else {
@@ -600,7 +606,7 @@ class JsChart extends SugarChart {
 			$colorArr[] = str_replace("0x","#",$color);
 		}
 
-
+        $isTrClosed = false;
 		foreach($groups as $group) {
 			if($i == 5) {$i = 0;}
 			$html .= ($i == 0) ? "<tr>" : "";
@@ -611,11 +617,22 @@ class JsChart extends SugarChart {
 			$html .= $group->title;
 			$html .= "</td>";
 			$html .= ($x+1 == $items) ? "<td colspan=".($remainder*2)."></td>" : "";
-			$html .= ($i == 4) ? "</tr>" : "";
+            if ($i == 4)
+            {
+                $html .= "</tr>";
+                $isTrClosed = true;
+            }
+            else
+            {
+                $isTrClosed = false;
+            }
 			$x++;
 			$i++;
 		}
-
+        if ($isTrClosed == false)
+        {
+            $html .= '</tr>';
+        }
 
 		$html .= "</table>";
 		return $html;

@@ -620,41 +620,7 @@ if(file_exists('ModuleInstall/PackageManager/PackageManagerDisplay.php')) {
 	require_once('ModuleInstall/PackageManager/PackageManagerDisplay.php');
 }
 
-	$parserFiles = array();
 
-if(file_exists(clean_path("{$zipBasePath}/include/SugarFields"))) {
-	$parserFiles = findAllFiles(clean_path("{$zipBasePath}/include/SugarFields"), $parserFiles);
-}
- //$cwd = clean_path(getcwd());
-foreach($parserFiles as $file) {
-	$srcFile = clean_path($file);
-	//$targetFile = clean_path(getcwd() . '/' . $srcFile);
-    if (strpos($srcFile,".svn") !== false) {
-	  //do nothing
-    }
-    else{
-    $targetFile = str_replace(clean_path($zipBasePath), $cwd, $srcFile);
-
-    if(!file_exists(dirname($targetFile)))
-    {
-		logThis("Create directory " . dirname($targetFile), $path);
-    	mkdir_recursive(str_replace($argv[3], '', dirname($targetFile))); // make sure the directory exists
-	}
-
-	if(!file_exists($targetFile))
-	 {
-		//logThis('Copying file to destination: ' . $targetFile, $path);
-		if(!copy($srcFile, $targetFile)) {
-			logThis('*** ERROR: could not copy file: ' . $targetFile, $path);
-		} else {
-			$copiedFiles[] = $targetFile;
-		}
-	} else {
-		//logThis('Skipping file: ' . $targetFile, $path);
-		//$skippedFiles[] = $targetFile;
-	}
-   }
- }
 	//copy minimum required files including sugar_file_utils.php
 	if(file_exists("{$zipBasePath}/include/utils/sugar_file_utils.php")){
 		$destFile = clean_path(str_replace($zipBasePath, $cwd, "{$zipBasePath}/include/utils/sugar_file_utils.php"));

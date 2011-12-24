@@ -44,6 +44,7 @@ $viewdefs['Users']['QuickCreate'] = array(
                                 'headerTpl'=>'modules/Users/tpls/EditViewHeader.tpl',
                                 'footerTpl'=>'modules/Users/tpls/EditViewFooter.tpl',
                             ),
+                            'javascript' => '<script type="text/javascript" src="modules/Users/UserEditView.js"></script>',
     ),
     'panels' => array (
         'LBL_USER_INFORMATION' => array (

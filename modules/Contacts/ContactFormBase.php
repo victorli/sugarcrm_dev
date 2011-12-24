@@ -432,7 +432,7 @@ function handleSave($prefix, $redirect=true, $useRequired=false){
 	} else {
 
         $focus = populateFromPost($prefix, $focus);
-        if(!empty($focus->portal_password) && $focus->portal_password != $_POST[$prefix.'old_portal_password']){
+        if( isset($_POST[$prefix.'old_portal_password']) && !empty($focus->portal_password) && $focus->portal_password != $_POST[$prefix.'old_portal_password']){
             $focus->portal_password = md5($focus->portal_password);
         }
 		if (!isset($_POST[$prefix.'email_opt_out'])) $focus->email_opt_out = 0;

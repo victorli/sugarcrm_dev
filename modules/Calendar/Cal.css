@@ -122,6 +122,10 @@
 	cursor: default;
 }
 
+.act_item.empty {
+	border-color: transparent;
+}
+
 .act_item, #cal-grid .day_col {
 	-webkit-user-select: none;
 	-khtml-user-select: none;

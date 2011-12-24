@@ -237,6 +237,7 @@ $dictionary['User'] = array(
         ) ,
         'created_by_name' => array(
             'name' => 'created_by_name',
+	    'vname' => 'LBL_CREATED_BY_NAME', //bug 48978
             'type' => 'varchar',
             'source' => 'non-db',
             'importable' => 'false',
@@ -563,6 +564,14 @@ $dictionary['User'] = array(
             'source' => 'non-db',
             'vname' => 'LBL_PROSPECT_LIST',
         ) ,
+        'emails_users' => array(
+            'name' => 'emails_users',
+            'type' => 'link',
+            'relationship' => 'emails_users_rel',
+            'module' => 'Emails',
+            'source' => 'non-db',
+            'vname' => 'LBL_EMAILS'
+        ),
         'holidays' => array(
             'name' => 'holidays',
             'type' => 'link',

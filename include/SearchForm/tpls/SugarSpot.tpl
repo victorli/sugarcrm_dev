@@ -55,7 +55,7 @@ border:0;
 {if !empty($displayResults)}
 {foreach from=$displayResults key=module item=data}
 <div>
-    {if isset($appListStrings.moduleList[$modulepair])}
+    {if isset($appListStrings.moduleList[$module])}
         {$appListStrings.moduleList[$module]}
     {else}
         {$module}
@@ -66,17 +66,27 @@ border:0;
     {/if}
 </div>
 <table class="gs_table">
-{foreach from=$data key=id item=name}
-<tr onmouseover="DCMenu.showQuickViewIcon('{$id}')" onmouseout="DCMenu.hideQuickViewIcon('{$id}')">
-<td>
-<span id="gs_div_{$id}" class="SpanQuickView">
-<img id="gs_img_{$id}" class="QuickView" src="themes/default/images/Search.gif" alt="quick_view_{$id}" onclick="DCMenu.showQuickView('{$module}', '{$id}');">
-</span>
-</td>
-<td><a href="index.php?module={$module}&action=DetailView&record={$id}" class="gs_link">{$name}</a></td>
-</tr>
-{/foreach}
-</table>
+    {if isset($data.link)}
+        <tr>
+            <td>{sugar_getimage name='blank.gif' width='16' height='16' border='0'}</td>
+            <td>
+                <a href="index.php?&module=Home&action=UnifiedSearch&query_string={$data.link.query_encoded}">{$data.link.total} {$appStrings.LBL_SEARCH_RESULTS}</a>
+            </td>
+        </tr>
+        </table>
+    {else}
+        {foreach from=$data key=id item=name}
+        <tr onmouseover="DCMenu.showQuickViewIcon('{$id}')" onmouseout="DCMenu.hideQuickViewIcon('{$id}')">
+        <td>
+        <span id="gs_div_{$id}" class="SpanQuickView">
+        <img id="gs_img_{$id}" class="QuickView" src="themes/default/images/Search.gif" alt="quick_view_{$id}" onclick="DCMenu.showQuickView('{$module}', '{$id}');">
+        </span>
+        </td>
+        <td><a href="index.php?module={$module}&action=DetailView&record={$id}" class="gs_link">{$name}</a></td>
+        </tr>
+        {/foreach}
+        </table>
+    {/if}
 {/foreach}
 {else}
 {$appStrings.LBL_EMAIL_SEARCH_NO_RESULTS}

@@ -629,4 +629,56 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
 		$_SESSION['authenticated_user_id'] = $current_user->id;
         return session_id();
     }
+
+
+    /**
+     * get_subpanel_defs
+     *
+     * @param String $module The name of the module to get the subpanel definition for
+     * @param String $type The type of subpanel definition ('wireless' or 'default')
+     * @return array Array of the subpanel definition; empty array if no matching definition found
+     */
+	function get_subpanel_defs($module, $type)
+	{
+	    global $beanList, $beanFiles;
+	    $results = array();
+	    switch ($type)
+	    {
+	        case 'wireless':
+
+                if (file_exists('custom/modules/'.$module.'/metadata/wireless.subpaneldefs.php'))
+	                 require_once('custom/modules/'.$module.'/metadata/wireless.subpaneldefs.php');
+	            else if (file_exists('modules/'.$module.'/metadata/wireless.subpaneldefs.php'))
+	                 require_once('modules/'.$module.'/metadata/wireless.subpaneldefs.php');
+
+                //If an Ext/WirelessLayoutdefs/wireless.subpaneldefs.ext.php file exists, then also load it as well
+                if(file_exists('custom/modules/'.$module.'/Ext/WirelessLayoutdefs/wireless.subpaneldefs.ext.php'))
+                {
+                    require_once('custom/modules/'.$module.'/Ext/WirelessLayoutdefs/wireless.subpaneldefs.ext.php');
+                }
+	            break;
+
+	        case 'default':
+	        default:
+	            if (file_exists ('modules/'.$module.'/metadata/subpaneldefs.php' ))
+	                require ('modules/'.$module.'/metadata/subpaneldefs.php');
+	            if ( file_exists('custom/modules/'.$module.'/Ext/Layoutdefs/layoutdefs.ext.php' ))
+	                require ('custom/modules/'.$module.'/Ext/Layoutdefs/layoutdefs.ext.php');
+	    }
+
+	    //Filter results for permissions
+	    foreach ($layout_defs[$module]['subpanel_setup'] as $subpanel => $subpaneldefs)
+	    {
+	        $moduleToCheck = $subpaneldefs['module'];
+	        if(!isset($beanList[$moduleToCheck]))
+	           continue;
+	        $class_name = $beanList[$moduleToCheck];
+	        $bean = new $class_name();
+	        if($bean->ACLAccess('list'))
+	            $results[$subpanel] = $subpaneldefs;
+	    }
+
+	    return $results;
+
+	}
 }

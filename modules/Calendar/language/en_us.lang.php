@@ -40,7 +40,7 @@ $mod_strings = array (
 
 	'LBL_MODULE_NAME' => 'Calendar',
 	'LBL_MODULE_TITLE' => 'Calendar',
-	'LNK_NEW_CALL' => 'Schedule Call',
+	'LNK_NEW_CALL' => 'Log Call',
 	'LNK_NEW_MEETING' => 'Schedule Meeting',
 	'LNK_NEW_APPOINTMENT' => 'Create Appointment',
 	'LNK_NEW_TASK' => 'Create Task',

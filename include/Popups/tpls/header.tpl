@@ -35,12 +35,13 @@
  ********************************************************************************/
 
 *}
+
 <script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_3.js'}"></script>
 <script type="text/javascript" src="{sugar_getjspath file='include/javascript/popup_helper.js'}"></script>
 <script type='text/javascript' src="{sugar_getjspath file='cache/include/javascript/sugar_grp_overlib.js'}"></script>
 <script type="text/javascript">
 	{$ASSOCIATED_JAVASCRIPT_DATA}
-
+	
 {literal}
 function clearAll() {
    for(i=0; i < document.popup_query_form.length; i++) {
@@ -50,8 +51,8 @@ function clearAll() {
           }
        }
    }
-}
-{/literal}
+}	
+{/literal}	
 </script>
 {{if isset($formData)}}
 {$SEARCH_FORM_HEADER}
@@ -95,7 +96,7 @@ function clearAll() {
 <p>
 {{if isset($popupMeta)}}
 <div id='addformlink'>
-<input type="button" name="showAdd" class="button" value="{$popupMeta.create.createButton}" onclick="toggleDisplay('addform');" />
+<input type="button" id="showAdd" name="showAdd" class="button" value="{$popupMeta.create.createButton}" onclick="toggleDisplay('addform');" />
 </div>
 {{/if}}
 <div id='addform' style='display:none;position:relative;z-index:2;left:0px;top:0px;'>
@@ -122,9 +123,7 @@ function clearAll() {
 <input type='hidden' name='massupdate' value='true' />
 {$massUpdateData}
 <input type='hidden' name='Leads_LEAD_offset' value=''><input type='hidden' name='saved_associated_data' value=''><input type='hidden' name='module' value='{$module}'><input type='hidden' name='action' value='Popup'><input type='hidden' name='return_module' value='{$module}'><input type='hidden' name='return_action' value='Popup'><input type='hidden' name='hide_clear_button' value='true'><input type='hidden' name='current_query_by_page' value='{$current_query}'>
-
+	
 	{$multiSelectData}
 	<input class="button" type="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' onclick="send_back_selected('{$module}',document.MassUpdate,'mass[]','{$APP.ERR_NOTHING_SELECTED}');">
-
 {{/if}}
-

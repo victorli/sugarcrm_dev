@@ -147,8 +147,7 @@ $dictionary['Lead'] = array('table' => 'leads','audited'=>true, 'unified_search'
 		'vname'=>'LBL_REPORTS_TO',
         'reportable'=>false
   ),
-  'contacts'=>
-    array (
+    'contacts'=> array(
         'name' => 'contacts',
         'type' => 'link',
         'relationship' => 'contact_leads',
@@ -216,13 +215,14 @@ $dictionary['Lead'] = array('table' => 'leads','audited'=>true, 'unified_search'
     'vname'=>'LBL_CONTACT_ID',
 	'comment' => 'If converted, Contact ID resulting from the conversion'
   ),
-    'contact'=> array (
+    'contact' => array(
         'name' => 'contact',
         'type' => 'link',
         'link_type' => 'one',
         'relationship' => 'contact_leads',
         'source' => 'non-db',
-        'vname' => 'LBL_CONTACTS',
+        'vname' => 'LBL_LEADS',
+        'reportable' => false,
     ),
   'account_id' =>
   array (

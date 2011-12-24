@@ -515,11 +515,17 @@ EOCSS;
         $sqsWaitImage = SugarThemeRegistry::current()->getImageURL('sqsWait.gif');
 
         return <<<EOJAVASCRIPT
-document.getElementById('goback').onclick = function(){
-    document.getElementById('{$this->currentFormID}').action.value = '{$this->previousAction}';
-    return true;
-}
-
+    document.getElementById('goback').onclick = function()
+    {
+        document.getElementById('{$this->currentFormID}').action.value = '{$this->previousAction}';
+        //bug #48960: CSS didn't load when use click back in the step2 (external sources are selected for contacts)
+        //need to unset 'to_pdf' in extstep1.tpl 
+        if (document.getElementById('{$this->currentFormID}').to_pdf)
+        {
+            document.getElementById('{$this->currentFormID}').to_pdf.value = '';
+        }
+        return true;
+    }
 
 ImportView = {
 

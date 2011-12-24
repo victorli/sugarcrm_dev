@@ -289,7 +289,7 @@ class EmailMan extends SugarBean{
 			$this->db->query($query);
 		}else{
 			//try to send the email again a day later.
-			$query = 'UPDATE ' . $this->table_name . " SET in_queue='1', send_attempts='$this->send_attempts', in_queue_date='". TimeDate::getInstance()->nowDb() ."' WHERE id = '$this->id'";
+			$query = 'UPDATE ' . $this->table_name . " SET in_queue='1', send_attempts='$this->send_attempts', in_queue_date=". $this->db->now() ." WHERE id = '$this->id'";
 			$this->db->query($query);
 		}
 	}
@@ -748,7 +748,7 @@ class EmailMan extends SugarBean{
             {
                 $focus_name = 'Accounts';
             }
-            
+
 
 			$template_data=  $this->current_emailtemplate->parse_email_template(array('subject'=>$this->current_emailtemplate->subject,
 																					  'body_html'=>$this->current_emailtemplate->body_html,

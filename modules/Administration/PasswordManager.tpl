@@ -48,7 +48,7 @@
 
 		<td style="padding-bottom: 2px;" >
 			<input title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}" class="button primary" id="btn_save" type="submit" onclick="addcheck(form);return check_form('ConfigurePasswordSettings');"  name="save" value="{$APP.LBL_SAVE_BUTTON_LABEL}" >
-			&nbsp;<input title="{$MOD.LBL_CANCEL_BUTTON_TITLE}"  onclick="document.location.href='index.php?module=Administration&action=index'" class="button"  type="button" name="cancel" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" >
+			&nbsp;<input title="{$MOD.LBL_CANCEL_BUTTON_TITLE}" id="btn_cancel" onclick="document.location.href='index.php?module=Administration&action=index'" class="button"  type="button" name="cancel" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" >
 		</td>
 	</tr>
 </table>
@@ -82,7 +82,7 @@
 											{/if}
 										</tr>
 										<tr>
-											<td colspan="2" id='SystemGeneratedPassword_warning'scope="row" style='display:{$smtp_warning}';>
+											<td colspan="2" id="SystemGeneratedPassword_warning" scope="row" style='display:{$smtp_warning}';>
 											<i>{if $SMTP_SERVER_NOT_SET}&nbsp;&nbsp;&nbsp;&nbsp;{$MOD.ERR_SMTP_SERVER_NOT_SET}<br>{/if}
 											&nbsp;&nbsp;&nbsp;&nbsp;{$MOD.LBL_EMAIL_ADDRESS_REQUIRED_FOR_FEATURE}</i>
 										</td>
@@ -167,7 +167,7 @@
 												{assign var='smtp_warning_2' value='none'}
 											{/if}
 										</tr>
-										<tr><td colspan="4" id='SystemGeneratedPassword_warning2'scope="row" style='display:{$smtp_warning_2}';>
+										<tr><td colspan="4" id="SystemGeneratedPassword_warning2" scope="row" style='display:{$smtp_warning_2}';>
 											<i>{if $SMTP_SERVER_NOT_SET}&nbsp;&nbsp;&nbsp;&nbsp;{$MOD.ERR_SMTP_SERVER_NOT_SET}<br>{/if}
 											&nbsp;&nbsp;&nbsp;&nbsp;{$MOD.LBL_EMAIL_ADDRESS_REQUIRED_FOR_FEATURE}</i>
 											</td>

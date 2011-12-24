@@ -229,7 +229,7 @@ for($i= 0; $i<$columns;$i++){
                 $Web_To_Lead_Form_html .= "<td width='15%' style='text-align: left; font-size: 12px; font-weight: normal;'><span sugar='slot'>$field_label</span sugar='slot'></td>";
              }
           if(isset($lead->field_defs[$colsFirstField]['isMultiSelect']) && $lead->field_defs[$colsFirstField]['isMultiSelect'] ==1){
-            $Web_To_Lead_Form_html .= "<td width='35%' style='font-size: 12px; font-weight: normal;'><span sugar='slot'><select id='{$field_name}' multiple='true' name='{$field_name}' tabindex='1'>$lead_options</select></span sugar='slot'></td>";
+            $Web_To_Lead_Form_html .= "<td width='35%' style='font-size: 12px; font-weight: normal;'><span sugar='slot'><select id='{$field_name}' multiple='true' name='{$field_name}[]' tabindex='1'>$lead_options</select></span sugar='slot'></td>";
           }elseif(ifRadioButton($lead->field_defs[$colsFirstField]['name'])){
             $Web_To_Lead_Form_html .="<td width='35%' style='font-size: 12px; font-weight: normal;'><span sugar='slot'>";
             foreach($app_list_strings[$field_options] as $field_option_key => $field_option){
@@ -356,7 +356,7 @@ for($i= 0; $i<$columns;$i++){
                 $Web_To_Lead_Form_html .= "<td width='15%' style='text-align: left; font-size: 12px; font-weight: normal;'><span sugar='slot'>$field1_label</span sugar='slot'></td>";
              }
             if(isset($lead->field_defs[$colsSecondField]['isMultiSelect']) && $lead->field_defs[$colsSecondField]['isMultiSelect'] ==1){
-                $Web_To_Lead_Form_html .= "<td width='35%' style='font-size: 12px; font-weight: normal;'><span sugar='slot'><select id='{$field1_name}' name='{$field1_name}' multiple='true' tabindex='1'>$lead1_options</select></span sugar='slot'></td>";
+                $Web_To_Lead_Form_html .= "<td width='35%' style='font-size: 12px; font-weight: normal;'><span sugar='slot'><select id='{$field1_name}' name='{$field1_name}[]' multiple='true' tabindex='1'>$lead1_options</select></span sugar='slot'></td>";
             }elseif(ifRadioButton($lead->field_defs[$colsSecondField]['name'])){
                 $Web_To_Lead_Form_html .="<td width='35%' style='font-size: 12px; font-weight: normal;'><span sugar='slot'>";
                 foreach($app_list_strings[$field1_options] as $field_option_key => $field_option){

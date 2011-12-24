@@ -42,10 +42,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * Window - Preferences - PHPeclipse - PHP - Code Templates
  */
 require_once('soap/SoapHelperFunctions.php');
-require_once('modules/MailMerge/MailMerge.php');
-
-
-
+require_once('modules/MailMerge/MailMerge.php'); 
+ 
+ 
+ 
 require_once('include/upload_file.php');
 
 
@@ -81,7 +81,7 @@ $item_ids = array();
 parse_str(stripslashes(html_entity_decode($selObjs, ENT_QUOTES)),$item_ids);
 
 if($module == 'CampaignProspects'){
-    $module = 'Prospects';
+    $module = 'Prospects';   
     if(!empty($_SESSION['MAILMERGE_CAMPAIGN_ID'])){
     	$targets = array_keys($item_ids);
     	require_once('modules/Campaigns/utils.php');
@@ -91,7 +91,7 @@ if($module == 'CampaignProspects'){
 $class_name = $beanList[$module];
 $includedir = $beanFiles[$class_name];
 require_once($includedir);
-$seed = new $class_name();
+$seed = new $class_name(); 
 
 $fields =  get_field_list($seed);
 
@@ -108,7 +108,7 @@ global $sugar_config;
 
 $filter = array();
 if(array_key_exists('mailmerge_filter', $sugar_config)){
- //   $filter = $sugar_config['mailmerge_filter'];
+ //   $filter = $sugar_config['mailmerge_filter']; 
 }
 array_push($filter, 'link');
 
@@ -128,19 +128,20 @@ foreach($item_ids as $key=>$value)
 }//rof
 $merge_array['ids'] = $ids;
 
-$dataDir = sugar_cached("MergedDocuments/");
+$dataDir = getcwd(). '/' . sugar_cached('MergedDocuments/');
 if(!file_exists($dataDir))
 {
 	sugar_mkdir($dataDir);
 }
-srand((double)microtime()*1000000);
+srand((double)microtime()*1000000); 
 $mTime = microtime();
 $dataFileName = 'sugardata'.$mTime.'.php';
 write_array_to_file('merge_array', $merge_array, $dataDir.$dataFileName);
 //Save the temp file so we can remove when we are done
 $_SESSION['MAILMERGE_TEMP_FILE_'.$mTime] = $dataDir.$dataFileName;
 $site_url = $sugar_config['site_url'];
-$templateFile = $site_url.UploadFile::get_upload_url($document);
+//$templateFile = $site_url . '/' . UploadFile::get_upload_url($document);
+$templateFile = $site_url.'/'.UploadFile::get_url(from_html($document->filename),$document->id);
 $dataFile =$dataFileName;
 $redirectUrl = 'index.php?action=index&step=5&module=MailMerge&mtime='.$mTime;
 $startUrl = 'index.php?action=index&module=MailMerge&reset=true';
@@ -153,10 +154,10 @@ $fp = sugar_fopen($dataDir.$rtfFileName, 'w');
 fwrite($fp, $contents);
 fclose($fp);
 
-$_SESSION['mail_merge_file_location'] = $dataDir.$rtfFileName;
+$_SESSION['mail_merge_file_location'] = sugar_cached('MergedDocuments/').$rtfFileName;
 $_SESSION['mail_merge_file_name'] = $rtfFileName;
 
-$xtpl->assign("MAILMERGE_FIREFOX_URL", $site_url .'/cache/MergedDocuments/'.$rtfFileName);
+$xtpl->assign("MAILMERGE_FIREFOX_URL", $site_url .'/'.$GLOBALS['sugar_config']['cache_dir'].'MergedDocuments/'.$rtfFileName);
 $xtpl->assign("MAILMERGE_START_URL", $startUrl);
 $xtpl->assign("MAILMERGE_TEMPLATE_FILE", $templateFile);
 $xtpl->assign("MAILMERGE_DATA_FILE", $dataFile);

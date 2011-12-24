@@ -46,6 +46,9 @@ class Bug34547Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        if ( !function_exists('mysql_connect') || !function_exists('mysqli_connect'))
+            $this->markTestSkipped('Test requires mysql and mysqli extensions enabled.');
+        
         $this->_db = DBManagerFactory::getInstance();
         if(get_class($this->_db) != 'MysqlManager' && get_class($this->_db) != 'MysqliManager') {
             $this->markTestSkipped("Skipping test if not mysql or mysqli configuration");

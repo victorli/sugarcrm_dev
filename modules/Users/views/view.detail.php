@@ -36,8 +36,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
-require_once('include/MVC/View/views/view.detail.php');
 require_once('modules/Users/UserViewHelper.php');
 
 class UsersViewDetail extends ViewDetail {

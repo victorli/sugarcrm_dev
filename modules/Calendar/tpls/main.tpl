@@ -165,6 +165,7 @@
 		
 		YAHOO.util.Event.on(window, 'resize', function(){
 			CAL.fit_grid();
+			CAL.update_dd.fire();
 		});		
 				
 		YAHOO.util.Event.on("btn-save","click",function(){																		
@@ -227,7 +228,9 @@
 		{/literal}
 		
 		{if $view != "year"}
-		CAL.fit_grid();	
+		CAL.arrange_advanced();
+		CAL.fit_grid();
+		CAL.update_dd.fire();
 		{/if}
 		
 		cal_loaded = null;		

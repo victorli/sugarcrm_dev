@@ -1546,7 +1546,7 @@ function get_mailmerge_document($session, $file_name, $fields)
         $error->set_error('invalid_login');
         return array('result'=>'', 'error'=>$error->get_soap_array());
     }
-    if(!preg_match('/^sugardata\d+[.]php$/', $file_name)) {
+    if(!preg_match('/^sugardata[\.\d\s]+\.php$/', $file_name)) {
         $error->set_error('no_records');
         return array('result'=>'', 'error'=>$error->get_soap_array());
     }
@@ -1667,14 +1667,17 @@ $NAMESPACE);
  */
 function get_mailmerge_document2($session, $file_name, $fields)
 {
-    global  $beanList, $beanFiles, $app_list_strings;
+    global  $beanList, $beanFiles, $app_list_strings, $app_strings;
+
     $error = new SoapError();
     if(!validate_authenticated($session))
     {
+        $GLOBALS['log']->error('invalid_login');
         $error->set_error('invalid_login');
         return array('result'=>'', 'error'=>$error->get_soap_array());
     }
-    if(!preg_match('/^sugardata\d+[.]php$/', $file_name)) {
+    if(!preg_match('/^sugardata[\.\d\s]+\.php$/', $file_name)) {
+        $GLOBALS['log']->error($app_strings['ERR_NO_SUCH_FILE'] . " ({$file_name})");
         $error->set_error('no_records');
         return array('result'=>'', 'error'=>$error->get_soap_array());
     }

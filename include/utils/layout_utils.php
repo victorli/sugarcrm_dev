@@ -324,7 +324,8 @@ EOHTML;
  * @return string HTML
  */
 function insert_popup_header(
-    $theme = null
+    $theme = null,
+    $includeJS = true
     )
 {
     global $app_strings, $sugar_config;
@@ -336,20 +337,24 @@ function insert_popup_header(
 
     $langHeader = get_language_header();
 
-    echo <<<EOHTML
+    //The SugarView will insert the header now, this function should no longer do the actual head element.
+    if ($includeJS)
+    {
+        echo <<<EOHTML
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html {$langHeader}>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset="{$charset}">
-<title>{$app_strings['LBL_BROWSER_TITLE']}</title>
-{$themeCSS}
 EOHTML;
-    echo '<script type="text/javascript" src="' . getJSPath('cache/include/javascript/sugar_grp1_yui.js') . '"></script>';
-    echo '<script type="text/javascript" src="' . getJSPath('cache/include/javascript/sugar_grp1.js') . '"></script>';
-    echo <<<EOHTML
-</head>
-<body class="popupBody">
-EOHTML;
+    }
+    echo "<title>{$app_strings['LBL_BROWSER_TITLE']}</title>" . $themeCSS;
+    if ($includeJS)
+    {
+        echo '<script type="text/javascript" src="' . getJSPath('cache/include/javascript/sugar_grp1_yui.js') . '"></script>';
+        echo '<script type="text/javascript" src="' . getJSPath('cache/include/javascript/sugar_grp1.js') . '"></script>';
+        echo '</head>';
+    }
+    echo  '<body class="popupBody">';
 }
 
 /**

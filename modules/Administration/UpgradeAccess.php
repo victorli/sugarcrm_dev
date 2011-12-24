@@ -72,9 +72,9 @@ if(substr($contents, -1) != "\n") {
 }
 $status =  file_put_contents($htaccess_file, $contents . $restrict_str);
 if( !$status ){
-    echo '<p>' . $mod_strings['LBL_HT_NO_WRITE'] . '<span class=stop>$htaccess_file</span></p>\n';
-    echo '<p>' . $mod_strings['LBL_HT_NO_WRITE_2'] . '</p>\n';
-    echo "$redirect_str";
+    echo '<p>' . $mod_strings['LBL_HT_NO_WRITE'] . "<span class=stop>{$htaccess_file}</span></p>\n";
+    echo '<p>' . $mod_strings['LBL_HT_NO_WRITE_2'] . "</p>\n";
+    echo "{$redirect_str}\n";
 }
 
 

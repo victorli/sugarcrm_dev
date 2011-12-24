@@ -184,6 +184,10 @@ class ViewQuickedit extends ViewAjax
                    if(!empty($GLOBALS['beanFiles'][$class])){
                        require_once($GLOBALS['beanFiles'][$class]);
                        $bean = new $class();
+                       if (isset($_REQUEST['record']) && $_REQUEST['record'] != false)
+                       {
+                           $bean->retrieve($_REQUEST['record']);
+                       }
                        $view->bean = $bean;
                    }
                    $view->ev->formName = 'form_DC'.$view->ev->view .'_'.$module;

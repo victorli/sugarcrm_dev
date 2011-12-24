@@ -69,7 +69,7 @@ class CampaignLog extends SugarBean {
         //make sure that both items in array are set to some value, else return null
         if(!(isset($temp_array['TARGET_TYPE']) && $temp_array['TARGET_TYPE']!= '') || !(isset($temp_array['TARGET_ID']) && $temp_array['TARGET_ID']!= ''))
         {   //needed values to construct query are empty/null, so return null
-            $GLOBALS['log']->debug("CampaignLog.php:get_list_view_data duntion: temp_array['TARGET_TYPE'] and/or temp_array['TARGET_ID'] are empty, return null");
+            $GLOBALS['log']->debug("CampaignLog.php:get_list_view_data: temp_array['TARGET_TYPE'] and/or temp_array['TARGET_ID'] are empty, return null");
             $emptyArr = array();
             return $emptyArr;
         }

@@ -229,7 +229,7 @@ class SugarFieldBase {
                     require_once($includeFile);
                 }
 
-                return $funcName($parentFieldArray, $vardef['name'], $parentFieldArray[$vardef['name']], $displayType);
+                return $funcName($parentFieldArray, $vardef['name'], $parentFieldArray[strtoupper($vardef['name'])], $displayType);
             } else {
                 $displayTypeFunc = 'get'.$displayType.'Smarty';
                 return $this->$displayTypeFunc($parentFieldArray, $vardef, $displayParams, $tabindex);
@@ -255,6 +255,19 @@ class SugarFieldBase {
     }
 
     function getEditView() {
+    }
+
+    /**
+     * getSearchWhereValue
+     *
+     * Checks and returns a sane value based on the field type that can be used when building the where clause in a
+     * search form.
+     *
+     * @param $value Mixed value being searched on
+     * @return Mixed the value for the where clause used in search
+     */
+    function getSearchWhereValue($value) {
+        return $value;
     }
 
     /**

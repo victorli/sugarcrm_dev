@@ -77,7 +77,7 @@ class ImportViewStep2 extends ImportView
         $this->ss->assign("JAVASCRIPT", $this->_getJS());
         $this->ss->assign("SAMPLE_URL", "<a href=\"javascript: void(0);\" onclick=\"window.location.href='index.php?entryPoint=export&module=".$_REQUEST['import_module']."&action=index&all=true&sample=true'\" >".$mod_strings['LBL_EXAMPLE_FILE']."</a>");
 
-        $displayBackBttn = isset($_REQUEST['return_action']) && $_REQUEST['return_action'] != 'index'? TRUE : FALSE;
+        $displayBackBttn = isset($_REQUEST['action']) && $_REQUEST['action'] != 'index'? TRUE : FALSE;
         $this->ss->assign("displayBackBttn", $displayBackBttn);
 
         $importSource = isset($_REQUEST['source']) ? $_REQUEST['source'] : 'csv' ;

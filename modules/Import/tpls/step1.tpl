@@ -60,7 +60,6 @@
 <input type="hidden" name="module" value="Import">
 <input type="hidden" name="action" value="Step2">
 <input type="hidden" name="current_step" value="1">
-<input type="hidden" name="return_action" value="Step1">
 <input type="hidden" name="external_source" value="">
 <input type="hidden" name="from_admin_wizard" value="{$FROM_ADMIN}">
 <input type="hidden" name="import_module" value="{$IMPORT_MODULE}">

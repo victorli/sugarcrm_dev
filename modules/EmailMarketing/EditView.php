@@ -35,18 +35,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description:  TODO: To be written.
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
- * All Rights Reserved.
- * Contributor(s): ______________________________________..
- ********************************************************************************/
-
-
-
 require_once('modules/EmailMarketing/Forms.php');
-
 
 global $timedate;
 global $app_strings;
@@ -85,18 +74,19 @@ $xtpl->assign("THEME", SugarThemeRegistry::current()->__toString());
 $xtpl->assign("CALENDAR_LANG", "en");
 $xtpl->assign("USER_DATEFORMAT", '('. $timedate->get_user_date_format().')');
 $xtpl->assign("CALENDAR_DATEFORMAT", $timedate->get_cal_date_format());
-$xtpl->assign("TIME_MERIDIEM", $timedate->AMPMMenu('', $focus->time_start));
+$time_ampm = $timedate->AMPMMenu('', $focus->time_start);
+$xtpl->assign("TIME_MERIDIEM", $time_ampm);
 
 if (isset($_REQUEST['return_module'])) {
 	$xtpl->assign("RETURN_MODULE", $_REQUEST['return_module']);
 } else {
 	$xtpl->assign("RETURN_MODULE", 'Campaigns');
 }
-if (isset($_REQUEST['return_action'])) { 
+if (isset($_REQUEST['return_action'])) {
 	$xtpl->assign("RETURN_ACTION", $_REQUEST['return_action']);
 } else {
 	$xtpl->assign("RETURN_ACTION", 'DetailView');
-}	
+}
 if (isset($_REQUEST['return_id'])) {
 	$xtpl->assign("RETURN_ID", $_REQUEST['return_id']);
 } else {
@@ -107,13 +97,17 @@ if (isset($_REQUEST['return_id'])) {
 
 if($focus->campaign_id) {
 	$campaign_id=$focus->campaign_id;
-}
-else {
+} else {
 	$campaign_id=$_REQUEST['campaign_id'];
 }
 $xtpl->assign("CAMPAIGN_ID", $campaign_id);
 
-
+if(empty($time_ampm) || empty($focus->time_start)) {
+    $time_start = $focus->time_start;
+} else {
+    $split = $timedate->splitTime($focus->time_start, $timedate->get_time_format());
+    $time_start = $split['h'].$timedate->timeSeparator().$split['m'];
+}
 $xtpl->assign("PRINT_URL", "index.php?".$GLOBALS['request_string']);
 $xtpl->assign("JAVASCRIPT", get_set_focus_js().get_validate_record_js());
 $xtpl->assign("DATE_ENTERED", $focus->date_entered);
@@ -123,7 +117,7 @@ $xtpl->assign("NAME", $focus->name);
 $xtpl->assign("FROM_NAME", $focus->from_name);
 $xtpl->assign("FROM_ADDR", $focus->from_addr);
 $xtpl->assign("DATE_START", $focus->date_start);
-$xtpl->assign("TIME_START", $focus->time_start);
+$xtpl->assign("TIME_START", $time_start);
 $xtpl->assign("TIME_FORMAT", '('. $timedate->get_user_time_format().')');
 
 $email_templates_arr = get_bean_select_array(true, 'EmailTemplate','name','','name');
@@ -140,7 +134,7 @@ else {
 //include campaign utils..
 require_once('modules/Campaigns/utils.php');
 if (empty($_REQUEST['campaign_name'])) {
-	
+
 	$campaign = new Campaign();
 	$campaign->retrieve($campaign_id);
 	$campaign_name=$campaign->name;
@@ -163,8 +157,8 @@ $scope_options=get_message_scope_dom($campaign_id,$campaign_name,$focus->db);
 $prospectlists=array();
 if (isset($focus->all_prospect_lists) && $focus->all_prospect_lists==1) {
 	$xtpl->assign("ALL_PROSPECT_LISTS_CHECKED","checked");
-	$xtpl->assign("MESSAGE_FOR_DISABLED","disabled");		
-}	
+	$xtpl->assign("MESSAGE_FOR_DISABLED","disabled");
+}
 else {
 	//get select prospect list.
 	if (!empty($focus->id)) {
@@ -206,7 +200,7 @@ $xtpl->assign("DEFAULT_FROM_EMAIL",$default_email_address);
 if (empty($focus->inbound_email_id)) {
 	$xtpl->assign("MAILBOXES", get_select_options_with_id($mailboxes, ''));
 } else {
-	$xtpl->assign("MAILBOXES", get_select_options_with_id($mailboxes, $focus->inbound_email_id));	
+	$xtpl->assign("MAILBOXES", get_select_options_with_id($mailboxes, $focus->inbound_email_id));
 }
 
 $xtpl->assign("STATUS_OPTIONS", get_select_options_with_id($app_list_strings['email_marketing_status_dom'], $focus->status));

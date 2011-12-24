@@ -189,7 +189,7 @@ function populateBean(&$focus) {
 
 	foreach($all_fields as $field)
 	{
-		if(isset($focus->$field))
+		if(isset($focus->$field) && !is_object($focus->$field))
 		{
 			$focus->$field =	from_html($focus->$field);
 			$focus->$field =	preg_replace("/\r\n/","<BR>",$focus->$field);
@@ -197,7 +197,7 @@ function populateBean(&$focus) {
 			$module_arr['fields'][$field] = $focus->$field;
 		}
 	}
-$GLOBALS['log']->debug("JSON_SERVER:populate bean:");
+	$GLOBALS['log']->debug("JSON_SERVER:populate bean:");
 	return $module_arr;
 }
 

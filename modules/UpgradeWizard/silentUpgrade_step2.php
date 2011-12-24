@@ -400,7 +400,10 @@ foreach ($beanFiles as $bean => $file) {
 			if(!isset($repairedTables[$focus->table_name]))
 			{
 				$sql = $GLOBALS['db']->repairTable($focus, true);
-				logThis('Running sql:' . $sql, $path);
+                if(trim($sql) != '')
+                {
+				    logThis('Running sql:' . $sql, $path);
+                }
 				$repairedTables[$focus->table_name] = true;
 			}
 
@@ -451,7 +454,7 @@ if($ce_to_pro_ent) {
 	//add the global team if it does not exist
 	$globalteam = new Team();
 	$globalteam->retrieve('1');
-	require_once('modules/Administration/language/en_us.lang.php');
+	require_once($unzip_dir.'/'.$zip_from_dir.'/modules/Administration/language/en_us.lang.php');
 	if(isset($globalteam->name)){
 		echo 'Global '.$mod_strings['LBL_UPGRADE_TEAM_EXISTS'].'<br>';
 		logThis(" Finish Building Global Team", $path);

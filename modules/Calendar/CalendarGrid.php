@@ -359,13 +359,14 @@ class CalendarGrid {
 			$month_end = $month_start->get("+".$month_start->format('t')." days");			
 			$week_start = CalendarUtils::get_first_day_of_week($month_start);
 			$week_start_ts = $week_start->format('U') + $week_start->getOffset(); // convert to timestamp, ignore tz
-			$month_end_ts = $month_end->format('U') + $month_end->getOffset();	
+			$month_end_ts = $month_end->format('U') + $month_end->getOffset();
+			$table_id = "daily_cal_table".$m; //bug 47471	
 						
 			if($m % 3 == 0)
 				$str .= "<tr>";		
 					$str .= '<td class="yearCalBodyMonth" align="center" valign="top" scope="row">';
 						$str .= '<a class="yearCalBodyMonthLink" href="'.ajaxLink('index.php?module=Calendar&action=index&view=month&&hour=0&day=1&month='.($m+1).'&year='.$GLOBALS['timedate']->fromTimestamp($month_start_ts)->format('Y')).'">'.$GLOBALS['app_list_strings']['dom_cal_month_long'][$m+1].'</a>';
-						$str .= '<table id="daily_cal_table" cellspacing="1" cellpadding="0" border="0" width="100%">';	
+						$str .= '<table id="'. $table_id. '" cellspacing="1" cellpadding="0" border="0" width="100%">';	
 							$str .= '<tr class="monthCalBodyTH">';
 								for($d = 0; $d < 7; $d++)
 									$str .= '<th width="14%">'.$this->weekday_names[$d].'</th>';			

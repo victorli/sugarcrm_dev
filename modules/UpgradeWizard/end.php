@@ -82,7 +82,10 @@ foreach ($beanFiles as $bean => $file) {
 			if(!isset($repairedTables[$focus->table_name]))
 			{
 				$sql = $GLOBALS['db']->repairTable($focus, true);
-				logThis('Running sql:' . $sql, $path);
+                if(trim($sql) != '')
+                {
+				    logThis('Running sql:' . $sql, $path);
+                }
 				$repairedTables[$focus->table_name] = true;
 			}
 
@@ -105,7 +108,10 @@ foreach ($dictionary as $meta) {
 	$fielddefs = $meta['fields'];
 	$indices = $meta['indices'];
 	$sql = $GLOBALS['db']->repairTableParams($tablename, $fielddefs, $indices, true);
-	logThis('Running sql:' . $sql, $path);
+    if(trim($sql) != '')
+    {
+	    logThis('Running sql:' . $sql, $path);
+    }
 	$repairedTables[$tablename] = true;
 }
 

@@ -2298,12 +2298,12 @@ class Email extends SugarBean {
 		$result =$this->db->query($query,true," Error filling in additional list fields: ");
 
 		$row = $this->db->fetchByAssoc($result);
+        $this->attachment_image = ($row !=null) ? SugarThemeRegistry::current()->getImage('attachment',"","","") : "";
 
 		if ($row !=null) {
 			$this->attachment_image = SugarThemeRegistry::current()->getImage('attachment',"","","",'.gif',translate('LBL_ATTACHMENT', 'Emails'));
-		} else {
-			$this->attachment_image = SugarThemeRegistry::current()->getImage('blank',"","","",'.gif'," ");
 		}
+
 		///////////////////////////////////////////////////////////////////////
 		if(empty($this->contact_id) && !empty($this->parent_id) && !empty($this->parent_type) && $this->parent_type === 'Contacts' && !empty($this->parent_name) ){
 			$this->contact_id = $this->parent_id;

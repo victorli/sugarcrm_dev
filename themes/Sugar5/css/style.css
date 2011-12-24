@@ -3642,6 +3642,11 @@ li div.star {float:none;}
 	padding: 5px;
 }
 
+div#chartDashlets
+{
+    overflow-y: auto;
+}
+
 
 /* miscellaneaous 508 classes */
 .detail508 tr td[scope="col"]
@@ -3650,4 +3655,5 @@ li div.star {float:none;}
     border-color: #CBDAE6;
     color: #000000;
     text-align: right;
+    white-space: nowrap;
 }

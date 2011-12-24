@@ -35,48 +35,99 @@
  ********************************************************************************/
 
 
-require_once('service/v3/SugarWebServiceUtilv3.php');
-require_once('tests/service/APIv3Helper.php');
-require_once 'tests/service/SOAPTestCase.php';
+require_once('tests/service/RestTestCase.php');
 
-class Bug48748Test extends SOAPTestCase
+class Bug48748Test extends RestTestCase
 {
+
+    protected $package = 'Accounts';
+    protected $packageExists = false;
+    protected $aclRole;
+    protected $aclField;
+
 
     public function setUp()
     {
-        $this->markTestIncomplete('Incomplete test');
-    	$this->_soapURL = $GLOBALS['sugar_config']['site_url'].'/service/v3/soap.php';
         parent::setUp();
-        $beanList = array();
-        $beanFiles = array();
-        require('include/modules.php');
-        $GLOBALS['beanList'] = $beanList;
-        $GLOBALS['beanFiles'] = $beanFiles;
-        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-        $GLOBALS['current_user']->status = 'Active';
-        $GLOBALS['current_user']->is_admin = 1;
-        $GLOBALS['current_user']->save();
+
+        //If somehow this package already exists copy it
+        if(file_exists('custom/modules/' . $this->package))
+        {
+           $this->packageExists = true;
+           mkdir_recursive('custom/modules/' . $this->package . '_bak');
+           copy_recursive('custom/modules/' . $this->package, 'custom/modules/' . $this->package . '_bak');
+        }
+
+        //Make the custom package directory and simulate copying the file in
+        mkdir_recursive('custom/modules/' . $this->package . '/Ext/WirelessLayoutdefs');
+        if( $fh = @fopen('custom/modules/' . $this->package . '/Ext/WirelessLayoutdefs/wireless.subpaneldefs.ext.php', 'w+'))
+        {
+$string = <<<EOQ
+<?php
+\$layout_defs["{$this->package}"]["subpanel_setup"]['{$this->package}_accounts'] = array (
+  'order' => 100,
+  'module' => 'Contacts',
+  'subpanel_name' => 'default',
+  'title_key' => 'LBL_BUG48784TEST',
+  'get_subpanel_data' => 'Bug48748Test',
+);
+
+?>
+EOQ;
+            fputs( $fh, $string);
+            fclose( $fh );
+        }
+
+
+        global $beanList, $beanFiles, $current_user;
+        //$beanList['Contacts'] = 'Contact';
+        //$beanFiles['Bug48784Mock'] = 'modules/Contacts/Contact.php';
+
+        //Create an anonymous user for login purposes/
+        $current_user = SugarTestUserUtilities::createAnonymousUser();
+        $current_user->status = 'Active';
+        $current_user->is_admin = 1;
+        $current_user->save();
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before continuing
+
+        $_SESSION['avail_modules'][$this->package] = 'write';
         $this->useOutputBuffering = false;
     }
 
     public function tearDown()
     {
         parent::tearDown();
-        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-        unset($GLOBALS['current_user']);
-        unset($GLOBALS['beanFiles']);
-        unset($GLOBALS['beanList']);
+        if($this->packageExists)
+        {
+            //Copy original contents back in
+            copy_recursive('custom/modules/' . $this->package . '_bak', 'custom/modules/' . $this->package);
+            rmdir_recursive('custom/modules/' . $this->package . '_bak');
+        } else {
+            rmdir_recursive('custom/modules/' . $this->package);
+        }
+
+        unset($_SESSION['avail_modules'][$this->package]);
     }
 
-
-    public function testGetRelationshipsWithCustomFields()
+    public function testWirelessModuleLayoutForCustomModule()
     {
-        $this->_login();
-        $account = new Account();
-        //$result = $this->_soapClient->get_module_layout($this->_sessionId, array($account), 'wireless', 'subpanel');
-        //echo var_export($result, true);
-        //$total = $GLOBALS['db']->getOne("SELECT count(id) AS total FROM users WHERE portal_only=0 AND deleted=0");
-        //$this->assertArrayHasKey('list', $result, 'Assert that we have a list of results and that the get_data_list query on Employees does not cause an error');
-    }
 
+        $this->assertTrue(file_exists('custom/modules/' . $this->package . '/Ext/WirelessLayoutdefs/wireless.subpaneldefs.ext.php'));
+        //$contents = file_get_contents('custom/modules/' . $this->package . '/Ext/WirelessLayoutdefs/wireless.subpaneldefs.ext.php');
+        include('custom/modules/' . $this->package . '/Ext/WirelessLayoutdefs/wireless.subpaneldefs.ext.php');
+
+        global $current_user;
+        $result = $this->_login($current_user);
+        $session = $result['id'];
+        $results = $this->_makeRESTCall('get_module_layout',
+        array(
+            'session' => $session,
+            'module' => array($this->package),
+            'type' => array('wireless'),
+            'view' => array('subpanel'),
+            )
+        );
+
+        $this->assertEquals('Bug48748Test', $results[$this->package]['wireless']['subpanel']["{$this->package}_accounts"]['get_subpanel_data'], 'Cannot load custom wireless.subpaneldefs.ext.php file');
+    }
 }

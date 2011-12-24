@@ -1504,62 +1504,6 @@ $uwMain = $upgrade_directories_not_found;
 				return '';
 	}
 
-	$parserFiles = array();
-
-	if(file_exists(clean_path($unzip_dir.'/'.$zip_from_dir."/include/SugarFields"))) {
-		$parserFiles = findAllFiles(clean_path($unzip_dir.'/'.$zip_from_dir."/include/SugarFields"), $parserFiles);
-	}
-
-     $cwd = clean_path(getcwd());
-	foreach($parserFiles as $file) {
-		$srcFile = clean_path($file);
-		//$targetFile = clean_path(getcwd() . '/' . $srcFile);
-        if (strpos($srcFile,".svn") !== false) {
-		  //do nothing
-	    }
-	    else{
-	    $targetFile = str_replace(clean_path($unzip_dir.'/'.$zip_from_dir), $cwd, $srcFile);
-
-		if(!is_dir(dirname($targetFile))) {
-			mkdir_recursive(dirname($targetFile)); // make sure the directory exists
-		}
-
-		if(!file_exists($targetFile))
-		 {
-			// handle sugar_version.php
-			// C.L. - Added check for portal directory
-			if(strpos($targetFile, 'sugar_version.php') !== false && !preg_match('/\/portal\/sugar_version\.php$/i', $targetFile)) {
-				logThis('Skipping "sugar_version.php" - file copy will occur at end of successful upgrade', $path);
-				$_SESSION['sugar_version_file'] = $srcFile;
-				continue;
-			}
-
-			if(!copy($srcFile, $targetFile)) {
-				logThis('*** ERROR: could not copy file: ' . $targetFile);
-			} else {
-				$copiedFiles[] = $targetFile;
-			}
-		}
-	   }
-	 }
-
-    //Also copy the SugarMerge files
- 	if(file_exists(clean_path($unzip_dir.'/'.$zip_from_dir."/UpgradeWizard510Files"))) {
-		$parserFiles = findAllFiles(clean_path($unzip_dir.'/'.$zip_from_dir."/UpgradeWizard510Files"), $parserFiles);
-		foreach($parserFiles as $file) {
-			$srcFile = clean_path($file);
-	        if (strpos($srcFile,".svn") !== false) {
-			  //do nothing
-		    } else {
-			    $targetFile = str_replace(clean_path($unzip_dir.'/'.$zip_from_dir."/UpgradeWizard510Files"), $cwd, $srcFile);
-				if(!is_dir(dirname($targetFile))) {
-					mkdir_recursive(dirname($targetFile)); // make sure the directory exists
-				}
-				logThis('updating UpgradeWizard code: '.$targetFile);
-				copy_recursive($file, $targetFile);
-		    }
-	 	}
-    }
     logThis ('is SugarConfig there '.file_exists(clean_path($unzip_dir.'/'.$zip_from_dir."/include/SugarObjects/SugarConfig.php")));
 	if(file_exists(clean_path($unzip_dir.'/'.$zip_from_dir."/include/SugarObjects/SugarConfig.php"))) {
 		$file = clean_path($unzip_dir.'/'.$zip_from_dir."/include/SugarObjects/SugarConfig.php");

@@ -593,7 +593,10 @@ SUGAR.subpanelUtils = function() {
          * Removes the current subpanel if it exists.
          */
         removeSubPanel: function() {
-            var currentPanelEl = document.getElementById(currentPanelDiv);
+            var currentPanelEl = null;
+            if (typeof currentPanelDiv != 'undefined' && currentPanelDiv != null) {
+                currentPanelEl = document.getElementById(currentPanelDiv);
+            }
 
             if (currentPanelEl != null) {
                 currentPanelEl.parentNode.removeChild(currentPanelEl);

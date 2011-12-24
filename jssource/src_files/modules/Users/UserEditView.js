@@ -38,6 +38,33 @@ function setSymbolValue(id) {
 }
 
 function user_status_display(field){
+        if (typeof field.form.is_admin == 'undefined')
+        {
+            var input = document.createElement("input");
+            input.setAttribute("id", "is_admin");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("name", "is_admin");
+            input.setAttribute("value", "");
+            field.form.appendChild(input);
+        }
+        if (typeof field.form.is_group == 'undefined')
+        {
+            var input = document.createElement("input");
+            input.setAttribute("id", "is_group");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("name", "is_group");
+            input.setAttribute("value", "");
+            field.form.appendChild(input);
+        }
+        if (typeof field.form.portal_only == 'undefined')
+        {
+            var input = document.createElement("input");
+            input.setAttribute("id", "portal_only");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("name", "portal_only");
+            input.setAttribute("value", "");
+            field.form.appendChild(input);
+        }
 		switch (field.value){
 		case 'Administrator':
 		    document.getElementById('UserTypeDesc').innerHTML=SUGAR.language.get('Users',"LBL_ADMIN_DESC");

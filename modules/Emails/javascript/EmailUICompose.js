@@ -1382,13 +1382,18 @@ SE.composeLayout = {
         if(json_objects['email_template_object']['fields']['subject'] != '' ) { // cn: bug 7743, don't stomp populated Subject Line
             document.getElementById('emailSubject' + idx).value = decodeURI(encodeURI(json_objects['email_template_object']['fields']['subject']));
         }
-
-        var text = decodeURI(encodeURI(json_objects['email_template_object']['fields']['body_html'])).replace(/<BR>/ig, '\n').replace(/<br>/gi, "\n").replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');
-
-        // cn: bug 14361 - text-only templates don't fill compose screen
-        if(text == '') {
-            text = decodeURI(encodeURI(json_objects['email_template_object']['fields']['body'])).replace(/<BR>/ig, '\n').replace(/<br>/gi, "\n").replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"').replace(/\r\n/gi,"<br/>");
+        var text = '';
+        if(json_objects['email_template_object']['fields']['text_only'] == 1){
+        	text = "<p>" + decodeURI(encodeURI(json_objects['email_template_object']['fields']['body'])).replace(/<BR>/ig, '</p><p>').replace(/<br>/gi, "</p><p>").replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"') + "</p>";
+        	document.getElementById("setEditor1").checked = true;
+        	SUGAR.email2.composeLayout.renderTinyMCEToolBar('1', 1);
         }
+        else{
+        	text = decodeURI(encodeURI(json_objects['email_template_object']['fields']['body_html'])).replace(/<BR>/ig, '\n').replace(/<br>/gi, "\n").replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');
+        	document.getElementById("setEditor1").checked = false;
+        	SUGAR.email2.composeLayout.renderTinyMCEToolBar('1', 0);
+        }
+
 
         var tiny = SE.util.getTiny('htmleditor' + idx);
         var tinyHTML = tiny.getContent();
@@ -1409,38 +1414,39 @@ SE.composeLayout = {
      * Writes out the signature in the email editor
      */
     setSignature : function(idx) {
-         if (!tinyMCE)
-             return false;
-         var hide = document.getElementById('setEditor' + idx).checked;
-         SE.composeLayout.renderTinyMCEToolBar(idx,hide);
-         //wait for signatures to load before trying to set them
-         if (!SE.composeLayout.signatures) {
-             setTimeout("SE.composeLayout.setSignature(" + idx + ");", 1000);
-                         return;
-         }
+        if (!tinyMCE)
+            return false;
+        var hide = document.getElementById('setEditor' + idx).checked;
+        SE.composeLayout.renderTinyMCEToolBar(idx,hide);
+        //wait for signatures to load before trying to set them
+        if (!SE.composeLayout.signatures) {
+            setTimeout("SE.composeLayout.setSignature(" + idx + ");", 1000);
+			return;
+        }
 
-         if(idx) {
-             var sel = document.getElementById('signatures' + idx);
-         } else {
-             var sel = document.getElementById('signature_id');
-             idx = SE.tinyInstances.currentHtmleditor;
-         }
+        if(idx != null) {
+            var sel = document.getElementById('signatures' + idx);
+        } else {
+            var sel = document.getElementById('signature_id');
+            idx = SE.tinyInstances.currentHtmleditor;
+        }
 
-         //Ensure that the tinyMCE html has been rendered.
-         if(typeof(SE.composeLayout.loadedTinyInstances[idx]) != 'undefined' && SE.composeLayout.loadedTinyInstances[idx] == false) {
-             setTimeout("SE.composeLayout.setSignature(" + idx + ");",1000);
-                     return;
-                 }
+        //Ensure that the tinyMCE html has been rendered.
+        if(typeof(SE.composeLayout.loadedTinyInstances[idx]) != 'undefined' && SE.composeLayout.loadedTinyInstances[idx] == false) {
+            setTimeout("SE.composeLayout.setSignature(" + idx + ");",1000);
+		    return;
+		}
 
-         var signature = '';
+        var signature = '';
 
-         try {
-             signature = sel.options[sel.selectedIndex].value;
-         } catch(e) {
+        try {
+            signature = sel.options[sel.selectedIndex].value;
+        } catch(e) {
 
-         }
+        }
 
-
+        var openTag = '<div><span>&nbsp;</span>';
+        var closeTag = '<span>&nbsp;</span></div>';
         var t = tinyMCE.getInstanceById('htmleditor' + idx);
         //IE 6 Hack
         if(typeof(t) != 'undefined')
@@ -1450,63 +1456,22 @@ SE.composeLayout = {
         }
         else
         {
-            //if tinymce isntance is undefined, then we can't do anything useful, just return
-            return;
+            var html = '';
         }
 
         var htmllow = html.toLowerCase();
-        var htmlBeg = '';
-        var htmlEnd = '';
-        var htmlBodPreSig = '';
-        var htmlSig = '';
-        var htmlBodPostSig = '';
-
-
-        //process if html is not empty.  Note that we are using the htmllow var for searching as it is lowercased, but substringing
-        //on html var as it is original
-        if(typeof(htmllow)!='undefined' && htmllow != null && htmllow !=''){
-            //search for ending body tag
-            if (htmllow.indexOf('</body>') < 0 ){
-                //if not found, search for ending html tag
-                    if (htmllow.indexOf('</html>') >= 0 ){
-                        //set the beginning, end, and pre signature body tags
-                        htmlBeg = html.substr(0,htmllow.indexOf('<html>')+6 );
-                        htmlEnd = html.substr(htmllow.indexOf('</html>') );
-                        htmlBodPreSig = html.substr(htmlBeg.length, htmllow.length - (htmlEnd.length + htmlBeg.length));
-
-                    }
-            }else{
-                //body tag was found, set the beginning, end, and pre signature body tags
-                htmlBeg = html.substr(0,htmllow.indexOf('<body>')+6 );
-                htmlEnd = html.substr(htmllow.indexOf('</body>') );
-                htmlBodPreSig = html.substr(htmlBeg.length, htmllow.length - (htmlEnd.length + htmlBeg.length) );
-
-            }
-            if(htmlBeg == ''){
-                //html and body tags were not found, so assign html to presignature tag and leave the rest empty
-                htmlBodPreSig = html;
-            }
-
-        }
-
-        //now find the signature marker if it exists
-        if (htmlBodPreSig.indexOf('<div id="begsig">') > -1) {
-            sigBeg = htmlBodPreSig.indexOf('<div id="begsig">');
-            sigEnd = htmlBodPreSig.indexOf('&nbsp;&nbsp;</div>', sigBeg);
-            if(sigBeg >-1 && sigEnd>-1){
-                //both beginning and end of signature were found, lets create the signature related t
-                htmlBodPostSig =  htmlBodPreSig.substr(sigEnd+19);
-                htmlSig = htmlBodPreSig.substr(sigBeg,sigEnd+18);
-                htmlBodPreSig = htmlBodPreSig.substr(0,sigBeg-1);
-
-            }
-        }
+        var start = htmllow.indexOf(openTag);
+        var end = htmllow.indexOf(closeTag) + closeTag.length;
 
         // selected "none" - remove signature from email
         if(signature == '') {
-            //remove signature if it exists
-            sigLessHtml = htmlBeg + htmlBodPreSig + htmlBodPostSig + htmlEnd;
-            t.setContent(sigLessHtml);
+            if (start > -1) {
+                var htmlPart1 = html.substr(0, start);
+                var htmlPart2 = html.substr(end, html.length);
+
+                html = htmlPart1 + htmlPart2;
+                t.setContent(html);
+            }
             SE.signatures.lastAttemptedLoad = '';
             return false;
         }
@@ -1523,27 +1488,64 @@ SE.composeLayout = {
             AjaxObject.target = '';
             AjaxObject.startRequest(callbackLoadSignature, urlStandard + "&emailUIAction=getSignature&id="+signature);
         } else {
-            //create new signature with identifying div tags
-            var newSignature = '<div id="begsig">' + this.prepareSignature(SE.signatures[signature]) + '&nbsp;&nbsp;</div>';
-            newHtml = html;
+            var newSignature = this.prepareSignature(SE.signatures[signature]);
 
-            // by default, clear out old signature and recreate the string without it
-            if(SE.signatures.lastAttemptedLoad) {
-                newHtml = htmlBeg + htmlBodPreSig + htmlBodPostSig + htmlEnd;
+            // clear out old signature
+            if(SE.signatures.lastAttemptedLoad && start > -1) {
+                var htmlPart1 = html.substr(0, start);
+                var htmlPart2 = html.substr(end, html.length);
+
+                html = htmlPart1 + htmlPart2;
             }
 
+            // pre|append
+			start = html.indexOf('<div><hr></div>');
+            if(SE.userPrefs.signatures.signature_prepend == 'true' && start > -1) {
+				var htmlPart1 = html.substr(0, start);
+				var htmlPart2 = html.substr(start, html.length);
+                var newHtml = htmlPart1 + openTag + newSignature + closeTag + htmlPart2;
+            } else if(SUGAR.email2.userPrefs.signatures.signature_prepend == 'true') {
 
+            	//bug 48285
+                var newHtml = html;
 
+                //remove custom spacing
+                var spacing = '<span id="spacing"><br /><br /><br /></span>&nbsp;';
+                var customSpacingStart = html.indexOf(spacing);
 
-            // [pre|ap]pend
-            if(SE.userPrefs.signatures.signature_prepend == 'true' || SUGAR.email2.userPrefs.signatures.signature_prepend == 'true'){
-                //we need to prepend the signature, so recreate the string with the new signature after the htmlBeg token
-                newHtml = htmlBeg + newSignature + htmlBodPreSig + htmlBodPostSig + htmlEnd;
-            }else{
-                //we need to append the signature, so recreate the string with the new signature after the htmlPostSig token
-                newHtml = htmlBeg + htmlBodPreSig + htmlBodPostSig + newSignature + htmlEnd;
+                if (customSpacingStart > -1)
+                {
+                    var part1 = newHtml.substr(0, customSpacingStart);
+                    var part2 = newHtml.substr(customSpacingStart+spacing.length, newHtml.length);
+                    newHtml = part1 + part2;
+                }
+
+                //append signature
+                var bodyStartTag = '<body>';
+                var body = newHtml.indexOf(bodyStartTag);
+
+                if (body > -1)
+                {
+                    var part1 = newHtml.substr(0, body+bodyStartTag.length);
+                    var part2 = newHtml.substr(body+bodyStartTag.length, newHtml.length);
+                    newHtml = part1 + spacing + openTag + newSignature + closeTag + part2;
+                }
+                else
+                {
+                    newHtml = openTag + newSignature + closeTag + newHtml;
+                }
+                //end bug 48285
+            } else {
+                var body = html.indexOf('</body>');
+                if (body > -1) {
+                    var part1 = html.substr(0, body);
+                    var part2 = html.substr(body, html.length);
+                    var newHtml = part1 + openTag + newSignature + closeTag + part2;
+                } else {
+                    var newHtml = html + openTag + newSignature + closeTag;
+                }
             }
-
+            //tinyMCE.setContent(newHtml);
             t.setContent(newHtml);
         }
     },
@@ -1989,7 +1991,7 @@ SE.composeLayout = {
             if (composePackage.body != null && composePackage.body.length > 0) {
 		        var tiny = SE.util.getTiny('htmleditor' + SE.composeLayout.currentInstanceId);
 		        SE.composeLayout.loadedTinyInstances[SE.composeLayout.currentInstanceId] = false;
-        		setTimeout("SE.composeLayout.setContentOnThisTiny();", 4000);
+        		setTimeout("SE.composeLayout.setContentOnThisTiny();", 3000);
             } // if
             if (composePackage.attachments != null) {
 				SE.composeLayout.loadAttachments(composePackage.attachments);
@@ -2015,16 +2017,19 @@ SE.composeLayout = {
 
     setContentOnThisTiny : function(recursive) {
     	var tiny = SE.util.getTiny('htmleditor' + SE.composeLayout.currentInstanceId);
-
+        var tinyHTML = tiny.getContent();
         composePackage.body = decodeURI(encodeURI(composePackage.body));
         // cn: bug 14361 - text-only templates don't fill compose screen
         if(composePackage.body == '') {
             composePackage.body = decodeURI(encodeURI(composePackage.body)).replace(/<BR>/ig, '\n').replace(/<br>/gi, "\n").replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');
         } // if
         //Flag determines if we should clear the tiny contents or just append
-        if (typeof(composePackage.clearBody) != 'undefined' && composePackage.clearBody){
+        if (typeof(composePackage.clearBody) != 'undefined' && composePackage.clearBody)
+        {
             SE.composeLayout.tinyHTML = '';
-        }else{
+        }
+        else
+        {
 
             //check to see if tiny is defined, and this is not a recursive call if not, then call self function one more time
             if(typeof tiny == 'undefined'  &&  typeof recursive == 'undefined'){
@@ -2032,44 +2037,28 @@ SE.composeLayout = {
                 setTimeout("SE.composeLayout.setContentOnThisTiny(true);", 3000);
                 return;
             }
+            
+            //bug 48179
+            //check tinyHTML for closing tags
+            var body = tinyHTML.lastIndexOf('</body>');
+            spacing = '<span id="spacing"><br /><br /><br /></span>&nbsp;';
 
-            var tinyHTML = tiny.getContent();
-            htmlBeg = '';
-            htmlEnd = '';
-            htmlBod = tinyHTML;
-            //process if html is not empty
-            if(typeof(htmlBod)!='undefined' && htmlBod != null && htmlBod !=''){
-                //search for ending body tag
-                if (htmlBod.indexOf('</body>') < 0 ){
-                    //if not found, search for ending html tag
-                        if (htmlBod.indexOf('</html>') >= 0 ){
-                            htmlBeg = htmlBod.substr(0,htmlBod.indexOf('</html>') );
-                            htmlEnd = htmlBod.substr(htmlBod.indexOf('</html>') );
-
-                        }
-                }else{
-                    //html tag was found, append right before the tag
-                    htmlBeg = htmlBod.substr(0,htmlBod.indexOf('</body>') );
-                    htmlEnd = htmlBod.substr(htmlBod.indexOf('</body>') );
-                }
-                if(htmlBeg == ''){
-                    //html and body tags were not found, so append to end
-                    htmlBeg = htmlBod;
-                }
-
+            if (body > -1)
+            {
+                var part1 = tinyHTML.substr(0, body);
+                var part2 = tinyHTML.substr(body, tinyHTML.length);
+                var newHtml = part1 + spacing + composePackage.body + part2;
             }
-            SE.composeLayout.tinyHTML = htmlBeg + composePackage.body + htmlEnd;
-            //SE.composeLayout.tinyHTML = tinyHTML + composePackage.body;
+            else
+            {
+                var newHtml = tinyHTML + spacing + composePackage.body;
+            }
+            //end bug 48179
+
+            SE.composeLayout.tinyHTML = newHtml;
         }
-        //check to see if tiny is defined, and this is not a recursive call if not, then call self function one more time
-        if(typeof tiny == 'undefined'  &&  typeof recursive == 'undefined'){
-            //call this same function again, this time setting the recursive flag to true
-            setTimeout("SE.composeLayout.setContentOnThisTiny(true);", 3000);
-            return;
-        }else{
-            //tiny is defined, set the content
-            tiny.setContent(SE.composeLayout.tinyHTML);
-        }
+
+         tiny.setContent(SE.composeLayout.tinyHTML);
          //Indicate that the contents has been loaded successfully.
          SE.composeLayout.loadedTinyInstances[SE.composeLayout.currentInstanceId] = true;
     },
