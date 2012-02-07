@@ -67,6 +67,7 @@ Calendar.setup = function (params) {
         var showButton = params.button ? params.button : params.buttonObj;
         var userDateFormat = params.ifFormat ? params.ifFormat : (params.daFormat ? params.daFormat : "m/d/Y");
         var inputField = params.inputField ? params.inputField : params.inputFieldObj;
+        var startWeekday = params.startWeekday ? params.startWeekday : 0;
         var dateFormat = userDateFormat.substr(0,10);
         var date_field_delimiter = /([-.\\/])/.exec(dateFormat)[0];
         dateFormat = dateFormat.replace(/[^a-zA-Z]/g,'');
@@ -81,13 +82,14 @@ Calendar.setup = function (params) {
         dateParams.dayPos = dayPos;
         dateParams.yearPos = yearPos;
         
-        Event.on(Dom.get(showButton), "click", function() {
+        var showButtonElement = Dom.get(showButton);
+        Event.on(showButtonElement, "click", function() {
 
             if (!dialog) {
                                   
-                dialog = new YAHOO.widget.SimpleDialog("container_" + showButton, {
+                dialog = new YAHOO.widget.SimpleDialog("container_" + showButtonElement.id, {
                     visible:false,
-                    context:[showButton, "tl", "bl"],
+                    context:[showButton, "tl", "bl", null, [-175,5]],
                     buttons:[],
                     draggable:false,
                     close:true,
@@ -95,12 +97,12 @@ Calendar.setup = function (params) {
                 });
                 
                 dialog.setHeader(SUGAR.language.get('app_strings', 'LBL_MASSUPDATE_DATE'));
-                var dialogBody = '<p class="callnav_today"><a href="javascript:void(0)"  id="callnav_today">' + SUGAR.language.get('app_strings', 'LBL_EMAIL_DATE_TODAY') + '</a></p><div id="' + showButton + '_div"></div>';
+                var dialogBody = '<p class="callnav_today"><a href="javascript:void(0)"  id="callnav_today">' + SUGAR.language.get('app_strings', 'LBL_EMAIL_DATE_TODAY') + '</a></p><div id="' + showButtonElement.id + '_div"></div>';
                 dialog.setBody(dialogBody);
                 dialog.render(document.body);
 
                 //Since the cal div name is dynamic we need to add a custom class to override some default yui css styles
-                Dom.addClass("container_" + showButton, "cal_panel");
+                Dom.addClass("container_" + showButtonElement.id, "cal_panel");
                 
                 //Clear the date selection if the user clicks on today.
                 Event.addListener("callnav_today", "click", function(){ 
@@ -138,7 +140,7 @@ Calendar.setup = function (params) {
                 	
                     var el = Event.getTarget(e);                   
                     var dialogEl = dialog.element;
-                    if (el != dialogEl && !Dom.isAncestor(dialogEl, el) && el != Dom.get(showButton) && !Dom.isAncestor(Dom.get(showButton), el)) {
+                    if (el != dialogEl && !Dom.isAncestor(dialogEl, el) && el != showButtonElement && !Dom.isAncestor(showButtonElement, el)) {
                         dialog.hide();
                     }
                 });                
@@ -158,7 +160,7 @@ Calendar.setup = function (params) {
                     initialFocus: "year"
                 };               	
             	
-                calendar = new YAHOO.widget.Calendar(showButton + '_div', {
+                calendar = new YAHOO.widget.Calendar(showButtonElement.id + '_div', {
                     iframe:false,
                     hide_blank_weeks:true,
                     navigator:navConfig
@@ -168,6 +170,7 @@ Calendar.setup = function (params) {
                 calendar.cfg.setProperty('MDY_DAY_POSITION', dayPos+1);
                 calendar.cfg.setProperty('MDY_MONTH_POSITION', monthPos+1);
                 calendar.cfg.setProperty('MDY_YEAR_POSITION', yearPos+1);
+                calendar.cfg.setProperty('START_WEEKDAY', startWeekday);
                 
                 //Configure the month and days label with localization support where defined
                 if(typeof SUGAR.language.languages['app_list_strings'] != 'undefined' && SUGAR.language.languages['app_list_strings']['dom_cal_month_long'] != 'undefined')
@@ -247,8 +250,9 @@ Calendar.setup = function (params) {
 
                     return selDate;
                 };
-                
-                calendar.selectEvent.subscribe(function() {
+
+                calendar.selectEvent.subscribe(function(type, args, obj) {
+
                     var input = Dom.get(inputField);
 					if (calendar.getSelectedDates().length > 0) {
 
@@ -258,8 +262,12 @@ Calendar.setup = function (params) {
                         {
                            params.comboObject.update();
                         }
+                    } else if(typeof args[0][0] == 'object') {
+                        //We resort to using the args parameter to set the date should calendar.getSelectedDates return an empty array
+                        selDate = args[0][0];
+                        input.value = formatSelectedDate(new Date(selDate[0], selDate[1], selDate[2]));
                     } else {
-                        input.value = "";
+                        input.value = '';
                     }
 					
 					//bug 44147 fix
@@ -296,7 +304,6 @@ Calendar.setup = function (params) {
             	}
             	
             	//If it's not a valid date format, use the current date.
-                
                 //fixing bug #48823: 
                 //'Stack overflow at line : 80' alert displayed when user clicks on the calendar icon 
                 if(dateArray.length != 3)
@@ -307,6 +314,7 @@ Calendar.setup = function (params) {
                     dateArray[dateParams.monthPos] = oDate.getMonth() + 1;
                     dateArray[dateParams.yearPos] = oDate.getFullYear();
                 }
+
             	
             	for(var i = 0; i < dateArray.length; i++){
             		if (dateArray[i] > 32){

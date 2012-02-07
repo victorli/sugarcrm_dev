@@ -50,7 +50,7 @@ function compare($table_name, $db_indexes, $var_indexes) {
 			$var_fields_string = implode('',$var_i_def['fields']);
 		$field_list_match = false;
 		if(isset($db_indexes[$var_i_name])) {
-			$sel_db_index = $db_indexes[$var_i_name];	
+			$sel_db_index = $db_indexes[$var_i_name];
 			$db_fields_string = implode('', $db_indexes[$var_i_name]['fields']);
 			if(strcasecmp($var_fields_string, $db_fields_string)==0) {
 				$field_list_match=true;
@@ -60,29 +60,29 @@ function compare($table_name, $db_indexes, $var_indexes) {
 			foreach ($db_indexes as $db_i_name=>$db_i_def) {
 				$db_fields_string=implode('',$db_i_def['fields']);
 				if(strcasecmp($var_fields_string , $db_fields_string)==0) {
-					$sel_db_index=$db_indexes[$db_i_name];			
+					$sel_db_index=$db_indexes[$db_i_name];
 					$field_list_match=true;
 					break;
 				}
 			}
-		}	
+		}
 
-		//no matching index in database. 
+		//no matching index in database.
 		if(empty($sel_db_index)) {
-			$add_index[]=$GLOBALS['db']->helper->add_drop_constraint($table_name,$var_i_def);
+			$add_index[]=$GLOBALS['db']->add_drop_constraint($table_name,$var_i_def);
 			continue;
 		}
 		if(!$field_list_match) {
 			//drop the db index and create new index based on vardef
-			$drop_index[]=$GLOBALS['db']->helper->add_drop_constraint($table_name,$sel_db_index,true);
-			$add_index[]=$GLOBALS['db']->helper->add_drop_constraint($table_name,$var_i_def);
+			$drop_index[]=$GLOBALS['db']->add_drop_constraint($table_name,$sel_db_index,true);
+			$add_index[]=$GLOBALS['db']->add_drop_constraint($table_name,$var_i_def);
 			continue;
 		}
 		//check for name match.
 		//it should not occur for indexes of type primary or unique.
 		if( $var_i_def['type'] != 'primary' and $var_i_def['type'] != 'unique' and $var_i_def['name'] != $sel_db_index['name']) {
 			//rename index.
-			$rename=$GLOBALS['db']->helper->rename_index($sel_db_index,$var_i_def,$table_name);
+			$rename=$GLOBALS['db']->renameIndexDefs($sel_db_index,$var_i_def,$table_name);
 			if(is_array($rename)) {
 				$change_index=array_merge($change_index,$rename);
 			} else {
@@ -90,7 +90,7 @@ function compare($table_name, $db_indexes, $var_indexes) {
 			}
 			continue;
 		}
-	}	
+	}
 }
 ////	END LOCAL UTILITY
 ///////////////////////////////////////////////////////////////////////////////
@@ -125,12 +125,12 @@ foreach ($beanFiles as $beanname=>$beanpath) {
 	$focus= new $beanname();
 
 	//skips beans based on same tables. user, employee and group are an example.
-	if(empty($focus->table_name) || isset($processed_tables[$focus->table_name])) {		
+	if(empty($focus->table_name) || isset($processed_tables[$focus->table_name])) {
 		continue;
 	} else {
 		$processed_tables[$focus->table_name]=$focus->table_name;
 	}
-	
+
 	if(!empty($dictionary[$focus->object_name]['indices'])) {
 		$indices=$dictionary[$focus->object_name]['indices'];
 	} else {
@@ -145,13 +145,13 @@ foreach ($beanFiles as $beanname=>$beanpath) {
 		if ($definition['type']=='fulltext') {
 			continue;
 		}
-		
+
 		if(empty($definition['db']) or $definition['db'] == $focus->db->dbType) {
 			$var_indices[$definition['name']] = $definition;
 		}
 	}
 
-	$db_indices=$focus->db->helper->get_indices($focus->table_name);
+	$db_indices=$focus->db->get_indices($focus->table_name);
 	compare($focus->table_name,$db_indices,$var_indices);
 }
 ////	END PROCESS MODULE BEANS
@@ -166,7 +166,7 @@ foreach ($dictionary as $rel=>$rel_def) {
 		$indices=$rel_def['indices'];
 	} else {
 		$indices=array();
-	}	
+	}
 
 	//clean vardef defintions.. removed indexes not value for this dbtype.
 	//set index name as the key.
@@ -177,7 +177,7 @@ foreach ($dictionary as $rel=>$rel_def) {
 		}
 	}
 
-	$db_indices=$focus->db->helper->get_indices($rel_def['table']);
+	$db_indices=$focus->db->get_indices($rel_def['table']);
 
 	compare($rel_def['table'],$db_indices,$var_indices);
 }
@@ -209,7 +209,7 @@ if((count($drop_index) > 0 or count($add_index) > 0 or count($change_index) > 0)
 			foreach ($drop_index as $statement) {
 				echo ($_REQUEST['silent']) ? "" : "<BR>".$statement.";";
 			}
-		}		
+		}
 	}
 
 	if(count($add_index) > 0) {
@@ -242,7 +242,7 @@ if((count($drop_index) > 0 or count($add_index) > 0 or count($change_index) > 0)
 			}
 		}
 	}
-	
+
 	if(!isset($_REQUEST['mode']) or $_REQUEST['mode'] != 'execute') {
 		echo ($_REQUEST['silent']) ? "" : "<BR><BR><BR>";
 		echo ($_REQUEST['silent']) ? "" : "<a href='index.php?module=Administration&action=RepairIndex&mode=execute'>Execute Script</a>";

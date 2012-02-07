@@ -45,24 +45,26 @@ class Bug45709Test extends Sugar_PHPUnit_Framework_TestCase
 	var $contact = null;
 	var $requestArray = null;
 	var $searchForm = null;
-   
+
     public function setUp()
     {
+		$GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
+		$GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
 		$GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-		$this->contact = SugarTestContactUtilities::createContact();	
+		$this->contact = SugarTestContactUtilities::createContact();
     	$this->task =SugarTestTaskUtilities::createTask();
     	$this->task->contact_id = $this->contact->id;
     	$this->task->save();
     }
-    
+
     public function tearDown()
     {
-        
+
         SugarTestContactUtilities::removeAllCreatedContacts();
         SugarTestTaskUtilities::removeAllCreatedTasks();
         unset($GLOBALS['current_user']);
     }
-    
+
     /**
      * @ticket 45709
      */
@@ -70,34 +72,34 @@ class Bug45709Test extends Sugar_PHPUnit_Framework_TestCase
     {
         //test GenerateSearchWhere for fields that have db_concat_fields set in vardefs
         //Contact in advanced search panel in Tasks module is one of those
-        
+
     	//array to simulate REQUEST object
     	$this->requestArray['module'] = 'Tasks';
     	$this->requestArray['action'] = 'index';
     	$this->requestArray['searchFormTab'] = 'advanced_search';
     	$this->requestArray['contact_name_advanced'] = $this->contact->first_name. " ". $this->contact->last_name; //value of a contact name field set in REQUEST object
     	$this->requestArray['query'] = 'true';
-    	
-    	
+
+
     	$this->searchForm = new SearchForm($this->task,'Tasks');
-    	
+
     	require 'modules/Tasks/vardefs.php';
     	require 'modules/Tasks/metadata/SearchFields.php';
     	require 'modules/Tasks/metadata/searchdefs.php';
-        $this->searchForm->searchFields = $searchFields[$this->searchForm->module]; 
-        $this->searchForm->searchdefs = $searchdefs[$this->searchForm->module]; 
-        $this->searchForm->fieldDefs = $this->task->getFieldDefinitions();                        
+        $this->searchForm->searchFields = $searchFields[$this->searchForm->module];
+        $this->searchForm->searchdefs = $searchdefs[$this->searchForm->module];
+        $this->searchForm->fieldDefs = $this->task->getFieldDefinitions();
     	$this->searchForm->populateFromArray($this->requestArray,'advanced_search',false);
     	$whereArray = $this->searchForm->generateSearchWhere(true, $this->task->module_dir);
     	$test_query = "SELECT id FROM contacts WHERE " . $whereArray[0];
     	$result = $GLOBALS['db']->query($test_query);
     	$row = $GLOBALS['db']->fetchByAssoc($result);
 
-    	$this->assertEquals($this->contact->id, $row['id']);
-    	
+    	$this->assertEquals($this->contact->id, $row['id'], "Didn't find the correct contact id");
+
     	$result2 = $GLOBALS['db']->query("SELECT * FROM tasks WHERE tasks.contact_id='{$this->task->contact_id}'");
         $row2 = $GLOBALS['db']->fetchByAssoc($result2);
-        
-        $this->assertEquals($this->task->id, $row2['id']);
+
+        $this->assertEquals($this->task->id, $row2['id'], "Couldn't find the expected related task");
     }
 }

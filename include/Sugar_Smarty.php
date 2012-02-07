@@ -40,19 +40,23 @@ require_once('include/Smarty/Smarty.class.php');
 
 if(!defined('SUGAR_SMARTY_DIR'))
 {
-	define('SUGAR_SMARTY_DIR', $GLOBALS['sugar_config']['cache_dir'].'smarty/');
+	define('SUGAR_SMARTY_DIR', sugar_cached('smarty/'));
 }
 
+/**
+ * Smarty wrapper for Sugar
+ * @api
+ */
 class Sugar_Smarty extends Smarty
 {
-	
+
 	function Sugar_Smarty()
 	{
 		if(!file_exists(SUGAR_SMARTY_DIR))mkdir_recursive(SUGAR_SMARTY_DIR, true);
 		if(!file_exists(SUGAR_SMARTY_DIR . 'templates_c'))mkdir_recursive(SUGAR_SMARTY_DIR . 'templates_c', true);
 		if(!file_exists(SUGAR_SMARTY_DIR . 'configs'))mkdir_recursive(SUGAR_SMARTY_DIR . 'configs', true);
 		if(!file_exists(SUGAR_SMARTY_DIR . 'cache'))mkdir_recursive(SUGAR_SMARTY_DIR . 'cache', true);
-		
+
 		$this->template_dir = '.';
 		$this->compile_dir = SUGAR_SMARTY_DIR . 'templates_c';
 		$this->config_dir = SUGAR_SMARTY_DIR . 'configs';
@@ -63,9 +67,10 @@ class Sugar_Smarty extends Smarty
 		if(file_exists('custom/include/Smarty/plugins'))
 			$plugins_dir[] = 'custom/include/Smarty/plugins';
 		$this->plugins_dir = $plugins_dir;
-		
+
+		$this->assign("VERSION_MARK", getVersionedPath(''));
 	}
-	
+
 }
 
 ?>

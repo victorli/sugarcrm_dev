@@ -34,7 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 require_once('service/v3/SugarWebServiceUtilv3.php');
 require_once('tests/service/APIv3Helper.php');
 
@@ -46,10 +46,10 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
     protected $_lastRawResponse;
 
     private static $helperObject;
-    
+
     protected $aclRole;
     protected $aclField;
-    
+
     public function setUp()
     {
         $beanList = array();
@@ -57,34 +57,39 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
 		require('include/modules.php');
 		$GLOBALS['beanList'] = $beanList;
 		$GLOBALS['beanFiles'] = $beanFiles;
-		
+
         //Reload langauge strings
         $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
         $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
         $GLOBALS['mod_strings'] = return_module_language($GLOBALS['current_language'], 'Accounts');
         //Create an anonymous user for login purposes/
         $this->_user = SugarTestUserUtilities::createAnonymousUser();
-        
+
         $this->_admin_user = SugarTestUserUtilities::createAnonymousUser();
         $this->_admin_user->status = 'Active';
         $this->_admin_user->is_admin = 1;
         $this->_admin_user->save();
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before continuing
+
         $GLOBALS['current_user'] = $this->_user;
 
         self::$helperObject = new APIv3Helper();
-        
+
         //Disable access to the website field.
         $this->aclRole = new ACLRole();
         $this->aclRole->name = "Unit Test";
         $this->aclRole->save();
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before continuing
+
         $this->aclRole->set_relationship('acl_roles_users', array('role_id'=>$this->aclRole->id ,'user_id'=> $this->_user->id), false);
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before continuing
     }
 
     public function tearDown()
 	{
 	    $GLOBALS['db']->query("DELETE FROM acl_roles WHERE id IN ( SELECT role_id FROM acl_roles_users WHERE user_id = '{$GLOBALS['current_user']->id}' )");
 	    $GLOBALS['db']->query("DELETE FROM acl_roles_users WHERE user_id = '{$GLOBALS['current_user']->id}'");
-	    
+
 	    if(isset($GLOBALS['listViewDefs'])) unset($GLOBALS['listViewDefs']);
 	    if(isset($GLOBALS['viewdefs'])) unset($GLOBALS['viewdefs']);
 	    unset($GLOBALS['beanList']);
@@ -132,6 +137,7 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
 
     protected function _login($user = null)
     {
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before logging in
         if($user == null)
             $user = $this->_user;
         return $this->_makeRESTCall('login',
@@ -153,17 +159,17 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testGetModuleFavoriteList()
     {
-        $result = $this->_login($this->_admin_user);
-        $session = $result['id'];
-
         $account = new Account();
         $account->id = uniqid();
         $account->new_with_id = TRUE;
         $account->name = "Test " . $account->id;
         $account->save();
 
+        $result = $this->_login($this->_admin_user); // Logging in just before the REST call as this will also commit any pending DB changes
+        $session = $result['id'];
+
         $this->_markBeanAsFavorite($session, "Accounts", $account->id);
-        
+
         $whereClause = "accounts.name='{$account->name}'";
         $module = 'Accounts';
         $orderBy = 'name';
@@ -180,7 +186,7 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
         $GLOBALS['db']->query("DELETE FROM accounts WHERE id = '{$account->id}'");
         $GLOBALS['db']->query("DELETE FROM sugarfavorites WHERE record_id = '{$account->id}'");
     }
-    
+
     /**
      * Test set entries call with name value list format key=>value.
      *
@@ -192,8 +198,8 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
         $module = 'Contacts';
         $c1_uuid = uniqid();
         $c2_uuid = uniqid();
-        $contacts = array( 
-            array('first_name' => 'Unit Test', 'last_name' => $c1_uuid), 
+        $contacts = array(
+            array('first_name' => 'Unit Test', 'last_name' => $c1_uuid),
             array('first_name' => 'Unit Test', 'last_name' => $c2_uuid)
         );
         $results = $this->_makeRESTCall('set_entries',
@@ -203,7 +209,7 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
             'name_value_lists' => $contacts,
         ));
         $this->assertTrue(isset($results['ids']) && count($results['ids']) == 2);
-        
+
         $actual_results = $this->_makeRESTCall('get_entries',
         array(
             'session' => $session,
@@ -211,22 +217,19 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
             'ids' => $results['ids'],
             'select_fields' => array('first_name','last_name')
         ));
-        
+
         $this->assertTrue(isset($actual_results['entry_list']) && count($actual_results['entry_list']) == 2);
         $this->assertEquals($actual_results['entry_list'][0]['name_value_list']['last_name']['value'], $c1_uuid);
         $this->assertEquals($actual_results['entry_list'][1]['name_value_list']['last_name']['value'], $c2_uuid);
     }
-    
-    
+
+
     /**
      * Test search by module with favorites flag enabled.
      *
      */
     public function testSearchByModuleWithFavorites()
     {
-        $result = $this->_login($this->_admin_user);
-        $session = $result['id'];
-
         $account = new Account();
         $account->id = uniqid();
         $account->assigned_user_id = $this->_user->id;
@@ -234,8 +237,7 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
         $account->new_with_id = TRUE;
         $account->name = "Unit Test Fav " . $account->id;
         $account->save();
-        $this->_markBeanAsFavorite($session, "Accounts", $account->id);
-        
+
         //Negative test.
         $account2 = new Account();
         $account2->id = uniqid();
@@ -243,7 +245,12 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
         $account2->name = "Unit Test Fav " . $account->id;
         $account->assigned_user_id = $this->_user->id;
         $account2->save();
-        
+
+        $result = $this->_login($this->_admin_user); // Logging in just before the REST call as this will also commit any pending DB changes
+        $session = $result['id'];
+
+        $this->_markBeanAsFavorite($session, "Accounts", $account->id);
+
         $searchModules = array('Accounts');
         $searchString = "Unit Test Fav ";
         $offSet = 0;
@@ -259,17 +266,17 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
                             'assigned_user_id'    => $this->_user->id,
                             'select_fields' => array(),
                             'unified_search_only' => true,
-                            'favorites' => true,                            
+                            'favorites' => true,
                             )
                         );
-        
+
         $GLOBALS['db']->query("DELETE FROM accounts WHERE name like 'Unit Test %' ");
         $GLOBALS['db']->query("DELETE FROM sugarfavorites WHERE record_id = '{$account->id}'");
         $GLOBALS['db']->query("DELETE FROM sugarfavorites WHERE record_id = '{$account2->id}'");
-        
+
         $this->assertTrue( self::$helperObject->findBeanIdFromEntryList($results['entry_list'],$account->id,'Accounts'), "Unable to find {$account->id} id in favorites search.");
         $this->assertFalse( self::$helperObject->findBeanIdFromEntryList($results['entry_list'],$account2->id,'Accounts'), "Account {$account2->id} id in favorites search should not be there.");
-    }    
+    }
     /**
      * Private helper function to mark a bean as a favorite item.
      *
@@ -382,4 +389,25 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
         $this->assertContains('New Contact 1',$returnedValues,$this->_returnLastRawResponse());
         $this->assertContains('New Contact 2',$returnedValues,$this->_returnLastRawResponse());
     }
+
+    /**
+     * Test SQL injection bug in get_entries
+     */
+    public function testGetEntriesProspectFilter()
+    {
+        $result = $this->_login();
+        $this->assertTrue(!empty($result['id']) && $result['id'] != -1,$this->_returnLastRawResponse());
+        $session = $result['id'];
+
+        $result = $this->_makeRESTCall('get_entries',
+            array(
+                'session' => $session,
+                'module' => 'CampaignProspects',
+                'ids' => array("' UNION SELECT id related_id, 'Users' related_type FROM users WHERE '1'='1")
+            )
+        );
+        $this->assertNull($result);
+
+    }
+
 }

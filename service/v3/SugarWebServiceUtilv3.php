@@ -61,6 +61,7 @@ class SugarWebServiceUtilv3 extends SoapHelperWebServices {
             if (isset($value->field_defs[$field]))
             {
                 $var = $value->field_defs[$field];
+                if($var['type'] == 'link') continue;
                 if( isset($var['source'])
                     && ($var['source'] != 'db' && $var['source'] != 'custom_fields' && $var['source'] != 'non-db')
                     && $var['name'] != 'email1' && $var['name'] != 'email2'
@@ -429,10 +430,10 @@ class SugarWebServiceUtilv3 extends SoapHelperWebServices {
         if(is_array($meta['status_field']))
         {
             foreach ($meta['status'] as $field)
-                $query[] = "{$seed->table_name}.{$meta['status_field']} {$meta['status_opp']} '{$field}' ";
+                $query[] = "{$seed->table_name}.{$meta['status_field']} {$meta['status_opp']} '".$GLOBALS['db']->quote($field)."' ";
         }
         else
-            $query[] = "{$seed->table_name}.{$meta['status_field']} {$meta['status_opp']} '{$meta['status']}' ";
+            $query[] = "{$seed->table_name}.{$meta['status_field']} {$meta['status_opp']} '".$GLOBALS['db']->quote($meta['status'])."' ";
 
         return implode(" AND ",$query);
     }

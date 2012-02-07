@@ -195,11 +195,11 @@ class SugarEmailAddress extends SugarBean {
                     $upd_eabr="";
                     if (isset($current_links[$emailId])) {
                         if (!$isConversion) { // do not update anything if this is for lead conversion
-                            if ($address['primary_address'] != $current_links[$emailId]['primary_address'] or $address['reply_to_address'] != $current_links[$emailId]['reply_to_address'] ) {
-                                $upd_eabr="UPDATE email_addr_bean_rel SET primary_address='{$address['primary_address']}', reply_to_address='{$address['reply_to_address']}' WHERE id='{$current_links[$emailId]['id']}'";
-                            }
+                        if ($address['primary_address'] != $current_links[$emailId]['primary_address'] or $address['reply_to_address'] != $current_links[$emailId]['reply_to_address'] ) {
+                            $upd_eabr="UPDATE email_addr_bean_rel SET primary_address='{$address['primary_address']}', reply_to_address='{$address['reply_to_address']}' WHERE id='{$current_links[$emailId]['id']}'";
+                        }
 
-                            unset($current_links[$emailId]);
+                        unset($current_links[$emailId]);
                         }
                     } else {
                         $primary = $address['primary_address'];
@@ -212,8 +212,8 @@ class SugarEmailAddress extends SugarBean {
                                 }
                             }
                         }
-                        $now = TimeDate::getInstance()->nowDb();
-                        $upd_eabr = "INSERT INTO email_addr_bean_rel (id, email_address_id,bean_id, bean_module,primary_address,reply_to_address,date_created,date_modified,deleted) VALUES('{$guid}', '{$emailId}', '{$id}', '{$module}', {$primary}, {$address['reply_to_address']}, '$now', '$now', 0)";
+                        $now = $this->db->now();
+                        $upd_eabr = "INSERT INTO email_addr_bean_rel (id, email_address_id,bean_id, bean_module,primary_address,reply_to_address,date_created,date_modified,deleted) VALUES('{$guid}', '{$emailId}', '{$id}', '{$module}', {$primary}, {$address['reply_to_address']}, $now, $now, 0)";
                     }
 
                     if (!empty($upd_eabr)) {
@@ -376,9 +376,8 @@ class SugarEmailAddress extends SugarBean {
                    $fromRequest = true;
                    break;
                 }
-            }
             $widget_id = $_REQUEST[$module .'_email_widget_id'];
-
+    }
 
             //Iterate over the widgets for this module, in case there are multiple email widgets for this module
             while(isset($_REQUEST[$module . $widget_id . "emailAddress" . $widgetCount]))
@@ -597,7 +596,7 @@ class SugarEmailAddress extends SugarBean {
      * @return string $id email_addresses ID
      */
     function getEmailGUID($addr) {
-        $address = $this->_cleanAddress($addr);
+        $address = $this->db->quote($this->_cleanAddress($addr));
         $addressCaps = strtoupper($address);
 
         $q = "SELECT id FROM email_addresses WHERE email_address_caps = '{$addressCaps}'";
@@ -611,7 +610,6 @@ class SugarEmailAddress extends SugarBean {
             if(!empty($address)){
                 $guid = create_guid();
                 $address = $GLOBALS['db']->quote($address);
-                $addressCaps = $GLOBALS['db']->quote($addressCaps);
                 $now = TimeDate::getInstance()->nowDb();
                 $qa = "INSERT INTO email_addresses (id, email_address, email_address_caps, date_created, date_modified, deleted)
                         VALUES('{$guid}', '{$address}', '{$addressCaps}', '$now', '$now', 0)";
@@ -621,10 +619,10 @@ class SugarEmailAddress extends SugarBean {
         }
     }
 
-    function AddUpdateEmailAddress($addr,$invalid=0,$opt_out=0) {
-
-        $address = $this->_cleanAddress($addr);
-        $addressCaps = strtoupper($this->db->quoteForEmail($address));
+    function AddUpdateEmailAddress($addr,$invalid=0,$opt_out=0)
+    {
+        $address = $this->db->quote($this->_cleanAddress($addr));
+        $addressCaps = strtoupper($address);
 
         $q = "SELECT * FROM email_addresses WHERE email_address_caps = '{$addressCaps}' and deleted=0";
         $r = $this->db->query($q);
@@ -641,8 +639,6 @@ class SugarEmailAddress extends SugarBean {
             $guid = '';
             if(!empty($address)){
                 $guid = create_guid();
-                $address = $GLOBALS['db']->quote($address);
-                $addressCaps = $GLOBALS['db']->quote($addressCaps);
                 $now = TimeDate::getInstance()->nowDb();
                 $qa = "INSERT INTO email_addresses (id, email_address, email_address_caps, date_created, date_modified, deleted, invalid_email, opt_out)
                         VALUES('{$guid}', '{$address}', '{$addressCaps}', '$now', '$now', 0 , $invalid, $opt_out)";
@@ -728,7 +724,7 @@ class SugarEmailAddress extends SugarBean {
      * @param bool asMetadata Default false
      * @return string HTML/JS for widget
      */
-    function getEmailAddressWidgetEditView($id, $module, $asMetadata=false, $tpl='',$tabindex='')
+    function getEmailAddressWidgetEditView($id, $module, $asMetadata=false, $tpl='',$tabindex='0')
     {
         if ( !($this->smarty instanceOf Sugar_Smarty ) )
             $this->smarty = new Sugar_Smarty();
@@ -999,7 +995,7 @@ class SugarEmailAddress extends SugarBean {
  * @param string $view DetailView or EditView
  * @return string
  */
-function getEmailAddressWidget($focus, $field, $value, $view, $tabindex='') {
+function getEmailAddressWidget($focus, $field, $value, $view, $tabindex='0') {
     $sea = new SugarEmailAddress();
     $sea->setView($view);
 

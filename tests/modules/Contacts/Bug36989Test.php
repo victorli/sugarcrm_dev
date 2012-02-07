@@ -47,9 +47,7 @@ class Bug36989Test extends Sugar_PHPUnit_Framework_TestCase
 
      public function setUp()
     {
-         $this->markTestIncomplete(
-          'This test is not working.'
-        );
+          //$this->markTestIncomplete('This test is not working.');
           $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
 		  require('include/modules.php');
 		  $GLOBALS['beanList'] = $beanList;

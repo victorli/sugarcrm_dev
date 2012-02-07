@@ -80,10 +80,10 @@ class Bug45960 extends Sugar_PHPUnit_Framework_TestCase
         $this->email_id = $email->id;
 
         // ensure record is inserted into emails_beans table
-        $query = "select count(*) as CNT from emails_beans eb WHERE eb.bean_id = '{$this->_account->id}' AND eb.bean_module = 'Accounts' AND eb.email_id = '{$email->id}' AND eb.deleted=0";
+        $query = "select count(*) as cnt from emails_beans eb WHERE eb.bean_id = '{$this->_account->id}' AND eb.bean_module = 'Accounts' AND eb.email_id = '{$email->id}' AND eb.deleted=0";
         $result = $GLOBALS['db']->query($query);
         $count = $GLOBALS['db']->fetchByAssoc($result);
-        $this->assertEquals(1, $count['CNT'], 'Incorrect emails_beans count');
+        $this->assertEquals(1, $count['cnt'], 'Incorrect emails_beans count');
     }
     
 }

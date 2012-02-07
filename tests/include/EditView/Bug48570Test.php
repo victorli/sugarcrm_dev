@@ -52,6 +52,12 @@ class Bug48570Test extends Sugar_PHPUnit_Framework_TestCase
         $current_user = SugarTestUserUtilities::createAnonymousUser();
 	}
 
+    public function tearDown()
+    {
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+	}
+
+
     /**
      * Create new currency
      * Create fake Opportunity with created currency

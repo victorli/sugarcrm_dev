@@ -54,8 +54,12 @@ $title=getClassicModuleTitle($mod_strings['LBL_MODULE_NAME'], array($mod_strings
 #30205
 $selectedAppLanguages = return_application_language($tabGroupSelected_lang);
 require_once('include/GroupedTabs/GroupedTabStructure.php');
+$availableModules = $tg->getAvailableModules($tabGroupSelected_lang);
+$smarty->assign('availableModuleList',$availableModules);
+$modList = array_keys($availableModules);
+$modList = array_combine($modList, $modList); // Bug #48693 We need full list of modules here instead of displayed modules
 $groupedTabsClass = new GroupedTabStructure();
-$groupedTabStructure = $groupedTabsClass->get_tab_structure('', '', true,true);
+$groupedTabStructure = $groupedTabsClass->get_tab_structure($modList, '', true,true);
 foreach($groupedTabStructure as $mainTab => $subModules){
  	$groupedTabStructure[$mainTab]['label'] = $mainTab;
  	$groupedTabStructure[$mainTab]['labelValue'] = $selectedAppLanguages[$mainTab];
@@ -71,13 +75,11 @@ $selected_lang = (!empty($_REQUEST['dropdown_lang'])?$_REQUEST['dropdown_lang']:
 if(empty($selected_lang)){
     $selected_lang = $GLOBALS['sugar_config']['default_language'];
 }
-$availableModules = $tg->getAvailableModules($tabGroupSelected_lang);
-$smarty->assign('availableModuleList',$availableModules);
 
 $smarty->assign('dropdown_languages', get_languages());
 
 
-$imageSave = SugarThemeRegistry::current()->getImage( 'studio_save', '');
+$imageSave = SugarThemeRegistry::current()->getImage( 'studio_save', '',null,null,'.gif',$mod_strings['LBL_SAVE']);
 
 $buttons = array();
 $buttons [] = array ( 'text' => $GLOBALS['mod_strings']['LBL_BTN_SAVEPUBLISH'],'actionScript'=>"onclick='studiotabs.generateForm(\"edittabs\");document.edittabs.submit()'" ) ;
@@ -90,10 +92,10 @@ $smarty->assign('buttons', $html);
 $smarty->assign('title', $title);
 $smarty->assign('dropdown_lang', $selected_lang);
 
-$editImage = SugarThemeRegistry::current()->getImage( 'edit_inline', '');
+$editImage = SugarThemeRegistry::current()->getImage( 'edit_inline', '',null,null,'.gif',$mod_strings['LBL_EDIT']);
 $smarty->assign('editImage',$editImage);
-$deleteImage = SugarThemeRegistry::current()->getImage( 'delete_inline', '');
-$recycleImage = SugarThemeRegistry::current()->getImage('icon_Delete','',48,48 );
+$deleteImage = SugarThemeRegistry::current()->getImage( 'delete_inline', '',null,null,'.gif',$mod_strings['LBL_MB_DELETE']);
+$recycleImage = SugarThemeRegistry::current()->getImage('icon_Delete','',48,48,'.gif',$mod_strings['LBL_MB_DELETE'] );
 $smarty->assign('deleteImage',$deleteImage);
 $smarty->assign('recycleImage',$recycleImage);	
 

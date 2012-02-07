@@ -91,7 +91,7 @@ foreach ($focus_tasks_list as $task) {
 		if ($task->date_due == '0000-00-00') $date_due = '';
 		else {
 			$date_due = $task->date_due;
-					
+
 		}
 		$open_activity_list[] = Array('name' => $task->name,
 									 'id' => $task->id,
@@ -210,7 +210,7 @@ foreach ($focus_notes_list as $note) {
 		$count = count($history_list);
 		$count--;
 		$history_list[$count]['filename'] = $note->filename;
-		$history_list[$count]['fileurl'] = UploadFile::get_url($note->filename,$note->id);
+		$history_list[$count]['fileurl'] = UploadFile::get_upload_url($note);
 	}
 
 }
@@ -225,8 +225,8 @@ else
 	$xtpl=new XTemplate ('modules/Activities/SubPanelView.html');
 }
 
-$xtpl->assign("DELETE_INLINE_PNG",  SugarThemeRegistry::current()->getImage('delete_inline','align="absmiddle" alt="'.$app_strings['LNK_DELETE'].'" border="0"'));
-$xtpl->assign("EDIT_INLINE_PNG",  SugarThemeRegistry::current()->getImage('edit_inline','align="absmiddle" alt="'.$app_strings['LNK_EDIT'].'" border="0"'));
+$xtpl->assign("DELETE_INLINE_PNG",  SugarThemeRegistry::current()->getImage('delete_inline','align="absmiddle" border="0"', null,null,'.gif',$app_strings['LNK_DELETE']));
+$xtpl->assign("EDIT_INLINE_PNG",  SugarThemeRegistry::current()->getImage('edit_inline','align="absmiddle" border="0"', null,null,'.gif',$app_strings['LNK_EDIT']));
 
 $xtpl->assign("MOD", $current_module_strings);
 $xtpl->assign("APP", $app_strings);
@@ -306,15 +306,15 @@ foreach($open_activity_list as $activity)
 	if (isset($activity['parent_type'])) $activity_fields['PARENT_MODULE'] = $activity['parent_type'];
 	switch ($activity['type']) {
 		case 'Call':
-			$activity_fields['SET_COMPLETE'] = "<a href='index.php?return_module=$currentModule&return_action=$action&return_id=$focus->id&action=EditView&module=Calls&status=Held&record=".$activity['id']."&status=Held'>".SugarThemeRegistry::current()->getImage("close_inline","title=".translate('LBL_LIST_CLOSE','Activities')." border='0'")."</a>";
+			$activity_fields['SET_COMPLETE'] = "<a href='index.php?return_module=$currentModule&return_action=$action&return_id=$focus->id&action=EditView&module=Calls&status=Held&record=".$activity['id']."&status=Held'>".SugarThemeRegistry::current()->getImage("close_inline","title=".translate('LBL_LIST_CLOSE','Activities')." border='0'",null,null,'.gif',$mod_strings['LBL_LIST_CLOSE'])."</a>";
 			$activity_fields['STATUS'] = $app_list_strings['call_status_dom'][$activity['status']];
 			break;
 		case 'Meeting':
-			$activity_fields['SET_COMPLETE'] = "<a href='index.php?return_module=$currentModule&return_action=$action&return_id=$focus->id&action=EditView&module=Meetings&status=Held&record=".$activity['id']."&status=Held'>".SugarThemeRegistry::current()->getImage("close_inline","title=".translate('LBL_LIST_CLOSE','Activities')." border='0'")."</a>";
+			$activity_fields['SET_COMPLETE'] = "<a href='index.php?return_module=$currentModule&return_action=$action&return_id=$focus->id&action=EditView&module=Meetings&status=Held&record=".$activity['id']."&status=Held'>".SugarThemeRegistry::current()->getImage("close_inline","title=".translate('LBL_LIST_CLOSE','Activities')." border='0'", null,null,'.gif',$mod_strings['LBL_LIST_CLOSE'])."</a>";
 			$activity_fields['STATUS'] = $app_list_strings['meeting_status_dom'][$activity['status']];
 			break;
 		case 'Task':
-			$activity_fields['SET_COMPLETE'] = "<a href='index.php?return_module=$currentModule&return_action=$action&return_id=$focus->id&action=EditView&module=Tasks&status=Completed&record=".$activity['id']."&status=Completed'>".SugarThemeRegistry::current()->getImage("close_inline","title=".translate('LBL_LIST_CLOSE','Activities')." border='0'")."</a>";
+			$activity_fields['SET_COMPLETE'] = "<a href='index.php?return_module=$currentModule&return_action=$action&return_id=$focus->id&action=EditView&module=Tasks&status=Completed&record=".$activity['id']."&status=Completed'>".SugarThemeRegistry::current()->getImage("close_inline","title=".translate('LBL_LIST_CLOSE','Activities')." border='0'", null,null,'.gif',$mod_strings['LBL_LIST_CLOSE'])."</a>";
 			$activity_fields['STATUS'] = $app_list_strings['task_status_dom'][$activity['status']];
 			break;
 	}
@@ -325,7 +325,7 @@ foreach($open_activity_list as $activity)
  global $click_bg;
 $xtpl->assign("BG_HILITE", $hilite_bg);
 $xtpl->assign("BG_CLICK", $click_bg);
-$xtpl->assign("ACTIVITY_MODULE_PNG", SugarThemeRegistry::current()->getImage($activity_fields['MODULE'].'','border="0" alt="'.$activity_fields['NAME'].'"'));
+$xtpl->assign("ACTIVITY_MODULE_PNG", SugarThemeRegistry::current()->getImage($activity_fields['MODULE'].'','border="0"', null,null,'.gif',$activity_fields['NAME']));
 	$xtpl->assign("ACTIVITY", $activity_fields);
 
 	if($oddRow)
@@ -357,7 +357,7 @@ $popup_request_data = array(
 		'form_name' => 'EditView',
 		'field_to_name_array' => array(),
 		);
-	
+
 $json = getJSONobj();
 $encoded_popup_request_data = $json->encode($popup_request_data);
 
@@ -424,13 +424,13 @@ foreach($history_list as $activity)
 
 	if (isset($activity['location'])) $activity_fields['LOCATION'] = $activity['location'];
 	if (isset($activity['filename'])) {
-		$activity_fields['ATTACHMENT'] = "<a href='".$activity['fileurl']."' target='_blank'>".SugarThemeRegistry::current()->getImage("attachment","alt='".$activity['filename']."' border='0' align='absmiddle'")."</a>";
+		$activity_fields['ATTACHMENT'] = "<a href='".$activity['fileurl']."' target='_blank'>".SugarThemeRegistry::current()->getImage("attachment","border='0' align='absmiddle'",null,null,'.gif',$activity['filename'])."</a>";
     }
 
 	if (isset($activity['parent_type'])) $activity_fields['PARENT_MODULE'] = $activity['parent_type'];
 
 	$xtpl->assign("ACTIVITY", $activity_fields);
-	$xtpl->assign("ACTIVITY_MODULE_PNG", SugarThemeRegistry::current()->getImage($activity_fields['MODULE'].'','border="0" alt="'.$activity_fields['NAME'].'"'));
+	$xtpl->assign("ACTIVITY_MODULE_PNG", SugarThemeRegistry::current()->getImage($activity_fields['MODULE'].'','border="0"', null,null,'.gif',$activity_fields['NAME']));
 
 	if($oddRow)
     {

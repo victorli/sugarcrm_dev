@@ -80,7 +80,7 @@
 {capture name=imageNameCapture assign=imageName}
 {$fields.{{$vardef.docType}}.value}_image_inline.png
 {/capture}
-<a href="{$fields.{{$vardef.docUrl}}.value}" class="tabDetailViewDFLink" target="_blank"><img src="{sugar_getimagepath file=$imageName}" border="0"></a>
+<a href="{$fields.{{$vardef.docUrl}}.value}" class="tabDetailViewDFLink" target="_blank">{sugar_getimage name=$imageName alt=$imageName other_attributes='border="0" '}</a>
 {/if}
 {{/if}}
 {if !$noChange}
@@ -120,11 +120,11 @@ type="file" title='{{$vardef.help}}' size="{{$displayParams.size|default:30}}"
 {{if empty($displayParams.hideButtons) }}
 <span class="id-ff multiple">
 <button type="button" name="{{$idName}}_remoteSelectBtn" id="{{$idName}}_remoteSelectBtn" tabindex="{{$tabindex}}" title="{sugar_translate label="{{$displayParams.accessKeySelectTitle}}"}" accessKey="{sugar_translate label="{{$displayParams.accessKeySelect}}"}" class="button firstChild" value="{sugar_translate label="{{$displayParams.accessKeySelectLabel}}"}"
-onclick="SUGAR.field.file.openPopup('{{$idName}}'); return false;"
-><img src="{sugar_getimagepath file="id-ff-select.png"}"></button
-><button type="button" name="{{$idName}}_remoteClearBtn" id="{{$idName}}_remoteClearBtn" tabindex="{{$tabindex}}" title="{sugar_translate label="{{$displayParams.accessKeyClearTitle}}"}" accessKey="{sugar_translate label="{{$displayParams.accessKeyClear}}"}" class="button lastChild" value="{sugar_translate label="{{$displayParams.accessKeyClearLabel}}"}"
-onclick="SUGAR.field.file.clearRemote('{{$idName}}'); return false;"
-><img src="{sugar_getimagepath file="id-ff-clear.png"}"></button>
+onclick="SUGAR.field.file.openPopup('{{$idName}}'); return false;">
+{sugar_getimage alt=$app_strings.LBL_ID_FF_SELECT name="id-ff-select" ext=".png" other_attributes=''}</button>
+<button type="button" name="{{$idName}}_remoteClearBtn" id="{{$idName}}_remoteClearBtn" tabindex="{{$tabindex}}" title="{$APP.LBL_CLEAR_BUTTON_TITLE}" accessKey="{$APP.LBL_CLEAR_BUTTON_KEY}" class="button lastChild" value="{$APP.LBL_CLEAR_BUTTON_LABEL}" onclick="SUGAR.field.file.clearRemote('{{$idName}}'); return false;">
+{sugar_getimage name="id-ff-clear" alt=$app_strings.LBL_ID_FF_CLEAR ext=".png" other_attributes=''}
+</button>
 </span>
 {{/if}}
 </span>

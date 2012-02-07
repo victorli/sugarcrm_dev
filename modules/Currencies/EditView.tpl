@@ -42,7 +42,7 @@
 <script type="text/javascript">
 js_iso4217 = {$JS_ISO4217};
 </script>
-<script type="text/javascript" src="modules/Currencies/EditView.js"></script>
+<script type="text/javascript" src="{sugar_getjspath file='modules/Currencies/EditView.js'}"></script>
 <table width="100%" cellspacing="0" cellpadding="0" border="0" class="edit view">
 <tr>
     <td>

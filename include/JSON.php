@@ -50,8 +50,8 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  *
  * Note: We no longer eval our json so there is no more need for security envelopes. The parameter
  * has been left for backwards compatibility.
+ * @api
  */
-
 class JSON
 {
 
@@ -61,7 +61,7 @@ class JSON
      * @param string $string
      * @param bool $addSecurityEnvelope defaults to false
      * @param bool $encodeSpecial
-     * @return string 
+     * @return string
      */
     public static function encode($string, $addSecurityEnvelope = false, $encodeSpecial = false)
     {
@@ -75,7 +75,7 @@ class JSON
                 $encodedString = str_replace($c, $enc, $encodedString);
             }
         }
-        
+
         return $encodedString;
     }
 
@@ -85,7 +85,7 @@ class JSON
      * @param string $string
      * @param bool $examineEnvelope Default false, true to extract and verify envelope
      * @param bool $assoc
-     * @return string 
+     * @return string
      */
     public static function decode($string, $examineEnvelope=false, $assoc = true)
     {
@@ -99,7 +99,7 @@ class JSON
     {
         return self::encode($string);
     }
-    
+
     /**
      * @deprecated use JSON::decode() instead
      */

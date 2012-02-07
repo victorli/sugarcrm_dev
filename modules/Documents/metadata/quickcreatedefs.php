@@ -48,7 +48,7 @@ $viewdefs['Documents']['QuickCreate'] = array(
                             'includes' => 
                               array (
                                 array('file' => 'include/javascript/popup_parent_helper.js'),
-                                array('file' => 'include/javascript/sugar_grp_jsolait.js'),
+                                array('file' => 'cache/include/javascript/sugar_grp_jsolait.js'),
                                 array('file' => 'modules/Documents/documents.js'),
                               ),
 ),

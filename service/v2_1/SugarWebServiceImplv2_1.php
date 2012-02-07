@@ -41,7 +41,7 @@ if(!defined('sugarEntry'))define('sugarEntry', true);
  */
 require_once('service/core/SugarWebServiceImpl.php');
 
-class SugarWebServiceImplv2_1 extends SugarWebServiceImpl 
+class SugarWebServiceImplv2_1 extends SugarWebServiceImpl
 {
 	/**
 	 * Retrieve a list of beans.  This is the primary method for getting list of SugarBeans from Sugar using the SOAP API.
@@ -64,6 +64,9 @@ class SugarWebServiceImplv2_1 extends SugarWebServiceImpl
 	public function get_entry_list($session, $module_name, $query, $order_by,$offset, $select_fields, $link_name_to_fields_array, $max_results, $deleted )
 	{
 		$result = parent::get_entry_list($session, $module_name, $query, $order_by,$offset, $select_fields, $link_name_to_fields_array, $max_results, $deleted );
+		if(empty($result)) {
+		    return null;
+		}
 		$relationshipList = $result['relationship_list'];
 		$returnRelationshipList = array();
 		foreach($relationshipList as $rel){

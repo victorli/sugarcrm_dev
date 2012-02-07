@@ -42,11 +42,7 @@ if( !isset( $install_script ) || !$install_script ){
     die($mod_strings['ERR_NO_DIRECT_SCRIPT']);
 }
 
-
 if( is_file("config.php") ){
-	
-    
-
 	if(!empty($sugar_config['default_theme']))
       $_SESSION['site_default_theme'] = $sugar_config['default_theme'];
 
@@ -109,9 +105,10 @@ $customId = (isset($_SESSION['setup_site_specify_guid']) && !empty($_SESSION['se
 
 ///////////////////////////////////////////////////////////////////////////////
 ////	START OUTPUT
+$langHeader = get_language_header();
 $out =<<<EOQ
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<html {$langHeader}>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
    <meta http-equiv="Content-Script-Type" content="text/javascript">
@@ -148,8 +145,8 @@ EOQ;
 
 
 //hide this in typical mode
-if(isset($_SESSION['install_type'])  && !empty($_SESSION['install_type'])  && strtolower($_SESSION['install_type'])=='custom'){
-$out .=<<<EOQ
+if(!empty($_SESSION['install_type'])  && strtolower($_SESSION['install_type'])=='custom'){
+    $out .=<<<EOQ
 
    <tr><td colspan="3" align="left"> {$mod_strings['LBL_SITECFG_URL_MSG']}
    </td></tr>
@@ -161,10 +158,28 @@ $out .=<<<EOQ
        <td><b>{$mod_strings['LBL_SYSTEM_NAME']}</b></td>
        <td align="left"><input type="text" name="setup_system_name" value="{$_SESSION['setup_system_name']}" size="40" /><br>&nbsp;</td></tr>
 EOQ;
+    $db = getDbConnection();
+    if($db->supports("collation")) {
+        $collationOptions = $db->getCollationList();
+    }
+    if(!empty($collationOptions)) {
+        if(isset($_SESSION['setup_db_options']['collation'])) {
+            $default = $_SESSION['setup_db_options']['collation'];
+        } else {
+            $default = $db->getDefaultCollation();
+        }
+        $options = get_select_options_with_id(array_combine($collationOptions, $collationOptions), $default);
+        $out .=<<<EOQ
+       <tr><td colspan="3" align="left"> <br>{$mod_strings['LBL_SITECFG_COLLATION_MSG']}</td></tr>
+        <tr><td><span class="required">*</span></td>
+           <td><b>{$mod_strings['LBL_COLLATION']}</b></td>
+           <td align="left"><select name="setup_db_collation" id="setup_db_collation">$options</select><br>&nbsp;</td></tr>
+EOQ;
+   }
 }
 
 $out .=<<<EOQ
-       
+
     <tr><td colspan="3" align="left"> {$mod_strings['LBL_SITECFG_PASSWORD_MSG']}</td></tr>
     <tr><td><span class="required">*</span></td>
        <td><b>{$mod_strings['LBL_SITECFG_ADMIN_Name']}</b><br>
@@ -179,7 +194,7 @@ $out .=<<<EOQ
        <td align="left"><input type="password" name="setup_site_admin_password_retype" value="{$_SESSION['setup_site_admin_password_retype']}" size="20" /></td></tr>
 
 EOQ;
- 
+
 $out .= <<<EOQ
 </table>
 </td>

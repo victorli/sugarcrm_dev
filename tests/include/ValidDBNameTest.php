@@ -34,7 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 require_once("include/utils.php");
 
 class ValidDBNameTest extends Sugar_PHPUnit_Framework_TestCase
@@ -50,8 +50,8 @@ class ValidDBNameTest extends Sugar_PHPUnit_Framework_TestCase
     public function testmaxLengthParam()
     {
         $this->assertEquals(
-            'idx_test_123_456_789_foo_bar_id',
-            getValidDBName('idx_test_123_456_789_foo_bar_id', false, 40)
+            'idx_test_123_456_foo_bar_id',
+            getValidDBName('idx_test_123_456_foo_bar_id', false)
         );
     }
 
@@ -84,19 +84,8 @@ class ValidDBNameTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertFalse(isValidDBName('sugar.crm', 'mysql'));
     }
 
-    public function testValidOracleNameReturnsTrue()
-    {
-        $this->assertTrue(isValidDBName('sugarCRM', 'oci8'));
-        $this->assertTrue(isValidDBName('sugar_crm', 'oci8'));
-        $this->assertTrue(isValidDBName('sugarCRM_ver6', 'oci8'));
-    }
 
-    public function testInvalidOracleNameReturnsFalse()
-    {
-        $this->assertFalse(isValidDBName('sugar\CRM', 'oci8'));
-        $this->assertFalse(isValidDBName('sugar crm', 'oci8'));
-        $this->assertFalse(isValidDBName('sugarCRM_ver#63', 'oci8'));
-    }
+
 
     public function testValidMSSQLNameReturnsTrue()
     {
@@ -112,7 +101,7 @@ class ValidDBNameTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertFalse(isValidDBName('#sugarCRM_ver6', 'mssql'));
     }
     
-    public function testLongNameEffected()
+    public function testLongNameAffected()
     {
         $this->assertNotEquals(
             getValidDBName('eeeee_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_opportunities', true),
@@ -120,3 +109,5 @@ class ValidDBNameTest extends Sugar_PHPUnit_Framework_TestCase
         );
     }
 }
+
+?>

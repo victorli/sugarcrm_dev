@@ -38,18 +38,18 @@ $viewdefs['Documents']['EditView'] = array(
     'templateMeta' => array('form' => array('enctype'=>'multipart/form-data',
                                             'hidden'=>array('<input type="hidden" name="old_id" value="{$fields.document_revision_id.value}">',
                                             				'<input type="hidden" name="contract_id" value="{$smarty.request.contract_id}">'),
-                            			    ),       
-                            'maxColumns' => '2', 
+                            			    ),
+                            'maxColumns' => '2',
                             'widths' => array(
-                                            array('label' => '10', 'field' => '30'), 
+                                            array('label' => '10', 'field' => '30'),
                                             array('label' => '10', 'field' => '30')
                                             ),
-'javascript' => '<script type="text/javascript" src="include/javascript/popup_parent_helper.js?s={$SUGAR_VERSION}&c={$JS_CUSTOM_VERSION}"></script>
-<script type="text/javascript" src="include/javascript/sugar_grp_jsolait.js?s={$SUGAR_VERSION}&c={$JS_CUSTOM_VERSION}"></script>
-<script type="text/javascript" src="modules/Documents/documents.js?s={$SUGAR_VERSION}&c={$JS_CUSTOM_VERSION}"></script>',
+'javascript' => '{sugar_getscript file="include/javascript/popup_parent_helper.js"}
+{sugar_getscript file="cache/include/javascript/sugar_grp_jsolait.js"}
+{sugar_getscript file="modules/Documents/documents.js"}',
 ),
  'panels' =>array (
-  'lbl_document_information' => 
+  'lbl_document_information' =>
   array (
     array (
       array(
@@ -59,18 +59,18 @@ $viewdefs['Documents']['EditView'] = array(
       array (
             'name' => 'status_id',
             'label' => 'LBL_DOC_STATUS',
-      ),          
+      ),
     ),
-    
+
     array (
       'document_name',
-    
+
       array('name'=>'revision',
             'customCode' => '<input name="revision" type="text" value="{$fields.revision.value}" {$DISABLED}>'
            ),
-      
+
     ),
-    
+
     array (
 	    array (
 	      'name' => 'template_type',
@@ -81,22 +81,22 @@ $viewdefs['Documents']['EditView'] = array(
 	      'label' => 'LBL_DET_IS_TEMPLATE',
 	    ),
     ),
-    
+
     array (
       array('name'=>'active_date'),
        'category_id',
 
-    ),    
-    
+    ),
+
     array (
       'exp_date',
       'subcategory_id',
     ),
-    
+
     array (
       array('name'=>'description'),
     ),
-    
+
     array (
       array('name'=>'related_doc_name',
             'customCode' => '<input name="related_document_name" type="text" size="30" maxlength="255" value="{$RELATED_DOCUMENT_NAME}" readonly>' .
@@ -106,7 +106,7 @@ $viewdefs['Documents']['EditView'] = array(
             'customCode' => '<select name="related_doc_rev_id" id="related_doc_rev_id" {$RELATED_DOCUMENT_REVISION_DISABLED}>{$RELATED_DOCUMENT_REVISION_OPTIONS}</select>',
            ),
     ),
-    
+
     ),
   'LBL_PANEL_ASSIGNMENT' =>
   array (

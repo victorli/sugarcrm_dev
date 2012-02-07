@@ -692,7 +692,7 @@ class Link {
 					return;
 				}
 		}
-        $GLOBALS['log']->fatal("Relationship type = {$this->_relationship->relationship_type}");
+        $GLOBALS['log']->debug("Relationship type = {$this->_relationship->relationship_type}");
         foreach($keys as $key) {
 
 			//fetch the related record using the key and update.
@@ -816,7 +816,7 @@ class Link {
 	}
 
 	function _delete_row($table_name,$key) {
-		$query="UPDATE $table_name SET deleted=1, date_modified='" .$GLOBALS['timedate']->nowDb()."' WHERE id='$key'";
+		$query="UPDATE $table_name SET deleted=1, date_modified='" .$GLOBALS['timedate']->nowDb()."' WHERE id='".$this->_db->quote($key)."'";
 		$GLOBALS['log']->debug("Relationship Delete Statement :".$query);
 
 		$result=$this->_db->query($query, true);
@@ -827,7 +827,7 @@ class Link {
 		$query='UPDATE '.$table_name.' SET ';
 		$delimiter='';
 		foreach ($value_array as $key=>$value) {
-			$query.=$delimiter.$key."='".$value."' ";
+			$query.=$delimiter.$key."='".$this->_db->quote($value)."' ";
 			$delimiter=",";
 		}
 		$query.=$where;
@@ -845,7 +845,7 @@ class Link {
 		$delimiter='';
 		foreach ($value_array as $key=>$value) {
 			$columns_list.=$delimiter.$key;
-			$values_list .=$delimiter."'".$value."'";
+			$values_list .=$delimiter."'".$this->_db->quote($value)."'";
 			$delimiter=",";
 		}
 		$insert_string='INSERT into '.$this->_relationship->join_table.' ('.$columns_list.') VALUES ('.$values_list.')';

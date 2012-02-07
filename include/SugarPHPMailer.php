@@ -45,8 +45,12 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 require_once('include/phpmailer/class.phpmailer.php');
 require_once('include/OutboundEmail/OutboundEmail.php');
 
-
-class SugarPHPMailer extends PHPMailer {
+/**
+ * Sugar mailer
+ * @api
+ */
+class SugarPHPMailer extends PHPMailer
+{
 	var $oe; // OutboundEmail
 	var $protocol = "tcp://";
 	var $preppedForOutbound = false;
@@ -101,8 +105,8 @@ class SugarPHPMailer extends PHPMailer {
 
 		// ssl or tcp - keeping outside isSMTP b/c a default may inadvertantly set ssl://
 		$this->protocol = ($oe->mail_smtpssl) ? "ssl://" : "tcp://";
-		
-		if($oe->mail_sendtype == "SMTP") 
+
+		if($oe->mail_sendtype == "SMTP")
 		{
     		//Set mail send type information
     		$this->Mailer = "smtp";
@@ -114,14 +118,14 @@ class SugarPHPMailer extends PHPMailer {
             if ($oe->mail_smtpssl == 2) {
             	$this->SMTPSecure = 'tls';
             } // if
-    
+
     		if($oe->mail_smtpauth_req) {
     			$this->SMTPAuth = TRUE;
     			$this->Username = $oe->mail_smtpuser;
     			$this->Password = $oe->mail_smtppass;
     		}
 		}
-		else 
+		else
 			$this->Mailer = "sendmail";
 	}
 
@@ -135,8 +139,8 @@ class SugarPHPMailer extends PHPMailer {
 
 		// ssl or tcp - keeping outside isSMTP b/c a default may inadvertantly set ssl://
 		$this->protocol = ($oe->mail_smtpssl) ? "ssl://" : "tcp://";
-		
-		if($oe->mail_sendtype == "SMTP") 
+
+		if($oe->mail_sendtype == "SMTP")
 		{
     		//Set mail send type information
     		$this->Mailer = "smtp";
@@ -152,9 +156,9 @@ class SugarPHPMailer extends PHPMailer {
     			$this->SMTPAuth = TRUE;
     			$this->Username = $oe->mail_smtpuser;
     			$this->Password = $oe->mail_smtppass;
-    		}		
+    		}
 		}
-		else 
+		else
 		  $this->Mailer = "sendmail";
 	}
 
@@ -243,9 +247,12 @@ class SugarPHPMailer extends PHPMailer {
 			// HTML email RFC compliance
 			if($this->ContentType == "text/html") {
 				if(strpos($this->Body, '<html') === false) {
+
+                    $langHeader = get_language_header();
+
 					$head=<<<eoq
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" {$langHeader}>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset={$OBCharset}" />
 <title>{$subject}</title>
@@ -282,71 +289,73 @@ eoq;
 	}
 
 	/**
+	 * Replace images with locations specified by regex with cid: images
+	 * and attach needed files
+	 * @param string $regex Regular expression
+	 * @param string $local_prefix Prefix where local files are stored
+	 * @param bool $object Use attachment object
+	 */
+	public function replaceImageByRegex($regex, $local_prefix, $object = false)
+	{
+		preg_match_all("#<img[^>]*[\s]+src[^=]*=[\s]*[\"']($regex)(.+?)[\"']#si", $this->Body, $matches);
+		$i = 0;
+        foreach($matches[2] as $match) {
+			$filename = urldecode($match);
+			$cid = $filename;
+			$file_location = $local_prefix.$filename;
+			if(!file_exists($file_location)) continue;
+			if($object) {
+			    if(preg_match('#&(?:amp;)?type=([\w]+)#i', $matches[0][$i], $typematch)) {
+			        switch(strtolower($typematch[1])) {
+			            case 'documents':
+			                $beanname = 'DocumentRevisions';
+			                break;
+			            case 'notes':
+			                $beanname = 'Notes';
+			                break;
+			        }
+			    }
+			    $mime_type = "application/octet-stream";
+			    if(isset($beanname)) {
+			        $bean = SugarModule::get($beanname)->loadBean();
+    			    $bean->retrieve($filename);
+    			    if(!empty($bean->id)) {
+        			    $mime_type = $bean->file_mime_type;
+        			    $filename = $bean->filename;
+    			    }
+			    }
+			} else {
+			    $mime_type = "image/".strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+			}
+		    $this->AddEmbeddedImage($file_location, $cid, $filename, 'base64', $mime_type);
+		    $i++;
+        }
+		//replace references to cache with cid tag
+		$this->Body = preg_replace("|\"$regex|i",'"cid:',$this->Body);
+		// remove bad img line from outbound email
+		$this->Body = preg_replace('#<img[^>]+src[^=]*=\"\/([^>]*?[^>]*)>#sim', '', $this->Body);
+	}
+
+	/**
 	 * @param notes	array of note beans
 	 */
 	function handleAttachments($notes) {
 		global $sugar_config;
 
         //replace references to cache/images with cid tag
-        $this->Body = str_replace($GLOBALS['sugar_config']['cache_dir'].'images/','cid:',$this->Body);
+        $this->Body = str_replace(sugar_cached('images/'),'cid:',$this->Body);
 
 		if (empty($notes)) {
 				return;
 		}
 		// cn: bug 4864 - reusing same SugarPHPMailer class, need to clear attachments
 		$this->ClearAttachments();
-		require_once('include/upload_file.php');
 
-		//Handle legacy attachments
-        $fileBasePath = "{$sugar_config['upload_dir']}";
-		$filePatternSearch = "{$sugar_config['upload_dir']}";
-		$filePatternSearch = str_replace("/", "\/", $filePatternSearch);
-		if(strpos($this->Body, "\"{$fileBasePath}")) {
-			$matches = array();
-			preg_match_all("/{$filePatternSearch}.+?\"/i", $this->Body, $matches);
-			foreach($matches[0] as $match) {
-				$filename = str_replace($fileBasePath, '', $match);
-				$filename = urldecode(substr($filename, 0, -1));
-				$cid = $filename;
-				$file_location = clean_path(getcwd()."/{$sugar_config['upload_dir']}{$filename}");
-				$mime_type = "image/".strtolower(substr($filename, strrpos($filename, ".")+1, strlen($filename)));
-				if(file_exists($file_location)) {
-					$this->AddEmbeddedImage($file_location, $cid, $filename, 'base64', $mime_type);
-				}
-			}
-            //replace references to cache with cid tag
-            $this->Body = str_replace($fileBasePath,'cid:',$this->Body);
-		}
-		
-		//Handle secure embeded images.
-		$noteImgRegex = "/<img[^>]*[\s]+src[^=]*=\"index.php\?entryPoint=download(\&amp;|\&)id=([^\&]*)[^>]*>/im";
-        $embededImageMatches = array(); 
-        preg_match_all($noteImgRegex, $this->Body, $embededImageMatches,PREG_SET_ORDER);
-        
-        foreach ($embededImageMatches as $singleMatch )
-        {
-            $fullMatch = $singleMatch[0];
-            $noteId = $singleMatch[2];
-            $cid = $noteId;
-            $filename = $noteId;
-           
-            //Retrieve note for mimetype
-            $tmpNote = new Note();
-            $tmpNote->retrieve($noteId);
-            //Replace the src part of img tag with new cid tag
-            $cidRegex = "/src=\"([^\"]*)\"/im";
-            $replaceMatch = preg_replace($cidRegex, "src=\"cid:$noteId\"", $fullMatch);
+		$this->replaceImageByRegex("(?:{$sugar_config['site_url']})?/?cache/images/", sugar_cached("images/"));
 
-            //Replace the body, old tag for new tag
-            $this->Body = str_replace($fullMatch, $replaceMatch, $this->Body);
-            
-            //Attach the file
-            $file_location = clean_path(getcwd()."/{$sugar_config['upload_dir']}{$noteId}");
-            
-            if(file_exists($file_location)) 
-					$this->AddEmbeddedImage($file_location, $cid, $filename, 'base64', $tmpNote->file_mime_type);
-        }
-		
+		//Replace any embeded images using the secure entryPoint for src url.
+		$this->replaceImageByRegex("(?:{$sugar_config['site_url']})?index.php[?]entryPoint=download&(?:amp;)?[^\"]+?id=", "upload://", true);
+
 		//Handle regular attachments.
 		foreach($notes as $note) {
 				$mime_type = 'text/plain';
@@ -359,13 +368,13 @@ eoq;
 						$filename = $note->file->original_file_name;
 						$mime_type = $note->file->mime_type;
 					} else {
-						$file_location = rawurldecode(UploadFile::get_file_path($note->filename,$note->id));
+						$file_location = "upload://{$note->id}";
 						$filename = $note->id.$note->filename;
 						$mime_type = $note->file_mime_type;
 					}
 				} elseif($note->object_name == 'DocumentRevision') { // from Documents
 					$filename = $note->id.$note->filename;
-					$file_location = getcwd().'/'.$GLOBALS['sugar_config']['upload_dir'].$filename;
+					$file_location = "upload://$filename";
 					$mime_type = $note->file_mime_type;
 				}
 
@@ -384,7 +393,7 @@ eoq;
 		$GLOBALS['log']->fatal("SugarPHPMailer encountered an error: {$msg}");
 		parent::SetError($msg);
 	}
-	
+
 	function SmtpConnect() {
 		$connection = parent::SmtpConnect();
 		if (!$connection) {
@@ -397,5 +406,5 @@ eoq;
 		}
 		return $connection;
 	} // fn
-	
+
 } // end class definition

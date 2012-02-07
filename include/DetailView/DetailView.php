@@ -36,41 +36,44 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
+/**
+ * DetailView - display single record
+ * @api
+ */
 class DetailView extends ListView {
-	
+
 	var $list_row_count = null;
 	var $return_to_list_only=false;
 	var $offset_key_mismatch=false;
 	var $no_record_found=false;
-	
+
 	function DetailView(){
 		parent::ListView();
-		
+
 		global $theme, $app_strings, $currentModule;
 		$this->local_theme = $theme;
 		$this->local_app_strings =$app_strings;
 	}
 
-	function processSugarBean($html_varName, $seed, &$offset, $isfirstview=0) { 
+	function processSugarBean($html_varName, $seed, &$offset, $isfirstview=0) {
 		global $row_count, $sugar_config;
-		
+
 		global $next_offset;
 		global $previous_offset;
 		global $list_view_row_count;
 		global $current_offset;
 		if (!empty($sugar_config['disable_vcr']) )  {
 			    $seed->retrieve($_REQUEST['record']);
-				return $seed;						
+				return $seed;
 		}
 		$isfirstview = 0;
-		
+
 		$nav_history_set=false;
 		$nav_history_array=array();
 		$nav_offset='';
 		$nav_ids_visited=array();
 		$nav_stamp='';
-			
+
 		//get the session variable DETAIL_NAV_HISTORY,
 		//the format of the variable stamp,offset, array of IDs visited.
         $nav_history=$this->getLocalSessionVariable($html_varName, "DETAIL_NAV_HISTORY");
@@ -81,13 +84,13 @@ class DetailView extends ListView {
 			$nav_offset=$nav_history_array[1];
 			eval("\$nav_ids_visited= ".$nav_history_array[2].";");
 		}
-	
+
 		//from list				 					offset is there but $bNavHistorySet is false.
-		//from next,previous,start and end buttons	offset and $bNavHistorySet is true.	
+		//from next,previous,start and end buttons	offset and $bNavHistorySet is true.
 		//from tracker 								offset is not there but $bNavHistorySet may or may not exist.
 		if (isset($_REQUEST['offset']) && !empty($_REQUEST['offset'])) {
 			//get offset values.
-			$offset = $_REQUEST['offset'];		
+			$offset = $_REQUEST['offset'];
 			if($offset < 0){
 				$offset = 0;
 			}
@@ -95,15 +98,15 @@ class DetailView extends ListView {
 			//use case, search, navigate to detail, copy URL, search again, paste URL.
 			if (!$this->isRequestFromListView($html_varName))  {
 			    $result = $seed->retrieve($_REQUEST['record']);
-				return $result;						
+				return $result;
 			}
-			
+
 			if ($nav_history_set) {
 				if (isset($nav_ids_visited[$offset])) {
 					unset($nav_ids_visited[$offset]);
 				}
 			}
-						
+
 		} else {
 			if ($nav_history_set) {
 				//try to locate the ID in the nav_history array.
@@ -111,7 +114,7 @@ class DetailView extends ListView {
 				$key = array_search($_REQUEST['record'], $nav_ids_visited);
 				if ($key === false) {
 					//do not show the VCR buttons.
-					
+
 			    	$result = $seed->retrieve($_REQUEST['record']);
 					return $result;
 				}
@@ -119,22 +122,22 @@ class DetailView extends ListView {
 				$_REQUEST['offset'] = $offset;
 				$_GET['offset'] = $offset;
 				$_POST['offset'] = $offset;
-				
+
 				$_REQUEST['stamp'] = $nav_stamp;
 				$_GET['stamp'] = $nav_stamp;
-				$_POST['stamp'] = $nav_stamp;		
+				$_POST['stamp'] = $nav_stamp;
 				if (isset($nav_ids_visited[$offset])) {
 					unset($nav_ids_visited[$offset]);
 				}
-							
+
 			} else {
 				if(!empty($seed->id))return $seed;
-			
+
 		    	$result = $seed->retrieve($_REQUEST['record']);
 				return $result;
-			}				
+			}
 		}
-	
+
         //Check if this is the first time we have viewed this record
         $var = $this->getLocalSessionVariable($html_varName, "IS_FIRST_VIEW");
         if(!isset($var) || !$var){
@@ -158,14 +161,14 @@ class DetailView extends ListView {
        		}
        		$this->query_where .= $seed->getOwnerWhere($current_user->id);
 		}
-        
+
         $order = $this->getLocalSessionVariable($seed->module_dir.'2_'.$html_varName, "ORDER_BY");
         $orderBy = '';
         if(!empty($order['orderBy']))
         	$orderBy = $order['orderBy'];
          if(!empty($orderBy) && !empty($order['direction']))
-        	$orderBy .= ' ' . $order['direction'];	
-        	  
+        	$orderBy .= ' ' . $order['direction'];
+
         $this->query_orderby =  $seed->process_order_by($orderBy,null);
 		$current_offset = $_REQUEST['offset'] -1;
 		$response = $seed->process_detail_query(SugarVCR::retrieve($seed->module_dir), 0, -1, -1, '', $current_offset);
@@ -184,13 +187,13 @@ class DetailView extends ListView {
 		if (empty($_REQUEST['InDetailNav']) and strcmp($_REQUEST['record'],$object->id)!=0)  {
 			 $this->offset_key_mismatch=true;
 		}
-		if ($this->no_record_found or $this->offset_key_mismatch ) { 
-			if ($nav_history_set) { 
+		if ($this->no_record_found or $this->offset_key_mismatch ) {
+			if ($nav_history_set) {
 				$this->return_to_list_only=true;
 			}
 	    	$result = $seed->retrieve($_REQUEST['record']);
-			return $result;						
-		} 		
+			return $result;
+		}
 
 		//update the request with correct value for the record attribute.
 		//need only when using the VCR buttuoms. This is a workaround need to fix the values
@@ -204,7 +207,7 @@ class DetailView extends ListView {
 			$nav_stamp=$_GET['stamp'];
 		}
 		if (empty($nav_offset)) {
-			$nav_offset=$offset;		
+			$nav_offset=$offset;
 		}
 		//store a maximum of 20 entries in the nav_ids_visited array.
 		//remove the oldest entry when this limit is reached.
@@ -218,14 +221,14 @@ class DetailView extends ListView {
 
 		return $object;
 	}
-	
+
 	function populateQueryWhere($isfirstview, $html_varName){
 		if($isfirstview){
             $this->query_where = $this->getVariableFromSession($_REQUEST['module'], 'QUERY_WHERE');
-            
+
             //this is a fail safe, in case the old ListView is still in use
             if(empty($this->query_where)){
-                $this->query_where = $this->getLocalSessionVariable($html_varName, "QUERY_WHERE");   
+                $this->query_where = $this->getLocalSessionVariable($html_varName, "QUERY_WHERE");
             }
 			//SETTING QUERY FOR LATER USE
 			$this->setSessionVariable("QUERY_DETAIL", "where", $this->query_where);
@@ -239,7 +242,7 @@ class DetailView extends ListView {
 		global $export_module, $sugar_config, $current_user;
         //intialize audit_link
         $audit_link = '';
-		
+
 		$row_count = $this->getListViewRowCount();
 
         if($display_audit_link && (!isset($sugar_config['disc_client']) || $sugar_config['disc_client'] == false))
@@ -254,15 +257,15 @@ class DetailView extends ListView {
             $encoded_popup_request_data = $json->encode($popup_request_data);
             $audit_link = "<a href='javascript:void(0)' onclick='open_popup(\"Audit\", \"600\", \"400\", \"&record=".$_REQUEST['record']."&module_name=".$_REQUEST['module']."\", true, false, $encoded_popup_request_data);'>".$this->local_app_strings['LNK_VIEW_CHANGE_LOG']."</a>";
         }
-        
+
         $html_text = "";
         $pre_html_text = "";
 		$pre_html_text .= "<tr class='pagination'>\n";
 		$pre_html_text .= "<td COLSPAN=\"20\">\n";
         $pre_html_text .= "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr><td style=\"text-align: left\" >&nbsp;".$audit_link."</td>\n";
 
-        
-        
+
+
         if ($this->return_to_list_only == true) {
 	        if($current_offset != 0 && $this->isRequestFromListView($html_varName))
 	        {
@@ -282,16 +285,16 @@ class DetailView extends ListView {
 				$list_link = "<button type='button' class='button' title='{$GLOBALS['app_strings']['LNK_LIST_RETURN']}' onClick='location.href=\"$list_URL\";'>".$this->local_app_strings['LNK_LIST_RETURN']."</button>";
 
 				$html_text .= "<td nowrap align='right' scope='row'>".$list_link;
-			
+
 				if ($row_count != 0) {
 		    		$resume_URL  = $this->base_URL.$current_offset."&InDetailNav=1";
 	    			//$resume_link = "<a href=\"$resume_URL\" >".$this->local_app_strings['LNK_RESUME']."&nbsp;</a>";
 					$resume_link = "<button type='button' class='button' title='$this->local_app_strings['LNK_RESUME']' onClick='location.href=\"$resume_URL\";'>".$this->local_app_strings['LNK_RESUME']."</button>";
-	    			
+
 	    			$html_text .= "&nbsp;&nbsp;".$resume_link;
 				}
 				$html_text .= "</td>";
-	        }		
+	        }
         }
 		else {
 	        if($current_offset != 0 && $this->isRequestFromListView($html_varName))
@@ -302,58 +305,58 @@ class DetailView extends ListView {
 	    		else if($current_offset > $row_count){
 	    			$current_offset = $row_count;
 	    		}
-	
+
 	    		$next_offset = $current_offset + 1;
 	    		$previous_offset = $current_offset - 1;
-	
+
 				$this->set_base_URL($html_varName);
-		
+
 	    		$start_URL = $this->base_URL."1"."&InDetailNav=1";
 	    		$current_URL = $this->base_URL.$current_offset."&InDetailNav=1";
 	    		$previous_URL  = $this->base_URL.$previous_offset."&InDetailNav=1";
 	    		$next_URL  = $this->base_URL.$next_offset."&InDetailNav=1";
 	    		$end_URL  = $this->base_URL.$row_count."&InDetailNav=1";
-	    		
+
 	    		$current_page = floor($current_offset / $this->records_per_page) * $this->records_per_page;
-	
+
 	    		if(1 == $current_offset){
-	    			//$start_link = SugarThemeRegistry::current()->getImage("start_off","alt='".$this->local_app_strings['LNK_LIST_START']."'  border='0' align='absmiddle'")."&nbsp;".$this->local_app_strings['LNK_LIST_START'];
-	   				//$previous_link = SugarThemeRegistry::current()->getImage("previous_off","alt='".$this->local_app_strings['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'")."&nbsp;".$this->local_app_strings['LNK_LIST_PREVIOUS']."";
-					$start_link = "<button type='button' title='{$this->local_app_strings['LNK_LIST_START']}' class='button' disabled>".SugarThemeRegistry::current()->getImage("start_off","alt='".$this->local_app_strings['LNK_LIST_START']."'  border='0' align='absmiddle'")."</button>";
-					$previous_link = "<button type='button' title='{$this->local_app_strings['LNK_LIST_PREVIOUS']}' class='button' disabled>".SugarThemeRegistry::current()->getImage("previous_off","alt='".$this->local_app_strings['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'")."</button>";
-	   				
+	    			//$start_link = SugarThemeRegistry::current()->getImage("start_off","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_START'])."&nbsp;".$this->local_app_strings['LNK_LIST_START'];
+	   				//$previous_link = SugarThemeRegistry::current()->getImage("previous_off","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_PREVIOUS'])."&nbsp;".$this->local_app_strings['LNK_LIST_PREVIOUS']."";
+					$start_link = "<button type='button' title='{$this->local_app_strings['LNK_LIST_START']}' class='button' disabled>".SugarThemeRegistry::current()->getImage("start_off","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_START'])."</button>";
+					$previous_link = "<button type='button' title='{$this->local_app_strings['LNK_LIST_PREVIOUS']}' class='button' disabled>".SugarThemeRegistry::current()->getImage("previous_off","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_PREVIOUS'])."</button>";
+
 	   			}else{
-	   				//$start_link = "<a href=\"$start_URL\">".SugarThemeRegistry::current()->getImage("start","alt='".$this->local_app_strings['LNK_LIST_START']."'  border='0' align='absmiddle'")."</a>&nbsp;<a href=\"$start_URL\">".$this->local_app_strings['LNK_LIST_START']."</a>";
-					$start_link = "<button type='button' class='button' title='{$this->local_app_strings['LNK_LIST_START']}' onClick='location.href=\"$start_URL\";'>".SugarThemeRegistry::current()->getImage("start","alt='".$this->local_app_strings['LNK_LIST_START']."'  border='0' align='absmiddle'")."</button>";
-	   				
+	   				//$start_link = "<a href=\"$start_URL\">".SugarThemeRegistry::current()->getImage("start","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_START'])."</a>&nbsp;<a href=\"$start_URL\">".$this->local_app_strings['LNK_LIST_START']."</a>";
+					$start_link = "<button type='button' class='button' title='{$this->local_app_strings['LNK_LIST_START']}' onClick='location.href=\"$start_URL\";'>".SugarThemeRegistry::current()->getImage("start","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_START'])."</button>";
+
 	   				if(0 != $current_offset){
-		   				//$previous_link = "<a href=\"$previous_URL\">".SugarThemeRegistry::current()->getImage("previous","alt='".$this->local_app_strings['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'")."</a>&nbsp;<a href=\"$previous_URL\" >".$this->local_app_strings['LNK_LIST_PREVIOUS']."</a>";
-						$previous_link = "<button type='button' class='button' title='{$this->local_app_strings['LNK_LIST_PREVIOUS']}' onClick='location.href=\"$previous_URL\";'>".SugarThemeRegistry::current()->getImage("previous","alt='".$this->local_app_strings['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'")."</button>";
+		   				//$previous_link = "<a href=\"$previous_URL\">".SugarThemeRegistry::current()->getImage("previous","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_PREVIOUS'])."</a>&nbsp;<a href=\"$previous_URL\" >".$this->local_app_strings['LNK_LIST_PREVIOUS']."</a>";
+						$previous_link = "<button type='button' class='button' title='{$this->local_app_strings['LNK_LIST_PREVIOUS']}' onClick='location.href=\"$previous_URL\";'>".SugarThemeRegistry::current()->getImage("previous","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_PREVIOUS'])."</button>";
 	    			}
 	    			else {
-	    				//$previous_link = SugarThemeRegistry::current()->getImage("previous_off","alt='".$this->local_app_strings['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'")."&nbsp;".$this->local_app_strings['LNK_LIST_PREVIOUS'];
-						$previous_link = "<button type='button' title='{$this->local_app_strings['LNK_LIST_PREVIOUS']}' class='button' disabled>".SugarThemeRegistry::current()->getImage("previous_off","alt='".$this->local_app_strings['LNK_LIST_PREVIOUS']."'  border='0' align='absmiddle'")."</button>";
-	    				
+	    				//$previous_link = SugarThemeRegistry::current()->getImage("previous_off","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_PREVIOUS'])."&nbsp;".$this->local_app_strings['LNK_LIST_PREVIOUS'];
+						$previous_link = "<button type='button' title='{$this->local_app_strings['LNK_LIST_PREVIOUS']}' class='button' disabled>".SugarThemeRegistry::current()->getImage("previous_off","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_PREVIOUS'])."</button>";
+
 	    			}
 	    		}
-	
-	
+
+
 	    		if($row_count <= $current_offset){
-	    			//$end_link = $this->local_app_strings['LNK_LIST_END']."&nbsp;".SugarThemeRegistry::current()->getImage("end_off","alt='".$this->local_app_strings['LNK_LIST_END']."'  border='0' align='absmiddle'");
-	    			//$next_link = $this->local_app_strings['LNK_LIST_NEXT']."&nbsp;".SugarThemeRegistry::current()->getImage("next_off","alt='".$this->local_app_strings['LNK_LIST_NEXT']."'  border='0' align='absmiddle'");
-					$end_link = "<button type='button' title='{$this->local_app_strings['LNK_LIST_END']}' class='button' disabled>".SugarThemeRegistry::current()->getImage("end_off","alt='".$this->local_app_strings['LNK_LIST_END']."'  border='0' align='absmiddle'")."</button>";
-					$next_link = "<button type='button' title='{$this->local_app_strings['LNK_LIST_NEXT']}' class='button' disabled>".SugarThemeRegistry::current()->getImage("next_off","alt='".$this->local_app_strings['LNK_LIST_NEXT']."'  border='0' align='absmiddle'")."</button>";
+	    			//$end_link = $this->local_app_strings['LNK_LIST_END']."&nbsp;".SugarThemeRegistry::current()->getImage("end_off","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_END']);
+	    			//$next_link = $this->local_app_strings['LNK_LIST_NEXT']."&nbsp;".SugarThemeRegistry::current()->getImage("next_off","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_NEXT']);
+					$end_link = "<button type='button' title='{$this->local_app_strings['LNK_LIST_END']}' class='button' disabled>".SugarThemeRegistry::current()->getImage("end_off","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_END'])."</button>";
+					$next_link = "<button type='button' title='{$this->local_app_strings['LNK_LIST_NEXT']}' class='button' disabled>".SugarThemeRegistry::current()->getImage("next_off","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_NEXT'])."</button>";
 	    		}
 	    		else{
-	    			//$end_link = "<a href=\"$end_URL\">".$this->local_app_strings['LNK_LIST_END']."</a>&nbsp;<a href=\"$end_URL\">".SugarThemeRegistry::current()->getImage("end","alt='".$this->local_app_strings['LNK_LIST_END']."'  border='0' align='absmiddle'")."</a>";
-	    			//$next_link = "<a href=\"$next_URL\">".$this->local_app_strings['LNK_LIST_NEXT']."</a>&nbsp;<a href=\"$next_URL\">".SugarThemeRegistry::current()->getImage("next","alt='".$this->local_app_strings['LNK_LIST_NEXT']."'  border='0' align='absmiddle'")."</a>";
-					$end_link = "<button type='button' class='button' title='{$this->local_app_strings['LNK_LIST_END']}' onClick='location.href=\"$end_URL\";'>".SugarThemeRegistry::current()->getImage("end","alt='".$this->local_app_strings['LNK_LIST_END']."'  border='0' align='absmiddle'")."</button>";
-					$next_link = "<button type='button' class='button' title='{$this->local_app_strings['LNK_LIST_NEXT']}' onClick='location.href=\"$next_URL\";'>".SugarThemeRegistry::current()->getImage("next","alt='".$this->local_app_strings['LNK_LIST_NEXT']."'  border='0' align='absmiddle'")."</button>";
-	    			
+	    			//$end_link = "<a href=\"$end_URL\">".$this->local_app_strings['LNK_LIST_END']."</a>&nbsp;<a href=\"$end_URL\">".SugarThemeRegistry::current()->getImage("end","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_END'])."</a>";
+	    			//$next_link = "<a href=\"$next_URL\">".$this->local_app_strings['LNK_LIST_NEXT']."</a>&nbsp;<a href=\"$next_URL\">".SugarThemeRegistry::current()->getImage("next","border='0' align='absmiddle'",,null,null,'.gif',$this->local_app_strings['LNK_LIST_NEXT'])."</a>";
+					$end_link = "<button type='button' class='button' title='{$this->local_app_strings['LNK_LIST_END']}' onClick='location.href=\"$end_URL\";'>".SugarThemeRegistry::current()->getImage("end","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_END'])."</button>";
+					$next_link = "<button type='button' class='button' title='{$this->local_app_strings['LNK_LIST_NEXT']}' onClick='location.href=\"$next_URL\";'>".SugarThemeRegistry::current()->getImage("next","border='0' align='absmiddle'",null,null,'.gif',$this->local_app_strings['LNK_LIST_NEXT'])."</button>";
+
 	    		}
-	
+
 	    		$html_text .= "<td nowrap align='right' >".$start_link."&nbsp;&nbsp;".$previous_link."&nbsp;&nbsp;(".$current_offset." ".$this->local_app_strings['LBL_LIST_OF']." ".$row_count.")&nbsp;&nbsp;".$next_link."&nbsp;&nbsp;".$end_link."</td>";
-	
+
 	        }
 		}
         $post_html_text = "</tr></table>\n";
@@ -369,9 +372,9 @@ class DetailView extends ListView {
 
 
 	function set_base_URL($html_varName) {
-		
+
 		if(!isset($this->base_URL)){
-		
+
 			$this->base_URL = $_SERVER['PHP_SELF'];
     		if(empty($this->base_URL)){
     			$this->base_URL = 'index.php';
@@ -431,7 +434,7 @@ class DetailView extends ListView {
             return false;
         }
     }
-    
+
     /**
      * Return a variable from the session. uses the new ListView session data. Hence the '2'
      *
@@ -444,7 +447,7 @@ class DetailView extends ListView {
         }
         else{
             return "";
-    }  
+    }
     }
 
 	}

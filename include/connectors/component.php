@@ -35,8 +35,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-
-
+/**
+ * Connector component
+ * @api
+ */
 class component{
 	protected $_has_testing_enabled = false;
 	protected $_source;

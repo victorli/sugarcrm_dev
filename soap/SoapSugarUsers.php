@@ -334,6 +334,17 @@ function get_entry_list($session, $module_name, $query, $order_by,$offset, $sele
 		$error->set_error('no_access');
 		return array('result_count'=>-1, 'entry_list'=>array(), 'error'=>$error->get_soap_array());
 	}
+
+	require_once 'include/SugarSQLValidate.php';
+	$valid = new SugarSQLValidate();
+	if(!$valid->validateQueryClauses($query, $order_by)) {
+        $GLOBALS['log']->error("Bad query: $query $order_by");
+	    $error->set_error('no_access');
+	    return array(
+    			'result_count' => -1,
+    			'error' => $error->get_soap_array()
+    	);
+	}
 	if($query == ''){
 		$where = '';
 	}
@@ -343,7 +354,7 @@ function get_entry_list($session, $module_name, $query, $order_by,$offset, $sele
     if($using_cp){
         $response = $seed->retrieveTargetList($query, $select_fields, $offset,-1,-1,$deleted);
     }else{
-	   $response = $seed->get_list($order_by, $query, $offset,-1,-1,$deleted,true);
+        $response = $seed->get_list($order_by, $query, $offset,-1,-1,$deleted,true);
     }
 	$list = $response['list'];
 
@@ -1099,7 +1110,18 @@ function get_relationships($session, $module_name, $module_id, $related_module, 
 		return array('ids'=>$ids, 'error'=>$error->get_soap_array());
 	}
 
-	$id_list = get_linked_records($related_module, $module_name, $module_id);
+	require_once 'include/SugarSQLValidate.php';
+	$valid = new SugarSQLValidate();
+	if(!$valid->validateQueryClauses($related_module_query)) {
+        $GLOBALS['log']->error("Bad query: $related_module_query");
+        $error->set_error('no_access');
+	    return array(
+    			'result_count' => -1,
+    			'error' => $error->get_soap_array()
+    		);
+    }
+
+    $id_list = get_linked_records($related_module, $module_name, $module_id);
 
 	if ($id_list === FALSE) {
 		$error->set_error('no_relationship_support');
@@ -1111,8 +1133,7 @@ function get_relationships($session, $module_name, $module_id, $related_module, 
 
 	$list = array();
 
-	$id_list_quoted = array_map(create_function('$str','return "\'" . $str . "\'";'), $id_list);
-	$in = implode(", ", $id_list_quoted);
+	$in = "'".implode("', '", $id_list)."'";
 
 	$related_class_name = $beanList[$related_module];
 	require_once($beanFiles[$related_class_name]);
@@ -1255,16 +1276,16 @@ function handle_set_relationship($set_relationship_value)
     	$key = array_search(strtolower($module2),$mod->relationship_fields);
     	if(!$key) {
     	    $key = Relationship::retrieve_by_modules($module1, $module2, $GLOBALS['db']);
-    	    
+
             // BEGIN SnapLogic fix for bug 32064
             if ($module1 == "Quotes" && $module2 == "ProductBundles") {
-                // Alternative solution is perhaps to 
+                // Alternative solution is perhaps to
                 // do whatever Sugar does when the same
                 // request is received from the web:
-                $pb_cls = $beanList[$module2]; 
+                $pb_cls = $beanList[$module2];
                 $pb = new $pb_cls();
                 $pb->retrieve($module2_id);
-                
+
                 // Check if this relationship already exists
                 $query = "SELECT count(*) AS count FROM product_bundle_quote WHERE quote_id = '{$module1_id}' AND bundle_id = '{$module2_id}' AND deleted = '0'";
                 $result = $GLOBALS['db']->query($query, true, "Error checking for previously existing relationship between quote and product_bundle");
@@ -1272,18 +1293,18 @@ function handle_set_relationship($set_relationship_value)
                 if(isset($row['count']) && $row['count'] > 0){
                     return $error->get_soap_array();
                 }
-                
+
                 $query = "SELECT MAX(bundle_index)+1 AS idx FROM product_bundle_quote WHERE quote_id = '{$module1_id}' AND deleted='0'";
                 $result = $GLOBALS['db']->query($query, true, "Error getting bundle_index");
                 $GLOBALS['log']->debug("*********** Getting max bundle_index");
                 $GLOBALS['log']->debug($query);
                 $row = $GLOBALS['db']->fetchByAssoc($result);
-                
+
                 $idx = 0;
                 if ($row) {
                     $idx = $row['idx'];
                 }
-                
+
                 $pb->set_productbundle_quote_relationship($module1_id,$module2_id,$idx);
                 $pb->save();
                 return $error->get_soap_array();
@@ -1301,7 +1322,7 @@ function handle_set_relationship($set_relationship_value)
                 if(isset($row['count']) && $row['count'] > 0){
                     return $error->get_soap_array();
                 }
-                
+
                 $query = "SELECT MAX(product_index)+1 AS idx FROM product_bundle_product WHERE bundle_id='{$module1_id}'";
                 $result = $GLOBALS['db']->query($query, true, "Error getting bundle_index");
                 $GLOBALS['log']->debug("*********** Getting max bundle_index");
@@ -1323,7 +1344,7 @@ function handle_set_relationship($set_relationship_value)
                 return $error->get_soap_array();
             }
             // END SnapLogic fix for bug 32064
-            
+
     		if (!empty($key)) {
     			$mod->load_relationship($key);
     			$mod->$key->add($module2_id);
@@ -1401,10 +1422,25 @@ function search_by_module($user_name, $password, $search_string, $modules, $offs
 	global  $beanList, $beanFiles;
 
 	$error = new SoapError();
-	if(!validate_user($user_name, $password)){
-		$error->set_error('invalid_login');
-		return array('result_count'=>-1, 'entry_list'=>array(), 'error'=>$error->get_soap_array());
+    $hasLoginError = false;
+
+    if(empty($user_name) && !empty($password))
+    {
+        if(!validate_authenticated($password))
+        {
+            $hasLoginError = true;
+        }
+    } else if(!validate_user($user_name, $password)) {
+		$hasLoginError = true;
 	}
+
+    //If there is a login error, then return the error here
+    if($hasLoginError)
+    {
+        $error->set_error('invalid_login');
+        return array('result_count'=>-1, 'entry_list'=>array(), 'error'=>$error->get_soap_array());
+    }
+
 	global $current_user;
 	if($max_results > 0){
 		global $sugar_config;
@@ -1466,9 +1502,9 @@ function search_by_module($user_name, $password, $search_string, $modules, $offs
 						if($key != 'EmailAddresses'){
 							foreach($search_terms as $term){
 								if(!strpos($where_clause, 'number')){
-									$where .= string_format($where_clause,array($term));
+									$where .= string_format($where_clause,array($GLOBALS['db']->quote($term)));
 								}elseif(is_numeric($term)){
-									$where .= string_format($where_clause,array($term));
+									$where .= string_format($where_clause,array($GLOBALS['db']->quote($term)));
 								}else{
 									$addQuery = false;
 								}
@@ -1496,13 +1532,6 @@ function search_by_module($user_name, $password, $search_string, $modules, $offs
 				}
 				//grab the items from the db
 				$result = $seed->db->query($query, $offset, $max_results);
-
-				$list = Array();
-				if(empty($rows_found)){
-  						$rows_found =  $seed->db->getRowCount($result);
-				}//fi
-
-				$row_offset = 0;
 
 				while(($row = $seed->db->fetchByAssoc($result)) != null){
 					$list = array();
@@ -1537,7 +1566,7 @@ array('return'=>'tns:get_sync_result_encoded'),
 $NAMESPACE);
 
 /**
- * Enter description here...
+ * Get MailMerge document
  *
  * @param String $session -- Session ID returned by a previous call to login.
  * @param unknown_type $file_name
@@ -1553,15 +1582,20 @@ function get_mailmerge_document($session, $file_name, $fields)
         $error->set_error('invalid_login');
         return array('result'=>'', 'error'=>$error->get_soap_array());
     }
+    if(!preg_match('/^sugardata[\.\d\s]+\.php$/', $file_name)) {
+        $error->set_error('no_records');
+        return array('result'=>'', 'error'=>$error->get_soap_array());
+    }
     $html = '';
-    $file_name = $GLOBALS['sugar_config']['cache_dir'].'MergedDocuments/'.$file_name;
+
+    $file_name = sugar_cached('MergedDocuments/').pathinfo($file_name, PATHINFO_BASENAME);
 
     $master_fields = array();
     $related_fields = array();
 
     if(file_exists($file_name))
     {
-        require_once($file_name);
+        include($file_name);
 
         $class1 = $merge_array['master_module'];
         $beanL = $beanList[$class1];
@@ -1596,7 +1630,7 @@ function get_mailmerge_document($session, $file_name, $fields)
             }
         }
 
-        $html = '<html><body><table border = 1><tr>';
+        $html = '<html ' . get_language_header() .'><body><table border = 1><tr>';
 
         foreach($master_fields as $master_field){
             $html .= '<td>'.$class1.'_'.$master_field.'</td>';
@@ -1669,22 +1703,30 @@ $NAMESPACE);
  */
 function get_mailmerge_document2($session, $file_name, $fields)
 {
-    global  $beanList, $beanFiles, $app_list_strings;
+    global  $beanList, $beanFiles, $app_list_strings, $app_strings;
+
     $error = new SoapError();
     if(!validate_authenticated($session))
     {
+        $GLOBALS['log']->error('invalid_login');
         $error->set_error('invalid_login');
         return array('result'=>'', 'error'=>$error->get_soap_array());
     }
+    if(!preg_match('/^sugardata[\.\d\s]+\.php$/', $file_name)) {
+        $GLOBALS['log']->error($app_strings['ERR_NO_SUCH_FILE'] . " ({$file_name})");
+        $error->set_error('no_records');
+        return array('result'=>'', 'error'=>$error->get_soap_array());
+    }
     $html = '';
-    $file_name = $GLOBALS['sugar_config']['cache_dir'].'MergedDocuments/'.$file_name;
+
+    $file_name = sugar_cached('MergedDocuments/').pathinfo($file_name, PATHINFO_BASENAME);
 
     $master_fields = array();
     $related_fields = array();
 
     if(file_exists($file_name))
     {
-        require_once($file_name);
+        include($file_name);
 
         $class1 = $merge_array['master_module'];
         $beanL = $beanList[$class1];
@@ -1719,7 +1761,7 @@ function get_mailmerge_document2($session, $file_name, $fields)
             }
         }
 
-        $html = '<html><body><table border = 1><tr>';
+        $html = '<html ' . get_language_header() . '><body><table border = 1><tr>';
 
         foreach($master_fields as $master_field){
             $html .= '<td>'.$class1.'_'.$master_field.'</td>';
@@ -1811,10 +1853,8 @@ function get_document_revision($session,$id)
     $dr = new DocumentRevision();
     $dr->retrieve($id);
     if(!empty($dr->filename)){
-        $filename = $sugar_config['upload_dir']."/".$dr->id;
+        $filename = "upload://{$dr->id}";
         $contents = base64_encode(sugar_file_get_contents($filename));
-//        $fh = sugar_fopen($sugar_config['upload_dir']."/rogerrsmith.doc", 'w');
-//        fwrite($fh, base64_decode($contents));
         return array('document_revision'=>array('id' => $dr->id, 'document_name' => $dr->document_name, 'revision' => $dr->revision, 'filename' => $dr->filename, 'file' => $contents), 'error'=>$error->get_soap_array());
     }else{
         $error->set_error('no_records');
@@ -1915,6 +1955,16 @@ function get_entries_count($session, $module_name, $query, $deleted) {
 	// build WHERE clauses, if any
 	$where_clauses = array();
 	if (!empty($query)) {
+	    require_once 'include/SugarSQLValidate.php';
+	    $valid = new SugarSQLValidate();
+	    if(!$valid->validateQueryClauses($query)) {
+            $GLOBALS['log']->error("Bad query: $query");
+	        $error->set_error('no_access');
+	        return array(
+    			'result_count' => -1,
+    			'error' => $error->get_soap_array()
+    		);
+	    }
 		$where_clauses[] = $query;
 	}
 	if ($deleted == 0) {
@@ -1968,7 +2018,7 @@ function set_entries_details($session, $module_name, $name_value_lists, $select_
 
 // INTERNAL FUNCTION NOT EXPOSED THROUGH API
 function handle_set_entries($module_name, $name_value_lists, $select_fields = FALSE) {
-    global $beanList, $beanFiles, $app_list_strings, $current_user;
+	global $beanList, $beanFiles, $app_list_strings, $current_user;
 
 	$error = new SoapError();
 	$ret_values = array();
@@ -1978,8 +2028,7 @@ function handle_set_entries($module_name, $name_value_lists, $select_fields = FA
 		return array('ids'=>array(), 'error'=>$error->get_soap_array());
 	}
 
-	if(!check_modules_access($current_user, $module_name, 'write'))
-    {
+    if(!check_modules_access($current_user, $module_name, 'write')){
 		$error->set_error('no_access');
 		return array('ids'=>-1, 'error'=>$error->get_soap_array());
 	}
@@ -1996,46 +2045,51 @@ function handle_set_entries($module_name, $name_value_lists, $select_fields = FA
 		$seed->update_vcal = false;
 
         //See if we can retrieve the seed by a given id value
-        foreach($name_value_list as $value)
+		foreach($name_value_list as $value)
         {
-            if($value['name'] == 'id')
+			if($value['name'] == 'id')
             {
 				$seed->retrieve($value['value']);
 				break;
 			}
 		}
 
+
         $dataValues = array();
-        foreach($name_value_list as $value)
+
+		foreach($name_value_list as $value)
         {
 			$val = $value['value'];
-            if($seed->field_name_map[$value['name']]['type'] == 'enum' || $seed->field_name_map[$value['name']]['type'] == 'radioenum')
+
+			if($seed->field_name_map[$value['name']]['type'] == 'enum' || $seed->field_name_map[$value['name']]['type'] == 'radioenum')
             {
 				$vardef = $seed->field_name_map[$value['name']];
-                if(isset($app_list_strings[$vardef['options']]) && !isset($app_list_strings[$vardef['options']][$val]) )
+				if(isset($app_list_strings[$vardef['options']]) && !isset($app_list_strings[$vardef['options']][$val]) )
                 {
-                    if ( in_array($val,$app_list_strings[$vardef['options']]) )
+		            if ( in_array($val,$app_list_strings[$vardef['options']]) )
                     {
 		                $val = array_search($val,$app_list_strings[$vardef['options']]);
 		            }
 		        }
 
 			} else if($seed->field_name_map[$value['name']]['type'] == 'multienum') {
+
                 $vardef = $seed->field_name_map[$value['name']];
 
                 if(isset($app_list_strings[$vardef['options']]) && !isset($app_list_strings[$vardef['options']][$value]) )
                 {
 					$items = explode(",", $val);
 					$parsedItems = array();
-                    foreach ($items as $item)
+					foreach ($items as $item)
                     {
-                        if ( in_array($item, $app_list_strings[$vardef['options']]) )
+						if ( in_array($item, $app_list_strings[$vardef['options']]) )
                         {
 							$keyVal = array_search($item,$app_list_strings[$vardef['options']]);
 							array_push($parsedItems, $keyVal);
 						}
 					}
-                    if (!empty($parsedItems))
+
+		           	if (!empty($parsedItems))
                     {
 						$val = encodeMultienumValue($parsedItems);
 		           	}
@@ -2051,20 +2105,20 @@ function handle_set_entries($module_name, $name_value_lists, $select_fields = FA
             $dataValues[$value['name']] = $val;
 		}
 
-        if($count == $total)
+		if($count == $total)
         {
-            $seed->update_vcal = false;
+			$seed->update_vcal = false;
 		}
 		$count++;
 
 		//Add the account to a contact
 		if($module_name == 'Contacts'){
-
+			$GLOBALS['log']->debug('Creating Contact Account');
 			add_create_account($seed);
 			$duplicate_id = check_for_duplicate_contacts($seed);
-            if($duplicate_id == null)
+			if($duplicate_id == null)
             {
-                if($seed->ACLAccess('Save') && ($seed->deleted != 1 || $seed->ACLAccess('Delete')))
+				if($seed->ACLAccess('Save') && ($seed->deleted != 1 || $seed->ACLAccess('Delete')))
                 {
                     //Now apply the values, since this is not a duplicate we can just pass false for the $firstSync argument
                     apply_values($seed, $dataValues, false);
@@ -2074,9 +2128,9 @@ function handle_set_entries($module_name, $name_value_lists, $select_fields = FA
 					}
 					$ids[] = $seed->id;
 				}
-			} else {
+			}else{
 				//since we found a duplicate we should set the sync flag
-                if( $seed->ACLAccess('Save'))
+				if( $seed->ACLAccess('Save'))
                 {
                     //Determine if this is a first time sync.  We find out based on whether or not a contacts_users relationship exists
                     $seed->id = $duplicate_id;
@@ -2091,7 +2145,8 @@ function handle_set_entries($module_name, $name_value_lists, $select_fields = FA
 					$ids[] = $duplicate_id;//we have a conflict
 				}
 			}
-		} else if($module_name == 'Meetings' || $module_name == 'Calls') {
+
+        } else if($module_name == 'Meetings' || $module_name == 'Calls'){
 			//we are going to check if we have a meeting in the system
 			//with the same outlook_id. If we do find one then we will grab that
 			//id and save it
@@ -2129,7 +2184,9 @@ function handle_set_entries($module_name, $name_value_lists, $select_fields = FA
 				$seed->save();
 				$ids[] = $seed->id;
 			}//fi
-		} else {
+		}
+		else
+		{
 			if( $seed->ACLAccess('Save') && ($seed->deleted != 1 || $seed->ACLAccess('Delete'))){
 				$seed->save();
 				$ids[] = $seed->id;

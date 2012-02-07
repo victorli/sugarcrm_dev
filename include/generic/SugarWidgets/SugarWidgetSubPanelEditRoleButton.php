@@ -58,8 +58,7 @@ class SugarWidgetSubPanelEditRoleButton extends SugarWidgetField
 			. '&return_action=' . 'DetailView'
 			. '&return_id=' . $_REQUEST['record'];
 
-		$edit_icon_html = SugarThemeRegistry::current()->getImage( 'edit_inline',
-			'align="absmiddle" alt="' . $app_strings['LNK_EDIT'] . '" border="0"');
+		$edit_icon_html = SugarThemeRegistry::current()->getImage( 'edit_inline', 'align="absmiddle" border="0"',null,null,'.gif',$app_strings['LNK_EDIT']);
 	//based on listview since that lets you select records
 	if($layout_def['ListView']){
 		return '<a href="' . $href . '"'

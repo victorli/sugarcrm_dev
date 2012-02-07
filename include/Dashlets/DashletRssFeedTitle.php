@@ -49,22 +49,14 @@ class DashletRssFeedTitle {
 	public $endWith = "...";
 	public $xmlEncoding = false;
 	public $fileOpen = false;
-	
+
 	public function __construct($url) {
 		$this->url = $url;
 	}
-	
-	/**
-	 * Yeah, assign an empty string, because unset(classproperty) will cause an exception in php 5.3.3
-	 *
-	 */
-	public function __destruct() {
-		$this->contents = '';
-	}
-	
+
 	public function generateTitle() {
 		if ($this->readFeed()) {
-			$this->getTitle(); 
+			$this->getTitle();
 			if (!empty($this->title)) {
 				$this->convertEncoding();
 				$this->cutLength();
@@ -72,7 +64,7 @@ class DashletRssFeedTitle {
 		}
 		return $this->title;
 	}
-	
+
 	/**
 	 * @todo use curl with waiting timeout instead of fopen
 	 */
@@ -86,11 +78,11 @@ class DashletRssFeedTitle {
 				return true;
 			}
 		}
-		return false;		
+		return false;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public function getTitle() {
 		$matches = array ();
@@ -99,13 +91,13 @@ class DashletRssFeedTitle {
 			$this->title = str_replace(array('<![CDATA[', '<title>', '</title>', ']]>'), '', $matches[0]);
 		}
 	}
-	
+
 	public function cutLength() {
 		if (mb_strlen(trim($this->title), $this->defaultEncoding) > $this->cut) {
 			$this->title = mb_substr($this->title, 0, $this->cut, $this->defaultEncoding) . $this->endWith;
 		}
 	}
-	
+
 	private function _identifyXmlEncoding() {
 		$matches = array ();
 		preg_match('/encoding\=*\".*?\"/', $this->contents, $matches);
@@ -113,7 +105,7 @@ class DashletRssFeedTitle {
 			$this->xmlEncoding = trim(str_replace('encoding="', '"', $matches[0]), '"');
 		}
 	}
-	
+
 	public function convertEncoding() {
 		$this->_identifyXmlEncoding();
 		if ($this->xmlEncoding && $this->xmlEncoding != $this->defaultEncoding) {

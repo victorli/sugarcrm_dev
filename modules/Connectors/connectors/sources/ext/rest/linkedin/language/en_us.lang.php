@@ -45,12 +45,14 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 $connector_strings = array (
     //licensing information shown in config screen
-    'LBL_LICENSING_INFO' => '', //'LinkedIn&#169; licensing info...',
+    'LBL_LICENSING_INFO' => '<table border="0" cellspacing="1"><tr><td valign="top" width="35%" class="dataLabel">Obtain a pair of API and Secret Keys from LinkedIn&#169; by registering your Sugar instance as a new application.<br/><br>Steps to register your instance:<br/><br/><ol><li>Go to the LinkedIn&#169; Developers site: <a href=\'https://www.linkedin.com/secure/developer\' target=\'_blank\'>https://www.linkedin.com/secure/developer</a>.</li><li>Sign In using the LinkedIn&#169; account under which you would like to register the application.</li><li>Click the Add New Application link.</li><li>Complete the Add New Application form.</li><li>Select the Agree checkbox and click Add Application.</li><li>Find the API and Secret Keys for the Linkedin&#169; Connector (Admin – Connector - Linkedin&#169;) in the Application Details page and enter the keys below.</li><li>Click Save.</li></ol></td></tr></table>',
 
     'LBL_NAME' => 'Company Name',
 
 	//Configuration labels
 	'company_url' => 'URL',
+    'oauth_consumer_key' => 'API Key',
+    'oauth_consumer_secret' => 'Secret Key'
 );
 
 ?>

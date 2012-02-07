@@ -121,6 +121,7 @@ class ListViewSmarty extends ListViewDisplay{
         if ( $this->data['pageData']['offsets']['next'] < 0 ) {
             $pageTotal = $this->data['pageData']['offsets']['total'] - $this->data['pageData']['offsets']['current'];
         }
+
 		if($this->select)$this->ss->assign('selectLink', $this->buildSelectLink('select_link', $this->data['pageData']['offsets']['total'], $pageTotal));
 		
 		if($this->show_action_dropdown)

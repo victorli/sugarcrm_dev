@@ -87,8 +87,8 @@ class SugarRestService extends SugarWebService{
 		$GLOBALS['log']->info('Begin: SugarRestService->__construct');
 		$this->restURL = $url;
 
-		$this->responseClass = $this->_getTypeName($_REQUEST['response_type']);
-		$this->serverClass = $this->_getTypeName($_REQUEST['input_type']);
+		$this->responseClass = $this->_getTypeName(@$_REQUEST['response_type']);
+		$this->serverClass = $this->_getTypeName(@$_REQUEST['input_type']);
 		$GLOBALS['log']->info('SugarRestService->__construct serverclass = ' . $this->serverClass);
 		require_once('service/core/REST/'. $this->serverClass . '.php');
 		$GLOBALS['log']->info('End: SugarRestService->__construct');
@@ -195,7 +195,7 @@ class SugarRestService extends SugarWebService{
 	function error($errorObject){
 		$GLOBALS['log']->info('Begin: SugarRestService->error');
 		$this->server->fault($errorObject);
-		$GLOBALS['log']->info('Begin: SugarRestService->error');
+		$GLOBALS['log']->info('End: SugarRestService->error');
 	} // fn
 
 	/**

@@ -36,9 +36,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 require_once('include/Pear/Crypt_Blowfish/Blowfish.php');
- 
-function sugarEncode($key, $data){	
-	return base64_encode($data); 
+
+function sugarEncode($key, $data){
+	return base64_encode($data);
 }
 
 
@@ -56,16 +56,16 @@ function sugarDecode($key, $encoded){
  */
 function blowfishGetKey($type) {
 	$key = array();
-	
+
 	$type = str_rot13($type);
-	
-	$keyCache = "{$GLOBALS['sugar_config']['cache_dir']}blowfish/{$type}.php";
-	
+
+	$keyCache = "custom/blowfish/{$type}.php";
+
 	// build cache dir if needed
-	if(!file_exists($GLOBALS['sugar_config']['cache_dir'].'blowfish')) {
-		mkdir_recursive($GLOBALS['sugar_config']['cache_dir'].'blowfish');
+	if(!file_exists('custom/blowfish')) {
+		mkdir_recursive('custom/blowfish');
 	}
-	
+
 	// get key from cache, or build if not exists
 	if(file_exists($keyCache)) {
 		include($keyCache);
@@ -75,7 +75,7 @@ function blowfishGetKey($type) {
 		write_array_to_file('key', $key, $keyCache);
 	}
 	return $key[0];
-}	
+}
 
 /**
  * Uses blowfish to encrypt data and base 64 encodes it. It stores the iv as part of the data
@@ -83,10 +83,10 @@ function blowfishGetKey($type) {
  * @param STRING data - string to be encrypted and encoded
  * @return string
  */
-function blowfishEncode($key, $data){	
+function blowfishEncode($key, $data){
 	$bf = new Crypt_Blowfish($key);
 	$encrypted = $bf->encrypt($data);
-	return base64_encode($encrypted); 
+	return base64_encode($encrypted);
 }
 
 /**
@@ -98,7 +98,7 @@ function blowfishEncode($key, $data){
 function blowfishDecode($key, $encoded){
 	$data = base64_decode($encoded);
 	$bf = new Crypt_Blowfish($key);
-	return trim($bf->decrypt($data));	
+	return trim($bf->decrypt($data));
 }
 
 ?>

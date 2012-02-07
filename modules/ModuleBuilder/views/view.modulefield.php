@@ -207,13 +207,15 @@ class ViewModulefield extends SugarView
         {
             require_once('modules/ModuleBuilder/MB/ModuleBuilder.php');
             $mb = new ModuleBuilder();
-            $module =& $mb->getPackageModule($_REQUEST['view_package'], $_REQUEST['view_module']);
+            $moduleName = $_REQUEST['view_module'];
+            $module =& $mb->getPackageModule($_REQUEST['view_package'], $moduleName);
             $package =& $mb->packages[$_REQUEST['view_package']];
             $module->getVardefs();
             if(!$ac){
                 $ac = new AjaxCompose();
             }
             $vardef = (!empty($module->mbvardefs->vardefs['fields'][$field_name]))? $module->mbvardefs->vardefs['fields'][$field_name]: array();
+
             if($isClone){
                 unset($vardef['name']);
             }
@@ -268,7 +270,7 @@ class ViewModulefield extends SugarView
 		}
 		
         if((!empty($vardef['studio']) && is_array($vardef['studio']) && !empty($vardef['studio']['no_duplicate']) && $vardef['studio']['no_duplicate'] == true)
-           || (strcmp($field_name, "name") == 0)) // bug #35767, do not allow cloning of name field
+           || (strcmp($field_name, "name") == 0) || (isset($vardef['type']) && $vardef['type'] == 'name')) // bug #35767, do not allow cloning of name field
             {
                $fv->ss->assign('no_duplicate', true);
             }
@@ -306,13 +308,17 @@ class ViewModulefield extends SugarView
 
 		// jchi #24880
 		// end
+
+
         $layout = $fv->getLayout($vardef);
 
         $fv->ss->assign('fieldLayout', $layout);
         if(empty($vardef['type']))
+        {
             $vardef['type'] = 'varchar';
-        $fv->ss->assign('vardef', $vardef);
+        }
 
+        $fv->ss->assign('vardef', $vardef);
 
         if(empty($_REQUEST['field'])){
             $edit_or_add = 'addField';

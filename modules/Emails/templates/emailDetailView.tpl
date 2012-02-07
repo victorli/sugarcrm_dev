@@ -43,11 +43,10 @@
 
 <P/>
 
-<script type="text/javascript" src="modules/Emails/javascript/Email.js?s={$SUGAR_VERSION}&c={$JS_CUSTOM_VERSION}"></script>
+<script type="text/javascript" src="{sugar_getjspath file="modules/Emails/javascript/Email.js"}"></script>
 <script type="text/javascript" language="Javascript">
 {$JS_VARS}
 </script>
-<script type="text/javascript" language="Javascript" src="modules/Emails/javascript/Email.js"></script>
 <form action="index.php" method="POST" name="DetailView" id="emailDetailView">
     <input type="hidden" name="inbound_email_id" value="{$ID}">
     <input type="hidden" name="type" value="out">

@@ -65,7 +65,7 @@ $listView = new ListView();
 $listView->initNewXTemplate('modules/Schedulers/Scheduled.html', $mod_strings);
 $listView->setHeaderTitle($mod_strings['LBL_LIST_TITLE']);
 $listView->setQuery($where, $limit, $orderBy, $varName, $allowByOverride);
-$listView->xTemplateAssign("REMOVE_INLINE_PNG", SugarThemeRegistry::current()->getImage('delete_inline','align="absmiddle" alt="'.$app_strings['LNK_REMOVE'].'" border="0"')); 
+$listView->xTemplateAssign("REMOVE_INLINE_PNG", SugarThemeRegistry::current()->getImage('delete_inline','align="absmiddle" border="0"',null,null,'.gif',$app_strings['LNK_REMOVE']));
 $listView->processListView($focus, "main", "JOB");
 
 ?>

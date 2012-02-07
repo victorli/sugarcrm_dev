@@ -39,9 +39,14 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 $config = array (
   'name' => 'LinkedIn&#169;',
   'order' => 1,
+  'eapm' => array(
+    'enabled' => true,
+  ),
   'properties' => 
   array (
     'company_url'=>'http://www.linkedin.com/companyInsider?script&useBorder=no',
+    'oauth_consumer_key' => '',
+    'oauth_consumer_secret' => '',
   ),
 );
 ?>

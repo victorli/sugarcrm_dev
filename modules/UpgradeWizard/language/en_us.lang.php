@@ -60,6 +60,7 @@ $mod_strings = array(
 	'ERR_UW_LOG_FILE_UNWRITABLE'				=> './upgradeWizard.log could not be created/written to.  Please fix permissions on your SugarCRM directory.',
 	'ERR_UW_MBSTRING_FUNC_OVERLOAD'				=> 'mbstring.func_overload set to a value higher than 1.  Please change this in your php.ini and restart the web server.',
 	'ERR_UW_MYSQL_VERSION'						=> 'SugarCRM requires MySQL version 4.1.2 or newer.  Found: ',
+	'ERR_UW_OCI8_VERSION'				        => 'Your version of Oracle is not supported by Sugar.  You will need to install a version that is compatible with the Sugar application.  Please consult the Compatibility Matrix in the Release Notes for supported Oracle Versions. Current version: ',
 	'ERR_UW_NO_FILE_UPLOADED'					=> 'Please specify a file and try again!',
 	'ERR_UW_NO_FILES'							=> 'An error occurred, no files were found to check.',
 	'ERR_UW_NO_MANIFEST'						=> 'The zip file is missing a manifest.php file.  Cannot proceed.',
@@ -81,7 +82,7 @@ $mod_strings = array(
 													6 => 'Missing a temporary folder.',
 													7 => 'Failed to write file to disk.',
 													8 => 'File upload stopped by extension.',
-												),
+),
 	'LBL_BUTTON_BACK'							=> '< Back',
 	'LBL_BUTTON_CANCEL'							=> 'Cancel',
 	'LBL_BUTTON_DELETE'							=> 'Delete Package',
@@ -91,7 +92,7 @@ $mod_strings = array(
 	'LBL_BUTTON_NEXT'							=> 'Next >',
 	'LBL_BUTTON_RECHECK'						=> 'Recheck',
 	'LBL_BUTTON_RESTART'						=> 'Restart',
-												
+
 	'LBL_UPLOAD_UPGRADE'						=> 'Upload Upgrade Package ',
 	'LBL_UPLOAD_FILE_NOT_FOUND'					=> 'Upload file not found',
 	'LBL_UW_BACKUP_FILES_EXIST_TITLE'			=> 'File Backup',
@@ -195,7 +196,7 @@ $mod_strings = array(
 	'LBL_UW_PREFLIGHT_PRESERVE_FILES'			=> 'Auto-preserved Files:',
 	'LBL_UW_PREFLIGHT_TESTS_PASSED'				=> 'All preflight tests have passed.',
 	'LBL_UW_PREFLIGHT_TESTS_PASSED2'			=> 'Click Next to copy the upgraded files to the system.',
-	'LBL_UW_PREFLIGHT_TESTS_PASSED3'			=> '<b>Note: </b> The rest of the upgrade process is mandatory, and clicking Next will require you to complete the process. If you do not wish to proceed, click the Cancel button.',	
+	'LBL_UW_PREFLIGHT_TESTS_PASSED3'			=> '<b>Note: </b> The rest of the upgrade process is mandatory, and clicking Next will require you to complete the process. If you do not wish to proceed, click the Cancel button.',
 	'LBL_UW_PREFLIGHT_TOGGLE_ALL'				=> 'Toggle All Files',
 
 	'LBL_UW_REBUILD_TITLE'						=> 'Rebuild Result',
@@ -294,5 +295,12 @@ $mod_strings = array(
     'LBL_UW_CONFIRM_LAYOUT_RESULTS' => 'Confirm Layout Results',
     'LBL_UW_CONFIRM_LAYOUT_RESULTS_DESC' => 'The following layouts were merged successfully:',
 	'LBL_SELECT_FILE' => 'Select File:',
+	'LBL_LANGPACKS' => 'Language Packs' /*for 508 compliance fix*/,
+	'LBL_MODULELOADER' => 'Module Loader' /*for 508 compliance fix*/,
+	'LBL_PATCHUPGRADES' => 'Patch Upgrades' /*for 508 compliance fix*/,
+	'LBL_THEMES' => 'Themes' /*for 508 compliance fix*/,
+	'LBL_WORKFLOW' => 'Workflow' /*for 508 compliance fix*/,
+	'LBL_UPGRADE' => 'Upgrade' /*for 508 compliance fix*/,
+	'LBL_PROCESSING' => 'Processing' /*for 508 compliance fix*/,
 );
 ?>

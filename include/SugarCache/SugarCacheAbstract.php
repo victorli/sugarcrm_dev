@@ -35,6 +35,10 @@
  ********************************************************************************/
 
 
+/**
+ * Abstract cache class
+ * @api
+ */
 abstract class SugarCacheAbstract
 {
     /**

@@ -105,6 +105,19 @@ class SugarMerge {
 			while($e = $dir->read()){
 				if(substr($e , 0, 1) != '.') {
 					if(is_dir("{$searchDirectory}/{$e}/metadata")){
+
+                        //lets make sure that the directory matches the case of the module before we pass it in
+                        global $moduleList;
+                        //lets populate an array with the available modules, and make the key's lowercase
+                        $checkModList =  array_combine ($moduleList,$moduleList);
+                        $checkModList = array_change_key_case($checkModList);
+
+  						//now lets compare with the current directory.  This accounts for cases in which the directory was created in lowercase
+                        if(!empty($checkModList[strtolower($e)])){
+                            //directory was lowercase, let's use the right module value
+							$e = $checkModList[strtolower($e)];
+                        }
+
 					    if( is_array($merge) )
 					    {
 					        if ( in_array($e,$merge) ) 

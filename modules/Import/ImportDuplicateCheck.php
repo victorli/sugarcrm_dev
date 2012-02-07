@@ -54,19 +54,17 @@ class ImportDuplicateCheck
      * holds current field when a duplicate has been found
      */
     public $_dupedFields =array();
-    
-    /** 
+
+    /**
      * Constructor
      *
-     * @param object $focus bean 
+     * @param object $focus bean
      */
-    public function __construct(
-        &$focus
-        )
+    public function __construct($focus)
     {
-        $this->_focus = &$focus;
+        $this->_focus = $focus;
     }
-    
+
     /**
      * Returns an array of indices for the current module
      *
@@ -94,10 +92,10 @@ class ImportDuplicateCheck
                 'type' => 'index',
                 'fields' => array('email2')
                 );
-        
+
         return $indexes;
     }
-    
+
     /**
      * Returns an array with an element for each index
      *
@@ -106,10 +104,10 @@ class ImportDuplicateCheck
     public function getDuplicateCheckIndexes()
     {
         $super_language_pack = sugarArrayMerge(
-            return_module_language($GLOBALS['current_language'], $this->_focus->module_dir), 
+            return_module_language($GLOBALS['current_language'], $this->_focus->module_dir),
             $GLOBALS['app_strings']
             );
-        
+
         $index_array = array();
         foreach ($this->_getIndexVardefs() as $index){
             if ($index['type'] == "index"){
@@ -125,7 +123,7 @@ class ImportDuplicateCheck
                 $index_array[$index['name']] = str_replace(":", "",implode(", ",$labelsArray));
             }
         }
-        
+
         return $index_array;
     }
 
@@ -200,7 +198,9 @@ class ImportDuplicateCheck
             }else{
                 //this is not a custom field, so place in index list
                 $indexlist[] = $field_index_array[0];
-                $fieldlist[] = $field_index_array[1];
+                if(isset($field_index_array[1])) {
+                    $fieldlist[] = $field_index_array[1];
+                }
             }
         }
 
@@ -277,7 +277,7 @@ class ImportDuplicateCheck
         if(!empty($this->_dupedFields)){
             return true;
         }
-        
+
         return false;
     }
 

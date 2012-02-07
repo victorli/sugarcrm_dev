@@ -43,22 +43,6 @@ class EAPMViewDetail extends ViewDetail {
 
     private $_returnId;
 
-    public function __construct()
-    {
-        $this->setReturnId();
-        parent::__construct();
-    }
-
-    protected function setReturnId()
-    {
-        $returnId = $GLOBALS['current_user']->id;
-        if(!empty($_REQUEST['user_id']) && !empty($_REQUEST['return_module']) && 'Users' == $_REQUEST['return_module']){
-            $returnId = $_REQUEST['user_id'];
-        }
-        $this->_returnId = $returnId;
-    }
-
-
     protected function _getModuleTab()
     {
         return 'Users';
@@ -94,7 +78,8 @@ class EAPMViewDetail extends ViewDetail {
         $iconPath = $this->getModuleTitleIconPath($this->module);
         $params = array();
         if (!empty($iconPath) && !$browserTitle) {
-            $params[] = "<a href='index.php?module=Users&action=index'><img src='{$iconPath}' alt='".translate('LBL_MODULE_NAME','Users')."' title='".translate('LBL_MODULE_NAME','Users')."' align='absmiddle'></a>";
+            $params[] = "<a href='index.php?module=Users&action=index'><!--not_in_theme!--><img src='{$iconPath}' alt='".translate('LBL_MODULE_NAME','Users')."' title='".translate('LBL_MODULE_NAME','Users')."' align='absmiddle'></a>";
+
         }
         else {
             $params[] = translate('LBL_MODULE_NAME','Users');

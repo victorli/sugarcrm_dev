@@ -55,7 +55,7 @@ class EmployeesViewDetail extends ViewDetail {
     {
         global $sugar_version, $sugar_flavor, $server_unique_key, $current_language, $action, $current_user;
 
-        $theTitle = "<div class='moduleTitle'>\n<h2>";
+        $theTitle = "<div class='moduleTitle'>\n";
 
         $module = preg_replace("/ /","",$this->module);
 
@@ -67,14 +67,18 @@ class EmployeesViewDetail extends ViewDetail {
 			$params = array_reverse($params);
 		}
 
+        $paramString = '';
         foreach($params as $parm){
             $index++;
-            $theTitle .= $parm;
+            $paramString .= $parm;
             if($index < $count){
-                $theTitle .= $this->getBreadCrumbSymbol();
+                $paramString .= $this->getBreadCrumbSymbol();
             }
         }
-        $theTitle .= "</h2>\n";
+
+        if(!empty($paramString)){
+            $theTitle .= "<h2> $paramString </h2>\n";
+        }
 
         if ($show_help) {
             $theTitle .= "<span class='utils'>";
@@ -94,8 +98,8 @@ EOHTML;
 
         $theTitle .= "</span></div>\n";
         return $theTitle;
-    } 	
- 	
+    }
+
  	function display() {
        	if(is_admin($GLOBALS['current_user']) || $_REQUEST['record'] == $GLOBALS['current_user']->id) {
 			 $this->ss->assign('DISPLAY_EDIT', true);
@@ -103,14 +107,14 @@ EOHTML;
         if(is_admin($GLOBALS['current_user'])){
  			$this->ss->assign('DISPLAY_DUPLICATE', true);
  		}
- 		
+
  		$showDeleteButton = FALSE;
  		if(  $_REQUEST['record'] != $GLOBALS['current_user']->id && $GLOBALS['current_user']->isAdminForModule('Users') )
         {
             $showDeleteButton = TRUE;
  		     if( empty($this->bean->user_name) ) //Indicates just employee
  		         $deleteWarning = $GLOBALS['mod_strings']['LBL_DELETE_EMPLOYEE_CONFIRM'];
- 		     else 
+ 		     else
  		         $deleteWarning = $GLOBALS['mod_strings']['LBL_DELETE_USER_CONFIRM'];
  		     $this->ss->assign('DELETE_WARNING', $deleteWarning);
         }

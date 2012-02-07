@@ -63,12 +63,24 @@ class ViewModulefields extends SugarView
 
         $module_name = $_REQUEST['view_module'];
 
-        if(! isset($_REQUEST['view_package']) || $_REQUEST['view_package'] == 'studio') {
+        global $current_language;
+        $module_strings = return_module_language($current_language, $module_name);
+
+        $fieldsData = array();
+        $customFieldsData = array();
+
+        //use fieldTypes variable to map field type to displayed field type
+        $fieldTypes = $mod_strings['fieldTypes'];
+        //add datetimecombo type field from the vardef overrides to point to Datetime type
+        $fieldTypes['datetime'] = $fieldTypes['datetimecombo'];
+
+        if(!isset($_REQUEST['view_package']) || $_REQUEST['view_package'] == 'studio') {
             //$this->loadPackageHelp($module_name);
             $studioClass = new stdClass;
             $studioClass->name = $module_name;
-            
+
             $objectName = BeanFactory::getObjectName($module_name);
+
             VardefManager::loadVardef($module_name, $objectName, true);
             global $dictionary;
             $f = array($mod_strings['LBL_HCUSTOM']=>array(), $mod_strings['LBL_HDEFAULT']=>array());
@@ -76,12 +88,19 @@ class ViewModulefields extends SugarView
             foreach($dictionary[$objectName]['fields'] as $def) {
                 if ($this->isValidStudioField($def))
                 {
+                    $def['label'] = translate($def['vname'], $module_name);
 					//Custom relate fields will have a non-db source, but custom_module set
                 	if(isset($def['source']) && $def['source'] == 'custom_fields' || isset($def['custom_module'])) {
                        $f[$mod_strings['LBL_HCUSTOM']][$def['name']] = $def;
+                       $def['custom'] = true;
                     } else {
                        $f[$mod_strings['LBL_HDEFAULT']][$def['name']] = $def;
+                       $def['custom'] = false;
                     }
+
+                    $def['type'] = isset($fieldTypes[$def['type']]) ? $fieldTypes[$def['type']] : ucfirst($def['type']);
+                    $fieldsData[] = $def;
+                    $customFieldsData[$def['name']] = $def['custom'];
                 }
             }
             $studioClass->mbvardefs->vardefs['fields'] = $f;
@@ -90,6 +109,12 @@ class ViewModulefields extends SugarView
             $package = new stdClass;
             $package->name = '';
             $smarty->assign('package', $package);
+            global $current_user;
+            $sortPreferences = $current_user->getPreference('fieldsTableColumn', 'ModuleBuilder');
+            $smarty->assign('sortPreferences', $sortPreferences);
+            $smarty->assign('fieldsData', getJSONobj()->encode($fieldsData));
+            $smarty->assign('customFieldsData', getJSONobj()->encode($customFieldsData));
+            $smarty->assign('studio', true);
             $ajax = new AjaxCompose();
             $ajax->addCrumb($mod_strings['LBL_STUDIO'], 'ModuleBuilder.getContent("module=ModuleBuilder&action=wizard")');
             $ajax->addCrumb(translate($module_name), 'ModuleBuilder.getContent("module=ModuleBuilder&action=wizard&view_module='.$module_name.'")');
@@ -110,34 +135,53 @@ class ViewModulefields extends SugarView
             $this->mbModule->getVardefs(true);
             $this->mbModule->mbvardefs->vardefs['fields'] = array_reverse($this->mbModule->mbvardefs->vardefs['fields'], true);
             $loadedFields = array();
-            foreach($this->mbModule->mbvardefs->vardefs['fields'] as $k=>$v){
+
+            if(file_exists($this->mbModule->path. '/language/'.$current_language.'.lang.php'))
+            {
+                include($this->mbModule->path .'/language/'.$current_language.'.lang.php');
+                $this->mbModule->setModStrings($current_language,$mod_strings);
+            }elseif(file_exists($this->mbModule->path. '/language/en_us.lang.php')){
+                include($this->mbModule->path .'/language/en_us.lang.php');
+                $this->mbModule->setModStrings('en_us',$mod_strings);
+            }
+
+            foreach($this->mbModule->mbvardefs->vardefs['fields'] as $k=>$v)
+            {
                 if($k != $module_name)
+                {
                     $titleLBL[$k]=translate("LBL_".strtoupper($k),'ModuleBuilder');
-                else{
+                }else{
                     $titleLBL[$k]=$k;
                 }
                 foreach($v as $field => $def)
                 {
                 	if (isset($loadedFields[$field]))
-                		unset($this->mbModule->mbvardefs->vardefs['fields'][$k][$field]);
-                	else
-                	   $loadedFields[$field] = true;
+                    {
+                	   unset($this->mbModule->mbvardefs->vardefs['fields'][$k][$field]);
+                    } else {
+                       $this->mbModule->mbvardefs->vardefs['fields'][$k][$field]['label'] = isset($def['vname']) && isset($this->mbModule->mblanguage->strings[$current_language][$def['vname']]) ? $this->mbModule->mblanguage->strings[$current_language][$def['vname']] : $field;
+                       $customFieldsData[$field] = ($k == $this->mbModule->name) ? true : false;
+                       $loadedFields[$field] = true;
+                        
+                       $type = $this->mbModule->mbvardefs->vardefs['fields'][$k][$field]['type'];
+                       $this->mbModule->mbvardefs->vardefs['fields'][$k][$field]['type'] = isset($fieldTypes[$type]) ? $fieldTypes[$type] : ucfirst($type);
+                       $fieldsData[] = $this->mbModule->mbvardefs->vardefs['fields'][$k][$field];
+                    }
                 }
             }
+
             $this->mbModule->mbvardefs->vardefs['fields'][$module_name] = $this->cullFields($this->mbModule->mbvardefs->vardefs['fields'][$module_name]);
-            if(file_exists($this->mbModule->path. '/language/'.$GLOBALS['current_language'].'.lang.php')){
-                include($this->mbModule->path .'/language/'. $GLOBALS['current_language'].'.lang.php');
-                $this->mbModule->setModStrings($GLOBALS['current_language'],$mod_strings);
-            }
-            elseif(file_exists($this->mbModule->path. '/language/en_us.lang.php')){
-                include($this->mbModule->path .'/language/en_us.lang.php');
-                $this->mbModule->setModStrings('en_us',$mod_strings);
-            }
+
+            $smarty->assign('fieldsData', getJSONobj()->encode($fieldsData));
+            $smarty->assign('customFieldsData', getJSONobj()->encode($customFieldsData));
+            global $current_user;
+            $sortPreferences = $current_user->getPreference('fieldsTableColumn', 'ModuleBuilder');
+            $smarty->assign('sortPreferences', $sortPreferences);
             $smarty->assign('title', $titleLBL);
             $smarty->assign('package', $package);
             $smarty->assign('module', $this->mbModule);
-            $smarty->assign('editLabelsMb','1'); //need to merge MB labels and studio labels. quick fix for now.
-
+            $smarty->assign('editLabelsMb','1');
+            $smarty->assign('studio', false);
 
             $ajax = new AjaxCompose();
             $ajax->addCrumb($bak_mod_strings['LBL_MODULEBUILDER'], 'ModuleBuilder.main("mb")');

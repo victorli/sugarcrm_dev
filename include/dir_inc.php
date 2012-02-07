@@ -60,33 +60,63 @@ function copy_recursive( $source, $dest ){
         $status &= copy_recursive( "$source/$f", "$dest/$f" );
     }
     $d->close();
-    return( $status );
+    return $status;
 }
 
-function mkdir_recursive($path, $check_is_parent_dir = false) {
+function mkdir_recursive($path, $check_is_parent_dir = false)
+{
 	if(sugar_is_dir($path, 'instance')) {
 		return(true);
 	}
 	if(sugar_is_file($path, 'instance')) {
-		print("ERROR: mkdir_recursive(): argument $path is already a file.\n");
+	    if(!empty($GLOBALS['log'])) {
+		    $GLOBALS['log']->fatal("ERROR: mkdir_recursive(): argument $path is already a file.");
+	    }
 		return false;
 	}
 
-	$path = clean_path($path);
-	$path = str_replace(clean_path(getcwd()), '', $path);
+    //make variables with file paths
+	$pathcmp = $path = rtrim(clean_path($path), '/');
+	$basecmp =$base = rtrim(clean_path(getcwd()), '/');
+	if(is_windows()) {
+        //make path variable lower case for comparison in windows
+	    $pathcmp = strtolower($path);
+	    $basecmp = strtolower($base);
+	}
+
+    if($basecmp == $pathcmp) {
+        return true;
+    }
+    $base .= "/";
+	if(strncmp($pathcmp, $basecmp, strlen($basecmp)) == 0) {
+        /* strip current path prefix */
+	    $path = substr($path, strlen($base));
+	}
 	$thePath = '';
 	$dirStructure = explode("/", $path);
-	$status = true;
+	if($dirStructure[0] == '') {
+	    // absolute path
+        $base = '/';
+        array_shift($dirStructure);
+	}
+	if(is_windows()) {
+	    if(strlen($dirStructure[0]) == 2 && $dirStructure[0][1] == ':') {
+	        /* C: prefix */
+	        $base = array_shift($dirStructure)."\\";
+	    } elseif ($dirStructure[0][0].$dirStructure[0][1] == "\\\\") {
+	        /* UNC absolute path */
+	        $base = array_shift($dirStructure)."\\".array_shift($dirStructure)."\\"; // we won't try to mkdir UNC share name
+	    }
+	}
 	foreach($dirStructure as $dirPath) {
-		$thePath .= '/'.$dirPath;
-		$mkPath = getcwd().'/'.$thePath;
+		$thePath .= $dirPath."/";
+		$mkPath = $base.$thePath;
 
 		if(!is_dir($mkPath )) {
-			$status = $status & sugar_mkdir($mkPath);
+			if(!sugar_mkdir($mkPath)) return false;
 		}
 	}
-	return $status;
-
+	return true;
 }
 
 function rmdir_recursive( $path ){
@@ -94,8 +124,10 @@ function rmdir_recursive( $path ){
         return( unlink( $path ) );
     }
     if( !is_dir( $path ) ){
-        $GLOBALS['log']->error( "ERROR: rmdir_recursive(): argument $path is not a file or a dir.\n" );
-        return( false );
+       	if(!empty($GLOBALS['log'])) {
+            $GLOBALS['log']->fatal( "ERROR: rmdir_recursive(): argument $path is not a file or a dir." );
+       	}
+        return false;
     }
 
     $status = true;
@@ -145,7 +177,7 @@ function findTextFiles( $the_dir, $the_array ){
                 case "text/rtf":
                     break;
                 default:
-                    debug( "no type handler for $the_dir/$f with mime_content_type: " . mime_content_type( "$the_dir/$f" ) . "\n" );
+                    $GLOBALS['log']->info( "no type handler for $the_dir/$f with mime_content_type: " . mime_content_type( "$the_dir/$f" ) . "\n" );
             }
         }
     }
@@ -162,6 +194,7 @@ function findAllFiles( $the_dir, $the_array, $include_dirs=false, $ext='', $excl
 			}
 		}
 	}
+	$the_dir = rtrim($the_dir, "/\\");
 	//end
     if(!is_dir($the_dir)) {
 		return $the_array;
@@ -187,10 +220,10 @@ function findAllFiles( $the_dir, $the_array, $include_dirs=false, $ext='', $excl
 			if($include_dirs) {
 				$the_array[] = clean_path("$the_dir/$f");
 			}
-            $the_array = findAllFiles( "$the_dir/$f/", $the_array, $include_dirs, $ext);
+            $the_array = findAllFiles( "$the_dir/$f", $the_array, $include_dirs, $ext);
         } else {
 			if(empty($ext) || preg_match('/'.$ext.'$/i', $f)){
-				$the_array[] = clean_path("$the_dir/$f");
+				$the_array[] = "$the_dir/$f";
 			}
         }
 

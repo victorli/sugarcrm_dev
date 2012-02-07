@@ -80,7 +80,7 @@ var callsLoader = new YAHOO.util.YUILoader({
 callsLoader.addModule({
     name :"sugar_grp_jsolait",
     type : "js",
-    fullpath: "include/javascript/sugar_grp_jsolait.js",
+    fullpath: "cache/include/javascript/sugar_grp_jsolait.js",
     varName: "global_rpcClient",
     requires: []
 });

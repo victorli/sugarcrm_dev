@@ -139,18 +139,6 @@ function enable_change_password_button() {
 	}
 }
 
-
-function toggleAdv() {
-	var adv = document.getElementById("ie_adv");
-	if(adv.style.display == 'none') {
-		adv.style.display = "";
-	} else {
-		adv.style.display = 'none';
-	}
-}
-
-
-
 function refresh_signature_list(signature_id, signature_name) {
 	var field=document.getElementById('signature_id');
 	var bfound=0;

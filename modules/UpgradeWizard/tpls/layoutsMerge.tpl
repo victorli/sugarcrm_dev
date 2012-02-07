@@ -75,7 +75,7 @@
 <div id="upgradeDiv" style="display:none">
     <table cellspacing="0" cellpadding="0" border="0">
         <tr><td>
-           <p><img src='modules/UpgradeWizard/processing.gif'></p>
+           <p><img src='modules/UpgradeWizard/processing.gif' alt='{$mod_strings.LBL_PROCESSING}'></p>
         </td></tr>
      </table>
  </div>

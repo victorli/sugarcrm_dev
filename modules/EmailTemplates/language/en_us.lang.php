@@ -112,5 +112,8 @@ $mod_strings = array (
     'LBL_ACTIVITIES_REPORTS' 	=> 'Activities Report',
     'LNK_VIEW_MY_INBOX' => 'View My Email',
 	'LBL_ASSIGNED_TO_ID' => 'Assigned To',
+	'LBL_EDIT_LAYOUT' => 'Edit Layout' /*for 508 compliance fix*/,
+	'LBL_SELECT' => 'Select' /*for 508 compliance fix*/,
+	'LBL_ID_FF_CLEAR' => 'Clear' /*for 508 compliance fix*/,
 );
 ?>

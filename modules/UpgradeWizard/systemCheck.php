@@ -126,20 +126,20 @@ $dbOut = "
 		<th align='left'>{$mod_strings['LBL_UW_DB_PERMS']}</th>
 	</tr>";
 
-$db =& DBManagerFactory::getInstance();
+$db = DBManagerFactory::getInstance();
 $outs = array();
 $outs['skip'] = false;
 $outs['db'] = array();
 $outs['dbOut'] = $dbOut;
-$outs = testPermsCreate($db->dbType, $outs);
-$outs = testPermsInsert($db->dbType, $outs, $outs['skip']);
-$outs = testPermsUpdate($db->dbType, $outs, $outs['skip']);
-$outs = testPermsSelect($db->dbType, $outs, $outs['skip']);
-$outs = testPermsDelete($db->dbType, $outs, $outs['skip']);
-$outs = testPermsAlterTableAdd($db->dbType, $outs, $outs['skip']);
-$outs = testPermsAlterTableChange($db->dbType, $outs, $outs['skip']);
-$outs = testPermsAlterTableDrop($db->dbType, $outs, $outs['skip']);
-$outs = testPermsDropTable($db->dbType, $outs, $outs['skip']);
+$outs = testPermsCreate($db, $outs);
+$outs = testPermsInsert($db, $outs, $outs['skip']);
+$outs = testPermsUpdate($db, $outs, $outs['skip']);
+$outs = testPermsSelect($db, $outs, $outs['skip']);
+$outs = testPermsDelete($db, $outs, $outs['skip']);
+$outs = testPermsAlterTableAdd($db, $outs, $outs['skip']);
+$outs = testPermsAlterTableChange($db, $outs, $outs['skip']);
+$outs = testPermsAlterTableDrop($db, $outs, $outs['skip']);
+$outs = testPermsDropTable($db, $outs, $outs['skip']);
 $outs['dbOut'] .= '</table>';
 
 
@@ -159,7 +159,6 @@ $result = checkSystemCompliance();
 $checks = array(
 	'phpVersion'				=> $mod_strings['LBL_UW_COMPLIANCE_PHP_VERSION'],
 	'mysqlVersion'				=> $mod_strings['LBL_UW_COMPLIANCE_MYSQL'],
-	'mssqlStatus'				=> $mod_strings['LBL_UW_COMPLIANCE_MSSQL_MAGIC_QUOTES'],
 	'xmlStatus'					=> $mod_strings['LBL_UW_COMPLIANCE_XML'],
 	'curlStatus'				=> $mod_strings['LBL_UW_COMPLIANCE_CURL'],
 	'imapStatus'				=> $mod_strings['LBL_UW_COMPLIANCE_IMAP'],
@@ -275,7 +274,7 @@ $uwMain =<<<eoq
 <div id="upgradeDiv" style="display:none">
     <table border="0" cellspacing="0" cellpadding="0">
         <tr><td>
-           <p><img src='modules/UpgradeWizard/processing.gif'> <br></p>
+           <p><!--not_in_theme!--><img src='modules/UpgradeWizard/processing.gif' alt='Processing'> <br></p>
         </td></tr>
      </table>
  </div>

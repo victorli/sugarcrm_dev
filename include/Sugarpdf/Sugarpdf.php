@@ -89,8 +89,8 @@ class Sugarpdf extends TCPDF
     /**
      * Constructor which will peform the setup.
      */
-    
-   
+
+
     function __construct($bean = null, $sugarpdf_object_map = array(),$orientation=PDF_PAGE_ORIENTATION, $unit=PDF_UNIT, $format=PDF_PAGE_FORMAT, $unicode=true, $encoding='UTF-8', $diskcache=false){
         global $locale;
       //  $encoding = $locale->getExportCharset();
@@ -99,7 +99,7 @@ class Sugarpdf extends TCPDF
         }
         parent::__construct($orientation,$unit,$format,$unicode,$encoding,$diskcache);
         $this->module = $GLOBALS['module'];
-        $this->bean = &$bean;
+        $this->bean = $bean;
         $this->sugarpdf_object_map = $sugarpdf_object_map;
         if(!empty($_REQUEST["sugarpdf"])){
             $this->action = $_REQUEST["sugarpdf"];
@@ -140,7 +140,7 @@ class Sugarpdf extends TCPDF
         $this->SetTitle(PDF_TITLE);
         $this->SetSubject(PDF_SUBJECT);
         $this->SetKeywords(PDF_KEYWORDS);
-        
+
         // set other properties
         $compression=false;
         if(PDF_COMPRESSION == "on"){
@@ -156,30 +156,30 @@ class Sugarpdf extends TCPDF
         $this->setCellHeightRatio(K_CELL_HEIGHT_RATIO);
         $this->setJPEGQuality(intval(PDF_JPEG_QUALITY));
         $this->setPDFVersion(PDF_PDF_VERSION);
-        
+
         // set default header data
         $this->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
-        
+
         // set header and footer fonts
         $this->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
         $this->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
-        
+
         //set margins
         $this->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
         $this->setHeaderMargin(PDF_MARGIN_HEADER);
         $this->setFooterMargin(PDF_MARGIN_FOOTER);
-        
+
         //set auto page breaks
         $this->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-        
+
         //set image scale factor
-        $this->setImageScale(PDF_IMAGE_SCALE_RATIO); 
-        
+        $this->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
         //set some language-dependent strings
-        //$this->setLanguageArray($l); 
-        
-        // ---------------------------------------------------------        
-        
+        //$this->setLanguageArray($l);
+
+        // ---------------------------------------------------------
+
     }
 
     /**
@@ -193,7 +193,7 @@ class Sugarpdf extends TCPDF
 
 
     }
-    
+
     /**
      * [OVERRIDE]
      * This method override the regular Header() method to enable the custom image directory in addition to the OOB image directory.
@@ -206,9 +206,9 @@ class Sugarpdf extends TCPDF
         $ormargins = $this->getOriginalMargins();
         $headerfont = $this->getHeaderFont();
         $headerdata = $this->getHeaderData();
-        
+
         if (($headerdata['logo']) AND ($headerdata['logo'] != K_BLANK_IMAGE)) {
-            
+
             // START SUGARPDF
             $logo = K_PATH_CUSTOM_IMAGES.$headerdata['logo'];
             $imsize = @getimagesize($logo);
@@ -221,7 +221,7 @@ class Sugarpdf extends TCPDF
                 }
             }
             // END SUGARPDF
-            
+
             $this->Image($logo, $this->GetX(), $this->getHeaderMargin(), $headerdata['logo_width']);
             $imgy = $this->getImageRBY();
         } else {
@@ -237,7 +237,7 @@ class Sugarpdf extends TCPDF
         $this->SetTextColor(0, 0, 0);
         // header title
         $this->SetFont($headerfont[0], 'B', $headerfont[2] + 1);
-        $this->SetX($header_x);         
+        $this->SetX($header_x);
         $this->Cell(0, $cell_height, $headerdata['title'], 0, 1, '', 0, '', 0);
         // header string
         $this->SetFont($headerfont[0], $headerfont[1], $headerfont[2]);
@@ -253,11 +253,11 @@ class Sugarpdf extends TCPDF
         }
         $this->Cell(0, 0, '', 'T', 0, 'C');
     }
-    
+
     /**
     * [OVERRIDE] SetFont method in TCPDF Library
     * This method override the regular SetFont() method to enable the custom font directory in addition to the OOB font directory.
-    * 
+    *
     * @param string $family Family font. It can be either a name defined by AddFont() or one of the standard Type1 families (case insensitive):<ul><li>times (Times-Roman)</li><li>timesb (Times-Bold)</li><li>timesi (Times-Italic)</li><li>timesbi (Times-BoldItalic)</li><li>helvetica (Helvetica)</li><li>helveticab (Helvetica-Bold)</li><li>helveticai (Helvetica-Oblique)</li><li>helveticabi (Helvetica-BoldOblique)</li><li>courier (Courier)</li><li>courierb (Courier-Bold)</li><li>courieri (Courier-Oblique)</li><li>courierbi (Courier-BoldOblique)</li><li>symbol (Symbol)</li><li>zapfdingbats (ZapfDingbats)</li></ul> It is also possible to pass an empty string. In that case, the current family is retained.
     * @param string $style Font style. Possible values are (case insensitive):<ul><li>empty string: regular</li><li>B: bold</li><li>I: italic</li><li>U: underline</li><li>D: line trough</li></ul> or any combination. The default value is regular. Bold and italic styles do not apply to Symbol and ZapfDingbats basic fonts or other fonts when not defined.
     * @param float $size Font size in points. The default value is the current size. If no size has been specified since the beginning of the document, the value taken is 12
@@ -266,7 +266,7 @@ class Sugarpdf extends TCPDF
     * @see include/tcpdf/TCPDF#SetFont()
     */
     public function SetFont($family, $style='', $size=0, $fontfile='') {
-        
+
         if(empty($fontfile) && defined('K_PATH_CUSTOM_FONTS')){
             // This will force addFont to search the custom directory for font before the OOB directory
             $fontfile = K_PATH_CUSTOM_FONTS."phantomFile.phantom";
@@ -275,7 +275,7 @@ class Sugarpdf extends TCPDF
     }
 
     function Info(){
-        
+
         $this->SetFont(PDF_FONT_NAME_MAIN,'',12);
         $this->MultiCell(0,0,'---',0,'L');
         $this->MultiCell(0,0,'Class: '.get_class($this),0,'L');
@@ -288,7 +288,7 @@ class Sugarpdf extends TCPDF
         $this->MultiCell(0,0,'---',0,'L');
 
     }
-    
+
     /**
      * [OVERRIDE] Cell method in tcpdf library.
      * Handle charset conversion and HTML entity decode.
@@ -300,7 +300,7 @@ class Sugarpdf extends TCPDF
     public function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=0, $link='', $stretch=0) {
         parent::Cell($w, $h, prepare_string($txt), $border, $ln, $align, $fill, $link, $stretch);
     }
-    
+
     /**
      * This Ln1() method will always print a line break of one line height.
      * The regular Ln() method print a line break which has the height of the last printed cell.
@@ -308,15 +308,15 @@ class Sugarpdf extends TCPDF
     public function Ln1() {
         parent::Ln($this->FontSize * $this->cell_height_ratio + 2 * $this->cMargin, false);
     }
-    
-    
+
+
     /**
      * This method allow printing a table using the MultiCell method with a formatted options array in parameter
-     * Options : 
+     * Options :
      * header options override the regular options for the header's cells - $options['header']
      * cell options override the regular options for the specific cell - Array[line number (0 to x)][cell header]['options']
-     * @param $item Array[line number (0 to x)][cell header] = Cell content OR 
-     *              Array[line number (0 to x)][cell header]['value'] = Cell content AND 
+     * @param $item Array[line number (0 to x)][cell header] = Cell content OR
+     *              Array[line number (0 to x)][cell header]['value'] = Cell content AND
      *              Array[line number (0 to x)][cell header]['options'] = Array[cell properties] = values
      * @param $options Array which can contain : width (array 'column name'=>'width value + % OR nothing'), isheader (bool), header (array), fill (string: HTML color), ishtml (bool) default: false, border (0: no border (defaul), 1: frame or all of the following characters: L ,T ,R ,B), align (L: left align, C: center, R: right align, J: justification), stretch (array 'column name'=>stretch type)
      * @see MultiCell()
@@ -328,9 +328,9 @@ class Sugarpdf extends TCPDF
         $fontSize = $this->getFontSizePt();
         $fontStyle = $this->getFontStyle();
         $this->SetTextColor(0, 0, 0);
-        
+
         $options = $this->initOptionsForWriteCellTable($options, $item);
-        
+
         // HEADER
         if(!isset($options['isheader']) || $options['isheader'] == true){
             $headerOptions = $options;
@@ -346,7 +346,7 @@ class Sugarpdf extends TCPDF
             $this->SetFillColorArray($this->convertHTMLColorToDec($options['fill']));
             $this->Ln();
         }
-        
+
         // MAIN
         // default font
         $this->SetFont($fontFamily,$fontStyle,$fontSize);
@@ -368,7 +368,7 @@ class Sugarpdf extends TCPDF
             foreach($line as $kk=>$cell){
                 $cellOptions = $options;
                 $value = $cell;
-                
+
                 if(is_array($cell)){
                     $value = $cell['value'];
                     if(!empty($cell['options']) && is_array($cell['options'])){
@@ -380,7 +380,7 @@ class Sugarpdf extends TCPDF
 					$value=str_replace("&#039;","'",$value);
 				//Bug45077-replacing double quote entities
 					$value=str_replace("&quot;",'"',$value);
-                
+
                 if($even && !empty($options['evencolor'])){
                     $this->SetFillColorArray($this->convertHTMLColorToDec($options['evencolor']));
                     $cellOptions['fillstate']=1;
@@ -409,12 +409,12 @@ class Sugarpdf extends TCPDF
         $this->SetFont($fontFamily,$fontStyle,$fontSize);
         $this->SetTextColor(0, 0, 0);
     }
-    
+
     /**
      * This method allow printing a table using the writeHTML method with a formatted array in parameter
      * This method can also return the table as HTML code
-     * @param $item Array[line number (0 to x)][cell header] = Cell content OR 
-     *              Array[line number (0 to x)][cell header]['value'] = Cell content AND 
+     * @param $item Array[line number (0 to x)][cell header] = Cell content OR
+     *              Array[line number (0 to x)][cell header]['value'] = Cell content AND
      *              Array[line number (0 to x)][cell header]['options'] = Array[cell properties] = values
      * @param $returnHtml (bool) Return the table as HTML code instead of printing the HTML table
      * @param $options Array which can contain : table (array of "HTML proprty"=>"value"),td (array of "HTML proprty"=>"value"), tr (array of "HTML proprty"=>"value"), isheader(bool), header (array of "HTML proprty"=>"value"), width (array 'column name'=>'width value + unit OR nothing')
@@ -442,7 +442,7 @@ class Sugarpdf extends TCPDF
             }else{
                 $options["header"]=array("tr"=>array("bgcolor"=>"#DCDCDC"),"td"=>array());
             }
-            
+
             foreach($item[0] as $k => $v){
                 if(!empty($options["width"]))$options["header"]["td"]["width"]=$options["width"][$k];
                 $line.=$this->wrap("td", $k, $options["header"]);
@@ -464,7 +464,7 @@ class Sugarpdf extends TCPDF
             $this->writeHTML($html);
         }
     }
-    
+
     /**
      * return the HTML code of the value wrap with the tag $tag. This method handle options (general and specific)
      * @param $tag
@@ -478,7 +478,7 @@ class Sugarpdf extends TCPDF
         }
         if(is_array($value)){
             if(isset($value["options"])){
-                // The options of a specific entity overwrite the general options 
+                // The options of a specific entity overwrite the general options
                 $options[$tag] = $value["options"];
             }
             if(isset($value["value"])){
@@ -489,7 +489,7 @@ class Sugarpdf extends TCPDF
         }
         return wrapTag($tag, $value, $options[$tag]);
     }
-    
+
     /**
      * Return the heigth of a line depending of the width, the font and the content
      * @param $line Array containing the data of all the cells of the line
@@ -510,7 +510,7 @@ class Sugarpdf extends TCPDF
         }
         return $h * $this->FontSize * $this->cell_height_ratio + 2 * $this->cMargin;
     }
-    
+
     /**
      * Private method for writeCellTable which format and initialize the options array.
      * @param $options array
@@ -537,17 +537,17 @@ class Sugarpdf extends TCPDF
             foreach($options["width"] as $k => $v){
                 $options["width"][$k] = $this->getHTMLUnitToUnits($v, $this->getRemainingWidth());
             }
-            
+
         }
-        
+
         if(empty($options["border"])){
             $options["border"]=0;
         }
-        
+
         if(empty($options["align"])){
             $options["align"]="L";
         }
-        
+
         if(empty($options['ishtml'])){
             $options['ishtml'] = false;
         }
@@ -565,7 +565,7 @@ class Sugarpdf extends TCPDF
             $options['fill']="#FFFFFF";//white
             $options['fillstate']=0;
         }
-        
+
         if(!empty($options['fontfamily'])){
             $fontFamily = $options['fontfamily'];
         }else{
@@ -588,10 +588,10 @@ class Sugarpdf extends TCPDF
         }
 
         $this->SetFont($fontFamily, $fontStyle, $fontSize);
-        
+
         return $options;
     }
-    
+
     /**
     * This is method is fix for a better handling of the count. This method now handle the line break
     * between words.
@@ -632,7 +632,7 @@ class Sugarpdf extends TCPDF
                 $first=true;
                 $lastNum = 0;
                 $run = false;
-                
+
                 for($i=0; $i<count($words); $i++){
                     if($first){
                         $wordBlock = $words[$i];
@@ -668,25 +668,25 @@ class Sugarpdf extends TCPDF
                         $lines += ceil($this->GetStringWidth($wordBlock) / $wmax);
                     }
                 }
-                
+
             }else{
                 $lines++;
             }
         }
         return $lines;
     }
-    
+
     /**
      * Disable zlib output compression if we are downloading the PDF.
      *
      * @see TCPDF::Output()
      */
-    public function Output($name='doc.pdf', $dest='I') 
+    public function Output($name='doc.pdf', $dest='I')
     {
         if ( $dest == 'I' || $dest == 'D') {
             ini_set('zlib.output_compression', 'Off');
         }
-        
+
         return parent::Output($name,$dest);
     }
 }

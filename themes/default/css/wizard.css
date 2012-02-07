@@ -57,8 +57,6 @@ color: #C60C30;
 }
 
 .dashletPanelMenu .bd .screen {
-
-	border: 0px none;
 	background-color: transparent;
     display: none;
     width: 820px;
@@ -170,4 +168,5 @@ div.screen .view td a
     font-size: 14px;
 }
 .userWizWelcome {margin: 10px -30px 0pt 0pt; width: 770px;}
+
 #userWizFrame {width: 770px; height: 325px; border: none;}

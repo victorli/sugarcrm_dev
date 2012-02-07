@@ -34,16 +34,36 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 require_once('include/nusoap/nusoap.php');
+require_once('include/TimeDate.php');
 
 abstract class SOAPTestCase extends Sugar_PHPUnit_Framework_TestCase
 {
-	public $_user = null;
+	public static $_user = null;
 	public $_soapClient = null;
 	public $_session = null;
 	public $_sessionId = '';
     public $_soapURL = '';
+
+    public static function setUpBeforeClass()
+    {
+        self::$_user = SugarTestUserUtilities::createAnonymousUser();
+        self::$_user->status = 'Active';
+        self::$_user->is_admin = 1;
+        self::$_user->save();
+        $GLOBALS['db']->commit();
+        $GLOBALS['current_user'] = self::$_user;
+    }
+
+    public static function tearDownAfterClass()
+    {
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        SugarTestContactUtilities::removeAllCreatedContacts();
+        SugarTestAccountUtilities::removeAllCreatedAccounts();
+        unset($GLOBALS['current_user']);
+        $GLOBALS['db']->commit();
+    }
 
     /**
      * Create test user
@@ -56,10 +76,10 @@ abstract class SOAPTestCase extends Sugar_PHPUnit_Framework_TestCase
 		require('include/modules.php');
 		$GLOBALS['beanList'] = $beanList;
 		$GLOBALS['beanFiles'] = $beanFiles;
-		
+
         $this->_soapClient = new nusoapclient($this->_soapURL,false,false,false,false,false,600,600);
-        $this->_setupTestUser();
         parent::setUp();
+        $GLOBALS['db']->commit();
     }
 
     /**
@@ -68,25 +88,22 @@ abstract class SOAPTestCase extends Sugar_PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
-        $this->_tearDownTestUser();
-        $this->_user = null;
         $this->_sessionId = '';
-        
+
 		unset($GLOBALS['beanList']);
 		unset($GLOBALS['beanFiles']);
-		
-        SugarTestAccountUtilities::removeAllCreatedAccounts();
-        SugarTestContactUtilities::removeAllCreatedContacts();
+        $GLOBALS['db']->commit();
     }
 
     protected function _login()
     {
+        $GLOBALS['db']->commit();
     	$result = $this->_soapClient->call('login',
             array('user_auth' =>
-                array('user_name' => $this->_user->user_name,
-                    'password' => $this->_user->user_hash,
+                array('user_name' => self::$_user->user_name,
+                    'password' => self::$_user->user_hash,
                     'version' => '.01'),
-                'application_name' => 'SoapTest')
+                'application_name' => 'SoapTest', "name_value_list" => array())
             );
         $this->_sessionId = $result['id'];
 		return $result;
@@ -101,6 +118,7 @@ abstract class SOAPTestCase extends Sugar_PHPUnit_Framework_TestCase
         $this->_user->status = 'Active';
         $this->_user->is_admin = 1;
         $this->_user->save();
+        $GLOBALS['db']->commit();
         $GLOBALS['current_user'] = $this->_user;
     }
 

@@ -86,8 +86,9 @@ class ConfiguratorViewSugarpdfsettings extends SugarView
                 }
                 if(!empty($_POST["sugarpdf_pdf_class"]) && $_POST["sugarpdf_pdf_class"] != PDF_CLASS){
                     // clear the cache for quotes detailview in order to switch the pdf class.
-                    if(is_file($GLOBALS['sugar_config']['cache_dir'].'modules/Quotes/DetailView.tpl'))
-                        unlink($GLOBALS['sugar_config']['cache_dir'].'modules/Quotes/DetailView.tpl');
+                    if(is_file($cachedfile = sugar_cached('modules/Quotes/DetailView.tpl'))) {
+                        unlink($cachedfile);
+                    }
                 }
                 $focus->saveConfig();
                 header('Location: index.php?module=Administration&action=index');
@@ -100,7 +101,7 @@ class ConfiguratorViewSugarpdfsettings extends SugarView
                 $prefix = $focus->get_config_prefix($key);
                 if(in_array($prefix[0], $focus->config_categories)) {
                     $result = $focus->db->query("SELECT count(*) AS the_count FROM config WHERE category = '{$prefix[0]}' AND name = '{$prefix[1]}'");
-                    $row = $focus->db->fetchByAssoc( $result, -1, true );
+                    $row = $focus->db->fetchByAssoc($result);
                     if( $row['the_count'] != 0){
                         $focus->db->query("DELETE FROM config WHERE category = '{$prefix[0]}' AND name = '{$prefix[1]}'");
                     }

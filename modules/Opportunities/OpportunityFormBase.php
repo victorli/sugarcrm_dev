@@ -250,7 +250,7 @@ $the_form .= <<<EOQ
     <td scope="row">$lbl_date_closed&nbsp;<span class="required">$lbl_required_symbol</span></td>
 </tr>
 <tr>
-<td ><input name='{$prefix}date_closed' onblur="parseDate(this, '$cal_dateformat');" size='12' maxlength='10' id='${prefix}jscal_field' type="text" value="">&nbsp;<img src="{$jsCalendarImage}" alt="{$app_strings['LBL_ENTER_DATE']}"  id="${prefix}jscal_trigger" align="absmiddle"></td>
+<td ><input name='{$prefix}date_closed' onblur="parseDate(this, '$cal_dateformat');" size='12' maxlength='10' id='${prefix}jscal_field' type="text" value="">&nbsp;<!--not_in_theme!--><img src="{$jsCalendarImage}" alt="{$app_strings['LBL_ENTER_DATE']}"  id="${prefix}jscal_trigger" align="absmiddle"></td>
 </tr>
 EOQ;
 if($showaccount){
@@ -383,7 +383,7 @@ EOQ;
 $jsCalendarImage = SugarThemeRegistry::current()->getImageURL('jscalendar.gif');
 $the_form .= <<<EOQ
 		$lbl_date_closed&nbsp;<span class="required">$lbl_required_symbol</span> <br><span class="dateFormat">$ntc_date_format</span><br>
-		<input name='{$prefix}date_closed' size='12' maxlength='10' id='{$prefix}jscal_field' type="text" value=""> <img src="{$jsCalendarImage}" alt="{$app_strings['LBL_ENTER_DATE']}"  id="jscal_trigger" align="absmiddle"><br>
+		<input name='{$prefix}date_closed' size='12' maxlength='10' id='{$prefix}jscal_field' type="text" value=""> <!--not_in_theme!--><img src="{$jsCalendarImage}" alt="{$app_strings['LBL_ENTER_DATE']}"  id="jscal_trigger" align="absmiddle"><br>
 		$lbl_sales_stage&nbsp;<span class="required">$lbl_required_symbol</span><br>
 		<select name='{$prefix}sales_stage'>
 EOQ;

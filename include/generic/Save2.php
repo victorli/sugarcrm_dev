@@ -104,7 +104,7 @@ function add_prospects_to_prospect_list($query,$parent_module,$parent_type,$pare
 function save_from_report($report_id,$parent_id, $module_name, $relationship_attr_name) {
 	global $beanFiles;
 	global $beanList;
-   
+
 	$GLOBALS['log']->debug("Save2: Linking with report output");
 	$GLOBALS['log']->debug("Save2:Report ID=".$report_id);
 	$GLOBALS['log']->debug("Save2:Parent ID=".$parent_id);
@@ -124,7 +124,7 @@ global $current_language, $report_modules, $modules_report;
 
 $mod_strings = return_module_language($current_language,"Reports");
 
-	
+
 	$saved = new SavedReport();
 	$saved->disable_row_level_security = true;
 	$saved->retrieve($report_id, false);
@@ -158,20 +158,20 @@ if (isset($_REQUEST['return_type'])  && $_REQUEST['return_type'] == 'report') {
 
 	$refreshsubpanel=false;
 }else if (isset($_REQUEST['return_type'])  && $_REQUEST['return_type'] == 'addcampaignlog') {
-    //if param is set to "addcampaignlog", then we need to create a campaign log entry 
+    //if param is set to "addcampaignlog", then we need to create a campaign log entry
     //for each campaign id passed in.
 
     //get list of campaign's selected'
     if (isset($_REQUEST['subpanel_id'])  && !empty($_REQUEST['subpanel_id'])) {
         $campaign_ids = $_REQUEST['subpanel_id'];
         global $beanFiles;
-        global $beanList; 
-        //retrieve current bean            
+        global $beanList;
+        //retrieve current bean
         $bean_name = $beanList[$_REQUEST['module']];
         require_once($beanFiles[$bean_name]);
         $focus = new $bean_name();
         $focus->retrieve($_REQUEST['record']);
-        
+
         require_once('modules/Campaigns/utils.php');
         //call util function to create the campaign log entry
         foreach($campaign_ids as $id){
@@ -188,25 +188,25 @@ else {
  	$focus = new $bean_name();
 
  	$focus->retrieve($_REQUEST['record']);
-	
+
  	// If the user selected "All records" from the selection menu, we pull up the list
  	// based on the query they used on that popup to relate them to the parent record
  	if(!empty($_REQUEST['select_entire_list']) &&  $_REQUEST['select_entire_list'] != 'undefined' && isset($_REQUEST['current_query_by_page'])){
 		$order_by = '';
 		$current_query_by_page = $_REQUEST['current_query_by_page'];
  		$current_query_by_page_array = unserialize(base64_decode($current_query_by_page));
- 		
+
         $module = $current_query_by_page_array['module'];
  		$seed = loadBean($module);
  		$where_clauses = '';
  		require_once('include/SearchForm/SearchForm2.php');
- 		
+
  		if(file_exists('custom/modules/'.$module.'/metadata/metafiles.php')){
-            require('custom/modules/'.$module.'/metadata/metafiles.php');	
+            require('custom/modules/'.$module.'/metadata/metafiles.php');
         }elseif(file_exists('modules/'.$module.'/metadata/metafiles.php')){
             require('modules/'.$module.'/metadata/metafiles.php');
         }
- 		
+
         if (file_exists('custom/modules/'.$module.'/metadata/searchdefs.php'))
         {
         	require_once('custom/modules/'.$module.'/metadata/searchdefs.php');
@@ -219,7 +219,7 @@ else {
         {
         	require_once('modules/'.$module.'/metadata/searchdefs.php');
         }
-        
+
         if(!empty($metafiles[$module]['searchfields'])){
         	require_once($metafiles[$module]['searchfields']);
         }
@@ -235,18 +235,18 @@ else {
 	            $where_clauses = '('. implode(' ) AND ( ', $where_clauses_arr) . ')';
 	        }
         }
-        
+
 		$ret_array = create_export_query_relate_link_patch($module, $searchFields, $where_clauses);
 		$query = $seed->create_export_query($order_by, $ret_array['where'], $ret_array['join']);
 		$result = $GLOBALS['db']->query($query,true);
 		$uids = array();
-		while($val = $GLOBALS['db']->fetchByAssoc($result,-1,false))
+		while($val = $GLOBALS['db']->fetchByAssoc($result,false))
 		{
 			array_push($uids, $val['id']);
 		}
 		$_REQUEST['subpanel_id'] = $uids;
  	}
- 	
+
  	if($bean_name == 'Team'){
  		$subpanel_id = $_REQUEST['subpanel_id'];
  		if(is_array($subpanel_id)){
@@ -259,13 +259,13 @@ else {
  		}
  	} else{
  		//find request paramters with with prefix of REL_ATTRIBUTE_
- 		//convert them into an array of name value pairs add pass them as 
+ 		//convert them into an array of name value pairs add pass them as
  		//parameters to the add metod.
  		$add_values =array();
  		foreach ($_REQUEST as $key=>$value) {
  			if (strpos($key,"REL_ATTRIBUTE_") !== false) {
  				$add_values[substr($key,14)]=$value;
- 			}	
+ 			}
  		}
  		$focus->load_relationship($_REQUEST['subpanel_field_name']);
  		$focus->$_REQUEST['subpanel_field_name']->add($_REQUEST['subpanel_id'],$add_values);

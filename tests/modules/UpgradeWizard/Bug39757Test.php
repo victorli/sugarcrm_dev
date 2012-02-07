@@ -59,7 +59,7 @@ class Bug39757Test extends Sugar_PHPUnit_Framework_TestCase
 	
 	public function tearDown() 
 	{
-	    $sql = "DELETE FROM MEETINGS WHERE id = '{$this->_meetingId}'";
+	    $sql = "DELETE FROM meetings WHERE id = '{$this->_meetingId}'";
 	    $GLOBALS['db']->query($sql);
 	    SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset($GLOBALS['current_user']);

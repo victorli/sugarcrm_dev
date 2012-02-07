@@ -66,6 +66,7 @@ switch ($_REQUEST['view']) {
         
         $sugar_smarty = new Sugar_Smarty();
         $sugar_smarty->assign('iframeURL', $iframe_url);
+        $sugar_smarty->assign('langHeader', get_language_header());
         echo $sugar_smarty->fetch('modules/Administration/SupportPortal.tpl');
 
 		break;
@@ -108,6 +109,7 @@ switch ($_REQUEST['view']) {
 			$sugar_smarty->assign('table', "<table class='tabForm'><tr><td>");
 			$sugar_smarty->assign('endtable', "</td></tr></table>");
 			$sugar_smarty->assign('charset', $app_strings['LBL_CHARSET']);
+            $sugar_smarty->assign('langHeader', get_language_header());
 			echo $sugar_smarty->fetch('modules/Administration/SupportPortal.tpl');			
 			
 		} else {

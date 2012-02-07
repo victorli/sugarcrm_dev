@@ -344,15 +344,6 @@ EOJS;
 			$result = $seed_bean->db->query($query,true,"Error retrieving $seed_bean->object_name list: ");
 
 			$list = Array();
-			if(empty($rows_found))
-			{
-  				$rows_found =  $seed_bean->db->getRowCount($result);
-			}
-			
-			$row_offset = 0;
-global $sugar_config;
-			$max_per_page = $sugar_config['list_max_entries_per_page'];
-
 				while(($row = $seed_bean->db->fetchByAssoc($result)) != null)
 			    	{
 						$seed_bean = new Contact();

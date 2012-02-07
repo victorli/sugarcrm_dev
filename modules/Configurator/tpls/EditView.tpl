@@ -39,7 +39,7 @@
 
 
 *}
-<script type='text/javascript' src='{sugar_getjspath file='include/javascript/sugar_grp_overlib.js'}'></script>
+<script type='text/javascript' src='{sugar_getjspath file='cache/include/javascript/sugar_grp_overlib.js'}'></script>
 <form name="ConfigureSettings" enctype='multipart/form-data' method="POST" action="index.php" onSubmit="return (add_checks(document.ConfigureSettings) && check_form('ConfigureSettings'));">
 <input type='hidden' name='action' value='SaveConfig'/>
 <input type='hidden' name='module' value='Configurator'/>
@@ -142,7 +142,7 @@
         {$MOD.CURRENT_LOGO}&nbsp;{sugar_help text=$MOD.CURRENT_LOGO_HELP}
         </td>
         <td width='35%' >
-            <img id="company_logo_image" src='{$company_logo}' height="40" width="212">
+            <img id="company_logo_image" src='{$company_logo}' alt=$mod_strings.LBL_LOGO height="40" width="212">
         </td>
     </tr>
     <tr>
@@ -223,21 +223,6 @@
 	</tr>
  </table>
 
-
-<table width="100%" border="0" cellspacing="1" cellpadding="0" class="edit view">
-	<tr>
-	<th align="left" scope="row" colspan="4"><h4>{$MOD.LBL_MAILMERGE}</h4></th>
-	</tr>
-	<tr>
-	<td width="25%" scope="row" valign='middle'>{$MOD.LBL_ENABLE_MAILMERGE}&nbsp{sugar_help text=$MOD.LBL_MAILMERGE_DESC WIDTH=400}</td>
-	{if !empty($settings.system_mailmerge_on)}
-		{assign var='system_mailmerge_on_checked' value='CHECKED'}
-	{else}
-		{assign var='system_mailmerge_on_checked' value=''}
-	{/if}
-	<td width="75%" align="left"  valign='middle'><input type='hidden' name='system_mailmerge_on' value='0'><input name="system_mailmerge_on" value="1" class="checkbox" type="checkbox" {$system_mailmerge_on_checked}></td>
-	</tr>
-</table>
 
 
 <table width="100%" border="0" cellspacing="1" cellpadding="0" class="edit view">
@@ -368,7 +353,7 @@ addToValidateMoreThan('ConfigureSettings', 'list_max_entries_per_subpanel', 'int
 <div id='upload_panel' style="display:none">
     <form id="upload_form" name="upload_form" method="POST" action='index.php' enctype="multipart/form-data">
         <input type="file" id="my_file_company" name="file_1" size="20" onchange="uploadCheck(false)"/>
-        <img id="loading_img_company" alt="loading..." src="{sugar_getimagepath file='sqsWait.gif'}" style="display:none">
+        {sugar_getimage name="sqsWait" ext=".gif" alt=$mod_strings.LBL_LOADING other_attributes='id="loading_img_company" style="display:none" '}
     </form>
 </div>
 {literal}
@@ -402,7 +387,7 @@ function toggleDisplay_2(div_string){
                 case 'size':
                     alert(SUGAR.language.get('Configurator','LBL_ALERT_SIZE_RATIO'));
                     document.getElementById(forQuotes + "_logo").value=file_type['path'];
-                    document.getElementById(forQuotes + "_logo_image").src=file_type['path'];
+                    document.getElementById(forQuotes + "_logo_image").src=file_type['url'];
                     break;
                 case 'file_error':
                     alert(SUGAR.language.get('Configurator','ERR_ALERT_FILE_UPLOAD'));
@@ -411,7 +396,7 @@ function toggleDisplay_2(div_string){
                 //File good
                 case 'ok':
                     document.getElementById(forQuotes + "_logo").value=file_type['path'];
-                    document.getElementById(forQuotes + "_logo_image").src=file_type['path'];
+                    document.getElementById(forQuotes + "_logo_image").src=file_type['url'];
                     break;
                 //error in getimagesize because unsupported type
                 default:

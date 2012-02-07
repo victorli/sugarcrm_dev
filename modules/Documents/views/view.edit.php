@@ -54,16 +54,7 @@ class DocumentsViewEdit extends ViewEdit
 	public function display()
  	{
 		global $app_list_strings, $mod_strings;
-		/*
-		$this->bean->category_name = $app_list_strings['document_category_dom'][$this->bean->category_id];
-	    $this->bean->subcategory_name = $app_list_strings['document_subcategory_dom'][$this->bean->subcategory_id];
-	    if(isset($this->bean->status_id)) {
-	    $this->bean->status = $app_list_strings['document_status_dom'][$this->bean->status_id];
-	    }
-        $this->bean->related_doc_name = Document::get_document_name($this->bean->related_doc_id);
-        $this->bean->related_doc_rev_number = DocumentRevision::get_document_revision_name($this->bean->related_doc_rev_id);
-        $this->bean->save_file = basename($this->bean->file_url_noimage);
-        */
+
 		$load_signed=false;
 		if ((isset($_REQUEST['load_signed_id']) && !empty($_REQUEST['load_signed_id']))) {
 
@@ -88,7 +79,7 @@ class DocumentsViewEdit extends ViewEdit
 			if (!$this->ev->isDuplicate) {
 				$this->ss->assign("DISABLED", "disabled");
 			}
-		} else {	    
+		} else {
 			$this->bean->revision = 1;
 		    $this->ss->assign("FILE_OR_HIDDEN", "file");
 		}

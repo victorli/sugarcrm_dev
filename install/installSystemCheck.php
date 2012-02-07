@@ -146,26 +146,9 @@ if(ini_get("zend.ze1_compatibility_mode")) {
 if (!empty($_REQUEST['setup_db_type']))
     $_SESSION['setup_db_type'] = $_REQUEST['setup_db_type'];
 
-$mssqlStatus = '';
-$dbVersion = '';
-// Removed php_sqlsrv install support until the driver support is out of beta status
-$supported_dbs = array("mysql_connect",
-                       "mysqli_connect",
-                       "mssql_connect",
+$drivers = DBManagerFactory::getDbDrivers();
 
-                       "sqlsrv_connect",
-                      );
-$db_support_exists = false;
-
-foreach ($supported_dbs as $dbfunct){
-
-    if( function_exists( $dbfunct) ){
-        $db_support_exists = true;
-        installLog("Found at least one supported DB Type");
-        break;
-    }
-}
-if( !$db_support_exists ){
+if( empty($drivers) ){
     $db_name = $mod_strings['LBL_DB_UNAVAILABLE'];
     installLog("ERROR:: {$mod_strings['LBL_CHECKSYS_DB_SUPPORT_NOT_AVAILABLE']}");
     $dbStatus = "<b><span class=stop>{$mod_strings['LBL_CHECKSYS_DB_SUPPORT_NOT_AVAILABLE']}</span></b>";
@@ -240,45 +223,19 @@ if(!make_writable('./custom')) {
  installLog("/custom directory and subdirectory check passed");
 }
 
-// data dir
-if(!make_writable('./data') || !make_writable('./data/upload')) {
-    $dataStatus = "<b><span class='stop'>{$mod_strings['ERR_CHECKSYS_FILES_NOT_WRITABLE']}</span></b>";
-    installLog("ERROR:: {$mod_strings['ERR_CHECKSYS_FILES_NOT_WRITABLE']}");
-    $error_found = true;
-    $error_txt .= '
-      <tr>
-        <td><strong>'.$mod_strings['LBL_CHECKSYS_DATA'].'</strong></td>
-        <td class="error">'.$dataStatus
-        .'</td>
-      </tr><tr>
-       <td colspan="2">
-            <b>'.$mod_strings['LBL_CHECKSYS_FIX_FILES'].'</b>';
-        if(!make_writable('./data')) {
-                $error_txt .='<br>'.getcwd().'/data';
-            }
-        if(!make_writable('./data/upload')) {
-                $error_txt .='<br>'.getcwd().'/data/upload';
-            }
-        $error_txt .= '</td>
-      </tr>';
-}else{
- installLog("/data/upoad directory and subdirectory check passed");
-}
-
 
 // cache dir
-    $cache_files[] = '/cache';
-    $cache_files[] = '/cache/images';
-    $cache_files[] = '/cache/import';
-    $cache_files[] = '/cache/layout';
-    $cache_files[] = '/cache/pdf';
-    $cache_files[] = '/cache/upload';
-    $cache_files[] = '/cache/xml';
-	$filelist = '';
+    $cache_files[] = '';
+    $cache_files[] = 'images';
+    $cache_files[] = 'layout';
+    $cache_files[] = 'pdf';
+    $cache_files[] = 'xml';
+    $cache_files[] = 'include/javascript';
+    $filelist = '';
 
 	foreach($cache_files as $c_file)
 	{
-		$dirname = ".".$c_file;
+		$dirname = sugar_cached($c_file);
 		$ok = false;
 		if ((is_dir($dirname)) || @sugar_mkdir($dirname,0555)) // set permissions to restrictive - use make_writable to change in a standard way to the required permissions
 		{
@@ -286,7 +243,7 @@ if(!make_writable('./data') || !make_writable('./data/upload')) {
 		}
 		if (!$ok)
 		{
-			$filelist .= '<br>'.getcwd().$c_file;
+			$filelist .= '<br>'.getcwd()."/$dirname";
 
 		}
 	}
@@ -304,7 +261,7 @@ if(!make_writable('./data') || !make_writable('./data/upload')) {
         	<td colspan="2"><b>'.$mod_strings['LBL_CHECKSYS_FIX_FILES'].'</b>'.$filelist. '</td>
 		</tr>';
 	}else{
-     installLog("/cache directory and subdirectory check passed");
+     installLog("cache directory and subdirectory check passed");
     }
 
 
@@ -345,6 +302,20 @@ if(!$passed_write) {
  installLog("/module  directory and subdirectory check passed");
 }
 
+// check upload dir
+if (!make_writable('./upload'))
+{
+    $uploadStatus = "<b><span class='stop'>{$mod_strings['ERR_CHECKSYS_NOT_WRITABLE']}</span></b>";
+    installLog("ERROR: Upload directory is not writable.");
+    $error_found = true;
+    $error_txt .= '
+    <tr>
+        <td><strong>'.$mod_strings['LBL_CHECKSYS_UPLOAD'].'</strong></td>
+        <td align="right" class="error">'.$uploadStatus.'</td>
+    </tr>';
+} else {
+    installLog("/upload directory check passed");
+}
 
 
 // PHP.ini

@@ -39,13 +39,17 @@ require_once('include/upload_file.php');
 
 require_once('include/upload_file.php');
 
-class NoteSoap{
-var $upload_file;
-function NoteSoap(){
-	$this->upload_file = new UploadFile('uploadfile');
-}
+class NoteSoap
+{
+    var $upload_file;
 
-function saveFile($note, $portal = false){
+    function NoteSoap()
+    {
+    	$this->upload_file = new UploadFile('uploadfile');
+    }
+
+    function saveFile($note, $portal = false)
+    {
         global $sugar_config;
 
         $focus = new Note();
@@ -54,6 +58,9 @@ function saveFile($note, $portal = false){
 
         if(!empty($note['id'])){
                 $focus->retrieve($note['id']);
+                if(empty($focus->id)) {
+                    return '-1';
+                }
         }else{
                 return '-1';
         }
@@ -79,9 +86,9 @@ function saveFile($note, $portal = false){
         }
 
         return $return_id;
-}
+    }
 
-function newSaveFile($note, $portal = false){
+    function newSaveFile($note, $portal = false){
         global $sugar_config;
 
         $focus = new Note();
@@ -89,6 +96,9 @@ function newSaveFile($note, $portal = false){
 
         if(!empty($note['id'])){
         	$focus->retrieve($note['id']);
+            if(empty($focus->id)) {
+                return '-1';
+            }
         } else {
            	return '-1';
         }
@@ -129,29 +139,21 @@ function newSaveFile($note, $portal = false){
 
         } // if
         return $return_id;
-}
+    }
 
-function retrieveFile($id, $filename){
-	if(empty($filename)){
-		return '';
-	}
+    function retrieveFile($id, $filename)
+    {
+    	if(empty($filename)){
+    		return '';
+    	}
 
-	$this->upload_file->stored_file_name = $filename;
-	$filepath = $this->upload_file->get_upload_path($id);
-	if(file_exists($filepath)){
-		$file = file_get_contents($filepath);
-		return base64_encode($file);
-	}
-	return -1;
-
-
-
-
-}
+    	$this->upload_file->stored_file_name = $filename;
+    	$filepath = $this->upload_file->get_upload_path($id);
+    	if(file_exists($filepath)){
+    		$file = file_get_contents($filepath);
+    		return base64_encode($file);
+    	}
+    	return -1;
+    }
 
 }
-
-
-
-
-?>

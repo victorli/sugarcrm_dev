@@ -43,7 +43,7 @@ if( !isset( $install_script ) || !$install_script ){
 ///////////////////////////////////////////////////////////////////////////////
 ////    PREFILL $sugar_config VARS
 if(empty($sugar_config['upload_dir'])) {
-    $sugar_config['upload_dir'] = 'cache/upload/';
+    $sugar_config['upload_dir'] = 'upload/';
 }
 if(empty($sugar_config['upload_maxsize'])) {
     $sugar_config['upload_maxsize'] = 8192000;
@@ -60,9 +60,9 @@ require_once('include/upload_file.php');
 
 ///////////////////////////////////////////////////////////////////////////////
 ////    PREP VARS FOR LANG PACK
-    $base_upgrade_dir       = $sugar_config['upload_dir'] . "upgrades";
-    $base_tmp_upgrade_dir   = $base_upgrade_dir."/temp";
-///////////////////////////////////////////////////////////////////////////////    
+    $base_upgrade_dir       = "upload://upgrades";
+    $base_tmp_upgrade_dir   = sugar_cached("upgrades/temp");
+///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 ////    HANDLE FILE UPLOAD AND PROCESSING
@@ -76,38 +76,38 @@ if(isset($_REQUEST['languagePackAction']) && !empty($_REQUEST['languagePackActio
         if(isset($_REQUEST['release_id']) && $_REQUEST['release_id'] != ""){
             require_once('ModuleInstall/PackageManager/PackageManager.php');
             $pm = new PackageManager();
-            $tempFile = $pm->download('3', '3', $_REQUEST['release_id'], getcwd().'/'.$sugar_config['upload_dir']);    
+            $tempFile = $pm->download('3', '3', $_REQUEST['release_id'], $sugar_config['upload_dir']);
             $perform = true;
             //$base_filename = urldecode($tempFile);
         }else{
             $file = new UploadFile('language_pack');
             if($file->confirm_upload())
-            $perform = true; 
+            $perform = true;
              if(strpos($file->mime_type, 'zip') !== false) { // only .zip files
                     if(langPackFinalMove($file)) {
-                        $perform = true; 
+                        $perform = true;
                     }
                     else {
-                        $errors[] = $mod_strings['ERR_LANG_UPLOAD_3'];   
+                        $errors[] = $mod_strings['ERR_LANG_UPLOAD_3'];
                     }
                 } else {
                     $errors[] = $mod_strings['ERR_LANG_UPLOAD_2'];
-                }   
+                }
         }
-            
-    
-            if($perform) { // check for a real file               
+
+
+            if($perform) { // check for a real file
                         $uploadResult = $mod_strings['LBL_LANG_SUCCESS'];
-                        $result = langPackUnpack('patch', $tempFile);                   
+                        $result = langPackUnpack('patch', $tempFile);
             } else {
                 $errors[] = $mod_strings['ERR_LANG_UPLOAD_1'];
             }
-            
+
             if(count($errors) > 0) {
                 foreach($errors as $error) {
                     $uploadResult .= $error."<br />";
                 }
-            }        
+            }
             break; // end 'validate'
         case 'commit':
             $sugar_config = commitPatch();
@@ -116,7 +116,7 @@ if(isset($_REQUEST['languagePackAction']) && !empty($_REQUEST['languagePackActio
             removeLanguagePack();
             break;
         default:
-            break;                   
+            break;
     }
 }
 ////    END HANDLE FILE UPLOAD AND PROCESSING
@@ -161,9 +161,10 @@ if(isset($validation_errors)) {
 ////    BEING PAGE OUTPUT
 $disabled = "";
 $result = "";
+$langHeader = get_language_header();
 $out =<<<EOQ
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<html {$langHeader}>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
    <meta http-equiv="Content-Script-Type" content="text/javascript">
@@ -174,8 +175,8 @@ $out =<<<EOQ
    <script type="text/javascript" src="install/installCommon.js"></script>
    <link rel="stylesheet" type="text/css" media="all" href="jscalendar/calendar-win2k-cold-1.css?s={$sugar_version}&c={$js_custom_version}">
    <script>jscal_today = 1161698116000; if(typeof app_strings == "undefined") app_strings = new Array();</script>
-   <script type="text/javascript" src="include/javascript/sugar_grp1.js?s={$sugar_version}&c={$js_custom_version}"></script>
-   <script type="text/javascript" src="include/javascript/sugar_grp1_yui.js?s={$sugar_version}&c={$js_custom_version}"></script>
+   <script type="text/javascript" src="cache/include/javascript/sugar_grp1.js?s={$sugar_version}&c={$js_custom_version}"></script>
+   <script type="text/javascript" src="cache/include/javascript/sugar_grp1_yui.js?s={$sugar_version}&c={$js_custom_version}"></script>
    <script type="text/javascript">
     <!--
     if ( YAHOO.env.ua )
@@ -210,12 +211,12 @@ $out =<<<EOQ
                     <td colspan="2">
 EOQ;
 $form =<<<EOQ1
-                    <form name="the_form" enctype="multipart/form-data" 
+                    <form name="the_form" enctype="multipart/form-data"
                         action="install.php" method="post">
                         <input type="hidden" name="current_step" value="{$next_step}">
                         <input type="hidden" name="goto" value="{$mod_strings['LBL_CHECKSYS_RECHECK']}">
                         <input type="hidden" name="languagePackAction" value="upload">
-                    
+
                     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="edit view">
                         <tr>
                             <td>
@@ -226,7 +227,7 @@ $form =<<<EOQ1
 										</td>
 									</tr><tr>
                                         <td>
-                                            
+
                                             <input type="file" name="language_pack" size="40" />
                                         </td>
                                         <td valign="bottom">
@@ -253,7 +254,7 @@ $out1 =<<<EOQ2
                         {$result}
                     </td>
                 </tr>
-               
+
                 <!--// Available Upgrades //-->
                 <tr>
                     <td align="left" colspan="2">
@@ -270,7 +271,7 @@ $out1 =<<<EOQ2
                         <tr><td><form action='install.php' method='POST'>
                                 <input type='hidden' name='current_step' value="{$next_step}">
                                 <input type='hidden' name='goto' value="{$mod_strings['LBL_CHECKSYS_RECHECK']}">
-                                <input type='hidden' name='languagePackAction' value='commit'> 
+                                <input type='hidden' name='languagePackAction' value='commit'>
                                 <input type='submit' value="{$mod_strings['LBL_INSTALL']}" class='button'>
                                 </form>
                         </td></tr>
@@ -285,7 +286,7 @@ $out1 =<<<EOQ2
                         <table cellspacing="0" cellpadding="0" border="0" class="stdTable">
                             <tr>
                                 <td>
-                                  
+
                                 </td>
                                 <td>
                                     <input class="button" type="submit" name="goto" value="{$mod_strings['LBL_NEXT']}" id="button_next2" {$disabled} />

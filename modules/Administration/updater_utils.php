@@ -45,7 +45,7 @@ function getSystemInfo($send_usage_info=true){
 	global $db, $authLevel, $administration, $timedate;
 	$info=array();
 	$info = getBaseSystemInfo($send_usage_info);
-    	if($send_usage_info){
+    if($send_usage_info){
 		if($authLevel > 0){
 			if(isset($_SERVER['SERVER_ADDR']))
 				$info['ip_address'] = $_SERVER['SERVER_ADDR'];
@@ -73,32 +73,25 @@ function getSystemInfo($send_usage_info=true){
 		$info['system_name'] = (!empty($administration->settings['system_name']))?substr($administration->settings['system_name'], 0 ,255):'';
 
 
-		$query="select count(*) count from users where status='Active' and deleted=0 and is_admin='1'";
-		$result=$db->query($query, 'fetching admin count', false);
-		$row = $db->fetchByAssoc($result);
-		if(!empty($row)) {
-			$info['admin_users'] = $row['count'];
+		$result=$db->getOne("select count(*) count from users where status='Active' and deleted=0 and is_admin='1'", false, 'fetching admin count');
+		if($result !== false) {
+			$info['admin_users'] = $result;
 		}
+
 		if(empty($authLevel)){
 			$authLevel = 0;
 		}
-		$query="select count(*) count from users";
-		$result=$db->query($query, 'fetching all users count', false);
-		$row = $db->fetchByAssoc($result);
 
-		if(!empty($row)) {
-			$info['registered_users'] = $row['count'];
+		$result=$db->getOne("select count(*) count from users", false, 'fetching all users count');
+		if($result !== false) {
+			$info['registered_users'] = $result;
 		}
-		$lastMonth = db_convert("'". $timedate->getNow()->modify("-30 days")->asDb(false) . "'", 'datetime');
-		if( !$send_usage_info){
+
+		$lastMonth = $db->convert("'". $timedate->getNow()->modify("-30 days")->asDb(false) . "'", 'datetime');
+		if( !$send_usage_info) {
 			$info['users_active_30_days'] = -1;
-		}
-		else{
-			$query = "SELECT count( DISTINCT users.id ) user_count FROM tracker, users WHERE users.id = tracker.user_id AND  tracker.date_modified >= $lastMonth";
-			$result=$db->query($query, 'fetching last 30 users count', false);
-			$row = $db->fetchByAssoc($result);
-			$info['users_active_30_days'] = $row['user_count'];
-
+		} else {
+			$info['users_active_30_days'] = $db->getOne("SELECT count( DISTINCT users.id ) user_count FROM tracker, users WHERE users.id = tracker.user_id AND  tracker.date_modified >= $lastMonth", false, 'fetching last 30 users count');
 		}
 
 
@@ -107,15 +100,13 @@ function getSystemInfo($send_usage_info=true){
 		if(!$send_usage_info){
 			$info['latest_tracker_id'] = -1;
 		}else{
-			$query="select id from tracker order by date_modified desc";
-			$id=$db->getOne($query,'fetching most recent tracker entry',false);
+			$id=$db->getOne("select id from tracker order by date_modified desc", false, 'fetching most recent tracker entry');
 			if ( $id !== false )
 			    $info['latest_tracker_id'] = $id;
 		}
 
-		$dbManager = &DBManagerFactory::getInstance();
 		$info['db_type']=$sugar_config['dbconfig']['db_type'];
-		$info['db_version']=$dbManager->version();
+		$info['db_version']=$db->version();
 	}
 	if(file_exists('distro.php')){
 		include('distro.php');
@@ -285,21 +276,32 @@ function check_now($send_usage_info=true, $get_request_data=false, $response_dat
  */
 function compareVersions($ver1, $ver2)
 {
-    $ver_arr_1 = preg_split("/[^0-9]/", $ver1); 
-    $ver_arr_2 = preg_split("/[^0-9]/", $ver2); 
-    $count = (count($ver_arr_1) >= count($ver_arr_2)) ? count($ver_arr_1) : count($ver_arr_2);
-    for ($i = 0; $i < $count; $i++)
+    if(!preg_match_all("/[0-9]/", $ver1, $matches1))
     {
-        if (!isset($ver_arr_1[$i]))
-            $ver_arr_1[$i] = 0;
-        
-        if (!isset($ver_arr_2[$i]))
-            $ver_arr_2[$i] = 0;
-        
-        if ($ver_arr_1[$i] > $ver_arr_2[$i])
-            return true;
+        return false;
     }
-    return false;
+
+    if(!preg_match_all("/[0-9]/", $ver2, $matches2))
+    {
+        return true;
+    }
+
+    //Now recreate string with only numbers
+    $ver1 = implode('', $matches1[0]);
+    $ver2 = implode('', $matches2[0]);
+
+    $len1 = strlen($ver1);
+    $len2 = strlen($ver2);
+
+    //Now apply padding
+    if($len1 > $len2) {
+        $ver2 = str_pad($ver2, $len1, '0');
+    } else if($len2 > $len1) {
+        $ver1 = str_pad($ver1, $len2, '0');
+    }
+
+    //Return result
+    return (int)$ver1 > (int)$ver2;
 }
 function set_CheckUpdates_config_setting($value) {
 

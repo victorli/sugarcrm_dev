@@ -72,8 +72,13 @@ $focus->retrieve($_POST['record']);
 
 // Flag to determine whether to save a new password or not.
 // Bug 43241 - Changed $focus->id to $focus->user_name to make sure that a system generated password is made when converting employee to user
-if(empty($focus->user_name)) $newUser = true;
-else $newUser = false;
+if(empty($focus->user_name))
+{
+    $newUser = true;
+    clear_register_value('user_array');
+} else {
+    $newUser = false;
+}
 	
 
 if(!$current_user->is_admin && !$GLOBALS['current_user']->isAdminForModule('Users')
@@ -90,8 +95,18 @@ if(!$current_user->is_admin  && !$GLOBALS['current_user']->isAdminForModule('Use
 }
 
 
-	$portal=array("sugar_user_name","last_name","status","portal_only");
-	$group=array("sugar_user_name","last_name","status","is_group");
+    // Populate the custom fields
+    foreach ($focus->field_defs as $fieldName => $field ) {
+        if ( isset($field['source']) && $field['source'] == 'custom_fields' ) {
+            if ( isset($_POST[$fieldName]) ) {
+                $focus->$field = $_POST[$fieldName];
+            }
+        }
+    }
+    
+
+	$portal=array("user_name","last_name","status","portal_only");
+	$group=array("user_name","last_name","status","is_group");
 	if(isset($_POST['portal_only']) && ($_POST['portal_only']=='1' || $focus->portal_only)){
 		foreach($portal as $field){
 			if(isset($_POST[$field]))
@@ -116,9 +131,9 @@ if(!$current_user->is_admin  && !$GLOBALS['current_user']->isAdminForModule('Use
 
 	
 	// copy the group or portal user name over.  We renamed the field in order to ensure auto-complete would not change the value
-	if(isset($_POST['sugar_user_name']))
+	if(isset($_POST['user_name']))
 	{
-		$focus->user_name = $_POST['sugar_user_name'];
+		$focus->user_name = $_POST['user_name'];
 	}
 	
 	// if the user saved is a Regular User
@@ -143,10 +158,12 @@ if(!$current_user->is_admin  && !$GLOBALS['current_user']->isAdminForModule('Use
 		
 		$focus->is_group=0;
 		$focus->portal_only=0;
+
+     		if(isset($_POST['status']) && $_POST['status']== "Inactive") $focus->employee_status = "Terminated"; //bug49972
 		
-			if(isset($_POST['sugar_user_name']))
+			if(isset($_POST['user_name']))
 		{
-			$focus->user_name = $_POST['sugar_user_name'];
+			$focus->user_name = $_POST['user_name'];
 		}	
 		if(isset($_POST['is_admin']) && ($_POST['is_admin'] == 'on' || $_POST['is_admin'] == '1')) $focus->is_admin = 1;
 		elseif(empty($_POST['is_admin'])) $focus->is_admin = 0;
@@ -258,6 +275,7 @@ if(!$current_user->is_admin  && !$GLOBALS['current_user']->isAdminForModule('Use
 		if(isset($_POST['default_currency_significant_digits'])) $focus->setPreference('default_currency_significant_digits',$_POST['default_currency_significant_digits'], 0, 'global');
 		if(isset($_POST['num_grp_sep'])) $focus->setPreference('num_grp_sep', $_POST['num_grp_sep'], 0, 'global');
 		if(isset($_POST['dec_sep'])) $focus->setPreference('dec_sep', $_POST['dec_sep'], 0, 'global');
+                if(isset($_POST['fdow'])) $focus->setPreference('fdow', $_POST['fdow'], 0, 'global');
 		if(isset($_POST['dateformat'])) $focus->setPreference('datef',$_POST['dateformat'], 0, 'global');
 		if(isset($_POST['timeformat'])) $focus->setPreference('timef',$_POST['timeformat'], 0, 'global');
 		if(isset($_POST['timezone'])) $focus->setPreference('timezone',$_POST['timezone'], 0, 'global');

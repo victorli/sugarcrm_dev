@@ -73,19 +73,6 @@ function Datetimecombo (datetime, field, timeformat, tabindex, showCheckbox, che
         this.mins = parseInt(parts[1].substring(3,5), 10);    	
     }
     
-    //A safety scan to make sure hrs and minutes are formatted correctly
-	if (this.mins > 0 && this.mins < 15) {
-		this.mins = 15;
-	} else if (this.mins > 15 && this.mins < 30) {
-		this.mins = 30;
-	} else if (this.mins > 30 && this.mins < 45) {
-		this.mins = 45;
-	} else if (this.mins > 45) {
-		this.hrs += 1;
-		this.mins = 0;
-	} //if-else
-
-
     this.timeformat = timeformat;  //23:00 || 11:00
     this.tabindex = tabindex == null || isNaN(tabindex) ? 1 : tabindex;
     
@@ -101,6 +88,36 @@ function Datetimecombo (datetime, field, timeformat, tabindex, showCheckbox, che
     this.showCheckbox = showCheckbox;
     this.checked = parseInt(checked);
     document.getElementById(this.fieldname + '_date').value = this.datetime;
+
+    //A safety scan to make sure hrs and minutes are formatted correctly
+	if (this.mins > 0 && this.mins < 15) {
+		this.mins = 15;
+	} else if (this.mins > 15 && this.mins < 30) {
+		this.mins = 30;
+	} else if (this.mins > 30 && this.mins < 45) {
+		this.mins = 45;
+	} else if (this.mins > 45) {
+		this.hrs += 1;
+		this.mins = 0;
+		if(this.hasMeridiem && this.hrs == 12) {
+			if(this.meridiem == "pm" || this.meridiem == "am") {				
+				if(this.meridiem == "pm") {
+					this.meridiem = "am";
+				} else {
+					this.meridiem = "pm";
+				}
+			} else {
+				if(this.meridiem == "PM") {
+					this.meridiem = "AM";
+				} else {
+					this.meridiem = "PM";
+				}
+			}
+		}
+		if (this.hrs > 12) {
+			this.hrs = this.hrs - 12;
+		}			
+	} //if-else
 
 }
 

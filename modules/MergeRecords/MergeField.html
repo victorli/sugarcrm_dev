@@ -59,37 +59,37 @@
 <!-- END: merge_cell_edit_checkbox -->
 <!-- BEGIN: merge_cell_edit_datetime -->
 	<td  valign="top" width="{CELL_WIDTH}"><slot><input name='{EDIT_FIELD_NAME}' id='{EDIT_FIELD_NAME}_date' type="text" tabindex='{TAB_INDEX}' size='11' maxlength='10' value="{EDIT_FIELD_VALUE}"> <img src="index.php?entryPoint=getImage&themeName={THEME}&imageName=jscalendar.gif" alt="{APP.LBL_ENTER_DATE}"  id="{EDIT_FIELD_NAME}_trigger" align="absmiddle"> <span class="dateFormat"></span><span id='{EDIT_FIELD_NAME}_time_section'  ></span><input type="hidden" name='{EDIT_FIELD_NAME}' id='{EDIT_FIELD_NAME}'></slot></td>
-	<script type="text/javascript" src="include/SugarFields/Fields/Datetimecombo/Datetimecombo.js"></script>
+	<script type="text/javascript" src="include/SugarFields/Fields/Datetimecombo/Datetimecombo.js?v={VERSION_MARK}"></script>
 	<script type="text/javascript">
-	var combo_{EDIT_FIELD_NAME} = new Datetimecombo("{EDIT_FIELD_VALUE}", "{EDIT_FIELD_NAME}", "{USER_DATEFORMAT}", '','',''); 
+	var combo_{EDIT_FIELD_NAME} = new Datetimecombo("{EDIT_FIELD_VALUE}", "{EDIT_FIELD_NAME}", "{USER_DATEFORMAT}", '','','');
 		//Render the remaining widget fields
 		text = combo_{EDIT_FIELD_NAME}.html('');
 		document.getElementById('{EDIT_FIELD_NAME}_time_section').innerHTML = text;
-		
+
 		//Call eval on the update function to handle updates to calendar picker object
 		eval(combo_{EDIT_FIELD_NAME}.jsscript(''));
-		
+
 		function update_{EDIT_FIELD_NAME}_available() {
-		      YAHOO.util.Event.onAvailable("{EDIT_FIELD_NAME}_date", this.handleOnAvailable, this); 
+		      YAHOO.util.Event.onAvailable("{EDIT_FIELD_NAME}_date", this.handleOnAvailable, this);
 		}
-		
+
 		update_{EDIT_FIELD_NAME}_available.prototype.handleOnAvailable = function(me) {
 			Calendar.setup ({
 			onClose : update_{EDIT_FIELD_NAME},
 			inputField : "{EDIT_FIELD_NAME}_date",
 			daFormat :  "{CALENDAR_DATEFORMAT}",
-			ifFormat : "{CALENDAR_DATEFORMAT}", 
+			ifFormat : "{CALENDAR_DATEFORMAT}",
 			button : "{EDIT_FIELD_NAME}_trigger",
 			singleClick : true,
 			step : 1,
 			weekNumbers:false
 			});
-			
+
 			//Call update for first time to round hours and minute values
 			combo_{EDIT_FIELD_NAME}.update();
 		}
-		
-		var obj_{EDIT_FIELD_NAME} = new update_{EDIT_FIELD_NAME}_available(); 
+
+		var obj_{EDIT_FIELD_NAME} = new update_{EDIT_FIELD_NAME}_available();
 	</script>
 <!-- END: merge_cell_edit_datetime -->
 <!-- BEGIN: merge_cell_edit_date -->

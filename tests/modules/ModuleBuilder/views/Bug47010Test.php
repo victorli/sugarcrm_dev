@@ -61,9 +61,6 @@ class Bug47010Test extends Sugar_PHPUnit_Framework_TestCase {
             $this->fail('An exception has been raised: ' . $e->getMessage());
         }
         $this->assertEmpty($smarty->get_template_vars('module_name'));
-        
+
     }
 }
- 
-?>
- 

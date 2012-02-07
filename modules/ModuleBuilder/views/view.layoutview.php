@@ -105,7 +105,7 @@ class ViewLayoutView extends ViewEdit
         $images = array ( 'icon_save' => 'studio_save' , 'icon_publish' => 'studio_publish' , 'icon_address' => 'icon_Address' , 'icon_emailaddress' => 'icon_EmailAddress' , 'icon_phone' => 'icon_Phone' ) ;
         foreach ( $images as $image => $file )
         {
-            $smarty->assign ( $image, SugarThemeRegistry::current()->getImage($file) ) ;
+            $smarty->assign ( $image, SugarThemeRegistry::current()->getImage($file,'',null,null,'.gif',$file) ) ;
         }
 
         $requiredFields = implode($parser->getRequiredFields () , ',');

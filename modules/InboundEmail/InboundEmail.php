@@ -156,7 +156,7 @@ class InboundEmail extends SugarBean {
 												'user'			=> 'user',
 												'port'			=> 'port',
 											);
-	var $imageTypes					= array("JPG", "JPEG", "GIF");
+	var $imageTypes					= array("JPG", "JPEG", "GIF", "PNG");
 	var $inlineImages					= array();  // temporary space to store ID of inlined images
 	var $defaultEmailNumAutoreplies24Hours = 10;
 	var $maxEmailNumAutoreplies24Hours = 10;
@@ -169,13 +169,16 @@ class InboundEmail extends SugarBean {
 	var $ssl;
 	var $protocol;
 	var $keyForUsersDefaultIEAccount = 'defaultIEAccount';
+	// prefix to use when importing inlinge images in emails
+	public $imagePrefix;
 
 	/**
 	 * Sole constructor
 	 */
 	function InboundEmail() {
-	    $this->InboundEmailCachePath = $GLOBALS['sugar_config']['cache_dir'].'modules/InboundEmail';
-		parent::SugarBean();
+	    $this->InboundEmailCachePath = sugar_cached('modules/InboundEmail');
+	    $this->EmailCachePath = sugar_cached('modules/Emails');
+	    parent::SugarBean();
 		if(function_exists("imap_timeout")) {
 			/*
 			 * 1: Open
@@ -189,9 +192,12 @@ class InboundEmail extends SugarBean {
 		}
 
 		$this->safe = new HTML_Safe();
+		$this->safe->whiteProtocols[] = "cid";
 		$this->safe->clear();
+
 		$this->smarty = new Sugar_Smarty();
 		$this->overview = new Overview();
+		$this->imagePrefix = "{$GLOBALS['sugar_config']['site_url']}/cache/images/";
 	}
 
 	/**
@@ -238,7 +244,7 @@ class InboundEmail extends SugarBean {
 	 */
 	function mark_deleted($id) {
 		parent::mark_deleted($id);
-		$q = "update inbound_email set groupfolder_id = null WHERE id = $id";
+		$q = "update inbound_email set groupfolder_id = null WHERE id = '{$id}'";
 		$r = $this->db->query($q);
 		$this->deleteCache();
 	}
@@ -250,11 +256,11 @@ class InboundEmail extends SugarBean {
 	function mark_answered($mailid, $type = 'smtp') {
 		switch ($type) {
 			case 'smtp' :
-				$q = "update email_cache set answered = 1 WHERE imap_uid = $mailid and ie_id = '$this->id'";
+				$q = "update email_cache set answered = 1 WHERE imap_uid = $mailid and ie_id = '{$this->id}'";
 				$this->db->query($q);
 				break;
 			case 'pop3' :
-				$q = "update email_cache set answered = 1 WHERE message_id = '$mailid' and ie_id = '$this->id'";
+				$q = "update email_cache set answered = 1 WHERE message_id = '$mailid' and ie_id = '{$this->id}'";
 				$this->db->query($q);
 				break;
 		}
@@ -507,7 +513,7 @@ class InboundEmail extends SugarBean {
 		foreach($cacheUIDLs as $msgNo => $msgId) {
 			if (!in_array($msgId, $UIDLs)) {
 				$md5msgIds = md5($msgId);
-				$file = "{$sugar_config['cache_dir']}modules/Emails/{$this->id}/messages/INBOX{$md5msgIds}.PHP";
+				$file = "{$this->EmailCachePath}/{$this->id}/messages/INBOX{$md5msgIds}.PHP";
 				$GLOBALS['log']->debug("INBOUNDEMAIL: deleting file [ {$file} ] ");
 				if(file_exists($file)) {
 					if(!unlink($file)) {
@@ -785,15 +791,15 @@ class InboundEmail extends SugarBean {
 						break;
 
 						case "toaddr":
-							$values .= "'".$this->db->helper->escape_quote($overview->to)."'";
+							$values .= $this->db->quoted($overview->to);
 						break;
 
 						case "fromaddr":
-							$values .= "'".$this->db->helper->escape_quote($overview->from)."'";
+							$values .= $this->db->quoted($overview->from);
 						break;
 
 						case "message_id" :
-							$values .= "'".$this->db->helper->escape_quote($overview->message_id)."'";
+							$values .= $this->db->quoted($overview->message_id);
 						break;
 
 						case "mailsize":
@@ -803,7 +809,7 @@ class InboundEmail extends SugarBean {
 						case "senddate":
 							$conv=$timedate->fromString($overview->date);
 							if (!empty($conv)) {
-								$values .= "'" . $conv->asDb() ."'";
+								$values .= $this->db->quoted($conv->asDb());
 							} else {
 								$values .= "NULL";
 							}
@@ -816,7 +822,7 @@ class InboundEmail extends SugarBean {
 						default:
 							$overview->$colDef['name'] = from_html($overview->$colDef['name']);
 							$overview->$colDef['name'] = $this->cleanContent($overview->$colDef['name']);
-							$values .= "'".$this->db->helper->escape_quote($overview->$colDef['name'])."'";
+							$values .= $this->db->quoted($overview->$colDef['name']);
 						break;
 					}
 				}
@@ -845,30 +851,17 @@ class InboundEmail extends SugarBean {
 
 					switch($colDef['name']) {
 						case "toaddr":
-							//$set .= "toaddr = '".$this->db->helper->escape_quote($overview->to)."'";
-						break;
-
 						case "fromaddr":
-							//$set .= "fromaddr = '".$this->db->helper->escape_quote($overview->from)."'";
-						break;
-
 						case "mailsize":
-							//$set .= "mailsize = {$overview->size}";
-						break;
-
 						case "senddate":
-							//$set .= "senddate = '".date("Y-m-d H:i:s", $overview->date)."'";
-						break;
-
 						case "mbox":
-							//$set .= "mbox = '{$mbox}'";
 						break;
 
 						default:
 							if(!empty($set)) {
 								$set .= ",";
 							}
-							$set .= "{$colDef['name']} = '".$this->db->helper->escape_quote($overview->$colDef['name'])."'";
+							$set .= "{$colDef['name']} = ".$this->db->quoted($overview->$colDef['name']);
 						break;
 					}
 				}
@@ -1025,7 +1018,7 @@ class InboundEmail extends SugarBean {
 		$cacheDataExists = false;
 		$diff = array();
 		$results = array();
-		$cacheFilePath = clean_path("{$sugar_config['cache_dir']}modules/Emails/{$this->id}/folders/MsgNOToUIDLData.php");
+		$cacheFilePath = clean_path("{$this->EmailCachePath}/{$this->id}/folders/MsgNOToUIDLData.php");
 		if(file_exists($cacheFilePath)) {
 			$cacheDataExists = true;
 			if($fh = @fopen($cacheFilePath, "rb")) {
@@ -1066,7 +1059,7 @@ class InboundEmail extends SugarBean {
 				$diff = array_diff_assoc($UIDLs, $cacheUIDLs);
 				$diff = $this->pop3_shiftCache($diff, $cacheUIDLs);
 				require_once('modules/Emails/EmailUI.php');
-				EmailUI::preflightEmailCache("{$sugar_config['cache_dir']}modules/Emails/{$this->id}");
+				EmailUI::preflightEmailCache("{$this->EmailCachePath}/{$this->id}");
 
 				if (count($diff)> 50) {
                 	$newDiff = array_slice($diff, 50, count($diff), true);
@@ -1418,7 +1411,7 @@ class InboundEmail extends SugarBean {
 
         if ($ret['status'] == 'done') {
         	//Remove the cached search if we are done with this mailbox
-        	$cacheFilePath = clean_path("{$sugar_config['cache_dir']}modules/Emails/{$this->id}/folders/SearchData.php");
+        	$cacheFilePath = clean_path("{$this->EmailCachePath}/{$this->id}/folders/SearchData.php");
             unlink($cacheFilePath);
 	        /**
 	         * To handle the use case where an external client is also connected, deleting emails, we need to clear our
@@ -1452,7 +1445,7 @@ class InboundEmail extends SugarBean {
     	$cacheDataExists = false;
         $diff = array();
         $results = array();
-        $cacheFolderPath = clean_path("{$sugar_config['cache_dir']}modules/Emails/{$this->id}/folders");
+        $cacheFolderPath = clean_path("{$this->EmailCachePath}/{$this->id}/folders");
         if (!file_exists($cacheFolderPath)) {
         	mkdir_recursive($cacheFolderPath);
         }
@@ -1489,7 +1482,14 @@ class InboundEmail extends SugarBean {
     function checkEmailIMAPPartial($prefetch=true, $synch = false) {
     	$GLOBALS['log']->info("*****************INBOUNDEMAIL: at IMAP check partial");
         global $sugar_config;
-        $this->connectMailserver();
+        $result = $this->connectMailserver();
+        if ($result == 'false')
+        {
+            return array(
+                'status' => 'error',
+                'message' => 'Email server is down'
+            );
+        }
         $mailboxes = $this->getMailboxes(true);
         if (!in_array('INBOX', $mailboxes)) {
             $mailboxes[] = 'INBOX';
@@ -1686,9 +1686,6 @@ class InboundEmail extends SugarBean {
 		global $sugar_config;
 
 		if(!isset($this->email) && !isset($this->email->et)) {
-			if(!class_exists('Email')) {
-
-			}
 			$this->email = new Email();
 			$this->email->email2init();
 		}
@@ -1696,7 +1693,7 @@ class InboundEmail extends SugarBean {
 		$uids = $this->email->et->_cleanUIDList($uids);
 
 		foreach($uids as $uid) {
-			$file = "{$sugar_config['cache_dir']}modules/Emails/{$this->id}/messages/{$fromFolder}{$uid}.php";
+			$file = "{$this->EmailCachePath}/{$this->id}/messages/{$fromFolder}{$uid}.php";
 
 			if(file_exists($file)) {
 				if(!unlink($file)) {
@@ -1717,9 +1714,6 @@ class InboundEmail extends SugarBean {
 	function getOverviewsFromCacheFile($uids, $mailbox='', $remove=false) {
 		global $app_strings;
 		if(!isset($this->email) && !isset($this->email->et)) {
-			if(!class_exists('Email')) {
-
-			}
 			$this->email = new Email();
 			$this->email->email2init();
 		}
@@ -1812,7 +1806,7 @@ class InboundEmail extends SugarBean {
 
 					if(!empty($uid)) {
 						$file = "{$this->mailbox}{$uid}.php";
-						$cacheFile = clean_path("{$sugar_config['cache_dir']}/modules/Emails/{$this->id}/messages/{$file}");
+						$cacheFile = clean_path("{$this->EmailCachePath}/{$this->id}/messages/{$file}");
 
 						if(!file_exists($cacheFile)) {
 							$GLOBALS['log']->info("INBOUNDEMAIL: Prefetching email [ {$file} ]");
@@ -1879,7 +1873,7 @@ class InboundEmail extends SugarBean {
 		$connectString = $this->getConnectString('', $mbox);
 		//Remove Folder cache
 		global $sugar_config;
-		unlink("{$sugar_config['cache_dir']}modules/Emails/{$this->id}/folders/folders.php");
+		unlink("{$this->EmailCachePath}/{$this->id}/folders/folders.php");
 
 		if(imap_unsubscribe($this->conn, imap_utf7_encode($connectString))) {
 			if(imap_deletemailbox($this->conn, $connectString)) {
@@ -1915,7 +1909,7 @@ class InboundEmail extends SugarBean {
 		global $sugar_config;
         //Remove Folder cache
         global $sugar_config;
-        //unlink("{$sugar_config['cache_dir']}modules/Emails/{$this->id}/folders/folders.php");
+        //unlink("{$this->EmailCachePath}/{$this->id}/folders/folders.php");
 
         //$mboxImap = $this->getImapMboxFromSugarProprietary($mbox);
         $delimiter = $this->get_stored_options('folderDelimiter');
@@ -1984,7 +1978,6 @@ class InboundEmail extends SugarBean {
 
 		$criteria  = "";
 		$criteria .= (!empty($subject)) ? 'SUBJECT '.from_html($subject).'' : "";
-		//$criteria .= (!empty($subject)) ? 'SUBJECT "'.$GLOBALS['db']->helper->escape_quote($subject).'"' : "";
 		$criteria .= (!empty($from)) ? ' FROM "'.$from.'"' : "";
 		$criteria .= (!empty($to)) ? ' FROM "'.$to.'"' : "";
 		$criteria .= (!empty($body)) ? ' TEXT "'.$body.'"' : "";
@@ -2015,7 +2008,7 @@ class InboundEmail extends SugarBean {
 				$searchOverviews = array();
 				if ($bean->protocol == 'pop3') {
 					$pop3Criteria = "SELECT * FROM email_cache WHERE ie_id = '{$bean->id}' AND mbox = '{$mbox}'";
-					$pop3Criteria .= (!empty($subject)) ? ' AND subject like "%'.$bean->db->helper->escape_quote($subject).'%"' : "";
+					$pop3Criteria .= (!empty($subject)) ? ' AND subject like "%'.$bean->db->quote($subject).'%"' : "";
 					$pop3Criteria .= (!empty($from)) ? ' AND fromaddr like "%'.$from.'%"' : "";
 					$pop3Criteria .= (!empty($to)) ? ' AND toaddr like "%'.$to.'%"' : "";
 					$pop3Criteria .= (!empty($dateFrom)) ? ' AND senddate > "'.$dateFrom.'"' : "";
@@ -2485,7 +2478,7 @@ class InboundEmail extends SugarBean {
 			$i = 0;
 			foreach($raw as $mbox)
 			{
-				$raw[$i] = str_replace($testConnectString, "", mb_convert_encoding($mbox, "UTF8", "UTF7-IMAP" ));
+				$raw[$i] = str_replace($testConnectString, "", $GLOBALS['locale']->translateCharset($mbox, "UTF7-IMAP", "UTF8" ));
 				$i++;
 			} // foreach
 			sort($raw);
@@ -2626,9 +2619,6 @@ class InboundEmail extends SugarBean {
 					$to[0]['display'] = $email->from_name;
 				}
 
-				if(!class_exists('EmailTemplate')) {
-
-				}
 				$et = new EmailTemplate();
 				$et->retrieve($this->template_id);
 				if(empty($et->subject))		{ $et->subject = ''; }
@@ -2660,9 +2650,6 @@ class InboundEmail extends SugarBean {
 	}
 
 	function handleCaseAssignment($email) {
-		if(!class_exists('aCase')) {
-
-		}
 		$c = new aCase();
 		if($caseId = $this->getCaseIdFromCaseNumber($email->name, $c)) {
 			$c->retrieve($caseId);
@@ -2725,9 +2712,6 @@ class InboundEmail extends SugarBean {
 		global $current_user, $mod_strings, $current_language;
 		$mod_strings = return_module_language($current_language, "Emails");
 		$GLOBALS['log']->debug('In handleCreateCase');
-		if(!class_exists('aCase')) {
-
-		}
 		$c = new aCase();
 		$this->getCaseIdFromCaseNumber($email->name, $c);
 
@@ -2803,9 +2787,6 @@ class InboundEmail extends SugarBean {
 					$to[0]['display'] = $email->from_name;
 				}
 
-				if(!class_exists('EmailTemplate')) {
-
-				}
 				$et = new EmailTemplate();
 				$et->retrieve($createCaseTemplateId);
 				if(empty($et->subject))		{ $et->subject = ''; }
@@ -2896,9 +2877,6 @@ class InboundEmail extends SugarBean {
 			$email->load_relationship('leads');
 			$email->leads->add($leadIds);
 
-			if(!class_exists('Lead')) {
-
-			}
 			foreach($leadIds as $leadId) {
 				$lead = new Lead();
 				$lead->retrieve($leadId);
@@ -2920,10 +2898,6 @@ class InboundEmail extends SugarBean {
 			$email->load_relationship('accounts');
 			$email->accounts->add($accountIds);
 
-			if(!class_exists('Account')) {
-
-			}
-
 			/* cn: bug 9171 another cause of dying I-E - bad linking
 			foreach($accountIds as $accountId) {
 				$GLOBALS['log']->debug('I-E reverse-linking Accounts to Emails');
@@ -2936,6 +2910,32 @@ class InboundEmail extends SugarBean {
 		}
 		return $contactAddr;
 	}
+
+	/**
+	 * Gets part by following breadcrumb path
+	 * @param string $bc the breadcrumb string in format (1.1.1)
+	 * @param array parts the root level parts array
+	 */
+	protected function getPartByPath($bc, $parts)
+	{
+		if(strstr($bc,'.')) {
+			$exBc = explode('.', $bc);
+		} else {
+			$exBc = array($bc);
+		}
+
+		foreach($exBc as $step) {
+		    if(empty($parts)) return false;
+		    $res = $parts[$step-1]; // MIME starts with 1, array starts with 0
+		    if(!empty($res->parts)) {
+		        $parts = $res->parts;
+		    } else {
+		        $parts = false;
+		    }
+		}
+		return $res;
+ 	}
+
 	/**
 	 * takes a breadcrumb and returns the encoding at that level
 	 * @param	string bc the breadcrumb string in format (1.1.1)
@@ -2968,24 +2968,12 @@ class InboundEmail extends SugarBean {
 	 * @param array parts 1 level above ROOT array of Objects representing a multipart body
 	 * @return string charset name
 	 */
-	function getCharsetFromBreadCrumb($bc, $parts) {
-		if(strstr($bc,'.')) {
-			$exBc = explode('.', $bc);
-		} else {
-			$exBc[0] = $bc;
-		}
-
-		foreach($exBc as $crumb) {
-			$tempObj = $parts[$crumb-1];
-			if(is_array($tempObj->parts)) {
-				$parts = $tempObj->parts;
-			}
-		}
-
+	function getCharsetFromBreadCrumb($bc, $parts)
+	{
+		$tempObj = $this->getPartByPath($bc, $parts);
 		// now we have the tempObj at the end of the breadCrumb trail
-		//$GLOBALS['log']->fatal(print_r(debug_backtrace(), true));
 
-		if($tempObj->ifparameters) {
+		if(!empty($tempObj->ifparameters)) {
 			foreach($tempObj->parameters as $param) {
 				if(strtolower($param->attribute) == 'charset') {
 					return $param->value;
@@ -3072,10 +3060,13 @@ class InboundEmail extends SugarBean {
 						    $msgPartRaw .= $this->getMessageTextFromSingleMimePart($msgNo,$bcTrail,$structure);
 						 else {
 							// deal with inline image
-							if(count($this->inlineImages) > 0) {
-								$imageName = array_shift($this->inlineImages);
-								$newImagePath = "class='image' src='{$sugar_config['site_url']}/{$sugar_config['cache_dir']}/images/{$imageName}'";
-								$preImagePath = 'src="cid:'.substr($structure->parts[$bcArryKey]->id, 1, -1).'"';
+							$part = $this->getPartByPath($bcTrail, $structure->parts);
+							if(empty($part) || empty($part->id)) continue;
+							$partid = substr($part->id, 1, -1); // strip <> around
+							if(isset($this->inlineImages[$partid])) {
+								$imageName = $this->inlineImages[$partid];
+								$newImagePath = "class=\"image\" src=\"{$this->imagePrefix}{$imageName}\"";
+								$preImagePath = "src=\"cid:$partid\"";
 								$msgPartRaw = str_replace($preImagePath, $newImagePath, $msgPartRaw);
 							}
 						}
@@ -3104,9 +3095,11 @@ class InboundEmail extends SugarBean {
 			}
 
 			$msgPart = $text;
-			if(isset($upperCaseKeyDecodeHeader[strtoupper('Content-Type')]['charset']) && !empty($upperCaseKeyDecodeHeader[strtoupper('Content-Type')]['charset'])) {
-				$msgPart = $this->handleCharsetTranslation($text, $upperCaseKeyDecodeHeader[strtoupper('Content-Type')]['charset']);
-			}
+			if(is_array($upperCaseKeyDecodeHeader['CONTENT-TYPE']) && isset($upperCaseKeyDecodeHeader['CONTENT-TYPE']['charset']) && !empty($upperCaseKeyDecodeHeader[$upperCaseKeyDecodeHeader['CONTENT-TYPE']]['charset'])) {
+				$msgPart = $this->handleCharsetTranslation($text, $upperCaseKeyDecodeHeader['CONTENT-TYPE']['charset']);
+			} else {
+                $msgPart = utf8_encode($text);
+            }
 		} // end else clause
 
 		$msgPart = $this->customGetMessageText($msgPart);
@@ -3117,7 +3110,7 @@ class InboundEmail extends SugarBean {
 		else
 		{
             $safedMsgPart = $this->cleanContent($msgPart);
-	   	    return str_replace("<img />", '', $safedMsgPart);
+	   	    return str_replace("<img />", '', $safedMsgPart); /*SKIP_IMAGE_TAG*/
 		}
 	}
 
@@ -3323,7 +3316,7 @@ class InboundEmail extends SugarBean {
 			}
 			$name = urldecode($name);
 		}
-		return (strtolower($encoding) == 'utf-8') ? $name : mb_convert_encoding($name, 'UTF-8', $encoding);
+		return (strtolower($encoding) == 'utf-8') ? $name : $GLOBALS['locale']->translateCharset($name, $encoding, 'UTF-8');
 	}
 
 	/*
@@ -3421,7 +3414,6 @@ class InboundEmail extends SugarBean {
 						// only save if doing a full import, else we want only the binaries
 						$attach->save();
 					}
-					$this->saveAttachmentBinaries($attach, $msgNo, $thisBc, $part, $forDisplay);
 				} // end if disposition type 'attachment'
 			}// end ifdisposition
 			//Retrieve contents of subtype rfc8822
@@ -3439,7 +3431,6 @@ class InboundEmail extends SugarBean {
 			        // only save if doing a full import, else we want only the binaries
 			        $attach->save();
 			    }
-			    $this->saveAttachmentBinaries($attach, $msgNo, $thisBc, $part, $forDisplay);
 			} elseif(!$part->ifdisposition && $part->type != 1 && $part->type != 2 && $thisBc != '1') {
         		// No disposition here, but some IMAP servers lie about disposition headers, try to find the truth
 				// Also Outlook puts inline attachments as type 5 (image) without a disposition
@@ -3465,7 +3456,6 @@ class InboundEmail extends SugarBean {
 						// only save if doing a full import, else we want only the binaries
 						$attach->save();
 					}
-					$this->saveAttachmentBinaries($attach, $msgNo, $thisBc, $part, $forDisplay);
 				}
 			}
 			$this->saveAttachmentBinaries($attach, $msgNo, $thisBc, $part, $forDisplay);
@@ -3519,46 +3509,35 @@ class InboundEmail extends SugarBean {
 	 * @param bool $forDisplay
 	 */
 	function saveAttachmentBinaries($attach, $msgNo, $thisBc, $part, $forDisplay) {
-		global $sugar_config;
-
 		// decide where to place the file temporarily
-		$uploadDir = $sugar_config['upload_dir']; // typically "cache/uploads/"
-		$uploadDir = ($forDisplay) ? "{$sugar_config['cache_dir']}modules/Emails/{$this->id}/attachments/" : $uploadDir;
+		$uploadDir = ($forDisplay) ? "{$this->EmailCachePath}/{$this->id}/attachments/" : "upload://";
 
 		// decide what name to save file as
 		$fileName = $attach->id;
 
-		// deal with attachment encoding and decode the text string
+		// download the attachment if we didn't do it yet
 		if(!file_exists($uploadDir.$fileName)) {
 			$msgPartRaw = imap_fetchbody($this->conn, $msgNo, $thisBc);
+    		// deal with attachment encoding and decode the text string
 			$msgPart = $this->handleTranserEncoding($msgPartRaw, $part->encoding);
 
-			if($fp = fopen($uploadDir.$fileName, 'wb')) {
-				if(fwrite($fp, $msgPart)) {
-					$this->tempAttachment[$fileName] = urldecode($attach->filename);
-					$GLOBALS['log']->debug('InboundEmail saved attachment file: '.$attach->filename);
-				} else {
-					$GLOBALS['log']->debug('InboundEmail could not create attachment file: '.$attach->filename ." - temp file target: [ {$uploadDir}{$fileName} ]");
-				}
-				fclose($fp);
-
-				// if all was successful, feel for inline and cache Note ID for display:
-				if((strtolower($part->disposition) == 'inline' && in_array($part->subtype, $this->imageTypes))
-					|| ($part->type == 5)) {
-					if(copy($uploadDir.$fileName,
-						"{$sugar_config['cache_dir']}/images/{$fileName}.".strtolower($part->subtype))) {
-						$this->inlineImages[] = $attach->id.".".strtolower($part->subtype);
-					}
-				}
+			if(file_put_contents($uploadDir.$fileName, $msgPart)) {
+				$GLOBALS['log']->debug('InboundEmail saved attachment file: '.$attach->filename);
 			} else {
-				$GLOBALS['log']->debug('InboundEmail could not open a filepointer to: '.$uploadDir.$fileName);
+                $GLOBALS['log']->debug('InboundEmail could not create attachment file: '.$attach->filename ." - temp file target: [ {$uploadDir}{$fileName} ]");
+                return;
 			}
-		} else {
-			// binary is in cache already, just prep necessary metadata
-			$this->tempAttachment[$fileName] = urldecode($attach->filename);
-			if((strtolower($part->disposition) == 'inline' && in_array($part->subtype, $this->imageTypes))
-					|| ($part->type == 5)) {
-                $this->inlineImages[] = $attach->id.".".strtolower($part->subtype);
+		}
+
+		$this->tempAttachment[$fileName] = urldecode($attach->filename);
+		// if all was successful, feel for inline and cache Note ID for display:
+		if((strtolower($part->disposition) == 'inline' && in_array($part->subtype, $this->imageTypes))
+		    || ($part->type == 5)) {
+		    if(copy($uploadDir.$fileName, sugar_cached("images/{$fileName}.").strtolower($part->subtype))) {
+			    $id = substr($part->id, 1, -1); //strip <> around
+			    $this->inlineImages[$id] = $attach->id.".".strtolower($part->subtype);
+			} else {
+				$GLOBALS['log']->debug('InboundEmail could not copy '.$uploadDir.$fileName.' to cache');
 			}
 		}
 	}
@@ -3699,6 +3678,10 @@ class InboundEmail extends SugarBean {
 	    if(strtolower($attr) == "href") return true;
 	    $items = parse_url($value);
 	    if(empty($items)) return false;
+	    if(!empty($items['scheme']) && strtolower($items['scheme']) != 'http' && strtolower($items['scheme']) != 'https') {
+	        // do not touch non-HTTP URLs
+	        return true;
+	    }
 	// don't allow relative URLs
 		if(empty($items['host'])) return false;
 	// allow URLs with no query
@@ -3776,7 +3759,7 @@ class InboundEmail extends SugarBean {
 				if(strpos($headerDate, '-') || strpos($headerDate, '+')) {
 					// cn: bug make sure last 5 chars are [+|-]nnnn
 					if(strpos($headerDate, "(")) {
-						$headerDate = preg_replace("/\([\w]+\)/i", "", $headerDate);
+						$headerDate = preg_replace('/\([\w]+\)/i', "", $headerDate);
 						$headerDate = trim($headerDate);
 					}
 
@@ -3886,9 +3869,6 @@ class InboundEmail extends SugarBean {
 	 * If the importOneEmail returns false, then findout if the duplicate email
 	 */
 	function getDuplicateEmailId($msgNo, $uid) {
-		if(!class_exists('Email')) {
-
-		}
 		global $timedate;
 		global $app_strings;
 		global $app_list_strings;
@@ -3931,10 +3911,6 @@ class InboundEmail extends SugarBean {
 	 * @param clean_email boolean, default true,
 	 */
 	function importOneEmail($msgNo, $uid, $forDisplay=false, $clean_email=true) {
-		if(!class_exists('Email')) {
-
-		}
-
 		$GLOBALS['log']->debug("InboundEmail processing 1 email {$msgNo}-----------------------------------------------------------------------------------------");
 		global $timedate;
 		global $app_strings;
@@ -4048,7 +4024,6 @@ class InboundEmail extends SugarBean {
 			////	ASSIGN APPROPRIATE ATTRIBUTES TO NEW EMAIL OBJECT
 			// handle UTF-8/charset encoding in the ***headers***
 			global $db;
-			//bug #33929 added quoteForEmail() to replace single quote
 			$email->name			= $this->handleMimeHeaderDecode($header->subject);
 			$email->date_start = (!empty($unixHeaderDate)) ? $timedate->asUserDate($unixHeaderDate) : "";
 			$email->time_start = (!empty($unixHeaderDate)) ? $timedate->asUserTime($unixHeaderDate) : "";
@@ -4080,9 +4055,15 @@ class InboundEmail extends SugarBean {
 
 			$email->message_id		= $this->compoundMessageId; // filled by importDupeCheck();
 
+			$oldPrefix = $this->imagePrefix;
+			if(!$forDisplay) {
+				// Store CIDs in imported messages, convert on display
+				$this->imagePrefix = "cid:";
+			}
 			// handle multi-part email bodies
 			$email->description_html= $this->getMessageText($msgNo, 'HTML', $structure, $fullHeader,$clean_email); // runs through handleTranserEncoding() already
 			$email->description	= $this->getMessageText($msgNo, 'PLAIN', $structure, $fullHeader,$clean_email); // runs through handleTranserEncoding() already
+			$this->imagePrefix = $oldPrefix;
 
 			// empty() check for body content
 			if(empty($email->description)) {
@@ -4266,7 +4247,6 @@ class InboundEmail extends SugarBean {
 		/* include PHP_Compat library; it auto-feels for PHP5's compiled convert_uuencode() function */
 		require_once('include/PHP_Compat/convert_uudecode.php');
 
-
 		$attach = new Note();
 		$attach->parent_id = $id;
 		$attach->parent_type = 'Emails';
@@ -4301,16 +4281,11 @@ class InboundEmail extends SugarBean {
 		$attach->save();
 
 		$bin = convert_uudecode($UUEncode);
-		if($fp = fopen($sugar_config['upload_dir'].$attach->id, 'wb')) {
-			if(fwrite($fp, $bin)) {
-				$GLOBALS['log']->debug('InboundEmail saved attachment file: '.$attach->filename);
-			} else {
-				$GLOBALS['log']->debug('InboundEmail could not create attachment file: '.$attach->filename);
-			}
-			fclose($fp);
+		$filename = "upload://{$attach->id}";
+		if(file_put_contents($filename, $bin)) {
+    		$GLOBALS['log']->debug('InboundEmail saved attachment file: '.$filename);
 		} else {
-			//kbrill Bug#17125
-			$GLOBALS['log']->debug('InboundEmail could not open a filepointer to: '.$sugar_config['upload_dir'].$attach->id);
+    		$GLOBALS['log']->debug('InboundEmail could not create attachment file: '.$filename);
 		}
 	}
 
@@ -4462,9 +4437,6 @@ class InboundEmail extends SugarBean {
 		global $app_list_strings;
 
 		////	Case Macro
-		if(!class_exists('aCase')) {
-
-		}
 		$c = new aCase();
 
 		$macro = $c->getEmailSubjectMacro();
@@ -5018,43 +4990,7 @@ eoq;
 	 */
 	function cleanOutCache() {
 		$GLOBALS['log']->debug("INBOUNDEMAIL: at cleanOutCache()");
-		//global $current_user;
-		//global $sugar_config;
-
-		//$showFolders = unserialize(base64_decode($current_user->getPreference('showFolders', 'Emails')));
-		//$personals = $this->retrieveAllByGroupId($current_user->id, true);
-
-		//foreach($personals as $k => $personalAccount) {
-		//	if(in_array($personalAccount->id, $showFolders)) {
-//				// check for cache value
-//				$cacheRoot = getcwd()."/{$sugar_config['cache_dir']}modules/Emails/{$personalAccount->id}";
-//
-//				// on new account creation, this is not created yet
-//				if(!file_exists($cacheRoot)) {
-//					require_once("modules/Emails/EmailUI.php");
-//					$et = new EmailUI();
-//					$et->preflightEmailCache($cacheRoot);
-//					$et->preflightUserCache();
-//					continue; // no need to find files, there are none.
-//				}
-//
-//				// destroy overviews, keep messages
-//				$cacheFiles = findAllFiles($cacheRoot."/folders/", array());
-//
-//				foreach($cacheFiles as $cFile) {
-//					if(preg_match("/imapFetchOverview/", $cFile)) {
-//						_ppl("***InboundEmail deleting cache file [ {$cFile} ]");
-//						$GLOBALS['log']->debug("***InboundEmail deleting cache file [ {$cFile} ]");
-//						if(!unlink($cFile)) {
-//							$GLOBALS['log']->error("*** ERROR: InboundEmail could not delete cache file [ {$cFile} ]");
-//						}
-//					}
-//				}
-
-				// delete the tables
-				$this->deleteCache();
-			//}
-		//}
+		$this->deleteCache();
 	}
 
 	/**
@@ -5450,9 +5386,9 @@ eoq;
 		if ($this->isPop3Protocol()) {
 			// get the UIDL from database;
 			$cachedUIDL = md5($uid);
-			$cache = "{$sugar_config['cache_dir']}modules/Emails/{$this->id}/messages/{$this->mailbox}{$cachedUIDL}.php";
+			$cache = "{$this->EmailCachePath}/{$this->id}/messages/{$this->mailbox}{$cachedUIDL}.php";
 		} else {
-			$cache = "{$sugar_config['cache_dir']}modules/Emails/{$this->id}/messages/{$this->mailbox}{$uid}.php";
+			$cache = "{$this->EmailCachePath}/{$this->id}/messages/{$this->mailbox}{$uid}.php";
 		}
 
 		if(file_exists($cache) && !$forceRefresh) {
@@ -5574,7 +5510,7 @@ eoq;
 			if ($this->isPop3Protocol()) {
 				$uid = md5($uid);
 			} // if
-			$msgCacheFile = "{$sugar_config['cache_dir']}modules/Emails/{$this->id}/messages/{$this->mailbox}{$uid}.php";
+			$msgCacheFile = "{$this->EmailCachePath}/{$this->id}/messages/{$this->mailbox}{$uid}.php";
 			if(file_exists($msgCacheFile)) {
 				if(!unlink($msgCacheFile)) {
 					$GLOBALS['log']->error("***ERROR: InboundEmail could not delete the cache file [ {$msgCacheFile} ]");
@@ -5599,6 +5535,7 @@ eoq;
 		global $sugar_smarty;
 		global $theme;
 		global $current_user;
+		global $sugar_config;
 
 		$fetchedAttributes = array(
 			'name',
@@ -5660,11 +5597,11 @@ eoq;
 		$attachments = '';
 		if ($mbox == "sugar::Emails") {
 
-			$q = "SELECT id, filename FROM notes WHERE parent_id = '{$uid}' AND deleted = 0";
+			$q = "SELECT id, filename, file_mime_type FROM notes WHERE parent_id = '{$uid}' AND deleted = 0";
 			$r = $this->db->query($q);
 			$i = 0;
 			while($a = $this->db->fetchByAssoc($r)) {
-				$url = "index.php?entryPoint=download&id={$a['id']}&type=notes";
+				$url = "index.php?entryPoint=download&type=notes&id={$a['id']}";
 				$lbl = ($i == 0) ? $app_strings['LBL_EMAIL_ATTACHMENTS'].":" : '';
 				$i++;
 				$attachments .=<<<EOQ
@@ -5677,7 +5614,7 @@ eoq;
 							</td>
 						</tr>
 EOQ;
-
+				$this->email->cid2Link($a['id'], $a['file_mime_type']);
 		    } // while
 
 
@@ -5691,7 +5628,7 @@ EOQ;
 					$name = $this->getTempFilename(true).$i;
 					$tempName = urlencode($this->tempAttachment[$name]);
 
-					$url = "index.php?entryPoint=download&id={$name}&type=temp&isTempFile=true&ieId={$this->id}&tempName={$tempName}";
+					$url = "index.php?entryPoint=download&type=temp&isTempFile=true&ieId={$this->id}&tempName={$tempName}&id={$name}";
 
 					$attachments .=<<<eoq
 						<tr>
@@ -6049,7 +5986,7 @@ eoq;
 			$from		= $this->handleMimeHeaderDecode($msg->from);
 			$subject	= $this->handleMimeHeaderDecode($msg->subject);
 			//$date		= date($tPref['date']." ".$tPref['time'], $msg->date);
-			$date		= $timedate->to_display_date_time($msg->date);
+			$date		= $timedate->to_display_date_time($this->db->fromConvert($msg->date, 'datetime'));
 			//$date		= date($tPref['date'], $this->getUnixHeaderDate($msg->date));
 
 			$temp = array();
@@ -6165,9 +6102,8 @@ eoq;
 			$value = implode(",", $value);
 		}
 		$this->mailboxarray = explode(",", $value);
-		$value = $this->db->helper->escape_quote($value);
-		//$query = "update config set value = '{$value}' where category='InboundEmail' and name='{$this->id}' )";
-		$query = "update inbound_email set mailbox = '{$value}' where id ='{$this->id}'";
+		$value = $this->db->quoted($value);
+		$query = "update inbound_email set mailbox = $value where id ='{$this->id}'";
 		$this->db->query($query);
 	}
 
@@ -6180,9 +6116,9 @@ eoq;
 				$value = implode(",", $value);
 			}
 			$this->mailboxarray = explode(",", $value);
-			$value = $this->db->helper->escape_quote($value);
+			$value = $this->db->quoted($value);
 
-			$query = "INSERT INTO config VALUES('InboundEmail', '{$this->id}', '{$value}')";
+			$query = "INSERT INTO config VALUES('InboundEmail', '{$this->id}', $value)";
 			$this->db->query($query);
 		} // if
 	}

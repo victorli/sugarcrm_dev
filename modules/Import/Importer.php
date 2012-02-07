@@ -85,7 +85,7 @@ class Importer
         global $mod_strings, $sugar_config;
 
         $this->importSource = $importSource;
-        
+
         //Vanilla copy of the bean object.
         $this->bean = $bean;
 
@@ -541,7 +541,7 @@ class Importer
     protected function saveMappingFile()
     {
         global $current_user;
-        
+
         $firstrow    = unserialize(base64_decode($_REQUEST['firstrow']));
         $mappingValsArr = $this->importColumns;
         $mapping_file = new ImportMap();
@@ -693,7 +693,7 @@ class Importer
         $currency = new Currency();
         $currency->retrieve($this->importSource->importlocale_currency);
         $ifs->currency_symbol = $currency->symbol;
-        
+
         return $ifs;
     }
 
@@ -807,36 +807,43 @@ class Importer
         if ( !defined('E_USER_DEPRECATED') )
             define('E_USER_DEPRECATED','16384');
 
-        // check to see if current reporting level should be included based upon error_reporting() setting, if not
-        // then just return
-        if ( !(error_reporting() & $errno) )
-            return true;
-
+        $isFatal = false;
         switch ($errno)
         {
             case E_USER_ERROR:
-                echo "ERROR: [$errno] $errstr on line $errline in file $errfile<br />\n";
-                exit(1);
+                $message = "ERROR: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                $isFatal = true;
                 break;
             case E_USER_WARNING:
             case E_WARNING:
-                echo "WARNING: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                $message = "WARNING: [$errno] $errstr on line $errline in file $errfile<br />\n";
                 break;
             case E_USER_NOTICE:
             case E_NOTICE:
-                echo "NOTICE: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                $message = "NOTICE: [$errno] $errstr on line $errline in file $errfile<br />\n";
                 break;
             case E_STRICT:
             case E_DEPRECATED:
             case E_USER_DEPRECATED:
                 // don't worry about these
-                //echo "STRICT ERROR: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                // $message = "STRICT ERROR: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                $message = "";
                 break;
             default:
-                echo "Unknown error type: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                $message = "Unknown error type: [$errno] $errstr on line $errline in file $errfile<br />\n";
                 break;
         }
 
-        return true;
+        // check to see if current reporting level should be included based upon error_reporting() setting, if not
+        // then just return
+        if (error_reporting() & $errno)
+        {
+            echo $message;
+        }
+
+        if ($isFatal)
+        {
+            exit(1);
+        }
     }
 }

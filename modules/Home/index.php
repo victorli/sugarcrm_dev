@@ -42,13 +42,13 @@ global $current_user, $sugar_version, $sugar_config, $beanFiles;
 require_once('include/MySugar/MySugar.php');
 
 // build dashlet cache file if not found
-if(!is_file($GLOBALS['sugar_config']['cache_dir'].'dashlets/dashlets.php')) {
+if(!is_file($cachefile = sugar_cached('dashlets/dashlets.php'))) {
     require_once('include/Dashlets/DashletCacheBuilder.php');
 
     $dc = new DashletCacheBuilder();
     $dc->buildCache();
 }
-require_once($GLOBALS['sugar_config']['cache_dir'].'dashlets/dashlets.php');
+require_once $cachefile;
 
 require('modules/Home/dashlets.php');
 
@@ -274,7 +274,6 @@ $sugar_smarty->assign('currentLanguage', $GLOBALS['current_language']);
 $sugar_smarty->assign('serverUniqueKey', $GLOBALS['server_unique_key']);
 $sugar_smarty->assign('imagePath', $GLOBALS['image_path']);
 
-$sugar_smarty->assign('jsCustomVersion', $sugar_config['js_custom_version']);
 $sugar_smarty->assign('maxCount', empty($sugar_config['max_dashlets_homepage']) ? 15 : $sugar_config['max_dashlets_homepage']);
 $sugar_smarty->assign('dashletCount', $count);
 $sugar_smarty->assign('dashletIds', '["' . implode('","', $dashletIds) . '"]');

@@ -150,13 +150,13 @@ $seps				= array("-", "/");
 $dates				= array($date_start, $date_end);
 $dateFileNameSafe	= str_replace($seps, "_", $dates);
 
-$cache_file_name = $current_user->getUserPrivGuid()."_outcome_by_month_".$dateFileNameSafe[0]."_".$dateFileNameSafe[1].".xml";
+$cache_file_name = sugar_cached("xml/").$current_user->getUserPrivGuid()."_outcome_by_month_".$dateFileNameSafe[0]."_".$dateFileNameSafe[1].".xml";
 
 $GLOBALS['log']->debug("cache file name is: $cache_file_name");
 
 
 global $app_strings;
-$tools='<div align="right"><a href="index.php?module='.$currentModule.'&action='. $action .'&obm_refresh=true" class="tabFormAdvLink">'.SugarThemeRegistry::current()->getImage('refresh','alt="Refresh"  border="0" align="absmiddle"').'&nbsp;'.$current_module_strings['LBL_REFRESH'].'</a>&nbsp;&nbsp;<a href="javascript: toggleDisplay(\'outcome_by_month_edit\');" class="tabFormAdvLink">'.SugarThemeRegistry::current()->getImage('edit','alt="Edit"  border="0"  align="absmiddle"').'&nbsp;'. $current_module_strings['LBL_EDIT'].'</a>&nbsp;&nbsp;'.$extra_tools.'</div>';
+$tools='<div align="right"><a href="index.php?module='.$currentModule.'&action='. $action .'&obm_refresh=true" class="tabFormAdvLink">'.SugarThemeRegistry::current()->getImage('refresh','border="0" align="absmiddle"', null,null,'.gif',$mod_strings['LBL_REFRESH']).'&nbsp;'.$current_module_strings['LBL_REFRESH'].'</a>&nbsp;&nbsp;<a href="javascript: toggleDisplay(\'outcome_by_month_edit\');" class="tabFormAdvLink">'.SugarThemeRegistry::current()->getImage('edit','border="0" align="absmiddle"',null,null,'.gif',$mod_strings['LBL_EDIT']).'&nbsp;'. $current_module_strings['LBL_EDIT'].'</a>&nbsp;&nbsp;'.$extra_tools.'</div>';
 ?>
 	<?php echo '<span onmouseover="this.style.cursor=\'move\'" id="chart_handle_' . $this->order . '">' . get_form_header($current_module_strings['LBL_YEAR_BY_OUTCOME'],$tools,false) . '</span>';?>
 
@@ -189,7 +189,7 @@ if (empty($_SESSION['obm_ids'])) $_SESSION['obm_ids'] = "";
 </p>
 <?php
 // draw chart
-echo "<p align='center'>".$this->gen_xml($date_start, $date_end, $ids, $sugar_config['tmp_dir'].$cache_file_name, $refresh,$current_module_strings)."</p>";
+echo "<p align='center'>".$this->gen_xml($date_start, $date_end, $ids, $cache_file_name, $refresh,$current_module_strings)."</p>";
 echo "<P align='center'><span class='chartFootnote'>".$current_module_strings['LBL_MONTH_BY_OUTCOME_DESC']."</span></P>";
 
 
@@ -198,8 +198,8 @@ echo "<P align='center'><span class='chartFootnote'>".$current_module_strings['L
 
 
 <?php
-	if (file_exists($sugar_config['tmp_dir'].$cache_file_name)) {
-		$file_date = $timedate->asUser($timedate->fromTimestamp(filemtime($sugar_config['tmp_dir'].$cache_file_name)));
+	if (file_exists($cache_file_name)) {
+		$file_date = $timedate->asUser($timedate->fromTimestamp(filemtime($cache_file_name)));
 	}
 	else {
 		$file_date = '';
@@ -261,8 +261,7 @@ echo get_validate_chart_js();
 			//query for opportunity data that matches $datay and $user
 			//_pp($query);
 
-			$result = $opp->db->query($query)
-			or sugar_die("Error selecting sugarbean: ".mysql_error());
+			$result = $opp->db->query($query, true);
 			//build pipeline by sales stage data
 			$total = 0;
 			$div = 1;
@@ -282,7 +281,7 @@ echo get_validate_chart_js();
 			}
 			$months = array();
 			$monthArr = array();
-			while($row = $opp->db->fetchByAssoc($result, -1, false))
+			while($row = $opp->db->fetchByAssoc($result, false))
 			{
 				if($row['total']*$div<=100){
 					$sum = round($row['total']*$div, 2);

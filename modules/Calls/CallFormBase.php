@@ -43,7 +43,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * Contributor(s): ______________________________________..
  ********************************************************************************/
 
-class CallFormBase{
+require_once('include/SugarObjects/forms/FormBase.php');
+
+class CallFormBase extends FormBase {
 
 function getFormBody($prefix, $mod='', $formname='',$cal_date='',$cal_time=''){
 if(!ACLController::checkAccess('Calls', 'edit', true)){
@@ -274,10 +276,10 @@ function handleSave($prefix,$redirect=true,$useRequired=false) {
         $return_id = $focus->id;
     }else{
 
-	    if(empty($_REQUEST['return_module']) && empty($_REQUEST['return_action']) && $focus->status == 'Held'){
-    		//if we are closing the call, and the request does not have a return module AND return action set, then
-    		//the request is coming from a dashlet or subpanel close icon and there is no need to process user invitees,
-    		//just save the current values.
+        if($focus->status == 'Held' && $this->isEmptyReturnModuleAndAction() && !$this->isSaveFromDCMenu()){
+    		//if we are closing the meeting, and the request does not have a return module AND return action set and it is not a save
+            //being triggered by the DCMenu (shortcut bar) then the request is coming from a dashlet or subpanel close icon and there is no
+            //need to process user invitees, just save the current values.
     		$focus->save(true);
 	    }else{
 	    	///////////////////////////////////////////////////////////////////////////
@@ -581,7 +583,7 @@ $form .=	<<<EOQ
 <td scope='row'>$lbl_date&nbsp;<span class="required">$lbl_required_symbol</span>&nbsp;<span class="dateFormat">$ntc_date_format</span></td>
 </tr>
 <tr>
-<td ><input onblur="parseDate(this, '$cal_dateformat');" name='${prefix}date_start' size="12" id='${prefix}jscal_field' maxlength='10' type="text" value="${default_date_start}"> <img src="{$jscalenderImage}" alt="{$app_strings['LBL_ENTER_DATE']}"  id="${prefix}jscal_trigger" align="absmiddle"></td>
+<td ><input onblur="parseDate(this, '$cal_dateformat');" name='${prefix}date_start' size="12" id='${prefix}jscal_field' maxlength='10' type="text" value="${default_date_start}"> <!--not_in_theme!--><img src="{$jscalenderImage}" alt="{$app_strings['LBL_ENTER_DATE']}"  id="${prefix}jscal_trigger" align="absmiddle"></td>
 </tr>
 
 <tr>

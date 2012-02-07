@@ -75,7 +75,7 @@
 	<td width="30%" ><slot><input name='amount' tabindex='2' size='15' maxlength='25' type="text" value=''></slot></td>
 	</tr><tr>
 	<td scope="row"><slot>{$MOD.LBL_DATE_CLOSED}&nbsp;<span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></slot></td>	
-	<td ><slot><input name='date_closed' onblur="parseDate(this, '{$CALENDAR_DATEFORMAT}');" id='jscal_field' type="text" tabindex='1' size='11' maxlength='10' value=""> <img src="{sugar_getimagepath file='jscalendar.gif'}" alt="{$APP.LBL_ENTER_DATE}"  id="jscal_trigger" align="absmiddle"> <span class="dateFormat">{$USER_DATEFORMAT}</span></slot></td>
+	<td ><slot><input name='date_closed' onblur="parseDate(this, '{$CALENDAR_DATEFORMAT}');" id='jscal_field' type="text" tabindex='1' size='11' maxlength='10' value=""> {sugar_getimage name="jscalendar" ext=".gif" alt=$APP.LBL_ENTER_DATE other_attributes='align="absmiddle" id="jscal_trigger" '} <span class="dateFormat">{$USER_DATEFORMAT}</span></slot></td>
 	<td scope="row"><slot>{$MOD.LBL_LEAD_SOURCE}</slot></td>
 	<td ><slot><select tabindex='2' name='lead_source'>{$LEAD_SOURCE_OPTIONS}</select></slot></td>
 	</tr>

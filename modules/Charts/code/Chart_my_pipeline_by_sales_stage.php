@@ -155,12 +155,12 @@ $id_md5 = substr(md5($current_user->id),0,9);
 $seps				= array("-", "/");
 $dates				= array($dateStartDisplay, $dateEndDisplay);
 $dateFileNameSafe	= str_replace($seps, "_", $dates);
-$cache_file_name = $current_user->getUserPrivGuid()."_".$theme."_my_pipeline_".$dateFileNameSafe[0]."_".$dateFileNameSafe[1].".xml";
+$cache_file_name = sugar_cached("xml/").$current_user->getUserPrivGuid()."_".$theme."_my_pipeline_".$dateFileNameSafe[0]."_".$dateFileNameSafe[1].".xml";
 
 $GLOBALS['log']->debug("cache file name is: $cache_file_name");
 
 
-$tools='<div align="right"><a href="index.php?module='.$currentModule.'&action='. $action .'&mypbss_refresh=true" class="tabFormAdvLink">'.SugarThemeRegistry::current()->getImage('refresh','alt="Refresh"  border="0" align="absmiddle"').'&nbsp;'.$current_module_strings['LBL_REFRESH'].'</a>&nbsp;&nbsp;<a href="javascript: toggleDisplay(\'my_pipeline_edit\');" class="tabFormAdvLink">'.SugarThemeRegistry::current()->getImage('edit','alt="Edit"  border="0"  align="absmiddle"').'&nbsp;'. $current_module_strings['LBL_EDIT'].'</a></div>';
+$tools='<div align="right"><a href="index.php?module='.$currentModule.'&action='. $action .'&mypbss_refresh=true" class="tabFormAdvLink">'.SugarThemeRegistry::current()->getImage('refresh','border="0" align="absmiddle"',null,null,'.gif',$mod_strings['LBL_REFRESH']).'&nbsp;'.$current_module_strings['LBL_REFRESH'].'</a>&nbsp;&nbsp;<a href="javascript: toggleDisplay(\'my_pipeline_edit\');" class="tabFormAdvLink">'.SugarThemeRegistry::current()->getImage('edit','border="0" align="absmiddle"',null,null,'.gif',$mod_strings['LBL_EDIT']).'&nbsp;'. $current_module_strings['LBL_EDIT'].'</a></div>';
 
 ?>
 	<?php echo get_form_header($mod_strings['LBL_PIPELINE_FORM_TITLE'], $tools , false);?>
@@ -179,12 +179,12 @@ $tools='<div align="right"><a href="index.php?module='.$currentModule.'&action='
 <table cellpadding="0" cellspacing="0" border="0" class="edit view" align="center">
 <tr>
 	<td valign='top' nowrap><b><?php echo $current_module_strings['LBL_DATE_START']?> </b><br><i><?php echo $timedate->get_user_date_format();?></i></td>
-	<td valign='top' ><input onblur="parseDate(this, '<?php echo $cal_dateformat ?>');" class="text" name="mypbss_date_start" size='12' maxlength='10' id='date_start' value='<?php echo $date_start; ?>'>  <img src="<?php echo SugarThemeRegistry::current()->getImageURL('jscalendar.gif'); ?>" alt="<?php echo $app_strings['LBL_ENTER_DATE']; ?>"  id="date_start_trigger" align="absmiddle"> </td>
+	<td valign='top' ><input onblur="parseDate(this, '<?php echo $cal_dateformat ?>');" class="text" name="mypbss_date_start" size='12' maxlength='10' id='date_start' value='<?php echo $date_start; ?>'> <?php echo SugarThemeRegistry::current()->getImage('jscalendar', 'id="date_start_trigger" align="absmiddle"', null, null, ".gif", $app_strings['LBL_ENTER_DATE']); ?> </td>
 </tr>
 
 <tr>
 	<td valign='top' nowrap><b><?php echo $current_module_strings['LBL_DATE_END'];?></b><br><i><?php echo $timedate->get_user_date_format();?></i></td>
-	<td valign='top' ><input onblur="parseDate(this, '<?php echo $cal_dateformat ?>');" class="text" name="mypbss_date_end" size='12' maxlength='10' id='date_end' value='<?php echo $date_end; ?>'>  <img src="<?php echo SugarThemeRegistry::current()->getImageURL('jscalendar.gif'); ?>" alt="<?php echo $app_strings['LBL_ENTER_DATE']; ?>"  id="date_end_trigger" align="absmiddle"> </td>
+	<td valign='top' ><input onblur="parseDate(this, '<?php echo $cal_dateformat ?>');" class="text" name="mypbss_date_end" size='12' maxlength='10' id='date_end' value='<?php echo $date_end; ?>'>  <?php echo SugarThemeRegistry::current()->getImage('jscalendar', 'id="date_end_trigger" align="absmiddle"', null, null, ".gif", $app_strings['LBL_ENTER_DATE']); ?> </td>
 </tr>
 
 	<tr>
@@ -210,12 +210,12 @@ Calendar.setup ({
 
 <?php
 
-echo "<p align='center'>".gen_xml_pipeline_by_sales_stage($datax, $dateXml[0], $dateXml[1], $ids, $sugar_config['tmp_dir'].$cache_file_name, $refresh,'hBarS',$current_module_strings)."</p>";
+echo "<p align='center'>".gen_xml_pipeline_by_sales_stage($datax, $dateXml[0], $dateXml[1], $ids, $cache_file_name, $refresh,'hBarS',$current_module_strings)."</p>";
 echo "<P align='center'><span class='chartFootnote'>".$current_module_strings['LBL_PIPELINE_FORM_TITLE_DESC']."</span></P>";
 
 
-	if (file_exists($sugar_config['tmp_dir'].$cache_file_name)) {
-		$file_date = $timedate->asUser($timedate->fromTimestamp(filemtime($sugar_config['tmp_dir'].$cache_file_name)));
+	if (file_exists($cache_file_name)) {
+		$file_date = $timedate->asUser($timedate->fromTimestamp(filemtime($cache_file_name)));
 	}
 	else {
 		$file_date = '';
@@ -295,8 +295,7 @@ echo get_validate_chart_js();
 			$query .= "WHERE " .$where;
 			$query .= " GROUP BY opportunities.sales_stage,users.user_name,opportunities.assigned_user_id";
 
-			$result = $opp->db->query($query)
-			or sugar_die("Error selecting sugarbean: ".mysql_error());
+			$result = $opp->db->query($query, true);
 			//build pipeline by sales stage data
 			$total = 0;
 			$div = 1;
@@ -319,7 +318,7 @@ echo get_validate_chart_js();
 			$usernameArr = array();
 			$rowTotalArr = array();
 			$rowTotalArr[] = 0;
-			while($row = $opp->db->fetchByAssoc($result, -1, false))
+			while($row = $opp->db->fetchByAssoc($result, false))
 			{
 				if($row['total']*$div<=100){
 					$sum = round($row['total']*$div, 2);

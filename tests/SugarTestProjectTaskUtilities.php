@@ -56,6 +56,17 @@ class SugarTestProjectTaskUtilities extends SugarTestObjectUtilities
 			$projectTask->project_task_id = $projectTaskData['project_task_id'];
 			$projectTask->percent_complete = $projectTaskData['percent_complete'];
 			$projectTask->name = $projectTaskData['name'];
+
+            if (isset($projectTaskData['duration']))
+            {
+                $projectTask->duration = $projectTaskData['duration'];
+            }
+
+            if (isset($projectTaskData['duration_unit']))
+            {
+                $projectTask->duration_unit = $projectTaskData['duration_unit'];
+            }
+
 			$projectTask->save();
 			self::pushObject($projectTask);
 			return $projectTask;

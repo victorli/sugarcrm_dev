@@ -121,7 +121,7 @@ class SugarCacheRedis extends SugarCacheAbstract
         $key = $this->_fixKeyName($key);
         
         $this->_getRedisObject()->set($key,$value);
-        $this->_getRedisObject()->expire($key, $this->expireTimeout);
+        $this->_getRedisObject()->expire($key, $this->_expireTimeout);
     }
     
     /**

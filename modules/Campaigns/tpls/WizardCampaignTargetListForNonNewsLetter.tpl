@@ -52,7 +52,7 @@
 	<th colspan="5" align="left" ><h4>{$MOD.LBL_TARGET_LISTS}</h4></th>
 	</tr>
 	<tr>
-	<td scope="row" colspan="5">{$MOD.LBL_WIZARD_TARGET_MESSAGE1}<br></td>
+	<td colspan="5">{$MOD.LBL_WIZARD_TARGET_MESSAGE1}<br></td>
 	</tr>
 	<tr><td colspan=5>&nbsp;</td></tr>
 	<tr>
@@ -60,22 +60,22 @@
 	<input id="popup_target_list_type" name="popup_target_list_type" type='hidden'>
 	<input id="popup_target_list_name" name="popup_target_list_name" type="hidden" value="">
 	<input id='popup_target_list_id' name='popup_target_list_id' title='List ID' type="hidden" value=''>
-	<input title="{$APP.LBL_SELECT_BUTTON_TITLE}" type="button" tabindex='1' class="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' name=btn3 id='target_list_button'
+	<input title="{$APP.LBL_SELECT_BUTTON_TITLE}" type="button"  class="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' name=btn3 id='target_list_button'
  	onclick='open_popup("ProspectLists", 600, 400, "", true, false,  {$encoded_target_list_popup_request_data}, "single", true);'>	
 	</span sugar='slot'>	
 	</td>
-	<td scope="row">&nbsp;</td>
+	<td>&nbsp;</td>
 	</tr>
 	<tr><td colspan=5>&nbsp;</td></tr>
 	<tr>
 	<td scope="row" colspan="5">{$MOD.LBL_WIZARD_TARGET_MESSAGE2}<br></td>
 	</tr>
 	<tr>
-	<td width='10%' scope="row">{$MOD.LBL_TARGET_NAME}</td>
-	<td width='20%' scope="row">
+	<td width='10%' scope="col">{$MOD.LBL_TARGET_NAME}</td>
+	<td width='20%'>
 		<input id="target_list_name" name="target_list_name" type='text' size='40'>
 	</td>
-	<td width='10%' scope="row">
+	<td width='10%' scope="col">
 		<span sugar='slot28'>{$MOD.LBL_TARGET_TYPE}</span sugar='slot'>
 	</td>
 	<td  width='20%' >
@@ -92,9 +92,9 @@
 		<tr><td>{$MOD.LBL_TRACKERS_ADDED}</td></tr>
 		<tr><td>
 		
-			<table bprder=1 width='100%'><tr class='detail view'>
-				<td width='25%'><b>{$MOD.LBL_TARGET_NAME}</b></td>
-			    <td width='25%'><b>{$MOD.LBL_TARGET_TYPE}</b></td><td>&nbsp;</td>
+			<table border=1 width='100%'><tr class='detail view'>
+				<th scope='col' width='25%'><b>{$MOD.LBL_TARGET_NAME}</b></th>
+			    <th scope='col' width='25%'><b>{$MOD.LBL_TARGET_TYPE}</b></th><td>&nbsp;</td>
 			    <td width='25%'><b>&nbsp;</b></td>			    
 		    </tr>
 			</table>
@@ -154,7 +154,8 @@
 
 					{/literal}
 					//display the html
-					var trgt_html = "<div id='trgt_added_"+targets_added+"'> <table width='100%' class='tabDetailViewDL2'><tr class='tabDetailViewDL2' ><td width='25%'>"+trgt_name_html+"</td><td width='25%'>"+trgt_type_html+"</td><td>"+trgt_id_html+"<a href='#' onclick=\"remove_target('trgt_added_"+targets_added+"','"+targets_added+"'); \" >  <img src='{sugar_getimagepath file='delete_inline.gif'}' alt='rem' align='absmiddle' border='0' height='12' width='12'>{$MOD.LBL_REMOVE}</a></td></tr></table></div>";						
+					{capture assign='alt_remove' }{sugar_translate label='LBL_DELETE' module='CAMPAIGNS'}{/capture}
+                    var trgt_html = "<div id='trgt_added_"+targets_added+"'> <table width='100%' class='tabDetailViewDL2'><tr class='tabDetailViewDL2' ><td width='25%'>"+trgt_name_html+"</td><td width='25%'>"+trgt_type_html+"</td><td>"+trgt_id_html+"<a href='#' onclick=\"remove_target('trgt_added_"+targets_added+"','"+targets_added+"'); \" >  "+'{sugar_getimage name="delete_inline" ext=".gif" width="12" height="12" alt=$alt_remove other_attributes='align="absmiddle" border="0" '}'+"{$MOD.LBL_REMOVE}</a></td></tr></table></div>";
 					document.getElementById('added_targets').innerHTML = document.getElementById('added_targets').innerHTML + trgt_html;
 
 					//add values to array in string, seperated by "@@" characters

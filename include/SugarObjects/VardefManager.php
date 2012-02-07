@@ -35,7 +35,10 @@
  ********************************************************************************/
 
 
-  
+/**
+ * Vardefs management
+ * @api
+ */
 class VardefManager{
     static $custom_disabled_modules = array();
     static $linkFields;
@@ -88,7 +91,7 @@ class VardefManager{
               $custom_disabled_modules[$module] = true;
         }
     }
-    
+
     static function addTemplate($module, $object, $template, $object_name=false){
         if($template == 'default')$template = 'basic';
         $templates = array();
@@ -100,7 +103,7 @@ class VardefManager{
         }else{
             $table_name = strtolower($module);
         }
-        
+
         if(empty($templates[$template])){
             $path = 'include/SugarObjects/templates/' . $template . '/vardefs.php';
             if(file_exists($path)){
@@ -125,8 +128,9 @@ class VardefManager{
             // maintain a record of this objects inheritance from the SugarObject templates...
             $GLOBALS['dictionary'][$object]['templates'][ $template ] = $template ;
         }
-        
+
     }
+
 
     /**
      * Remove invalid field definitions
@@ -146,14 +150,14 @@ class VardefManager{
 
         return $fieldDefs;
     }
-    
+
     /**
      * Save the dictionary object to the cache
      * @param string $module the name of the module
      * @param string $object the name of the object
      */
     static function saveCache($module,$object, $additonal_objects= array()){
-        
+
         if (empty($GLOBALS['dictionary'][$object]))
             $object = BeanFactory::getObjectName($module);
         $file = create_cache_directory('modules/' . $module . '/' . $object . 'vardefs.php');
@@ -161,14 +165,14 @@ class VardefManager{
         if ( sugar_is_file($file) && is_readable($file)) {
             include($file);
         }
-        
+
         // put the item in the sugar cache.
         $key = "VardefManager.$module.$object";
         //Sometimes bad definitions can get in from left over extensions or file system lag(caching). We need to clean those.
         $data = self::cleanVardefs($GLOBALS['dictionary'][$object]);
         sugar_cache_put($key,$data);
     }
-    
+
     /**
      * clear out the vardef cache. If we receive a module name then just clear the vardef cache for that module
      * otherwise clear out the cache for every module
@@ -188,7 +192,7 @@ class VardefManager{
             }
         }
     }
-    
+
     /**
      * PRIVATE function used within clearVardefCache so we do not repeat logic
      * @param string module_dir the module_dir to clear
@@ -196,14 +200,15 @@ class VardefManager{
      */
     static function _clearCache($module_dir = '', $object_name = ''){
         if(!empty($module_dir) && !empty($object_name)){
-            
+
             //Some modules like cases have a bean name that doesn't match the object name
             if (empty($GLOBALS['dictionary'][$object_name])) {
                 $newName = BeanFactory::getObjectName($module_dir);
                 $object_name = $newName != false ? $newName : $object_name;
             }
 
-            $file = $GLOBALS['sugar_config']['cache_dir'].'modules/'.$module_dir.'/' . $object_name . 'vardefs.php';
+            $file = sugar_cached('modules/').$module_dir.'/' . $object_name . 'vardefs.php';
+
             if(file_exists($file)){
                 unlink($file);
                 $key = "VardefManager.$module_dir.$object_name";
@@ -211,11 +216,11 @@ class VardefManager{
             }
         }
     }
-    
+
     /**
      * Given a module, search all of the specified locations, and any others as specified
      * in order to refresh the cache file
-     * 
+     *
      * @param string $module the given module we want to load the vardefs for
      * @param string $object the given object we wish to load the vardefs for
      * @param array $additional_search_paths an array which allows a consumer to pass in additional vardef locations to search
@@ -267,7 +272,7 @@ class VardefManager{
             $df = new DynamicField ($module) ;
             $df->buildCache($module);
         }
-        
+
         //great! now that we have loaded all of our vardefs.
         //let's go save them to the cache file.
         if(!empty($dictionary[$object])) {
@@ -341,26 +346,35 @@ class VardefManager{
         return $matches;
     }
 
-    
+
+
     /**
-     * apply global "account_required" setting if possible
-     * @param array    $vardef
-     * @return array   updated $vardef
+     * applyGlobalAccountRequirements
+     *
+     * This method ensures that the account_name relationships are set to always be required if the configuration file specifies
+     * so.  For more information on this require_accounts parameter, please see the administrators guide or go to the
+     * developers.sugarcrm.com website to find articles relating to the use of this field.
+     *
+     * @param Array $vardef The vardefs of the module to apply the account_name field requirement to
+     * @return Array $vardef The vardefs of the module with the updated required setting based on the system configuration
      */
     static function applyGlobalAccountRequirements($vardef)
     {
-        if (isset($GLOBALS['sugar_config']['require_accounts'])) {
-            if (isset($vardef['fields']) &&
-                isset($vardef['fields']['account_name']) &&
-                isset($vardef['fields']['account_name']['required']))
+        if (isset($GLOBALS['sugar_config']['require_accounts']))
+        {
+            if (isset($vardef['fields'])
+                && isset($vardef['fields']['account_name'])
+                && isset($vardef['fields']['account_name']['type'])
+                && $vardef['fields']['account_name']['type'] == 'relate'
+                && isset($vardef['fields']['account_name']['required']))
             {
                 $vardef['fields']['account_name']['required'] = $GLOBALS['sugar_config']['require_accounts'];
             }
 
         }
-
         return $vardef;
     }
+
 
     /**
      * load the vardefs for a given module and object
@@ -377,7 +391,7 @@ class VardefManager{
         }
         // Retrieve the vardefs from cache.
         $key = "VardefManager.$module.$object";
-        
+
         if(!$refresh)
         {
             $return_result = sugar_cache_retrieve($key);
@@ -389,23 +403,25 @@ class VardefManager{
                 return;
             }
         }
-                
+
         // Some of the vardefs do not correctly define dictionary as global.  Declare it first.
         global $dictionary;
         if(empty($GLOBALS['dictionary'][$object]) || $refresh){
             //if the consumer has demanded a refresh or the cache/modules... file
             //does not exist, then we should do out and try to reload things
-            if($refresh || !file_exists($GLOBALS['sugar_config']['cache_dir'].'modules/'. $module . '/' . $object . 'vardefs.php')){
-                VardefManager::refreshVardefs($module, $object, null, true, $params);
-            }
-            
+
+			$cachedfile = sugar_cached('modules/'). $module . '/' . $object . 'vardefs.php';
+			if($refresh || !file_exists($cachedfile)){
+				VardefManager::refreshVardefs($module, $object, null, true, $params);
+			}
+
             //at this point we should have the cache/modules/... file
             //which was created from the refreshVardefs so let's try to load it.
-            if(file_exists($GLOBALS['sugar_config']['cache_dir'].'modules/'. $module .  '/' . $object . 'vardefs.php'))
+            if(file_exists($cachedfile))
             {
-                if ( is_readable($GLOBALS['sugar_config']['cache_dir'].'modules/'. $module .  '/' . $object . 'vardefs.php') )
+                if (is_readable($cachedfile))
                 {
-                    include_once($GLOBALS['sugar_config']['cache_dir'].'modules/'. $module .  '/' . $object . 'vardefs.php');
+                    include_once($cachedfile);
                 }
                 // now that we hae loaded the data from disk, put it in the cache.
                 if(!empty($GLOBALS['dictionary'][$object]))
@@ -416,4 +432,5 @@ class VardefManager{
             }
         }
     }
+
 }

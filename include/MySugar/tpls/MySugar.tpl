@@ -56,13 +56,13 @@ height: 10px;
 {/literal}
 
 <!-- begin includes for overlib -->
-<script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_overlib.js'}"></script>
+{sugar_getscript file="cache/include/javascript/sugar_grp_overlib.js"}
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000"></div>
 <!-- end includes for overlib -->
 
 
-<script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_yui_widgets.js'}"></script>
-<script type="text/javascript" src="{sugar_getjspath file='include/javascript/dashlets.js'}"></script>
+{sugar_getscript file="cache/include/javascript/sugar_grp_yui_widgets.js"}
+{sugar_getscript file='include/javascript/dashlets.js'}
 <link rel='stylesheet' href='{sugar_getjspath file='include/ytree/TreeView/css/folders/tree.css'}'>
 {$chartResources}
 {$mySugarChartResources}
@@ -141,11 +141,11 @@ mySugarLoader.insert();
 <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-top: 5px;">
  	<tr>
 	 	<td>
-		
+
 		</td>
-	
+
 		<td rowspan="3">
-				<img src='{sugar_getimagepath file='blank.gif'}' width='40' height='1' border='0'>
+				{sugar_getimage name="blank.gif"  width='40' height='1' border='0'}
 		</td>
 		<td align='right'>
 			{if !$lock_homepage}<input id="add_dashlets" class="button" type="button" value="{$lblAddDashlets}" onclick="return SUGAR.mySugar.showDashletsDialog();"/>{/if}
@@ -156,15 +156,15 @@ mySugarLoader.insert();
 		{foreach from=$columns key=colNum item=data}
 		<td valign='top' width='{$data.width}'>
 			<ul class='noBullet' id='col_{$activePage}_{$colNum}'>
-				<li id='page_{$activePage}_hidden{$hiddenCounter}b' style='height: 5px; margin-top: 12px\9;' class='noBullet'>&nbsp;&nbsp;&nbsp;</li>
-				{foreach from=$data.dashlets key=id item=dashlet}		
+				<li id='page_{$activePage}_hidden{$hiddenCounter}b' style='height: 5px; margin-top:12px;' class='noBullet'>&nbsp;&nbsp;&nbsp;</li>
+		        {foreach from=$data.dashlets key=id item=dashlet}
 				<li class='noBullet' id='dashlet_{$id}'>
 					<div id='dashlet_entire_{$id}' class='dashletPanel'>
 						{$dashlet.script}
 					{$dashlet.displayHeader}
 						{$dashlet.display}
-						{$dashlet.displayFooter}
-				  </div> 
+                        {$dashlet.displayFooter}
+                  </div>
 				</li>
 				{/foreach}
 				<li id='page_{$activePage}_hidden{$hiddenCounter}' style='height: 5px' class='noBullet'>&nbsp;&nbsp;&nbsp;</li>
@@ -175,22 +175,22 @@ mySugarLoader.insert();
 	</tr>
 </table>
 	</div>
-	
+
 	{foreach from=$divPages key=divPageIndex item=divPageNum}
 	<div id="pageNum_{$divPageNum}_div" style="display:none;">
 	</div>
 	{/foreach}
 
-	
-	
+
+
 	<div id="dashletsDialog" style="display:none;">
 		<div class="hd" id="dashletsDialogHeader"><a href="javascript:void(0)" onClick="javascript:SUGAR.mySugar.closeDashletsDialog();">
 			<div class="container-close">&nbsp;</div></a>{$lblAdd}
-		</div>	
+		</div>
 		<div class="bd" id="dashletsList">
 			<form></form>
 		</div>
-		
+
 	</div>
 				
 	

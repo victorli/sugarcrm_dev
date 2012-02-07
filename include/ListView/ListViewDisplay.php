@@ -280,21 +280,27 @@ class ListViewDisplay {
 			$plus = '+';
 			$this->show_plus = true;
 		}
-		$script = "<script>
-			function select_overlib() {
-				return overlib('<a style=\'width: 150px\' name=\"thispage\" class=\'menuItem\' onmouseover=\'hiliteItem(this,\"yes\");\' onmouseout=\'unhiliteItem(this);\' onclick=\'if (document.MassUpdate.select_entire_list.value==1){document.MassUpdate.select_entire_list.value=0;sListView.check_all(document.MassUpdate, \"mass[]\", true, $pageTotal)}else {sListView.check_all(document.MassUpdate, \"mass[]\", true)};\' href=\'javascript:void(0)\'>{$app_strings['LBL_LISTVIEW_OPTION_CURRENT']}&nbsp;&#x28;{$pageTotal}&#x29;&#x200E;</a>"
-			. "<a style=\'width: 150px\' name=\"selectall\" class=\'menuItem\' onmouseover=\'hiliteItem(this,\"yes\");\' onmouseout=\'unhiliteItem(this);\' onclick=\'sListView.check_entire_list(document.MassUpdate, \"mass[]\",true,{$total});\' href=\'javascript:void(0)\'>{$app_strings['LBL_LISTVIEW_OPTION_ENTIRE']}&nbsp;&#x28;{$total}&#x29;&#x200E;</a>"
-			. "<a style=\'width: 150px\' name=\"deselect\" class=\'menuItem\' onmouseover=\'hiliteItem(this,\"yes\");\' onmouseout=\'unhiliteItem(this);\' onclick=\'sListView.clear_all(document.MassUpdate, \"mass[]\", false);\' href=\'javascript:void(0)\'>{$app_strings['LBL_LISTVIEW_NONE']}</a>"
-			. "', CENTER, '"
-			. "', STICKY, MOUSEOFF, 3000, CLOSETEXT, '<img border=0 src=" . SugarThemeRegistry::current()->getImageURL('close_inline.gif')
-			. ">', WIDTH, 150, CLOSETITLE, '" . $app_strings['LBL_ADDITIONAL_DETAILS_CLOSE_TITLE'] . "', CLOSECLICK, FGCLASS, 'olOptionsFgClass', "
-			. "CGCLASS, 'olOptionsCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olOptionsCapFontClass', CLOSEFONTCLASS, 'olOptionsCloseFontClass',TIMEOUT,1000);
-			}
-			</script>";
-		$script .= "<a id='$id' onclick='return select_overlib();' href=\"javascript:void(0)\"><img src='".SugarThemeRegistry::current()->getImageURL('MoreDetail.png')."' border='0'>"."</a>";
+
+
+		$close_inline_img = SugarThemeRegistry::current()->getImage('close_inline', 'border=0', null, null, ".gif", $app_strings['LBL_CLOSEINLINE']);
+		$script_href = "<a style=\'width: 150px\' name=\"thispage\" class=\'menuItem\' onmouseover=\'hiliteItem(this,\"yes\");\' onmouseout=\'unhiliteItem(this);\' onclick=\'if (document.MassUpdate.select_entire_list.value==1){document.MassUpdate.select_entire_list.value=0;sListView.check_all(document.MassUpdate, \"mass[]\", true, $pageTotal)}else {sListView.check_all(document.MassUpdate, \"mass[]\", true)};\' href=\'#\'>{$app_strings['LBL_LISTVIEW_OPTION_CURRENT']}&nbsp;&#x28;{$pageTotal}&#x29;&#x200E;</a>"
+			. "<a style=\'width: 150px\' name=\"selectall\" class=\'menuItem\' onmouseover=\'hiliteItem(this,\"yes\");\' onmouseout=\'unhiliteItem(this);\' onclick=\'sListView.check_entire_list(document.MassUpdate, \"mass[]\",true,{$total});\' href=\'#\'>{$app_strings['LBL_LISTVIEW_OPTION_ENTIRE']}&nbsp;&#x28;{$total}&#x29;&#x200E;</a>"
+			. "<a style=\'width: 150px\' name=\"deselect\" class=\'menuItem\' onmouseover=\'hiliteItem(this,\"yes\");\' onmouseout=\'unhiliteItem(this);\' onclick=\'sListView.clear_all(document.MassUpdate, \"mass[]\", false);\' href=\'#\'>{$app_strings['LBL_LISTVIEW_NONE']}</a>";
+
+		$script = <<<EOHTML
+<script type="text/javascript">
+function select_overlib() {
+	return overlib('{$script_href}', CENTER, STICKY, MOUSEOFF, 3000, CLOSETEXT, '{$close_inline_img}', WIDTH, 150, CLOSETITLE, "{$app_strings['LBL_ADDITIONAL_DETAILS_CLOSE_TITLE']}" , CLOSECLICK, FGCLASS, 'olOptionsFgClass', CGCLASS, 'olOptionsCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olOptionsCapFontClass', CLOSEFONTCLASS, 'olOptionsCloseFontClass',TIMEOUT,1000);
+}
+</script>
+EOHTML;
+            $script .= "<a id='$id' onclick='return select_overlib();' href=\"#\">".SugarThemeRegistry::current()->getImage('MoreDetail', 'border=0', null, null, '.png', $app_strings['LBL_MOREDETAIL'])."</a>";
 
 		return $script;
 	}
+
+
+
 
 	/**
 	 * Display the actions link
@@ -307,7 +313,7 @@ class ListViewDisplay {
 	    )
 	{
 	    global $app_strings;
-		$closeText = "<img border=0 src=" . SugarThemeRegistry::current()->getImageURL('close_inline.gif') . " />";
+		$closeText = SugarThemeRegistry::current()->getImage('close_inline', 'border=0', null, null, ".gif", $app_strings['LBL_CLOSEINLINE']);
 		$moreDetailImage = SugarThemeRegistry::current()->getImageURL('MoreDetail.png');
 		$menuItems = '';
 
@@ -344,19 +350,57 @@ class ListViewDisplay {
 		    return '';
 
 		return <<<EOHTML
+<a id='$id' href="javascript:void(0)">
+    {$app_strings['LBL_LINK_ACTIONS']}&nbsp;<img src='{$moreDetailImage}' border='0' />
+</a>
 <script type="text/javascript">
-function actions_overlib()
+var actionLinkSelector = "#$id";
+var userHoveredOverMenu = false;
+
+function actions_overlib(e)
 {
-    return overlib("{$menuItems}", CENTER, '', STICKY, MOUSEOFF, 3000, CLOSETEXT, "{$closeText}", WIDTH, 150,
+    overlib("{$menuItems}", CENTER, '', STICKY, MOUSEOFF, 3000, CLOSETEXT, '{$closeText}', WIDTH, 150,
         CLOSETITLE, "{$app_strings['LBL_ADDITIONAL_DETAILS_CLOSE_TITLE']}", CLOSECLICK,
         FGCLASS, 'olOptionsFgClass', CGCLASS, 'olOptionsCgClass', BGCLASS, 'olBgClass',
         TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olOptionsCapFontClass',
         CLOSEFONTCLASS, 'olOptionsCloseFontClass');
+        
+    e.currentTarget.focus();
+        
+    YUI().use('node', 'event-base', function(Y) {
+        e.currentTarget.on('blur', actions_overlib_close);
+        Y.all('#overDiv').on('mouseover', function(e) {
+            userHoveredOverMenu = true;
+        });
+        Y.all('#overDiv').on('mouseout', function(e) {
+            userHoveredOverMenu = false;
+        });
+    });
 }
+        
+function actions_overlib_close(e) {
+    if (userHoveredOverMenu == false) {
+        YUI().use('node', function(Y) {
+            var overDiv = Y.one("#overDiv");
+            if (overDiv != null) overDiv.remove();
+        });
+    }
+}
+        
+// event delegations
+YUI().use('node', 'event-base', function(Y) {
+    if (typeof alClickEventHandler != 'undefined')
+    {
+        alClickEventHandler.detach();
+    }
+
+    if (Y.one('div.listViewBody') != null)
+    {
+        var alClickEventHandler = Y.one('div.listViewBody').delegate('click', actions_overlib, actionLinkSelector);
+    }
+});
+
 </script>
-<a id='$id' onclick='return actions_overlib();' href="javascript:void(0)">
-    {$app_strings['LBL_LINK_ACTIONS']}&nbsp;<img src='{$moreDetailImage}' border='0' />
-</a>
 EOHTML;
 	}
 

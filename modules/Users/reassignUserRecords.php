@@ -273,7 +273,7 @@ else if(!isset($_GET['execute'])){
 	echo "<li>* {$mod_strings_users['LBL_REASS_NOTES_TWO']}\n";
 	echo "<li>* {$mod_strings_users['LBL_REASS_NOTES_THREE']}\n";
 	echo "</ul>\n";
-        $help_img = SugarThemeRegistry::current()->getImage('helpInline','border="0" onmouseout="return nd();" onmouseover="return overlib(\''.$mod_strings['LBL_REASS_VERBOSE_HELP'].'\', FGCLASS, \'olFgClass\', CGCLASS, \'olCgClass\', BGCLASS, \'olBgClass\', TEXTFONTCLASS, \'olFontClass\', CAPTIONFONTCLASS, \'olCapFontClass\', CLOSEFONTCLASS, \'olCloseFontClass\');"');
+        $help_img = SugarThemeRegistry::current()->getImage('helpInline','border="0" onmouseout="return nd();" onmouseover="return overlib(\''.$mod_strings['LBL_REASS_VERBOSE_HELP'].'\', FGCLASS, \'olFgClass\', CGCLASS, \'olCgClass\', BGCLASS, \'olBgClass\', TEXTFONTCLASS, \'olFontClass\', CAPTIONFONTCLASS, \'olCapFontClass\', CLOSEFONTCLASS, \'olCloseFontClass\');"',null,null,'.gif',$mod_strings['LBL_HELP']);
 	echo "<BR><input type=checkbox name=verbose> {$mod_strings_users['LBL_REASS_VERBOSE_OUTPUT']}".$help_img."<BR>\n";
 	unset($_SESSION['reassignRecords']['modules']);
 	$beanListFlip = array_flip($_SESSION['reassignRecords']['assignedModuleListCache']);
@@ -398,7 +398,7 @@ else if(isset($_GET['execute']) && $_GET['execute'] == true){
 		echo "<tr>\n";
 		echo "<td>\n";
 		if(! $workflow){
-			$affected_rows = $GLOBALS['db']->getAffectedRowCount();
+			$affected_rows = $GLOBALS['db']->getAffectedRowCount($res);
 			echo "{$mod_strings_users['LBL_UPDATE_FINISH']}: $affected_rows {$mod_strings_users['LBL_AFFECTED']}<BR>\n";
 		}
 		else{
@@ -467,8 +467,8 @@ else if(isset($_GET['execute']) && $_GET['execute'] == true){
 
 /////////////////// END STEP 3 - Execute reassignment ///////////////////////
 }
+echo getVersionedScript("cache/include/javascript/sugar_grp_overlib.js");
 ?>
-<script type="text/javascript" src="include/javascript/sugar_grp_overlib.js"></script>
 <script type="text/javascript">
 
 function clearCurrentRecords()

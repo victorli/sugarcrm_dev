@@ -774,7 +774,7 @@ margin-top: 0;
 {
     width: 5em;
 }
-.list tr th, .list tr td[scope=col], 
+.td_alt, .list tr th, .list tr td[scope=col],
 .edit .list tr th, .edit .list tr td[scope=col]
 {
     font-size: 11px;
@@ -1238,7 +1238,7 @@ div.indent_right {
 {
 	border-left: 0;
 }
-#scheduler .schedulerDiv table tr.schedulerTimeRow td[scope=col]
+#scheduler .schedulerDiv table tr.schedulerTimeRow th[scope=col]
 {
     border-left:1px solid #DDDDDD;
     padding-left:4px;
@@ -2464,7 +2464,7 @@ table.detail
     background:#FAFAFA none repeat scroll 0 0;
     color:#666666;
 }
-.list tr th, .list tr td[scope=col], .edit .list tr th, .edit .list tr td[scope=col]
+.td_alt, .list tr th, .list tr td[scope=col], .edit .list tr th, .edit .list tr td[scope=col]
 {
     border-left: none;
     border-right: none;
@@ -3605,3 +3605,55 @@ ul.tablist li a.current:link, ul.tablist li a.current:visited, ul.tablist li a.c
     background : transparent url('../../../../index.php?entryPoint=getImage&themeName=Sugar55&imageName=sugar-yui-sprites.png')  no-repeat scroll 0px -70px;
  }
  
+
+#basic_search_link
+{
+    margin-left:6px !important;
+}
+
+.star {
+	float:right;
+	zoom: 1;
+	display: inline;
+	*float: none;
+	*width: 18px;
+}
+.moduleTitle .star 
+{
+    margin-top:4px;
+    padding-right:5px;
+}
+
+li div.star {float:none;}
+.star div {background-image:url('../../../../index.php?entryPoint=getImage&imageName=star-sheet.png');width:18px;height:18px;float:left;}
+.star div.on {background-position:0px 0px}
+.star div.off {background-position:0px -18px}
+.star div:hover {cursor:pointer;background-position:0px 0px;}
+
+#ajaxStatusDiv {
+    background : #ffffff;
+	color : #c60c30;
+	position : fixed;
+	opacity : .8;
+	filter : alpha(opacity=80);
+    z-index: 20;
+    top: 7px;
+    border: 1px solid #aaa;
+	padding: 5px;
+}
+
+div#chartDashlets
+{
+    overflow-y: auto;
+}
+
+
+/* miscellaneaous 508 classes */
+.detail508 tr td[scope="col"]
+{
+    background-color: #F6F6F6;
+    border-color: #CBDAE6;
+    color: #000000;
+    text-align: right;
+    white-space: nowrap;
+}

@@ -100,7 +100,7 @@ div.resultsTable {
         <td nowrap id="tabListContainerTD">
             <div id="tabListContainer" class="yui-module yui-scroll">
                 <div class="yui-hd">
-                    <span class="yui-scroll-controls" style="visibility: none">
+                    <span class="yui-scroll-controls" style="visibility:hidden">
                         <a title="scroll left" class="yui-scrollup"><em>scroll left</em></a>
                         <a title="scroll right" class="yui-scrolldown"><em>scroll right</em></a>
                     </span>

@@ -35,11 +35,13 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-
-
 require_once('include/SubPanel/SubPanel.php');
 require_once('include/SubPanel/SubPanelDefinitions.php');
 require_once('include/SubPanel/SubPanelTiles.php');
+/**
+ * Tabbed subpanel tiles
+ * @api
+ */
 class SubPanelTilesTabs extends SubPanelTiles
 {
 

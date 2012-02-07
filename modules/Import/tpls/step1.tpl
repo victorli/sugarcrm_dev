@@ -39,11 +39,16 @@
 
 {literal}
 <style>
+#smtpButtonGroup .yui-button {
+    padding-top: 10px;
+}
 #smtpButtonGroup .yui-radio-button-checked button, .yui-checkbox-button-checked button {
     background-color: #CCCCCC;
     color: #FFFFFF;
     text-shadow: none;
 }
+
+
 {/literal}
 </style>
 {if $ERROR != ''}
@@ -55,7 +60,6 @@
 <input type="hidden" name="module" value="Import">
 <input type="hidden" name="action" value="Step2">
 <input type="hidden" name="current_step" value="1">
-<input type="hidden" name="return_action" value="Step1">
 <input type="hidden" name="external_source" value="">
 <input type="hidden" name="from_admin_wizard" value="{$FROM_ADMIN}">
 <input type="hidden" name="import_module" value="{$IMPORT_MODULE}">

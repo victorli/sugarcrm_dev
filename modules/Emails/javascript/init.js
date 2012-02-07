@@ -348,6 +348,10 @@ function addChildNodes(parentNode, parentData) {
                 // Default behavior is to wrap in span if no href property, and since this href
                 // doesn't do anything, remove it so that it will be wrapped in spans.
                 // nodes[i].href = "#";
+				
+				// URL Decode the text, so it shows properly
+				nodes[i].text = unescape(nodes[i].text);
+				
 				if (nodes[i].text) nodes[i].label = nodes[i].text;
 				//Override YUI child node creation
 				if (nodes[i].children) {

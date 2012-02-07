@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 *}
-<script src="modules/ACLRoles/ACLRoles.js"></script>
+<script src="{sugar_getjspath file='modules/ACLRoles/ACLRoles.js'}"></script>
 <b>{$MOD.LBL_EDIT_VIEW_DIRECTIONS}</b>
 <table width='100%'><tr>
 <td width= '100%'  valign='top'>

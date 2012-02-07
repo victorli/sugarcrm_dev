@@ -46,16 +46,6 @@ class TemplateTextArea extends TemplateText{
 		$this->vardef_map['cols'] = 'ext3';
 	}
 
-	function get_db_type(){
-		if ($GLOBALS['db']->dbType=='oci8') {
-			return " CLOB ";
-		} else if(!empty($GLOBALS['db']->isFreeTDS)) {
-		    return " NTEXT ";
-		} else {
-			return " TEXT ";
-		}
-	}
-
 	function set($values){
 	   parent::set($values);
 	    if(!empty($this->ext2)){
@@ -76,7 +66,8 @@ class TemplateTextArea extends TemplateText{
 		return nl2br($this->bean->$name);
 	}
 
-	function get_field_def(){
+	function get_field_def()
+	{
 		$def = parent::get_field_def();
 		$def['studio'] = 'visible';
 
@@ -93,17 +84,10 @@ class TemplateTextArea extends TemplateText{
 		return $def;
 	}
 
-	function get_db_default(){
+	function get_db_default()
+	{
 	    // TEXT columns in MySQL cannot have a DEFAULT value - let the Bean handle it on save
         return null; // Bug 16612 - null so that the get_db_default() routine in TemplateField doesn't try to set DEFAULT
     }
 
-     function get_db_modify_alter_table($table){
-        return parent::get_db_modify_alter_table($table);
-	}
-
-
 }
-
-
-?>

@@ -144,8 +144,8 @@ if (!isset($_REQUEST['search_form']) || $_REQUEST['search_form'] != 'false') {
 	$search_form = new XTemplate ('modules/Emails/SearchFormGroupInbox.html');
 	$search_form->assign('MOD', $mod_strings);
 	$search_form->assign('APP', $app_strings);
-	$search_form->assign('ADVANCED_SEARCH_PNG', SugarThemeRegistry::current()->getImage('advanced_search','alt="'.$app_strings['LNK_ADVANCED_SEARCH'].'"  border="0"'));
-	$search_form->assign('BASIC_SEARCH_PNG', SugarThemeRegistry::current()->getImage('basic_search','alt="'.$app_strings['LNK_BASIC_SEARCH'].'"  border="0"'));
+	$search_form->assign('ADVANCED_SEARCH_PNG', SugarThemeRegistry::current()->getImage('advanced_search','border="0"', null,null,'.gif',$app_strings['LNK_ADVANCED_SEARCH']));
+	$search_form->assign('BASIC_SEARCH_PNG', SugarThemeRegistry::current()->getImage('basic_search','border="0"', null,null,'.gif',$app_strings['LNK_BASIC_SEARCH']));
 	$search_form->assign('TYPE_OPTIONS', $types);
 	$search_form->assign('ASSIGNED_TO_OPTIONS', $assigned_to);
 	$search_form->assign('STATUS_OPTIONS', $email_status);
@@ -212,7 +212,7 @@ $display_title = $mod_strings['LBL_LIST_TITLE_GROUP_INBOX'];
 echo getClassicModuleTitle("Emails", array($mod_strings['LBL_MODULE_TITLE'].$display_title), true); 
 // admin-edit
 if(is_admin($current_user) && $_REQUEST['module'] != 'DynamicLayout' && !empty($_SESSION['editinplace'])){	
-	$header_text = "&nbsp;<a href='index.php?action=index&module=DynamicLayout&from_action=SearchForm&from_module=".$_REQUEST['module'] ."'>".SugarThemeRegistry::current()->getImage("EditLayout","border='0' alt='Edit Layout' align='bottom'")."</a>";
+	$header_text = "&nbsp;<a href='index.php?action=index&module=DynamicLayout&from_action=SearchForm&from_module=".$_REQUEST['module'] ."'>".SugarThemeRegistry::current()->getImage("EditLayout","border='0' align='bottom'",null,null,'.gif',$mod_strings['LBL_EDIT_LAYOUT'])."</a>";
 }
 // search form
 echo get_form_header($mod_strings['LBL_SEARCH_FORM_TITLE']. $header_text, "", false);
@@ -253,7 +253,7 @@ $ListView->shouldProcess = true;
 $ListView->show_mass_update = true;
 $ListView->show_mass_update_form = false;
 $ListView->initNewXTemplate( 'modules/Emails/ListViewGroupInbox.html',$mod_strings);
-$ListView->xTemplateAssign('ATTACHMENT_HEADER', SugarThemeRegistry::current()->getImage('attachment',"","",""));
+$ListView->xTemplateAssign('ATTACHMENT_HEADER', SugarThemeRegistry::current()->getImage('attachment',"","","",'.gif',$mod_strings['LBL_ATTACHMENT']));
 $ListView->xTemplateAssign('ERROR', $error);
 $ListView->xTemplateAssign('CHECK_MAIL',$focus->checkInbox('group'));
 $ListView->setHeaderTitle($display_title . $header_text );

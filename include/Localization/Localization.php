@@ -35,14 +35,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description:
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc. All Rights
- * Reserved. Contributor(s): ______________________________________..
- * *******************************************************************************/
-
-
+/**
+ * Localization manager
+ * @api
+ */
 class Localization {
 	var $availableCharsets = array(
 		'BIG-5',        //Taiwan and Hong Kong
@@ -79,6 +75,7 @@ class Localization {
 	var $default_export_charset = 'UTF-8';
 	var $default_email_charset = 'UTF-8';
 	var $currencies = array(); // array loaded with current currencies
+    var $invalidNameFormatUpgradeFilename = 'upgradeInvalidLocaleNameFormat.php';
 
 
 	/**
@@ -103,6 +100,8 @@ class Localization {
 			'default_currency_symbol'				=> '$',
 			'default_export_charset'				=> $this->default_export_charset,
 			'default_locale_name_format'			=> 's f l',
+            'name_formats'                          => array('s f l' => 's f l', 'f l' => 'f l', 's l' => 's l', 'l, s f' => 'l, s f',
+                                                            'l, f' => 'l, f', 's l, f' => 's l, f', 'l s f' => 'l s f', 'l f s' => 'l f s'),
 			'default_number_grouping_seperator'		=> ',',
 			'default_decimal_seperator'				=> '.',
 			'export_delimiter'						=> ',',
@@ -196,7 +195,7 @@ class Localization {
             $this->currencies = $load;
         }
 
-		
+
 	}
 
 	/**
@@ -309,9 +308,18 @@ class Localization {
 	 * @param bean object A SugarBean
 	 * @return bean object The bean with translated strings
 	 */
-    function prepBeanForExport($bean) {
-        foreach($bean->field_defs as $k => $field) {
-			$bean->$k = $this->translateCharset($bean->$k, 'UTF-8', $this->getExportCharset());
+    function prepBeanForExport($bean)
+    {
+        foreach($bean->field_defs as $k => $field)
+        {
+            if (is_string($bean->$k))
+            {
+			   // $bean->$k = $this->translateCharset($bean->$k, 'UTF-8', $this->getExportCharset());
+            }
+            else
+            {
+                $bean->$k = '';
+            }
         }
 
         return $bean;
@@ -687,7 +695,7 @@ eoq;
                     name += stuff[format.substr(i,1)];
 				} else {
                     name += format.substr(i,1);
-				}
+		}
 			}
 
 			//alert(name);
@@ -698,6 +706,76 @@ eoq;
 
 		return $ret;
 	}
+
+    /**
+     * Checks to see that the characters in $name_format are allowed:  s, f, l, space/tab or punctuation
+     * @param $name_format
+     * @return bool
+     */
+    public function isAllowedNameFormat($name_format) {
+        // will result in a match as soon as a disallowed char is hit in $name_format
+        $match = preg_match('/[^sfl[:punct:][:^alnum:]\s]/', $name_format);
+        if ($match !== false && $match === 0) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks to see if there was an invalid Name Format encountered during the upgrade
+     * @return bool true if there was an invalid name, false if all went well.
+     */
+    public function invalidLocaleNameFormatUpgrade() {
+        return file_exists($this->invalidNameFormatUpgradeFilename);
+    }
+
+    /**
+     * Creates the file that is created when there is an invalid name format during an upgrade
+     */
+    public function createInvalidLocaleNameFormatUpgradeNotice() {
+        $fh = fopen($this->invalidNameFormatUpgradeFilename,'w');
+        fclose($fh);
+    }
+
+    /**
+     * Removes the file that is created when there is an invalid name format during an upgrade
+     */
+    public function removeInvalidLocaleNameFormatUpgradeNotice() {
+        if ($this->invalidLocaleNameFormatUpgrade()) {
+            unlink($this->invalidNameFormatUpgradeFilename);
+        }
+    }
+
+
+    /**
+     * Creates dropdown items that have localized example names while filtering out invalid formats
+     *
+     * @param array un-prettied dropdown list
+     * @return array array of dropdown options
+     */
+    public function getUsableLocaleNameOptions($options) {
+        global $app_strings;
+
+        $examples = array('s' => $app_strings['LBL_LOCALE_NAME_EXAMPLE_SALUTATION'],
+                        'f' => $app_strings['LBL_LOCALE_NAME_EXAMPLE_FIRST'],
+                        'l' => $app_strings['LBL_LOCALE_NAME_EXAMPLE_LAST']);
+        $newOpts = array();
+        foreach ($options as $key => $val) {
+            if ($this->isAllowedNameFormat($key) && $this->isAllowedNameFormat($val)) {
+                $newVal = '';
+                $pieces = str_split($val);
+                foreach ($pieces as $piece) {
+                    if (isset($examples[$piece])) {
+                        $newVal .= $examples[$piece];
+                    } else {
+                        $newVal .= $piece;
+                    }
+                }
+                $newOpts[$key] = $newVal;
+            }
+        }
+        return $newOpts;
+    }
 	////	END NAME DISPLAY FORMATTING CODE
 	///////////////////////////////////////////////////////////////////////////
 

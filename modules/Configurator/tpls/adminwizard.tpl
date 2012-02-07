@@ -36,7 +36,7 @@
 
 *}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html {$langHeader}>
 <head>
 <link rel="SHORTCUT ICON" href="{$FAVICON_URL}">
 <meta http-equiv="Content-Type" content="text/html; charset={$APP.LBL_CHARSET}">
@@ -63,9 +63,9 @@ function disableReturnSubmission(e) {
 <input type='hidden' name='action' value='SaveAdminWizard'/>
 <input type='hidden' name='module' value='Configurator'/>
 <span class='error'>{$error.main}</span>
-<script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_yui_widgets.js'}"></script>
+<script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_yui_widgets.js'}"></script>
 <script type="text/javascript" src="{sugar_getjspath file='modules/Emails/javascript/vars.js'}"></script>
-<script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_emails.js'}"></script>
+<script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_emails.js'}"></script>
 <script type="text/javascript" src="{sugar_getjspath file='modules/Users/User.js'}"></script>
 
 <div class="dashletPanelMenu wizard">
@@ -84,7 +84,7 @@ function disableReturnSubmission(e) {
             <tr>
                 <td scope="row">
               <p>{$MOD.LBL_WIZARD_WELCOME}</p>
-                <div class="userWizWelcome"><img src='include/images/sugar_wizard_welcome.jpg' border='0' width='765px' height='325px'></div>
+				<div class="userWizWelcome"><img src='include/images/sugar_wizard_welcome.jpg' alt='{$MOD.LBL_WELCOME}' border='0' width='765px' height='325px'></div>
                 </td>
             </tr>
             </table>
@@ -131,7 +131,7 @@ function disableReturnSubmission(e) {
             <tr>
                 <td scope="row" width='12%' nowrap>{$MOD.CURRENT_LOGO}&nbsp;{sugar_help text=$MOD.CURRENT_LOGO_HELP}</td>
                 <td width='35%' >
-                    <img id="company_logo_image" src='{$company_logo}' height="40" width="212" />
+                    <img id="company_logo_image" alt='{$MOD.LBL_LOGO}' src='{$company_logo}' height="40" width="212" />
                 </td>
             </tr>
             </table>
@@ -212,8 +212,9 @@ function disableReturnSubmission(e) {
                     <td colspan="4"><hr /></td>
                 </tr>
                 <tr>
+                    <td nowrap="nowrap" scope="row" valign="top">{sugar_translate module='Administration' label='LBL_LOCALE_DEFAULT_NAME_FORMAT'}: </td>
                     <td>
-                        <input id="default_locale_name_format" type="hidden" name="default_locale_name_format" value="{$config.default_locale_name_format}">
+                        {html_options id="default_locale_name_format" name="default_locale_name_format" selected=$config.default_locale_name_format options=$NAMEFORMATS}
                     </td>
                 </tr>
             </table>
@@ -372,7 +373,7 @@ addToValidate('ConfigureSettings', 'system_name', 'varchar', true,'System Name' 
 <div id='upload_panel' style="display:none">
     <form id="upload_form" name="upload_form" method="POST" action='index.php' enctype="multipart/form-data">
         <input type="file" id="my_file_company" name="file_1" size="20" onchange="uploadCheck(false)"/>
-        <img id="loading_img_company" alt="loading..." src="{sugar_getimagepath file='sqsWait.gif'}" style="display:none">
+        {sugar_getimage name="sqsWait" ext=".gif" alt=$mod_strings.LBL_LOADING other_attributes='id="loading_img_company" style="display:none" '}
     </form>
 </div>
 

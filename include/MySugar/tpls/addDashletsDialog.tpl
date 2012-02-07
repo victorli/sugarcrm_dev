@@ -38,7 +38,7 @@
 <div align="right" id="dashletSearch">
 	<table>
 		<tr>
-			<td>{sugar_translate label='LBL_DASHLET_SEARCH' module='Home'}: <input id="search_string" type="text" length="15" onKeyPress="javascript:if(event.keyCode==13)SUGAR.mySugar.searchDashlets(this.value,document.getElementById('search_category').value);" />
+			<td>{sugar_translate label='LBL_DASHLET_SEARCH' module='Home'}: <input id="search_string" type="text" length="15" onKeyPress="javascript:if(event.keyCode==13)SUGAR.mySugar.searchDashlets(this.value,document.getElementById('search_category').value);"  title="{sugar_translate label='LBL_DASHLET_SEARCH' module='Home'}"/>
 			<input type="button" class="button" value="{sugar_translate label='LBL_SEARCH' module='Home'}" onClick="javascript:SUGAR.mySugar.searchDashlets(document.getElementById('search_string').value,document.getElementById('search_category').value);" />
 			<input type="button" class="button" value="{sugar_translate label='LBL_CLEAR' module='Home'}" onClick="javascript:SUGAR.mySugar.clearSearch();" />			
 			{if $moduleName == 'Home'}
@@ -64,14 +64,14 @@
 {if $moduleName == 'Home'}
 <div id="moduleDashlets" style="height:400px;display:;">
 	<h3>{sugar_translate label='LBL_MODULES' module='Home'}</h3>
-	<div id="moduleDashletsList">
+	<div id="moduleDashletsList" style="height:394px;overflow:auto;display:;">
 	<table width="95%">
 		{counter assign=rowCounter start=0 print=false}
 		{foreach from=$modules item=module}
 		{if $rowCounter % 2 == 0}
 		<tr>
 		{/if}
-			<td width="50%" align="left"><a id="{$module.id}_icon" href="javascript:void(0)" onclick="{$module.onclick}">{$module.icon}</a>&nbsp;<a class="mbLBLL" href="#" onclick="{$module.onclick}" id="{$module.id}">{$module.title}</a><br /></td>
+			<td width="50%" align="left"><a id="{$module.id}_icon" href="javascript:void(0)" onclick="{$module.onclick}" style="text-decoration:none">{$module.icon}&nbsp;<span id="mbLBLL" class="mbLBLL">{$module.title}</span></a><br /></td>
 		{if $rowCounter % 2 == 1}
 		</tr>
 		{/if}
@@ -83,7 +83,7 @@
 {/if}
 <div id="chartDashlets" style="{if $moduleName == 'Home'}height:400px;display:none;{else}height:425px;display:;{/if}">
 	{if $charts != false}
-	<h3><span id="basicChartDashletsExpCol"><a href="javascript:void(0)" onClick="javascript:SUGAR.mySugar.collapseList('basicChartDashlets');"><img border="0" src="{sugar_getimagepath file='basic_search.gif'}" align="absmiddle" /></span></a>&nbsp;{sugar_translate label='LBL_BASIC_CHARTS' module='Home'}</h3>
+	<h3><span id="basicChartDashletsExpCol"><a href="javascript:void(0)" onClick="javascript:SUGAR.mySugar.collapseList('basicChartDashlets');">{sugar_getimage alt=$app_strings.LBL_BASIC_SEARCH name="basic_search" ext=".gif" other_attributes='align="absmiddle" border="0" '}</span></a>&nbsp;{sugar_translate label='LBL_BASIC_CHARTS' module='Home'}</h3>
 	<div id="basicChartDashletsList">
 	<table width="100%">
 		{foreach from=$charts item=chart}
@@ -124,7 +124,7 @@
 	<table width="95%">
 	    <tr>
 	        <td scope="row"></td>
-	        <td><input type="text" id="web_address" value="http://" style="width: 400px" /></td>
+	        <td><input type="text" id="web_address" value="http://" style="width: 400px"   title="{sugar_translate label='LBL_WEBSITE_TITLE' module='Home'}"/></td>
         </tr>
         <tr>
             <td colspan="2">
@@ -137,7 +137,7 @@
 	<table width="95%">
         <tr>
 	        <td scope="row"></td>
-	        <td><input type="text" id="rss_address" value="http://" style="width: 400px" /></td>
+	        <td><input type="text" id="rss_address" value="http://" style="width: 400px"  title="{sugar_translate label='LBL_RSS_TITLE' module='Home'}" /></td>
         </tr>
         <tr>
             <td colspan="2">

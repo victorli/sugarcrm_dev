@@ -34,7 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 require_once('include/externalAPI/Google/ExtAPIGoogle.php');
 
 
@@ -50,7 +50,7 @@ class Bug43652Test extends Sugar_PHPUnit_Framework_TestCase
     {
         //Just need base class but its abstract so we use the google implementation for this test.
         $this->extAPI = new ExtAPIGoogle();
-        $this->fileData1 = $GLOBALS['sugar_config']['upload_dir'] . DIRECTORY_SEPARATOR . 'unittest';
+        $this->fileData1 = sugar_cached('unittest');
         file_put_contents($this->fileData1, "Unit test for mime type");
     }
 

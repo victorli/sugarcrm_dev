@@ -170,15 +170,16 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
 				}
 				
 				$redirect_url = $redirect_url.$query_string;
-				
+
+
 				// Check if the headers have been sent, or if the redirect url is greater than 2083 characters (IE max URL length)
 				//   and use a javascript form submission if that is the case.
 			    if(headers_sent() || strlen($redirect_url) > 2083){
-    				echo '<html><head><title>SugarCRM</title></head><body>';
+    				echo '<html ' . get_language_header() . '><head><title>SugarCRM</title></head><body>';
     				echo '<form name="redirect" action="' .$_POST['redirect_url']. '" method="GET">';
     
     				foreach($_POST as $param => $value) {
-    					if($param != 'redirect_url' || $param != 'submit') {
+    					if($param != 'redirect_url' ||$param != 'submit') {
     						echo '<input type="hidden" name="'.$param.'" value="'.$value.'">';
     					}
     				}
@@ -207,7 +208,7 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
 
 if (!empty($_POST['redirect'])) {
     if(headers_sent()){
-    	echo '<html><head><title>SugarCRM</title></head><body>';
+    	echo '<html ' . get_language_header() . '><head><title>SugarCRM</title></head><body>';
     	echo '<form name="redirect" action="' .$_POST['redirect']. '" method="GET">';
     	echo '</form><script language="javascript" type="text/javascript">document.redirect.submit();</script>';
     	echo '</body></html>';

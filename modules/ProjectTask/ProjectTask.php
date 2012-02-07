@@ -247,6 +247,7 @@ class ProjectTask extends SugarBean {
 		//$date_due = $timedate->to_db_date($task_fields['DATE_DUE'],false);
         if (isset($this->parent_type))
 			$task_fields['PARENT_MODULE'] = $this->parent_type;
+
 		/*
         if ($this->status != "Completed" && $this->status != "Deferred" ) {
 			$task_fields['SET_COMPLETE'] = "<a href='index.php?return_module=$currentModule&return_action=$action&return_id=" . ((!empty($focus->id)) ? $focus->id : "") . "&module=ProjectTask&action=EditView&record={$this->id}&status=Completed'>".SugarThemeRegistry::current()->getImage("close_inline","alt='Close' border='0'")."</a>";
@@ -323,6 +324,7 @@ class ProjectTask extends SugarBean {
         if($custom_join){
 			$query .=  $custom_join['select'];
 		}
+
         $query .= " FROM project_task LEFT JOIN project ON project_task.project_id=project.id AND project.deleted=0 ";
 
 		if($custom_join){
@@ -354,37 +356,161 @@ class ProjectTask extends SugarBean {
     }
 
 
-
-	public function updateParentProjectTaskPercentage()
+    /**
+    * This method recalculates the percent complete of a parent task
+    */
+    public function updateParentProjectTaskPercentage()
 	{
+
 		if (empty($this->parent_task_id))
 		{
 			return;
 		}
-		$projectId = $this->project_id;
-		if (!empty($projectId))
+
+		if (!empty($this->project_id))
 		{
-			$project = new Project();
-			$project->retrieve($projectId);
-			$projectTasks = $project->getAllProjectTasks();
-			$dependentTaskId = $this->parent_task_id;
-			$collectPercentage = 0;
-			$parentProjectTask = false;
-			foreach ($projectTasks as $key => $value)
-			{
-				if ($value->project_task_id == $dependentTaskId)
-				{
-					$parentProjectTask = $value;
-					continue;
-				}
-				$collectPercentage += $value->percent_complete;
-			}
-			if ($parentProjectTask)
-			{
-				$parentProjectTask->percent_complete = round($collectPercentage / (count($projectTasks) - 1));
-				$parentProjectTask->save(isset($GLOBALS['check_notify']) ? $GLOBALS['check_notify'] : '');
-			}
+            //determine parent task
+            $parentProjectTask = $this->getProjectTaskParent();
+
+            //get task children
+            if ($parentProjectTask)
+            {
+                $subProjectTasks = $parentProjectTask->getAllSubProjectTasks();
+
+                $totalHours = 0;
+                $cumulativeDone = 0;
+
+                //update cumulative calculation - mimics gantt calculation
+                foreach ($subProjectTasks as $key => $value)
+                {
+                    if ($value->duration == "")
+                    {
+                        $value->duration = 0;
+                    }
+
+                    if ($value->percent_complete == "")
+                    {
+                        $value->percent_complete = 0;
+                    }
+
+                    if ($value->duration_unit == "Hours")
+                    {
+                        $totalHours += $value->duration;
+                        $cumulativeDone += $value->duration * ($value->percent_complete / 100);
+                    }
+                    else
+                    {
+                        $totalHours += ($value->duration * 8);
+                        $cumulativeDone += ($value->duration * 8) * ($value->percent_complete / 100);
+                    }
+                }
+
+                $cumulativePercentage = 0;
+				if ($totalHours != 0)
+                {
+					$cumulativePercentage = ($cumulativeDone/$totalHours) * 100;
+                }
+
+                $parentProjectTask->percent_complete = round($cumulativePercentage);
+                $parentProjectTask->save(isset($GLOBALS['check_notify']) ? $GLOBALS['check_notify'] : '');
+            }
 		}
+	}
+
+    /**
+    * Retrieves the parent project task of a project task
+    * returns project task bean
+    */
+    function getProjectTaskParent()
+    {
+
+        $projectTaskParent=false;
+
+        if (!empty($this->parent_task_id) && !empty($this->project_id))
+        {
+            $query = "SELECT id FROM project_task WHERE project_id = '{$this->project_id}' AND project_task_id = '{$this->parent_task_id}' AND deleted = 0 ORDER BY date_modified DESC";
+            $project_task_id = $this->db->getOne($query, true, "Error retrieving parent project task");
+
+            if (!empty($project_task_id))
+            {
+                $projectTaskParent = BeanFactory::getBean('ProjectTask', $project_task_id);
+            }
+        }
+
+        return $projectTaskParent;
+    }
+
+    /**
+    * Retrieves all the child project tasks of a project task
+    * returns project task bean array
+    */
+    function getAllSubProjectTasks()
+    {
+		$projectTasksBeans = array();
+
+        if (!empty($this->project_task_id) && !empty($this->project_id))
+		{
+            //select all tasks from a project
+            $query = "SELECT id, project_task_id, parent_task_id FROM project_task WHERE project_id = '{$this->project_id}' AND deleted = 0 ORDER BY project_task_id";
+
+            $result = $this->db->query($query, true, "Error retrieving child project tasks");
+
+            $projectTasks=array();
+            while($row = $this->db->fetchByAssoc($result))
+            {
+                $projectTasks[$row['id']]['project_task_id'] = $row['project_task_id'];
+                $projectTasks[$row['id']]['parent_task_id'] = $row['parent_task_id'];
+            }
+
+            $potentialParentTaskIds[$this->project_task_id] = $this->project_task_id;
+            $actualParentTaskIds=array();
+            $subProjectTasks=array();
+
+            $startProjectTasksCount=0;
+            $endProjectTasksCount=0;
+
+            //get all child tasks
+            $run = true;
+            while ($run)
+            {
+                $count=0;
+
+                foreach ($projectTasks as $id=>$values)
+                {
+                    if (in_array($values['parent_task_id'], $potentialParentTaskIds))
+                    {
+                        $potentialParentTaskIds[$values['project_task_id']] = $values['project_task_id'];
+                        $actualParentTaskIds[$values['parent_task_id']] = $values['parent_task_id'];
+
+                        $subProjectTasks[$id]=$values;
+                        $count=$count+1;
+                    }
+                }
+
+                $endProjectTasksCount = count($subProjectTasks);
+
+                if ($startProjectTasksCount == $endProjectTasksCount)
+                {
+                    $run = false;
+                }
+                else
+                {
+                    $startProjectTasksCount = $endProjectTasksCount;
+                }
+            }
+
+            foreach($subProjectTasks as $id=>$values)
+            {
+                //ignore tasks that are parents
+                if(!in_array($values['project_task_id'], $actualParentTaskIds))
+                {
+                    $projectTaskBean = BeanFactory::getBean('ProjectTask', $id);
+                    array_push($projectTasksBeans, $projectTaskBean);
+                }
+            }
+		}
+
+		return $projectTasksBeans;
 	}
 }
 

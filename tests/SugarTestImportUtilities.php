@@ -34,7 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 require_once 'modules/Import/ImportCacheFiles.php';
 
 class SugarTestImportUtilities
@@ -48,9 +48,9 @@ class SugarTestImportUtilities
         self::removeAllCreatedFiles();
     }
 
-    public static function createFile($lines = 2000,$columns = 3, $dir = 'upload_dir')
+    public static function createFile($lines = 2000,$columns = 3)
     {
-        $filename = $GLOBALS['sugar_config'][$dir].'test'. uniqid();
+		$filename = ImportCacheFiles::getImportDir().'/test'. uniqid();
         $fp = fopen($filename,"w");
         for ($i = 0; $i < $lines; $i++) {
             $line = array();
@@ -59,18 +59,18 @@ class SugarTestImportUtilities
             fputcsv($fp,$line);
         }
         fclose($fp);
-        
+
         self::$_createdFiles[] = $filename;
-        
+
         return $filename;
     }
-	
+
     public static function createFileWithEOL(
         $lines = 2000,
         $columns = 3
-        ) 
+        )
     {
-        $filename = $GLOBALS['sugar_config']['upload_dir'].'test'.date("YmdHis");
+        $filename = ImportCacheFiles::getImportDir().'/test'.date("YmdHis");
         $fp = fopen($filename,"w");
         for ($i = 0; $i < $lines; $i++) {
             $line = array();
@@ -81,34 +81,34 @@ class SugarTestImportUtilities
             fputcsv($fp,$line);
         }
         fclose($fp);
-        
+
         self::$_createdFiles[] = $filename;
-        
+
         return $filename;
     }
-	
-    public static function createFileWithWhiteSpace() 
+
+    public static function createFileWithWhiteSpace()
     {
-        $filename = $GLOBALS['sugar_config']['upload_dir'].'testWhiteSpace'.date("YmdHis");
+        $filename = ImportCacheFiles::getImportDir().'testWhiteSpace'.date("YmdHis");
         $contents = <<<EOTEXT
 account2,foo bar
 EOTEXT;
         file_put_contents($filename, $contents);
-        
+
         self::$_createdFiles[] = $filename;
-        
+
         return $filename;
     }
-    
+
     public static function removeAllCreatedFiles()
     {
         foreach ( self::$_createdFiles as $file ) {
             @unlink($file);
             $i = 0;
             while(true) {
-                if ( is_file($file.'-'.$i) ) 
+                if ( is_file($file.'-'.$i) )
                     unlink($file.'-'.$i++);
-                else 
+                else
                     break;
             }
         }

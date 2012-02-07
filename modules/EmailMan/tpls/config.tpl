@@ -41,8 +41,8 @@
 
 <!-- BEGIN: main -->
 <script type="text/javascript" src="{sugar_getjspath file='modules/Users/User.js'}"></script>
-<script type='text/javascript' src="{sugar_getjspath file='include/javascript/sugar_grp_overlib.js'}"></script>
-<script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_yui_widgets.js'}"></script>
+<script type='text/javascript' src="{sugar_getjspath file='cache/include/javascript/sugar_grp_overlib.js'}"></script>
+<script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_yui_widgets.js'}"></script>
 {literal}
 <script type="text/javascript" >
 <!--

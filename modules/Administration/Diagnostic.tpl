@@ -54,9 +54,6 @@
 <div id="table" style="visibility:visible">
 <table id="maintable" width="430" border="0" cellspacing="0" cellpadding="0" class="edit view">
 <tr>
-    {if $NO_MYSQL_MESSAGE}
-    <td>{$NO_MYSQL_MESSAGE}</td>
-    {/if}
 	<td scope="row"><slot>{$MOD.LBL_DIAGNOSTIC_CONFIGPHP}</slot></td>
 	<td ><slot><input name='configphp' class="checkbox" type="checkbox" tabindex='1' checked></slot></td>
 	</tr><tr>
@@ -67,15 +64,15 @@
 	<td scope="row"><slot>{$MOD.LBL_DIAGNOSTIC_PHPINFO}</slot></td>
 	<td ><slot><input name='phpinfo' class="checkbox" type="checkbox" tabindex='3' checked></slot></td>
 	</tr><tr>
-	<td scope="row"><slot>{$MOD.LBL_DIAGNOSTIC_MYSQLDUMPS}</slot></td>
-	<td ><slot><input name='mysql_dumps' class="checkbox" type="checkbox" tabindex='4' {$MYSQL_CAPABLE}></slot></td>
+	<td scope="row"><slot>{$DB_NAME} - {$MOD.LBL_DIAGNOSTIC_MYSQLDUMPS}</slot></td>
+	<td ><slot><input name='mysql_dumps' class="checkbox" type="checkbox" tabindex='4' checked></slot></td>
 	</tr><tr>
-	<td scope="row"><slot>{$MOD.LBL_DIAGNOSTIC_MYSQLSCHEMA}</slot></td>
+	<td scope="row"><slot>{$DB_NAME} - {$MOD.LBL_DIAGNOSTIC_MYSQLSCHEMA}</slot></td>
 
-	<td ><slot><input name='mysql_schema' class="checkbox" type="checkbox" tabindex='5' {$MYSQL_CAPABLE}></slot></td>
+	<td ><slot><input name='mysql_schema' class="checkbox" type="checkbox" tabindex='5' checked></slot></td>
 	</tr><tr>
-	<td scope="row"><slot>{$MOD.LBL_DIAGNOSTIC_MYSQLINFO}</slot></td>
-	<td ><slot><input name='mysql_info' class="checkbox" type="checkbox" tabindex='6' {$MYSQL_CAPABLE}></slot></td>
+	<td scope="row"><slot>{$DB_NAME} - {$MOD.LBL_DIAGNOSTIC_MYSQLINFO}</slot></td>
+	<td ><slot><input name='mysql_info' class="checkbox" type="checkbox" tabindex='6' checked></slot></td>
 	</tr><tr>
 	<td scope="row"><slot>{$MOD.LBL_DIAGNOSTIC_MD5}</slot></td>
 	<td ><slot><input name='md5' class="checkbox" type="checkbox" tabindex='7' onclick="md5checkboxes()" checked></slot></td>
@@ -101,7 +98,6 @@
 </div>
 </form>
 
-{$MYSQL_CAPABLE_CHECKBOXES}
 {literal}
 <script type="text/javascript" language="Javascript">
   var md5filesmd5_checked;

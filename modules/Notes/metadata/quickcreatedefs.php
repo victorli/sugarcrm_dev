@@ -34,49 +34,49 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-$viewdefs ['Notes'] = 
+$viewdefs ['Notes'] =
 array (
-  'QuickCreate' => 
+  'QuickCreate' =>
   array (
-    'templateMeta' => 
+    'templateMeta' =>
     array (
-      'form' => 
+      'form' =>
       array (
         'enctype' => 'multipart/form-data',
         'headerTpl' => 'modules/Notes/tpls/EditViewHeader.tpl',
       ),
       'maxColumns' => '2',
-      'widths' => 
+      'widths' =>
       array (
-         
+
         array (
           'label' => '10',
           'field' => '30',
         ),
-         
+
         array (
           'label' => '10',
           'field' => '30',
         ),
       ),
-      'javascript' => '<script type="text/javascript" src="include/javascript/dashlets.js?s={$SUGAR_VERSION}&c={$JS_CUSTOM_VERSION}"></script>
+      'javascript' => '{sugar_getscript file="include/javascript/dashlets.js"}
 <script>toggle_portal_flag(); function toggle_portal_flag()  {literal} { {/literal} {$TOGGLE_JS} {literal} } {/literal} </script>',
     ),
-    'panels' => 
+    'panels' =>
     array (
-      'default' => 
+      'default' =>
       array (
-         
+
         array (
            'contact_name',
            'parent_name',
         ),
         array (
-           
+
           array (
             'name' => 'name',
             'label' => 'LBL_SUBJECT',
-            'displayParams' => 
+            'displayParams' =>
             array (
               'size' => 50,
               'required' => true,
@@ -86,17 +86,17 @@ array (
           	'name' => 'assigned_user_name','label' => 'LBL_ASSIGNED_TO',
           ),
         ),
-         
+
         array (
            'filename',
         ),
-         
+
         array (
-           
+
           array (
             'name' => 'description',
             'label' => 'LBL_NOTE_STATUS',
-            'displayParams' => 
+            'displayParams' =>
             array (
               'rows' => 6,
               'cols' => 75,

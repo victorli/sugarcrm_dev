@@ -38,7 +38,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 /**
  * source is the parent class of any source object.
- *
+ * @api
  */
 abstract class source{
 	/**
@@ -454,7 +454,7 @@ abstract class source{
          // We have to add this destructor back in
          // because there are customers who upgrade from 61x to 623
          // who have the Jigsaw connector enabled, and the jigsaw connector
-         // makes a call to this destructor. 
+         // makes a call to this destructor.
 
      }
 }

@@ -88,12 +88,12 @@ init: function() {
 	new YAHOO.util.DDTarget("{$source_id}:enabled_ul");
 	new YAHOO.util.DDTarget("{$source_id}:disabled_ul");
 
-	{foreach from=$enabled_modules item=module key=moduleKey}
-	     new YAHOO.example.DDList("{$source_id}:{$moduleKey}");
+	{foreach from=$enabled_modules item=module}
+	     new YAHOO.example.DDList("{$source_id}:{$module}");
 	{/foreach}
 
-	{foreach from=$disabled_modules item=module key=moduleKey}
-	     new YAHOO.example.DDList("{$source_id}:{$moduleKey}");
+	{foreach from=$disabled_modules item=module}
+	     new YAHOO.example.DDList("{$source_id}:{$module}");
 	{/foreach}
 {literal}
 }

@@ -38,6 +38,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 require_once('include/JSON.php');
 require_once('include/entryPoint.php');
+require_once 'include/upload_file.php';
 
 global $sugar_config;
 $supportedExtensions = array('jpg', 'png', 'jpeg');
@@ -49,32 +50,27 @@ if($json->decode(html_entity_decode($_REQUEST['forQuotes']))){
 }else{
     $returnArray['forQuotes']="company";
 }
+$upload_ok = false;
 if(isset($_FILES['file_1'])){
-    $uploadTmpDir=$sugar_config['tmp_dir'].'tmp_logo_'.$returnArray['forQuotes'].'_upload';
-    $file_name = $uploadTmpDir . DIRECTORY_SEPARATOR .  cleanFileName(basename($_FILES['file_1']['name']));
-    if(file_exists($uploadTmpDir))
-       rmdir_recursive($uploadTmpDir);
-
-    mkdir_recursive( $uploadTmpDir,null,true );
-    if (!empty($_FILES['file_1']['error'])){
-        rmdir_recursive($uploadTmpDir);
-        $returnArray['data']='not_recognize';
-        echo $json->encode($returnArray);
-        sugar_cleanup();
-        exit();
+    $upload = new UploadFile('file_1');
+    if($upload->confirm_upload()) {
+        $dir = "upload://tmp_logo_{$returnArray['forQuotes']}_upload";
+        UploadStream::ensureDir($dir);
+        $file_name = $dir."/".$upload->get_stored_file_name();
+        if($upload->final_move($file_name)) {
+            $upload_ok = true;
+        }
     }
-    if (!move_uploaded_file($_FILES['file_1']['tmp_name'], $file_name)){
-        rmdir_recursive($uploadTmpDir);
-        die("Possible file upload attack!\n");
-    }
-}else{
+}
+if(!$upload_ok) {
     $returnArray['data']='not_recognize';
     echo $json->encode($returnArray);
     sugar_cleanup();
     exit();
 }
-if(file_exists($file_name) && is_file($file_name)){
-    $returnArray['path']=$file_name;
+if(file_exists($file_name) && is_file($file_name)) {
+    $returnArray['path']=substr($file_name, 9); // strip upload prefix
+    $returnArray['url']= 'cache/images/'.$upload->get_stored_file_name();
     if(!verify_uploaded_image($file_name, $returnArray['forQuotes'] == 'quotes')) {
         $returnArray['data']='other';
         $returnArray['path'] = '';
@@ -88,6 +84,7 @@ if(file_exists($file_name) && is_file($file_name)){
         }
         if (($test>20 || $test<3)&& $returnArray['forQuotes'] == 'quotes')
             $returnArray['data']='size';
+        copy($file_name, sugar_cached('images/'.$upload->get_stored_file_name()));
     }
     if(!empty($returnArray['data'])){
         echo $json->encode($returnArray);
@@ -100,8 +97,5 @@ if(file_exists($file_name) && is_file($file_name)){
     $returnArray['data']='file_error';
     echo $json->encode($returnArray);
 }
-if($rmdir)
-    rmdir_recursive($uploadTmpDir);
 sugar_cleanup();
 exit();
-?>

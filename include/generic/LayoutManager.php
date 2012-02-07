@@ -40,8 +40,11 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 require_once('include/generic/SugarWidgets/SugarWidgetSubPanelTopButton.php');
 require_once('include/generic/SugarWidgets/SugarWidgetReportField.php');
-require_once('include/database/DBHelper.php');
 
+/**
+ * Form layout manager
+ * @api
+ */
 class LayoutManager
 {
 	var $defs = array();
@@ -53,7 +56,7 @@ class LayoutManager
 	{
 		// set a sane default for context
 		$this->defs['context'] = 'Detail';
-		$this->DBHelper = $GLOBALS['db']->getHelper();
+		$this->DBHelper = $GLOBALS['db'];
 	}
 
 	function setAttribute($key,$value)

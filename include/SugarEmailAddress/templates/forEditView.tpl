@@ -36,9 +36,9 @@
 
 *}
 {php}
-global $emailInstances; 
+global $emailInstances;
 if (empty($emailInstances))
-	$emailInstances = array(); 
+	$emailInstances = array();
 if (!isset($emailInstances[$this->_tpl_vars['module']]))
 	$emailInstances[$this->_tpl_vars['module']] = 0;
 $this->_tpl_vars['index'] = $emailInstances[$this->_tpl_vars['module']];
@@ -60,11 +60,8 @@ var emailAddressWidgetLoaded = false;
 					<td scope="row" NOWRAP>
 					    <input type=hidden id="{$module}_email_widget_id" name="{$module}_email_widget_id" value="">
 						<input type=hidden id='emailAddressWidget' name='emailAddressWidget' value='1'>
-						<span class="id-ff multiple ownline">
-						<button class='button' type='button' id="{$module}{$index}_email_widget_add"
-onClick="javascript:SUGAR.EmailAddressWidget.instances.{$module}{$index}.addEmailAddress('{$module}emailAddressesTable{$index}','','');" 
-value='{$app_strings.LBL_ADD_BUTTON}'><img src="{sugar_getimagepath file="id-ff-add.png"}"></button>
-						</span>
+                        {capture assign="other_attributes"}id="{$module}{$index}_email_widget_add" onclick="javascript:SUGAR.EmailAddressWidget.instances.{$module}{$index}.addEmailAddress('{$module}emailAddressesTable{$index}','','');"{/capture}
+                        <button type="button" {$other_attributes}>{sugar_getimage name="id-ff-add" alt="$app_strings.LBL_ID_FF_ADD" ext=".png"}</button>
 					</td>
 					<td scope="row" NOWRAP>
 					    &nbsp;

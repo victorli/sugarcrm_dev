@@ -123,7 +123,7 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
      * if the list should filter for favorites.  Should eventually update the SugarBean function as well.
      *
      */
-    function get_data_list($seed, $order_by = "", $where = "", $row_offset = 0, $limit=-1, $max=-1, $show_deleted = 0, $favorites = false, $singleSelect=false)
+    function get_data_list($seed, $order_by = "", $where = "", $row_offset = 0, $limit=-1, $max=-1, $show_deleted = 0, $favorites = false)
 	{
 		$GLOBALS['log']->debug("get_list:  order_by = '$order_by' and where = '$where' and limit = '$limit'");
 		if(isset($_SESSION['show_deleted']))
@@ -132,23 +132,12 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
 		}
 		$order_by=$seed->process_order_by($order_by, null);
 
-		if($seed->bean_implements('ACL') && ACLController::requireOwner($seed->module_dir, 'list') )
-		{
-			global $current_user;
-			$owner_where = $seed->getOwnerWhere($current_user->id);
-			if(!empty($owner_where)){
-				if(empty($where)){
-					$where = $owner_where;
-				}else{
-					$where .= ' AND '.  $owner_where;
-				}
-			}
-		}
 		$params = array();
-		if($favorites === TRUE )
+		if(!empty($favorites)) {
 		  $params['favorites'] = true;
+		}
 
-		$query = $seed->create_new_list_query($order_by, $where,array(),$params, $show_deleted,'',false,null,$singleSelect);
+		$query = $seed->create_new_list_query($order_by, $where,array(),$params, $show_deleted);
 		return $seed->process_list_query($query, $row_offset, $limit, $max, $where);
 	}
 
@@ -298,7 +287,7 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
 
     function get_field_list($value,$fields,  $translate=true) {
 
-	    $GLOBALS['log']->info('Begin: SoapHelperWebServices->get_field_list');
+	    $GLOBALS['log']->info('Begin: SoapHelperWebServices->get_field_list(too large a struct, '.print_r($fields, true).", $translate");
 		$module_fields = array();
 		$link_fields = array();
 		if(!empty($value->field_defs)){
@@ -629,4 +618,56 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
 		$_SESSION['authenticated_user_id'] = $current_user->id;
         return session_id();
     }
+
+
+    /**
+     * get_subpanel_defs
+     *
+     * @param String $module The name of the module to get the subpanel definition for
+     * @param String $type The type of subpanel definition ('wireless' or 'default')
+     * @return array Array of the subpanel definition; empty array if no matching definition found
+     */
+	function get_subpanel_defs($module, $type)
+	{
+	    global $beanList, $beanFiles;
+	    $results = array();
+	    switch ($type)
+	    {
+	        case 'wireless':
+
+                if (file_exists('custom/modules/'.$module.'/metadata/wireless.subpaneldefs.php'))
+	                 require_once('custom/modules/'.$module.'/metadata/wireless.subpaneldefs.php');
+	            else if (file_exists('modules/'.$module.'/metadata/wireless.subpaneldefs.php'))
+	                 require_once('modules/'.$module.'/metadata/wireless.subpaneldefs.php');
+
+                //If an Ext/WirelessLayoutdefs/wireless.subpaneldefs.ext.php file exists, then also load it as well
+                if(file_exists('custom/modules/'.$module.'/Ext/WirelessLayoutdefs/wireless.subpaneldefs.ext.php'))
+                {
+                    require_once('custom/modules/'.$module.'/Ext/WirelessLayoutdefs/wireless.subpaneldefs.ext.php');
+                }
+	            break;
+
+	        case 'default':
+	        default:
+	            if (file_exists ('modules/'.$module.'/metadata/subpaneldefs.php' ))
+	                require ('modules/'.$module.'/metadata/subpaneldefs.php');
+	            if ( file_exists('custom/modules/'.$module.'/Ext/Layoutdefs/layoutdefs.ext.php' ))
+	                require ('custom/modules/'.$module.'/Ext/Layoutdefs/layoutdefs.ext.php');
+	    }
+
+	    //Filter results for permissions
+	    foreach ($layout_defs[$module]['subpanel_setup'] as $subpanel => $subpaneldefs)
+	    {
+	        $moduleToCheck = $subpaneldefs['module'];
+	        if(!isset($beanList[$moduleToCheck]))
+	           continue;
+	        $class_name = $beanList[$moduleToCheck];
+	        $bean = new $class_name();
+	        if($bean->ACLAccess('list'))
+	            $results[$subpanel] = $subpaneldefs;
+	    }
+
+	    return $results;
+
+	}
 }

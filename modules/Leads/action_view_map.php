@@ -39,4 +39,5 @@
  $action_view_map['editconvertlayout'] = 'editConvertLayout';
  $action_view_map['saveandpublishlayout'] = 'editConvert';
  $action_view_map['savelayout'] = 'editConvert';
+ $action_view_map['showduplicates'] = 'showDuplicates';
 ?>

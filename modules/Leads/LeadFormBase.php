@@ -35,122 +35,36 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-class LeadFormBase  {
+require_once('include/SugarObjects/forms/PersonFormBase.php');
 
-function checkForDuplicates($prefix, $id){
-	require_once('include/formbase.php');
-	
-	$focus = new Lead();
-	if(!checkRequired($prefix, array_keys($focus->required_fields))){
-		return null;
-	}
-	$query = '';
-	$baseQuery = "select id,first_name, last_name,account_name, title  from leads where deleted!=1 and id!='$id' and (status!='Converted' or status is NULL) and ";
-	if(isset($_POST[$prefix.'first_name']) && !empty($_POST[$prefix.'first_name']) && isset($_POST[$prefix.'last_name']) && !empty($_POST[$prefix.'last_name'])){
-		$query = $baseQuery ." (first_name='". $_POST[$prefix.'first_name'] . "' and last_name = '". $_POST[$prefix.'last_name'] ."')";
-	}else{
-			$query = $baseQuery ."  last_name = '". $_POST[$prefix.'last_name'] ."'";
-	}
-	$rows = array();
-    global $db;
-	$result = $db->query($query);
-	while (($row = $db->fetchByAssoc($result)) != null) {
-		if(!isset($rows[$row['id']])) {
-		   $rows[]=$row;
-		}
-	}
+class LeadFormBase extends PersonFormBase {
 
-	$emailStr="";
-	if(isset($_POST[$prefix.'email1']) && !empty($_POST[$prefix.'email1'])){
-		$emailStr="'". strtoupper($_POST[$prefix.'email1']) ."'";
-	}
-	if(isset($_POST[$prefix.'email2']) && !empty($_POST[$prefix.'email2'])){
-		if (!empty($emailStr)) $emailStr.=",";
-		$emailStr="'". strtoupper($_POST[$prefix.'email2']) ."'";
-	}
+var $moduleName = 'Leads';
+var $objectName = 'Lead';
 
-	if(!empty($emailStr) > 0) {
-		$query = 'SELECT DISTINCT er.bean_id AS id FROM email_addr_bean_rel er, ' .
-		         'email_addresses ea WHERE ea.id = er.email_address_id ' .
-		         'AND ea.deleted = 0 AND er.deleted = 0 AND er.bean_module = \'Contacts\' ' .
-	             'AND email_address_caps IN (' . $emailStr . ')';
-		$result = $db->query($query);
-		while (($row= $db->fetchByAssoc($result)) != null) {
-			if(!isset($rows[$row['id']])) {
-			   $query2 = "SELECT id, first_name, last_name, title FROM contacts WHERE deleted = 0 AND id = '" . $row['id'] . "'";
-			   $result2 = $db->query($query2);
-			   $r = $db->fetchByAssoc($result2);
-			   if(isset($r['id'])) {
-			   	  $rows[]=$r;
-			   }
-			} //if
-		}
-	} //if
-	
-    return !empty($rows) ? $rows : null;
+/**
+ * getDuplicateQuery
+ *
+ * This function returns the SQL String used for initial duplicate Leads check
+ *
+ * @see checkForDuplicates (method), ContactFormBase.php, LeadFormBase.php, ProspectFormBase.php
+ * @param $prefix String value of prefix that may be present in $_POST variables
+ * @return SQL String of the query that should be used for the initial duplicate lookup check
+ */
+public function getDuplicateQuery($prefix='')
+{
+	$query = "SELECT id, first_name, last_name, account_name, title FROM leads WHERE deleted != 1 AND (status <> 'Converted' OR status IS NULL) AND ";
+
+    //Use the first and last name from the $_POST to filter.  If only last name supplied use that
+	if(isset($_POST[$prefix.'first_name']) && strlen($_POST[$prefix.'first_name']) != 0 && isset($_POST[$prefix.'last_name']) && strlen($_POST[$prefix.'last_name']) != 0) {
+		$query .= " (first_name='". $_POST[$prefix.'first_name'] . "' AND last_name = '". $_POST[$prefix.'last_name'] ."')";
+	} else {
+		$query .= " last_name = '". $_POST[$prefix.'last_name'] ."'";
+	}
+    return $query;
 }
 
 
-function buildTableForm($rows, $mod=''){
-	if(!empty($mod)){
-	global $current_language;
-	$mod_strings = return_module_language($current_language, $mod);
-	}else global $mod_strings;
-	global $app_strings;
-	$cols = sizeof($rows[0]) * 2 + 1;
-	$form = '<table width="100%"><tr><td>'.$mod_strings['MSG_DUPLICATE']. '</td></tr><tr><td height="20"></td></tr></table>';
-	$form .= "<form action='index.php' method='post' name='dupLeads'><input type='hidden' name='selectedLead' value=''>";
-	 $form .= get_form_header($mod_strings['LBL_DUPLICATE'],"", '');
-	$form .= "<table width='100%' cellpadding='0' cellspacing='0'>	<tr >	<td ></td>";
-
-
-	require_once('include/formbase.php');
-	$form .= getPostToForm();
-
-	if(isset($rows[0])){
-		foreach ($rows[0] as $key=>$value){
-			if($key != 'id'){
-
-
-					$form .= "<td scope='col' >". $mod_strings[$mod_strings['db_'.$key]]. "</td>";
-			}
-		}
-		$form .= "</tr>";
-	}
-	$rowColor = 'oddListRowS1';
-	foreach($rows as $row){
-
-
-		$form .= "<tr class='$rowColor'>";
-		$form .= "<td width='1%' nowrap='nowrap' align='center'><input type='checkbox' name='selectedLeads[]' value='{$row['id']}'></td>";
-		$wasSet = false;
-
-		foreach ($row as $key=>$value){
-				if($key != 'id'){
-
-					if(!$wasSet){
-						$form .= "<td scope='row'><a target='_blank' href='index.php?module=Leads&action=DetailView&record=${row['id']}'>$value</a></td>";
-						$wasSet = true;
-					}else{
-					$form .= "<td><a target='_blank' href='index.php?module=Leads&action=DetailView&record=${row['id']}'>$value</a></td>";
-		}}
-		}
-		if($rowColor == 'evenListRowS1'){
-			$rowColor = 'oddListRowS1';
-		}else{
-			 $rowColor = 'evenListRowS1';
-		}
-		$form .= "</tr>";
-	}
-		$form .= "<tr ><td colspan='$cols' ></td></tr>";
-	$form .= "</table><br><input type='submit' class='button' name='ContinueLead' value='${app_strings['LBL_NEXT_BUTTON_LABEL']}'></form>";
-	return $form;
-
-
-
-
-
-}
 function getWideFormBody($prefix, $mod='', $formname=''){
 if(!ACLController::checkAccess('Leads', 'edit', true)){
 		return '';
@@ -286,11 +200,9 @@ return $the_form;
 
 
 function handleSave($prefix,$redirect=true, $useRequired=false, $do_save=true, $exist_lead=null){
-	
-            require_once('modules/Campaigns/utils.php');	
-	require_once('include/formbase.php');
 
-	
+    require_once('modules/Campaigns/utils.php');
+	require_once('include/formbase.php');
 
 	if(empty($exist_lead)) {
         $focus = new Lead();
@@ -307,9 +219,110 @@ function handleSave($prefix,$redirect=true, $useRequired=false, $do_save=true, $
 		ACLController::displayNoAccess(true);
 		sugar_cleanup(true);
 	}
+
+    //Check for duplicate Leads
+    if (empty($_POST['record']) && empty($_POST['dup_checked']))
+    {
+		$duplicateLeads = $this->checkForDuplicates($prefix);
+
+        if(isset($duplicateLeads))
+        {
+            //Set the redirect location to call the ShowDuplicates action.  This will map to view.showduplicates.php
+			$location='module=Leads&action=ShowDuplicates';
+
+			$get = '';
+
+			if(isset($_POST['inbound_email_id']) && !empty($_POST['inbound_email_id'])) {
+				$get .= '&inbound_email_id='.$_POST['inbound_email_id'];
+			}
+
+			if(isset($_POST['relate_to']) && !empty($_POST['relate_to'])) {
+				$get .= '&Leadsrelate_to='.$_POST['relate_to'];
+			}
+			if(isset($_POST['relate_id']) && !empty($_POST['relate_id'])) {
+				$get .= '&Leadsrelate_id='.$_POST['relate_id'];
+			}
+
+			//add all of the post fields to redirect get string
+			foreach ($focus->column_fields as $field)
+			{
+				if (!empty($focus->$field) && !is_object($focus->$field))
+				{
+					$get .= "&Leads$field=".urlencode($focus->$field);
+				}
+			}
+
+			foreach ($focus->additional_column_fields as $field)
+			{
+				if (!empty($focus->$field))
+				{
+					$get .= "&Leads$field=".urlencode($focus->$field);
+				}
+			}
+
+			if($focus->hasCustomFields()) {
+				foreach($focus->field_defs as $name=>$field) {
+					if (!empty($field['source']) && $field['source'] == 'custom_fields')
+					{
+						$get .= "&Leads$name=".urlencode($focus->$name);
+					}
+				}
+			}
+
+
+			$emailAddress = new SugarEmailAddress();
+			$get .= $emailAddress->getFormBaseURL($focus);
+
+
+			//create list of suspected duplicate lead ids in redirect get string
+			$i=0;
+			foreach ($duplicateLeads as $lead)
+			{
+				$get .= "&duplicate[$i]=".$lead['id'];
+				$i++;
+			}
+
+			//add return_module, return_action, and return_id to redirect get string
+			$get .= "&return_module=";
+			if(!empty($_POST['return_module']))
+            {
+                $get .= $_POST['return_module'];
+            } else {
+			    $get .= "Leads";
+            }
+
+			$get .= "&return_action=";
+			if(!empty($_POST['return_action'])) $get .= $_POST['return_action'];
+			if(!empty($_POST['return_id'])) $get .= "&return_id=".$_POST['return_id'];
+			if(!empty($_POST['popup'])) $get .= '&popup='.$_POST['popup'];
+			if(!empty($_POST['create'])) $get .= '&create='.$_POST['create'];
+
+			// for InboundEmail flow
+			if(!empty($_POST['start'])) $get .= '&start='.$_POST['start'];
+
+            $_SESSION['SHOW_DUPLICATES'] = $get;
+
+            if (!empty($_POST['is_ajax_call']) && $_POST['is_ajax_call'] == '1')
+            {
+            	ob_clean();
+                $json = getJSONobj();
+                echo $json->encode(array('status' => 'dupe', 'get' => $location));
+            } else if(!empty($_REQUEST['ajax_load'])) {
+                echo "<script>SUGAR.ajaxUI.loadContent('index.php?$location');</script>";
+            } else {
+                if(!empty($_POST['to_pdf']))
+                {
+                    $location .= '&to_pdf='.$_POST['to_pdf'];
+                }
+                header("Location: index.php?$location");
+            }
+            return null;
+		}
+    }
+
 	if (!isset($_POST[$prefix.'email_opt_out'])) $focus->email_opt_out = 0;
 	if (!isset($_POST[$prefix.'do_not_call'])) $focus->do_not_call = 0;
-    
+
     if($do_save) {
     	if(!empty($GLOBALS['check_notify'])) {
     		$focus->save($GLOBALS['check_notify']);
@@ -318,9 +331,9 @@ function handleSave($prefix,$redirect=true, $useRequired=false, $do_save=true, $
     		$focus->save(FALSE);
     	}
     }
-    
+
     $return_id = $focus->id;
-    
+
 	if (isset($_POST[$prefix.'prospect_id']) &&  !empty($_POST[$prefix.'prospect_id'])) {
 		$prospect=new Prospect();
 		$prospect->retrieve($_POST[$prefix.'prospect_id']);
@@ -345,10 +358,10 @@ function handleSave($prefix,$redirect=true, $useRequired=false, $do_save=true, $
 	if(isset($_REQUEST['inbound_email_id']) && !empty($_REQUEST['inbound_email_id'])) {
 		if(!isset($current_user)) {
 			global $current_user;
-		} 
-			
+		}
+
 		// fake this case like it's already saved.
-		
+
 		$email = new Email();
 		$email->retrieve($_REQUEST['inbound_email_id']);
 		$email->parent_type = 'Leads';
@@ -358,13 +371,13 @@ function handleSave($prefix,$redirect=true, $useRequired=false, $do_save=true, $
 		$email->save();
 		$email->load_relationship('leads');
 		$email->leads->add($focus->id);
-		
+
 		header("Location: index.php?&module=Emails&action=EditView&type=out&inbound_email_id=".$_REQUEST['inbound_email_id']."&parent_id=".$email->parent_id."&parent_type=".$email->parent_type.'&start='.$_REQUEST['start']);
 		exit();
 	}
 	////	END INBOUND EMAIL HANDLING
-	///////////////////////////////////////////////////////////////////////////////	
-	
+	///////////////////////////////////////////////////////////////////////////////
+
 	$GLOBALS['log']->debug("Saved record with id of ".$return_id);
 	if($redirect){
 		handleRedirect($return_id, 'Leads');

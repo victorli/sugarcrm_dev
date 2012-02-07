@@ -39,8 +39,8 @@
  ********************************************************************************/
 -->
 <!-- BEGIN: main -->
-<script type="text/javascript" src="include/javascript/popup_parent_helper.js?s={SUGAR_VERSION}&c={JS_CUSTOM_VERSION}"></script>
-<script type="text/javascript" src="modules/Campaigns/WebToLead.js"></script>
+<script type="text/javascript" src="include/javascript/popup_parent_helper.js?v={VERSION_MARK}"></script>
+<script type="text/javascript" src="modules/Campaigns/WebToLead.js?v={VERSION_MARK}"></script>
 <style>
 	.yui-dt table {
 		width: 180px;
@@ -49,11 +49,11 @@
 
 {JAVASCRIPT}
 <form id="WebToLeadCreation" name="WebToLeadCreation" method="POST" action="index.php">
-    <input type="hidden" name="module" value="Campaigns"> 
-	<input type="hidden" name="record" value="{ID}"> 
-	<input type="hidden" name="action"> 
-	<input type="hidden" name="return_module" value="{RETURN_MODULE}"> 
-	<input type="hidden" name="return_id" value="{RETURN_ID}"> 
+    <input type="hidden" name="module" value="Campaigns">
+	<input type="hidden" name="record" value="{ID}">
+	<input type="hidden" name="action">
+	<input type="hidden" name="return_module" value="{RETURN_MODULE}">
+	<input type="hidden" name="return_id" value="{RETURN_ID}">
 	<input type="hidden" name="return_action" value="{RETURN_ACTION}">
 
 <div id='grid_Div'>
@@ -74,7 +74,7 @@
 	<tr>
 		<td>
 		<table width="555" border="0" cellspacing="0" cellpadding="0">
-	        
+
 			<tr>
 				  <td>
 					<table align="center" border="0" cellpadding="0" cellspacing="0" width='350'>
@@ -87,16 +87,16 @@
 				<td colspan='3'>
 				  <div id='webformfields'></div>
 				</td>
-			</tr>						
-		</table>		
-	
+			</tr>
+		</table>
+
 	<table width="595" border="0" cellspacing="0" cellpadding="2">
 		<tr>
 		<td align="left"><input id="lead_add_remove_button" type='button' title="{APP.LBL_ADD_ALL_LEAD_FIELDS}"
 			class="button"
 			onclick="javascript:dragDropAllFields('{APP.LBL_ADD_ALL_LEAD_FIELDS}','{APP.LBL_REMOVE_ALL_LEAD_FIELDS}');"
 			name="button" value="{APP.LBL_ADD_ALL_LEAD_FIELDS}">
-		</td>	
+		</td>
 		<td align="right" style="padding-bottom: 2px;"><input title="{APP.LBL_CANCEL_BUTTON_TITLE}"
 			accessKey="{APP.LBL_CANCEL_BUTTON_KEY}" class="button"
 			onclick="this.form.action.value='{RETURN_ACTION}'; this.form.module.value='{RETURN_MODULE}'; this.form.record.value='{RETURN_ID}'"
@@ -105,7 +105,7 @@
 			onclick="javascript:askLeadQ('next','{MOD.LBL_SELECT_REQUIRED_LEAD_FIELDS}','{MOD.LBL_SELECT_LEAD_FIELDS}');" name="button"
 			value="{APP.LBL_NEXT_BUTTON_LABEL}">
 		</td>
-		</tr>      
+		</tr>
     </table>
 	</td>
   </tr>
@@ -114,21 +114,21 @@
 
 
 <div id='lead_queries_Div' style="display: none">
-<table width="100%" cellpadding="0" cellspacing="0" border="0">     
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr><td>
   	    {TITLE2}
 	   </td>
 	</tr>
-</table>	
+</table>
 
 <table width="100%" cellpadding="0" cellspacing="0" border="0" class="edit view">
 
 	<tr>
-		<td>	
+		<td>
 		<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<tr>
 				<td scope="row" width="20%">{MOD.LBL_DEFINE_LEAD_HEADER}</td>
-				<td  width="80%"><input id="web_header" name="web_header" title="Name" size="60" 
+				<td  width="80%"><input id="web_header" name="web_header" title="Name" size="60"
 					value="{MOD.LBL_LEAD_DEFAULT_HEADER}" type="text"></td>
 			</tr>
 			<tr>
@@ -144,7 +144,7 @@
 				<td scope="row"><slot>{MOD.LBL_DEFINE_LEAD_POST_URL}</slot></td>
 				<td ><slot><input id="post_url" name="post_url" size="60"
 					disabled='true' value="{WEB_POST_URL}" type="text"></slot> <input
-					id="chk_edit_url" name="chk_edit_url" onclick="editUrl();" class='checkbox' type='checkbox'> <class ="dataLabel" width="10%">{MOD.LBL_EDIT_LEAD_POST_URL}				
+					id="chk_edit_url" name="chk_edit_url" onclick="editUrl();" class='checkbox' type='checkbox'> <class ="dataLabel" width="10%">{MOD.LBL_EDIT_LEAD_POST_URL}
 			</tr>
 			</tr>
 			<tr>
@@ -173,7 +173,7 @@
       	    </tr>
 	<!-- BEGIN: open_source -->
 	<!-- END: open_source -->
-	
+
 			<tr>
 				<td scope="row"><slot>{MOD.LBL_LEAD_FOOTER}</slot></td>
 				<td ><slot><textarea tabindex='1' name='web_footer' rows='2' cols='55'></textarea></slot></td>
@@ -192,7 +192,7 @@
 			type="submit" name="button" value="{APP.LBL_CANCEL_BUTTON_LABEL}"> <input
 			title="{APP.LBL_GENERATE_WEB_TO_LEAD_FORM}" class="button"
 			onclick="this.form.action.value='GenerateWebToLeadForm';return addGrids('WebToLeadCreation');" type="submit"
-			name="button" value="{APP.LBL_GENERATE_WEB_TO_LEAD_FORM}"></td>		
+			name="button" value="{APP.LBL_GENERATE_WEB_TO_LEAD_FORM}"></td>
 	</tr>
 </table>
 </div>

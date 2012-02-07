@@ -39,6 +39,10 @@
 require_once('include/TemplateHandler/TemplateHandler.php');
 require_once('include/EditView/SugarVCR.php');
 
+/**
+ * New EditView
+ * @api
+ */
 class EditView
 {
     public $th;
@@ -302,7 +306,7 @@ class EditView
                         $panel[$row][$col]['field']['tabindex'] =
                             (isset($p[$row][$col]['tabindex']) && is_numeric($p[$row][$col]['tabindex']))
                                 ? $p[$row][$col]['tabindex']
-                                : $itemCount;
+                                : '0';
 
                         if ($columnsInRows < $maxColumns)
                         {
@@ -371,7 +375,7 @@ class EditView
         }
 
         return $panel;
-    }    
+    }
 
     function process($checkFormName = false, $formName = '')
     {
@@ -581,6 +585,7 @@ class EditView
         $this->th->ss->assign('bean', $this->focus);
         $this->th->ss->assign('isAuditEnabled', $this->focus->is_AuditEnabled());
         $this->th->ss->assign('gridline',$current_user->getPreference('gridline') == 'on' ? '1' : '0');
+        $this->th->ss->assign('VERSION_MARK', getVersionedPath(''));
 
         global $js_custom_version;
         global $sugar_version;
@@ -674,6 +679,7 @@ class EditView
             $this->th->ss->assign('CALENDAR_FORMAT', $date_format . ' ' . $t23 . $time_separator . '%M' . $pm);
         }
 
+        $this->th->ss->assign('CALENDAR_FDOW', $current_user->get_first_day_of_week());
         $this->th->ss->assign('TIME_SEPARATOR', $time_separator);
 
         $seps = get_number_seperators();

@@ -232,6 +232,10 @@ for($i = 0; $i < $number_companies; $i++) {
 	$call->status='Planned';
 	$call->save();
 
+    //Set the user to accept the call
+    $seed_user->id = $call->assigned_user_id;
+    $call->set_accept_status($seed_user,'accept');
+
 	//Create new opportunities
 	$opp = new Opportunity();
 	$opp->assigned_user_id = $account->assigned_user_id;

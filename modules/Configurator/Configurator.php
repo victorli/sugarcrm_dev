@@ -185,7 +185,7 @@ class Configurator {
 
 	function saveImages() {
 		if (!empty ($_POST['company_logo'])) {
-			$this->saveCompanyLogo($_POST['company_logo']);
+			$this->saveCompanyLogo("upload://".$_POST['company_logo']);
 		}
 	}
 

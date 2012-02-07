@@ -169,6 +169,7 @@ class ViewListView extends ViewEdit
 
     function constructSmarty ($parser)
     {
+        global $mod_strings;
         $smarty = new Sugar_Smarty ( ) ;
         $smarty->assign ( 'translate', true ) ;
         $smarty->assign ( 'language', $parser->getLanguage () ) ;
@@ -221,9 +222,11 @@ class ViewListView extends ViewEdit
         $smarty->assign ( 'groups', $groups ) ;
         $smarty->assign('from_mb', $this->fromModuleBuilder);
 
-        global $image_path ;
-        $imageSave = SugarThemeRegistry::current()->getImage('studio_save') ;
+        global $image_path;
+        $imageSave = SugarThemeRegistry::current()->getImage('studio_save','',null,null,'.gif',$mod_strings['LBL_BTN_SAVE']) ;
+
 //        $imageHelp = SugarThemeRegistry::current()->getImage('help') ;
+
 
         $history = $parser->getHistory () ;
 
@@ -243,9 +246,11 @@ class ViewListView extends ViewEdit
 
         $smarty->assign ( 'buttons', $this->_buildImageButtons ( $buttons ) ) ;
 
-        $editImage = SugarThemeRegistry::current()->getImage('edit_inline') ;
+        $editImage = SugarThemeRegistry::current()->getImage('edit_inline','',null,null,'.gif',$mod_strings['LBL_EDIT']) ;
+
         $smarty->assign ( 'editImage', $editImage ) ;
-        $deleteImage = SugarThemeRegistry::current()->getImage('delete_inline') ;
+        $deleteImage = SugarThemeRegistry::current()->getImage('delete_inline','',null,null,'.gif',$mod_strings['LBL_MB_DELETE']) ;
+
         $smarty->assign ( 'deleteImage', $deleteImage ) ;
         $smarty->assign ( 'MOD', $GLOBALS [ 'mod_strings' ] ) ;
 

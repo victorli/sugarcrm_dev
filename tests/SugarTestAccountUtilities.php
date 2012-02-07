@@ -57,6 +57,7 @@ class SugarTestAccountUtilities
             $account->id = $id;
         }
         $account->save();
+        $GLOBALS['db']->commit();
         self::$_createdAccounts[] = $account;
         return $account;
     }

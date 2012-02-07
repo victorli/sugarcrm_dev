@@ -49,14 +49,14 @@ class ConfiguratorController extends SugarController
         }
         $this->view = 'fontmanager';
     }
-    
+
     /**
      * Delete a font and go back to the font manager
      */
     function action_deleteFont(){
         global $current_user;
         if(!is_admin($current_user)){
-            sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']); 
+            sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);
         }
         $urlSTR = 'index.php?module=Configurator&action=FontManager';
         if(!empty($_REQUEST['filename'])){
@@ -69,7 +69,7 @@ class ConfiguratorController extends SugarController
         }
         header("Location: $urlSTR");
     }
-    
+
     function action_listview(){
         global $current_user;
         if(!is_admin($current_user)){
@@ -93,7 +93,7 @@ class ConfiguratorController extends SugarController
     function action_addFont(){
         global $current_user, $mod_strings;
         if(!is_admin($current_user)){
-            sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']); 
+            sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);
         }
         if(empty($_FILES['pdf_metric_file']['name'])){
             $this->errors[]=translate("ERR_MISSING_REQUIRED_FIELDS")." ".translate("LBL_PDF_METRIC_FILE", "Configurator");
@@ -107,13 +107,13 @@ class ConfiguratorController extends SugarController
         }
         $path_info = pathinfo($_FILES['pdf_font_file']['name']);
         $path_info_metric = pathinfo($_FILES['pdf_metric_file']['name']);
-        if(($path_info_metric['extension']!="afm" && $path_info_metric['extension']!="ufm") || 
+        if(($path_info_metric['extension']!="afm" && $path_info_metric['extension']!="ufm") ||
         ($path_info['extension']!="ttf" && $path_info['extension']!="otf" && $path_info['extension']!="pfb")){
             $this->errors[]=translate("JS_ALERT_PDF_WRONG_EXTENSION", "Configurator");
             $this->view = 'addFontView';
             return;
         }
-        
+
         if($_REQUEST['pdf_embedded'] == "false"){
             if(empty($_REQUEST['pdf_cidinfo'])){
                 $this->errors[]=translate("ERR_MISSING_CIDINFO", "Configurator");
@@ -141,26 +141,26 @@ class ConfiguratorController extends SugarController
         $focus = new Administration();
         $focus->retrieveSettings();
         $focus->saveConfig();
-        
+
         $configurator = new Configurator();
         $configurator->populateFromPost();
         $configurator->handleOverride();
         $configurator->parseLoggerSettings();
         $configurator->saveConfig();
-        
+
         // Bug 37310 - Delete any existing currency that matches the one we've just set the default to during the admin wizard
         $currency = new Currency;
         $currency->retrieve($currency->retrieve_id_by_name($_REQUEST['default_currency_name']));
-        if ( !empty($currency->id) 
+        if ( !empty($currency->id)
                 && $currency->symbol == $_REQUEST['default_currency_symbol']
                 && $currency->iso4217 == $_REQUEST['default_currency_iso4217'] ) {
             $currency->deleted = 1;
             $currency->save();
         }
-        
+
         SugarApplication::redirect('index.php?module=Users&action=Wizard&skipwelcome=1');
     }
-    
+
     function action_saveconfig()
     {
         global $current_user;
@@ -169,17 +169,17 @@ class ConfiguratorController extends SugarController
         }
         $configurator = new Configurator();
         $configurator->saveConfig();
-        
+
         $focus = new Administration();
         $focus->saveConfig();
-        
+
         // Clear the Contacts file b/c portal flag affects rendering
-        if (file_exists($GLOBALS['sugar_config']['cache_dir'].'modules/Contacts/EditView.tpl'))
-           unlink($GLOBALS['sugar_config']['cache_dir'].'modules/Contacts/EditView.tpl');
-        
+        if (file_exists($cachedfile = sugar_cached('modules/Contacts/EditView.tpl')))
+           unlink($cachedfile);
+
         SugarApplication::redirect('index.php?module=Administration&action=index');
     }
-    
+
     function action_detail()
     {
         global $current_user;

@@ -34,7 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 require_once('service/v3/SugarWebServiceUtilv3.php');
 require_once('tests/service/APIv3Helper.php');
 
@@ -47,20 +47,43 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
     private static $helperObject;
 
+    private $_unified_search_modules_content;
+
     public function setUp()
     {
+        global $beanList, $beanFiles;
+        include('include/modules.php');
+
         //Reload langauge strings
         $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
         $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
         $GLOBALS['mod_strings'] = return_module_language($GLOBALS['current_language'], 'Accounts');
         //Create an anonymous user for login purposes/
-        $this->_user = SugarTestUserUtilities::createAnonymousUser();
-        $this->_user->status = 'Active';
-        $this->_user->is_admin = 1;
-        $this->_user->save();
+        $this->_user = new User();
+        $this->_user->retrieve('1');
         $GLOBALS['current_user'] = $this->_user;
 
         self::$helperObject = new APIv3Helper();
+
+
+        if(file_exists(sugar_cached('modules/unified_search_modules.php')))
+        {
+            $this->unified_search_modules_content = file_get_contents(sugar_cached('modules/unified_search_modules.php'));
+            unlink(sugar_cached('modules/unified_search_modules.php'));
+        }
+
+        require_once('modules/Home/UnifiedSearchAdvanced.php');
+        $unifiedSearchAdvanced = new UnifiedSearchAdvanced();
+        $_REQUEST['enabled_modules'] = 'Accounts,Contacts,Opportunities';
+        $unifiedSearchAdvanced->saveGlobalSearchSettings();
+
+        $GLOBALS['db']->query("DELETE FROM accounts WHERE name like 'UNIT TEST%' ");
+        $GLOBALS['db']->query("DELETE FROM opportunities WHERE name like 'UNIT TEST%' ");
+        $GLOBALS['db']->query("DELETE FROM contacts WHERE first_name like 'UNIT TEST%' ");
+        $GLOBALS['db']->query("DELETE FROM calls WHERE name like 'UNIT TEST%' ");
+        $GLOBALS['db']->query("DELETE FROM tasks WHERE name like 'UNIT TEST%' ");
+        $GLOBALS['db']->query("DELETE FROM meetings WHERE name like 'UNIT TEST%' ");
+        //$this->useOutputBuffering = false;
     }
 
     public function tearDown()
@@ -70,6 +93,18 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 	    unset($GLOBALS['app_list_strings']);
 	    unset($GLOBALS['app_strings']);
 	    unset($GLOBALS['mod_strings']);
+
+        if(!empty($this->unified_search_modules_content))
+        {
+            file_put_contents(sugar_cached('modules/unified_search_modules.php'), $this->unified_search_modules_content);
+        }
+
+        $GLOBALS['db']->query("DELETE FROM accounts WHERE name like 'UNIT TEST%' ");
+        $GLOBALS['db']->query("DELETE FROM opportunities WHERE name like 'UNIT TEST%' ");
+        $GLOBALS['db']->query("DELETE FROM contacts WHERE first_name like 'UNIT TEST%' ");
+        $GLOBALS['db']->query("DELETE FROM calls WHERE name like 'UNIT TEST%' ");
+        $GLOBALS['db']->query("DELETE FROM tasks WHERE name like 'UNIT TEST%' ");
+        $GLOBALS['db']->query("DELETE FROM meetings WHERE name like 'UNIT TEST%' ");
 	}
 
     protected function _makeRESTCall($method,$parameters)
@@ -108,6 +143,8 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
     protected function _login()
     {
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before logging in
+
         return $this->_makeRESTCall('login',
             array(
                 'user_auth' =>
@@ -124,9 +161,6 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function testSearchByModule()
     {
-        $result = $this->_login();
-        $session = $result['id'];
-
         $seedData = self::$helperObject->populateSeedDataForSearchTest($this->_user->id);
 
         $searchModules = array('Accounts','Contacts','Opportunities');
@@ -134,6 +168,8 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $offSet = 0;
         $maxResults = 10;
 
+        $result = $this->_login(); // Logging in just before the REST call as this will also commit any pending DB changes
+        $session = $result['id'];
         $results = $this->_makeRESTCall('search_by_module',
                         array(
                             'session' => $session,
@@ -149,16 +185,10 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $this->assertTrue( self::$helperObject->findBeanIdFromEntryList($results['entry_list'],$seedData[2]['id'],'Contacts') );
         $this->assertTrue( self::$helperObject->findBeanIdFromEntryList($results['entry_list'],$seedData[3]['id'],'Opportunities') );
         $this->assertFalse( self::$helperObject->findBeanIdFromEntryList($results['entry_list'],$seedData[4]['id'],'Opportunities') );
-        $GLOBALS['db']->query("DELETE FROM accounts WHERE name like 'UNIT TEST%' ");
-        $GLOBALS['db']->query("DELETE FROM opportunities WHERE name like 'UNIT TEST%' ");
-        $GLOBALS['db']->query("DELETE FROM contacts WHERE first_name like 'UNIT TEST%' ");
     }
 
     public function testSearchByModuleWithReturnFields()
     {
-        $result = $this->_login();
-        $session = $result['id'];
-
         $seedData = self::$helperObject->populateSeedDataForSearchTest($this->_user->id);
 
         $returnFields = array('name','id','deleted');
@@ -167,6 +197,8 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $offSet = 0;
         $maxResults = 10;
 
+        $result = $this->_login(); // Logging in just before the REST call as this will also commit any pending DB changes
+        $session = $result['id'];
         $results = $this->_makeRESTCall('search_by_module',
                         array(
                             'session' => $session,
@@ -184,10 +216,6 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEquals($seedData[2]['fieldValue'], self::$helperObject->findFieldByNameFromEntryList($results['entry_list'],$seedData[2]['id'],'Contacts', $seedData[2]['fieldName']));
         $this->assertEquals($seedData[3]['fieldValue'], self::$helperObject->findFieldByNameFromEntryList($results['entry_list'],$seedData[3]['id'],'Opportunities', $seedData[3]['fieldName']));
         $this->assertFalse(self::$helperObject->findFieldByNameFromEntryList($results['entry_list'],$seedData[4]['id'],'Opportunities', $seedData[4]['fieldName']));
-
-        $GLOBALS['db']->query("DELETE FROM accounts WHERE name like 'UNIT TEST%' ");
-        $GLOBALS['db']->query("DELETE FROM opportunities WHERE name like 'UNIT TEST%' ");
-        $GLOBALS['db']->query("DELETE FROM contacts WHERE first_name like 'UNIT TEST%' ");
     }
 
     public function testGetServerInformation()
@@ -205,9 +233,6 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function testGetModuleList()
     {
-        $result = $this->_login();
-        $session = $result['id'];
-
         $account = new Account();
         $account->id = uniqid();
         $account->new_with_id = TRUE;
@@ -219,6 +244,9 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $orderBy = 'name';
         $offset = 0;
         $returnFields = array('name');
+
+        $result = $this->_login(); // Logging in just before the REST call as this will also commit any pending DB changes
+        $session = $result['id'];
         $result = $this->_makeRESTCall('get_entry_list', array($session, $module, $whereClause, $orderBy,$offset, $returnFields));
 
         $this->assertEquals($account->id, $result['entry_list'][0]['id'],'Unable to retrieve account list during search.');
@@ -411,17 +439,17 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $session = $result['id'];
 
         //Test a regular module
-        $fullResult = $this->_makeRESTCall('get_module_fields_md5', array('session' => $session, 'module' => 'Accounts' ));
-        $result = $fullResult['Accounts'];
-        $a = new Account();
+        $fullResult = $this->_makeRESTCall('get_module_fields_md5', array('session' => $session, 'module' => 'Currencies' ));
+        $result = $fullResult['Currencies'];
+        $a = new Currency();
         $soapHelper = new SugarWebServiceUtilv3();
-        $actualVardef = $soapHelper->get_return_module_fields($a,'Accounts','');
+        $actualVardef = $soapHelper->get_return_module_fields($a,'Currencies','');
         $actualMD5 = md5(serialize($actualVardef));
         $this->assertEquals($actualMD5, $result, "Unable to retrieve vardef md5.");
 
         //Test a fake module
         $result = $this->_makeRESTCall('get_module_fields_md5', array('session' => $session, 'module' => 'BadModule' ));
-        $this->assertTrue($result['name'] == 'Module Does Not Exist');
+        $this->assertEquals('Module Does Not Exist', $result['name']);
         unset($GLOBALS['reload_vardefs']);
     }
 
@@ -481,7 +509,7 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
             );
 
         $GLOBALS['db']->query("DELETE FROM accounts WHERE id= '{$accountId}'");
-        
+
         $this->assertTrue(!empty($result['entry_list'][0]['id']) && $result['entry_list'][0]['id'] != -1,$this->_returnLastRawResponse());
         $this->assertEquals($result['entry_list'][0]['name_value_list'][0]['name'],'warning',$this->_returnLastRawResponse());
         $this->assertEquals($result['entry_list'][0]['name_value_list'][0]['value'],"Access to this object is denied since it has been deleted or does not exist",$this->_returnLastRawResponse());
@@ -723,18 +751,25 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
     }
      public function testGetUpcomingActivities()
      {
-         $result = $this->_login();
+         $expected = $this->_createUpcomingActivities(); //Seed the data.
+
+         $result = $this->_login(); // Logging in just before the REST call as this will also commit any pending DB changes
          $this->assertTrue(!empty($result['id']) && $result['id'] != -1,$this->_returnLastRawResponse());
          $session = $result['id'];
-         $expected = $this->_createUpcomingActivities(); //Seed the data.
          $results = $this->_makeRESTCall('get_upcoming_activities',
                              array(
                              'session' => $session,
                              )
          );
 
-         $this->assertEquals($expected[0] ,$results[0]['id'] , "Unable to get upcoming activities");
-         $this->assertEquals($expected[1] ,$results[1]['id'] , "Unable to get upcoming activities");
+         $ids = array();
+         foreach($results as $activity)
+         {
+             $ids[$activity['id']] = $activity['id'];
+         }
+
+         $this->assertArrayHasKey($expected[0] , $ids , "Unable to get upcoming activities");
+         $this->assertArrayHasKey($expected[1] ,$ids , "Unable to get upcoming activities");
 
          $this->_removeUpcomingActivities();
      }

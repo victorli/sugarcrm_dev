@@ -179,6 +179,7 @@ $mod_strings = array (
     'LBL_PROSPECT_LIST' => 'Prospect List',
     'LBL_ACCOUNTS_SUBPANEL_TITLE'=>'Accounts',
     'LBL_PROJECT_SUBPANEL_TITLE' => 'Projects',
+	'LBL_COPY' => 'Copy' /*for 508 compliance fix*/,
     //For export labels
     'LBL_ACCOUNT_TYPE' => 'Account Type',
     'LBL_CAMPAIGN_ID' => 'Campaign ID',

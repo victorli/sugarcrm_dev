@@ -83,8 +83,10 @@ class AbstractRelationships
             // do not include the submodules of Activities as already have the parent...
             if (! $includeActivitiesSubmodules && in_array ( $module->module, self::$activities ))
                 continue ;
-
-            $relatableModules [ $module->module ] = $module->getProvidedSubpanels() ;
+            $providedSubpanels = $module->getProvidedSubpanels();
+            if ( $providedSubpanels !== false ) {
+                $relatableModules [ $module->module ] = $providedSubpanels;
+            }
         }
         
         return $relatableModules ;

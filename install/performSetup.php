@@ -61,7 +61,7 @@ $trackerManager = TrackerManager::getInstance();
 $trackerManager->pause();
 
 
-$cache_dir                          = 'cache/';
+$cache_dir                          = sugar_cached("");
 $line_entry_format                  = "&nbsp&nbsp&nbsp&nbsp&nbsp<b>";
 $line_exit_format                   = "... &nbsp&nbsp</b>";
 $rel_dictionary                 = $dictionary; // sourced by modules/TableDictionary.php
@@ -74,6 +74,7 @@ $setup_db_create_sugarsales_user    = $_SESSION['setup_db_create_sugarsales_user
 $setup_db_database_name             = $_SESSION['setup_db_database_name'];
 $setup_db_drop_tables               = $_SESSION['setup_db_drop_tables'];
 $setup_db_host_instance             = $_SESSION['setup_db_host_instance'];
+$setup_db_port_num                  = $_SESSION['setup_db_port_num'];
 $setup_db_host_name                 = $_SESSION['setup_db_host_name'];
 $demoData                           = $_SESSION['demoData'];
 $setup_db_sugarsales_password       = $_SESSION['setup_db_sugarsales_password'];
@@ -98,10 +99,10 @@ sugar_cache_clear('TeamSetsMD5Cache');
 if ( file_exists($cache_dir.'modules/Teams/TeamSetMD5Cache.php') ) {
 	unlink($cache_dir.'modules/Teams/TeamSetMD5Cache.php');
 }
-
+$langHeader = get_language_header();
 $out =<<<EOQ
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<html {$langHeader}>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
    <meta http-equiv="Content-Script-Type" content="text/javascript">
@@ -150,7 +151,7 @@ echo "<br>";
 
 // create the SugarCRM database
 if($setup_db_create_database) {
-installLog("calling handleDbCreateDatabase()");
+    installLog("calling handleDbCreateDatabase()");
     handleDbCreateDatabase();
 } else {
 
@@ -163,7 +164,6 @@ installLog("calling handleDbCreateDatabase()");
 if($setup_db_create_sugarsales_user)
     handleDbCreateSugarUser();
 
-
 foreach( $beanFiles as $bean => $file ){
     require_once( $file );
 }
@@ -174,7 +174,7 @@ if( is_file("config_override.php") ){
     require_once("config_override.php");
 }
 
-$db                 = &DBManagerFactory::getInstance();
+$db                 = DBManagerFactory::getInstance();
 $startTime          = microtime(true);
 $focus              = 0;
 $processed_tables   = array(); // for keeping track of the tables we have worked on
@@ -188,10 +188,7 @@ $nonStandardModules = array (
     //'Tracker',
 );
 
-//if working with sql-server create a catalog for full-text indexes.
-if ($GLOBALS['db']->dbType=='mssql') {
-	$GLOBALS['db']->helper->create_default_full_text_catalog();
-}
+
 /**
  * loop through all the Beans and create their tables
  */
@@ -314,75 +311,7 @@ echo "<br>";
     echo $line_entry_format.$mod_strings['LBL_PERFORM_DEFAULT_SCHEDULER'].$line_exit_format;
     installLog($mod_strings['LBL_PERFORM_DEFAULT_SCHEDULER']);
     $scheduler = new Scheduler();
-    if(isset($sugar_config['demoData']) && $sugar_config['demoData'] != 'no' && $_SESSION['setup_db_type'] == 'mssql') {
-        $db->query('DELETE FROM schedulers');
-        $db->query('DELETE FROM schedulers_times');
-
-
-        $sched3 = new Scheduler();
-        $sched3->name               = 'Prune the User History Table';
-        $sched3->job                = 'function::trimTracker';
-        $sched3->date_time_start    = create_date(2005,1,1) . ' ' . create_time(0,0,1);
-        $sched3->date_time_end      = create_date(2020,12,31) . ' ' . create_time(23,59,59);
-        $sched3->job_interval       = '*::*::*::*::*';
-        $sched3->status             = 'Active';
-        $sched3->created_by         = '1';
-        $sched3->modified_user_id   = '1';
-        $sched3->catch_up           = '1';
-        $sched3->save();
-        $sched4 = new Scheduler();
-        $sched4->name               = 'Check Inbound Mailboxes';
-        $sched4->job                = 'function::pollMonitoredInboxes';
-        $sched4->date_time_start    = create_date(2005,1,1) . ' ' . create_time(0,0,1);
-        $sched4->date_time_end      = create_date(2020,12,31) . ' ' . create_time(23,59,59);
-        $sched4->job_interval       = '*::*::*::*::*';
-        $sched4->status             = 'Active';
-        $sched4->created_by         = '1';
-        $sched4->modified_user_id   = '1';
-        $sched4->catch_up           = '0';
-        $sched4->save();
-        $sched5 = new Scheduler();
-        $sched5->name               = 'Run Nightly Process Bounced Campaign Emails';
-        $sched5->job                = 'function::pollMonitoredInboxesForBouncedCampaignEmails';
-        $sched5->date_time_start    = create_date(2005,1,1) . ' ' . create_time(0,0,1);
-        $sched5->date_time_end      = create_date(2020,12,31) . ' ' . create_time(23,59,59);
-        $sched5->job_interval       = '0::2-6::*::*::*';
-        $sched5->status             = 'Active';
-        $sched5->created_by         = '1';
-        $sched5->modified_user_id   = '1';
-        $sched5->catch_up           = '1';
-        $sched5->save();
-
-        $sched6 = new Scheduler();
-        $sched6->name               = 'Run Nightly Mass Email Campaigns';
-        $sched6->job                = 'function::runMassEmailCampaign';
-        $sched6->date_time_start    = create_date(2005,1,1) . ' ' . create_time(0,0,1);
-        $sched6->date_time_end      = create_date(2020,12,31) . ' ' . create_time(23,59,59);
-        $sched6->job_interval       = '0::2-6::*::*::*';
-        $sched6->status             = 'Active';
-        $sched6->created_by         = '1';
-        $sched6->modified_user_id   = '1';
-        $sched6->catch_up           = '1';
-        $sched6->save();
-
-
-        $sched7 = new Scheduler();
-        $sched7->name               = 'Prune Database on 1st of Month';
-        $sched7->job                = 'function::pruneDatabase';
-        $sched7->date_time_start    = create_date(2005,1,1) . ' ' . create_time(0,0,1);
-        $sched7->date_time_end      = create_date(2020,12,31) . ' ' . create_time(23,59,59);
-        $sched7->job_interval       = '0::4::1::*::*';
-        $sched7->status             = 'Inactive';
-        $sched7->created_by         = '1';
-        $sched7->modified_user_id   = '1';
-        $sched7->catch_up           = '0';
-        $sched7->save();
-
-
-
-    } else {
-        $scheduler->rebuildDefaultSchedulers();
-    }
+    $scheduler->rebuildDefaultSchedulers();
 
 
     echo $mod_strings['LBL_PERFORM_DONE'];
@@ -437,7 +366,6 @@ enableInsideViewConnector();
 
 
     require_once('modules/Connectors/InstallDefaultConnectors.php');
-
 
 	///////////////////////////////////////////////////////////////////////////////
 	////    INSTALL PASSWORD TEMPLATES
@@ -527,6 +455,14 @@ FP;
     $tabs->set_system_tabs($enabled_tabs);
 
 post_install_modules();
+
+//Call rebuildSprites
+if(function_exists('imagecreatetruecolor'))
+{
+    require_once('modules/UpgradeWizard/uw_utils.php');
+    rebuildSprites(true);
+}
+
 if( count( $bottle ) > 0 ){
     foreach( $bottle as $bottle_message ){
         $bottleMsg .= "{$bottle_message}\n";

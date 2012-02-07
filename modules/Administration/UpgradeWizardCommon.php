@@ -39,11 +39,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 require_once('include/utils/db_utils.php');
-
 require_once('include/utils/zip_utils.php');
-
-
-
 
 // increase the cuttoff time to 1 hour
 ini_set("max_execution_time", "3600");
@@ -60,9 +56,10 @@ else{
 $form_action = "index.php?module=Administration&view=" . $view . "&action=UpgradeWizard";
 
 
-$base_upgrade_dir       = $sugar_config['upload_dir'] . "/upgrades";
-$base_tmp_upgrade_dir   = "$base_upgrade_dir/temp";
-$GLOBALS['subdirs'] = array('full', 'langpack', 'module', 'patch', 'theme', 'temp');
+$base_upgrade_dir       = "upload://upgrades";
+$base_tmp_upgrade_dir   = sugar_cached('upgrades/temp');
+
+$GLOBALS['subdirs'] = array('full', 'langpack', 'module', 'patch', 'theme');
 // array of special scripts that are executed during (un)installation-- key is type of script, value is filename
 
 if(!defined('SUGARCRM_PRE_INSTALL_FILE'))
@@ -83,7 +80,7 @@ $script_files = array(
 function extractFile( $zip_file, $file_in_zip ){
     global $base_tmp_upgrade_dir;
 	if(empty($base_tmp_upgrade_dir)){
-    	$base_tmp_upgrade_dir   = $GLOBALS['sugar_config']['upload_dir'] . "upgrades/temp";
+    	$base_tmp_upgrade_dir   = sugar_cached("upgrades/temp");
     }
     $my_zip_dir = mk_temp_dir( $base_tmp_upgrade_dir );
     unzip_file( $zip_file, $file_in_zip, $my_zip_dir );
@@ -97,7 +94,7 @@ function extractManifest( $zip_file ){
 function getInstallType( $type_string ){
     // detect file type
     global $subdirs;
-	
+
     foreach( $subdirs as $subdir ){
         if( preg_match( "#/$subdir/#", $type_string ) ){
             return( $subdir );
@@ -108,23 +105,23 @@ function getInstallType( $type_string ){
 }
 
 function getImageForType( $type ){
-    
+
     $icon = "";
     switch( $type ){
         case "full":
-            $icon = SugarThemeRegistry::current()->getImage("Upgrade", "" );
+            $icon = SugarThemeRegistry::current()->getImage("Upgrade", "",null,null,'.gif',$mod_strings['LBL_DST_UPGRADE']);
             break;
         case "langpack":
-            $icon = SugarThemeRegistry::current()->getImage("LanguagePacks", "" );
+            $icon = SugarThemeRegistry::current()->getImage("LanguagePacks", "",null,null,'.gif',$mod_strings['LBL_LANGUAGE_PACKS'] );
             break;
         case "module":
-            $icon = SugarThemeRegistry::current()->getImage("ModuleLoader", "" );
+            $icon = SugarThemeRegistry::current()->getImage("ModuleLoader", "",null,null,'.gif',$mod_strings['LBL_MODULE_LOADER_TITLE']);
             break;
         case "patch":
-            $icon = SugarThemeRegistry::current()->getImage("PatchUpgrades", "" );
+            $icon = SugarThemeRegistry::current()->getImage("PatchUpgrades", "",null,null,'.gif',$mod_strings['LBL_PATCH_UPGRADES'] );
             break;
         case "theme":
-            $icon = SugarThemeRegistry::current()->getImage("Themes", "" );
+            $icon = SugarThemeRegistry::current()->getImage("Themes", "",null,null,'.gif',$mod_strings['LBL_THEME_SETTINGS'] );
             break;
         default:
             break;
@@ -151,22 +148,6 @@ function getUITextForMode( $mode ){
     $mode = 'LBL_UW_MODE_'.strtoupper($mode);
     global $mod_strings;
     return $mod_strings[$mode];
-}
-
-/**
- * @deprecated
- * @todo this function doesn't seemed to be used anymore; trying kill this off
- */
-function run_upgrade_wizard_sql( $script ){
-    global $unzip_dir;
-    global $sugar_config;
-    global $mod_strings;
-
-    $db_type = $sugar_config['dbconfig']['db_type'];
-    $script = str_replace( "%db_type%", $db_type, $script );
-    if( !run_sql_file( "$unzip_dir/$script" ) ){
-        die( "{$mod_strings['ERR_UW_RUN_SQL']} $unzip_dir/$script" );
-    }
 }
 
 function validate_manifest( $manifest ){
@@ -259,6 +240,6 @@ function getDiffFiles($unzip_dir, $install_file, $is_install = true, $previous_v
 			}//fi
 		}//rof
 	}//fi
-	return $modified_files;		
+	return $modified_files;
 }
 ?>

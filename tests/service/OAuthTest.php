@@ -95,7 +95,7 @@ class OAuthTest extends Sugar_PHPUnit_Framework_TestCase
             $this->markTestSkipped("No OAuth support");
         }
         $this->oauth = new OAuth('TESTCUSTOMER','TESTSECRET',OAUTH_SIG_METHOD_HMACSHA1,OAUTH_AUTH_TYPE_URI);
-        $this->url = $GLOBALS['sugar_config']['site_url'].'service/v4/rest.php';
+        $this->url = rtrim($GLOBALS['sugar_config']['site_url'],'/').'/service/v4/rest.php';
 	    $GLOBALS['current_user'] = self::$_user;
 	}
 
@@ -107,7 +107,7 @@ class OAuthTest extends Sugar_PHPUnit_Framework_TestCase
     public function testOauthRequestToken()
     {
         $request_token_info = $this->oauth->getRequestToken($this->url."?method=oauth_request_token");
-        $this->assertEquals($GLOBALS['sugar_config']['site_url'].'index.php?module=OAuthTokens&action=authorize', $request_token_info["authorize_url"]);
+        $this->assertEquals(rtrim($GLOBALS['sugar_config']['site_url'],'/').'/index.php?module=OAuthTokens&action=authorize', $request_token_info["authorize_url"]);
         $this->assertEquals("true", $request_token_info["oauth_callback_confirmed"]);
         $this->assertNotEmpty($request_token_info['oauth_token']);
         $this->assertNotEmpty($request_token_info['oauth_token_secret']);

@@ -43,7 +43,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * *******************************************************************************/
 
 $mod_strings = array(
-
+	'LBL_BASIC_SEARCH'					=> 'Basic Search',
+	'LBL_ADVANCED_SEARCH'				=> 'Advanced Search',
+	'LBL_BASIC_TYPE'					=> 'Basic Type',
+	'LBL_ADVANCED_TYPE'					=> 'Advanced Type',
 	'LBL_SYSOPTS_1'						=> 'Select from the following system configuration options below.',
     'LBL_SYSOPTS_2'                     => 'What type of database will be used for the Sugar instance you are about to install?',
 	'LBL_SYSOPTS_CONFIG'				=> 'System Configuration',
@@ -54,7 +57,7 @@ $mod_strings = array(
 	'LBL_MAKE_DIRECTORY_WRITABLE'      => 'Please make the following directory writable:',
 
 
-
+    'ERR_DB_VERSION_FAILURE'			=> 'Unable to check database version.',
 
 
 	'DEFAULT_CHARSET'					=> 'UTF-8',
@@ -101,10 +104,10 @@ $mod_strings = array(
     'ERR_DB_EXISTS_PROCEED'             => 'The provided Database Name already exists.  You can<br>1.  hit the back button and choose a new database name <br>2.  click next and continue but all existing tables on this database will be dropped.  <strong>This means your tables and data will be blown away.</strong>',
 	'ERR_DB_HOSTNAME'					=> 'Host name cannot be blank.',
 	'ERR_DB_INVALID'					=> 'Invalid database type selected.',
-	'ERR_DB_LOGIN_FAILURE_MYSQL'		=> 'The provided database host, username, and/or password is invalid, and a connection to the database could not be established.  Please enter a valid host, username and password.',
-	'ERR_DB_LOGIN_FAILURE_MSSQL'		=> 'The provided database host, username, and/or password is invalid, and a connection to the database could not be established.  Please enter a valid host, username and password.',
-	'ERR_DB_MYSQL_VERSION1'				=> 'Your MySQL version (',
-	'ERR_DB_MYSQL_VERSION2'				=> ') is not supported by Sugar.  You will need to install a version that is compatible with the Sugar application.  Please consult the Compatibility Matrix in the Release Notes for supported MySQL versions.',
+	'ERR_DB_LOGIN_FAILURE'				=> 'The provided database host, username, and/or password is invalid, and a connection to the database could not be established.  Please enter a valid host, username and password',
+	'ERR_DB_LOGIN_FAILURE_MYSQL'		=> 'The provided database host, username, and/or password is invalid, and a connection to the database could not be established.  Please enter a valid host, username and password',
+	'ERR_DB_LOGIN_FAILURE_MSSQL'		=> 'The provided database host, username, and/or password is invalid, and a connection to the database could not be established.  Please enter a valid host, username and password',
+	'ERR_DB_MYSQL_VERSION'				=> 'Your MySQL version (%s) is not supported by Sugar.  You will need to install a version that is compatible with the Sugar application.  Please consult the Compatibility Matrix in the Release Notes for supported MySQL versions.',
 	'ERR_DB_NAME'						=> 'Database name cannot be blank.',
 	'ERR_DB_NAME2'						=> "Database name cannot contain a '\\', '/', or '.'",
     'ERR_DB_MYSQL_DB_NAME_INVALID'      => "Database name cannot contain a '\\', '/', or '.'",
@@ -144,6 +147,7 @@ $mod_strings = array(
 	'ERR_SESSION_PATH'					=> 'Session path is required if you wish to specify your own.',
 	'ERR_SI_NO_CONFIG'					=> 'You did not include config_si.php in the document root, or you did not define $sugar_config_si in config.php',
 	'ERR_SITE_GUID'						=> 'Application ID is required if you wish to specify your own.',
+    'ERROR_SPRITE_SUPPORT'              => "Currently we are not able to locate the GD library, as a result you will not be able to use the CSS Sprite functionality.",
 	'ERR_UPLOAD_MAX_FILESIZE'			=> 'Warning: Your PHP configuration should be changed to allow files of at least 6MB to be uploaded.',
     'LBL_UPLOAD_MAX_FILESIZE_TITLE'     => 'Upload File Size',
 	'ERR_URL_BLANK'						=> 'Provide the base URL for the Sugar instance.',
@@ -199,6 +203,7 @@ $mod_strings = array(
 	'LBL_CHECKSYS_ZIP'					=> 'ZIP Handling Module',
 	'LBL_CHECKSYS_FIX_FILES'            => 'Please fix the following files or directories before proceeding:',
     'LBL_CHECKSYS_FIX_MODULE_FILES'     => 'Please fix the following module directories and the files under them before proceeding:',
+    'LBL_CHECKSYS_UPLOAD'               => 'Writable Upload Directory',
     'LBL_CLOSE'							=> 'Close',
     'LBL_THREE'                         => '3',
 	'LBL_CONFIRM_BE_CREATED'			=> 'be created',
@@ -213,7 +218,7 @@ $mod_strings = array(
 	'LBL_DBCONF_DB_DROP_CREATE_WARN'	=> 'Caution: All Sugar data will be erased<br>if this box is checked.',
 	'LBL_DBCONF_DB_DROP_CREATE'			=> 'Drop and Recreate Existing Sugar tables?',
     'LBL_DBCONF_DB_DROP'                => 'Drop Tables',
-	'LBL_DBCONF_DB_NAME'				=> 'Database Name',
+    'LBL_DBCONF_DB_NAME'				=> 'Database Name',
 	'LBL_DBCONF_DB_PASSWORD'			=> 'Sugar Database User Password',
 	'LBL_DBCONF_DB_PASSWORD2'			=> 'Re-enter Sugar Database User Password',
 	'LBL_DBCONF_DB_USER'				=> 'Sugar Database Username',
@@ -221,9 +226,10 @@ $mod_strings = array(
     'LBL_DBCONF_DB_ADMIN_USER'          => 'Database Administrator Username',
     'LBL_DBCONF_DB_ADMIN_PASSWORD'      => 'Database Admin Password',
 	'LBL_DBCONF_DEMO_DATA'				=> 'Populate Database with Demo Data?',
-    'LBL_DBCONF_DEMO_DATA_TITLE'              => 'Choose Demo Data',
+    'LBL_DBCONF_DEMO_DATA_TITLE'        => 'Choose Demo Data',
 	'LBL_DBCONF_HOST_NAME'				=> 'Host Name',
-    'LBL_DBCONF_HOST_NAME_MSSQL'        => 'Host Name \ Host Instance',
+	'LBL_DBCONF_HOST_INSTANCE'			=> 'Host Instance',
+	'LBL_DBCONF_HOST_PORT'				=> 'Port',
 	'LBL_DBCONF_INSTRUCTIONS'			=> 'Please enter your database configuration information below. If you are unsure of what to fill in, we suggest that you use the default values.',
 	'LBL_DBCONF_MB_DEMO_DATA'			=> 'Use multi-byte text in demo data?',
     'LBL_DBCONFIG_MSG2'                 => 'Name of web server or machine (host) on which the database is located ( such as localhost or www.mydomain.com ):',
@@ -235,10 +241,10 @@ $mod_strings = array(
     'LBL_DBCONFIG_CREATE_DD'            => 'Define user to create',
     'LBL_DBCONFIG_SAME_DD'              => 'Same as Admin User',
 	//'LBL_DBCONF_I18NFIX'              => 'Apply database column expansion for varchar and char types (up to 255) for multi-byte data?',
-    'LBL_MSSQL_FTS'                     => 'Full Text Search',
-    'LBL_MSSQL_FTS_INSTALLED'           => 'Installed',
-    'LBL_MSSQL_FTS_INSTALLED_ERR1'      => 'Full Text Search capability is not installed.',
-    'LBL_MSSQL_FTS_INSTALLED_ERR2'      => 'You can still install but will not be able to use Full Text Search functionality unless you reinstall SQL Server with Full Text Search enabled.  Please refer to Sql Server install guide on how to do this, or contact your Administrator.',
+    'LBL_FTS'                           => 'Full Text Search',
+    'LBL_FTS_INSTALLED'                 => 'Installed',
+    'LBL_FTS_INSTALLED_ERR1'            => 'Full Text Search capability is not installed.',
+    'LBL_FTS_INSTALLED_ERR2'            => 'You can still install but will not be able to use Full Text Search functionality.  Please refer to your database server install guide on how to do this, or contact your Administrator.',
 	'LBL_DBCONF_PRIV_PASS'				=> 'Privileged Database User Password',
 	'LBL_DBCONF_PRIV_USER_2'			=> 'Database Account Above Is a Privileged User?',
 	'LBL_DBCONF_PRIV_USER_DIRECTIONS'	=> 'This privileged database user must have the proper permissions to create a database, drop/create tables, and create a user.  This privileged database user will only be used to perform these tasks as needed during the installation process.  You may also use the same database user as above if that user has sufficient privileges.',
@@ -331,10 +337,13 @@ $mod_strings = array(
 	'LBL_ML_VERSION'					=> 'Version',
 	'LBL_MSSQL'							=> 'SQL Server',
 	'LBL_MSSQL2'                        => 'SQL Server (FreeTDS)',
+	'LBL_MSSQL_SQLSRV'				    => 'SQL Server (Microsoft SQL Server Driver for PHP)',
 	'LBL_MYSQL'							=> 'MySQL',
+    'LBL_MYSQLI'						=> 'MySQL (mysqli extension)',
+	'LBL_IBM_DB2'						=> 'IBM DB2',
 	'LBL_NEXT'							=> 'Next',
 	'LBL_NO'							=> 'No',
-	'LBL_ORACLE'						=> 'Oracle',
+    'LBL_ORACLE'						=> 'Oracle',
 	'LBL_PERFORM_ADMIN_PASSWORD'		=> 'Setting site admin password',
 	'LBL_PERFORM_AUDIT_TABLE'			=> 'audit table / ',
 	'LBL_PERFORM_CONFIG_PHP'			=> 'Creating Sugar configuration file',
@@ -403,7 +412,9 @@ $mod_strings = array(
     'LBL_SITECFG_URL_MSG'               => 'Enter the URL that will be used to access the Sugar instance after installation. The URL will also be used as a base for the URLs in the Sugar application pages. The URL should include the web server or machine name or IP address.',
     'LBL_SITECFG_SYS_NAME_MSG'          => 'Enter a name for your system.  This name will be displayed in the browser title bar when users visit the Sugar application.',
     'LBL_SITECFG_PASSWORD_MSG'          => 'After installation, you will need to use the Sugar admin user (default username = admin) to log in to the Sugar instance.  Enter a password for this administrator user. This password can be changed after the initial login.  You may also enter another admin username to use besides the default value provided.',
-    'LBL_SYSTEM_CREDS'                  => 'System Credentials',
+    'LBL_SITECFG_COLLATION_MSG'         => 'Select collation (sorting) settings for your system. This settings will create the tables with the specific language you use. In case your language doesn\'t require special settings please use default value.',
+    'LBL_SPRITE_SUPPORT'                => 'Sprite Support',
+	'LBL_SYSTEM_CREDS'                  => 'System Credentials',
     'LBL_SYSTEM_ENV'                    => 'System Environment',
 	'LBL_START'							=> 'Start',
     'LBL_SHOW_PASS'                     => 'Show Passwords',
@@ -446,7 +457,8 @@ $mod_strings = array(
                                   permissions to make it writeable</li>
 					  <li>The following Sugar files must be writeable:<ul><li><b>/custom</li>
 <li>/cache</li>
-<li>/modules</b></li></ul></li></ul>
+<li>/modules</li>
+<li>/upload</b></li></ul></li></ul>
                                   If the check fails, you will not be able to proceed with the installation. An error message will be displayed, explaining why your system
                                   did not pass the check.
                                   After making any necessary changes, you can undergo the system
@@ -525,6 +537,7 @@ $mod_strings = array(
 											<br> Please correct your <a target=_new href='http://us2.php.net/manual/en/ref.session.php'>PHP configuration</a> in the php.ini file located here below.",
 	'LBL_SESSION_ERR_TITLE'				=> 'PHP Sessions Configuration Error',
 	'LBL_SYSTEM_NAME'=>'System Name',
+    'LBL_COLLATION' => 'Collation Settings',
 	'LBL_REQUIRED_SYSTEM_NAME'=>'Provide a System Name for the Sugar instance.',
 	'LBL_PATCH_UPLOAD' => 'Select a patch file from your local computer',
 	'LBL_INCOMPATIBLE_PHP_VERSION' => 'Php version 5 or above is required.',

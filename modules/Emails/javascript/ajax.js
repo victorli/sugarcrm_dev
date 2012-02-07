@@ -189,7 +189,7 @@ var AjaxObject = {
 		// apply attachment values
 		SUGAR.email2.composeLayout.loadAttachments(a.attachments);
 
-		setTimeout("callbackReplyForward.finish(globalA);", 500);
+		setTimeout("callbackReplyForward.finish(globalA,0,1);", 500);
 	},
 
 	/**
@@ -1481,24 +1481,26 @@ var callbackRefreshSugarFolders = {
 };
 var callbackReplyForward = {
 	success	: AjaxObject.handleReplyForward,
-	finish : function(a, retryCount) {
+	finish : function(a, retryCount,isReOrFwDraft) {
 		if (typeof(retryCount) == 'undefined') {
 			retryCount = 0;
 		} else {
 			retryCount++;
 		}
+		if (typeof(isReOrFwDraft) == 'undefined') {
+			isReOrFwDraft = 0;
+		}
 		var idx = SUGAR.email2.composeLayout.currentInstanceId;
 		var t = tinyMCE.getInstanceById('htmleditor' + idx);
         try {
 			var html = t.getContent();
-			
-			if(typeof a.type != 'undefined' && a.type == 'draft'){
-				html = a.description;
-			}
-			else{
-				html = "&nbsp;<br><div><hr></div>" + a.description;
-			}
-            
+
+            html = "&nbsp;";
+            //add hr tag if this is not a reply draft or forward draft
+            if(!isReOrFwDraft){
+                html += "<div><hr></div>";
+            }
+            html +=  a.description;
 
 			t.setContent(html);//
 

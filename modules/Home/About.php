@@ -46,11 +46,11 @@ ul li {
 list-style-type: square;
 }
 </style>
-<script language="javascript" src="modules/Home/about.js"></script>
+<?php echo getVersionedScript("modules/Home/about.js"); ?>
 <span>
 <div class="about" style="padding: 10px 15px 20px 15px;">
 <p>
-<IMG src="include/images/sugar_md_open.png" alt="SugarCRM" width="425" height="30" ondblclick='abouter.display();'>
+<h1><IMG src="include/images/sugar_md_open.png" alt="SugarCRM" width="425" height="30" ondblclick='abouter.display();'></h1>
 <br>
 <b><?php echo $mod_strings['LBL_VERSION']." ".$sugar_version." (".$mod_strings['LBL_BUILD']." ".$sugar_build.")";
     if( is_file( "custom_version.php" ) ){
@@ -66,15 +66,15 @@ echo "<P>Copyright ".$app_strings['LBL_SUGAR_COPYRIGHT']."</P>";
 // This version of viewLicenseText is for Community Edition only.
 $viewLicenseText = $mod_strings['LBL_VIEWLICENSE_COM'];
 
- 
+
 
 echo $viewLicenseText;
 
 
 
-$imgTagString = '<img style="margin-top: 2px" border="0" width="106" height="23" src="include/images/poweredby_sugarcrm.png" alt="Powered By SugarCRM">';
+		$noteImgRegex = "/<img[^>]*[\s]+src[^=]*=\"index.php\?entryPoint=download\&amp;id=([^\&]*)[^>]*>/im"; /*SKIP_IMAGE_TAG*/
 
- 
+
 
 echo $imgTagString;
 ?>
@@ -83,7 +83,7 @@ echo $imgTagString;
 
 $additionalTerm = $mod_strings['LBL_ADD_TERM_COM'];
 
- 
+
 
 echo $additionalTerm;
 
@@ -119,10 +119,10 @@ echo $theProductName."&#8482; ".$mod_strings['LBL_AND']." Sugar&#8482; ".$mod_st
 <h3><?php echo $mod_strings['LBL_GET_SUGARCRM_RSS']; ?></h3>
 
 <ul class="noBullet">
-	<li class="noBullet" style="margin-bottom: 6px;"><a href="http://www.sugarcrm.com/crm/index2.php?no_html=1&stype=rss20&task=returnRSS&option=com_rss_feed_manager&channel=Corporate" target="_blank"><img src="include/images/rss_xml.gif" border="0" alt="XML" align="top"></a>&nbsp;<a href="http://www.sugarcrm.com/crm/index2.php?no_html=1&stype=rss20&task=returnRSS&option=com_rss_feed_manager&channel=Corporate" target="_blank"><?php echo $mod_strings['LBL_SUGARCRM_NEWS']; ?></a></li>
-	<li class="noBullet" style="margin-bottom: 6px;"><a href="http://www.sugarcrm.com/forums/external.php?type=rss" target="_blank"><img src="include/images/rss_xml.gif" border="0" alt="XML" align="top"></a>&nbsp;<a href="http://www.sugarcrm.com/forums/external.php?type=rss" target="_blank"><?php echo $mod_strings['LBL_SUGARCRM_FORUMS']; ?></a></li>
-	<li class="noBullet" style="margin-bottom: 6px;"><a href="http://www.sugarforge.org/export/rss_sfnews.php" target="_blank"><img src="include/images/rss_xml.gif" border="0" alt="XML" align="top"></a>&nbsp;<a href="http://www.sugarforge.org/export/rss_sfnews.php" target="_blank"><?php echo $mod_strings['LBL_SUGARFORGE_NEWS']; ?></a></li>
-	<li class="noBullet" style="margin-bottom: 6px;"><a href="http://www.sugarcrm.com/crm/index2.php?no_html=1&stype=rss20&task=returnRSS&option=com_rss_feed_manager&channel=all" target="_blank"><img src="include/images/rss_xml.gif" border="0" alt="XML" align="top"></a>&nbsp;<a href="http://www.sugarcrm.com/crm/index2.php?no_html=1&stype=rss20&task=returnRSS&option=com_rss_feed_manager&channel=all" target="_blank"><?php echo $mod_strings['LBL_ALL_NEWS']; ?></a></li>
+	<li class="noBullet" style="margin-bottom: 6px;"><a href="http://www.sugarcrm.com/crm/index2.php?no_html=1&stype=rss20&task=returnRSS&option=com_rss_feed_manager&channel=Corporate" target="_blank"><!--not_in_theme!--><img src="include/images/rss_xml.gif" border="0" alt="XML" align="top">&nbsp;<?php echo $mod_strings['LBL_SUGARCRM_NEWS']; ?></a></li>
+	<li class="noBullet" style="margin-bottom: 6px;"><a href="http://www.sugarcrm.com/forums/external.php?type=rss" target="_blank"><!--not_in_theme!--><img src="include/images/rss_xml.gif" border="0" alt="XML" align="top">&nbsp;<?php echo $mod_strings['LBL_SUGARCRM_FORUMS']; ?></a></li>
+	<li class="noBullet" style="margin-bottom: 6px;"><a href="http://www.sugarforge.org/export/rss_sfnews.php" target="_blank"><!--not_in_theme!--><img src="include/images/rss_xml.gif" border="0" alt="XML" align="top">&nbsp;<?php echo $mod_strings['LBL_SUGARFORGE_NEWS']; ?></a></li>
+	<li class="noBullet" style="margin-bottom: 6px;"><a href="http://www.sugarcrm.com/crm/index2.php?no_html=1&stype=rss20&task=returnRSS&option=com_rss_feed_manager&channel=all" target="_blank"><!--not_in_theme!--><img src="include/images/rss_xml.gif" border="0" alt="XML" align="top">&nbsp;<?php echo $mod_strings['LBL_ALL_NEWS']; ?></a></li>
 </ul>
 <br>
 <h3><?php echo $mod_strings['LBL_JOIN_SUGAR_COMMUNITY']; ?></h3>
@@ -183,6 +183,7 @@ echo $theProductName."&#8482; ".$mod_strings['LBL_AND']." Sugar&#8482; ".$mod_st
 <LI><?php echo $mod_strings['LBL_SOURCE_ZEND']; ?> (<a href="http://framework.zend.com/" target="_blank">http://framework.zend.com/</a>)</LI>
 <LI><?php echo $mod_strings['LBL_SOURCE_PARSECSV']; ?> (<a href="http://code.google.com/p/parsecsv-for-php/" target="_blank">http://code.google.com/p/parsecsv-for-php/</a>)</LI>
 <LI><?php echo $mod_strings['LBL_SOURCE_PHPJS']; ?> (<a href="http://phpjs.org/" target="_blank">http://phpjs.org/</a>)</LI>
+<LI><?php echo $mod_strings['LBL_SOURCE_PHPSQL']; ?> (<a href="http://code.google.com/p/php-sql-parser/" target="_blank">http://code.google.com/p/php-sql-parser/</a>)</LI>
 </ul>
 
 	</td>

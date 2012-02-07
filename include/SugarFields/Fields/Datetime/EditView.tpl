@@ -43,7 +43,8 @@
 {assign var=date_value value={{sugarvar key='value' string=true}} }
 <input class="date_input" autocomplete="off" type="text" name="{{$idname}}" id="{{$idname}}" value="{$date_value}" title='{{$vardef.help}}' {{$displayParams.field}} tabindex='{{$tabindex}}' size="11" maxlength="10" >
 {{if !$displayParams.hiddeCalendar}}
-<img border="0" src="{sugar_getimagepath file='jscalendar.gif'}" alt="{$APP.LBL_ENTER_DATE}" id="{{$idname}}_trigger" align="absmiddle" />
+{capture assign="other_attributes"}align="absmiddle" border="0" id="{{$idname}}_trigger"{/capture}
+{sugar_getimage name="jscalendar" ext=".gif" alt="$APP.LBL_ENTER_DATE other_attributes=$other_attributes"}
 {{/if}}
 {{if $displayParams.showFormats}}
 &nbsp;(<span class="dateFormat">{$USER_DATEFORMAT}</span>)
@@ -58,6 +59,7 @@ daFormat : "{$CALENDAR_FORMAT}",
 button : "{{$idname}}_trigger",
 singleClick : true,
 dateStr : "{$date_value}",
+startWeekday: {$CALENDAR_FDOW|default:'0'},
 step : 1,
 weekNumbers:false
 {rdelim}

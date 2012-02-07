@@ -76,7 +76,6 @@ if(!empty($license->settings['license_latest_versions'])){
 $admin_group_header[]= array('LBL_SUGAR_NETWORK_TITLE','',false,$admin_option_defs, 'LBL_SUGAR_NETWORK_DESC');
 
 
-
 //system.
 $admin_option_defs=array();
 $admin_option_defs['Administration']['configphp_settings']= array('Administration','LBL_CONFIGURE_SETTINGS_TITLE','LBL_CONFIGURE_SETTINGS','./index.php?module=Configurator&action=EditView');

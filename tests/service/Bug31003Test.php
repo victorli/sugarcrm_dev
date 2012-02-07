@@ -34,7 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 require_once 'tests/service/SOAPTestCase.php';
 
 /**
@@ -53,11 +53,12 @@ class Bug31003Test extends SOAPTestCase
         $this->prospect = new Prospect();
         $this->prospect->email1 = $this->contact->email1;
         $this->prospect->save();
+        $GLOBALS['db']->commit();
     }
 
     public function testContactByEmail()
     {
-    	$result = $this->_soapClient->call('contact_by_email', array('user_name' => $this->_user->user_name, 'password' => $this->_user->user_hash, 'email_address' => $this->contact->email1));
+    	$result = $this->_soapClient->call('contact_by_email', array('user_name' => $GLOBALS['current_user']->user_name, 'password' => $GLOBALS['current_user']->user_hash, 'email_address' => $this->contact->email1));
         $this->assertTrue(!empty($result) && count($result) > 0, 'Incorrect number of results returned. HTTP Response: '.$this->_soapClient->response);
     	$this->assertEquals($result[0]['name1'], $this->contact->first_name, 'Incorrect result found');
     }
@@ -66,7 +67,6 @@ class Bug31003Test extends SOAPTestCase
     {
         parent::tearDown();
         $GLOBALS['db']->query("DELETE FROM prospects WHERE id = '{$this->contact->id}'");
-        SugarTestContactUtilities::removeAllCreatedContacts();
     }
 
 }

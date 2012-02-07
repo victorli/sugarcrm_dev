@@ -134,6 +134,8 @@ $mod_strings = array (
 	'LBL_NUMBER_GROUPING_SEP_TEXT'		=> 'Character used to separate thousands',
 	'LBL_DECIMAL_SEP'					=> 'Decimal Symbol',
 	'LBL_DECIMAL_SEP_TEXT'				=> 'Character used to separate decimal portion',
+	'LBL_FDOW'					=> 'First Day of Week',
+	'LBL_FDOW_TEXT'				=> 'First Day displayed in Week, Month, and Year Views',
 	'LBL_DATE_FORMAT_TEXT'				=> 'Set the display format for date stamps',
 	'LBL_DATE_FORMAT'					=> 'Date Format',
 	'LBL_DEFAULT_SUBPANEL_TITLE'		=> 'Users',
@@ -247,6 +249,7 @@ $mod_strings = array (
 	'LBL_MESSENGER_TYPE'				=> 'IM Type',
 	'LBL_MOBILE_PHONE'					=> 'Mobile',
 	'LBL_MODIFIED_BY'                  =>'Modified By',
+	'LBL_CREATED_BY_NAME' => 'Created By', //bug 48978
     'LBL_MODIFIED_BY_ID'               =>'Modified By ID',
     'LBL_MODULE_NAME'					=> 'Users',
 	'LBL_MODULE_TITLE'					=> 'Users: Home',
@@ -278,7 +281,7 @@ $mod_strings = array (
     'LBL_PASSWORD_EXPIRATION_GENERATED' => 'Your password is system-generated',
     'LBL_PASSWORD_EXPIRATION_TIME'      => 'Your password has expired. Please provide a new password.',
 
-	'LBL_PSW_MODIFIED'                  => 'password last changed',
+	'LBL_PSW_MODIFIED'                  => 'Password Last Changed',
     'LBL_PHONE'							=> 'Phone',
 	'LBL_PICK_TZ_WELCOME'				=> 'Welcome to Sugar.',
 	'LBL_PICK_TZ_DESCRIPTION'           => 'Before continuing, please confirm your time zone.  Select the appropriate time zone from the list below, and click Save to continue. The time zone can be changed at any time in your user settings.',
@@ -501,6 +504,17 @@ $mod_strings = array (
     'LBL_WIZARD_FINISH_TAB' => 'Finish',
     'LBL_WIZARD_FINISH_TITLE' => 'You are ready to use Sugar!',
 
+    'LBL_WIZARD_FINISH' => 'Click <b>Finish</b> below to save your settings and to begin using Sugar. For more information on using Sugar:<br /><br />
+<table cellpadding=0 cellspacing=0>
+<tr><td><!--not_in_theme!--><img src=include/images/university.png style="margin-right: 5px;"></td><td><a href="http://www.sugarcrm.com/university" target="_blank"><b>Sugar University</b></a><br>End-user and System Administrator Training and Resources</td></tr>
+<tr><td colspan=2><hr style="margin: 5px 0px;"></td></tr>
+<tr><td><!--not_in_theme!--><img src=include/images/docs.png style="margin-right: 5px;"></td><td><a href="http://docs.sugarcrm.com/" target="_blank"><b>Documentation</b></a><br>Product Guides and Release Notes</td></tr>
+<tr><td colspan=2><hr style="margin: 5px 0px;"></td></tr>
+<tr><td><!--not_in_theme!--><img src=include/images/kb.png style="margin-right: 5px;"></td><td><a href="http://kb.sugarcrm.com/" target="_blank"><b>Knowledge Base</b></a><br>Tips from SugarCRM Support for performing common tasks and processes in Sugar</td></tr>
+<tr><td colspan=2><hr style="margin: 5px 0px;"></td></tr>
+<tr><td><!--not_in_theme!--><img src=include/images/forums.png style="margin-right: 5px;"></td><td><a href="http://www.sugarcrm.com/forums" target="_blank"><b>Forums</b></a><br>Forums dedicated to the Sugar Community to discuss topics of interest with each other and with SugarCRM Developers</td></tr>
+</table>',
+
     'LBL_WIZARD_FINISH1' => 'What would you like to do next?',
     'LBL_WIZARD_FINISH2' => 'Start Using Sugar',
     'LBL_WIZARD_FINISH3' => 'Import Data ',
@@ -527,6 +541,12 @@ $mod_strings = array (
     'LBL_WIZARD_LOCALE_DESC' => 'Specify your time zone and how you would like dates, currencies and names to appear in Sugar.',
     'LBL_WIZARD_SMTP_DESC' => 'Provide your email account username and password for the default outbound email server.',
 	'LBL_EAPM_SUBPANEL_TITLE' => 'External Accounts',
+
+	'LBL_EDITLAYOUT' => 'Edit Layout' /*for 508 compliance fix*/,
+	'LBL_HELP' => 'Help' /*for 508 compliance fix*/,
+	'LBL_CHECKMARK' => 'Checkmark' /*for 508 compliance fix*/,
+	'LBL_THEMEPREVIEW' => 'Preview' /*for 508 compliance fix*/,
+
     'LBL_OAUTH_TOKENS' => 'OAuth Tokens',
     'LBL_OAUTH_TOKENS_SUBPANEL_TITLE' => "OAuth Access Tokens",
 
@@ -538,8 +558,16 @@ $mod_strings = array (
     'LBL_PHONE_OTHER' => 'Phone Other',
     'LBL_PHONE_FAX' => 'Phone Fax',
     'LBL_PORTAL_ONLY' => 'Portal Only',
+    'LBL_SHOW_ON_EMPLOYEES' => 'Display Employee Record',
     'LBL_IS_GROUP' => 'Is Group',
     'LBL_EXPORT_CREATED_BY' => 'Created By ID',
+    
+    'LBL_DATE_MODIFIED' => 'Date Modified',
+    'LBL_DATE_ENTERED' => 'Date Entered',
+    'LBL_DELETED' => 'Deleted',
+    'LBL_HIDEOPTIONS' => 'Hide Options',
+    'LBL_SHOWOPTIONS' => 'Show Options',
+
 ); // END STRINGS DEFS
 
 ?>

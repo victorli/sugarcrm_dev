@@ -55,6 +55,7 @@ class TimeDateTest extends Sugar_PHPUnit_Framework_TestCase
 	public function setUp()
 	{
 		$this->time_date = new TimeDate();
+		unset($GLOBALS['disable_date_format']);
 		$this->_noUserCache();
 	}
 

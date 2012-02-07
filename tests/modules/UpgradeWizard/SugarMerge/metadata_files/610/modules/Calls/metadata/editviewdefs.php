@@ -84,7 +84,7 @@ array (
       ),
       'javascript' => '<script type="text/javascript" src="include/JSON.js?s=94932f0dc915603816562a2cc59dbcd0&c=1"></script>
 <script type="text/javascript">{$JSON_CONFIG_JAVASCRIPT}</script>
-<script type="text/javascript" src="include/javascript/sugar_grp_jsolait.js?s=94932f0dc915603816562a2cc59dbcd0&c=1"></script>
+<script type="text/javascript" src="cache/include/javascript/sugar_grp_jsolait.js?s=94932f0dc915603816562a2cc59dbcd0&c=1"></script>
 <script type="text/javascript" src="modules/Meetings/jsclass_scheduler.js?s=94932f0dc915603816562a2cc59dbcd0&c=1"></script>
 <script>toggle_portal_flag();function toggle_portal_flag()  {ldelim} {$TOGGLE_JS} {rdelim} </script>',
       'useTabs' => false,

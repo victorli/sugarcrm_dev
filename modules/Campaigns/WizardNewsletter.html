@@ -50,7 +50,7 @@
 	<input type='hidden' name='campaign_type' value="{$MOD.LBL_NEWSLETTER_FORENTRY}">
 	<input type="hidden" id="wiz_total_steps" name="totalsteps" value="{$TOTAL_STEPS}">
 	<input type="hidden" id="wiz_current_step" name="currentstep" value='1'>
-	<input type="hidden" id="direction" name="wiz_direction" value='exit'>		
+	<input type="hidden" id="direction" name="wiz_direction" value='exit'>
 
 <table class='other view' cellspacing="1">
 <tr>
@@ -94,8 +94,8 @@
 </div>
 </form>
 
-<script type="text/javascript" language="javascript" src="modules/Campaigns/wizard.js"></script>
-<script type='text/javascript' src='include/javascript/sugar_grp_overlib.js'></script>
+{sugar_getscript file="modules/Campaigns/wizard.js"}
+{sugar_getscript file="cache/include/javascript/sugar_grp_overlib.js"}
 <div id='overDiv' style='position:absolute; visibility:hidden; z-index:1000;'></div>
 
 {$WIZ_JAVASCRIPT}

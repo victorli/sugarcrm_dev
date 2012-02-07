@@ -36,6 +36,10 @@ if (!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
+/**
+ * Global registry
+ * @api
+ */
 class SugarRegistry
 {
     private static $_instances = array();

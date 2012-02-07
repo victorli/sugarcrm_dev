@@ -48,16 +48,23 @@ class Bug42683Test extends SOAPTestCase
 		parent::setUp();
     }
 
-    public function testBadQuery() 
+    public function tearDown()
+    {
+        SugarTestLeadUtilities::removeAllCreatedLeads();
+        parent::tearDown();
+    }
+
+    public function testBadQuery()
     {
         $lead = SugarTestLeadUtilities::createLead();
-        
+
         $this->_login();
+
         $result = $this->_soapClient->call(
             'get_entry_list',
             array(
                 'session' => $this->_sessionId,
-                "module_name" => 'Leads', 
+                "module_name" => 'Leads',
                 "query" => "leads.id = '{$lead->id}'",
                 '',
                 0,
@@ -65,9 +72,8 @@ class Bug42683Test extends SOAPTestCase
                 array(array('name' =>  'email_addresses', 'value' => array('id', 'email_address', 'opt_out', 'primary_address'))),
                 )
             );
-		
+
         $this->assertEquals('primary_address', $result['relationship_list'][0][0]['records'][0][3]['name']);
-        
-        SugarTestLeadUtilities::removeAllCreatedLeads();
+
     }
 }

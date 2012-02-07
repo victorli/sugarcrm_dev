@@ -212,7 +212,7 @@ class StudioModule
         $popups = array( );
         $popups [] = array('name' => translate('LBL_POPUPLISTVIEW') , 'type' => 'popuplistview' , 'action' => 'module=ModuleBuilder&action=editLayout&view=popuplist&view_module=' . $this->module );
 		$popups [] = array('name' => translate('LBL_POPUPSEARCH') , 'type' => 'popupsearch' , 'action' => 'module=ModuleBuilder&action=editLayout&view=popupsearch&view_module=' . $this->module );
-		$layouts [ translate('LBL_POPUP') ] = array ( 'name' => translate('LBL_POPUP') , 'type' => 'Folder', 'children' => $popups, 'imageTitle' => 'Popup',  'imageName' => 'icon_Popup.gif', 'action' => 'module=ModuleBuilder&action=wizard&view=popup&view_module=' . $this->module);  
+		$layouts [ translate('LBL_POPUP') ] = array ( 'name' => translate('LBL_POPUP') , 'type' => 'Folder', 'children' => $popups, 'imageTitle' => 'Popup', 'action' => 'module=ModuleBuilder&action=wizard&view=popup&view_module=' . $this->module);  
 			
         $nodes = $this->getSearch () ;
         if ( !empty ( $nodes ) )

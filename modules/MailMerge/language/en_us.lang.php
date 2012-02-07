@@ -73,6 +73,8 @@ $mod_strings = array (
   'LBL_CONTAINS_CONTACT_INFO' => 'Selected template contains related ',
   'LBL_ADDIN_NOTICE' => 'This requires the installation of Sugar Mail Merge add-in to Microsoft Word.',
   'LBL_BROWSER_NOTICE' => 'You must be running IE 6.0 or greater to perform the actual merge.',
+	'LBL_REMOVE' => 'Remove Item(s)' /*for 508 compliance fix*/,
+	'LBL_ADD' => 'Add Item(s)' /*for 508 compliance fix*/,
 );
 
 

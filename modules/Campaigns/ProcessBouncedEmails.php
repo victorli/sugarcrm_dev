@@ -142,6 +142,12 @@ function campaign_process_bounced_emails(&$email, &$email_header)
 	global $sugar_config;
 	$emailFromAddress = $email_header->fromaddress;
 	$email_description = $email->raw_source;
+    	
+	//if raw_source is empty, try using the description instead
+    	if (empty($email_description)){
+        	$email_description = $email->description;
+	}
+
     $email_description .= retrieveErrorReportAttachment($email);
 
 	if (preg_match('/MAILER-DAEMON|POSTMASTER/i',$emailFromAddress)) 
@@ -195,7 +201,7 @@ function campaign_process_bounced_emails(&$email, &$email_header)
     		{
     			//todo mark the email address as invalid. search for prospects/leads/contact associated
     			//with this email address and set the invalid_email flag... also make email available.
-    			$GLOBALS['log']->info("Warning: Invalid identifier for campaign log $identifier");
+    			$GLOBALS['log']->info("Warning: Empty identifier for campaign log.");
     			return FALSE;
     		}
     	}  

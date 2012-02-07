@@ -40,18 +40,22 @@ require_once 'include/utils/file_utils.php';
 class CreateCacheDirectoryTest extends Sugar_PHPUnit_Framework_TestCase
 {
     private $_original_cwd = '';
-    
-    public function setUp() 
+
+    public function setUp()
     {
+        global $sugar_config;
         $this->_original_cwd = getcwd();
+        $this->_original_cachedir = $sugar_config['cache_dir'];
+        $sugar_config['cache_dir'] = 'cache/';
         chdir(dirname(__FILE__));
         $this->_removeCacheDirectory('./cache');
     }
 
-    public function tearDown() 
+    public function tearDown()
     {
         $this->_removeCacheDirectory('./cache');
         chdir($this->_original_cwd);
+        $sugar_config['cache_dir'] = $this->_original_cwd;
     }
 
     private function _removeCacheDirectory($dir)

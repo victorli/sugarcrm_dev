@@ -156,8 +156,7 @@ if(! isset($notes_list)) {
 $attachments = '';
 for($i=0; $i<count($notes_list); $i++) {
 	$the_note = $notes_list[$i];
-	//$attachments .= "<a href=\"".UploadFile::get_url($the_note->filename,$the_note->id)."\" target=\"_blank\">". $the_note->filename ."</a><br>";
-	$attachments .= "<a href=\"index.php?entryPoint=download&id=".$the_note->id."&type=Notes\">".$the_note->name.$the_note->description."</a><br />";
+	$attachments .= "<a href=\"index.php?entryPoint=download&id={$the_note->id}&type=Notes\">".$the_note->name.$the_note->description."</a><br />";
 }
 
 $xtpl->assign("ATTACHMENTS", $attachments);
@@ -166,7 +165,7 @@ $xtpl->assign("ATTACHMENTS", $attachments);
 global $current_user;
 if(is_admin($current_user) && $_REQUEST['module'] != 'DynamicLayout' && !empty($_SESSION['editinplace'])) {
 
-	$xtpl->assign("ADMIN_EDIT","<a href='index.php?action=index&module=DynamicLayout&from_action=".$_REQUEST['action'] ."&from_module=".$_REQUEST['module'] ."&record=".$_REQUEST['record']. "'>".SugarThemeRegistry::current()->getImage("EditLayout","border='0' alt='Edit Layout' align='bottom'")."</a>");
+	$xtpl->assign("ADMIN_EDIT","<a href='index.php?action=index&module=DynamicLayout&from_action=".$_REQUEST['action'] ."&from_module=".$_REQUEST['module'] ."&record=".$_REQUEST['record']. "'>".SugarThemeRegistry::current()->getImage("EditLayout","border='0' align='bottom'",null,null,'.gif',$mod_strings['LBL_EDIT_LAYOUT'])."</a>");
 }
 
 $xtpl->assign("DESCRIPTION", $focus->description);

@@ -39,7 +39,7 @@ $searchFields['Employees'] =
 	array (
 		'first_name' => array( 'query_type'=>'default'),
 		'last_name'=> array('query_type'=>'default'),	
-		'search_name'=> array('query_type'=>'default','db_field'=>array('first_name','last_name')),
+		'search_name'=> array('query_type'=>'default','db_field'=>array('first_name','last_name'),'force_unifiedsearch'=>true),
         'email'=> array(
 			'query_type' => 'default',
 			'operator' => 'subquery',
@@ -62,7 +62,9 @@ $searchFields['Employees'] =
                 'id',
             )
         ),
-		'current_user_only'=> array('query_type'=>'default','db_field'=>array('assigned_user_id'),'my_items'=>true, 'vname' => 'LBL_CURRENT_USER_FILTER', 'type' => 'bool'),
+        // This is named so awkwardly because it's the only way we could get it to be a "proper" checkbox and not throw the basic search all out of wack.
+		'open_only_active_users'=> array('query_type'=>'default','db_field'=>array('employee_status'), 'vname' => 'LBL_ONLY_ACTIVE', 'type' => 'bool'),
+
 		      
 		'employee_status'=> array('query_type'=>'default', 'options' => 'employee_status_dom', 'template_var' => 'STATUS_OPTIONS', 'options_add_blank' => true)
 	);

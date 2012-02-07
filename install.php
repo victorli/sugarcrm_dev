@@ -59,9 +59,11 @@ require_once('include/utils/LogicHook.php');
 require_once('data/SugarBean.php');
 require_once('include/entryPoint.php');
 //check to see if the script files need to be rebuilt, add needed variables to request array
-    $_REQUEST['root_directory'] = getcwd();
-    $_REQUEST['js_rebuild_concat'] = 'rebuild';
+$_REQUEST['root_directory'] = getcwd();
+$_REQUEST['js_rebuild_concat'] = 'rebuild';
+if(isset($_REQUEST['goto']) && $_REQUEST['goto'] != 'SilentInstall') {
     require_once('jssource/minify.php');
+}
 
 $timedate = TimeDate::getInstance();
 // cn: set php.ini settings at entry points
@@ -89,9 +91,6 @@ $common = 'install/installCommon.js';
 
 ///////////////////////////////////////////////////////////////////////////////
 ////	INSTALLER LANGUAGE
-
-
-
 function getSupportedInstallLanguages(){
 	$supportedLanguages = array(
 	'en_us'	=> 'English (US)',
@@ -99,23 +98,17 @@ function getSupportedInstallLanguages(){
 	if(file_exists('install/lang.config.php')){
 		include('install/lang.config.php');
 		if(!empty($config['languages'])){
-			
+
 			foreach($config['languages'] as $k=>$v){
 				if(file_exists('install/language/' . $k . '.lang.php')){
-					$supportedLanguages[$k] = $v;	
-				}	
-			}	
+					$supportedLanguages[$k] = $v;
+				}
+			}
 		}
 	}
 	return $supportedLanguages;
 }
 $supportedLanguages = getSupportedInstallLanguages();
-
-
-
-
-
-
 
 // after install language is selected, use that pack
 $default_lang = 'en_us';
@@ -160,11 +153,6 @@ if(isset($_REQUEST['page']) && $_REQUEST['page'] == 'licensePrint')
 {
     include('install/licensePrint.php');
     exit ();
-}
-
-//check to see if mysqli is enabled
-if(function_exists('mysqli_connect')){
-    $_SESSION['mysql_type'] = 'mysqli';
 }
 
 //if this is a system check, then just run the check and return,
@@ -220,31 +208,46 @@ if($_SERVER['SERVER_PORT']=='80'){
 $web_root = str_replace("/install.php", "", $web_root);
 $web_root = "http://$web_root";
 
- if(!isset($_SESSION['oc_install']) ||  $_SESSION['oc_install'] == false) {
+if (!isset($_SESSION['oc_install']) || $_SESSION['oc_install'] == false) {
     $workflow[] = 'siteConfig_a.php';
-    if(isset($_SESSION['install_type'])  && !empty($_SESSION['install_type'])  && $_SESSION['install_type']=='custom'){
-        $workflow[] = 'siteConfig_b.php';
+    if (isset($_SESSION['install_type']) && !empty($_SESSION['install_type']) &&
+         $_SESSION['install_type'] == 'custom') {
+            $workflow[] = 'siteConfig_b.php';
     }
- } else {
-    if(is_readable('config.php')) {
-        require_once('config.php');
+} else {
+    if (is_readable('config.php')) {
+        require_once ('config.php');
     }
- }
+}
 
-   // set the form's php var to the loaded config's var else default to sane settings
-    if(!isset($_SESSION['setup_site_url'])  || empty($_SESSION['setup_site_url'])){
-        if(isset($sugar_config['site_url']) && !empty($sugar_config['site_url'])){
-            $_SESSION['setup_site_url']= $sugar_config['site_url'];
-        }else{
-         $_SESSION['setup_site_url']= $web_root;
-        }
+if(empty($sugar_config['cache_dir']) && !empty($_SESSION['cache_dir'])) {
+    $sugar_config['cache_dir'] = $_SESSION['cache_dir'];
+}
+
+// set the form's php var to the loaded config's var else default to sane settings
+if(!isset($_SESSION['setup_site_url'])  || empty($_SESSION['setup_site_url'])) {
+    if(isset($sugar_config['site_url']) && !empty($sugar_config['site_url'])) {
+        $_SESSION['setup_site_url']= $sugar_config['site_url'];
+    } else {
+        $_SESSION['setup_site_url']= $web_root;
     }
-    if(!isset($_SESSION['setup_system_name']) || empty($_SESSION['setup_system_name'])){$_SESSION['setup_system_name'] = 'SugarCRM';}
-    if(!isset($_SESSION['setup_site_session_path']) || empty($_SESSION['setup_site_session_path'])){$_SESSION['setup_site_session_path']                = (isset($sugar_config['session_dir']))   ? $sugar_config['session_dir']  :  '';}
-    if(!isset($_SESSION['setup_site_log_dir']) || empty($_SESSION['setup_site_log_dir'])){$_SESSION['setup_site_log_dir']                     = (isset($sugar_config['log_dir']))       ? $sugar_config['log_dir']      : '.';}
-    if(!isset($_SESSION['setup_site_guid']) || empty($_SESSION['setup_site_guid'])){$_SESSION['setup_site_guid']                        = (isset($sugar_config['unique_key']))    ? $sugar_config['unique_key']   :  '';}
+}
 
-
+if (!isset($_SESSION['setup_system_name']) || empty($_SESSION['setup_system_name'])) {
+    $_SESSION['setup_system_name'] = 'SugarCRM';
+}
+if (!isset($_SESSION['setup_site_session_path']) || empty($_SESSION['setup_site_session_path'])) {
+    $_SESSION['setup_site_session_path'] = (isset($sugar_config['session_dir'])) ? $sugar_config['session_dir'] : '';
+}
+if (!isset($_SESSION['setup_site_log_dir']) || empty($_SESSION['setup_site_log_dir'])) {
+    $_SESSION['setup_site_log_dir'] = (isset($sugar_config['log_dir'])) ? $sugar_config['log_dir'] : '.';
+}
+if (!isset($_SESSION['setup_site_guid']) || empty($_SESSION['setup_site_guid'])) {
+    $_SESSION['setup_site_guid'] = (isset($sugar_config['unique_key'])) ? $sugar_config['unique_key'] : '';
+}
+if (!isset($_SESSION['cache_dir']) || empty($_SESSION['cache_dir'])) {
+    $_SESSION['cache_dir'] = isset($sugar_config['cache_dir']) ? $sugar_config['cache_dir'] : 'cache/';
+}
 
   $workflow[] = 'confirmSettings.php';
   $workflow[] = 'performSetup.php';
@@ -283,9 +286,12 @@ if(!empty($_REQUEST['goto'])) {
 }
 // Add check here to see if a silent install config file exists; if so then launch silent installer
 elseif ( is_file('config_si.php') && empty($sugar_config['installer_locked'])) {
+
+$langHeader = get_language_header();
+
     echo <<<EOHTML
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<html {$langHeader}>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
    <meta http-equiv="Content-Style-Type" content="text/css">
@@ -400,6 +406,9 @@ if($next_clicked) {
         case 'siteConfig_a.php':
             if(isset($_REQUEST['setup_site_url'])){$_SESSION['setup_site_url']          = $_REQUEST['setup_site_url'];}
             if(isset($_REQUEST['setup_system_name'])){$_SESSION['setup_system_name']    = $_REQUEST['setup_system_name'];}
+            if(isset($_REQUEST['setup_db_collation'])) {
+                $_SESSION['setup_db_options']['collation'] = $_REQUEST['setup_db_collation'];
+            }
             $_SESSION['setup_site_admin_user_name']             = $_REQUEST['setup_site_admin_user_name'];
             $_SESSION['setup_site_admin_password']              = $_REQUEST['setup_site_admin_password'];
             $_SESSION['setup_site_admin_password_retype']       = $_REQUEST['setup_site_admin_password_retype'];
@@ -535,6 +544,7 @@ EOQ;
         if(!$si_errors){
             $the_file = 'performSetup.php';
         }
+        require_once('jssource/minify.php');
         //since this is a SilentInstall we still need to make sure that
         //the appropriate files are writable
         // config.php
@@ -546,19 +556,15 @@ EOQ;
         // modules dir
         recursive_make_writable('./modules');
 
-        // data dir
-        make_writable('./data');
-        make_writable('./data/upload');
-
         // cache dir
-        make_writable('./cache/custom_fields');
-        make_writable('./cache/dyn_lay');
-        make_writable('./cache/images');
-        make_writable('./cache/import');
-        make_writable('./cache/layout');
-        make_writable('./cache/pdf');
-        make_writable('./cache/upload');
-        make_writable('./cache/xml');
+        create_writable_dir(sugar_cached('custom_fields'));
+        create_writable_dir(sugar_cached('dyn_lay'));
+        create_writable_dir(sugar_cached('images'));
+        create_writable_dir(sugar_cached('layout'));
+        create_writable_dir(sugar_cached('pdf'));
+        create_writable_dir(sugar_cached('upload/import'));
+        create_writable_dir(sugar_cached('xml'));
+        create_writable_dir(sugar_cached('include/javascript'));
 
         // check whether we're getting this request from a command line tool
         // we want to output brief messages if we're outputting to a command line tool

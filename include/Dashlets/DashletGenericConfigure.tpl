@@ -95,6 +95,7 @@
 		    </tr></table>
 	    </td>    
 	</tr>
+	{if $showMyItemsOnly || !empty($searchFields)}
 	<tr>
         <td scope='row'colspan='4' align='left'>
 	        <br>
@@ -124,6 +125,7 @@
         {/if}
     {/foreach}
     </tr>
+    {/if}
     <tr>
 	    <td colspan='4' align='right'>
 	        <input type='submit' class='button' value='{$strings.save}'>

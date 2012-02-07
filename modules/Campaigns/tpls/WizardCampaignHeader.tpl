@@ -51,39 +51,39 @@
 		<tr><td class="datalabel" colspan="3">{$MOD.LBL_WIZARD_HEADER_MESSAGE}<br></td><td>&nbsp;</td></tr>
 		<tr><td class="datalabel" colspan="4">&nbsp;</td></tr>
 		<tr>
-		<td width="17%" scope="row"><span sugar='slot1'>{$MOD.LBL_NAME} <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></span sugar='slot'></td>
-		<td width="33%" ><span sugar='slot1b'><input id='name' name='wiz_step1_name' title='{$MOD.LBL_NAME}' {$DISABLED} tabindex='1' size='50' maxlength='50' type="text" value="{$CAMP_NAME}" ></span sugar='slot'></td>
-		<td width="15%" scope="row"><span sugar='slot2'>{$APP.LBL_ASSIGNED_TO}</span sugar='slot'></td>
-		<td width="35%" ><span sugar='slot2b'><input class="sqsEnabled" tabindex="2" autocomplete="off" id="assigned_user_name" name="wiz_step1_assigned_user_name"  title='{$APP.LBL_ASSIGNED_TO}' type="text" value="{$ASSIGNED_USER_NAME}"><input id='assigned_user_id' name='wiz_step1_assigned_user_id' type="hidden" value="{$ASSIGNED_USER_ID}" />
-		<input title="{$APP.LBL_SELECT_BUTTON_TITLE}" accessKey="{$APP.LBL_SELECT_BUTTON_KEY}" type="button" tabindex='2' class="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' name=btn1
+		<td width="17%" scope="col"><span sugar='slot1'>{$MOD.LBL_NAME} <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></span sugar='slot'></td>
+		<td width="33%" ><span sugar='slot1b'><input id='name' name='wiz_step1_name' aria-required="true"  title='{$MOD.LBL_NAME}' {$DISABLED}  size='50' maxlength='50' type="text" value="{$CAMP_NAME}" ></span sugar='slot'></td>
+		<td width="15%" scope="col"><span sugar='slot2'>{$APP.LBL_ASSIGNED_TO}</span sugar='slot'></td>
+		<td width="35%" ><span sugar='slot2b'><input class="sqsEnabled" autocomplete="off" id="assigned_user_name" name="wiz_step1_assigned_user_name"  title='{$APP.LBL_ASSIGNED_TO}' type="text" value="{$ASSIGNED_USER_NAME}"><input id='assigned_user_id' name='wiz_step1_assigned_user_id' type="hidden" value="{$ASSIGNED_USER_ID}" />
+		<input title="{$APP.LBL_SELECT_BUTTON_TITLE}" accessKey="{$APP.LBL_SELECT_BUTTON_KEY}" type="button" class="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' name=btn1
 				onclick='open_popup("Users", 600, 400, "", true, false, {$encoded_users_popup_request_data});' /></span sugar='slot'>
 		</td>
 		</tr>
 		<tr>
-		<td width="15%" scope="row"><span sugar='slot3'>{$MOD.LBL_CAMPAIGN_STATUS} <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></span sugar='slot'></td>
-		<td width="35%" ><span sugar='slot3b'><select tabindex='1' id='status' name='wiz_step1_status' title='{$MOD.LBL_CAMPAIGN_STATUS}'>{$STATUS_OPTIONS}</select></span sugar='slot'></td>
+		<td width="15%" scope="col"><span sugar='slot3'>{$MOD.LBL_CAMPAIGN_STATUS} <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></span sugar='slot'></td>
+		<td width="35%" ><span sugar='slot3b'><select id='status' name='wiz_step1_status'  aria-required="true" title='{$MOD.LBL_CAMPAIGN_STATUS}'>{$STATUS_OPTIONS}</select></span sugar='slot'></td>
 		</tr>
 		<tr>
-		<td scope="row"><span sugar='slot5'>{$MOD.LBL_CAMPAIGN_START_DATE} </span sugar='slot'></td>
-		<td ><span sugar='slot5b'><input id='start_date' name='wiz_step1_start_date' title='{$MOD.LBL_CAMPAIGN_START_DATE}' onblur="parseDate(this, '{$CALENDAR_DATEFORMAT}');"  type="text" tabindex='1' size='11' maxlength='10' value="{$CAMP_START_DATE}"> <img src="{sugar_getimagepath file='jscalendar.gif'}" alt="{$APP.LBL_ENTER_DATE}" id="start_date_trigger" align="absmiddle"> <span class="dateFormat">{$USER_DATEFORMAT}</span></span sugar='slot'></td>
-		<td scope="row"><span sugar='slot6'>{$MOD.LBL_CAMPAIGN_TYPE} </td>
+		<td scope="col"><span sugar='slot5'>{$MOD.LBL_CAMPAIGN_START_DATE} </span sugar='slot'></td>
+		<td ><span sugar='slot5b'><input id='start_date' name='wiz_step1_start_date' title='{$MOD.LBL_CAMPAIGN_START_DATE}' onblur="parseDate(this, '{$CALENDAR_DATEFORMAT}');"  type="text" size='11' maxlength='10' value="{$CAMP_START_DATE}"> {sugar_getimage name="jscalendar" ext=".gif" alt=$APP.LBL_ENTER_DATE other_attributes='align="absmiddle" id="start_date_trigger" '} <span class="dateFormat">{$USER_DATEFORMAT}</span></span sugar='slot'></td>
+		<td scope="col"><span sugar='slot6'>{$MOD.LBL_CAMPAIGN_TYPE} </td>
 		<td><span sugar='slot6b'><{$SHOULD_TYPE_BE_DISABLED} id='campaign_type' title='{$MOD.LBL_CAMPAIGN_TYPE}' name='wiz_step1_campaign_type' >{$CAMPAIGN_TYPE_OPTIONS}</select></span sugar='slot'></td>
 		</tr>
 		<tr>
-		<td scope="row"><span sugar='slot7'>{$MOD.LBL_CAMPAIGN_END_DATE} <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></span sugar='slot'></td>
-		<td ><span sugar='slot7b'><input id='end_date' name='wiz_step1_end_date' title='{$MOD.LBL_CAMPAIGN_END_DATE}' onblur="parseDate(this, '{$CALENDAR_DATEFORMAT}');"  type="text" tabindex='1' size='11' maxlength='10' value="{$CAMP_END_DATE}"> <img src="{sugar_getimagepath file='jscalendar.gif'}" alt="{$APP.LBL_ENTER_DATE}" id="end_date_trigger" align="absmiddle"> <span class="dateFormat">{$USER_DATEFORMAT}</span></span sugar='slot'></td>
-		<td scope="row"><span sugar='slot8'>{$FREQUENCY_LABEL} </span sugar='slot'></td>
-		<td><span sugar='slot8b'><{$HIDE_FREQUENCY_IF_NEWSLETTER} tabindex='1' id='frequency' name='wiz_step1_frequency' title='{$MOD.LBL_CAMPAIGN_FREQUENCY}'>{$FREQ_OPTIONS}</select></span sugar='slot'></td>
+		<td scope="col"><span sugar='slot7'>{$MOD.LBL_CAMPAIGN_END_DATE} <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></span sugar='slot'></td>
+		<td ><span sugar='slot7b'><input id='end_date' name='wiz_step1_end_date'  aria-required="true" title='{$MOD.LBL_CAMPAIGN_END_DATE}' onblur="parseDate(this, '{$CALENDAR_DATEFORMAT}');"  type="text"s size='11' maxlength='10' value="{$CAMP_END_DATE}"> {sugar_getimage name="jscalendar" ext=".gif" alt=$APP.LBL_ENTER_DATE other_attributes='align="absmiddle" id="end_date_trigger" '} <span class="dateFormat">{$USER_DATEFORMAT}</span></span sugar='slot'></td>
+		<td scope="col"><span sugar='slot8'>{$FREQUENCY_LABEL} </span sugar='slot'></td>
+		<td><span sugar='slot8b'><{$HIDE_FREQUENCY_IF_NEWSLETTER}  id='frequency' name='wiz_step1_frequency' title='{$MOD.LBL_CAMPAIGN_FREQUENCY}'>{$FREQ_OPTIONS}</select></span sugar='slot'></td>
 		</tr>
 		<tr>
-		<td width="15%" scope="row"><span sugar='slot9'>&nbsp;</span></span sugar='slot'></td>
-		<td width="35%" ><span sugar='slot9b'>&nbsp;</span sugar='slot'></td>
-		<td scope="row"><span sugar='slot10'>&nbsp;</span sugar='slot'></td>
+		<td width="15%"><span sugar='slot9'>&nbsp;</span></span sugar='slot'></td>
+		<td width="35%" ><span sugeeear='slot9b'>&nbsp;</span sugar='slot'></td>
+		<td ><span sugar='slot10'>&nbsp;</span sugar='slot'></td>
 		<td><span sugar='slot10b'>&nbsp;</span sugar='slot'></td>
 		</tr>
 		<tr>
 		<td valign="top" scope="row"><span sugar='slot10'>{$MOD.LBL_CAMPAIGN_CONTENT}</span sugar='slot'></td>
-		<td colspan="3"><span sugar='slot10a'><textarea id='wiz_content' name='wiz_step1_content' title='{$MOD.LBL_CAMPAIGN_CONTENT}' tabindex='3' cols="110" rows="5">{$CONTENT}</textarea></span sugar='slot'></td>
+		<td colspan="3"><span sugar='slot10a'><textarea id='wiz_content' name='wiz_step1_content' title='{$MOD.LBL_CAMPAIGN_CONTENT}'  cols="110" rows="5">{$CONTENT}</textarea></span sugar='slot'></td>
 		</tr>
 		<tr>
 		<td scope="row">&nbsp;</td>

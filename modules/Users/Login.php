@@ -98,8 +98,6 @@ if(isset($_REQUEST['loginErrorMessage'])) {
         echo "<p align='center' class='error' > ". $app_strings[$_REQUEST['loginErrorMessage']]. "</p>";
     }
 }
-$query = "SELECT count(id) as total from users WHERE status='Active' AND deleted=0 AND is_group=0 AND portal_only=0";
-
 
 
 if (isset($_GET['login_module']))
@@ -175,7 +173,7 @@ if ( !empty($logindisplay) )
 
 			$captcha_privatekey = $admin->settings['captcha_private_key'];
 			$captcha_publickey = $admin->settings['captcha_public_key'];
-			$captcha_js .="<script type='text/javascript' src='" . getJSPath('include/javascript/sugar_grp1_yui.js') . "'></script><script type='text/javascript' src='" . getJSPath('include/javascript/sugar_grp_yui2.js') . "'></script>
+			$captcha_js .="<script type='text/javascript' src='" . getJSPath('cache/include/javascript/sugar_grp1_yui.js') . "'></script><script type='text/javascript' src='" . getJSPath('cache/include/javascript/sugar_grp_yui2.js') . "'></script>
 			<script type='text/javascript' src='http://api.recaptcha.net/js/recaptcha_ajax.js'></script>
 			<script>
 			function initCaptcha(){

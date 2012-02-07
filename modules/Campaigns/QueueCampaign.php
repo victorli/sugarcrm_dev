@@ -76,10 +76,7 @@ if (isset($_REQUEST['from_wiz'])) {
 if (!empty($campaign->status) && $campaign->status == 'sending') {
 	$err_messages[]=$mod_strings['ERR_SENDING_NOW'];
 }
-if ($campaign->db->dbType=='oci8') {
-} else {
-	$current_date= "'".$timedate->nowDb()."'";
-}
+$current_date = $campaign->db->now();
 
 //start scheduling now.....
 foreach ($_POST['mass'] as $message_id) {
@@ -105,15 +102,12 @@ foreach ($_POST['mass'] as $message_id) {
 
 	global $timedate;
 	$mergedvalue=$timedate->merge_date_time($marketing->date_start,$marketing->time_start);
-
-	if ($campaign->db->dbType=='oci8') {
+	if($test) {
+	    $send_date_time = $timedate->getNow()->get("-60 seconds")->asDb();
 	} else {
-		if ($test) {
-			$send_date_time="'".$timedate->getNow()->get("-60 seconds")->asDb() ."'";
-		} else {
-			$send_date_time= "'".$timedate->to_db($mergedvalue)."'";
-		}
+	    $send_date_time = $timedate->to_db($mergedvalue);
 	}
+    $send_date_time = $campaign->db->convert($campaign->db->quoted($send_date_time), "datetime");
 
 	//find all prospect lists associated with this email marketing message.
 	if ($marketing->all_prospect_lists == 1) {
@@ -140,58 +134,39 @@ foreach ($_POST['mass'] as $message_id) {
 	}
 	$result=$campaign->db->query($query);
 	while (($row=$campaign->db->fetchByAssoc($result))!=null ) {
-
-
 		$prospect_list_id=$row['prospect_list_id'];
 
 		//delete all messages for the current campaign and current email marketing message.
 		$delete_emailman_query="delete from emailman where campaign_id='{$campaign->id}' and marketing_id='{$message_id}' and list_id='{$prospect_list_id}'";
 		$campaign->db->query($delete_emailman_query);
+        $auto = $campaign->db->getAutoIncrementSQL("emailman", "id");
 
 		$insert_query= "INSERT INTO emailman (date_entered, user_id, campaign_id, marketing_id,list_id, related_id, related_type, send_date_time";
-		if ($campaign->db->dbType=='oci8') {
-		}
+		$insert_query.= empty($auto)?"":",id";
 		$insert_query.=')';
-		$insert_query.= " SELECT $current_date,'{$current_user->id}',plc.campaign_id,'{$message_id}',plp.prospect_list_id, plp.related_id, plp.related_type,{$send_date_time} ";
-		if ($campaign->db->dbType=='oci8') {
-		}
-		$insert_query.= "FROM prospect_lists_prospects plp ";
+		$insert_query.= " SELECT $current_date,'{$current_user->id}',plc.campaign_id,'{$message_id}',plp.prospect_list_id, plp.related_id, plp.related_type,{$send_date_time}";
+		$insert_query.= empty($auto)?"":",$auto";
+		$insert_query.= " FROM prospect_lists_prospects plp ";
 		$insert_query.= "INNER JOIN prospect_list_campaigns plc ON plc.prospect_list_id = plp.prospect_list_id ";
 		$insert_query.= "WHERE plp.prospect_list_id = '{$prospect_list_id}' ";
 		$insert_query.= "AND plp.deleted=0 ";
 		$insert_query.= "AND plc.deleted=0 ";
 		$insert_query.= "AND plc.campaign_id='{$campaign->id}'";
 
-		if ($campaign->db->dbType=='oci8') {
-		}
 		$campaign->db->query($insert_query);
 	}
 }
 
 //delete all entries from the emailman table that belong to the exempt list.
+//TODO:SM: may want to move this to query clause above instead
 if (!$test) {
-    //id based exempt list treatment.
-    if ($campaign->db->dbType =='mysql') {
-
-        $delete_query = "DELETE emailman.* FROM emailman ";
-        $delete_query.= "INNER JOIN prospect_lists_prospects plp on plp.related_id = emailman.related_id and  plp.related_type = emailman.related_type ";
-        $delete_query.= "INNER JOIN prospect_lists pl ON pl.id = plp.prospect_list_id ";
-        $delete_query .= "INNER JOIN prospect_list_campaigns plc on plp.prospect_list_id = plc.prospect_list_id ";
-        $delete_query.= "WHERE plp.deleted=0 ";
-        $delete_query.= "AND plc.campaign_id = '{$campaign->id}'";
-        $delete_query.= "AND pl.list_type = 'exempt' ";
-        $delete_query.= "AND emailman.campaign_id='{$campaign->id}'";
-        $campaign->db->query($delete_query);
-
-    }elseif($campaign->db->dbType =='mssql'){
-        $delete_query =  "DELETE FROM emailman ";
-        $delete_query .= "WHERE emailman.campaign_id='".$campaign->id."' ";
-        $delete_query .= "and emailman.related_id in ";
-        $delete_query .= "(select prospect_lists_prospects.related_id from prospect_lists_prospects where prospect_lists_prospects.deleted = 0 and prospect_lists_prospects.prospect_list_id in (select prospect_lists.id from prospect_lists where prospect_lists.list_type = 'exempt' and prospect_lists_prospects.prospect_list_id in(select prospect_list_campaigns.prospect_list_id from prospect_list_campaigns where prospect_list_campaigns.campaign_id = '".$campaign->id."'))) ";
-        $delete_query .= "and emailman.related_type in ";
-        $delete_query .= "(select prospect_lists_prospects.related_type from prospect_lists_prospects where prospect_lists_prospects.deleted = 0 and prospect_lists_prospects.prospect_list_id in (select prospect_lists.id from prospect_lists where prospect_lists.list_type = 'exempt' and prospect_lists_prospects.prospect_list_id in(select prospect_list_campaigns.prospect_list_id from prospect_list_campaigns where prospect_list_campaigns.campaign_id = '".$campaign->id."'))) ";
-        $campaign->db->query($delete_query);
-    }
+    $delete_query =  "DELETE FROM emailman WHERE emailman.campaign_id='{$campaign->id}' AND (emailman.related_id, emailman.related_type) IN
+    	(SELECT plp.related_id, plp.related_type FROM prospect_lists_prospects plp
+    		INNER JOIN prospect_lists pl ON pl.id = plp.prospect_list_id
+    		INNER JOIN prospect_list_campaigns plc ON plp.prospect_list_id = plc.prospect_list_id
+    		WHERE plp.deleted = 0 AND plc.deleted = 0 AND pl.deleted = 0 AND pl.list_type = 'exempt' AND  plc.campaign_id = '{$campaign->id}')
+    	";
+    $campaign->db->query($delete_query);
 }
 
 $return_module=isset($_REQUEST['return_module'])?$_REQUEST['return_module']:'Campaigns';

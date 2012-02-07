@@ -61,6 +61,12 @@
                 'include/javascript/phpjs/html_entity_decode.js' => 'include/javascript/sugar_grp1.js',
             ),
 
+           $sugar_field_grp = array(
+               'include/SugarFields/Fields/Collection/SugarFieldCollection.js' => 'include/javascript/sugar_field_grp.js',
+               'include/SugarFields/Fields/Teamset/Teamset.js' => 'include/javascript/sugar_field_grp.js',
+               'include/SugarFields/Fields/Datetimecombo/Datetimecombo.js' => 'include/javascript/sugar_field_grp.js',
+           ),
+
             $sugar_grp1_yui = array(
 			//YUI scripts loaded on first page
             'include/javascript/yui3/build/yui/yui-min.js'              => 'include/javascript/sugar_grp1_yui.js',
@@ -90,7 +96,7 @@
 			'include/javascript/sugar_connection_event_listener.js'     => 'include/javascript/sugar_grp1_yui.js',
 			'include/javascript/yui/build/calendar/calendar.js'     => 'include/javascript/sugar_grp1_yui.js',
             'include/javascript/yui/build/history/history.js'     => 'include/javascript/sugar_grp1_yui.js',
-			    
+
             ),
 
             $sugar_grp_yui_widgets = array(
@@ -115,7 +121,7 @@
                 "include/javascript/yui/build/button/assets/skins/sam/button.css"
 					=> 'include/javascript/sugar_grp_yui_widgets.css',
 				"include/javascript/yui/build/calendar/assets/skins/sam/calendar.css"
-					=> 'include/javascript/sugar_grp_yui_widgets.css',					
+					=> 'include/javascript/sugar_grp_yui_widgets.css',
 			),
 
             $sugar_grp_yui2 = array(

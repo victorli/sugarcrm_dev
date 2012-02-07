@@ -35,8 +35,10 @@
  ********************************************************************************/
 
 *}
+
+<script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_3.js'}"></script>
 <script type="text/javascript" src="{sugar_getjspath file='include/javascript/popup_helper.js'}"></script>
-<script type='text/javascript' src='{sugar_getjspath file='include/javascript/sugar_grp_overlib.js'}'></script>
+<script type='text/javascript' src="{sugar_getjspath file='cache/include/javascript/sugar_grp_overlib.js'}"></script>
 <script type="text/javascript">
 	{$ASSOCIATED_JAVASCRIPT_DATA}
 	
@@ -124,6 +126,4 @@ function clearAll() {
 	
 	{$multiSelectData}
 	<input class="button" type="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' onclick="send_back_selected('{$module}',document.MassUpdate,'mass[]','{$APP.ERR_NOTHING_SELECTED}');">
-
 {{/if}}
-

@@ -156,23 +156,6 @@ $layout_defs['Documents'] = array(
                     ),
                 ),
         ),
-        'quotes' => array(
-            'order' => 70,
-            'module' => 'Quotes',
-            'subpanel_name' => 'default',
-            'sort_order' => 'asc',
-            'sort_by' => 'id',
-            'title_key' => 'LBL_QUOTES_SUBPANEL_TITLE',
-            'get_subpanel_data' => 'quotes',
-            'top_buttons' => 
-            array (
-                0 => 
-                array (
-                    'widget_class' => 'SubPanelTopSelectButton',
-                    'mode' => 'MultiSelect',
-                    ),
-                ),
-        ),
 	),
 );
 ?>

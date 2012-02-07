@@ -139,91 +139,31 @@ function from_html($string, $encode=true) {
     return $cache[$string];
 }
 
-/**
- * @deprecated
- * @todo this function is only used by one function ( run_upgrade_wizard_sql() ), which isn't
- *       used either; trying kill this off
- */
-function run_sql_file( $filename )
-{
-    if( !is_file( $filename ) ){
-        print( "Could not find file: $filename <br>" );
-        return( false );
-    }
-
-
-    $contents = sugar_file_get_contents($filename);
-
-    $lastsemi   = strrpos( $contents, ';') ;
-    $contents   = substr( $contents, 0, $lastsemi );
-    $queries    = explode( ';', $contents );
-    $db         = DBManagerFactory::getInstance();
-
-    foreach( $queries as $query ){
-        if( !empty($query) ){
-			if($db->dbType == 'oci8')
-			{
-			}
-			else
-			{
-				$db->query( $query.';', true, "An error has occured while running.<br>" );
-			}
-        }
-    }
-    return( true );
-}
-
 /*
  * Return a version of $proposed that can be used as a column name in any of our supported databases
  * Practically this means no longer than 25 characters as the smallest identifier length for our supported DBs is 30 chars for Oracle plus we add on at least four characters in some places (for indicies for example)
  * @param string $name Proposed name for the column
  * @param string $ensureUnique
+ * @param int $maxlen Deprecated and ignored
  * @return string Valid column name trimmed to right length and with invalid characters removed
  */
- function getValidDBName ($name, $ensureUnique = false, $maxLen = 30)
+function getValidDBName ($name, $ensureUnique = false, $maxLen = 30)
 {
-    // first strip any invalid characters - all but alphanumerics and -
-    $name = preg_replace ( '/[^\w-]+/i', '', $name ) ;
-    $len = strlen ( $name ) ;
-    $result = $name;
-    if ($ensureUnique)
-    {
-        $md5str = md5($name);
-        $tail = substr ( $name, -11) ;
-        $temp = substr($md5str , strlen($md5str)-4 );
-        $result = substr ( $name, 0, 10) . $temp . $tail ;
-    }else if ($len > ($maxLen - 5))
-    {
-        $result = substr ( $name, 0, 11) . substr ( $name, 11 - $maxLen + 5);
-    }
-    return strtolower ( $result ) ;
+    return DBManagerFactory::getInstance()->getValidDBName($name, $ensureUnique);
 }
 
+
 /**
+ * isValidDBName
+ * 
  * Utility to perform the check during install to ensure a database name entered by the user
  * is valid based on the type of database server
  * @param string $name Proposed name for the DB
  * @param string $dbType Type of database server
  * @return bool true or false based on the validity of the DB name
  */
-function isValidDBName($name, $dbType) {
-    switch ($dbType){
-        case 'mssql':
-            $pattern = '/^[0-9#@]+|[\"\'\*\/\\?\:\\<\>\-\ \&\!\(\)\[\]\{\}\;\,\.\`\~\|\\\\]+/i';
-            break;
-        case 'oci8':
-            $pattern = '/[\#\"\'\*\/\\?\:\\<\>\-\ \&\!\(\)\[\]\{\}\;\,\.\`\~\|\\\\]+/i';
-            break;
-        case 'mysql':
-            $pattern = '/[\/\.\\\\]/i';
-            break;
-        default:
-            $pattern = '/[\/\.\\\\]/i';
-            break;
-    }
-    return preg_match($pattern, $name)==0?true:false;
+function isValidDBName($name, $dbType)
+{
+    $db = DBManagerFactory::getTypeInstance($dbType);
+    return $db->isDatabaseNameValid($name);
 }
-
-
-
-?>

@@ -112,7 +112,12 @@ $dictionary['email_addresses'] = array(
 );
 
 // hack for installer
-$dictionary['EmailAddress'] = $dictionary['email_addresses'];
+if (file_exists("cache/modules/EmailAddresses/EmailAddressvardefs.php"))
+{
+    include("cache/modules/EmailAddresses/EmailAddressvardefs.php");
+} else {
+    $dictionary['EmailAddress'] = $dictionary['email_addresses'];
+}
 
 /**
  * Relationship table linking email addresses to an instance of a Sugar Email object

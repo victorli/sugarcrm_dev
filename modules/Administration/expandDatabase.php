@@ -35,24 +35,16 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-
-global $current_user,$beanFiles;
-set_time_limit(3600);
-
-
-$db = & DBManagerFactory::getInstance();
-if ($db->dbType == 'oci8') {
+$db = DBManagerFactory::getInstance();
+if(!$db->supports('fix:expandDatabase')) {
 	echo "<BR>";
-	echo "<p>".$mod_strings['ERR_NOT_FOR_ORACLE']."</p>";
+	echo "<p>".$mod_strings['ERR_NOT_IMPLEMENTED']."</p>";
 	echo "<BR>";
 	sugar_die('');
 }
-if ($db->dbType == 'mysql') {
-    echo "<BR>";
-    echo "<p>".$mod_strings['ERR_NOT_FOR_MYSQL']."</p>";
-    echo "<BR>";
-    sugar_die('');
-}
+global $current_user,$beanFiles;
+
+set_time_limit(3600);
 if(is_admin($current_user) || isset($from_sync_client)){
 
 	$execute = false;

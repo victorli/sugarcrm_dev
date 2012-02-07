@@ -40,8 +40,8 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 require_once('modules/Administration/UpgradeWizardCommon.php');
 require_once('modules/Configurator/Configurator.php');
 function UWrebuild() {
-	$log =& $GLOBALS['log'];
-	$db =& $GLOBALS['db'];
+	global $log;
+	global $db;
 	$log->info('Deleting Relationship Cache. Relationships will automatically refresh.');
 
 	echo "
@@ -106,8 +106,7 @@ function UWrebuild() {
 unset($_SESSION['rebuild_relationships']);
 unset($_SESSION['rebuild_extensions']);
 
-$log =& $GLOBALS['log'];
-$db =& $GLOBALS['db'];
+global $log, $db;
 
 // process commands
 if( !isset($_REQUEST['mode']) || ($_REQUEST['mode'] == "") ){
@@ -125,10 +124,10 @@ if( !isset($_REQUEST['copy_count']) || ($_REQUEST['copy_count'] == "") ){
     die($mod_strings['ERR_UW_NO_FILES']);
 }
 
-if( !isset($_REQUEST['unzip_dir']) || ($_REQUEST['unzip_dir'] == "") ){
+if( empty($_REQUEST['unzip_dir']) || $_REQUEST['unzip_dir'] == "." || $_REQUEST['unzip_dir'] == ".."){
     die($mod_strings['ERR_UW_NO_TEMP_DIR']);
 }
-$unzip_dir      = $_REQUEST['unzip_dir'];
+$unzip_dir = $base_tmp_upgrade_dir. "/". basename($_REQUEST['unzip_dir']);
 
 if(empty($_REQUEST['install_file'])){
     die($mod_strings['ERR_UW_NO_INSTALL_FILE']);
@@ -191,7 +190,7 @@ if($install_type == 'module'){
 $file_action    = "";
 $uh_status      = "";
 
-$rest_dir = clean_path( remove_file_extension($install_file)."-restore");
+$rest_dir = remove_file_extension($install_file)."-restore";
 
 $files_to_handle  = array();
 
@@ -530,8 +529,8 @@ if(isset($lang_changed_string))
 	print($lang_changed_string);
 if ($install_type != "module" && $install_type != "langpack"){
     if( sizeof( $files_to_handle ) > 0 ){
-        echo '<div style="text-align: left; cursor: hand; cursor: pointer; text-decoration: underline;" onclick=\'this.style.display="none"; toggleDisplay("more");\' id="all_text"><img src="'.SugarThemeRegistry::current()->getImageURL('advanced_search.gif').'"> Show Details</div><div id=\'more\' style=\'display: none\'>
-            <div style="text-align: left; cursor: hand; cursor: pointer; text-decoration: underline;" onclick=\'document.getElementById("all_text").style.display=""; toggleDisplay("more");\'><img name="options" src="'.SugarThemeRegistry::current()->getImageURL('basic_search.gif').'"> Hide Details</div><br>';
+        echo '<div style="text-align: left; cursor: hand; cursor: pointer; text-decoration: underline;" onclick=\'this.style.display="none"; toggleDisplay("more");\' id="all_text">' . SugarThemeRegistry::current()->getImage('advanced_search', '', null, null, ".gif", $mod_strings['LBL_ADVANCED_SEARCH']) . ' Show Details</div><div id=\'more\' style=\'display: none\'>
+            <div style="text-align: left; cursor: hand; cursor: pointer; text-decoration: underline;" onclick=\'document.getElementById("all_text").style.display=""; toggleDisplay("more");\'>' . SugarThemeRegistry::current()->getImage('basic_search', '', null, null, ".gif", $mod_strings['LBL_BASIC_SEARCH']) . ' Hide Details</div><br>';
         print( "{$mod_strings['LBL_UW_FOLLOWING_FILES']} $file_action:<br>\n" );
         print( "<ul id=\"subMenu\">\n" );
         foreach( $files_to_handle as $file_to_copy ){

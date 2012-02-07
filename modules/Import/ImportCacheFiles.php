@@ -43,28 +43,83 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
  * All Rights Reserved.
  ********************************************************************************/
- 
+
 class ImportCacheFiles
 {
+    /**#@+
+     * Cache file names
+     */
+    const FILE_MISCELLANEOUS      = 'misc';
+    const FILE_DUPLICATES         = 'dupes';
+    const FILE_DUPLICATES_DISPLAY = 'dupesdisplay';
+    const FILE_ERRORS             = 'error';
+    const FILE_ERROR_RECORDS      = 'errorrecords';
+    const FILE_ERROR_RECORDS_ONLY = 'errorrecordsonly';
+    const FILE_STATUS             = 'status';
+    /**#@-*/
+
+    /**
+     * List of all cache file names
+     * 
+     * @var array
+     */
+    protected static $all_files = array(
+        self::FILE_MISCELLANEOUS,
+        self::FILE_DUPLICATES,
+        self::FILE_DUPLICATES_DISPLAY,
+        self::FILE_ERRORS,
+        self::FILE_ERROR_RECORDS,
+        self::FILE_ERROR_RECORDS_ONLY,
+        self::FILE_STATUS,
+    );
+
+    /**
+     * Get import directory name
+     * @return string
+     */
+    public static function getImportDir()
+    {
+        return "upload://import";
+    }
+
     /**
      * Returns the filename for a temporary file
      *
      * @param  string $type string to prepend to the filename, typically to indicate the file's use
      * @return string filename
      */
-    private static function _createFileName($type = 'misc')
+    private static function _createFileName($type = self::FILE_MISCELLANEOUS)
     {
-        global $sugar_config, $current_user;
-        
-        if( !is_dir($sugar_config['import_dir']) )
-            create_cache_directory(preg_replace('/^cache\//','',$sugar_config['import_dir']));
-        
-        if( !is_writable($sugar_config['import_dir']) )
-            return false;
-        
-        return "{$sugar_config['import_dir']}{$type}_{$current_user->id}.csv";        
+        global $current_user;
+        $importdir = self::getImportDir();
+        // ensure dir exists and writable
+        UploadStream::ensureDir($importdir, true);
+
+        return "$importdir/{$type}_{$current_user->id}.csv";
     }
-    
+
+    /**
+     * Ensure that all cache files are writable or can be created
+     * 
+     * @return bool
+     */
+    public static function ensureWritable()
+    {
+        foreach (self::$all_files as $type)
+        {
+            $filename = self::_createFileName($type);
+            if (file_exists($filename) && !is_writable($filename))
+            {
+                return false;
+            }
+            elseif (!is_writable(dirname($filename)))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Returns the duplicates filename (the ones used to download to csv file
      *
@@ -72,7 +127,7 @@ class ImportCacheFiles
      */
     public static function getDuplicateFileName()
     {
-        return self::_createFileName("dupes");
+        return self::_createFileName(self::FILE_DUPLICATES);
     }
 
     /**
@@ -82,7 +137,7 @@ class ImportCacheFiles
      */
     public static function getDuplicateFileDisplayName()
     {
-        return self::_createFileName("dupesdisplay");
+        return self::_createFileName(self::FILE_DUPLICATES_DISPLAY);
     }
 
     /**
@@ -92,9 +147,9 @@ class ImportCacheFiles
      */
     public static function getErrorFileName()
     {
-        return self::_createFileName("error");
+        return self::_createFileName(self::FILE_ERRORS);
     }
-    
+
     /**
      * Returns the error records filename
      *
@@ -102,7 +157,7 @@ class ImportCacheFiles
      */
     public static function getErrorRecordsFileName()
     {
-        return self::_createFileName("errorrecords");
+        return self::_createFileName(self::FILE_ERROR_RECORDS);
     }
 
     /**
@@ -112,7 +167,7 @@ class ImportCacheFiles
      */
     public static function getErrorRecordsWithoutErrorFileName()
     {
-        return self::_createFileName("errorrecordsonly");
+        return self::_createFileName(self::FILE_ERROR_RECORDS_ONLY);
     }
 
     /**
@@ -122,21 +177,21 @@ class ImportCacheFiles
      */
     public static function getStatusFileName()
     {
-        return self::_createFileName("status");
+        return self::_createFileName(self::FILE_STATUS);
     }
-    
+
     /**
-     * Clears out all cache files in the $sugar_config['import_dir'] directory
+     * Clears out all cache files in the import directory
      */
     public static function clearCacheFiles()
     {
         global $sugar_config;
-        
-        if ( is_dir($sugar_config['import_dir']) ) {
-            $files = dir($sugar_config['import_dir']);
+        $importdir = self::getImportDir();
+        if ( is_dir($importdir) ) {
+            $files = dir($importdir);
             while (false !== ($file = $files->read())) {
                 if ( !is_dir($file) && stristr($file,'.csv') )
-                    unlink($sugar_config['import_dir'].$file);
+                    unlink("$importdir/$file");
             }
         }
     }

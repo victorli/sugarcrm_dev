@@ -108,6 +108,7 @@ class TemplateHTML extends TemplateField{
         	$def['default'] = $this->ext4;
         }
         $def['studio'] = 'visible';
+        $def['source'] = 'non-db';
 		$def['dbType'] = isset($this->ext3) ? $this->ext3 : 'text' ;
         return array_merge($def, $this->get_additional_defs());
     }

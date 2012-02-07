@@ -37,7 +37,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 class TemplateURL extends TemplateText{
-	
+
+    var $supports_unified_search = true;
+
 	function __construct()
 	{
 		$this->vardef_map['ext4'] = 'link_target';

@@ -41,7 +41,7 @@
 
 
 {if $helpFileExists}
-<html>
+<html {$langHeader}>
 <head>
 <title>{$title}</title>
 {$styleSheet}
@@ -77,5 +77,5 @@ function createBookmarkLink(title, url){
 </body>
 </html>	
 {else}
-<IFRAME frameborder="0" marginwidth="0" marginheight="0" bgcolor="#FFFFFF" SRC="{$iframeURL}"  NAME="SUGARIFRAME" ID="SUGARIFRAME" WIDTH="100%" height="1000"></IFRAME>
+<IFRAME frameborder="0" marginwidth="0" marginheight="0" bgcolor="#FFFFFF" SRC="{$iframeURL}" TITLE="{$iframeURL}" NAME="SUGARIFRAME" ID="SUGARIFRAME" WIDTH="100%" height="1000"></IFRAME>
 {/if}

@@ -298,7 +298,7 @@ function get_user_module_list($user){
 
 	$actions = ACLAction::getUserActions($user->id,true);
 	foreach($actions as $key=>$value){
-		if($value['module']['access']['aclaccess'] < ACL_ALLOW_ENABLED){
+		if(isset($value['module']) && $value['module']['access']['aclaccess'] < ACL_ALLOW_ENABLED){
 			if ($value['module']['access']['aclaccess'] == ACL_ALLOW_DISABLED) {
 				unset($modules[$key]);
 			} else {
@@ -312,11 +312,14 @@ function get_user_module_list($user){
 	//Remove all modules that don't have a beanFiles entry associated with it
 	foreach($modules as $module_name=>$module)
 	{
-		$class_name = $beanList[$module_name];
-		if(empty($beanFiles[$class_name]))
-		{
-		   unset($modules[$module_name]);
-		}
+        if ( isset($beanList[$module_name]) ) {
+            $class_name = $beanList[$module_name];
+            if(empty($beanFiles[$class_name])) {
+                unset($modules[$module_name]);
+            }
+        } else {
+            unset($modules[$module_name]);
+        }
 	}
 
 	return $modules;
@@ -398,7 +401,8 @@ function filter_fields($value, $fields) {
 				continue;
 			}
 		} // if
-		$filterFields[] = $field;
+        // No valid field should be caught by this quoting.
+		$filterFields[] = getValidDBName($field);
 	} // foreach
 	return $filterFields;
 } // fn
@@ -503,7 +507,7 @@ function get_return_value_for_fields($value, $module, $fields) {
 				);
 }
 
-function getRelationshipResults($bean, $link_field_name, $link_module_fields, $optional_where = '') {
+function getRelationshipResults($bean, $link_field_name, $link_module_fields) {
 	global  $beanList, $beanFiles;
 	$bean->load_relationship($link_field_name);
 	if (isset($bean->$link_field_name)) {
@@ -530,7 +534,7 @@ function getRelationshipResults($bean, $link_field_name, $link_module_fields, $o
 			}
 		}
 		// create a query
-		$subquery = $submodule->create_new_list_query('',$optional_where ,$filterFields,$params, 0,'', true,$bean);
+		$subquery = $submodule->create_new_list_query('','',$filterFields,$params, 0,'', true,$bean);
 		$query =  $subquery['select'].$roleSelect .   $subquery['from'].$query_array['join']. $subquery['where'];
 
 		$result = $submodule->db->query($query, true);
@@ -704,7 +708,7 @@ function new_handle_set_entries($module_name, $name_value_lists, $select_fields 
 						//have an object with this outlook_id, if we do
 						//then we can set the id, otherwise this is a new object
 						$order_by = "";
-						$query = $seed->table_name.".outlook_id = '".$seed->outlook_id."'";
+						$query = $seed->table_name.".outlook_id = '".$GLOBALS['db']->quote($seed->outlook_id)."'";
 						$response = $seed->get_list($order_by, $query, 0,-1,-1,0);
 						$list = $response['list'];
 						if(count($list) > 0){
@@ -975,9 +979,9 @@ function add_create_account($seed)
 
 	    $query = "select id, deleted from {$focus->table_name} WHERE name='".$seed->db->quote($account_name)."'";
 	    $query .=" ORDER BY deleted ASC";
-	    $result = $seed->db->query($query) or sugar_die("Error selecting sugarbean: ".mysql_error());
+	    $result = $seed->db->query($query, true);
 
-	    $row = $seed->db->fetchByAssoc($result, -1, false);
+	    $row = $seed->db->fetchByAssoc($result, false);
 
 		// we found a row with that id
 	    if (isset($row['id']) && $row['id'] != -1)
@@ -986,7 +990,7 @@ function add_create_account($seed)
 	        if ( isset($row['deleted']) && $row['deleted'] == 1)
 	        {
 	            $query2 = "delete from {$focus->table_name} WHERE id='". $seed->db->quote($row['id'])."'";
-	            $result2 = $seed->db->query($query2) or sugar_die("Error deleting existing sugarbean: ".mysql_error());
+	            $result2 = $seed->db->query($query2, true);
 			}
 			// else just use this id to link the contact to the account
 	        else
@@ -1053,15 +1057,15 @@ function check_for_duplicate_contacts($seed){
 			}
 			return null;
 		}
-    } else {
+	} else {
         //This section of code is executed if no emails are supplied in the $seed instance
 
         //This query is looking for the id of Contact records that do not have a primary email address based on the matching
         //first and last name and the record being not deleted.  If any such records are found we will take the first one and assume
         //that it is the duplicate record
-        $query = "SELECT c.id as id FROM contacts c
-            LEFT OUTER JOIN email_addr_bean_rel eabr ON eabr.bean_id = c.id
-            WHERE c.first_name = '{$trimmed_first}' AND c.last_name = '{$trimmed_last}' AND c.deleted = 0 AND eabr.id IS NULL";
+	    $query = "SELECT c.id as id FROM contacts c
+LEFT OUTER JOIN email_addr_bean_rel eabr ON eabr.bean_id = c.id
+WHERE c.first_name = '{$trimmed_first}' AND c.last_name = '{$trimmed_last}' AND c.deleted = 0 AND eabr.id IS NULL";
 
         //Apply the limit query filter to this since we only need the first record
         $result = $GLOBALS['db']->getOne($query);
@@ -1098,8 +1102,7 @@ function is_server_version_greater($left, $right){
 }
 
 function getFile( $zip_file, $file_in_zip ){
-    global $sugar_config;
-    $base_upgrade_dir = $sugar_config['upload_dir'] . "/upgrades";
+    $base_upgrade_dir = sugar_cached("/upgrades");
     $base_tmp_upgrade_dir   = "$base_upgrade_dir/temp";
     $my_zip_dir = mk_temp_dir( $base_tmp_upgrade_dir );
     unzip_file( $zip_file, $file_in_zip, $my_zip_dir );
@@ -1157,6 +1160,7 @@ function canViewPath( $path, $base ){
   return 0 !== strncmp( $path, $base, strlen( $base ) );
 }
 
+
 /**
  * apply_values
  *
@@ -1188,6 +1192,7 @@ function apply_values($seed, $dataValues, $firstSync)
         }
     }
 }
+
 /*END HELPER*/
 
 ?>

@@ -34,7 +34,6 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-require_once("include/database/DBHelper.php");
 
 /**
  * @ticket 42475
@@ -44,15 +43,15 @@ class Bug42475Test extends Sugar_PHPUnit_Framework_TestCase
     public function testAuditingCurrency() {
         // getDataChanges
         $testBean = new Bug42475TestBean();
-        $dataChanges = $testBean->dbManager->helper->getDataChanges($testBean);
+        $dataChanges = $testBean->db->getDataChanges($testBean);
 
-        $this->assertEquals(0,count($dataChanges));
+        $this->assertEquals(0,count($dataChanges), "New test bean shouldn't have any changes");
 
         $testBean = new Bug42475TestBean();
         $testBean->test_field = 3829.83862;
-        $dataChanges = $testBean->dbManager->helper->getDataChanges($testBean);
+        $dataChanges = $testBean->db->getDataChanges($testBean);
 
-        $this->assertEquals(1,count($dataChanges));
+        $this->assertEquals(1,count($dataChanges), "Test bean should have 1 change since we added assigned new value to test_field");
 
     }
 }

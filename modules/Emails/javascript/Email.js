@@ -336,7 +336,7 @@ function multiFiles( list_target){
 
                 // constants
                 allowedTypes = ['gif', 'bmp', 'png', 'jpg', 'jpeg'],
-                imglocation = sugar_cache_dir + 'images/';
+                imglocation = 'cache/images/';
 
             //check if filetype is valid
             if (SUGAR.util.validateFileExt(fileName, allowedTypes)) {
@@ -487,13 +487,9 @@ function docUpload() {
         this.parentNode.childNodes[2].checked='true';
         var documentRevisionId = this.parentNode.childNodes[4].value;
         var mime_type = this.parentNode.childNodes[5].value;
-		if(mime_type == "image/gif" || mime_type == "image/bmp" || mime_type == "image/png" || mime_type == "image/x-png" || mime_type == "image/jpg")
+		if(mime_type == "image/gif" || mime_type == "image/bmp" || mime_type == "image/png" || mime_type == "image/x-png" || mime_type == "image/jpg" || mime_type == "image/jpeg")
         {
-            var imglocation = unescape(document.location.pathname.substr(1));
-            imglocation = imglocation.substring(0,imglocation.lastIndexOf('/')+1);
-            imglocation='/'+imglocation+sugar_upload_dir;
-            embedImage='<img src='+imglocation+documentRevisionId+'>';
-            embedImage1='<img src=cid:'+documentRevisionId+' width="1" height="1" >';
+            embedImage='<img src="index.php?entryPoint=download&type=Documents&id='+documentRevisionId+'">';
             insert_variable(embedImage);
         }
         else{

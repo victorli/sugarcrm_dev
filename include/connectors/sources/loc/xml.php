@@ -35,6 +35,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
+/**
+ * Local XML source
+ * @api
+ */
 abstract class loc_xml extends source
 {
  	public function __parse($file)

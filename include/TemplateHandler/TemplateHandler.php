@@ -34,20 +34,20 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
+
+
 /**
  * TemplateHandler builds templates using SugarFields and a generic view.
  * Currently it handles EditViews and DetailViews. It creates a smarty template cached in
  * cache/modules/moduleName/view
- *
+ * @api
  */
-
-
 class TemplateHandler {
     var $cacheDir;
     var $templateDir = 'modules/';
     var $ss;
     function TemplateHandler() {
-      $this->cacheDir = $GLOBALS['sugar_config']['cache_dir'];
+      $this->cacheDir = sugar_cached('');
     }
 
     function loadSmarty(){
@@ -383,7 +383,7 @@ class TemplateHandler {
 					   $field['id_name'] = $field['name'] . "_" . $field['id_name'];
                 }
 				$name = $qsd->form_name . '_' . $field['name'];
-				
+
 
 
                 if($field['type'] == 'relate' && isset($field['module']) && (preg_match('/_name$|_c$/si',$name) || !empty($field['quicksearch']))) {
@@ -397,7 +397,7 @@ class TemplateHandler {
                             else {
                                 if ($view == "ConvertLead")
 								    $sqs_objects[$name] = $qsd->getQSUser($field['name'], $field['id_name']);
-								else 
+								else
 								    $sqs_objects[$name] = $qsd->getQSUser();
 							}
                         } else if($matches[0] == 'Campaigns') {
@@ -444,7 +444,7 @@ class TemplateHandler {
                 } //if-else
             } //foreach
         }
-        
+
        //Implement QuickSearch for the field
        if(!empty($sqs_objects) && count($sqs_objects) > 0) {
            $quicksearch_js = '<script language="javascript">';

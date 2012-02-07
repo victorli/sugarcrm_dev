@@ -413,11 +413,21 @@ class User extends Person {
         return $user->_userPreferenceFocus->getPreference($name, $category);
 	}
 
+   /**
+    * Get WHERE clause that fetches all users counted for licensing purposes
+    * @return string
+    */
+	public static function getLicensedUsersWhere()
+	{
+		return "deleted=0 AND status='Active' AND user_name IS NOT NULL AND is_group=0 AND portal_only=0  AND ".$GLOBALS['db']->convert('user_name', 'length').">0";
+	    return "1<>1";
+	}
+
 	function save($check_notify = false) {
 		$isUpdate = !empty($this->id) && !$this->new_with_id;
 
 
-		$query = "SELECT count(id) as total from users WHERE status='Active' AND deleted=0 AND is_group=0 AND portal_only=0";
+		$query = "SELECT count(id) as total from users WHERE ".self::getLicensedUsersWhere();
 
 
 		// wp: do not save user_preferences in this table, see user_preferences module
@@ -743,7 +753,6 @@ EOQ;
 		$result = $this->db->query($query, true, "Error filling in additional detail fields");
 
 		$row = $this->db->fetchByAssoc($result);
-		$GLOBALS['log']->debug("additional detail query results: $row");
 
 		if ($row != null) {
 			$this->reports_to_name = stripslashes($row['first_name'].' '.$row['last_name']);
@@ -816,16 +825,10 @@ EOQ;
 			$verified = FALSE;
 		}
 
-		if (($current_user->is_admin == "on")) {
-            if($this->db->dbType == 'mssql'){
-                $query = "SELECT user_name from users where is_admin = 1 AND deleted=0";
-            }else{
-                $query = "SELECT user_name from users where is_admin = 'on' AND deleted=0";
-            }
-			$result = $this->db->query($query, true, "Error selecting possible duplicate users: ");
-			$remaining_admins = $this->db->getRowCount($result);
+		if (is_admin($current_user)) {
+		    $remaining_admins = $this->db->getOne("SELECT COUNT(*) as c from users where is_admin = 1 AND deleted=0");
 
-			if (($remaining_admins <= 1) && ($this->is_admin != "on") && ($this->id == $current_user->id)) {
+			if (($remaining_admins <= 1) && ($this->is_admin != '1') && ($this->id == $current_user->id)) {
 				$GLOBALS['log']->debug("Number of remaining administrator accounts: {$remaining_admins}");
 				$this->error_string .= $mod_strings['ERR_LAST_ADMIN_1'].$this->user_name.$mod_strings['ERR_LAST_ADMIN_2'];
 				$verified = FALSE;
@@ -843,17 +846,16 @@ EOQ;
 
 	function get_list_view_data() {
 
-		global $current_user;
-                
-                // Bug #48555 Not User Name Format of User's locale. 
-                $this->_create_proper_name_field();
-                
+		global $current_user, $mod_strings;
+        // Bug #48555 Not User Name Format of User's locale.
+        $this->_create_proper_name_field();
+
 		$user_fields = $this->get_list_view_array();
 		if ($this->is_admin)
-			$user_fields['IS_ADMIN_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '');
+			$user_fields['IS_ADMIN_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '',null,null,'.gif',$mod_strings['LBL_CHECKMARK']);
 		elseif (!$this->is_admin) $user_fields['IS_ADMIN'] = '';
 		if ($this->is_group)
-			$user_fields['IS_GROUP_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '');
+			$user_fields['IS_GROUP_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '',null,null,'.gif',$mod_strings['LBL_CHECKMARK']);
 		else
 			$user_fields['IS_GROUP_IMAGE'] = '';
 		$user_fields['NAME'] = empty ($this->name) ? '' : $this->name;
@@ -870,6 +872,23 @@ EOQ;
 	}
 
 
+
+	
+    /**
+     * getAllUsers
+     *
+     * Returns all active and inactive users
+     * @return Array of all users in the system
+     */
+
+    public static function getAllUsers()
+    {
+        $active_users = get_user_array(FALSE);
+        $inactive_users = get_user_array(FALSE, "Inactive");
+        $result = $active_users + $inactive_users;
+        asort($result);
+        return $result;
+    }
 
 	function create_export_query($order_by, $where) {
 		include('modules/Users/field_arrays.php');
@@ -993,9 +1012,9 @@ EOQ;
 		return $ret;
 	}
 
-	function getUsersNameAndEmail() 
+	function getUsersNameAndEmail()
 	{
-	    // Bug #48555 Not User Name Format of User's locale. 
+	    // Bug #48555 Not User Name Format of User's locale.
 	    $this->_create_proper_name_field();
 
 		$prefAddr = $this->emailAddress->getPrimaryAddress($this);
@@ -1102,15 +1121,15 @@ EOQ;
 			$to_addrs_ids = '';
 			$to_addrs_names = '';
 			$to_addrs_emails = '';
-			
-            $fullName = !empty($focus->name) ? $focus->name : '';
+
+			$fullName = !empty($focus->name) ? $focus->name : '';
 
 			if(empty($ret_module)) $ret_module = $focus->module_dir;
 			if(empty($ret_id)) $ret_id = $focus->id;
 			if($focus->object_name == 'Contact') {
 				$contact_id = $focus->id;
 				$to_addrs_ids = $focus->id;
-				// Bug #48555 Not User Name Format of User's locale. 
+				// Bug #48555 Not User Name Format of User's locale.
 				$focus->_create_proper_name_field();
 			    $fullName = $focus->name;
 			    $to_addrs_names = $fullName;
@@ -1179,6 +1198,7 @@ EOQ;
 			$to_addrs_ids = '';
 			$to_addrs_names = '';
 			$to_addrs_emails = '';
+
             $fullName = !empty($focus->name) ? $focus->name : '';
 
 			if(!empty($focus->$attribute)) {
@@ -1189,7 +1209,7 @@ EOQ;
 			if(empty($ret_module)) $ret_module = $focus->module_dir;
 			if(empty($ret_id)) $ret_id = $focus->id;
 			if($focus->object_name == 'Contact') {
-				// Bug #48555 Not User Name Format of User's locale. 
+				// Bug #48555 Not User Name Format of User's locale.
 				$focus->_create_proper_name_field();
 			    $fullName = $focus->name;
 			    $contact_id = $focus->id;
@@ -1272,13 +1292,13 @@ EOQ;
      * @return string
      */
     protected function _fixupModuleForACL($module) {
-        if($module=='ContractTypes') { 
+        if($module=='ContractTypes') {
             $module = 'Contracts';
         }
         if(preg_match('/Product[a-zA-Z]*/',$module)) {
             $module = 'Products';
         }
-        
+
         return $module;
     }
     /**
@@ -1301,9 +1321,9 @@ EOQ;
         // These modules don't take kindly to the studio trying to play about with them.
         static $ignoredModuleList = array('iFrames','Feeds','Home','Dashboard','Calendar','Activities','Reports');
 
-        
+
         $actions = ACLAction::getUserActions($this->id);
-        
+
         foreach ($beanList as $module=>$val) {
             // Remap the module name
             $module = $this->_fixupModuleForACL($module);
@@ -1317,14 +1337,14 @@ EOQ;
             }
 
             $key = 'module';
-            
+
             if (($this->isAdmin() && isset($actions[$module][$key]))
                 ) {
                 $myModules[] = $module;
             }
         }
 
-        return $myModules;        
+        return $myModules;
     }
     /**
      * Is this user a system wide admin
@@ -1371,9 +1391,9 @@ EOQ;
         if ($this->isAdmin()) {
             return true;
         }
-        
+
         $devModules = $this->getDeveloperModules();
-        
+
         $module = $this->_fixupModuleForACL($module);
 
         if (in_array($module,$devModules) ) {
@@ -1403,9 +1423,9 @@ EOQ;
         if ($this->isAdmin()) {
             return true;
         }
-        
+
         $adminModules = $this->getAdminModules();
-        
+
         $module = $this->_fixupModuleForACL($module);
 
         if (in_array($module,$adminModules) ) {
@@ -1488,6 +1508,191 @@ EOQ;
 
 
    }
+
+    /**
+     * Get user first day of week.
+     *
+     * @param [User] $user user object, current user if not specified
+     * @return int : 0 = Sunday, 1 = Monday, etc...
+     */
+    public function get_first_day_of_week()
+    {
+        $fdow = $this->getPreference('fdow');
+        if (empty($fdow))
+        {
+            $fdow = 0;
+        }
+
+        return $fdow;
+    }
+
+    /**
+     * Method for password generation
+     *
+     * @static
+     * @return string password
+     */
+    public static function generatePassword()
+    {
+        $res = $GLOBALS['sugar_config']['passwordsetting'];
+        $charBKT = '';
+        //chars to select from
+        $LOWERCASE = "abcdefghijklmnpqrstuvwxyz";
+        $NUMBER = "0123456789";
+        $UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        $SPECIAL = '~!@#$%^&*()_+=-{}|';
+        $condition = 0;
+        $charBKT .= $UPPERCASE . $LOWERCASE . $NUMBER;
+        $password = "";
+            $length = '6';
+
+        // Create random characters for the ones that doesnt have requirements
+        for ($i=0; $i < $length - $condition; $i ++)  // loop and create password
+        {
+            $password = $password . substr ($charBKT, rand() % strlen($charBKT), 1);
+        }
+
+        return $password;
+    }
+
+    /**
+     * Send new password or link to user
+     *
+     * @param string $templateId Id of email template
+     * @param array $additionalData additional params: link, url, password
+     * @return array status: true|false, message: error message, if status = false and message = '' it means that send method has returned false
+     */
+    public function sendEmailForPassword($templateId, array $additionalData = array())
+    {
+        global $sugar_config, $current_user;
+        $mod_strings = return_module_language('', 'Users');
+        $result = array(
+            'status' => false,
+            'message' => ''
+        );
+
+        $emailTemp = new EmailTemplate();
+        $emailTemp->disable_row_level_security = true;
+        if ($emailTemp->retrieve($templateId) == '')
+        {
+            $result['message'] = $mod_strings['LBL_EMAIL_TEMPLATE_MISSING'];
+            return $result;
+        }
+
+        //replace instance variables in email templates
+        $htmlBody = $emailTemp->body_html;
+        $body = $emailTemp->body;
+        if (isset($additionalData['link']) && $additionalData['link'] == true)
+        {
+            $htmlBody = str_replace('$contact_user_link_guid', $additionalData['url'], $htmlBody);
+            $body = str_replace('$contact_user_link_guid', $additionalData['url'], $body);
+        }
+        else
+        {
+            $htmlBody = str_replace('$contact_user_user_hash', $additionalData['password'], $htmlBody);
+            $body = str_replace('$contact_user_user_hash', $additionalData['password'], $body);
+        }
+        // Bug 36833 - Add replacing of special value $instance_url
+        $htmlBody = str_replace('$config_site_url', $sugar_config['site_url'], $htmlBody);
+        $body = str_replace('$config_site_url', $sugar_config['site_url'], $body);
+
+        $htmlBody = str_replace('$contact_user_user_name', $this->user_name, $htmlBody);
+        $htmlBody = str_replace('$contact_user_pwd_last_changed', TimeDate::getInstance()->nowDb(), $htmlBody);
+        $body = str_replace('$contact_user_user_name', $this->user_name, $body);
+        $body = str_replace('$contact_user_pwd_last_changed', TimeDate::getInstance()->nowDb(), $body);
+        $emailTemp->body_html = $htmlBody;
+        $emailTemp->body = $body;
+
+        $itemail = $this->emailAddress->getPrimaryAddress($this);
+        //retrieve IT Admin Email
+        //_ppd( $emailTemp->body_html);
+        //retrieve email defaults
+        $emailObj = new Email();
+        $defaults = $emailObj->getSystemDefaultEmail();
+        require_once('include/SugarPHPMailer.php');
+        $mail = new SugarPHPMailer();
+        $mail->setMailerForSystem();
+        //$mail->IsHTML(true);
+        $mail->From = $defaults['email'];
+        $mail->FromName = $defaults['name'];
+        $mail->ClearAllRecipients();
+        $mail->ClearReplyTos();
+        $mail->Subject = from_html($emailTemp->subject);
+        if ($emailTemp->text_only != 1)
+        {
+            $mail->IsHTML(true);
+            $mail->Body = from_html($emailTemp->body_html);
+            $mail->AltBody = from_html($emailTemp->body);
+        }
+        else
+        {
+            $mail->Body_html = from_html($emailTemp->body_html);
+            $mail->Body = from_html($emailTemp->body);
+        }
+        if ($mail->Body == '' && $current_user->is_admin)
+        {
+            global $app_strings;
+            $result['message'] = $app_strings['LBL_EMAIL_TEMPLATE_EDIT_PLAIN_TEXT'];
+            return $result;
+        }
+        if ($mail->Mailer == 'smtp' && $mail->Host =='' && $current_user->is_admin)
+        {
+            $result['message'] = $mod_strings['ERR_SERVER_SMTP_EMPTY'];
+            return $result;
+        }
+
+        $mail->prepForOutbound();
+        $hasRecipients = false;
+
+        if (!empty($itemail))
+        {
+            if ($hasRecipients)
+            {
+                $mail->AddBCC($itemail);
+            }
+            else
+            {
+                $mail->AddAddress($itemail);
+            }
+            $hasRecipients = true;
+        }
+        if ($hasRecipients)
+        {
+            $result['status'] = @$mail->Send();
+        }
+
+        if ($result['status'] == true)
+        {
+            $emailObj->team_id = 1;
+            $emailObj->to_addrs = '';
+            $emailObj->type = 'archived';
+            $emailObj->deleted = '0';
+            $emailObj->name = $mail->Subject ;
+            $emailObj->description = $mail->Body;
+            $emailObj->description_html = null;
+            $emailObj->from_addr = $mail->From;
+            $emailObj->parent_type = 'User';
+            $emailObj->date_sent = TimeDate::getInstance()->nowDb();
+            $emailObj->modified_user_id = '1';
+            $emailObj->created_by = '1';
+            $emailObj->status = 'sent';
+            $emailObj->save();
+            if (!isset($additionalData['link']) || $additionalData['link'] == false)
+            {
+                $user_hash = strtolower(md5($additionalData['password']));
+                $this->setPreference('loginexpiration', '0');
+                $this->setPreference('lockout', '');
+                $this->setPreference('loginfailed', '0');
+                $this->savePreferencesToDB();
+                //set new password
+                $now=TimeDate::getInstance()->nowDb();
+                $query = "UPDATE $this->table_name SET user_hash='$user_hash', system_generated_password='1', pwd_last_changed='$now' where id='$this->id'";
+                $this->db->query($query, true, "Error setting new password for $this->user_name: ");
+            }
+        }
+
+        return $result;
+    }
 
     // Bug #48014 Must to send password to imported user if this action is required
     function afterImportSave()

@@ -44,6 +44,7 @@ class TemplateEnum extends TemplateText{
     var $ext1 = '';
     var $default_value = '';
     var $dependency ; // any dependency information
+    var $supports_unified_search = true;
 
     function __construct ()
     {
@@ -133,18 +134,6 @@ class TemplateEnum extends TemplateText{
 		return $returnXTPL;
 
 	}
-
-	function get_db_type(){
-	    if(empty($this->max_size))$this->max_size = 150;
-	    switch($GLOBALS['db']->dbType){
-	    	case 'oci8': return " varchar2($this->max_size)";
-	    	case 'mssql': return !empty($GLOBALS['db']->isFreeTDS) ? " nvarchar($this->max_size)" : " varchar($this->max_size)";
-	    	default:  return " varchar($this->max_size)";
-	    }
-
-	}
-
-
 
 	function get_field_def(){
 		$def = parent::get_field_def();

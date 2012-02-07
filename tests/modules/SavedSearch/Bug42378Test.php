@@ -55,7 +55,7 @@ class Bug42378Test extends Sugar_PHPUnit_Framework_TestCase
     
     public function tearDown() 
     {
-        $GLOBALS['db']->query("DELETE FROM saved_search where id = '{$this->saved_search_id}'"); 
+        $GLOBALS['db']->query("DELETE FROM saved_search where id = '{$this->saved_search_id}'");
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset($GLOBALS['current_user']);
     }

@@ -44,6 +44,11 @@ class Bug46923Test extends Sugar_PHPUnit_Framework_OutputTestCase
     public function setUp()
     {
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser(true, 1);
+        $beanList = array();
+        $beanFiles = array();
+        require('include/modules.php');
+        $GLOBALS['beanList'] = $beanList;
+        $GLOBALS['beanFiles'] = $beanFiles;
     }
 
     public function tearDown()

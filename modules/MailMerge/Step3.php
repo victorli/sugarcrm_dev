@@ -210,9 +210,7 @@ foreach($sel_obj as $key => $value)
 	$result = $seed->db->limitQuery($fullQuery, 0, 1, true, "Error performing limit query");
 	$full_name = '';
 	$contact_id = '';
-	if($contact->db->getRowCount($result) > 0)
-	{
-			$row = $seed->db->fetchByAssoc($result, 0);
+	if($row = $seed->db->fetchByAssoc($result, 0)) {
 			if($relModule == "Contacts"){
 			$full_name = $locale->getLocaleFormattedName($row['first_name'], $row['last_name']);
 			}

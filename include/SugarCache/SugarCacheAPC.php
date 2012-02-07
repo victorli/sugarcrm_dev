@@ -67,7 +67,7 @@ class SugarCacheAPC extends SugarCacheAbstract
         $value
         )
     {
-        apc_store($key,$value,$this->expireTimeout);
+        apc_store($key,$value,$this->_expireTimeout);
     }
 
     /**

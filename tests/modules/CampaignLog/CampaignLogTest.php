@@ -56,13 +56,13 @@ class CampaignLogTest extends Sugar_PHPUnit_Framework_TestCase
 	var $campaign_tracker;
 	var	$campaign_log;
 
-    
+
     public function setup()
     {
-		global $current_user;	
-		
+		global $current_user;
+
 		$current_user = SugarTestUserUtilities::createAnonymousUser();
-		//for the purpose of this test, we need to create some records with fake campaign and prospect list data, 
+		//for the purpose of this test, we need to create some records with fake campaign and prospect list data,
 		//however we do need to create some targets for the prospect list
 
 		//create campaign tracker
@@ -73,14 +73,14 @@ class CampaignLogTest extends Sugar_PHPUnit_Framework_TestCase
 		$ct->save();
 		$this->campaign_tracker = $ct;
 
-		
+
 		//for each type, create an object and populate the campaignLog list
 		foreach($this->targetObjectArray as $type){
 			//skip campaign tracker
 			if($type == 'CampaignTracker'){
 				continue;
 			}
-				
+
 			//create the new bean
 			$bean = new $type();
 			if ($type == 'Account'){
@@ -88,11 +88,11 @@ class CampaignLogTest extends Sugar_PHPUnit_Framework_TestCase
 			}else{
 				$bean->first_name = 'CampaignLog';
 				$bean->last_name = 'Test '.$type;
-			}		
+			}
 			$type_obj = 'target_'.$type;
 			$bean->save();
 			$this->$type_obj = $bean;
-			
+
 			//save email
 			$sea = new SugarEmailAddress();
 			$id = $this->$type_obj->id;
@@ -107,9 +107,9 @@ class CampaignLogTest extends Sugar_PHPUnit_Framework_TestCase
 			$sea->save($id, $module, $new_addrs, $primary, $replyTo, $invalid, $optOut, $in_workflow);
 			//unset email request values for next run
 			foreach ($requestVariablesSet as $k)
-				unset($_REQUEST[$k]);	
+				unset($_REQUEST[$k]);
 
-		
+
 			//now create the campaign log
 			$cl = new CampaignLog();
 			$cl->campaign_id = $this->campaign_id;
@@ -127,12 +127,12 @@ class CampaignLogTest extends Sugar_PHPUnit_Framework_TestCase
 		//keep last created campaign log bean to be used to call functions
 		$this->campaign_log = $cl;
 
-		
+
     }
-    
+
     public function tearDown()
     {
-		global $current_user;	
+		global $current_user;
 		//for each type, delete the object and it's email
 		foreach($this->targetObjectArray as $type){
 			//skip campaign tracker
@@ -142,18 +142,18 @@ class CampaignLogTest extends Sugar_PHPUnit_Framework_TestCase
 			//create string to reference bean by
 			$type_obj = 'target_'.$type;
 
-			//remove the email address and relationship			
+			//remove the email address and relationship
 			$query = 'delete from email_addresses where email_address = \''.$type.'UnitTest@example.com\'';
 			$GLOBALS['db']->query($query);
 			$query = 'delete from email_addr_bean_rel where bean_id = \''.$this->$type_obj->id.'\'';
-			$GLOBALS['db']->query($query);			
+			$GLOBALS['db']->query($query);
 
 			//remove the bean and delete record
 			$this->$type_obj->deleted = 1;
 			$this->$type_obj->save();
 			$GLOBALS['db']->query('DELETE FROM '.$this->$type_obj->table_name.' WHERE id = \''.$this->$type_obj->id.'\' ');
 			unset($this->$type_obj);
-			
+
 		}
 
 		//delete the campaign logs and campaign tracker
@@ -163,12 +163,12 @@ class CampaignLogTest extends Sugar_PHPUnit_Framework_TestCase
         unset($this->campaign_log );SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset($GLOBALS['current_user']);
     }
-	
+
 
 
 	public function testGetListViewData(){
 		global $current_user;
-		$lvd = $this->campaign_log->get_list_view_data(); 
+		$lvd = $this->campaign_log->get_list_view_data();
 
 		//make sure the returned value is an array
 		$this->assertTrue(is_array($lvd), 'CampaignLog->get_list_view_data should return an object of array type');
@@ -179,7 +179,7 @@ class CampaignLogTest extends Sugar_PHPUnit_Framework_TestCase
 	}
 
 	public function testGetRelatedName(){
-		global $current_user,$locale;	
+		global $current_user,$locale;
 
 		foreach($this->targetObjectArray as $type){
 			//skip campaign tracker
@@ -188,29 +188,27 @@ class CampaignLogTest extends Sugar_PHPUnit_Framework_TestCase
 			}
 			//create string to reference bean by
 			$type_obj = 'target_'.$type;
-			
+
 			//make sure the related name is coming in from the correct related type
 			$related_name = $this->campaign_log->get_related_name($this->$type_obj->id,$this->$type_obj->module_dir);
 
 			//make sure the returned name is formatted as expected
 			if ($type == 'Account'){
-				$this->assertSame($related_name, $this->$type_obj->name, 'name retrieved from campaign log does not match the expected name of '.$formatted_name.' for the related '.$type.' object');	
+				$this->assertSame($related_name, $this->$type_obj->name, 'name retrieved from campaign log does not match the expected name of '.$formatted_name.' for the related '.$type.' object');
 			}elseif ($type == 'User'){
 				$formatted_name = $this->$type_obj->id.$this->$type_obj->module_dir;
-				$this->assertSame($related_name, $formatted_name, 'name retrieved from campaign log does not match the expected formatted name of '.$formatted_name.' for the related '.$type.' object');	
+				$this->assertSame($related_name, $formatted_name, 'name retrieved from campaign log does not match the expected formatted name of '.$formatted_name.' for the related '.$type.' object');
 			}else{
-				$bean->first_name = 'CampaignLog';
-				$bean->last_name = 'Test '.$type;
 				$formatted_name = $locale->getLocaleFormattedName($this->$type_obj->first_name, $this->$type_obj->last_name);
-				$this->assertSame($related_name, $formatted_name, 'name retrieved from campaign log does not match the expected formatted name of '.$formatted_name.' for the related '.$type.' object');	
-			}		
-			
+				$this->assertSame($related_name, $formatted_name, 'name retrieved from campaign log does not match the expected formatted name of '.$formatted_name.' for the related '.$type.' object');
+			}
+
 		}
-		
+
 	}
 
 	public function testRetrieveEmailAddress(){
-		global $current_user;	
+		global $current_user;
 		foreach($this->targetObjectArray as $type){
 			//skip campaign tracker
 			if($type == 'CampaignTracker'){
@@ -220,10 +218,10 @@ class CampaignLogTest extends Sugar_PHPUnit_Framework_TestCase
 			$type_obj = 'target_'.$type;
 
 			$eastring = $this->campaign_log->retrieve_email_address($this->$type_obj->id);
-			$this->assertSame($eastring, $type.'UnitTest@example.com', 'email retrieved from campaign log object type '.$type.'does not match the expected email of '.$type.'UnitTest@example.com');	
+			$this->assertSame($eastring, $type.'UnitTest@example.com', 'email retrieved from campaign log object type '.$type.'does not match the expected email of '.$type.'UnitTest@example.com');
 		}
-		
+
 	}
-    	
+
 
 }

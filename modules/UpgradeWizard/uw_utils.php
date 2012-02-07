@@ -39,6 +39,22 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 /**
+ * Helper function for upgrade - get path from upload:// name
+ * @param string $path
+ * return string
+ */
+function getUploadRelativeName($path)
+{
+    if(class_exists('UploadFile')) {
+        return UploadFile::realpath($path);
+    }
+    if(substr($path, 0, 9) == "upload://") {
+    	$path = rtrim($GLOBALS['sugar_config']['upload_dir'], "/\\")."/".substr($path, 9);
+    }
+    return $path;
+}
+
+/**
  * Backs-up files that are targeted for patch/upgrade to a restore directory
  * @param string rest_dir Full path to the directory containing the original, replaced files.
  * @param string install_file Full path to the uploaded patch/upgrade zip file
@@ -51,14 +67,14 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 function commitMakeBackupFiles($rest_dir, $install_file, $unzip_dir, $zip_from_dir, $errors, $path='') {
 	global $mod_strings;
 	// create restore file directory
-	mkdir_recursive($rest_dir);
+	sugar_mkdir($rest_dir, 0775, true);
 
     if(file_exists($rest_dir) && is_dir($rest_dir)){
 		logThis('backing up files to be overwritten...', $path);
 		$newFiles = findAllFiles(clean_path($unzip_dir . '/' . $zip_from_dir), array());
 
 		// keep this around for canceling
-		$_SESSION['uw_restore_dir'] = clean_path($rest_dir);
+		$_SESSION['uw_restore_dir'] = getUploadRelativeName($rest_dir);
 
 		foreach ($newFiles as $file) {
 			if (strpos($file, 'md5'))
@@ -69,10 +85,7 @@ function commitMakeBackupFiles($rest_dir, $install_file, $unzip_dir, $zip_from_d
 
 			// make sure the directory exists
 			$cleanDir = $rest_dir . '/' . dirname($cleanFile);
-			if (!is_dir($cleanDir)) {
-				mkdir_recursive($cleanDir);
-			}
-
+			sugar_mkdir($cleanDir, 0775, true);
 			$oldFile = clean_path(getcwd() . '/' . $cleanFile);
 
 			// only copy restore files for replacements - ignore new files from patch
@@ -237,11 +250,7 @@ function copyRecursiveBetweenDirectories($from,$to){
 	 	$cwd = clean_path(getcwd());
 		foreach($modifiedFiles as $file) {
 			$srcFile = clean_path($file);
-			//$targetFile = clean_path(getcwd() . '/' . $srcFile);
-            if (strpos($srcFile,".svn") !== false) {
-			  //do nothing
-	    	 }
-	    	else{
+            if (strpos($srcFile,".svn") === false) {
 	    		$targetFile = str_replace($from, $to, $srcFile);
 
 				if(!is_dir(dirname($targetFile))) {
@@ -250,21 +259,15 @@ function copyRecursiveBetweenDirectories($from,$to){
 
 					// handle sugar_version.php
 					if(strpos($targetFile, 'sugar_version.php') !== false && !preg_match('/\/portal\/sugar_version\.php$/i', $targetFile)) {
-						logThis('Skipping "sugar_version.php" - file copy will occur at end of successful upgrade', $path);
+						logThis('Skipping "sugar_version.php" - file copy will occur at end of successful upgrade', $targetFile);
 						$_SESSION['sugar_version_file'] = $srcFile;
 						continue;
 					}
 
-					//logThis('Copying file to destination: ' . $targetFile);
-
 					if(!copy($srcFile, $targetFile)) {
-						logThis('*** ERROR: could not copy file: ' . $targetFile);
-					} else {
-						//logThis('Copied file: ' . $targetFile);
-						//$copiedFiles[] = $targetFile;
+						logThis("*** ERROR: could not copy file $srcFile to $targetFile");
 					}
-
-	    	}
+            	}
 		 }
 	}
 }
@@ -292,7 +295,6 @@ function deleteDirectory($dirname,$only_empty=false) {
     }
     $i_until = ($only_empty)? 1 : 0;
     for ($i=count($darr)-1; $i>=$i_until; $i--) {
-        //echo "\nDeleting '".$darr[$i]."' ... ";
         if (rmdir($darr[$i]))
             logThis('Success :Copying file to destination: ' . $darr[$i]);
         else
@@ -590,22 +592,27 @@ function commitHandleReminders($skippedFiles, $path='') {
 
 function deleteCache(){
 	//Clean modules from cache
-	if(is_dir($GLOBALS['sugar_config']['cache_dir'].'modules')){
+	$cachedir = sugar_cached('modules');
+	if(is_dir($cachedir)){
 		$allModFiles = array();
-		$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'modules',$allModFiles);
-		foreach($allModFiles as $file)
-		{
-	       	if(file_exists($file))
-	       	{
-	       	   unlink($file);
+		$allModFiles = findAllFiles($cachedir,$allModFiles, true);
+		foreach($allModFiles as $file) {
+	       	if(file_exists($file)) {
+	       		if(is_dir($file)) {
+				  rmdir_recursive($file);
+	       		} else {
+	       		  unlink($file);
+               }
 	       	}
-		}
+	    }
+
 	}
-	
+
 	//Clean jsLanguage from cache
-	if(is_dir($GLOBALS['sugar_config']['cache_dir'].'jsLanguage')){
+	$cachedir = sugar_cached('jsLanguage');
+	if(is_dir($cachedir)){
 		$allModFiles = array();
-		$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'jsLanguage',$allModFiles);
+		$allModFiles = findAllFiles($cachedir,$allModFiles);
 	   foreach($allModFiles as $file){
 		   	if(file_exists($file)){
 				unlink($file);
@@ -613,9 +620,10 @@ function deleteCache(){
 		}
 	}
 	//Clean smarty from cache
-	if(is_dir($GLOBALS['sugar_config']['cache_dir'].'smarty')){
+	$cachedir = sugar_cached('smarty');
+	if(is_dir($cachedir)){
 		$allModFiles = array();
-		$allModFiles = findAllFiles($GLOBALS['sugar_config']['cache_dir'].'smarty',$allModFiles);
+		$allModFiles = findAllFiles($cachedir,$allModFiles);
 	   foreach($allModFiles as $file){
 	       	if(file_exists($file)){
 				unlink($file);
@@ -645,74 +653,103 @@ function deleteChance(){
 
 
 /**
- * copies upgrade wizard files from new patch if that dir exists
- * @param	string file Path to uploaded zip file
+ * upgradeUWFiles
+ * This function copies upgrade wizard files from new patch if that dir exists
+ *
+ * @param $file String path to uploaded zip file
  */
 function upgradeUWFiles($file) {
-	global $sugar_config;
-	// file = getcwd().'/'.$sugar_config['upload_dir'].$_FILES['upgrade_zip']['name'];
-
-	$cacheUploadUpgradesTemp = clean_path(mk_temp_dir("{$sugar_config['upload_dir']}upgrades/temp"));
+    $cacheUploadUpgradesTemp = mk_temp_dir(sugar_cached("upgrades/temp"));
 
 	unzip($file, $cacheUploadUpgradesTemp);
 
-	if(!file_exists(clean_path("{$cacheUploadUpgradesTemp}/manifest.php"))) {
+	if(!file_exists("$cacheUploadUpgradesTemp/manifest.php")) {
 		logThis("*** ERROR: no manifest file detected while bootstraping upgrade wizard files!");
 		return;
 	} else {
-		include(clean_path("{$cacheUploadUpgradesTemp}/manifest.php"));
+		include("$cacheUploadUpgradesTemp/manifest.php");
 	}
 
 	$allFiles = array();
-	// upgradeWizard
-	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/modules/UpgradeWizard"))) {
-		$allFiles = findAllFiles(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/modules/UpgradeWizard"), $allFiles);
-	}
-	// moduleInstaller
-	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/ModuleInstall"))) {
-		$allFiles = findAllFiles(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/ModuleInstall"), $allFiles);
-	}
-	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/javascript/yui"))) {
-		$allFiles = findAllFiles(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/javascript/yui"), $allFiles);
-	}
-	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/HandleAjaxCall.php"))) {
-		$allFiles[] = clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/HandleAjaxCall.php");
-	}
-	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/SugarTheme"))) {
-		$allFiles = findAllFiles(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/SugarTheme"), $allFiles);
-	}
-	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/SugarCache"))) {
-		$allFiles = findAllFiles(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/SugarCache"), $allFiles);
-	}
-	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/utils/external_cache.php"))) {
-		$allFiles[] = clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/utils/external_cache.php");
-	}
+	$from_dir = "{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}";
 
-	/*
-	 * /home/chris/workspace/maint450/cache/upload/upgrades/temp/DlNnqP/
-	 * SugarEnt-Patch-4.5.0c/modules/Leads/ConvertLead.html
-	 */
-	$cwd = clean_path(getcwd());
+    // Localization
+    if(file_exists("$from_dir/include/Localization/Localization.php")) {
+        $allFiles[] = "$from_dir/include/Localization/Localization.php";
+    }
+    // upgradeWizard
+    if(file_exists("$from_dir/modules/UpgradeWizard")) {
+        $allFiles[] = findAllFiles("$from_dir/modules/UpgradeWizard", $allFiles);
+    }
+    // moduleInstaller
+    if(file_exists("$from_dir/ModuleInstall")) {
+        $allFiles[] = findAllFiles("$from_dir/ModuleInstall", $allFiles);
+    }
+    if(file_exists("$from_dir/include/javascript/yui")) {
+        $allFiles[] = findAllFiles("$from_dir/include/javascript/yui", $allFiles);
+    }
+    if(file_exists("$from_dir/HandleAjaxCall.php")) {
+        $allFiles[] = "$from_dir/HandleAjaxCall.php";
+    }
+    if(file_exists("$from_dir/include/SugarTheme")) {
+        $allFiles[] = findAllFiles("$from_dir/include/SugarTheme", $allFiles);
+    }
+    if(file_exists("$from_dir/include/SugarCache")) {
+        $allFiles[] = findAllFiles("$from_dir/include/SugarCache", $allFiles);
+    }
+    if(file_exists("$from_dir/include/utils/external_cache.php")) {
+        $allFiles[] = "$from_dir/include/utils/external_cache.php";
+    }
+    if(file_exists("$from_dir/include/upload_file.php")) {
+        $allFiles[] = "$from_dir/include/upload_file.php";
+    }
+    if(file_exists("$from_dir/include/file_utils.php")) {
+        $allFiles[] = "$from_dir/include/file_utils.php";
+    }
+    if(file_exists("$from_dir/include/upload_file.php")) {
+        $allFiles[] = "$from_dir/include/upload_file.php";
+    }
+    if(file_exists("$from_dir/include/utils/sugar_file_utils.php")) {
+        $allFiles[] = "$from_dir/include/utils/sugar_file_utils.php";
+    }
+    // users
+    if(file_exists("$from_dir/modules/Users")) {
+        $allFiles[] = findAllFiles("$from_dir/modules/Users", $allFiles);
+    }
 
-	foreach($allFiles as $k => $file) {
-		$file = clean_path($file);
-		$destFile = str_replace(clean_path($cacheUploadUpgradesTemp.'/'.$manifest['copy_files']['from_dir']), $cwd, $file);
-       if(!is_dir(dirname($destFile))) {
-			mkdir_recursive(dirname($destFile)); // make sure the directory exists
-		}
-		if ( stristr($file,'uw_main.tpl') )
-            logThis('Skipping "'.$file.'" - file copy will during commit step.');
-        else {
-            logThis('updating UpgradeWizard code: '.$destFile);
-            copy_recursive($file, $destFile);
-        }
-	}
-	logThis ('is sugar_file_util there '.file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/utils/sugar_file_utils.php")));
-	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/utils/sugar_file_utils.php"))) {
-		$file = clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/utils/sugar_file_utils.php");
-		$destFile = str_replace(clean_path($cacheUploadUpgradesTemp.'/'.$manifest['copy_files']['from_dir']), $cwd, $file);
-        copy($file,$destFile);
-	}
+    upgradeUWFilesCopy($allFiles, $from_dir);
+}
+
+/**
+ * upgradeUWFilesCopy
+ *
+ * This function recursively copies files from the upgradeUWFiles Array
+ * @see upgradeUWFiles
+ *
+ * @param array $allFiles Array of files to copy over after zip file has been uploaded
+ * @param string $from_dir Source directory
+ */
+function upgradeUWFilesCopy($allFiles, $from_dir)
+{
+   foreach($allFiles as $file)
+   {
+       if(is_array($file))
+       {
+           upgradeUWFilesCopy($file, $from_dir);
+       } else {
+           $destFile = str_replace($from_dir."/", "", $file);
+           if(!is_dir(dirname($destFile))) {
+              mkdir_recursive(dirname($destFile)); // make sure the directory exists
+           }
+
+           if(stristr($file,'uw_main.tpl'))
+              logThis('Skipping "'.$file.'" - file copy will during commit step.');
+           else {
+              logThis('updating UpgradeWizard code: '.$destFile);
+              copy_recursive($file, $destFile);
+           }
+       }
+   }
 }
 
 
@@ -727,18 +764,14 @@ function getValidPatchName($returnFull = true) {
 	global $sugar_version;
     global $sugar_config;
     $uh = new UpgradeHistory();
-    $base_upgrade_dir = $sugar_config['upload_dir'] . "upgrades";
-	$return = array();
+    list($base_upgrade_dir, $base_tmp_upgrade_dir) = getUWDirs();
+    $return = array();
 
 	// scan for new files (that are not installed)
 	logThis('finding new files for upgrade');
 	$upgrade_content = '';
 	$upgrade_contents = findAllFiles($base_upgrade_dir, array(), false, 'zip');
 	//other variations of zip file i.e. ZIP, zIp,zIP,Zip,ZIp,ZiP
-    $extns = array('ZIP','ZIp','ZiP','Zip','zIP','zIp','ziP');
-    foreach($extns as $extn){
-    	$upgrade_contents = array_merge($upgrade_contents,findAllFiles( "$base_upgrade_dir", array() , false, $extn));
-    }
 	$ready = "<ul>\n";
 	$ready .= "
 		<table>
@@ -779,11 +812,10 @@ function getValidPatchName($returnFull = true) {
 	$disabled = '';
 
 	foreach($upgrade_contents as $upgrade_content) {
-		if(!preg_match("#.*\.zip\$#i", strtolower($upgrade_content))) {
+		if(!preg_match("#.*\.zip\$#i", $upgrade_content)) {
 			continue;
 		}
 
-		$upgrade_content = clean_path($upgrade_content);
 		$the_base = basename($upgrade_content);
 		$the_md5 = md5_file($upgrade_content);
 
@@ -819,7 +851,7 @@ function getValidPatchName($returnFull = true) {
 				$icon = getImageForType( $manifest['type'] );
 			} else {
 				$path_parts = pathinfo( $manifest['icon'] );
-				$icon = "<img src=\"" . remove_file_extension( $upgrade_content ) . "-icon." . $path_parts['extension'] . "\">";
+				$icon = "<!--not_in_theme!--><img src=\"" . remove_file_extension( $upgrade_content ) . "-icon." . $path_parts['extension'] . "\">";
 			}
 	    }
 	}
@@ -892,15 +924,8 @@ function updateVersions($version) {
 		return false;
 	}
 
-	// handle config table
-	if($db->dbType == 'mysql') {
-		$q1 = "DELETE FROM `config` WHERE `category` = 'info' AND `name` = 'sugar_version'";
-		$q2 = "INSERT INTO `config` (`category`, `name`, `value`) VALUES ('info', 'sugar_version', '{$version}')";
-	} elseif($db->dbType == 'oci8' || $db->dbType == 'oracle') {
-	} elseif($db->dbType == 'mssql') {
-		$q1 = "DELETE FROM config WHERE category = 'info' AND name = 'sugar_version'";
-		$q2 = "INSERT INTO config (category, name, value) VALUES ('info', 'sugar_version', '{$version}')";
-	}
+	$q1 = "DELETE FROM config WHERE category = 'info' AND name = 'sugar_version'";
+	$q2 = "INSERT INTO config (category, name, value) VALUES ('info', 'sugar_version', '{$version}')";
 
 	logThis('Deleting old DB version info from config table.', $path);
 	$db->query($q1);
@@ -971,25 +996,19 @@ function checkSystemCompliance() {
 	}
 
 	// database and connect
-	switch($sugar_config['dbconfig']['db_type']){
-	    case 'mysql':
-	        // mysql version
-	        $q = "SELECT version();";
-	        $r = $db->query($q);
-	        $a = $db->fetchByAssoc($r);
-	        if(version_compare($a['version()'], '4.1.2') < 0) {
+    $v = $db->version();
+	if($db->dbType == 'mysql')
+    {
+        if(version_compare($v, '4.1.2') < 0) {
 	        	$ret['error_found'] = true;
-	        	$ret['mysqlVersion'] = "<b><span class=stop>".$mod_strings['ERR_UW_MYSQL_VERSION'].$a['version()']."</span></b>";
-	        }
-
-	        break;
-		case 'mssql':
-	        break;
-	    case 'oci8':
-	        break;
+	        	$ret['mysqlVersion'] = "<b><span class=stop>".$mod_strings['ERR_UW_MYSQL_VERSION'].$v."</span></b>";
+	    }
+	} elseif($db->dbType == 'oci8') {
+	    if(!preg_match("/Oracle9i|Oracle Database 10g|11/i", $v)) {
+	        	$ret['error_found'] = true;
+	        	$ret['ociVersion'] = "<b><span class=stop>".$mod_strings['ERR_UW_OCI8_VERSION'].$v."</span></b>";
+	    }
 	}
-
-
 
 
 	// XML Parsing
@@ -1002,17 +1021,17 @@ function checkSystemCompliance() {
 
 	// cURL
 	if(function_exists('curl_init')) {
-		$ret['curlStatus'] = "<b><span class=go>{$installer_mod_strings['LBL_CHECKSYS_OK']}</font></b>";
+		$ret['curlStatus'] = "<b><span class=go>{$installer_mod_strings['LBL_CHECKSYS_OK']}</span></b>";
 	} else {
-		$ret['curlStatus'] = "<b><span class=go>{$installer_mod_strings['ERR_CHECKSYS_CURL']}</font></b>";
+		$ret['curlStatus'] = "<b><span class=go>{$installer_mod_strings['ERR_CHECKSYS_CURL']}</span></b>";
 		$ret['error_found'] = false;
 	}
 
 	// mbstrings
 	if(function_exists('mb_strlen')) {
-		$ret['mbstringStatus'] = "<b><span class=go>{$installer_mod_strings['LBL_CHECKSYS_OK']}</font></b>";
+		$ret['mbstringStatus'] = "<b><span class=go>{$installer_mod_strings['LBL_CHECKSYS_OK']}</span></b>";
 	} else {
-		$ret['mbstringStatus'] = "<b><span class=stop>{$installer_mod_strings['ERR_CHECKSYS_MBSTRING']}</font></b>";
+		$ret['mbstringStatus'] = "<b><span class=stop>{$installer_mod_strings['ERR_CHECKSYS_MBSTRING']}</span></b>";
 		$ret['error_found'] = true;
 	}
 
@@ -1074,15 +1093,6 @@ function checkSystemCompliance() {
 	return $ret;
 }
 
-
-
-function checkMysqlConnection(){
-	global $sugar_config;
-	$configOptions = $sugar_config['dbconfig'];
-	if($sugar_config['dbconfig']['db_type'] == 'mysql'){
-    	@mysql_ping($GLOBALS['db']->database);
-    }
-}
 
 /**
  * is a file that we blow away automagically
@@ -1154,52 +1164,6 @@ function logThis($entry, $path='') {
 		}
 }
 
-
-/**
- * tries to validate the query based on type
- * @param string query The query to verify
- * @param string dbType The DB type
- * @return string error Non-empty string on error
- */
-function verifySqlStatement($query, $dbType, &$newTables) {
-	$error = '';
-	logThis('verifying SQL statement');
-
-	$table	= getTableFromQuery($query);
-
-	switch(strtoupper(substr($query, 0, 10))) {
-		// ignore DROPs
-		case 'ALTER TABL':
-			// get ddl
-			$error = testQueryAlter($table, $dbType, strtoupper($query), $newTables);
-		break;
-
-		case 'CREATE TAB':
-			$error = testQueryCreate($table, $dbType, $query, $newTables);
-		break;
-
-		case 'DELETE FRO':
-			$error = testQueryDelete($table, $dbType, $query);
-		break;
-
-		case 'DROP TABLE':
-			$error = testQueryDrop($table, $dbType, $query);
-		break;
-
-		case 'INSERT INT':
-			$error = testQueryInsert($table, $dbType, $query);
-		break;
-
-		case (strtoupper(substr($query, 0, 6)) == 'UPDATE'):
-			$error = testQueryUpdate($table, $dbType, $query);
-		break;
-
-	}
-
-	return $error;
-}
-
-
 /**
 	*  @params : none
 	*  @author: nsingh
@@ -1257,788 +1221,137 @@ function updateQuickCreateDefs(){
 	}
 }
 
-
-function cleanQuery($query, $oci8=false) {
-	$bad = array(
-			"&#039;",
-			"&quot;",
-			);
-	$good = array(
-			'"',
-			"",
-			);
-
-	$q = str_replace($bad, $good, $query);
-
-	return $q;
-}
-
 /**
  * test perms for CREATE queries
  */
-function testPermsCreate($type, $out) {
+function testPermsCreate($db, $out) {
 	logThis('Checking CREATE TABLE permissions...');
-	global $db;
 	global $mod_strings;
 
-	switch($type) {
-		case 'mysql':
-		case 'mssql':
-			$db->query('CREATE TABLE temp (id varchar(36))');
-			if($db->checkError()) {
-				logThis('cannot CREATE TABLE!');
-				$out['db']['dbNoCreate'] = true;
-				$out['dbOut'] .= "<tr><td align='left'><span class='error'>{$mod_strings['LBL_UW_DB_NO_CREATE']}</span></td></tr>";
-			}
-		break;
-
-		case 'oci8':
-		break;
+	if(!$db->checkPrivilege("CREATE TABLE")) {
+        logThis('cannot CREATE TABLE!');
+		$out['db']['dbNoCreate'] = true;
+		$out['dbOut'] .= "<tr><td align='left'><span class='error'>{$mod_strings['LBL_UW_DB_NO_CREATE']}</span></td></tr>";
 	}
-
-	return $out;
+    return $out;
 }
 
 /**
  * test perms for INSERT
  */
-function testPermsInsert($type, $out, $skip=false) {
+function testPermsInsert($db, $out, $skip=false) {
 	logThis('Checking INSERT INTO permissions...');
-	global $db;
 	global $mod_strings;
 
-	switch($type) {
-		case 'mysql':
-		case 'mssql':
-			if(!$skip) {
-				$db->query("INSERT INTO temp (id) VALUES ('abcdef0123456789abcdef0123456789abcd')");
-				if($db->checkError()) {
-					logThis('cannot INSERT INTO!');
-					$out['db']['dbNoInsert'] = true;
-					$out['dbOut'] .= "<tr><td align='left'><span class='error'>{$mod_strings['LBL_UW_DB_NO_INSERT']}</span></td></tr>";
-				}
-			}
-		break;
-
-		case 'oci8':
-		break;
-	}
-
-	return $out;
+	if(!$db->checkPrivilege("INSERT")) {
+		logThis('cannot INSERT INTO!');
+		$out['db']['dbNoInsert'] = true;
+		$out['dbOut'] .= "<tr><td align='left'><span class='error'>{$mod_strings['LBL_UW_DB_NO_INSERT']}</span></td></tr>";
+    }
+    return $out;
 }
 
 
 /**
  * test perms for UPDATE TABLE
  */
-function testPermsUpdate($type, $out, $skip=false) {
+function testPermsUpdate($db, $out, $skip=false) {
 	logThis('Checking UPDATE TABLE permissions...');
-	global $db;
 	global $mod_strings;
-
-	switch($type) {
-		case 'mysql':
-		case 'mssql':
-			if(!$skip) {
-				$db->query("UPDATE temp SET id = '000000000000000000000000000000000000' WHERE id = 'abcdef0123456789abcdef0123456789abcd'");
-				if($db->checkError()) {
+	if(!$db->checkPrivilege("UPDATE")) {
 					logThis('cannot UPDATE TABLE!');
 					$out['db']['dbNoUpdate'] = true;
 					$out['dbOut'] .= "<tr><td align='left'><span class='error'>{$mod_strings['LBL_UW_DB_NO_UPDATE']}</span></td></tr>";
-				}
-			}
-		break;
-
-		case 'oci8':
-		break;
-	}
-
-	return $out;
+    }
+    return $out;
 }
 
 
 /**
  * test perms for SELECT
  */
-function testPermsSelect($type, $out, $skip=false) {
+function testPermsSelect($db, $out, $skip=false) {
 	logThis('Checking SELECT permissions...');
-	global $db;
 	global $mod_strings;
-
-	switch($type) {
-		case 'mysql':
-		case 'mssql':
-			$r = $db->query('SELECT id FROM temp');
-			if($db->checkError()) {
+	if(!$db->checkPrivilege("SELECT")) {
 				logThis('cannot SELECT!');
 				$out['db']['dbNoSelect'] = true;
 				$out['dbOut'] .= "<tr><td align='left'><span class='error'>{$mod_strings['LBL_UW_DB_NO_SELECT']}</span></td></tr>";
-			}
-			logThis('Checking validity of SELECT results');
-			while($a = $db->fetchByAssoc($r)) {
-				if($a['id'] != '000000000000000000000000000000000000') {
-					logThis('results DO NOT MATCH! got: '.$a['id']);
-					$out['db'][] = 'selectFailed';
-					$out['dbOut'] .= "<tr><td align='left'><span class='error'>{$mod_strings['LBL_UW_DB_INSERT_FAILED']}</span></td></tr>";
-				}
-			}
-		break;
-
-		case 'oci8':
-		break;
-	}
-
-	return $out;
+    }
+    return $out;
 }
-
-
 
 /**
  * test perms for DELETE
  */
-function testPermsDelete($type, $out, $skip=false) {
+function testPermsDelete($db, $out, $skip=false) {
 	logThis('Checking DELETE FROM permissions...');
-	global $db;
 	global $mod_strings;
-
-	switch($type) {
-		case 'mysql':
-		case 'mssql':
-			$db->query("DELETE FROM temp WHERE id = '000000000000000000000000000000000000'");
-			if($db->checkError()) {
+	if(!$db->checkPrivilege("DELETE")) {
 				logThis('cannot DELETE FROM!');
 				$out['db']['dbNoDelete'] = true;
 				$out['dbOut'] .= "<tr><td align='left'><span class='error'>{$mod_strings['LBL_UW_DB_NO_DELETE']}</span></td></tr>";
-			}
-		break;
-
-		case 'oci8':
-		break;
-	}
-
-	return $out;
+    }
+    return $out;
 }
 
 
 /**
  * test perms for ALTER TABLE ADD COLUMN
  */
-function testPermsAlterTableAdd($type, $out, $skip=false) {
+function testPermsAlterTableAdd($db, $out, $skip=false) {
 	logThis('Checking ALTER TABLE ADD COLUMN permissions...');
-	global $db;
 	global $mod_strings;
-
-	switch($type) {
-		case 'mysql':
-			$db->query('ALTER TABLE temp ADD COLUMN test varchar(100)');
-			if($db->checkError()) {
+	if(!$db->checkPrivilege("ADD COLUMN")) {
 				logThis('cannot ADD COLUMN!');
 				$out['db']['dbNoAddColumn'] = true;
 				$out['dbOut'] .= "<tr><td align='left'><span class='error'>{$mod_strings['LBL_UW_DB_NO_ADD_COLUMN']}</span></td></tr>";
-			}
-		break;
-
-		case 'mssql':
-			$db->query('ALTER TABLE [temp] ADD [test] [varchar] (100)');
-			if($db->checkError()) {
-				logThis('cannot ADD COLUMN!');
-				$out['db']['dbNoAddColumn'] = true;
-				$out['dbOut'] .= "<tr><td align='left'><span class='error'>{$mod_strings['LBL_UW_DB_NO_ADD_COLUMN']}</span></td></tr>";
-			}
-		break;
-
-		case 'oci8':
-		break;
-	}
-
-	return $out;
+    }
+    return $out;
 }
-
-
-
 
 /**
  * test perms for ALTER TABLE ADD COLUMN
  */
-function testPermsAlterTableChange($type, $out, $skip=false) {
+function testPermsAlterTableChange($db, $out, $skip=false) {
 	logThis('Checking ALTER TABLE CHANGE COLUMN permissions...');
-	global $db;
 	global $mod_strings;
-
-	switch($type) {
-		case 'mysql':
-			$db->query('ALTER TABLE temp CHANGE COLUMN test test varchar(100)');
-			if($db->checkError()) {
+	if(!$db->checkPrivilege("CHANGE COLUMN")) {
 				logThis('cannot CHANGE COLUMN!');
 				$out['db']['dbNoChangeColumn'] = true;
 				$out['dbOut'] .= "<tr><td align='left'><span class='error'>{$mod_strings['LBL_UW_DB_NO_CHANGE_COLUMN']}</span></td></tr>";
-			}
-		break;
-
-		case 'mssql':
-			$db->query('ALTER TABLE [temp] ALTER COLUMN [test] [varchar] (100)');
-			if($db->checkError()) {
-				logThis('cannot CHANGE COLUMN!');
-				$out['db']['dbNoChangeColumn'] = true;
-				$out['dbOut'] .= "<tr><td align='left'><span class='error'>{$mod_strings['LBL_UW_DB_NO_CHANGE_COLUMN']}</span></td></tr>";
-			}
-		break;
-
-		case 'oci8':
-		break;
-	}
-
-	return $out;
+    }
+    return $out;
 }
-
-
 
 /**
  * test perms for ALTER TABLE DROP COLUMN
  */
-function testPermsAlterTableDrop($type, $out, $skip=false) {
+function testPermsAlterTableDrop($db, $out, $skip=false) {
 	logThis('Checking ALTER TABLE DROP COLUMN permissions...');
-	global $db;
 	global $mod_strings;
-
-	switch($type) {
-		case 'mysql':
-		case 'mssql':
-			$db->query('ALTER TABLE temp DROP COLUMN test');
-			if($db->checkError()) {
+	if(!$db->checkPrivilege("DROP COLUMN")) {
 				logThis('cannot DROP COLUMN!');
 				$out['db']['dbNoDropColumn'] = true;
 				$out['dbOut'] .= "<tr><td align='left'><span class='error'>{$mod_strings['LBL_UW_DB_NO_DROP_COLUMN']}</span></td></tr>";
-			}
-		break;
-
-		case 'oci8':
-		break;
-	}
-
-	return $out;
+    }
+    return $out;
 }
 
 
 /**
  * test perms for DROP TABLE
  */
-function testPermsDropTable($type, $out, $skip=false) {
+function testPermsDropTable($db, $out, $skip=false) {
 	logThis('Checking DROP TABLE permissions...');
-	global $db;
 	global $mod_strings;
-
-	switch($type) {
-		case 'mysql':
-		case 'mssql':
-			$db->query('DROP TABLE temp');
-			if($db->checkError()) {
+	if(!$db->checkPrivilege("DROP TABLE")) {
 				logThis('cannot DROP TABLE!');
 				$out['db']['dbNoDropTable'] = true;
 				$out['dbOut'] .= "<tr><td align='left'><span class='error'>{$mod_strings['LBL_UW_DB_NO_DROP_TABLE']}</span></td></tr>";
-			}
-		break;
-
-		case 'oci8':
-		break;
-	}
-
-	return $out;
+    }
+    return $out;
 }
-
-
-
-function createMSSQLTemp($table) {
-	global $sugar_config;
-	global $db;
-
-	$qtest = "SELECT TABLE_NAME tn FROM information.tables WHERE TABLE_NAME = '{$table}__UW_TEMP'";
-	$rtest = $db->query($qtest);
-	$atest = $db->fetchByAssoc($rtest);
-
-	if(empty($atest)) {
-		$tempTable = "CREATE TABLE {$table}__UW_TEMP AS ".$db->limitQuerySql("SELECT * FROM {$table}",0,8);
-		logThis("Creating temp table for {$table}: {$tempTable}");
-		$db->query($tempTable);
-	}
-	else {
-		logThis("Found {$table}__UW_TEMP - skipping temp table creation.");
-	}
-}
-
-/**
- * Tests an ALTER TABLE query
- * @param string table The table name to get DDL
- * @param string dbType MySQL, MSSQL, etc.
- * @param string query The query to test.
- * @return string Non-empty if error found
- */
-function testQueryAlter($table, $dbType, $query, $newTables) {
-	logThis('verifying ALTER statement...');
-	global $db;
-	global $sugar_config;
-
-	if(empty($db)) {
-		$db = &DBManagerFactory::getInstance();
-	}
-
-	// Skipping ALTER TABLE [table] DROP PRIMARY KEY because primary keys are not being copied
-	// over to the temp tables
-	if(strpos(strtoupper($query), 'DROP PRIMARY KEY') !== false) {
-		logThis('Skipping DROP PRIMARY KEY verification');
-		return '';
-	}
-
-	if ($dbType == 'mysql'){
-		mysql_error(); // initialize errors
-	}
-	$error = '';
-
-	if(!in_array($table, $newTables)) {
-		switch($dbType) {
-			case 'mysql':
-				// get DDL
-				logThis('creating temp table for ['.$table.']...');
-				$q = "SHOW CREATE TABLE {$table}";
-				$r = $db->query($q);
-				$a = $db->fetchByAssoc($r);
-
-				// rewrite DDL with _temp name
-				$cleanQuery = cleanQuery($a['Create Table']);
-				$tempTableQuery = str_replace("CREATE TABLE `{$table}`", "CREATE TABLE `{$table}__uw_temp`", $cleanQuery);
-				$r2 = $db->query($tempTableQuery);
-
-				// get sample data into the temp table to test for data/constraint conflicts
-				logThis('inserting temp dataset...');
-				$q3 = "INSERT INTO `{$table}__uw_temp` SELECT * FROM `{$table}` LIMIT 10";
-				$r3 = $db->query($q3, false, "Preflight Failed for: {$query}");
-
-				// test the query on the test table
-				logThis('testing query: ['.$query.']');
-				$tempTableTestQuery = str_replace("ALTER TABLE `{$table}`", "ALTER TABLE `{$table}__uw_temp`", $query);
-				if (strpos($tempTableTestQuery, 'idx') === false) {
-					if(isRunningAgainstTrueTable($tempTableTestQuery)) {
-						$error = getFormattedError('Could not use a temp table to test query!', $query);
-						return $error;
-					}
-
-					logThis('testing query on temp table: ['.$tempTableTestQuery.']');
-					$r4 = $db->query($tempTableTestQuery, false, "Preflight Failed for: {$query}");
-				}
-				else {
-					// test insertion of an index on a table
-					$tempTableTestQuery_idx = str_replace("ADD INDEX `idx_", "ADD INDEX `temp_idx_", $tempTableTestQuery);
-					logThis('testing query on temp table: ['.$tempTableTestQuery_idx.']');
-					$r4 = $db->query($tempTableTestQuery_idx, false, "Preflight Failed for: {$query}");
-				}
-				$mysqlError = mysql_error(); // empty on no-errors
-				if(!empty($mysqlError)) {
-					logThis('*** ERROR: query failed: '.$mysqlError);
-					$error = getFormattedError($mysqlError, $query);
-				}
-
-
-				// clean up moved to end of preflight
-			break;
-
-			case 'mssql':
-				logThis('mssql found: skipping test query - ['.$query.']');
-			break;
-
-			case 'oci8':
-				logThis('Oracle found: skipping test query - ['.$query.']');
-			break;
-		} // end switch()
-	} else {
-		logThis($table . ' is a new table');
-	}
-
-	logThis('verification done.');
-	return $error;
-}
-
-/**
- * Tests an CREATE TABLE query
- * @param string table The table name to get DDL
- * @param string dbType MySQL, MSSQL, etc.
- * @param string query The query to test.
- * @return string Non-empty if error found
- */
-function testQueryCreate($table, $dbType, $query, &$newTables) {
-	logThis('verifying CREATE statement...');
-	global $db;
-	if(empty($db)) {
-		$db = &DBManagerFactory::getInstance();
-	}
-
-	$error = '';
-	switch($dbType) {
-		case 'mysql':
-			// rewrite DDL with _temp name
-			logThis('testing query: ['.$query.']');
-			$tempTableQuery = str_replace("CREATE TABLE `{$table}`", "CREATE TABLE `{$table}__uw_temp`", $query);
-
-			if(isRunningAgainstTrueTable($tempTableQuery)) {
-				$error = getFormattedError('Could not use a temp table to test query!', $query);
-				return $error;
-			}
-
-			$r4 = $db->query($tempTableQuery, false, "Preflight Failed for: {$query}");
-
-			$error = mysql_error(); // empty on no-errors
-			if(!empty($error)) {
-				logThis('*** ERROR: query failed.');
-				$error = getFormattedError($error, $query);
-			}
-
-			// check if table exists
-			logThis('testing for table: '.$table);
-			$q1 = "DESC `{$table}`";
-			$r1 = $db->query($q1);
-
-			$mysqlError = mysql_error();
-			if(empty($mysqlError)) {
-				logThis('*** ERROR: table already exists!: '.$table);
-				$error = getFormattedError('table exists', $query);
-			}
-			else {
-				logThis('NEW TABLE: '.$query);
-				$newTables[] = $table;
-			}
-		break;
-
-		case 'mssql':
-			logThis('mssql found: skipping test query - ['.$query.']');
-		break;
-
-		case 'oci8':
-				logThis('Oracle found: skipping test query - ['.$query.']');
-			break;
-	}
-	return $error;
-}
-
-/**
- * Tests an DELETE FROM query
- * @param string table The table name to get DDL
- * @param string dbType MySQL, MSSQL, etc.
- * @param string query The query to test.
- * @return string Non-empty if error found
- */
-function testQueryDelete($table, $dbType, $query) {
-	logThis('verifying DELETE statements');
-	global $db;
-	if(empty($db)) {
-		$db = &DBManagerFactory::getInstance();
-	}
-
-	$error = '';
-
-	switch($dbType) {
-		case 'mysql':
-			// get DDL
-			logThis('creating temp table...');
-			$q = "SHOW CREATE TABLE {$table}";
-			$r = $db->query($q);
-			$a = $db->fetchByAssoc($r);
-
-			// rewrite DDL with _temp name
-			$cleanQuery = cleanQuery($a['Create Table']);
-			$tempTableQuery = str_replace("CREATE TABLE `{$table}`", "CREATE TABLE `{$table}__uw_temp`", $cleanQuery);
-			$r2 = $db->query($tempTableQuery);
-
-			// get sample data into the temp table to test for data/constraint conflicts
-			logThis('inserting temp dataset...');
-			$q3 = "INSERT INTO `{$table}__uw_temp` SELECT * FROM `{$table}` LIMIT 10";
-			$r3 = $db->query($q3);
-
-			// test the query on the test table
-			logThis('testing query: ['.$query.']');
-			$tempTableTestQuery = str_replace("DELETE FROM `{$table}`", "DELETE FROM `{$table}__uw_temp`", $query);
-
-			if(isRunningAgainstTrueTable($tempTableTestQuery)) {
-				$error = getFormattedError('Could not use a temp table to test query!', $tempTableTestQuery);
-				return $error;
-			}
-
-			$r4 = $db->query($tempTableTestQuery, false, "Preflight Failed for: {$query}");
-			$error = mysql_error(); // empty on no-errors
-			if(!empty($error)) {
-				logThis('*** ERROR: query failed.');
-				$error = getFormattedError($error, $query);
-			}
-		break;
-
-		case 'mssql':
-			logThis('mssql found: skipping test query - ['.$query.']');
-		break;
-
-		case 'oci8':
-				logThis('Oracle found: skipping test query - ['.$query.']');
-			break;
-	}
-	logThis('verification done.');
-	return $error;
-}
-
-/**
- * Tests a DROP TABLE query
- *
- */
-function testQueryDrop($table, $dbType, $query) {
-	logThis('verifying DROP TABLE statement');
-	global $db;
-	if(empty($db)) {
-		$db = &DBManagerFactory::getInstance();
-	}
-
-	$error = '';
-
-	switch($dbType) {
-		case 'mysql':
-			// get DDL
-			logThis('creating temp table...');
-			$q = "SHOW CREATE TABLE {$table}";
-			$r = $db->query($q);
-			$a = $db->fetchByAssoc($r);
-
-			// rewrite DDL with _temp name
-			$cleanQuery = cleanQuery($a['Create Table']);
-			$tempTableQuery = str_replace("CREATE TABLE `{$table}`", "CREATE TABLE `{$table}__uw_temp`", $cleanQuery);
-			$r2 = $db->query($tempTableQuery);
-
-			// get sample data into the temp table to test for data/constraint conflicts
-			logThis('inserting temp dataset...');
-			$query = stripQuotesUW($query, $table);
-			$q3 = "INSERT INTO `{$table}__uw_temp` SELECT * FROM `{$table}` LIMIT 10";
-			$r3 = $db->query($q3);
-
-			// test the query on the test table
-			logThis('testing query: ['.$query.']');
-			$tempTableTestQuery = str_replace("DROP TABLE `{$table}`", "DROP TABLE `{$table}__uw_temp`", $query);
-
-			// make sure the test query is running against a temp table
-			if(isRunningAgainstTrueTable($tempTableTestQuery)) {
-				$error = getFormattedError('Could not use a temp table to test query!', $tempTableTestQuery);
-				return $error;
-			}
-
-			$r4 = $db->query($tempTableTestQuery, false, "Preflight Failed for: {$query}");
-			$error = mysql_error(); // empty on no-errors
-			if(!empty($error)) {
-				logThis('*** ERROR: query failed.');
-				$error = getFormattedError($error, $query);
-			}
-		break;
-
-		case 'mssql':
-			logThis('mssql found: skipping test query - ['.$query.']');
-		break;
-
-		case 'oci8':
-				logThis('Oracle found: skipping test query - ['.$query.']');
-			break;
-	}
-	logThis('verification done.');
-	return $error;
-}
-
-/**
- * Tests an INSERT INTO query
- * @param string table The table name to get DDL
- * @param string dbType MySQL, MSSQL, etc.
- * @param string query The query to test.
- * @return string Non-empty if error found
- */
-function testQueryInsert($table, $dbType, $query) {
-	logThis('verifying INSERT statement...');
-	global $db;
-	if(empty($db)) {
-		$db = &DBManagerFactory::getInstance();
-	}
-
-	$error = '';
-
-	switch($dbType) {
-		case 'mysql':
-			// get DDL
-			$q = "SHOW CREATE TABLE {$table}";
-			$r = $db->query($q);
-			$a = $db->fetchByAssoc($r);
-
-			// rewrite DDL with _temp name
-			$cleanQuery = cleanQuery($a['Create Table']);
-			$tempTableQuery = str_replace("CREATE TABLE `{$table}`", "CREATE TABLE `{$table}__uw_temp`", $cleanQuery);
-			$r2 = $db->query($tempTableQuery);
-
-			// test the query on the test table
-			logThis('testing query: ['.$query.']');
-			$tempTableTestQuery = str_replace("INSERT INTO `{$table}`", "INSERT INTO `{$table}__uw_temp`", $query);
-
-			// make sure the test query is running against a temp table
-			if(isRunningAgainstTrueTable($tempTableTestQuery)) {
-				$error = getFormattedError('Could not use a temp table to test query!', $tempTableTestQuery);
-				return $error;
-			}
-
-			$r4 = $db->query($tempTableTestQuery, false, "Preflight Failed for: {$query}");
-			$error = mysql_error(); // empty on no-errors
-			if(!empty($error)) {
-				logThis('*** ERROR: query failed.');
-				$error = getFormattedError($error, $query);
-			}
-		break;
-
-		case 'mssql':
-			logThis('mssql found: skipping test query - ['.$query.']');
-		break;
-
-		case 'oci8':
-				logThis('Oracle found: skipping test query - ['.$query.']');
-			break;
-	}
-	logThis('verification done.');
-	return $error;
-}
-
-
-/**
- * Tests an UPDATE TABLE query
- * @param string table The table name to get DDL
- * @param string dbType MySQL, MSSQL, etc.
- * @param string query The query to test.
- * @return string Non-empty if error found
- */
-function testQueryUpdate($table, $dbType, $query) {
-	logThis('verifying UPDATE TABLE statement...');
-	global $db;
-	if(empty($db)) {
-		$db = &DBManagerFactory::getInstance();
-	}
-
-	$error = '';
-
-	switch($dbType) {
-		case 'mysql':
-			// get DDL
-			$q = "SHOW CREATE TABLE {$table}";
-			$r = $db->query($q);
-			$a = $db->fetchByAssoc($r);
-
-			// rewrite DDL with _temp name
-			$cleanQuery = cleanQuery($a['Create Table']);
-			$tempTableQuery = str_replace("CREATE TABLE `{$table}`", "CREATE TABLE `{$table}__uw_temp`", $cleanQuery);
-			$r2 = $db->query($tempTableQuery);
-
-			// get sample data into the temp table to test for data/constraint conflicts
-			logThis('inserting temp dataset...');
-			$q3 = "INSERT INTO `{$table}__uw_temp` SELECT * FROM `{$table}` LIMIT 10";
-			$r3 = $db->query($q3, false, "Preflight Failed for: {$query}");
-
-			// test the query on the test table
-			logThis('testing query: ['.$query.']');
-			$tempTableTestQuery = str_replace("UPDATE `{$table}`", "UPDATE `{$table}__uw_temp`", $query);
-
-			// make sure the test query is running against a temp table
-			if(isRunningAgainstTrueTable($tempTableTestQuery)) {
-				$error = getFormattedError('Could not use a temp table to test query!', $tempTableTestQuery);
-				return $error;
-			}
-
-			$r4 = $db->query($tempTableTestQuery, false, "Preflight Failed for: {$query}");
-			$error = mysql_error(); // empty on no-errors
-			if(!empty($error)) {
-				logThis('*** ERROR: query failed.');
-				$error = getFormattedError($error, $query);
-			}
-		break;
-
-		case 'mssql':
-		break;
-
-		case 'oci8':
-				logThis('Oracle found: skipping test query - ['.$query.']');
-			break;
-	}
-	logThis('verification done.');
-	return $error;
-}
-
-
-/**
- * strip queries of single and double quotes
- */
-function stripQuotesUW($query, $table) {
-	$queryStrip = '';
-
-	$start = strpos($query, $table);
-
-	if(substr($query, ($start - 1), 1) != ' ') {
-		$queryStrip  = substr($query, 0, ($start-2));
-		$queryStrip .= " {$table} ";
-		$queryStrip .= substr($query, ($start + strlen($table) + 2), strlen($query));
-	}
-
-	return (empty($queryStrip)) ? $query : $queryStrip;
-}
-
-/**
- * ensures that a __UW_TEMP table test SQL is running against a temp table, not the real thing
- * @param string query
- * @return bool false if it is a good query
- */
-function isRunningAgainstTrueTable($query) {
-	$query = strtoupper($query);
-	if(strpos($query, '__UW_TEMP') === false) {
-		logThis('***ERROR: test query is NOT running against a temp table!!!! -> '.$query);
-		return true;
-	}
-	return false;
-}
-
-
-
-
-
-
-
-
-
-/**
- * cleans up temp tables created during schema test phase
- */
-function testCleanUp($dbType) {
-	logThis('Cleaning up temporary tables...');
-
-	global $db;
-	if(empty($db)) {
-		$db = &DBManagerFactory::getInstance();
-	}
-
-	$error = '';
-	switch($dbType) {
-		case 'mysql':
-			$q = 'SHOW TABLES LIKE "%__uw_temp"';
-			$r = $db->query($q, false, "Preflight Failed for: {$q}");
-
-			// using raw mysql_command to use integer index
-			while($a = $db->fetchByAssoc($r)) {
-				logThis('Dropping table: '.$a[0]);
-				$qClean = "DROP TABLE {$a[0]}";
-				$rClean = $db->query($qClean);
-			}
-		break;
-
-		case 'mssql':
-		break;
-
-		case 'oci8':
-		break;
-	}
-	logThis('Done cleaning up temp tables.');
-	return $error;
-}
-
 
 function getFormattedError($error, $query) {
 	$error = "<div><b>".$error;
@@ -2046,8 +1359,6 @@ function getFormattedError($error, $query) {
 
 	return $error;
 }
-
-
 
 /**
  * parses a query finding the table name
@@ -2082,37 +1393,20 @@ function preLicenseCheck() {
 if(!isset($_SESSION['unzip_dir']) || empty($_SESSION['unzip_dir'])) {
 		logThis('unzipping files in upgrade archive...');
 		$errors					= array();
-		$base_upgrade_dir		= $sugar_config['upload_dir'] . "/upgrades";
-		$base_tmp_upgrade_dir	= "$base_upgrade_dir/temp";
+		list($base_upgrade_dir, $base_tmp_upgrade_dir) = getUWDirs();
 		$unzip_dir = '';
 		//also come up with mechanism to read from upgrade-progress file
 		if(!isset($_SESSION['install_file']) || empty($_SESSION['install_file']) || !is_file($_SESSION['install_file'])) {
-			/*
-			if ($handle = opendir(clean_path($sugar_config['upload_dir']))) {
-	    		while (false !== ($file = readdir($handle))) {
-	    		if($file !="." && $file !="..")	{
-				   $far = explode(".",$file);
-				   if($far[sizeof($far)-1] == 'zip') {
-				   		echo $sugar_config['upload_dir'].'/'.$file;
-				   		$_SESSION['install_file'] =  $sugar_config['upload_dir'].'/'.$file;
-				   }
-		       	 }
-	    		}
-    		}
-    		*/
 			if (file_exists(clean_path($base_tmp_upgrade_dir)) && $handle = opendir(clean_path($base_tmp_upgrade_dir))) {
 		    		while (false !== ($file = readdir($handle))) {
 		    		if($file !="." && $file !="..")	{
-					 //echo $base_tmp_upgrade_dir."/".$file.'</br>';
 					 if(is_file($base_tmp_upgrade_dir."/".$file."/manifest.php")){
 					 	require_once($base_tmp_upgrade_dir."/".$file."/manifest.php");
 					 	$package_name= $manifest['copy_files']['from_dir'];
-					 	//echo file_exists($base_tmp_upgrade_dir."/".$file."/".$package_name).'</br>';
 					 	if(file_exists($base_tmp_upgrade_dir."/".$file."/".$package_name) && file_exists($base_tmp_upgrade_dir."/".$file."/scripts") && file_exists($base_tmp_upgrade_dir."/".$file."/manifest.php")){
-					 		//echo 'Yeah this the directory '. $base_tmp_upgrade_dir."/".$file;
 					 		$unzip_dir = $base_tmp_upgrade_dir."/".$file;
-					 		if(file_exists($sugar_config['upload_dir'].'/upgrades/patch/'.$package_name.'.zip')){
-					 			$_SESSION['install_file'] = $sugar_config['upload_dir'].'/upgrades/patch/'.$package_name.'.zip';
+					 		if(file_exists("$base_upgrade_dir/patch/".$package_name.'.zip')){
+					 			$_SESSION['install_file'] = $package_name.".zip";
 					 			break;
 					 		}
 						}
@@ -2121,8 +1415,8 @@ if(!isset($_SESSION['unzip_dir']) || empty($_SESSION['unzip_dir'])) {
 		    	}
 			}
 		}
-        if(!isset($_SESSION['install_file']) || empty($_SESSION['install_file'])){
-        	unlinkTempFiles();
+        if(empty($_SESSION['install_file'])){
+        	unlinkUWTempFiles();
         	resetUwSession();
         	echo 'Upload File not found so redirecting to Upgrade Start ';
         	$redirect_new_wizard = $sugar_config['site_url' ].'/index.php?module=UpgradeWizard&action=index';
@@ -2139,7 +1433,7 @@ eoq;
 $uwMain = $upgrade_directories_not_found;
 				return '';
         }
-		$install_file			= urldecode( $_SESSION['install_file'] );
+		$install_file			= "$base_upgrade_dir/patch/".basename(urldecode( $_SESSION['install_file'] ));
 		$show_files				= true;
 		if(empty($unzip_dir)){
 			$unzip_dir				= mk_temp_dir( $base_tmp_upgrade_dir );
@@ -2192,7 +1486,7 @@ $uwMain = $upgrade_directories_not_found;
 	if(!isset($_SESSION['unzip_dir']) || !file_exists($_SESSION['unzip_dir'])
 		|| !isset($_SESSION['install_file']) || empty($_SESSION['install_file']) || !file_exists($_SESSION['install_file'])){
 		    //redirect to start
-	    unlinkTempFiles();
+	    unlinkUWTempFiles();
 		resetUwSession();
 		echo 'Upload File not found so redirecting to Upgrade Start ';
 		$redirect_new_wizard = $sugar_config['site_url' ].'/index.php?module=UpgradeWizard&action=index';
@@ -2210,69 +1504,6 @@ $uwMain = $upgrade_directories_not_found;
 				return '';
 	}
 
-	$parserFiles = array();
-
-	if(file_exists(clean_path($unzip_dir.'/'.$zip_from_dir."/include/SugarFields"))) {
-		$parserFiles = findAllFiles(clean_path($unzip_dir.'/'.$zip_from_dir."/include/SugarFields"), $parserFiles);
-	}
-
-     $cwd = clean_path(getcwd());
-	foreach($parserFiles as $file) {
-		$srcFile = clean_path($file);
-		//$targetFile = clean_path(getcwd() . '/' . $srcFile);
-        if (strpos($srcFile,".svn") !== false) {
-		  //do nothing
-	    }
-	    else{
-	    $targetFile = str_replace(clean_path($unzip_dir.'/'.$zip_from_dir), $cwd, $srcFile);
-
-		if(!is_dir(dirname($targetFile))) {
-			mkdir_recursive(dirname($targetFile)); // make sure the directory exists
-		}
-
-		if(!file_exists($targetFile))
-		 {
-			// handle sugar_version.php
-			// C.L. - Added check for portal directory
-			if(strpos($targetFile, 'sugar_version.php') !== false && !preg_match('/\/portal\/sugar_version\.php$/i', $targetFile)) {
-				logThis('Skipping "sugar_version.php" - file copy will occur at end of successful upgrade', $path);
-				$_SESSION['sugar_version_file'] = $srcFile;
-				continue;
-			}
-
-			//logThis('Copying file to destination: ' . $targetFile);
-
-			if(!copy($srcFile, $targetFile)) {
-				logThis('*** ERROR: could not copy file: ' . $targetFile);
-			} else {
-				$copiedFiles[] = $targetFile;
-			}
-		} else {
-			//logThis('Skipping file: ' . $targetFile);
-			//$skippedFiles[] = $targetFile;
-		}
-	   }
-	 }
-
-    //Also copy the SugarMerge files
- 	if(file_exists(clean_path($unzip_dir.'/'.$zip_from_dir."/UpgradeWizard510Files"))) {
-		$parserFiles = findAllFiles(clean_path($unzip_dir.'/'.$zip_from_dir."/UpgradeWizard510Files"), $parserFiles);
-		foreach($parserFiles as $file) {
-			$srcFile = clean_path($file);
-			//$targetFile = clean_path(getcwd() . '/' . $srcFile);
-	        if (strpos($srcFile,".svn") !== false) {
-			  //do nothing
-		    }
-		    else{
-			    $targetFile = str_replace(clean_path($unzip_dir.'/'.$zip_from_dir."/UpgradeWizard510Files"), $cwd, $srcFile);
-				if(!is_dir(dirname($targetFile))) {
-					mkdir_recursive(dirname($targetFile)); // make sure the directory exists
-				}
-				logThis('updating UpgradeWizard code: '.$targetFile);
-				copy_recursive($file, $targetFile);
-		    }
-	 	}
-    }
     logThis ('is SugarConfig there '.file_exists(clean_path($unzip_dir.'/'.$zip_from_dir."/include/SugarObjects/SugarConfig.php")));
 	if(file_exists(clean_path($unzip_dir.'/'.$zip_from_dir."/include/SugarObjects/SugarConfig.php"))) {
 		$file = clean_path($unzip_dir.'/'.$zip_from_dir."/include/SugarObjects/SugarConfig.php");
@@ -2311,25 +1542,21 @@ function preflightCheck() {
 	if(!isset($_SESSION['unzip_dir']) || empty($_SESSION['unzip_dir'])) {
 		logThis('unzipping files in upgrade archive...');
 		$errors					= array();
-		$base_upgrade_dir		= $sugar_config['upload_dir'] . "/upgrades";
-		$base_tmp_upgrade_dir	= "$base_upgrade_dir/temp";
+		list($base_upgrade_dir, $base_tmp_upgrade_dir) = getUWDirs();
 		$unzip_dir = '';
 		//Following is if User logged out unexpectedly and then logged into UpgradeWizard again.
 		//also come up with mechanism to read from upgrade-progress file.
 		if(!isset($_SESSION['install_file']) || empty($_SESSION['install_file']) || !is_file($_SESSION['install_file'])) {
-			if (file_exists(clean_path($base_tmp_upgrade_dir)) && $handle = opendir(clean_path($base_tmp_upgrade_dir))) {
+			if (file_exists($base_tmp_upgrade_dir) && $handle = opendir($base_tmp_upgrade_dir)) {
 		    	while (false !== ($file = readdir($handle))) {
 		    		if($file !="." && $file !="..")	{
-					 //echo $base_tmp_upgrade_dir."/".$file.'</br>';
 					 if(is_file($base_tmp_upgrade_dir."/".$file."/manifest.php")){
 					 	require_once($base_tmp_upgrade_dir."/".$file."/manifest.php");
 					 	$package_name= $manifest['copy_files']['from_dir'];
-					 	//echo file_exists($base_tmp_upgrade_dir."/".$file."/".$package_name).'</br>';
 					 	if(file_exists($base_tmp_upgrade_dir."/".$file."/".$package_name) && file_exists($base_tmp_upgrade_dir."/".$file."/scripts") && file_exists($base_tmp_upgrade_dir."/".$file."/manifest.php")){
-					 		//echo 'Yeah this the directory '. $base_tmp_upgrade_dir."/".$file;
 					 		$unzip_dir = $base_tmp_upgrade_dir."/".$file;
-					 		if(file_exists($sugar_config['upload_dir'].'/upgrades/patch/'.$package_name.'.zip')){
-					 			$_SESSION['install_file'] = $sugar_config['upload_dir'].'/upgrades/patch/'.$package_name.'.zip';
+					 		if(file_exists("$base_upgrade_dir/patch/".$package_name.'.zip')){
+					 			$_SESSION['install_file'] = $package_name.".zip";
 					 			break;
 					 		}
 						}
@@ -2338,8 +1565,8 @@ function preflightCheck() {
 		    	}
 			}
 		}
-        if(!isset($_SESSION['install_file']) || empty($_SESSION['install_file'])){
-        	unlinkTempFiles();
+        if(empty($_SESSION['install_file'])){
+        	unlinkUWTempFiles();
         	resetUwSession();
         	echo 'Upload File not found so redirecting to Upgrade Start ';
         	$redirect_new_wizard = $sugar_config['site_url' ].'/index.php?module=UpgradeWizard&action=index';
@@ -2357,7 +1584,7 @@ $uwMain = $upgrade_directories_not_found;
 				return '';
 
         }
-		$install_file			= urldecode( $_SESSION['install_file'] );
+		$install_file			= "$base_upgrade_dir/patch/".basename(urldecode( $_SESSION['install_file'] ));
 		$show_files				= true;
 		if(empty($unzip_dir)){
 			$unzip_dir				= mk_temp_dir( $base_tmp_upgrade_dir );
@@ -2410,7 +1637,7 @@ $uwMain = $upgrade_directories_not_found;
 	if(!isset($_SESSION['unzip_dir']) || !file_exists($_SESSION['unzip_dir'])
 		|| !isset($_SESSION['install_file']) || empty($_SESSION['install_file']) || !file_exists($_SESSION['install_file'])){
 		    //redirect to start
-	    unlinkTempFiles();
+	    unlinkUWTempFiles();
 		resetUwSession();
 		echo 'Upload File not found so redirecting to Upgrade Start ';
 		$redirect_new_wizard = $sugar_config['site_url' ].'/index.php?module=UpgradeWizard&action=index';
@@ -2430,15 +1657,8 @@ $uwMain = $upgrade_directories_not_found;
 	//copy minimum required files
 	fileCopy('include/utils/sugar_file_utils.php');
 
-
-	if(file_exists('include/utils/file_utils.php')){
-
-	}
 	$upgradeFiles = findAllFiles(clean_path("$unzip_dir/$zip_from_dir"), array());
 	$cache_html_files= array();
-	if(is_dir("{$GLOBALS['sugar_config']['cache_dir']}layout")){
-	 //$cache_html_files = findAllFilesRelative( "cache/layout", array());
-	}
 
 	// get md5 sums
 	$md5_string = array();
@@ -2564,20 +1784,21 @@ function prepSystemForUpgrade() {
 	global $subdirs;
 	global $base_upgrade_dir;
 	global $base_tmp_upgrade_dir;
-
+    list($p_base_upgrade_dir, $p_base_tmp_upgrade_dir) = getUWDirs();
 	///////////////////////////////////////////////////////////////////////////////
 	////	Make sure variables exist
-	if(!isset($base_upgrade_dir) || empty($base_upgrade_dir)){
-		$base_upgrade_dir       = getcwd().'/'.$sugar_config['upload_dir'] . "upgrades";
+	if(empty($base_upgrade_dir)){
+		$base_upgrade_dir       = $p_base_upgrade_dir;
 	}
-	if(!isset($base_tmp_upgrade_dir) || empty($base_tmp_upgrade_dir)){
-		$base_tmp_upgrade_dir   = "$base_upgrade_dir/temp";
+	if(empty($base_tmp_upgrade_dir)){
+		$base_tmp_upgrade_dir   = $p_base_tmp_upgrade_dir;
 	}
+	sugar_mkdir($base_tmp_upgrade_dir, 0775, true);
 	if(!isset($subdirs) || empty($subdirs)){
-		$subdirs = array('full', 'langpack', 'module', 'patch', 'theme', 'temp');
+		$subdirs = array('full', 'langpack', 'module', 'patch', 'theme');
 	}
 
-    $upgrade_progress_dir = getcwd().'/'.$GLOBALS['sugar_config']['upload_dir'].'upgrades/temp';
+    $upgrade_progress_dir = $base_tmp_upgrade_dir;
     $upgrade_progress_file = $upgrade_progress_dir.'/upgrade_progress.php';
     if(file_exists($upgrade_progress_file)){
     	if(function_exists('get_upgrade_progress') && function_exists('didThisStepRunBefore')){
@@ -2595,7 +1816,7 @@ function prepSystemForUpgrade() {
     // make sure dirs exist
 	if($subdirs != null){
 		foreach($subdirs as $subdir) {
-		    mkdir_recursive("$base_upgrade_dir/$subdir");
+		    sugar_mkdir("$base_upgrade_dir/$subdir", 0775, true);
 		}
 	}
 	// array of special scripts that are executed during (un)installation-- key is type of script, value is filename
@@ -2666,22 +1887,24 @@ function getInstallType($type_string) {
 
 function getImageForType($type) {
     global $image_path;
+    global $mod_strings;
+
     $icon = "";
     switch($type) {
         case "full":
-            $icon = SugarThemeRegistry::current()->getImage("Upgrade", "");
+            $icon = SugarThemeRegistry::current()->getImage("Upgrade", "",null,null,'.gif',$mod_strings['LBL_UPGRADE']);
             break;
         case "langpack":
-            $icon = SugarThemeRegistry::current()->getImage("LanguagePacks", "");
+            $icon = SugarThemeRegistry::current()->getImage("LanguagePacks", "",null,null,'.gif',$mod_strings['LBL_LANGPACKS']);
             break;
         case "module":
-            $icon = SugarThemeRegistry::current()->getImage("ModuleLoader", "");
+            $icon = SugarThemeRegistry::current()->getImage("ModuleLoader", "",null,null,'.gif',$mod_strings['LBL_MODULELOADER']);
             break;
         case "patch":
-            $icon = SugarThemeRegistry::current()->getImage("PatchUpgrades", "");
+            $icon = SugarThemeRegistry::current()->getImage("PatchUpgrades", "",null,null,'.gif',$mod_strings['LBL_PATCHUPGRADES']);
             break;
         case "theme":
-            $icon = SugarThemeRegistry::current()->getImage("Themes", "");
+            $icon = SugarThemeRegistry::current()->getImage("Themes", "",null,null,'.gif',$mod_strings['LBL_THEMES']);
             break;
         default:
             break;
@@ -2714,21 +1937,6 @@ function getUITextForType($type) {
     }
     if($type == "theme") {
         return("Theme");
-    }
-}
-
-/**
- * @deprecated
- * @todo this function doesn't seemed to be used anymore; trying kill this off
- */
-function run_upgrade_wizard_sql($script) {
-    global $unzip_dir;
-    global $sugar_config;
-
-    $db_type = $sugar_config['dbconfig']['db_type'];
-    $script = str_replace("%db_type%", $db_type, $script);
-    if(!run_sql_file("$unzip_dir/$script")) {
-        die("Error running sql file: $unzip_dir/$script");
     }
 }
 
@@ -2814,25 +2022,18 @@ function unlinkUploadFiles() {
 //	}
 }
 
-if ( !function_exists('unlinkTempFiles') ) {
 /**
  * deletes files created by unzipping a package
  */
-function unlinkTempFiles() {
+function unlinkUWTempFiles() {
 	global $sugar_config;
 	global $path;
 
-	logThis('at unlinkTempFiles()');
+	logThis('at unlinkUWTempFiles()');
 	$tempDir='';
-	$sugar_config['upload_dir']='cache/upload/';
-	//if(isset($sugar_config['upload_dir']) && $sugar_config['upload_dir'] != null && $sugar_config['upload_dir']=='cache/upload/'){
-		$tempDir = clean_path(getcwd().'/'.$sugar_config['upload_dir'].'upgrades/temp');
-/*	}
-	else{
-		$uploadDir = getcwd()."/".'cache/upload/';
-		$tempDir = clean_path(getcwd().'/'.$uploadDir.'upgrades/temp');
-	}*/
-	if(file_exists($tempDir) && is_dir($tempDir)){
+	list($upgDir, $tempDir) = getUWDirs();
+
+    if(file_exists($tempDir) && is_dir($tempDir)){
 		$files = findAllFiles($tempDir, array(), false);
 		rsort($files);
 		foreach($files as $file) {
@@ -2849,14 +2050,13 @@ function unlinkTempFiles() {
 				@rmdir($dir);
 			}
 		}
-		$cacheFile = "modules/UpgradeWizard/_persistence.php";
+		$cacheFile = sugar_cached("modules/UpgradeWizard/_persistence.php");
 		if(is_file($cacheFile)) {
 			logThis("Unlinking Upgrade cache file: '_persistence.php'", $path);
 			@unlink($cacheFile);
 		}
 	}
 	logThis("finished!");
-}
 }
 
 /**
@@ -2903,6 +2103,7 @@ function uwFindAllFiles($dir, $theArray, $includeDirs=false, $skipDirs=array(), 
 
 	}
 	rsort($theArray);
+	$d->close();
 	return $theArray;
 }
 
@@ -2984,69 +2185,20 @@ function UWrebuild() {
 	logThis('Registering rebuild record in versions table: '.$query, $path);
 }
 
-function getCustomTables($dbType) {
+function getCustomTables() {
 	global $db;
 
-	$customTables = array();
-
-    switch($dbType) {
-		case 'mysql':
-    		$query = "SHOW tables LIKE '%_cstm'";
-        	$result = $db->query($query);//, true, 'Error getting custom tables');
-            while ($row = $db->fetchByAssoc($result)){
-            	$customTables[] = array_pop($row);
-            }
-            break;
-	}
-    return $customTables;
+    return $db->tablesLike('%_cstm');
 }
 
-function alterCustomTables($dbType, $customTables)
+function alterCustomTables($customTables)
 {
-	switch($dbType) {
-		case 'mysql':
-			$i = 0;
-			while( $i < count($customTables) ) {
-				$alterCustomTableSql[] = "ALTER TABLE " . $customTables[$i] . " CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci";
-				$i++;
-			}
-			break;
-		case 'oci8':
-			break;
-	}
-	return $alterCustomTableSql;
+	return array();
 }
 
-function executeAlterCustomTablesSql($dbType, $queries) {
+function getAllTables() {
 	global $db;
-
-	foreach($queries as $query){
-		if(!empty($query)){
-			logThis("Sending query: ".$query);
-	            if($db->dbType == 'oci8') {
-     	        } else {
-                    $query_result = $db->query($query);//.';', true, "An error has occured while performing db query.  See log file for details.<br>");
-                }
-         }
-	}
-	return true;
-}
-
-function getAllTables($dbType) {
-	global $db;
-
-	$tables = array();
-
-    switch($dbType) {
-		case 'mysql':
-    		$query = "SHOW tables";
-        	$result = $db->query($query, true, 'Error getting custom tables');
-            while ($row = $db->fetchByAssoc($result)){
-            	$tables[] = array_pop($row);
-            }
-            break;
-	}
-    return $tables;
+    return $db->getTablesArray();
 }
 
 function printAlterTableSql($tables)
@@ -3059,17 +2211,15 @@ function printAlterTableSql($tables)
 	return $alterTableSql;
 }
 
-function executeConvertTablesSql($dbType, $tables) {
+function executeConvertTablesSql($tables)
+{
 	global $db;
 
 	foreach($tables as $table){
 		$query = "ALTER TABLE " . $table . " CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci";
 		if(!empty($table)){
 			logThis("Sending query: ".$query);
-	            if($db->dbType == 'oci8') {
-     	        } else {
-                    $query_result = $db->query($query);//.';', true, "An error has occured while performing db query.  See log file for details.<br>");
-                }
+            $db->query($query);//, true, "An error has occured while performing db query.  See log file for details.<br>");
          }
 	}
 	return true;
@@ -3104,6 +2254,7 @@ function testThis() {
 
 
 function testThis2($dir, $id=0, $hide=false) {
+    global $mod_strings;
 	$path = $dir;
 	$dh = opendir($dir);
 	rewinddir($dh);
@@ -3119,7 +2270,7 @@ function testThis2($dir, $id=0, $hide=false) {
 		if(is_dir($path.'/'.$file)) {
 			$file = $path.'/'.$file;
 			$newI = create_guid();
-			$out .= "<tr><td valign='top'><a href='javascript:toggleNwFiles(\"{$newI}\");'><img border='0' src='".SugarThemeRegistry::current()->getImageURL('Workflow.gif')."'></a></td>\n";
+			$out .= "<tr><td valign='top'><a href='javascript:toggleNwFiles(\"{$newI}\");'>".SugarThemeRegistry::current()->getImage("Workflow", "", null, null, ".gif", $mod_strings['LBL_WORKFLOW'])."</a></td>\n";
 			$out .= "<td valign='top'><b><a href='javascript:toggleNwFiles(\"{$newI}\");'>".basename($file)."</a></b></td></tr>";
 			$out .= "<tr><td></td><td valign='top'>".testThis2($file, $newI, true)."</td></tr>";
 		} else {
@@ -3145,6 +2296,7 @@ function testThis3(&$files, $id, $hide, $previousPath = '') {
 
 	$out = '';
 
+    global $mod_strings;
 	// expecting full path here
 	foreach($files as $k => $file) {
 		$file = str_replace(getcwd(), '', $file);
@@ -3160,7 +2312,7 @@ function testThis3(&$files, $id, $hide, $previousPath = '') {
 			$out .= "<td valign='top' align='left'>{$fileName}</td></tr>";
 		} else { // new directory
 			$newI = $k;
-			$out .= "<tr><td valign='top'><a href='javascript:toggleNwFiles(\"{$newI}\");'><img border='0' src='".SugarThemeRegistry::current()->getImageURL('Workflow.gif')."></a></td>\n";
+			$out .= "<tr><td valign='top'><a href='javascript:toggleNwFiles(\"{$newI}\");'>".SugarThemeRegistry::current()->getImage("Workflow", "", null, null, ".gif", $mod_strings['LBL_WORKFLOW'])."</a></td>\n";
 			$out .= "<td valign='top'><b><a href='javascript:toggleNwFiles(\"{$newI}\");'>".$fileName."</a></b></td></tr>";
 			$recurse = testThis3($files, $newI, true, $previousPath);
 			$out .= "<tr><td></td><td valign='top'>".$recurse."</td></tr>";
@@ -3221,7 +2373,7 @@ function getFilesForPermsCheck() {
 	$skipDirs = array(
 		$sugar_config['upload_dir'],
 	);
-	$files = uwFindAllFiles(getcwd(), array(), true, $skipDirs, true);
+	$files = uwFindAllFiles(".", array(), true, $skipDirs, true);
 	return $files;
 }
 
@@ -3294,13 +2446,14 @@ function checkFiles($files, $echo=false) {
 function deletePackageOnCancel(){
 	global $mod_strings;
 	global $sugar_config;
+	list($base_upgrade_dir, $base_tmp_upgrade_dir) = getUWDirs();
 	logThis('running delete');
     if(!isset($_SESSION['install_file']) || ($_SESSION['install_file'] == "")) {
     	logThis('ERROR: trying to delete non-existent file: ['.$_REQUEST['install_file'].']');
         $error = $mod_strings['ERR_UW_NO_FILE_UPLOADED'];
     }
     // delete file in upgrades/patch
-    $delete_me = urldecode( $_SESSION['install_file'] );
+    $delete_me = "$base_upgrade_dir/patch/".basename(urldecode( $_REQUEST['install_file'] ));
     if(@unlink($delete_me)) {
     	//logThis('unlinking: '.$delete_me);
         $out = basename($delete_me).$mod_strings['LBL_UW_FILE_DELETED'];
@@ -3309,70 +2462,42 @@ function deletePackageOnCancel(){
 		$error = $mod_strings['ERR_UW_FILE_NOT_DELETED'].$delete_me;
     }
 
-    // delete file in cache/upload
-    $fileS = explode('/', $delete_me);
-    $c = count($fileS);
-    $fileName = (isset($fileS[$c-1]) && !empty($fileS[$c-1])) ? $fileS[$c-1] : $fileS[$c-2];
-    $deleteUpload = getcwd().'/'.$sugar_config['upload_dir'].$fileName;
-    logThis('Trying to delete '.$deleteUpload);
-    if(!@unlink($deleteUpload)) {
-    	logThis('ERROR: could not delete: ['.$deleteUpload.']');
-    	$error = $mod_strings['ERR_UW_FILE_NOT_DELETED'].$sugar_config['upload_dir'].$fileName;
-    }
     if(!empty($error)) {
 		$out = "<b><span class='error'>{$error}</span></b><br />";
     }
 }
 
+function handleExecuteSqlKeys($db, $tableName, $disable)
+{
+    if(empty($tableName)) return true;
+    if(is_callable(array($db, "supports"))) {
+        // new API
+        return $disable?$db->disableKeys($tableName):$db->enableKeys($tableName);
+    } else {
+        // old api
+        $op = $disable?"DISABLE":"ENABLE";
+        return $db->query("ALTER TABLE $tableName $op KEYS");
+    }
+}
 
-function parseAndExecuteSqlFile($sqlScript,$forStepQuery='',$resumeFromQuery=''){
+function parseAndExecuteSqlFile($sqlScript,$forStepQuery='',$resumeFromQuery='')
+{
 	global $sugar_config;
 	$alterTableSchema = '';
 	$sqlErrors = array();
 	if(!isset($_SESSION['sqlSkippedQueries'])){
-	 	$_SESSION['sqlSkippedQueries'] = array();
-	 }
-	$db = & DBManagerFactory::getInstance();
-	$is_mysql = false;
-	if($sugar_config['dbconfig']['db_type'] == 'mysql') {
-	   $is_mysql = true;
+		$_SESSION['sqlSkippedQueries'] = array();
 	}
-    if($sugar_config['dbconfig']['db_type'] == 'oci8'){
-        $db->query("CREATE OR REPLACE FUNCTION blob_to_clob (blob_in IN BLOB)
-					RETURN CLOB
-					AS
-					  v_clob    CLOB;
-					  v_varchar VARCHAR2(32767);
-					  v_start   PLS_INTEGER := 1;
-					  v_buffer  PLS_INTEGER := 32767;
-					BEGIN
-					  DBMS_LOB.CREATETEMPORARY(v_clob, TRUE);
-
-					  FOR i IN 1..CEIL(DBMS_LOB.GETLENGTH(blob_in) / v_buffer)
-					  LOOP
-
-					     v_varchar := UTL_RAW.CAST_TO_VARCHAR2(DBMS_LOB.SUBSTR(blob_in, v_buffer, v_start));
-
-					           DBMS_LOB.WRITEAPPEND(v_clob, LENGTH(v_varchar), v_varchar);
-
-					        v_start := v_start + v_buffer;
-					    END LOOP;
-
-					   RETURN v_clob;
-
-					END blob_to_clob;");
-    }
-    if(strpos($resumeFromQuery,",") != false){
-    	$resumeFromQuery = explode(",",$resumeFromQuery);
-    	if(is_array($resumeFromQuery)){
-    		//print_r('RES ARRAY '.$resumeFromQuery[0].'</br>');
-    	}
-    }
+	$db = DBManagerFactory::getInstance();
+	$disable_keys = ($db->dbType == "mysql"); // have to use old way for now for upgrades
+	if(strpos($resumeFromQuery,",") != false){
+		$resumeFromQuery = explode(",",$resumeFromQuery);
+	}
 	if(file_exists($sqlScript)) {
 		$fp = fopen($sqlScript, 'r');
 		$contents = stream_get_contents($fp);
-	    $anyScriptChanges =$contents;
-	    $resumeAfterFound = false;
+		$anyScriptChanges =$contents;
+		$resumeAfterFound = false;
 		if(rewind($fp)) {
 			$completeLine = '';
 			$count = 0;
@@ -3388,21 +2513,18 @@ function parseAndExecuteSqlFile($sqlScript,$forStepQuery='',$resumeFromQuery='')
 						if($query != null && $resumeFromQuery != null){
 							if(!$resumeAfterFound){
 								if(strpos($query,",") != false){
-									$queArray = array();
 									$queArray = explode(",",$query);
 									for($i=0;$i<sizeof($resumeFromQuery);$i++){
-										if(strcmp(strtolower(trim($resumeFromQuery[$i])),strtolower(trim($queArray[$i])))==0){
-											//echo 'mat found '.$queArray[$i].'</br>';
+										if(strcasecmp(trim($resumeFromQuery[$i]),trim($queArray[$i]))==0){
 											$resumeAfterFound = true;
-										}
-										else{
+										} else {
 											$resumeAfterFound = false;
 											break;
 										}
 									}//for
 
 								}
-								elseif(strcmp(strtolower(trim($resumeFromQuery)),strtolower(trim($query)))==0){
+								elseif(strcasecmp(trim($resumeFromQuery),trim($query))==0){
 									$resumeAfterFound = true;
 								}
 							}
@@ -3410,52 +2532,44 @@ function parseAndExecuteSqlFile($sqlScript,$forStepQuery='',$resumeFromQuery='')
 								$count++;
 							}
 							// if $count=1 means it is just found so skip the query. Run the next one
-	                        if($query != null && $resumeAfterFound && $count >1){
-	                        	$tableName = '';
-	                        	if($is_mysql)
-	                        	{
-	                        		$tableName = getAlterTable($query);
-	                        		if(!empty($tableName))
-	                        		{
-	                        			$db->query('ALTER TABLE '.$tableName.' DISABLE KEYS');
-	                        		}
-	                        	}
-		                        $db->query($query);
-		                        if($db->checkError()){
-		                            //put in the array to use later on
-		                            $_SESSION['sqlSkippedQueries'][] = $query;
-		                        }
-	                            if(!empty($tableName))
-                                {
-                                    $db->query('ALTER TABLE '.$tableName.' ENABLE KEYS');
-                                }
-		                        $progQuery[$forStepQuery]=$query;
-		                        post_install_progress($progQuery,$action='set');
-	                        }//if
+							if($query != null && $resumeAfterFound && $count >1){
+    							$tableName = getAlterTable($query);
+								if($disable_keys)
+								{
+									handleExecuteSqlKeys($db, $tableName, true);
+								}
+								$db->query($query);
+								if($db->checkError()){
+									//put in the array to use later on
+									$_SESSION['sqlSkippedQueries'][] = $query;
+								}
+								if($disable_keys)
+								{
+									handleExecuteSqlKeys($db, $tableName, false);
+								}
+								$progQuery[$forStepQuery]=$query;
+								post_install_progress($progQuery,$action='set');
+							}//if
 						}
 						elseif($query != null){
-						        $tableName = '';
-                                if($is_mysql)
-                                {
-                                    $tableName = getAlterTable($query);
-                                    if(!empty($tableName))
-                                    {
-                                        $db->query('ALTER TABLE '.$tableName.' DISABLE KEYS');
-                                    }
-                                }
-		                        $db->query($query);
-						        if(!empty($tableName))
-                                {
-                                    $db->query('ALTER TABLE '.$tableName.' ENABLE KEYS');
-                                }
-		                        $progQuery[$forStepQuery]=$query;
-		                        post_install_progress($progQuery,$action='set');
-		                        if($db->checkError()){
-		                            //put in the array to use later on
-		                            $_SESSION['sqlSkippedQueries'][] = $query;
-		                        }
-	                        }
-	                   	$completeLine = '';
+							$tableName = getAlterTable($query);
+							if($disable_keys)
+							{
+								handleExecuteSqlKeys($db, $tableName, true);
+							}
+							$db->query($query);
+							if($disable_keys)
+							{
+								handleExecuteSqlKeys($db, $tableName, false);
+							}
+							$progQuery[$forStepQuery]=$query;
+							post_install_progress($progQuery,$action='set');
+							if($db->checkError()){
+								//put in the array to use later on
+								$_SESSION['sqlSkippedQueries'][] = $query;
+							}
+						}
+						$completeLine = '';
 					}
 				}
 			}//while
@@ -3463,9 +2577,10 @@ function parseAndExecuteSqlFile($sqlScript,$forStepQuery='',$resumeFromQuery='')
 	}
 }
 
+
 function getAlterTable($query){
 	$query = strtolower($query);
-	if (preg_match("/^\s*alter\s+table\s+/", $query)) {
+	if (preg_match('/^\s*alter\s+table\s+/', $query)) {
 		$sqlArray = explode(" ", $query);
 		$key = array_search('table', $sqlArray);
 		return $sqlArray[($key+1)];
@@ -3476,7 +2591,7 @@ function getAlterTable($query){
 
 function set_upgrade_vars(){
 	logThis('setting session variables...');
-	$upgrade_progress_dir = getcwd().'/'.$GLOBALS['sugar_config']['upload_dir'].'upgrades/temp';
+	$upgrade_progress_dir = sugar_cached('upgrades/temp');
 	if(!is_dir($upgrade_progress_dir)){
 		mkdir_recursive($upgrade_progress_dir);
 	}
@@ -3532,7 +2647,7 @@ function set_upgrade_vars(){
 }
 
 function initialize_session_vars(){
-  $upgrade_progress_dir = getcwd().'/'.$GLOBALS['sugar_config']['upload_dir'].'upgrades/temp';
+  $upgrade_progress_dir = sugar_cached('upgrades/temp');
   $upgrade_progress_file = $upgrade_progress_dir.'/upgrade_progress.php';
   if(file_exists($upgrade_progress_file)){
   	include($upgrade_progress_file);
@@ -3556,7 +2671,7 @@ function initialize_session_vars(){
 //track the upgrade progress on each step
 function set_upgrade_progress($currStep,$currState,$currStepSub='',$currStepSubState=''){
 
-	$upgrade_progress_dir = getcwd().'/'.$GLOBALS['sugar_config']['upload_dir'].'upgrades/temp';
+	$upgrade_progress_dir = sugar_cached('upgrades/temp');
 	if(!is_dir($upgrade_progress_dir)){
 		mkdir_recursive($upgrade_progress_dir);
 	}
@@ -3606,15 +2721,12 @@ function set_upgrade_progress($currStep,$currState,$currStepSub='',$currStepSubS
 				//get the current upgrade progress
 				$latestStep = get_upgrade_progress();
 				//set the upgrade progress
-				//echo 'latest '.$latestStep;
 				if($latestStep == $currStep){
 					//update the current step with new progress status
-					//echo 'update it';
 					$upgrade_config[sizeof($upgrade_config)][$latestStep]=$currState;
 				}
 				else{
 					//it's a new step
-					//echo 'new it';
 					$upgrade_config[sizeof($upgrade_config)+1][$currStep]=$currState;
 				}
 	            // now check if there elements within array substeps
@@ -3634,20 +2746,17 @@ function set_upgrade_progress($currStep,$currState,$currStepSub='',$currStepSubS
 }
 
 function get_upgrade_progress(){
-	$upgrade_progress_dir = getcwd().'/'.$GLOBALS['sugar_config']['upload_dir'].'upgrades/temp';
+	$upgrade_progress_dir = sugar_cached('upgrades/temp');
 	$upgrade_progress_file = $upgrade_progress_dir.'/upgrade_progress.php';
 	$currState = '';
-	$upgrade_progress_file = $upgrade_progress_dir.'/upgrade_progress.php';
 
 	if(file_exists($upgrade_progress_file)){
 		include($upgrade_progress_file);
-		//echo 	'upconf '.$upgrade_config;
 		if(!isset($upgrade_config) || $upgrade_config == null){
 			$upgrade_config = array();
 		}
 		if($upgrade_config != null && sizeof($upgrade_config) >1){
 			$currArr = $upgrade_config[sizeof($upgrade_config)];
-				//echo 'size of '.sizeof($upgrade_config);
 			if(is_array($currArr)){
 			   foreach($currArr as $key=>$val){
 					$currState = $key;
@@ -3689,10 +2798,9 @@ function currUpgradeState($currState){
 
 function didThisStepRunBefore($step,$SubStep=''){
 	if($step == null) return;
-	$upgrade_progress_dir = getcwd().'/'.$GLOBALS['sugar_config']['upload_dir'].'upgrades/temp';
+	$upgrade_progress_dir = sugar_cached('upgrades/temp');
 	$upgrade_progress_file = $upgrade_progress_dir.'/upgrade_progress.php';
 	$currState = '';
-	$upgrade_progress_file = $upgrade_progress_dir.'/upgrade_progress.php';
 	$stepRan = false;
 	if(file_exists($upgrade_progress_file)){
 		include($upgrade_progress_file);
@@ -3708,7 +2816,6 @@ function didThisStepRunBefore($step,$SubStep=''){
 										foreach($v as $k1=>$v1){
 											if($SubStep != null){
 												if($SubStep ==$k1 && $v1=='done'){
-													//echo 'Found Inside '.$k1;
 													$stepRan = true;
 													break;
 												}
@@ -3717,20 +2824,17 @@ function didThisStepRunBefore($step,$SubStep=''){
 									}
 									elseif($SubStep !=null){
 										if($SubStep==$k && $v=='done'){
-											//echo 'Found1 '.$k;
 											$stepRan = true;
 											break;
 										}
 									}
 									elseif($step==$k && $v=='done'){
-										//echo 'Found2 '.$k;
 										$stepRan = true;
 										break;
 									}
 								}//foreach
 							}
 							elseif($val=='done'){
-								//echo 'Foundmmmm '.$key;
 								$stepRan = true;
 							}
 						}
@@ -3746,10 +2850,10 @@ function didThisStepRunBefore($step,$SubStep=''){
 
 //get and set post install status
 function post_install_progress($progArray='',$action=''){
-	if($action=='' || $action=='get'){
+	$upgrade_progress_dir = sugar_cached('upgrades/temp');
+	$upgrade_progress_file = $upgrade_progress_dir.'/upgrade_progress.php';
+    if($action=='' || $action=='get'){
 		//get the state of post install
-		$upgrade_progress_dir = getcwd().'/'.$GLOBALS['sugar_config']['upload_dir'].'upgrades/temp';
-		$upgrade_progress_file = $upgrade_progress_dir.'/upgrade_progress.php';
         $currProg = array();
 		if(file_exists($upgrade_progress_file)){
 			include($upgrade_progress_file);
@@ -3762,11 +2866,9 @@ function post_install_progress($progArray='',$action=''){
 		return $currProg;
 	}
 	elseif($action=='set'){
-		$upgrade_progress_dir = getcwd().'/'.$GLOBALS['sugar_config']['upload_dir'].'upgrades/temp';
 		if(!is_dir($upgrade_progress_dir)){
 			mkdir($upgrade_progress_dir);
 		}
-		$upgrade_progress_file = $upgrade_progress_dir.'/upgrade_progress.php';
 		if(file_exists($upgrade_progress_file)){
 			include($upgrade_progress_file);
 		}
@@ -3785,77 +2887,6 @@ function post_install_progress($progArray='',$action=''){
 		if(is_writable($upgrade_progress_file) && write_array_to_file( "upgrade_config", $upgrade_config,
 		$upgrade_progress_file)) {
 	       //writing to the file
-		}
-	}
-}
-
-
-// parse and run sql file
-function parseAndExecuteSqlFileExtended($sqlScript){
-	global $sugar_config;
-	$alterTableSchema = '';
-	$db = & DBManagerFactory::getInstance();
-	if(is_file($sqlScript)) {
-		$fp = fopen($sqlScript, 'r');
-		$contents = stream_get_contents($fp);
-	    $anyScriptChanges =$contents;
-		if(rewind($fp)) {
-			$completeLine = '';
-			$count = 0;
-			while($line = fgets($fp)) {
-				if(strpos($line, '--') === false) {
-					$completeLine .= " ".trim($line);
-					if(strpos($line, ';') !== false) {
-						$completeLine = str_replace(';','',$completeLine);
-	                    $currLine = explode(",",$completeLine);
-	                    //check if multiple statements are clubbed
-	                    if(sizeof($currLine) >1){
-	                    	$qarr = explode(" ",trim($currLine[0]));
-	                    	if(strtoupper(trim($qarr[0])) == 'CREATE' && strtoupper(trim($qarr[1])) == 'TABLE'){
-	                            if(strtoupper(trim($qarr[2]) != null)){
-	                            	if($sugar_config['dbconfig']['db_type'] == 'oci8'){
-	                            		$query= "select table_name from user_tables where table_name=strtoupper(trim($qarr[2]))";
-										$result = $db->query($query);
-										$row = $db->fetchByAssociation($result);
-										if($row['table_name'] != null){
-											//already exists
-										}
-										else{
-											//create table
-											$query= $completeLine;
-											$db->query($query);
-										}
-	                            	}
-
-	                            }
-
-	                    	}
-	                    	else{
-	                    		$qType =trim($qarr[0])." ".trim($qarr[1])." ".trim($qarr[2]);
-		                    	echo trim($currLine[0])."<br />";
-	                            for ($i = 1; $i <= sizeof($currLine)-1; $i++) {
-	 							   $query = $qType." ".trim($currLine[$i]);
-	 							   echo $query."<br />";
-								}
-	                    	}
-
-	                    }
-	                    else{
-	                    	echo  trim($currLine[0]);
-	                    }
-
-
-                        //$q3 = $completeLine;
-						//''$r3 = $GLOBALS['db']->query($q3, false, "Preflight Failed for:");
-                        //echo mysql_error();
-						$completeLine = '';
-						//break;
-					}
-				}
-			}
-		} else {
-
-			//$sqlErrors[] = $mod_strings['ERR_UW_FILE_NOT_READABLE'].'::'.$sqlScript;
 		}
 	}
 }
@@ -3921,8 +2952,81 @@ function repairDBForUpgrade($execute=false,$path=''){
  *
  */
 function upgradeUserPreferences() {
+    global $sugar_config, $sugar_version;
+    $uw_strings = return_module_language($GLOBALS['current_language'], 'UpgradeWizard');
 
+    $localization = new Localization();
+    $localeCoreDefaults = $localization->getLocaleConfigDefaults();
+
+    // check the current system wide default_locale_name_format and add it to the list if it's not there
+    if(empty($sugar_config['name_formats'])) {
+        $sugar_config['name_formats'] = $localeCoreDefaults['name_formats'];
+        if(!rebuildConfigFile($sugar_config, $sugar_version)) {
+            $errors[] = $uw_strings['ERR_UW_CONFIG_WRITE'];
+        }
+    }
+
+    $currentDefaultLocaleNameFormat = $sugar_config['default_locale_name_format'];
+
+    if ($localization->isAllowedNameFormat($currentDefaultLocaleNameFormat)) {
+        upgradeLocaleNameFormat($currentDefaultLocaleNameFormat);
+    } else {
+        $sugar_config['default_locale_name_format'] = $localeCoreDefaults['default_locale_name_format'];
+        if(!rebuildConfigFile($sugar_config, $sugar_version)) {
+            $errors[] = $uw_strings['ERR_UW_CONFIG_WRITE'];
+        }
+        $localization->createInvalidLocaleNameFormatUpgradeNotice();
+    }
+
+   	$db = &DBManagerFactory::getInstance();
+    $result = $db->query("SELECT id FROM users where deleted = '0'");
+   	while($row = $db->fetchByAssoc($result))
+    {
+        $current_user = new User();
+        $current_user->retrieve($row['id']);
+
+        // get the user's name locale format, check if it's in our list, add it if it's not, keep it as user's default
+        $currentUserNameFormat = $current_user->getPreference('default_locale_name_format');
+        if ($localization->isAllowedNameFormat($currentUserNameFormat)) {
+            upgradeLocaleNameFormat($currentUserNameFormat);
+        } else {
+            $current_user->setPreference('default_locale_name_format', 's f l', 0, 'global');
+            $current_user->savePreferencesToDB();
+        }
+
+	} //while
 }
+
+
+/**
+ * Checks if a locale name format is part of the default list, if not adds it to the config
+ * @param $name_format string a local name format string such as 's f l'
+ * @return bool true on successful write to config file, false on failure;
+ */
+function upgradeLocaleNameFormat($name_format) {
+    global $sugar_config, $sugar_version;
+
+    $localization = new Localization();
+    $localeConfigDefaults = $localization->getLocaleConfigDefaults();
+
+    $uw_strings = return_module_language($GLOBALS['current_language'], 'UpgradeWizard');
+    if(empty($sugar_config['name_formats'])) {
+        $sugar_config['name_formats'] = $localeConfigDefaults['name_formats'];
+        if(!rebuildConfigFile($sugar_config, $sugar_version)) {
+            $errors[] = $uw_strings['ERR_UW_CONFIG_WRITE'];
+        }
+    }
+    if (!in_array($name_format, $sugar_config['name_formats'])) {
+        $new_config = sugarArrayMerge($sugar_config['name_formats'], array($name_format=>$name_format));
+        $sugar_config['name_formats'] = $new_config;
+        if(!rebuildConfigFile($sugar_config, $sugar_version)) {
+            $errors[] = $uw_strings['ERR_UW_CONFIG_WRITE'];
+            return false;
+        }
+    }
+    return true;
+}
+
 
 
 function add_custom_modules_favorites_search(){
@@ -4118,7 +3222,7 @@ function upgradeTeamColumn($bean, $column_name) {
 			$GLOBALS['db']->addColumn($bean->table_name, $bean->field_defs['team_set_id']);
 		}
 		$indexArray =  $GLOBALS['db']->helper->get_indices($bean->table_name);
-		
+
         $indexName = getValidDBName('idx_'.strtolower($bean->table_name).'_tmst_id', true, 34);
         $indexDef = array(
 					 array(
@@ -4237,12 +3341,12 @@ function upgradeModulesForTeam() {
             {
 	            //grab the existing system tabs
 	            $tabs = $newTB->get_system_tabs();
-	
+
 	            //add the new tabs to the array
 	            foreach($newModuleList as $nm ){
 	              $tabs[$nm] = $nm;
 	            }
-	
+
 	            $newTB->set_system_tabs($tabs);
             }
             logThis('module tabs updated',$path);
@@ -4471,7 +3575,7 @@ function upgradeModulesForTeam() {
 
 
 	function update_iframe_dashlets(){
-		require_once('cache/dashlets/dashlets.php');
+		require_once(sugar_cached('dashlets/dashlets.php'));
 
 		$db = DBManagerFactory::getInstance();
 		$query = "SELECT id, contents, assigned_user_id FROM user_preferences WHERE deleted = 0 AND category = 'Home'";
@@ -4499,20 +3603,21 @@ function upgradeModulesForTeam() {
 
     /**
      * convertImageToText
+     * @deprecated
      * This method attempts to convert date type image to text on Microsoft SQL Server.
      * This method could NOT be used in any other type of datebases.
      */
 	function convertImageToText($table_name,$column_name){
 		$set_lang = "SET LANGUAGE us_english";
 		$GLOBALS['db']->query($set_lang);
-	    if($GLOBALS['db']->checkError()){
+	    if($GLOBALS['db']->lastError()){
             logThis('An error occurred when performing this query-->'.$set_lang);
         }
        $q="SELECT data_type
         FROM INFORMATION_SCHEMA.Tables T JOIN INFORMATION_SCHEMA.Columns C
         ON T.TABLE_NAME = C.TABLE_NAME where T.TABLE_NAME = '$table_name' and C.COLUMN_NAME = '$column_name'";
        $res= $GLOBALS['db']->query($q);
-       if($GLOBALS['db']->checkError()){
+       if($GLOBALS['db']->lastError()){
             logThis('An error occurred when performing this query-->'.$q);
         }
        $row= $GLOBALS['db']->fetchByAssoc($res);
@@ -4520,7 +3625,7 @@ function upgradeModulesForTeam() {
      if(trim(strtolower($row['data_type'])) == 'image'){
         $addContent_temp = "alter table {$table_name} add {$column_name}_temp text null";
         $GLOBALS['db']->query($addContent_temp);
-        if($GLOBALS['db']->checkError()){
+        if($GLOBALS['db']->lastError()){
             logThis('An error occurred when performing this query-->'.$addContent_temp);
         }
         $qN = "select count=datalength({$column_name}), id, {$column_name} from {$table_name}";
@@ -4534,7 +3639,7 @@ function upgradeModulesForTeam() {
                 while($contentLength >0){
                     $stepsQuery = "select cont=convert(varchar(max), convert(varbinary(8000), substring({$column_name},{$start},{$next}))) from {$table_name} where id= '{$row['id']}'";
                     $steContQ = $GLOBALS['db']->query($stepsQuery);
-                    if($GLOBALS['db']->checkError()){
+                    if($GLOBALS['db']->lastError()){
                         logThis('An error occurred when performing this query-->'.$stepsQuery);
                     }
                     $stepCont = $GLOBALS['db']->fetchByAssoc($steContQ);
@@ -4546,7 +3651,7 @@ function upgradeModulesForTeam() {
                 }
                 $addContentDataText="update {$table_name} set {$column_name}_temp = '{$convertedContent}' where id= '{$row['id']}'";
                 $GLOBALS['db']->query($addContentDataText);
-                if($GLOBALS['db']->checkError()){
+                if($GLOBALS['db']->lastError()){
                     logThis('An error occurred when performing this query-->'.$addContentDataText);
                 }
            }
@@ -4554,7 +3659,7 @@ function upgradeModulesForTeam() {
                 $addContentDataText="update {$table_name} set {$column_name}_temp =
                 convert(varchar(max), convert(varbinary(8000), {$column_name})) where id= '{$row['id']}'";
                 $GLOBALS['db']->query($addContentDataText);
-                if($GLOBALS['db']->checkError()){
+                if($GLOBALS['db']->lastError()){
                     logThis('An error occurred when performing this query-->'.$addContentDataText);
                 }
            }
@@ -4562,12 +3667,12 @@ function upgradeModulesForTeam() {
         //drop the contents now and change contents_temp to contents
         $dropColumn = "alter table {$table_name} drop column {$column_name}";
         $GLOBALS['db']->query($dropColumn);
-        if($GLOBALS['db']->checkError()){
+        if($GLOBALS['db']->lastError()){
             logThis('An error occurred when performing this query-->'.$dropColumn);
         }
         $changeColumnName = "EXEC sp_rename '{$table_name}.[{$column_name}_temp]','{$column_name}','COLUMN'";
         $GLOBALS['db']->query($changeColumnName);
-        if($GLOBALS['db']->checkError()){
+        if($GLOBALS['db']->lastError()){
             logThis('An error occurred when performing this query-->'.$changeColumnName);
         }
      }
@@ -4601,32 +3706,18 @@ function upgradeModulesForTeam() {
 	 *
 	 * @param path String location to log file, empty by default
 	 */
-	function upgradeDateTimeFields($path=''){
+	function upgradeDateTimeFields($path)
+	{
 		//bug: 39757
 		global $db;
-		if($db->dbType == 'mysql')
-		{
-			$meetingsSql = "UPDATE meetings SET date_end = date_add(date_start, INTERVAL + CONCAT(duration_hours, ':', duration_minutes) HOUR_MINUTE)";
-			$callsSql = "UPDATE calls SET date_end = date_add(date_start, INTERVAL + CONCAT(duration_hours, ':', duration_minutes) HOUR_MINUTE)";
-		} else if($db->dbType == 'mssql') {
-			$meetingsSql = "UPDATE meetings set date_end = DATEADD(hh, duration_hours, DATEADD(mi, duration_minutes, date_start))";
-			$callsSql = "UPDATE calls set date_end = DATEADD(hh, duration_hours, DATEADD(mi, duration_minutes, date_start))";
-		} else if ($db->dbType == 'oci8') {
-			$meetingsSql = "UPDATE meetings SET date_end = date_start + duration_hours/24 + duration_minutes/1440";
-			$callsSql = "UPDATE calls SET date_end = date_start + duration_hours/24 + duration_minutes/1440";
-		}
+		$meetingsSql = "UPDATE meetings SET date_end = ".$db->convert("date_start", 'add_time', array('duration_hours', 'duration_minutes'));
+		$callsSql = "UPDATE calls SET date_end = ".$db->convert("date_start", 'add_time', array('duration_hours', 'duration_minutes'));
+    	logThis('upgradeDateTimeFields Meetings SQL:' . $meetingsSql, $path);
+		$db->query($meetingsSql);
 
-		if(isset($meetingsSql) && isset($callsSql))
-		{
-			logThis('upgradeDateTimeFields Meetings SQL:' . $meetingsSql, $path);
-			$db->query($meetingsSql);
-
-			logThis('upgradeDateTimeFields Calls SQL:' . $callsSql, $path);
-			$db->query($callsSql);
-		}
+		logThis('upgradeDateTimeFields Calls SQL:' . $callsSql, $path);
+		$db->query($callsSql);
 	}
-
-
 
 	/**
 	 * upgradeDocumentTypeFields
@@ -4788,8 +3879,12 @@ function merge_config_si_settings($write_to_upgrade_log=false, $config_location=
 	return true;
 }
 
+
 /**
  * upgrade_connectors
+ * This function handles support for upgrading connectors, in particular the Hoovers connector
+ * that needs the wsdl and endpoint modifications in the config.php file as well as the search
+ * term change (from bal.specialtyCriteria.companyKeyword to bal.specialtyCriteria.companyName).
  * @param $path String variable for the log path
  */
 function upgrade_connectors($path='') {
@@ -4855,7 +3950,7 @@ function upgradeEnableInsideViewConnector($path='')
         logThis('Used default mapping', $path);
         require($mapFile);
     }
- 
+
     require_once('include/connectors/sources/SourceFactory.php');
     $source = SourceFactory::getSource('ext_rest_insideview');
 
@@ -5002,9 +4097,9 @@ function getSilentUpgradeVar($var){
  */
 function add_unified_search_to_custom_modules_vardefs()
 {
-	if(file_exists('cache/modules/unified_search_modules.php'))
+	if(file_exists($cachefile = sugar_cached('modules/unified_search_modules.php')))
 	{
-	   unlink('cache/modules/unified_search_modules.php');
+	   unlink($cachefile);
 	}
 
 }
@@ -5015,9 +4110,7 @@ function add_unified_search_to_custom_modules_vardefs()
 function upgradeSugarCache($file)
 {
 	global $sugar_config;
-	// file = getcwd().'/'.$sugar_config['upload_dir'].$_FILES['upgrade_zip']['name'];
-
-	$cacheUploadUpgradesTemp = clean_path(mk_temp_dir("{$sugar_config['upload_dir']}upgrades/temp"));
+	$cacheUploadUpgradesTemp = mk_temp_dir(sugar_cached('upgrades/temp'));
 
 	unzip($file, $cacheUploadUpgradesTemp);
 
@@ -5028,21 +4121,26 @@ function upgradeSugarCache($file)
 		include(clean_path("{$cacheUploadUpgradesTemp}/manifest.php"));
 	}
 
+	$from_dir = "{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}";
 	$allFiles = array();
-	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/database"))) {
-		$allFiles = findAllFiles(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/database"), $allFiles);
-	}	
-	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/SugarCache"))) {
-		$allFiles = findAllFiles(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/SugarCache"), $allFiles);
+	if(file_exists("$from_dir/include/SugarCache")) {
+		$allFiles = findAllFiles("$from_dir/include/SugarCache", $allFiles);
 	}
-	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/utils/external_cache.php"))) {
-		$allFiles[] = clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/utils/external_cache.php");
+	if(file_exists("$from_dir/include/database")) {
+		$allFiles = findAllFiles("$from_dir/include/database", $allFiles);
 	}
-	$cwd = clean_path(getcwd());
+	if(file_exists("$from_dir/include/utils/external_cache.php")) {
+		$allFiles[] = "$from_dir/include/utils/external_cache.php";
+	}
+	if(file_exists("$from_dir/include/utils/sugar_file_utils.php")) {
+		$allFiles[] = "$from_dir/include/utils/sugar_file_utils.php";
+	}
+	if(file_exists("$from_dir/include/utils/sugar_file_utils.php")) {
+		$allFiles[] = "$from_dir/include/utils/sugar_file_utils.php";
+	}
 
 	foreach($allFiles as $k => $file) {
-		$file = clean_path($file);
-		$destFile = str_replace(clean_path($cacheUploadUpgradesTemp.'/'.$manifest['copy_files']['from_dir']), $cwd, $file);
+		$destFile = str_replace($from_dir."/", "", $file);
        if(!is_dir(dirname($destFile))) {
 			mkdir_recursive(dirname($destFile)); // make sure the directory exists
 		}
@@ -5053,18 +4151,12 @@ function upgradeSugarCache($file)
             copy_recursive($file, $destFile);
         }
 	}
-	logThis ('is sugar_file_util there '.file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/utils/sugar_file_utils.php")));
-	if(file_exists(clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/utils/sugar_file_utils.php"))) {
-		$file = clean_path("{$cacheUploadUpgradesTemp}/{$manifest['copy_files']['from_dir']}/include/utils/sugar_file_utils.php");
-		$destFile = str_replace(clean_path($cacheUploadUpgradesTemp.'/'.$manifest['copy_files']['from_dir']), $cwd, $file);
-        copy($file,$destFile);
-	}
 }
 
 
 /**
  * upgradeDisplayedTabsAndSubpanels
- * 
+ *
  * @param $version String value of current system version (pre upgrade)
  */
 function upgradeDisplayedTabsAndSubpanels($version)
@@ -5073,33 +4165,33 @@ function upgradeDisplayedTabsAndSubpanels($version)
 	{
 		logThis('start upgrading system displayed tabs and subpanels');
 	    require_once('modules/MySettings/TabController.php');
-	    $tc = new TabController();	
-	    
-	    //grab the existing system tabs
-	    $tabs = $tc->get_tabs_system();  
+	    $tc = new TabController();
 
-	    //add Calls, Meetings, Tasks, Notes, Prospects (Targets) and ProspectLists (Target Lists) 
+	    //grab the existing system tabs
+	    $tabs = $tc->get_tabs_system();
+
+	    //add Calls, Meetings, Tasks, Notes, Prospects (Targets) and ProspectLists (Target Lists)
 	    //to displayed tabs unless explicitly set to hidden
 	    $modules_to_add = array('Calls', 'Meetings', 'Tasks', 'Notes', 'Prospects', 'ProspectLists');
 	    $added_tabs = array();
-	    
+
 	    foreach($modules_to_add as $module)
 	    {
 		       $tabs[0][$module] = $module;
 		       $added_tabs[] = $module;
 	    }
-	    
+
 	    logThis('calling set_system_tabs on TabController to add tabs: ' . var_export($added_tabs, true));
-	    $tc->set_system_tabs($tabs[0]);    
-	    logThis('finish upgrading system displayed tabs and subpanels'); 
+	    $tc->set_system_tabs($tabs[0]);
+	    logThis('finish upgrading system displayed tabs and subpanels');
 	}
 }
 
 
 /**
  * unlinkUpgradeFiles
- * This is a helper function to clean up 
- * 
+ * This is a helper function to clean up
+ *
  * @param $version String value of current system version (pre upgrade)
  */
 function unlinkUpgradeFiles($version)
@@ -5108,71 +4200,6 @@ function unlinkUpgradeFiles($version)
 	{
 	   return;
 	}
-	
-	logThis('start unlinking files from previous upgrade');
-	if($version < '620')
-	{
-	   //list of files to remove
-	   $files_to_remove = array('modules/Notifications/metadata/studio.php', 'modules/Help/Forms.php','themes/Sugar5/images/sugarColors.xml');
-	   
-	   foreach($files_to_remove as $f)
-	   {
-		   if(file_exists($f))
-		   {
-		   	  logThis('removing file: ' . $f);
-		   	  unlink($f);
-		   }  
-	   }
-	}
-	logThis('end unlinking files from previous upgrade');
-	
-	if($version < '620')
-	{
-		logThis('start upgrade for DocumentRevisions classic files (EditView.html, EditView.php, DetailView.html, DetailView.php, Save.php)');
-
-		//Use a md5 comparison check to see if we can just remove the file where an exact match is found
-		if($version < '610')
-		{
-			$dr_files = array(
-	         'modules/DocumentRevisions/DetailView.html' => '17ad4d308ce66643fdeb6fdb3b0172d3',
-			 'modules/DocumentRevisions/DetailView.php' => 'd8606cdcd0281ae9443b2580a43eb5b3',
-	         'modules/DocumentRevisions/EditView.php' => 'c7a1c3ef2bb30e3f5a11d122b3c55ff1',
-	         'modules/DocumentRevisions/EditView.html' => '7d360ca703863c957f40b3719babe8c8',
-			 'modules/DocumentRevisions/Save.php' => 'd7e39293a5fb4d605ca2046e7d1fcf28',
-	        );		
-		} else {
-			$dr_files = array(
-	         'modules/DocumentRevisions/DetailView.html' => 'a8356ff20cd995daffe6cb7f7b8b2340',
-			 'modules/DocumentRevisions/DetailView.php' => '20edf45dd785469c484fbddff1a3f8f2',
-	         'modules/DocumentRevisions/EditView.php' => 'fb31958496f04031b2851dcb4ce87d50',
-	         'modules/DocumentRevisions/EditView.html' => 'b8cada4fa6fada2b4e4928226d8b81ee',
-			 'modules/DocumentRevisions/Save.php' => '7fb62e4ebff879bafc07a08da62902aa',
-	        );
-		}
-	
-		foreach($dr_files as $rev_file=>$hash)
-		{
-			if(file_exists($rev_file))
-			{
-				//It's a match here so let's just remove the file
-				if (md5(file_get_contents($rev_file)) == $hash) 
-				{
-					logThis('removing file ' . $rev_file);
-					unlink($rev_file);
-				} else {
-					if(!copy($rev_file, $rev_file . '.suback.bak')) 
-					{
-					  logThis('error making backup for file ' . $rev_file);
-					} else {
-					  logThis('copied file ' . $rev_file . ' to ' . $rev_file . '.suback.bak');
-					  unlink($rev_file);
-					}
-				} 
-			}
-		}
-		
-		logThis('end upgrade for DocumentRevisions classic files');
-	}	
 
     //First check if we even have the scripts_for_patch/files_to_remove directory
     require_once('modules/UpgradeWizard/UpgradeRemoval.php');
@@ -5186,18 +4213,18 @@ function unlinkUpgradeFiles($version)
         $_SESSION['unzip_dir'] = mk_temp_dir( $base_tmp_upgrade_dir );
     }
     */
-    
+
     if(isset($_SESSION['unzip_dir']) && file_exists($_SESSION['unzip_dir'].'/scripts/files_to_remove'))
     {
        $files_to_remove = glob($_SESSION['unzip_dir'].'/scripts/files_to_remove/*.php');
-      
+
        foreach($files_to_remove as $script)
        {
        		if(preg_match('/UpgradeRemoval(\d+)x\.php/', $script, $matches))
        		{
        	   	   $checkVersion = $matches[1] + 1; //Increment by one to check everything equal or below the target version
        	   	   $upgradeClass = 'UpgradeRemoval' . $matches[1] . 'x';
-       	   	   require_once($_SESSION['unzip_dir'].'/scripts/files_to_remove/' . $upgradeClass . '.php');    	   	   
+       	   	   require_once($_SESSION['unzip_dir'].'/scripts/files_to_remove/' . $upgradeClass . '.php');
 
        	   	   //Check to make sure we should load and run this UpgradeRemoval instance
        	   	   if($checkVersion <= $version && class_exists($upgradeClass))
@@ -5217,21 +4244,21 @@ function unlinkUpgradeFiles($version)
        	   	   }
        	    }
        }
-    }  	
-    
+    }
+
     //Check if we have a custom directory
     if(file_exists('custom/scripts/files_to_remove'))
     {
        //Now find
        $files_to_remove = glob('custom/scripts/files_to_remove/*.php');
-       
+
        foreach($files_to_remove as $script)
        {
        	   if(preg_match('/\/files_to_remove\/(.*?)\.php$/', $script, $matches))
        	   {
        	   	   require_once($script);
        	   	   $upgradeClass  = $matches[1];
-       	   	          	   	   
+
        	   	   if(!class_exists($upgradeClass))
        	   	   {
        	   	   	  continue;
@@ -5247,11 +4274,11 @@ function unlinkUpgradeFiles($version)
 	       	   	   	  	 logThis($file);
 	       	   	   	  }
 	       	   	   	  $upgradeInstance->processFilesToRemove($files);
-       	   	   }     	   	
+       	   	   }
        	   }
        }
-    } 	
-	
+    }
+
 }
 
 if (!function_exists("getValidDBName"))
@@ -5281,8 +4308,26 @@ if (!function_exists("getValidDBName"))
         }
         return strtolower ( $result ) ;
     }
-    
 
+
+}
+
+/**
+ * Get UW directories
+ * Provides compatibility with both 6.3 and pre-6.3 setup
+ */
+function getUWDirs()
+{
+    if(!class_exists('UploadStream')) {
+        // we're still running the old code
+        global $sugar_config;
+        return array($sugar_config['upload_dir'] . "/upgrades", $sugar_config['cache_dir'] . "upload/upgrades/temp");
+    } else {
+        if(!in_array("upload", stream_get_wrappers())) {
+            UploadStream::register(); // just in case file was copied, but not run
+        }
+        return array("upload://upgrades", sugar_cached("upgrades/temp"));
+    }
 }
 
 /**
@@ -5291,7 +4336,7 @@ if (!function_exists("getValidDBName"))
  * @param array $skipDirs list with skipped dirs
  * @return boolean
  */
-function whetherNeedToSkipDir($dir, $skipDirs) 
+function whetherNeedToSkipDir($dir, $skipDirs)
 {
     foreach($skipDirs as $skipMe) {
 		if(strpos( clean_path($dir), $skipMe ) !== false) {
@@ -5299,4 +4344,40 @@ function whetherNeedToSkipDir($dir, $skipDirs)
 		}
 	}
     return false;
+}
+
+
+/*
+ * rebuildSprites
+ * @param silentUpgrade boolean flag indicating whether or not we should treat running the SugarSpriteBuilder as an upgrade operation
+ *
+ */
+function rebuildSprites($fromUpgrade=true)
+{
+    require_once('modules/Administration/SugarSpriteBuilder.php');
+    $sb = new SugarSpriteBuilder();
+    $sb->cssMinify = true;
+    $sb->fromSilentUpgrade = $fromUpgrade;
+    $sb->silentRun = $fromUpgrade;
+
+    // add common image directories
+    $sb->addDirectory('default', 'include/images');
+    $sb->addDirectory('default', 'themes/default/images');
+    $sb->addDirectory('default', 'themes/default/images/SugarLogic');
+
+    // add all theme image directories
+    if($dh = opendir('themes'))
+    {
+        while (($dir = readdir($dh)) !== false)
+        {
+            if ($dir != "." && $dir != ".." && $dir != 'default' && is_dir('themes/'.$dir)) {
+                $sb->addDirectory($dir, "themes/{$dir}/images");
+            }
+        }
+        closedir($dh);
+    }
+
+    // generate the sprite goodies
+    // everything is saved into cache/sprites
+    $sb->createSprites();
 }

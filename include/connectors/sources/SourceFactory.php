@@ -36,12 +36,13 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 /**
- * Provides a factory to loading a connector along with any key->value options to initialize on the 
+ * Provides a factory to loading a connector along with any key->value options to initialize on the
  * source.  The name of the class to be loaded, corresponds to the path on the file system. For example a source
  * with the name ext_soap_hoovers would be ext/soap/hoovers.php
+ * @api
  */
 class SourceFactory{
-	
+
 	/**
 	 * Given a source param, load the correct source and return the object
 	 * @param string $source string representing the source to load
@@ -66,9 +67,9 @@ class SourceFactory{
 				return null;
 			}
 		//}
-		
+
 		return null;
 	}
-	
+
 }
 ?>

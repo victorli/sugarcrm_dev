@@ -11668,11 +11668,54 @@ $jit.ST.Plot.NodeTypes.implement({
             linear.addColorStop(1, color);
             ctx.fillStyle = linear;
           }
-          if(horz) {
-            ctx.fillRect(x + acum, y, dimArray[i], height);
-          } else {
-            ctx.fillRect(x, y - acum - dimArray[i], width, dimArray[i]);
+
+          if (horz)
+          {
+              yCoord = y;
+              xCoord = x + acum;
+              chartBarWidth = dimArray[i];
+              chartBarHeight = height;
           }
+          else
+          {
+              xCoord = x;
+              yCoord = y - acum - dimArray[i];
+              chartBarWidth = width;
+              chartBarHeight = dimArray[i];
+          }
+          ctx.fillRect(xCoord, yCoord, chartBarWidth, chartBarHeight);
+
+          // add label
+          if (chartBarHeight > 0)
+          {
+              ctx.font = label.style + ' ' + (label.size - 2) + 'px ' + label.family;
+              labelText = valueArray[i].toString();
+              mtxt = ctx.measureText(labelText);
+
+              labelTextPaddingX = 10;
+              labelTextPaddingY = 6;
+
+              labelBoxWidth = mtxt.width + labelTextPaddingX;
+              labelBoxHeight = label.size + labelTextPaddingY;
+
+              // do NOT draw label if label box is smaller than chartBarHeight
+              if ((horz && (labelBoxWidth < chartBarWidth)) || (!horz && (labelBoxHeight < chartBarHeight)))
+              {
+                  labelBoxX = xCoord + chartBarWidth/2 - mtxt.width/2 - labelTextPaddingX/2;
+                  labelBoxY = yCoord + chartBarHeight/2 - labelBoxHeight/2;
+
+                  ctx.fillStyle = "rgba(255,255,255,.2)";
+                  $.roundedRect(ctx, labelBoxX, labelBoxY, labelBoxWidth, labelBoxHeight, 4, "fill");
+                  ctx.fillStyle = "rgba(0,0,0,.8)";
+                  $.roundedRect(ctx, labelBoxX, labelBoxY, labelBoxWidth, labelBoxHeight, 4, "stroke");
+                  ctx.textAlign = 'center';
+                  ctx.fillStyle = "rgba(255,255,255,.6)";
+                  ctx.fillText(labelText, labelBoxX + mtxt.width/2 + labelTextPaddingX/2, labelBoxY + labelBoxHeight/2);
+                  ctx.fillStyle = "rgba(0,0,0,.6)";
+                  ctx.fillText(labelText, labelBoxX + mtxt.width/2 + labelTextPaddingX/2 + 1, labelBoxY + labelBoxHeight/2 + 1);
+              }
+          }
+
           if(border && border.name == stringArray[i]) {
             opt.acum = acum;
             opt.dimValue = dimArray[i];

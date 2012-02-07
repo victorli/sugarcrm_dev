@@ -58,7 +58,7 @@ class UserDemoData {
 		'chris'	=> 'chris000-0000-0000-0000-000000000000',
 	*/
 	);
-	
+
 	/**
 	 * Constructor for creating user demo data
 	 */
@@ -69,18 +69,18 @@ class UserDemoData {
 		$this->_user = $seed_user;
 		$this->_large_scale_test = $large_scale_test;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
-	function create_demo_data() 
+	function create_demo_data()
 	{
 		global $current_language;
 		global $sugar_demodata;
 		foreach($sugar_demodata['users'] as $v)
 		{
 			$this->_create_seed_user($v['id'], $v['last_name'], $v['first_name'], $v['user_name'], $v['title'], $v['is_admin'], $v['reports_to'], $v['reports_to_name'], $v['email']);
-				
+
 		}
 		if($this->_large_scale_test) {
 			$user_list = $this->_seed_data_get_user_list();
@@ -99,7 +99,7 @@ class UserDemoData {
 		$title, $is_admin, $reports_to, $reports_to_name, $email)
 	{
         $u = new User();
-		
+
 		$u->id=$id;
 		$u->new_with_id = true;
 		$u->last_name = $last_name;
@@ -117,19 +117,19 @@ class UserDemoData {
 		$u->emailAddress->addAddress($email, true);
 		$u->emailAddress->addAddress("reply.".$email, false, true);
 		$u->emailAddress->addAddress("alias.".$email);
-		
+
 		// bug 15371 tyoung set a user preference so that Users/DetailView.php can find something without repeatedly querying the db in vain
 		$u->setPreference('max_tabs','7');
 		$u->savePreferencesToDB();
-		
+
 
 		$u->picture = $this->_copy_user_image($id);
-		
+
 		$u->save();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	function _seed_data_get_user_list()
 	{
@@ -157,9 +157,9 @@ class UserDemoData {
 
 		return $users;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	function _quick_create_user($name)
 	{
@@ -170,12 +170,12 @@ class UserDemoData {
 				$sugar_demodata['users'][0]['title'], $sugar_demodata['users'][0]['is_admin'], "seed_jim_id", $sugar_demodata['users'][0]['last_name'].", ".$sugar_demodata['users'][0]['first_name'], $sugar_demodata['users'][0]['email']);
 		}
 	}
-	
+
 	function _copy_user_image($id) {
 		global $sugar_config;
 		$picture_file = create_guid();
 		$file = "include/images/".$id.".gif";
-		$newfile = $sugar_config['upload_dir'].$picture_file;
+		$newfile = "upload://$picture_file";
 		if (!copy($file, $newfile)) {
    			global $app_strings;
         	$GLOBALS['log']->fatal(string_format($app_strings['ERR_FILE_NOT_FOUND'], array($file)));
@@ -183,6 +183,6 @@ class UserDemoData {
 		}
 		return $picture_file;
 	}
-	
+
 }
 ?>

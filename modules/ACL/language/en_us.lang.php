@@ -48,6 +48,9 @@ $mod_strings = array (
 'LBL_ROLES_SUBPANEL_TITLE'=>'User Roles',
 'LBL_SEARCH_FORM_TITLE'=>'Search',
 'LBL_NO_ACCESS'=>'You do not have access to this area. Contact your site administrator to obtain access.',
+'LBL_REDIRECT_TO_HOME'=>'Redirect to Home in',
+'LBL_SECONDS'=>'seconds',
 'LBL_ADDING'=>'Adding for ',
+
 )
 ?>

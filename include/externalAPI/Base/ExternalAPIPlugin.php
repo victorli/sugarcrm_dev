@@ -35,6 +35,10 @@
  ********************************************************************************/
 
 
+/**
+ * External API interface
+ * @api
+ */
 interface ExternalAPIPlugin {
     /**
      * Check if this API supports certain authentication method

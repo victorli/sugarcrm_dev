@@ -36,8 +36,10 @@
 
 
 require_once('include/tabs.php');
-
-
+/**
+ * Old search form
+ * @api
+ */
 class SearchForm {
    /**
      * SearchForm Template to use (xtpl)
@@ -98,7 +100,7 @@ class SearchForm {
         if(empty($tpl)) {
             $this->tpl = 'modules/' . $module . '/SearchForm.html';
             if(!empty($GLOBALS['layout_edit_mode'])){
-            	 $this->tpl = $GLOBALS['sugar_config']['cache_dir'].'studio/custom/working/modules/' . $module . '/SearchForm.html';
+            	 $this->tpl = sugar_cached('studio/custom/working/modules/' . $module . '/SearchForm.html');
             }
         }
         else {
@@ -219,7 +221,7 @@ class SearchForm {
         $values = $this->searchFields;
 
         $where_clauses = array();
-        $like_char = '%';
+        //$like_char = '%';
         $table_name = $this->bean->object_name;
 
         foreach($this->searchFields as $field=>$parms) {
@@ -321,39 +323,24 @@ class SearchForm {
                         }
 
                         if($type == 'date') {
-                           // Collin - Have mysql as first because it's usually the case
                            // The regular expression check is to circumvent special case YYYY-MM
-                           if($GLOBALS['db']->dbType == 'mysql') {
-                                 if(preg_match('/^\d{4}.\d{1,2}$/', $field_value) == 0) {
-                                    $field_value = $timedate->to_db_date($field_value, false);
-                                    $operator = '=';
-                                 } else {
-                                    $operator = 'db_date';
-                                 }
-                           } else if($GLOBALS['db']->dbType == 'oci8') {
-                            	 if(preg_match('/^\d{4}.\d{1,2}$/', $field_value) == 0) {
-                                    $field_value = $timedate->to_db_date($field_value, false);
-                                    $field_value = "to_date('" . $field_value . "', 'YYYY-MM-DD hh24:mi:ss')";
-                            	 }
-                                 $operator = 'db_date';
-                           } else if($GLOBALS['db']->dbType == 'mssql') {
-                                 if(preg_match('/^\d{4}.\d{1,2}$/', $field_value) == 0) {
-                                    $field_value = "Convert(DateTime, '".$timedate->to_db_date($field_value, false)."')";
-                                 }
-                                 $operator = 'db_date';
+                            $operator = '=';
+                            if(preg_match('/^\d{4}.\d{1,2}$/', $field_value) == 0) {
+                               $db_field = $this->bean->db->convert($db_field, "date_format", "%Y-%m");
                            } else {
-                           	     $field_value = $timedate->to_db_date($field_value, false);
-                           	     $operation = '=';
+                               $field_value = $timedate->to_db_date($field_value, false);
+                               $db_field = $this->bean->db->convert($db_field, "date_format", "%Y-%m-%d");
                            }
                         }
 
                         if($type == 'datetime'|| $type == 'datetimecombo') {
                             $dates = $timedate->getDayStartEndGMT($field_value);
-                            $field_value = $dates["start"] . "<>" . $dates["end"];
+                            $field_value = array($this->bean->db->convert($dates["start"], "datetime"),
+                                $this->bean->db->convert($dates["end"], "datetime"));
                             $operator = 'between';
                         }
 
-                        if($GLOBALS['db']->dbType == 'oci8' && isset($parms['query_type']) && $parms['query_type'] == 'case_insensitive') {
+                        if($this->bean->db->supports('case_sensitive') && isset($parms['query_type']) && $parms['query_type'] == 'case_insensitive') {
                               $db_field = 'upper(' . $db_field . ")";
                               $field_value = strtoupper($field_value);
                         }
@@ -397,29 +384,20 @@ class SearchForm {
 
     	                    	break;
                             case 'like':
-                                $where .=  $db_field . " like '".$field_value.$like_char."'";
+                                $where .=  $db_field . " like ".$this->bean->db->quoted($field_value.'%');
                                 break;
                             case 'in':
                                 $where .=  $db_field . " in (".$field_value.')';
                                 break;
                             case '=':
-                                $where .=  $db_field . " = '".$field_value ."'";
-                                break;
-                            case 'db_date':
-                                if(preg_match('/^\d{4}.\d{1,2}$/', $field_value) == 0) {
-                                  $where .=  $db_field . " = ". $field_value;
-                                } else {
-                                  // Create correct date_format conversion String
-                                  if($GLOBALS['db']->dbType == 'oci8') {
-                                  	$where .= db_convert($db_field,'date_format',array("'YYYY-MM'")) . " = '" . $field_value . "'";
-                                  } else {
-                                  	$where .= db_convert($db_field,'date_format',array("'%Y-%m'")) . " = '" . $field_value . "'";
-                                  }
-                                }
+                                $where .=  $db_field . " = ".$this->bean->db->quoted($field_value);
                                 break;
                             case 'between':
-                                $field_value = explode('<>', $field_value);
-                                $where .= $db_field . " >= '".$field_value[0] . "' AND " .$db_field . " <= '".$field_value[1]."'";
+                                if(!is_array($field_value)) {
+                                    $field_value = explode('<>', $field_value);
+                                }
+                                $where .= "(". $db_field . " >= ".$this->bean->db->quoted($field_value[0]) .
+                                	" AND " .$db_field . " <= ".$this->bean->db->quoted($field_value[1]).")";
                                 break;
                         }
                     }
@@ -543,7 +521,7 @@ class SearchForm {
         $GLOBALS['log']->debug('SearchForm.php->displayHeader()');
         $header_text = '';
         if(is_admin($current_user) && $_REQUEST['module'] != 'DynamicLayout' && !empty($_SESSION['editinplace'])){
-            $header_text = "<a href='index.php?action=index&module=DynamicLayout&from_action=SearchForm&from_module=".$_REQUEST['module'] ."'>".SugarThemeRegistry::current()->getImage("EditLayout","border='0' alt='Edit Layout' align='bottom'")."</a>";
+            $header_text = "<a href='index.php?action=index&module=DynamicLayout&from_action=SearchForm&from_module=".$_REQUEST['module'] ."'>".SugarThemeRegistry::current()->getImage("EditLayout","border='0' align='bottom'",null,null,'.gif','Edit Layout')."</a>";
         }
 
         echo $header_text . $this->displayTabs($this->module . '|' . $view);
@@ -695,11 +673,12 @@ class SearchForm {
                             document.getElementById('inlineSavedSearch').style.display = '';
 
                             document.getElementById('up_down_img').src='".SugarThemeRegistry::current()->getImageURL('basic_search.gif')."';
+                            document.getElementById('up_down_img').setAttribute('alt','".$GLOBALS['app_strings']['LBL_ALT_HIDE_OPTIONS']."');
 
                         }else{
 
                             document.getElementById('up_down_img').src='".SugarThemeRegistry::current()->getImageURL('advanced_search.gif')."';
-
+                            document.getElementById('up_down_img').setAttribute('alt','".$GLOBALS['app_strings']['LBL_ALT_SHOW_OPTIONS']."');
                             document.getElementById('showSSDIV').value = 'no';
                             document.getElementById('inlineSavedSearch').style.display = 'none';
                         }

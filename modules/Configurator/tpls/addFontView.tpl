@@ -39,7 +39,7 @@
 
 *}
 
-<script type='text/javascript' src='include/javascript/overlibmws.js'></script>
+<script type='text/javascript' src="{sugar_getjspath file='include/javascript/overlibmws.js'}"></script>
 <p>
 {$MODULE_TITLE}
 </p>
@@ -51,7 +51,7 @@
         <td style="padding-bottom: 2px;">
             <input title="{$MOD.LBL_ADD_FONT_BUTTON}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}" class="button"  type="submit"  name="save" value="  {$MOD.LBL_ADD_FONT_BUTTON}  " >
             &nbsp;<input title="{$MOD.LBL_CANCEL_BUTTON_TITLE}"  onclick="document.location.href='index.php?module=Configurator&action=FontManager'" class="button"  type="button" name="cancel" value="  {$APP.LBL_CANCEL_BUTTON_LABEL}  " >
-        </td> 
+        </td>
     </tr>
 </table>
 <br>
@@ -131,7 +131,7 @@ function checkFileExtension(metric){
     if(element.value != ""){
         var error=true;
 		var filename = element.value;
-	    var dot = filename.lastIndexOf("."); 
+	    var dot = filename.lastIndexOf(".");
 	    if( dot != -1 ){
     	    var extension = filename.substr(dot,filename.length);
             if(!metric){
@@ -146,7 +146,7 @@ function checkFileExtension(metric){
             alert("{$MOD.JS_ALERT_PDF_WRONG_EXTENSION}");
             {literal}
         }
-	} 
+	}
 }
 function showCidInfo(){
     if(document.getElementById("pdf_embedded").checked == false){

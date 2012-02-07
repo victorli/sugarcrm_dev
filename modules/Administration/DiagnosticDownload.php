@@ -47,7 +47,7 @@ if(!isset($_REQUEST['guid']) || !isset($_REQUEST['time']))
 }
 $time = str_replace(array('.', '/', '\\'), '', $_REQUEST['time']);
 $guid = str_replace(array('.', '/', '\\'), '', $_REQUEST['guid']);
-$path = getcwd()."/{$GLOBALS['sugar_config']['cache_dir']}diagnostic/{$guid}/diagnostic{$time}.zip";
+$path = sugar_cached("diagnostic/{$guid}/diagnostic{$time}.zip");
 $filesize = filesize($path);
 ob_clean();
 header('Content-Description: File Transfer');

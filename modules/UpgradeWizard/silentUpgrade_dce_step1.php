@@ -52,8 +52,8 @@ function prepSystemForUpgradeSilent() {
 
 	// make sure dirs exist
 	foreach($subdirs as $subdir) {
-		if(!is_dir(clean_path("{$cwd}/{$sugar_config['upload_dir']}upgrades/{$subdir}"))) {
-	    	mkdir_recursive(clean_path("{$cwd}/{$sugar_config['upload_dir']}upgrades/{$subdir}"));
+		if(!is_dir("upload://upgrades/{$subdir}")) {
+	    	mkdir_recursive("upload://upgrades/{$subdir}");
 		}
 	}
 }
@@ -117,7 +117,7 @@ function checkLoggerSettings(){
  		}
 	 }
 }
- 
+
 function checkResourceSettings(){
 	if(file_exists(getcwd().'/config.php')){
          require(getcwd().'/config.php');
@@ -162,33 +162,21 @@ function createMissingRels(){
 		$result= $GLOBALS['db']->query($query, true);
 		$a = null;
 		$a = $GLOBALS['db']->fetchByAssoc($result);
-		if($GLOBALS['db']->checkError()){
-			//log this
-		}
 		if(!isset($a['id']) && empty($a['id']) ){
 			$qRel = "INSERT INTO relationships (id,relationship_name, lhs_module, lhs_table, lhs_key, rhs_module, rhs_table, rhs_key, join_table, join_key_lhs, join_key_rhs, relationship_type, relationship_role_column, relationship_role_column_value, reverse, deleted)
 						VALUES ('{$guid}', '{$relObjName}_assigned_user','Users','users','id','{$relModName}','{$relObjName}','assigned_user_id',NULL,NULL,NULL,'one-to-many',NULL,NULL,'0','0')";
 			$GLOBALS['db']->query($qRel);
-			if($GLOBALS['db']->checkError()){
-				//log this
-			}
 		}
 		//modified_user
 		$guid = create_guid();
 		$query = "SELECT id FROM relationships WHERE relationship_name = '{$relObjName}_modified_user'";
 		$result= $GLOBALS['db']->query($query, true);
-		if($GLOBALS['db']->checkError()){
-			//log this
-		}
 		$a = null;
 		$a = $GLOBALS['db']->fetchByAssoc($result);
 		if(!isset($a['id']) && empty($a['id']) ){
 			$qRel = "INSERT INTO relationships (id,relationship_name, lhs_module, lhs_table, lhs_key, rhs_module, rhs_table, rhs_key, join_table, join_key_lhs, join_key_rhs, relationship_type, relationship_role_column, relationship_role_column_value, reverse, deleted)
 						VALUES ('{$guid}', '{$relObjName}_modified_user','Users','users','id','{$relModName}','{$relObjName}','modified_user_id',NULL,NULL,NULL,'one-to-many',NULL,NULL,'0','0')";
 			$GLOBALS['db']->query($qRel);
-			if($GLOBALS['db']->checkError()){
-				//log this
-			}
 		}
 		//created_by
 		$guid = create_guid();
@@ -200,9 +188,6 @@ function createMissingRels(){
 			$qRel = "INSERT INTO relationships (id,relationship_name, lhs_module, lhs_table, lhs_key, rhs_module, rhs_table, rhs_key, join_table, join_key_lhs, join_key_rhs, relationship_type, relationship_role_column, relationship_role_column_value, reverse, deleted)
 						VALUES ('{$guid}', '{$relObjName}_created_by','Users','users','id','{$relModName}','{$relObjName}','created_by',NULL,NULL,NULL,'one-to-many',NULL,NULL,'0','0')";
 			$GLOBALS['db']->query($qRel);
-			if($GLOBALS['db']->checkError()){
-				//log this
-			}
     	}
 	}
 	//Also add tracker perf relationship
@@ -215,7 +200,7 @@ function createMissingRels(){
  * @param   $sugar_version
  * @return  bool true if successful
  */
-function merge_passwordsetting($sugar_config, $sugar_version) {	
+function merge_passwordsetting($sugar_config, $sugar_version) {
     $passwordsetting_defaults = array(
     'passwordsetting' => array (
         'SystemGeneratedPasswordON' => '',
@@ -230,9 +215,9 @@ function merge_passwordsetting($sugar_config, $sugar_version) {
         'systexpirationtype' => '0',
         'systexpirationlogin' => '',
         ) ,
-    );    
-   
-        
+    );
+
+
     $sugar_config = sugarArrayMerge($passwordsetting_defaults, $sugar_config );
 
     // need to override version with default no matter what
@@ -261,9 +246,6 @@ function addDefaultModuleRoles($defaultRoles = array()) {
 	                	$currdate = gmdate($GLOBALS['timedate']->get_db_date_time_format());
 	                	$query= "INSERT INTO acl_actions (id,date_entered,date_modified,modified_user_id,name,category,acltype,aclaccess,deleted ) VALUES ('$guid','$currdate','$currdate','1','$name','$category','$roleName','$access_override','0')";
 						$GLOBALS['db']->query($query);
-						if($GLOBALS['db']->checkError()){
-							//log this
-						}
 	                }
             }
         }
@@ -329,13 +311,13 @@ function verifyArguments($argv,$usage_dce,$usage_regular){
         //this should be a regular sugar install
         echo "*******************************************************************************\n";
         echo "*** ERROR: Tried to execute in a non-SugarCRM root directory.\n";
-        exit(1);     
+        exit(1);
     }
 
     if(isset($argv[7]) && file_exists($argv[7].'SugarTemplateUtilties.php')){
         require_once($argv[7].'SugarTemplateUtilties.php');
     }
-    
+
     return $upgradeType;
 }
 
@@ -486,23 +468,23 @@ if($upgradeType == constant('DCE_INSTANCE')){
    	//$instanceUpgradePath = "{$argv[1]}/DCEUpgrade/{$zip_from_dir}";
    	//$instanceUpgradePath = "{$argv[1]}";
 	include ("ini_setup.php");
-	
+
 	//get new template path for use in later processing
     $dceupgrade_pos = strpos($argv[1], '/DCEUpgrade');
     $newtemplate_path = substr($argv[1], 0, $dceupgrade_pos);
-	
+
 	require("{$argv[4]}/sugar_version.php");
 	global $sugar_version;
 
 	//load up entrypoint from original template
-   	require_once("{$argv[4]}/include/entryPoint.php");	
+   	require_once("{$argv[4]}/include/entryPoint.php");
 	require_once("{$argv[4]}/include/utils/zip_utils.php");
 	require_once("{$argv[4]}/modules/Administration/UpgradeHistory.php");
-	// We need to run the silent upgrade as the admin user, 
+	// We need to run the silent upgrade as the admin user,
 	global $current_user;
 	$current_user = new User();
 	$current_user->retrieve('1');
-	
+
 	//This is DCE instance
       global $sugar_config;
       global $sugar_version;
@@ -562,7 +544,7 @@ if($upgradeType == constant('DCE_INSTANCE')){
 
     $ce_to_pro_ent = isset($manifest['name']) && ($manifest['name'] == 'SugarCE to SugarPro' || $manifest['name'] == 'SugarCE to SugarEnt' || $manifest['name'] == 'SugarCE to SugarCorp' || $manifest['name'] == 'SugarCE to SugarUlt');
 	$_SESSION['upgrade_from_flavor'] = $manifest['name'];
-	
+
 	//get the latest uw_utils.php
 //	require_once("{$instanceUpgradePath}/modules/UpgradeWizard/uw_utils.php");
     logThis("*** SILENT DCE UPGRADE INITIATED.", $path);
@@ -642,5 +624,5 @@ if(count($errors) > 0) {
 		logThis("****** SilentUpgrade ERROR: {$error}", $path);
 	}
 	echo "FAILED\n";
-} 
+}
 ?>

@@ -36,11 +36,14 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
 require_once('include/SubPanel/SubPanel.php');
 require_once('include/SubPanel/SubPanelTilesTabs.php');
 require_once('include/SubPanel/SubPanelDefinitions.php');
 
+/**
+ * Subpanel tiles
+ * @api
+ */
 class SubPanelTiles
 {
 	var $id;
@@ -295,6 +298,9 @@ if(document.DetailView != null &&
 			if(!empty($sugar_config['hide_subpanels'])){
 				$div_display = 'none';
 			}
+            if($thisPanel->isDefaultHidden()) {
+                $div_display = 'none';
+            }
 			if($div_display == 'none'){
 				$opp_display  = 'inline';
 			}else{
@@ -309,8 +315,9 @@ if(document.DetailView != null &&
 
 			if (empty($this->show_tabs))
 			{
-				$show_icon_html = SugarThemeRegistry::current()->getImage( 'advanced_search', 'alt="' . translate('LBL_SHOW') . '" border="0" align="absmiddle"');
-				$hide_icon_html = SugarThemeRegistry::current()->getImage( 'basic_search', 'alt="' . translate('LBL_HIDE') . '" border="0" align="absmiddle"');
+				$show_icon_html = SugarThemeRegistry::current()->getImage( 'advanced_search', 'border="0 align="absmiddle""',null,null,'.gif',translate('LBL_SHOW'));
+				$hide_icon_html = SugarThemeRegistry::current()->getImage( 'basic_search', 'border="0" align="absmiddle"',null,null,'.gif',translate('LBL_HIDE'));
+
  		 		$max_min = "<a name=\"$tab\"> </a><span id=\"show_link_".$tab."\" style=\"display: $opp_display\"><a href='#' class='utilsLink' onclick=\"current_child_field = '".$tab."';showSubPanel('".$tab."',null,null,'".$layout_def_key."');document.getElementById('show_link_".$tab."').style.display='none';document.getElementById('hide_link_".$tab."').style.display='';return false;\">"
  		 			. "" . $show_icon_html . "</a></span>";
 				$max_min .= "<span id=\"hide_link_".$tab."\" style=\"display: $div_display\"><a href='#' class='utilsLink' onclick=\"hideSubPanel('".$tab."');document.getElementById('hide_link_".$tab."').style.display='none';document.getElementById('show_link_".$tab."').style.display='';return false;\">"

@@ -78,7 +78,7 @@ YAHOO.util.Connect.asyncRequest('POST', 'index.php', callback, "module=Meetings&
 		{if $prerow}
 			<th scope='col' nowrap="nowrap" width='1%' class="selectCol">
 				<div>
-				<input type='checkbox' class='checkbox' name='massall' id='massall' value='' onclick='sListView.check_all(document.MassUpdate, "mass[]", this.checked);' />
+			        <input type='checkbox'  title="{sugar_translate label='LBL_SELECT_ALL_TITLE'}"  class='checkbox' name='massall' id='massall' value='' onclick='sListView.check_all(document.MassUpdate, "mass[]", this.checked);' />
 				{$selectLink}
 				</div>
 			</th>
@@ -97,28 +97,32 @@ YAHOO.util.Connect.asyncRequest('POST', 'index.php', callback, "module=Meetings&
 				<div style='white-space: normal;'width='100%' align='{$params.align|default:'left'}'>
                 {if false}
                     {if $params.url_sort}
-                        <a href='{$pageData.urls.orderBy}{$params.orderBy|default:$colHeader|lower}' class='listViewThLinkS1'>
+                        <a href='{$pageData.urls.orderBy}{$params.orderBy|default:$colHeader|lower}' class='listViewThLinkS1' title="{$arrowAlt}">
                     {else}
                         {if $params.orderBy|default:$colHeader|lower == $pageData.ordering.orderBy}
-                            <a href='javascript:sListView.order_checks("{$pageData.ordering.sortOrder|default:ASCerror}", "{$params.orderBy|default:$colHeader|lower}" , "{$pageData.bean.moduleDir}{"2_"}{$pageData.bean.objectName|upper}{"_ORDER_BY"}")' class='listViewThLinkS1'>
+                            <a href='javascript:sListView.order_checks("{$pageData.ordering.sortOrder|default:ASCerror}", "{$params.orderBy|default:$colHeader|lower}" , "{$pageData.bean.moduleDir}2_{$pageData.bean.objectName|upper}_ORDER_BY");' class='listViewThLinkS1' title="{$arrowAlt}">
                         {else}
-                            <a href='javascript:sListView.order_checks("ASC", "{$params.orderBy|default:$colHeader|lower}" , "{$pageData.bean.moduleDir}{"2_"}{$pageData.bean.objectName|upper}{"_ORDER_BY"}")' class='listViewThLinkS1'>
+                            <a href='javascript:sListView.order_checks("ASC", "{$params.orderBy|default:$colHeader|lower}" , "{$pageData.bean.moduleDir}2_{$pageData.bean.objectName|upper}_ORDER_BY");' class='listViewThLinkS1' title="{$arrowAlt}">
                         {/if}
                     {/if}
                     {sugar_translate label=$params.label module=$pageData.bean.moduleDir}
-					</a>&nbsp;&nbsp;
+					&nbsp;&nbsp;
 					{if $params.orderBy|default:$colHeader|lower == $pageData.ordering.orderBy}
 						{if $pageData.ordering.sortOrder == 'ASC'}
 							{capture assign="imageName"}arrow_down.{$arrowExt}{/capture}
-							<img border='0' src='{sugar_getimagepath file=$imageName}' width='{$arrowWidth}' height='{$arrowHeight}' align='absmiddle' alt='{$arrowAlt}'>
+                            {capture assign="alt_sort"}{sugar_translate label='LBL_ALT_SORT_DESC'}{/capture}
+							{sugar_getimage name="$imageName" width="$arrowWidth" height="$arrowHeight" attr='align="absmiddle" border="0" ' alt="$alt_sort"}
 						{else}
 							{capture assign="imageName"}arrow_up.{$arrowExt}{/capture}
-							<img border='0' src='{sugar_getimagepath file=$imageName}' width='{$arrowWidth}' height='{$arrowHeight}' align='absmiddle' alt='{$arrowAlt}'>
+                            {capture assign="alt_sort"}{sugar_translate label='LBL_ALT_SORT_ASC'}{/capture}
+							{sugar_getimage name="$imageName" width="$arrowWidth" height="$arrowHeight" attr='align="absmiddle" border="0" ' alt="$alt_sort"}
 						{/if}
 					{else}
 						{capture assign="imageName"}arrow.{$arrowExt}{/capture}
-						<img border='0' src='{sugar_getimagepath file=$imageName}' width='{$arrowWidth}' height='{$arrowHeight}' align='absmiddle' alt='{$arrowAlt}'>
+                        {capture assign="alt_sort"}{sugar_translate label='LBL_ALT_SORT'}{/capture}
+						{sugar_getimage name="$imageName" width="$arrowWidth" height="$arrowHeight" attr='align="absmiddle" border="0" ' alt="$alt_sort"}
 					{/if}
+                    </a>
 				{else}
                     {if !isset($params.noHeader) || $params.noHeader == false} 
 					  {sugar_translate label=$params.label module=$pageData.bean.moduleDir}
@@ -154,7 +158,9 @@ YAHOO.util.Connect.asyncRequest('POST', 'index.php', callback, "module=Meetings&
 				<td>{$rowData.star}</td>
 			{/if}
 			{if !empty($quickViewLinks)}
-			<td width='2%' nowrap>{if $pageData.access.edit}<a title='{$editLinkString}' id="dashedit-{$rowData.ID}" href="index.php?action=EditView&module={if $params.dynamic_module}{$rowData[$params.dynamic_module]}{else}{$pageData.bean.moduleDir}{/if}&record={$rowData[$params.parent_id]|default:$rowData.ID}&offset={$pageData.offsets.current+$smarty.foreach.rowIteration.iteration}&stamp={$pageData.stamp}&return_module=Home&return_action=index"><img border=0 src='{sugar_getimagepath file='edit_inline.gif'}'></a>{/if}</td>
+
+			<td width='2%' nowrap>{if $pageData.access.edit}<a title='{$editLinkString}' id="dashedit-{$rowData.ID}" href="index.php?action=EditView&module={if $params.dynamic_module}{$rowData[$params.dynamic_module]}{else}{$pageData.bean.moduleDir}{/if}&record={$rowData[$params.parent_id]|default:$rowData.ID}&offset={$pageData.offsets.current+$smarty.foreach.rowIteration.iteration}&stamp={$pageData.stamp}&return_module=Home&return_action=index" title="{sugar_translate label="LBL_EDIT_INLINE"}">{sugar_getimage name="edit_inline.gif" attr='border="0" '}</a>{/if}</td>
+
 			{/if}
 			{counter start=0 name="colCounter" print=false assign="colCounter"}
 			{foreach from=$displayColumns key=col item=params}

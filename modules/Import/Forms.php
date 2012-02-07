@@ -59,7 +59,7 @@ function getControl(
     $value = ''
     )
 {
-    global $current_language, $app_strings, $dictionary, $app_list_strings;
+    global $current_language, $app_strings, $dictionary, $app_list_strings, $current_user;
     
     // use the mod_strings for this module
     $mod_strings = return_module_language($current_language,$module);
@@ -143,7 +143,9 @@ function getControl(
         $pm = $match[2] == "pm" ? "%P" : "%p";
         $ss->assign('CALENDAR_FORMAT', $date_format . ' ' . $t23 . $time_separator . "%M" . $pm);
     }
-    
+
+    $ss->assign('CALENDAR_FDOW', $current_user->get_first_day_of_week());
+ 
     // populate the fieldlist from the vardefs
     $fieldlist = array();
     if ( !isset($focus) || !($focus instanceof SugarBean) )

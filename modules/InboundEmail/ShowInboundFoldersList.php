@@ -61,8 +61,6 @@ global $app_list_strings;
 global $current_user;
 global $sugar_config;
 
-$jsCustomVersion = $sugar_config['js_custom_version'];
-$sugar_version = $sugar_version;
 $title				= '';
 $msg				= '';
 $tls				= '';

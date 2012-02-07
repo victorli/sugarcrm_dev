@@ -95,7 +95,7 @@ class Bug47683Test extends SOAPTestCase
      **********************************/
     private function _setupTestContact() {
         $this->_contact = SugarTestContactUtilities::createContact();
-        $this->_contact->contacts_users_id = $this->_user->id;
+        //$this->_contact->contacts_users_id = $this->_user->id;
         $this->_contact->save();
     }
 

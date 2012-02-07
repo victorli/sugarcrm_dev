@@ -75,7 +75,7 @@ function gridInit() {
 			var colModel = 
 				[
 					{
-						label: "<img src='index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=attachment.gif' class='image' border='0' width='10' align='absmiddle'>", 
+						label: "<h2><img src='index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=attachment.gif' class='image' border='0' width='10' align='absmiddle'></h2>",
 						width: 10, 
 						sortable: false, 
 						fixed: true,

@@ -103,7 +103,7 @@ function change_state(radiobutton)
 					<td scope="row">
 					<div id="rollover">
 						{$MOD.LBL_CAMP_MESSAGE_COPY}&nbsp;<span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span>
-                        <a href="#" class="rollover"><span>{$MOD.LBL_CAMP_MESSAGE_COPY_DESC}</span><img border="0" src="index.php?entryPoint=getImage&themeName={$THEME}&imageName=helpInline.gif"></a>
+                        <a href="#" class="rollover"><span>{$MOD.LBL_CAMP_MESSAGE_COPY_DESC}</span><img border="0" alt=$mod_strings.LBL_HELP src="index.php?entryPoint=getImage&themeName={$THEME}&imageName=helpInline.gif"></a>
                     </div>
 					</td>
 					<td >

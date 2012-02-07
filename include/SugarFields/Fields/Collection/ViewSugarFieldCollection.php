@@ -57,7 +57,7 @@ class ViewSugarFieldCollection{
     var $hideShowHideButton = false;
     var $action_type;
     var $form_name;
-    
+
     function ViewSugarFieldCollection($fill_data = true){
     	$this->json = getJSONobj();
     	if($fill_data){
@@ -81,7 +81,7 @@ class ViewSugarFieldCollection{
      */
     function setup(){
         if(!class_exists('Relationship')){
-            
+
         }
         $rel = new Relationship();
         if(!empty($this->vardef['relationship'])){
@@ -175,7 +175,7 @@ class ViewSugarFieldCollection{
                                     $this->bean->$to = $mod->$field;
                                 }
                             }
-                        }   
+                        }
                     }
                 }
             }
@@ -192,7 +192,7 @@ class ViewSugarFieldCollection{
         }
     }
     function process_detailview(){
-        
+
     }
     /*
      * Build the DisplayParams array
@@ -204,19 +204,17 @@ class ViewSugarFieldCollection{
         if(!isset($this->displayParams['readOnly'])) {
            $this->displayParams['readOnly'] = '';
         } else {
-           $this->displayParams['readOnly'] = $this->displayParams['readOnly'] == false ? '' : 'READONLY';  
+           $this->displayParams['readOnly'] = $this->displayParams['readOnly'] == false ? '' : 'READONLY';
         }
         // If there is extra field to show.
         if(isset($this->displayParams['collection_field_list'])){
-        	
-            require_once('include/SugarFields/SugarFieldHandler.php');
-            $sfh = new SugarFieldHandler();
+
             $relatedObject = BeanFactory::getObjectName($this->related_module);
             vardefmanager::loadVardef($this->related_module, $relatedObject);
             foreach($this->displayParams['collection_field_list'] as $k=>$v){
                 $javascript='';
                 $collection_field_vardef = $GLOBALS['dictionary'][$relatedObject]['fields'][$v['name']];
-               
+
                 // For each extra field the params which are not displayParams will be consider as params to override the vardefs values.
                 foreach($v as $k_override=>$v_override){
                     if($k_override != 'displayParams'){
@@ -246,7 +244,7 @@ class ViewSugarFieldCollection{
                     $javascript = $this->json->encode($javascriptPHP);
                     $javascript = "<script language='javascript'>if(typeof sqs_objects == 'undefined'){var sqs_objects = new Array;}sqs_objects['{$collection_field_vardef['name']}_" . $this->vardef['name'] . "_collection_extra_0']=".$javascript.';</script>';
                 }
-                
+
                 $collection_field_vardef['name'] .= "_" . $this->vardef['name'] . "_collection_extra_0";
                 if(isset($collection_field_vardef['id_name'])){
                     $collection_field_vardef['id_name'] .= "_" . $this->vardef['name'] . "_collection_extra_0";
@@ -305,7 +303,7 @@ FRA;
             $this->displayParams['new_on_update']='false';
         }
     }
-    
+
     /*
      * Init the template with the variables
      */
@@ -333,11 +331,11 @@ FRA;
      * Display the collection field after retrieving the cached row.
      */
     function display(){
-        $cacheRowFile = $GLOBALS['sugar_config']['cache_dir'] . 'modules/'. $this->module_dir .  '/collections/'. $this->name . '.tpl';
+        $cacheRowFile = sugar_cached('modules/') . $this->module_dir .  '/collections/'. $this->name . '.tpl';
         if(!$this->checkTemplate($cacheRowFile)){
             $dir = dirname($cacheRowFile);
             if(!file_exists($dir)) {
-               
+
                mkdir_recursive($dir, null, true);
             }
             $cacheRow = $this->ss->fetch($this->findTemplate('CollectionEditViewRow'));
@@ -357,9 +355,9 @@ FRA;
         return file_exists($cacheRowFile);
     }
 
-    
+
     /*
-     * Create the quickSearch code for the collection field. 
+     * Create the quickSearch code for the collection field.
      * return the javascript code which define sqs_objects.
      */
     function createQuickSearchCode($returnAsJavascript = true){
@@ -381,11 +379,11 @@ FRA;
                 } else if($matches[0] == 'Accounts') {
                     $nameKey = "{$this->name}_collection_{$i}";
                     $idKey = "id_{$this->name}_collection_{$i}";
-                 
-                 //There are billingKey, shippingKey and additionalFields entries you can define in editviewdefs.php 
-                 //entry to allow quick search to autocomplete fields with a suffix value of the 
+
+                 //There are billingKey, shippingKey and additionalFields entries you can define in editviewdefs.php
+                 //entry to allow quick search to autocomplete fields with a suffix value of the
                  //billing/shippingKey value (i.e. 'billingKey' => 'primary' in Contacts will populate
-                 //primary_XXX fields with the Account's billing address values).        
+                 //primary_XXX fields with the Account's billing address values).
                  //addtionalFields are key/value pair of fields to fill from Accounts(key) to Contacts(value)
                     $billingKey = isset($this->displayParams['billingKey']) ? $this->displayParams['billingKey'] : null;
                     $shippingKey = isset($this->displayParams['shippingKey']) ? $this->displayParams['shippingKey'] : null;
@@ -395,7 +393,7 @@ FRA;
                     $sqs_objects[$name1] = $qsd->getQSContact($name1, "id_".$name1);
                 }
 
-               
+
 				$temp_array = array('field_list'=>array(),'populate_list'=>array());
                 foreach($sqs_objects[$name1]['field_list'] as $k=>$v){
                     if(!in_array($v, array('name','id'))){
@@ -430,8 +428,8 @@ FRA;
                          * "primary_populate_list" and "primary_field_list" are used when the field is selected as a primary.
                          * At this time the JS function changePrimary() will copy "primary_populate_list" and "primary_field_list"
                          * into "populate_list" and "field_list" and remove the values from all the others which are secondaries.
-                         * "primary_populate_list" and "primary_field_list" contain the fields which has to be populated outside of 
-                         * the collection field. For example the "Address Information" are populated with the "billing address" of the 
+                         * "primary_populate_list" and "primary_field_list" contain the fields which has to be populated outside of
+                         * the collection field. For example the "Address Information" are populated with the "billing address" of the
                          * selected account in a contact editview.
                          */
                         $sqs_objects[$name1]['primary_populate_list'][] = $v;
@@ -456,7 +454,7 @@ FRA;
             if($returnAsJavascript){
 	            $quicksearch_js = '<script language="javascript">';
 	            $quicksearch_js.= "if(typeof sqs_objects == 'undefined'){var sqs_objects = new Array;}";
-	            
+
 	            foreach($sqs_objects as $sqsfield=>$sqsfieldArray){
 	               $quicksearch_js .= "sqs_objects['$sqsfield']={$this->json->encode($sqsfieldArray)};";
 	            }
@@ -483,7 +481,7 @@ FRA;
             } else if($this->action_type == 'quickcreate'){
                 $form = "QuickCreate_{$this->module_dir}";
             }
-            
+
             if(isset($this->displayParams['call_back_function'])) {
                 $call_back_function = $this->displayParams['call_back_function'];
             }
@@ -498,9 +496,9 @@ FRA;
             $this->displayParams['popupData'] = '{literal}'. str_replace(array('{{', '}}'), array('{ {', '} }'), $this->json->encode($popup_request_data)) . '{/literal}';
         }
     }
-    
-    
-    
+
+
+
     function findTemplate($view){
         static $tplCache = array();
 
@@ -513,7 +511,7 @@ FRA;
         while ( $lastClass = get_parent_class($lastClass) ) {
             $classList[] = str_replace('ViewSugarField','',$lastClass);
         }
-        
+
         $tplName = '';
         foreach ( $classList as $className ) {
             global $current_language;
@@ -542,5 +540,3 @@ FRA;
         return $tplName;
     }
 }
-
-?>

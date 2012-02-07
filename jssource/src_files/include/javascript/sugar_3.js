@@ -122,6 +122,7 @@ var altMsgIndex = 15;
 var compareToIndex = 7;
 var arrIndex = 12;
 var operatorIndex = 13;
+var callbackIndex = 16;
 var allowblank = 8;
 var validate = new Array();
 var maxHours = 24;
@@ -177,7 +178,7 @@ function addAlert(type, name,subtitle, description,time, redirect) {
 	alertList[addIndex]['name'] = name;
 	alertList[addIndex]['type'] = type;
 	alertList[addIndex]['subtitle'] = subtitle;
-	alertList[addIndex]['description'] = description.replace(/<br>/gi, "\n").replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');
+	alertList[addIndex]['description'] = replaceHTMLChars(description.replace(/<br>/gi, "\n"));
 	alertList[addIndex]['time'] = time;
 	alertList[addIndex]['done'] = 0;
 	alertList[addIndex]['redirect'] = redirect;
@@ -248,6 +249,15 @@ function addToValidate(formname, name, type, required, msg) {
 		addForm(formname);
 	}
 	validate[formname][validate[formname].length] = new Array(name, type,required, msg);
+}
+
+// Bug #47961 Callback validator definition
+function addToValidateCallback(formname, name, type, required, msg, callback)
+{
+    addToValidate(formname, name, type, required, msg);
+    var iIndex = validate[formname].length -1;
+    validate[formname][iIndex][jstypeIndex] = 'callback';
+    validate[formname][iIndex][callbackIndex] = callback;
 }
 
 function addToValidateRange(formname, name, type,required,  msg,min,max) {
@@ -412,15 +422,16 @@ function isDecimal(s) {
 	{
 		s = unformatNumberNoParse(s, num_grp_sep, dec_sep).toString();
 	}
-	return  /^[+-]?[0-9]+\.?[0-9]*$/.test(s) ;
+	return  /^[+-]?[0-9]*\.?[0-9]*$/.test(s) ;
 }
 
 function isNumeric(s) {
 	return isDecimal(s);
 }
 
-var date_reg_positions = {'Y': 1,'m': 2,'d': 3};
-var date_reg_format = '([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})'
+if (typeof date_reg_positions != "object") var date_reg_positions = {'Y': 1,'m': 2,'d': 3};
+if (typeof date_reg_format != "string") var date_reg_format = '([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})';
+
 function isDate(dtStr) {
 
 	if(dtStr.length== 0) {
@@ -970,6 +981,18 @@ function validate_form(formname, startsWith){
 						if(typeof validate[formname][i][jstypeIndex]  != 'undefined'/* && !isError*/){
 
 							switch(validate[formname][i][jstypeIndex]){
+                                // Bug #47961 May be validation through callback is best way.
+                                case 'callback' :
+                                    if (typeof validate[formname][i][callbackIndex] == 'function')
+                                    {
+                                        var result = validate[formname][i][callbackIndex](formname, validate[formname][i][nameIndex]);
+                                        if (result == false)
+                                        {
+                                            isError = true;
+                                            add_error_style(formname, validate[formname][i][nameIndex], requiredTxt + " " +	validate[formname][i][msgIndex]);
+                                        }
+                                    }
+                                    break;
 							case 'range':
 								if(!inRange(trim(form[validate[formname][i][nameIndex]].value), validate[formname][i][minIndex], validate[formname][i][maxIndex])){
 									isError = true;
@@ -2160,7 +2183,7 @@ sugarListView.get_checks_count = function() {
 // saves the checks on the current page into the uid textarea
 sugarListView.get_checks = function() {
 	ar = new Array();
-
+	if(typeof document.MassUpdate != 'undefined' ){
 	if(document.MassUpdate.uid.value != '') {
 		oldUids = document.MassUpdate.uid.value.split(',');
 		for(uid in oldUids) {
@@ -2190,6 +2213,8 @@ sugarListView.get_checks = function() {
 
 	if(uids.length == 0) return false; // return false if no checks to get
 	return true; // there are saved checks
+	}
+	else return false;
 }
 
 sugarListView.prototype.order_checks = function(order,orderBy,moduleString){
@@ -2210,6 +2235,7 @@ sugarListView.prototype.order_checks = function(order,orderBy,moduleString){
 }
 sugarListView.prototype.save_checks = function(offset, moduleString) {
 	checks = sugarListView.get_checks();
+	if(typeof document.MassUpdate != 'undefined'){
 	eval('document.MassUpdate.' + moduleString + '.value = offset');
 
 	if(typeof document.MassUpdate.massupdate != 'undefined') {
@@ -2224,6 +2250,8 @@ sugarListView.prototype.save_checks = function(offset, moduleString) {
 
 
 	return !checks;
+	}
+	else return false;
 }
 
 sugarListView.prototype.check_item = function(cb, form) {
@@ -2784,7 +2812,7 @@ SUGAR.util = function () {
 					var script = document.createElement('script');
                   	script.type= 'text/javascript';
                   	if(result[1].indexOf("src=") > -1){
-						var srcRegex = /.*src=['"]([a-zA-Z0-9_\&\/\.\?=:]*)['"].*/igm;
+						var srcRegex = /.*src=['"]([a-zA-Z0-9_\&\/\.\?=:-]*)['"].*/igm;
 						var srcResult =  result[1].replace(srcRegex, '$1');
 						script.src = srcResult;
                   	}else{
@@ -4005,6 +4033,11 @@ function open_popup(module_name, width, height, initial_filter, close_popup, hid
  */
 var from_popup_return  = false;
 
+//Function replaces special HTML chars for usage in text boxes 
+function replaceHTMLChars(value) {
+	return value.replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');
+}
+
 function set_return_basic(popup_reply_data,filter)
 {
 	var form_name = popup_reply_data.form_name;
@@ -4017,7 +4050,7 @@ function set_return_basic(popup_reply_data,filter)
 		}
 		else if(the_key.match(filter))
 		{
-			var displayValue=name_to_value_array[the_key].replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');;
+			var displayValue=replaceHTMLChars(name_to_value_array[the_key]);
 			// begin andopes change: support for enum fields (SELECT)
 			if(window.document.forms[form_name] && window.document.forms[form_name].elements[the_key]) {
 				if(window.document.forms[form_name].elements[the_key].tagName == 'SELECT') {
@@ -4049,6 +4082,7 @@ function set_return(popup_reply_data)
 		var label_str = '';
 		var label_data_str = '';
 		var current_label_data_str = '';
+		var popupConfirm = popup_reply_data.popupConfirm;
 		for (var the_key in name_to_value_array)
 		{
 			if(the_key == 'toJSON')
@@ -4057,9 +4091,9 @@ function set_return(popup_reply_data)
 			}
 			else
 			{
-				var displayValue=name_to_value_array[the_key].replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');
+				var displayValue=replaceHTMLChars(name_to_value_array[the_key]);
 				if(window.document.forms[form_name] && document.getElementById(the_key+'_label') && !the_key.match(/account/)) {
-					var data_label = document.getElementById(the_key+'_label').innerHTML.replace(/\n/gi,'');
+                    var data_label = document.getElementById(the_key+'_label').innerHTML.replace(/\n/gi,'').replace(/<\/?[^>]+(>|$)/g, "");
 					label_str += data_label + ' \n';
 					label_data_str += data_label  + ' ' + displayValue + '\n';
 					if(window.document.forms[form_name].elements[the_key]) {
@@ -4068,12 +4102,23 @@ function set_return(popup_reply_data)
 				}
 			}
 		}
+		
         if(label_data_str != label_str && current_label_data_str != label_str){
-        	if(confirm(SUGAR.language.get('app_strings', 'NTC_OVERWRITE_ADDRESS_PHONE_CONFIRM') + '\n\n' + label_data_str))
+        	// Bug 48726 Start
+        	if (typeof popupConfirm != 'undefined')
+        	{
+        		if (popupConfirm > -1) {
+        			set_return_basic(popup_reply_data,/\S/);
+        		} 
+        	}
+        	// Bug 48726 End
+        	else if(confirm(SUGAR.language.get('app_strings', 'NTC_OVERWRITE_ADDRESS_PHONE_CONFIRM') + '\n\n' + label_data_str))
 			{
-				set_return_basic(popup_reply_data,/\S/);
-			}else{
-				set_return_basic(popup_reply_data,/account/);
+        		set_return_basic(popup_reply_data,/\S/);
+			}
+        	else
+			{
+        		set_return_basic(popup_reply_data,/account/);
 			}
 		}else if(label_data_str != label_str && current_label_data_str == label_str){
 			set_return_basic(popup_reply_data,/\S/);

@@ -43,7 +43,7 @@ class SoapHelperWebServices {
 
 	function get_field_list($value, $fields, $translate=true)
 	{
-		$GLOBALS['log']->info('Begin: SoapHelperWebServices->get_field_list');
+		$GLOBALS['log']->info('Begin: SoapHelperWebServices->get_field_list('.print_r($value, true).', '.print_r($fields, true).", $translate");
 		$module_fields = array();
 		$link_fields = array();
 		if(!empty($value->field_defs)){
@@ -133,8 +133,9 @@ class SoapHelperWebServices {
 			$module_fields['created_by_name']['name'] = 'created_by_name';
 		}
 
-		$GLOBALS['log']->info('End: SoapHelperWebServices->get_field_list');
-		return array('module_fields' => $module_fields, 'link_fields' => $link_fields);
+        $return = array('module_fields' => $module_fields, 'link_fields' => $link_fields);
+        $GLOBALS['log']->info('End: SoapHelperWebServices->get_field_list ->> '.print_r($return, true));
+		return $return;
 	} // fn
 
 	function setFaultObject($errorObject) {
@@ -265,41 +266,41 @@ function validate_user($user_name, $password){
 	}
 
 	function checkSessionAndModuleAccess($session, $login_error_key, $module_name, $access_level, $module_access_level_error_key, $errorObject) {
-		$GLOBALS['log']->info('Begin: SoapHelperWebServices->checkSessionAndModuleAccess');
+		$GLOBALS['log']->info('Begin: SoapHelperWebServices->checkSessionAndModuleAccess - ' . $module_name);
 		if(!$this->validate_authenticated($session)){
-			$GLOBALS['log']->info('SoapHelperWebServices->checkSessionAndModuleAccess - validate_authenticated failed');
+			$GLOBALS['log']->error('SoapHelperWebServices->checkSessionAndModuleAccess - validate_authenticated failed - ' . $module_name);
 			$errorObject->set_error('invalid_session');
 			$this->setFaultObject($errorObject);
-			$GLOBALS['log']->info('End: SoapHelperWebServices->checkSessionAndModuleAccess');
+			$GLOBALS['log']->info('End: SoapHelperWebServices->checkSessionAndModuleAccess -' . $module_name);
 			return false;
 		} // if
 
 		global  $beanList, $beanFiles;
 		if (!empty($module_name)) {
 			if(empty($beanList[$module_name])){
-				$GLOBALS['log']->info('SoapHelperWebServices->checkSessionAndModuleAccess - module does not exists - ' . $module_name);
+				$GLOBALS['log']->error('SoapHelperWebServices->checkSessionAndModuleAccess - module does not exists - ' . $module_name);
 				$errorObject->set_error('no_module');
 				$this->setFaultObject($errorObject);
-				$GLOBALS['log']->info('End: SoapHelperWebServices->checkSessionAndModuleAccess');
+				$GLOBALS['log']->info('End: SoapHelperWebServices->checkSessionAndModuleAccess -' . $module_name);
 				return false;
 			} // if
 			global $current_user;
 			if(!$this->check_modules_access($current_user, $module_name, $access_level)){
-				$GLOBALS['log']->info('SoapHelperWebServices->checkSessionAndModuleAccess - no module access - ' . $module_name);
+				$GLOBALS['log']->error('SoapHelperWebServices->checkSessionAndModuleAccess - no module access - ' . $module_name);
 				$errorObject->set_error('no_access');
 				$this->setFaultObject($errorObject);
-				$GLOBALS['log']->info('End: SoapHelperWebServices->checkSessionAndModuleAccess');
+				$GLOBALS['log']->info('End: SoapHelperWebServices->checkSessionAndModuleAccess - ' . $module_name);
 				return false;
 			}
 		} // if
-		$GLOBALS['log']->info('End: SoapHelperWebServices->checkSessionAndModuleAccess');
+		$GLOBALS['log']->info('End: SoapHelperWebServices->checkSessionAndModuleAccess - ' . $module_name);
 		return true;
 	} // fn
 
 	function checkACLAccess($bean, $viewType, $errorObject, $error_key) {
 		$GLOBALS['log']->info('Begin: SoapHelperWebServices->checkACLAccess');
 		if(!$bean->ACLAccess($viewType)) {
-			$GLOBALS['log']->info('SoapHelperWebServices->checkACLAccess - no ACLAccess');
+			$GLOBALS['log']->error('SoapHelperWebServices->checkACLAccess - no ACLAccess');
 			$errorObject->set_error($error_key);
 			$this->setFaultObject($errorObject);
 			$GLOBALS['log']->info('End: SoapHelperWebServices->checkACLAccess');
@@ -308,6 +309,19 @@ function validate_user($user_name, $password){
 		$GLOBALS['log']->info('End: SoapHelperWebServices->checkACLAccess');
 		return true;
 	} // fn
+
+	function checkQuery($errorObject, $query, $order_by = '')
+    {
+        require_once 'include/SugarSQLValidate.php';
+    	$valid = new SugarSQLValidate();
+    	if(!$valid->validateQueryClauses($query, $order_by)) {
+    		$GLOBALS['log']->error("SoapHelperWebServices->checkQuery - bad query: $query $order_by");
+    	    $errorObject->set_error('no_access');
+    		$this->setFaultObject($errorObject);
+    		return false;
+    	}
+        return true;
+    }
 
 	function get_name_value($field,$value){
 		return array('name'=>$field, 'value'=>$value);
@@ -350,22 +364,23 @@ function validate_user($user_name, $password){
 		if(isset($_SESSION['avail_modules'][$module_name])){
 			if($action == 'write' && $_SESSION['avail_modules'][$module_name] == 'read_only'){
 				if(is_admin($user)) {
-					$GLOBALS['log']->info('End: SoapHelperWebServices->check_modules_access');
+					$GLOBALS['log']->info('End: SoapHelperWebServices->check_modules_access - SUCCESS: Admin can even write to read_only module');
 					return true;
 				} // if
-				$GLOBALS['log']->info('End: SoapHelperWebServices->check_modules_access');
+				$GLOBALS['log']->info('End: SoapHelperWebServices->check_modules_access - FAILED: write action on read_only module only available to admins');
 				return false;
 			}elseif($action == 'write' && strcmp(strtolower($module_name), 'users') == 0 && !$user->isAdminForModule($module_name)){
                  //rrs bug: 46000 - If the client is trying to write to the Users module and is not an admin then we need to stop them
                 return false;
             }
-			$GLOBALS['log']->info('End: SoapHelperWebServices->check_modules_access');
+			$GLOBALS['log']->info('End: SoapHelperWebServices->check_modules_access - SUCCESS');
 			return true;
 		}
-		$GLOBALS['log']->info('End: SoapHelperWebServices->check_modules_access');
+		$GLOBALS['log']->info('End: SoapHelperWebServices->check_modules_access - FAILED: Module info not available in $_SESSION');
 		return false;
 
-	}
+    }
+
 
 	function get_name_value_list($value){
 		$GLOBALS['log']->info('Begin: SoapHelperWebServices->get_name_value_list');
@@ -543,10 +558,20 @@ function validate_user($user_name, $password){
 					);
 	}
 
+/**
+ * Fetch and array of related records
+ *
+ * @param String $bean -- Primary record
+ * @param String $link_field_name -- The name of the relationship
+ * @param Array $link_module_fields -- The keys of the array are the SugarBean attributes, the values of the array are the values the attributes should have.
+ * @param String $optional_where -- IGNORED
+ * @return Array 'rows/fields_set_on_rows' -- The list of records and what fields were actually set for thos erecords
+*/
+
 	function getRelationshipResults($bean, $link_field_name, $link_module_fields, $optional_where = '') {
 		$GLOBALS['log']->info('Begin: SoapHelperWebServices->getRelationshipResults');
 		require_once('include/TimeDate.php');
-		global $current_user, $disable_date_format,  $timedate;;
+		global $current_user, $disable_date_format,  $timedate;
 
 		$bean->load_relationship($link_field_name);
 		if (isset($bean->$link_field_name)) {
@@ -778,7 +803,7 @@ function validate_user($user_name, $password){
 							//have an object with this outlook_id, if we do
 							//then we can set the id, otherwise this is a new object
 							$order_by = "";
-							$query = $seed->table_name.".outlook_id = '".$seed->outlook_id."'";
+							$query = $seed->table_name.".outlook_id = '".$GLOBALS['db']->quote($seed->outlook_id)."'";
 							$response = $seed->get_list($order_by, $query, 0,-1,-1,0);
 							$list = $response['list'];
 							if(count($list) > 0){
@@ -942,9 +967,9 @@ function validate_user($user_name, $password){
             {
                $query = "select id, deleted from {$focus->table_name} WHERE name='".$seed->db->quote($account_name)."'";
             }
-            $result = $seed->db->query($query) or sugar_die("Error selecting sugarbean: ".mysql_error());
+            $result = $seed->db->query($query, true);
 
-		    $row = $seed->db->fetchByAssoc($result, -1, false);
+		    $row = $seed->db->fetchByAssoc($result, false);
 
 			// we found a row with that id
 		    if (isset($row['id']) && $row['id'] != -1)
@@ -953,7 +978,7 @@ function validate_user($user_name, $password){
 		        if ( isset($row['deleted']) && $row['deleted'] == 1)
 		        {
 		            $query2 = "delete from {$focus->table_name} WHERE id='". $seed->db->quote($row['id'])."'";
-		            $result2 = $seed->db->query($query2) or sugar_die("Error deleting existing sugarbean: ".mysql_error());
+		            $result2 = $seed->db->query($query2, true);
 				}
 				// else just use this id to link the contact to the account
 		        else

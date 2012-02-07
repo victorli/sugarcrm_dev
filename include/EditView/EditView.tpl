@@ -38,6 +38,8 @@
 {{include file=$headerTpl}}
 {sugar_include include=$includes}
 
+{{** SUGAR.TabFields variable will be used to track tabindexes for references **}}
+<span id='tabcounterJS'><script>SUGAR.TabFields=new Array();</script></span>
 
 <div id="{{$form_name}}_tabs"
 {{if $useTabs}}
@@ -75,7 +77,7 @@ class="yui-navset"
     {sugar_include type='php' file='{{$panel}}'}
 {{else}}
 
-<table width="100%" border="0" cellspacing="1" cellpadding="0"  class="yui3-skin-sam {$def.templateMeta.panelClass|default:'edit view dcQuickEdit'}">
+<table width="100%" border="0" cellspacing="1" cellpadding="0"  class="yui3-skin-sam {$def.templateMeta.panelClass|default:'edit view dcQuickEdit edit508'}">
 {{* Only show header if it is not default or an int value *}}
 {{if !empty($label) && !is_int($label) && $label != 'DEFAULT' && !$useTabs && $showSectionPanelsTitles}}
 <tr>
@@ -86,11 +88,14 @@ class="yui-navset"
 {{/if}}
 
 {{assign var='rowCount' value=0}}
+{{assign var='tabIndexVal' value=0}}
 {{foreach name=rowIteration from=$panel key=row item=rowData}}
 {counter name="fieldsUsed" start=0 print=false assign="fieldsUsed"}
 {capture name="tr" assign="tableRow"}
 <tr>
 
+	{{math assign="rowCount" equation="$rowCount + 1"}}
+	
 	{{assign var='columnsInRow' value=$rowData|@count}}
 	{{assign var='columnsUsed' value=0}}
 
@@ -100,7 +105,7 @@ class="yui-navset"
 	{{foreach name=colIteration from=$rowData key=col item=colData}}
 
 	{{counter name="colCount" print=false}}
-	{{math assign="tabIndex" equation="$panelCount * $maxColumns + $colCount"}}
+
 	{{if count($rowData) == $colCount}}
 		{{assign var="colCount" value=0}}
 	{{/if}}
@@ -110,15 +115,17 @@ class="yui-navset"
     {{/if}}
 
 		{{if empty($def.templateMeta.labelsOnTop) && empty($colData.field.hideLabel)}}
-		<td valign="top" id='{{$colData.field.name}}_label' width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].label}}%' scope="row">
+		<td valign="top" id='{{$colData.field.name}}_label' width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].label}}%' scope="col">
 			{{if isset($colData.field.customLabel)}}
-			   {{$colData.field.customLabel}}
+			   <label for="{{$fields[$colData.field.name].name}}">{{$colData.field.customLabel}}</label>
 			{{elseif isset($colData.field.label)}}
 			   {capture name="label" assign="label"}{sugar_translate label='{{$colData.field.label}}' module='{{$module}}'}{/capture}
-			   {$label|strip_semicolon}:
+			   <label for="{{$fields[$colData.field.name].name}}">{$label|strip_semicolon}:</label>
 			{{elseif isset($fields[$colData.field.name])}}
 			   {capture name="label" assign="label"}{sugar_translate label='{{$fields[$colData.field.name].vname}}' module='{{$module}}'}{/capture}
-			   {$label|strip_semicolon}:
+			   <label for="{{$fields[$colData.field.name].name}}">{$label|strip_semicolon}:</label>
+			{{else}}
+			    &nbsp;
 			{{/if}}
 			{{* Show the required symbol if field is required, but override not set.  Or show if override is set *}}
 				{{if ($fields[$colData.field.name].required && (!isset($colData.field.displayParams.required) || $colData.field.displayParams.required)) ||
@@ -134,18 +141,30 @@ class="yui-navset"
               {capture name="overlibStuff" assign="overlibStuff"}{overlib_includes}{/capture}
               {sugar_help text=$popupText WIDTH=-1}
             {{/if}}
-          
+
 		</td>
 		{{/if}}
 		{counter name="fieldsUsed"}
+		{{math assign="tabIndexVal" equation="$tabIndexVal + 1"}}
+		{{if !empty($colData.field.tabindex)  && $colData.field.tabindex !=0}}
+		    {{assign var='tabindex' value=$colData.field.tabindex}}
+            {{** instead of tracking tabindex values for all fields, just track for email as email does not get created directly from
+                a tpl that has access to smarty values.  Email gets created through addEmailAddress() function in SugarEmailAddress.js
+                which will use the value in tabFields array
+             **}}
+            {{if $colData.field.name == 'email1'}}<script>SUGAR.TabFields['{{$colData.field.name}}'] = '{{$tabindex}}';</script>{{/if}}
+		{{else}}
+		    {** if not explicitly assigned, we will default to 0 for 508 compliance reasons, instead of the calculated tabIndexVal value **}
+		    {{assign var='tabindex' value=0}}
+		{{/if}}
 		<td valign="top" width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].field}}%' {{if $colData.colspan}}colspan='{{$colData.colspan}}'{{/if}}>
 			{{if !empty($def.templateMeta.labelsOnTop)}}
 				{{if isset($colData.field.label)}}
 				    {{if !empty($colData.field.label)}}
-			   		    {sugar_translate label='{{$colData.field.label}}' module='{{$module}}'}:
+			   		    <label for="{{$fields[$colData.field.name].name}}">{sugar_translate label='{{$colData.field.label}}' module='{{$module}}'}:</label>
 				    {{/if}}
 				{{elseif isset($fields[$colData.field.name])}}
-			  		{sugar_translate label='{{$fields[$colData.field.name].vname}}' module='{{$module}}'}:
+			  		<label for="{{$fields[$colData.field.name].name}}">{sugar_translate label='{{$fields[$colData.field.name].vname}}' module='{{$module}}'}:</label>
 				{{/if}}
 
 				{{* Show the required symbol if field is required, but override not set.  Or show if override is set *}}
@@ -163,17 +182,21 @@ class="yui-navset"
 			    {{foreach from=$colData.field.fields item=subField}}
 			        {{if $fields[$subField.name]}}
 			        	{counter name="panelFieldCount"}
-			            {{sugar_field parentFieldArray='fields' tabindex=$colData.field.tabindex vardef=$fields[$subField.name] displayType='EditView' displayParams=$subField.displayParams formName=$form_name}}&nbsp;
+			            {{sugar_field parentFieldArray='fields' tabindex=$tabindex vardef=$fields[$subField.name] displayType='EditView' displayParams=$subField.displayParams formName=$form_name}}&nbsp;
 			        {{/if}}
 			    {{/foreach}}
-			{{elseif !empty($colData.field.customCode)}}
+			{{elseif !empty($colData.field.customCode) && empty($colData.field.customCodeRenderField)}}
 				{counter name="panelFieldCount"}
-				{{sugar_evalcolumn var=$colData.field.customCode colData=$colData tabindex=$colData.field.tabindex}}
+				{{sugar_evalcolumn var=$colData.field.customCode colData=$colData tabindex=$tabindex}}
 			{{elseif $fields[$colData.field.name]}}
 				{counter name="panelFieldCount"}
 			    {{$colData.displayParams}}
-				{{sugar_field parentFieldArray='fields' tabindex=$colData.field.tabindex vardef=$fields[$colData.field.name] displayType='EditView' displayParams=$colData.field.displayParams typeOverride=$colData.field.type formName=$form_name}}
+				{{sugar_field parentFieldArray='fields' tabindex=$tabindex vardef=$fields[$colData.field.name] displayType='EditView' displayParams=$colData.field.displayParams typeOverride=$colData.field.type formName=$form_name}}
 			{{/if}}
+	{{if !empty($colData.field.customCode) && !empty($colData.field.customCodeRenderField)}}
+	    {counter name="panelFieldCount"}
+	    {{sugar_evalcolumn var=$colData.field.customCode colData=$colData tabindex=$tabindex}}
+    {{/if}}
     {{if !empty($colData.field.hideIf)}}
 		{else}
 		<td></td><td></td>
@@ -201,7 +224,7 @@ class="yui-navset"
 {{include file=$footerTpl}}
 {$overlibStuff}
 {{if $useTabs}}
-<script type="text/javascript" src="{sugar_getjspath file='include/javascript/sugar_grp_yui_widgets.js'}"></script>
+{sugar_getscript file="cache/include/javascript/sugar_grp_yui_widgets.js"}
 <script type="text/javascript">
 var {{$form_name}}_tabs = new YAHOO.widget.TabView("{{$form_name}}_tabs");
 {{$form_name}}_tabs.selectTab(0);
@@ -211,5 +234,9 @@ var {{$form_name}}_tabs = new YAHOO.widget.TabView("{{$form_name}}_tabs");
 YAHOO.util.Event.onContentReady("{{$form_name}}",
     function () {ldelim} initEditView(document.forms.{{$form_name}}) {rdelim});
 //window.setTimeout(, 100);
+{{if $module == "Users"}}
+window.onbeforeunload = function () {ldelim} return disableOnUnloadEditView(); {rdelim};
+{{else}}
 window.onbeforeunload = function () {ldelim} return onUnloadEditView(); {rdelim};
+{{/if}}
 </script>

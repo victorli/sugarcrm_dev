@@ -40,7 +40,18 @@ require_once('data/SugarBean.php');
 
 class SugarBeanTest extends Sugar_PHPUnit_Framework_TestCase
 {
-    
+
+    public static function setUpBeforeClass()
+    {
+        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+	}
+
+	public static function tearDownAfterClass()
+	{
+	    SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        unset($GLOBALS['current_user']);
+	}
+
     public function testGetObjectName(){
         $bean = new BeanMockTestObjectName();
         $this->assertEquals($bean->getObjectName(), 'my_table', "SugarBean->getObjectName() is not returning the table name when object_name is empty.");
@@ -50,13 +61,57 @@ class SugarBeanTest extends Sugar_PHPUnit_Framework_TestCase
         $bean = new BeanMockTestObjectName();
         $this->assertEquals($bean->get_audit_table_name(), 'my_table_audit', "SugarBean->get_audit_table_name() is not returning the correct audit table name.");
     }
-	
+
+    public function testRetrieveQuoting()
+    {
+        $bean = new BeanMockTestObjectName();
+        $bean->db = new MockMysqlDb();
+        $bean->retrieve("bad'idstring");
+        $this->assertNotContains("bad'id", $bean->db->lastQuery);
+        $this->assertContains("bad", $bean->db->lastQuery);
+        $this->assertContains("idstring", $bean->db->lastQuery);
+    }
+
+    public function testRetrieveStringQuoting()
+    {
+        $bean = new BeanMockTestObjectName();
+        $bean->db = new MockMysqlDb();
+        $bean->retrieve_by_string_fields(array("test1" => "bad'string", "evil'key" => "data", 'tricky-(select * from config)' => 'test'));
+        $this->assertNotContains("bad'string", $bean->db->lastQuery);
+        $this->assertNotContains("evil'key", $bean->db->lastQuery);
+        $this->assertNotContains("select * from config", $bean->db->lastQuery);
+    }
+
+}
+
+// Using Mssql here because mysql needs real connection for quoting
+require_once 'include/database/MssqlManager.php';
+class MockMysqlDb extends MssqlManager
+{
+    public $database = true;
+    public $lastQuery;
+
+    public function connect(array $configOptions = null, $dieOnError = false)
+    {
+        return true;
+    }
+
+    public function query($sql, $dieOnError = false, $msg = '', $suppress = false, $keepResult = false)
+    {
+        $this->lastQuery = $sql;
+        return true;
+    }
+
+    public function fetchByAssoc($result, $encode = true)
+    {
+        return false;
+    }
 }
 
 class BeanMockTestObjectName extends SugarBean
 {
     var $table_name = "my_table";
-    
+
     function BeanMockTestObjectName() {
 		parent::SugarBean();
 	}

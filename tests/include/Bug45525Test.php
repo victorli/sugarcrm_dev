@@ -45,6 +45,10 @@ class Bug45525 extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        if(!file_exists('cache/upload'))
+        {
+            mkdir_recursive('cache/upload');
+        }
     }
 
 

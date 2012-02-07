@@ -44,12 +44,19 @@ if (!empty($_REQUEST['remove'])) clean_string($_REQUEST['remove'], "STANDARD");
 if (!empty($_REQUEST['from'])) clean_string($_REQUEST['from'], "STANDARD");
 
 if(!empty($_REQUEST['identifier'])) {
-	$keys=log_campaign_activity($_REQUEST['identifier'],'removed');
+    global $beanFiles, $beanList, $current_user;
+
+    //user is most likely not defined, retrieve admin user so that team queries are bypassed
+    if(empty($current_user) || empty($current_user->id)){
+            $current_user = new User();
+            $current_user->retrieve('1');
+    }
+    
+    $keys=log_campaign_activity($_REQUEST['identifier'],'removed');
     global $current_language;
     $mod_strings = return_module_language($current_language, 'Campaigns');
 
     
-    global $beanFiles, $beanList;
     if (!empty($keys) && $keys['target_type'] == 'Users'){
         //Users cannot opt out of receiving emails, print out warning message.
         echo $mod_strings['LBL_USERS_CANNOT_OPTOUT'];       

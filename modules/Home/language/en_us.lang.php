@@ -176,7 +176,7 @@ $mod_strings = array (
   'LBL_VIEWLICENSE_COM' => '<P>This program is free software; you can redistribute it and/or modify it under the terms of the <a href="LICENSE.txt" target="_blank" class="body"> GNU Affero General Public License version 3</a> as published by the Free Software Foundation, including the additional permission set forth in the source code header.</P>',
   'LBL_ADD_TERM_COM' => '<P>The interactive user interfaces in modified source and object code versions of this program must display Appropriate Legal Notices, as required under Section 5 of the GNU Affero General Public License version 3. In accordance with Section 7(b) of the GNU General Public License version 3, these Appropriate Legal Notices must retain the display of the &quot;Powered by SugarCRM&quot; logo. If the display of the logo is not reasonably feasible for technical reasons, the Appropriate Legal Notices must display the words &quot;Powered by SugarCRM&quot;.</P>',
 
- 
+
   'LBL_SUGAR_COMMUNITY_EDITION' => 'Sugar Community Edition',
   'LBL_SUGAR_PROFESSIONAL' => "Sugar Professional",
   'LBL_SUGAR_ENTERPRISE' => "Sugar Enterprise",
@@ -222,7 +222,7 @@ $mod_strings = array (
   'LBL_SOURCE_SWFOBJECT' => 'SWFObject - Javascript Flash Player detection and embed script.',
   'LBL_SOURCE_TINYMCE' => 'TinyMCE - A WYSIWYG editor control for web browsers that enables the user to edit HTML contents',
   'LBL_SOURCE_EXT' => 'Ext - A client-side JavaScript framework for building web applications.',
-  'LBL_SOURCE_RECAPTCHA' => 'reCAPTCHA - A free CAPTCHA service that helps to digitize books, newspapers and old time radio shows.', 
+  'LBL_SOURCE_RECAPTCHA' => 'reCAPTCHA - A free CAPTCHA service that helps to digitize books, newspapers and old time radio shows.',
   'LBL_SOURCE_TCPDF' => 'TCPDF - A PHP class for generating PDF documents.',
   'LBL_SOURCE_CSSMIN' => 'CssMin - A css parser and minifier.',
   'LBL_SOURCE_PHPSAML' => 'PHP-SAML - A simple SAML toolkit for PHP.',
@@ -232,6 +232,7 @@ $mod_strings = array (
   'LBL_SOURCE_ZEND' => 'Zend Framework - An open source, object oriented web application framework for PHP5.',
   'LBL_SOURCE_PARSECSV' => 'parseCSV - CSV data parser for PHP',
   'LBL_SOURCE_PHPJS' => 'php.js - Use PHP functions in JavaScript',
+  'LBL_SOURCE_PHPSQL' => 'PHP SQL Parser',
 
   'LBL_DASHLET_TITLE' => 'My Sites',
   'LBL_DASHLET_OPT_TITLE' => 'Title',
@@ -239,6 +240,10 @@ $mod_strings = array (
   'LBL_DASHLET_OPT_HEIGHT' => 'Dashlet Height (in pixels)',
   'LBL_DASHLET_SUGAR_NEWS' => 'Sugar News',
   'LBL_DASHLET_DISCOVER_SUGAR_PRO' => 'Discover Sugar',
+	'LBL_POWERED_BY_SUGAR' => 'Powered By SugarCRM' /*for 508 compliance fix*/,
+	'LBL_MORE_DETAIL' => 'More Detail' /*for 508 compliance fix*/,
+	'LBL_BASIC_SEARCH' => 'Basic Search' /*for 508 compliance fix*/,
+	'LBL_ADVANCED_SEARCH' => 'Advanced Search' /*for 508 compliance fix*/,
 );
 
 

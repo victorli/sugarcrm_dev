@@ -41,7 +41,7 @@ require('include/nusoap/nusoap.php');
 /**
  * This is an abstract class for the soap implementation for using NUSOAP. This class is responsible for making
  * all NUSOAP call by passing the client's request to NUSOAP server and seding response back to client
- *
+ * @api
  */
 abstract class NusoapSoap extends SugarSoapService{
 	/**

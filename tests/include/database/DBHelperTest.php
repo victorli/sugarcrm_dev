@@ -44,17 +44,27 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
     private $_db;
     private $_helper;
 
-    public function setUp()
+    static public function setupBeforeClass()
     {
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-        $this->_db = &DBManagerFactory::getInstance();
-        $this->_helper = $this->_db->getHelper();
+        $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
+    }
+
+    static public function tearDownAfterClass()
+    {
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        unset($GLOBALS['current_user']);
+        unset($GLOBALS['app_strings']);
+    }
+
+    public function setUp()
+    {
+        $this->_db = DBManagerFactory::getInstance();
+        $this->_helper = $this->_db;
     }
 
     public function tearDown()
     {
-        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-        unset($GLOBALS['current_user']);
         $this->_db->disconnect();
     }
 
@@ -62,7 +72,7 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
     {
         $sql = $this->_helper->createTableSQL(new Contact);
 
-        $this->assertRegExp("/create\s*table\s*contacts/i",$sql);
+        $this->assertRegExp('/create\s*table\s*contacts/i',$sql);
     }
 
     public function testCreateTableSQLParams()
@@ -74,16 +84,16 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
             $bean->getFieldDefinitions(),
             $bean->getIndices());
 
-        $this->assertRegExp("/create\s*table\s*contacts/i",$sql);
+        $this->assertRegExp('/create\s*table\s*contacts/i',$sql);
     }
 
     public function testInsertSQL()
     {
         $sql = $this->_helper->insertSQL(new Contact);
 
-        $this->assertRegExp("/insert\s*into\s*contacts/i",$sql);
+        $this->assertRegExp('/insert\s*into\s*contacts/i',$sql);
     }
-    
+
     /**
      * ticket 38216
      */
@@ -91,20 +101,20 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
     {
         $bean = new Contact;
         $bean->last_name = '&quot;Test&quot;';
-        
+
         $sql = $this->_helper->insertSQL($bean);
 
         $this->assertNotContains("&quot;",$sql);
     }
-    
+
     public function testUpdateSQL()
     {
         $sql = $this->_helper->updateSQL(new Contact, array("id" => "1"));
 
-        $this->assertRegExp("/update\s*contacts\s*set/i",$sql);
-        $this->assertRegExp("/where\s*contacts.id\s*=\s*'1'/i",$sql);
+        $this->assertRegExp('/update\s*contacts\s*set/i',$sql);
+        $this->assertRegExp('/where\s*contacts.id\s*=\s*\'1\'/i',$sql);
     }
-    
+
     /**
      * ticket 38216
      */
@@ -112,26 +122,26 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
     {
         $bean = new Contact;
         $bean->last_name = '&quot;Test&quot;';
-        
+
         $sql = $this->_helper->updateSQL($bean, array("id" => "1"));
 
         $this->assertNotContains("&quot;",$sql);
     }
-    
+
     public function testDeleteSQL()
     {
         $sql = $this->_helper->deleteSQL(new Contact, array("id" => "1"));
 
-        $this->assertRegExp("/update\s*contacts\s*set\s*deleted\s*=\s*1/i",$sql);
-        $this->assertRegExp("/where\s*contacts.id\s*=\s*'1'/i",$sql);
+        $this->assertRegExp('/update\s*contacts\s*set\s*deleted\s*=\s*1/i',$sql);
+        $this->assertRegExp('/where\s*contacts.id\s*=\s*\'1\'/i',$sql);
     }
 
     public function testRetrieveSQL()
     {
         $sql = $this->_helper->retrieveSQL(new Contact, array("id" => "1"));
 
-        $this->assertRegExp("/select\s*\*\s*from\s*contacts/i",$sql);
-        $this->assertRegExp("/where\s*contacts.id\s*=\s*'1'/i",$sql);
+        $this->assertRegExp('/select\s*\*\s*from\s*contacts/i',$sql);
+        $this->assertRegExp('/where\s*contacts.id\s*=\s*\'1\'/i',$sql);
     }
 
     public function testRetrieveViewSQL()
@@ -146,7 +156,7 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
             array('id' => array('name'=>'id')),
             'idx_id');
 
-        $this->assertRegExp("/create\s*unique\s*index\s*idx_id\s*on\s*contacts\s*\(\s*id\s*\)/i",$sql);
+        $this->assertRegExp('/create\s*unique\s*index\s*idx_id\s*on\s*contacts\s*\(\s*id\s*\)/i',$sql);
 
         $sql = $this->_helper->createIndexSQL(
             new Contact,
@@ -154,14 +164,14 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
             'idx_id',
             false);
 
-        $this->assertRegExp("/create\s*index\s*idx_id\s*on\s*contacts\s*\(\s*id\s*\)/i",$sql);
+        $this->assertRegExp('/create\s*index\s*idx_id\s*on\s*contacts\s*\(\s*id\s*\)/i',$sql);
 
         $sql = $this->_helper->createIndexSQL(
             new Contact,
             array('id' => array('name'=>'id'),'deleted' => array('name'=>'deleted')),
             'idx_id');
 
-        $this->assertRegExp("/create\s*unique\s*index\s*idx_id\s*on\s*contacts\s*\(\s*id\s*,\s*deleted\s*\)/i",$sql);
+        $this->assertRegExp('/create\s*unique\s*index\s*idx_id\s*on\s*contacts\s*\(\s*id\s*,\s*deleted\s*\)/i',$sql);
     }
 
     public function testGetFieldType()
@@ -192,9 +202,9 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
         $case->retrieve($case->id);
         $lastAuto = $case->case_number;
         $helperResult = $this->_helper->getAutoIncrement("cases", "case_number");
-        
-        $GLOBALS['db']->query("DELETE FROM cases WHERE id= '{$case->id}'");
-        
+
+//        $GLOBALS['db']->query("DELETE FROM cases WHERE id= '{$case->id}'");
+
         $this->assertEquals($lastAuto + 1, $helperResult);
     }
     public function testSetAutoIncrementStart()
@@ -213,10 +223,10 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
         $case2->save();
         $case2->retrieve($case2->id);
         $case_number = $case2->case_number;
-        
+
         $GLOBALS['db']->query("DELETE FROM cases WHERE id= '{$case->id}'");
         $GLOBALS['db']->query("DELETE FROM cases WHERE id= '{$case2->id}'");
-        
+
         $this->assertEquals($newAuto, $case_number);
     }
     public function testAddColumnSQL()
@@ -226,7 +236,7 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
             array('foo' => array('name'=>'foo','type'=>'varchar'))
             );
 
-        $this->assertRegExp("/alter\s*table\s*contacts/i",$sql);
+        $this->assertRegExp('/alter\s*table\s*contacts/i',$sql);
     }
 
     public function testAlterColumnSQL()
@@ -236,21 +246,28 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
             array('foo' => array('name'=>'foo','type'=>'varchar'))
             );
 
-        $this->assertRegExp("/alter\s*table\s*contacts/i",$sql);
+        // Generated SQL may be a sequence of statements
+		switch(gettype($sql)){
+			case 'array':
+				$sql = $sql[0];
+			case 'string':
+				$this->assertRegExp('/alter\s*table\s*contacts/i',$sql);
+				break;
+			}
     }
 
     public function testDropTableSQL()
     {
         $sql = $this->_helper->dropTableSQL(new Contact);
 
-        $this->assertRegExp("/drop\s*table.*contacts/i",$sql);
+        $this->assertRegExp('/drop\s*table.*contacts/i',$sql);
     }
 
     public function testDropTableNameSQL()
     {
         $sql = $this->_helper->dropTableNameSQL('contacts');
 
-        $this->assertRegExp("/drop\s*table.*contacts/i",$sql);
+        $this->assertRegExp('/drop\s*table.*contacts/i',$sql);
     }
 
     public function testDeleteColumnSQL()
@@ -259,7 +276,7 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
             new Contact,
             array('foo' => array('name'=>'foo','type'=>'varchar'))
             );
-            $this->assertRegExp("/alter\s*table\s*contacts\s*drop\s*column\s*foo/i",$sql);
+            $this->assertRegExp('/alter\s*table\s*contacts\s*drop\s*column\s*foo/i',$sql);
     }
 
     public function testDropColumnSQL()
@@ -268,7 +285,7 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
             'contacts',
             array('foo' => array('name'=>'foo','type'=>'varchar'))
             );
-            $this->assertRegExp("/alter\s*table\s*contacts\s*drop\s*column\s*foo/i",$sql);
+            $this->assertRegExp('/alter\s*table\s*contacts\s*drop\s*column\s*foo/i',$sql);
     }
 
     public function testMassageValue()
@@ -277,8 +294,8 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
             $this->_helper->massageValue(123,array('name'=>'foo','type'=>'int')),
             123
             );
-        if ( $this->_db->dbType == 'mssql'
-            )
+        if (in_array($this->_db->dbType, array('mssql'
+            )))
             $this->assertEquals(
                 $this->_helper->massageValue("'dog'",array('name'=>'foo','type'=>'varchar')),
                 "'''dog'''"
@@ -286,16 +303,18 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
         else
             $this->assertEquals(
                 $this->_helper->massageValue("'dog'",array('name'=>'foo','type'=>'varchar')),
-                "'\'dog\''"
+                "'\\'dog\\''"
                 );
     }
 
     public function testGetColumnType()
     {
-            $this->assertEquals(
-                $this->_helper->getColumnType('int'),
-                'int'
-                );
+        switch($this->_db->dbType){
+            default:
+                $expected_type = 'int';
+        }
+
+        $this->assertEquals($expected_type, $this->_helper->getColumnType('int'));
     }
 
     public function testIsFieldArray()
@@ -327,19 +346,11 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
         // TODO: write this test
     }
 
-    public function testQuote()
+    public function testQuoted()
     {
         $this->assertEquals(
-            $this->_helper->quote('foobar'),
-            "'".$this->_db->quote('foobar')."'"
-            );
-    }
-
-    public function testEscapeQuote()
-    {
-        $this->assertEquals(
-            $this->_helper->escape_quote('foobar'),
-            $this->_db->quote('foobar')
+            "'".$this->_db->quote('foobar')."'",
+            $this->_db->quoted('foobar')
             );
     }
 
@@ -451,8 +462,8 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
                  )
             );
 
-        $this->assertNotRegExp("/float\s*\(18,\s*\)/i",$sql);
-        $this->assertRegExp("/float\s*\(18\)/i",$sql);
+        $this->assertNotRegExp('/float\s*\(18,\s*\)/i',$sql);
+        $this->assertRegExp('/float\s*\(18\)/i',$sql);
     }
 
     /**
@@ -482,8 +493,8 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
                  )
             );
 
-        $this->assertNotRegExp("/float\s*\(18,\s*\)/i",$sql);
-        $this->assertRegExp("/float\s*\(18\)/i",$sql);
+        $this->assertNotRegExp('/float\s*\(18,\s*\)/i',$sql);
+        $this->assertRegExp('/float\s*\(18\)/i',$sql);
     }
 
     /**
@@ -514,9 +525,9 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
             );
 
         if ( $this->_db->dbType == 'mssql' )
-			$this->assertRegExp("/float\s*\(18\)/i",$sql);
+			$this->assertRegExp('/float\s*\(18\)/i',$sql);
         else
-        	$this->assertRegExp("/float\s*\(18,2\)/i",$sql);
+        	$this->assertRegExp('/float\s*\(18,2\)/i',$sql);
     }
 
     /**
@@ -545,9 +556,9 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
                  )
             );
         if ( $this->_db->dbType == 'mssql' )
-			$this->assertRegExp("/float\s*\(18\)/i",$sql);
+			$this->assertRegExp('/float\s*\(18\)/i',$sql);
         else
-        	$this->assertRegExp("/float\s*\(18,2\)/i",$sql);
+        	$this->assertRegExp('/float\s*\(18,2\)/i',$sql);
     }
 
     /**

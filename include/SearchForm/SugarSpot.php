@@ -1,5 +1,5 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
+//if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
@@ -36,106 +36,109 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
+/**
+ * Global search
+ * @api
+ */
 class SugarSpot
 {
 	/**
+     * searchAndDisplay
+     *
 	 * Performs the search and returns the HTML widget containing the results
 	 *
-	 * @param  $query   string what we are searching for
-	 * @param  $modules array  modules we are searching in
-	 * @param  $offset  int    search result offset
-	 * @return string HTML widget
+	 * @param  $query string what we are searching for
+	 * @param  $modules array modules we are searching in
+	 * @param  $offset int search result offset
+	 * @return string HTML code containing results
 	 */
-	public function searchAndDisplay(
-	    $query,
-	    $modules,
-	    $offset = -1
-	    )
+	public function searchAndDisplay($query, $modules, $offset=-1)
 	{
+        global $current_user;
 		$query_encoded = urlencode($query);
 	    $results = $this->_performSearch($query, $modules, $offset);
+        $displayResults = array();
+        $displayMoreForModule = array();
 
-		$str = '<div id="SpotResults">';
-
-		$actions=0;
-		$foundData = false;
-		foreach($results as $m=>$data){
-			if(empty($data['data'])){
+		foreach($results as $m=>$data)
+        {
+			if(empty($data['data']))
+            {
 				continue;
 			}
 
-			$foundData = true;
+            $total = count($data['data']);
+			$countRemaining = $data['pageData']['offsets']['total'] - $total;
 
-			$countRemaining = $data['pageData']['offsets']['total'] - count($data['data']);
-			if($offset > 0) $countRemaining -= $offset;
-			$more = '';
-			$data['pageData']['offsets']['next']++;
-			if($countRemaining > 0){
-				$more = <<<EOHTML
-<small class='more' onclick="DCMenu.spotZoom('$query', '$m','{$data['pageData']['offsets']['next']}' )">($countRemaining {$GLOBALS['app_strings']['LBL_SEARCH_MORE']})</small>
-EOHTML;
+            if(isset($results[$m]['readAccess']) && !$results[$m]['readAccess'])
+            {
+               $displayTotal = $countRemaining > 0 ? ($total + $countRemaining) : $total;
+               $displayResults[$m]['link'] = array('total'=>$displayTotal, 'count_remaining'=>$countRemaining, 'query_encoded'=>$query_encoded);
+               continue;
+            }
+
+			if($offset > 0)
+            {
+                $countRemaining -= $offset;
+            }
+
+			if($countRemaining > 0)
+            {
+                $displayMoreForModule[$m] = array('query'=>$query,
+                                                  'offset'=>$data['pageData']['offsets']['next']++,
+                                                  'countRemaining'=>$countRemaining);
 			}
 
-			$modDisplayString = $m;
-			if(isset($GLOBALS['app_list_strings']['moduleList'][$m]))
-			    $modDisplayString = $GLOBALS['app_list_strings']['moduleList'][$m];
-
-			$str.= "<div>{$modDisplayString} $more</div>";
-			$str.= '<ul>';
-			foreach($data['data'] as $row){
+            foreach($data['data'] as $row)
+            {
 				$name = '';
-				
-				if(!empty($row['NAME'])){
+
+                //Determine a name to use
+				if(!empty($row['NAME']))
+                {
 					$name = $row['NAME'];
 				} else if(!empty($row['DOCUMENT_NAME'])) {
 				    $name = $row['DOCUMENT_NAME'];
 				} else {
+                    $foundName = '';
 					foreach($row as $k=>$v){
-						if(strpos($k, 'NAME') !== false && !empty($row[$k])){
-							$name = $v;
-							break;
+						if(strpos($k, 'NAME') !== false)
+                        {
+                            if(!empty($row[$k]))
+                            {
+							    $name = $v;
+							    break;
+                            } else if(empty($foundName)) {
+                                $foundName = $v;
+                            }
 						}
 					}
 
 					if(empty($name))
 					{
-						foreach($row as $k=>$v){
-							if(strpos($k, 'NAME') !== false){
-								$name = $v;
-								break;
-							}
-						}
+					   $name = $foundName;
 					}
 				}
 
-				    $str .= <<<EOHTML
-<li><a href="index.php?module={$data['pageData']['bean']['moduleDir']}&action=DetailView&record={$row['ID']}">$name</a></li>
-EOHTML;
-			}
-			$str.= '</ul>';
-		}
+				$displayResults[$m][$row['ID']] = $name;
 
-		if($foundData)
-		{
-			$str = <<<EOHTML
-			<button onclick="document.location.href='index.php?module=Home&action=UnifiedSearch&search_form=false&advanced=false&query_string={$query_encoded}'">{$GLOBALS['app_strings']['LBL_EMAIL_SHOW_READ']}</button>
-			<br><br>
-			{$str}
-			</div>
-			<p>
-			<button onclick="document.location.href='index.php?module=Home&action=UnifiedSearch&search_form=false&advanced=false&query_string={$query_encoded}'">{$GLOBALS['app_strings']['LBL_EMAIL_SHOW_READ']}</button>
-EOHTML;
-		} else {
-			$str .= $GLOBALS['app_strings']['LBL_EMAIL_SEARCH_NO_RESULTS'];
-			$str .= <<<EOHTML
-			</div>
-			<p>
-			<button onclick="document.location.href='index.php?module=Home&action=UnifiedSearch&search_form=false&advanced=false&query_string={$query_encoded}'">{$GLOBALS['app_strings']['LBL_EMAIL_SHOW_READ']}</button>
-EOHTML;
+		    }
 
-		}
 
-		return $str;
+
+        }
+        $ss = new Sugar_Smarty();
+        $ss->assign('displayResults', $displayResults);
+        $ss->assign('displayMoreForModule', $displayMoreForModule);
+        $ss->assign('appStrings', $GLOBALS['app_strings']);
+        $ss->assign('appListStrings', $GLOBALS['app_list_strings']);
+        $ss->assign('queryEncoded', $query_encoded);
+        $template = 'include/SearchForm/tpls/SugarSpot.tpl';
+        if(file_exists('custom/include/SearchForm/tpls/SugarSpot.tpl'))
+        {
+            $template = 'custom/include/SearchForm/tpls/SugarSpot.tpl';
+        }
+        return $ss->fetch($template);
 	}
 
 	/**
@@ -152,19 +155,19 @@ EOHTML;
 	{
 		$searchFields = array();
 
-		if(file_exists("modules/{$moduleName}/metadata/SearchFields.php")) 
+		if(file_exists("modules/{$moduleName}/metadata/SearchFields.php"))
 		{
 		    require("modules/{$moduleName}/metadata/SearchFields.php");
 		}
-		
-		if(file_exists("custom/modules/{$moduleName}/metadata/SearchFields.php")) 
+
+		if(file_exists("custom/modules/{$moduleName}/metadata/SearchFields.php"))
 		{
 		    require("custom/modules/{$moduleName}/metadata/SearchFields.php");
 		}
-		
+
 		return $searchFields;
 	}
-	
+
 
 	/**
 	 * Get count from query
@@ -180,7 +183,9 @@ EOHTML;
 	}
 
 	/**
-	 * Performs the search
+     * _performSearch
+     *
+	 * Performs the search from the global search field.
 	 *
 	 * @param  $query   string what we are searching for
 	 * @param  $modules array  modules we are searching in
@@ -193,55 +198,83 @@ EOHTML;
 	    $offset = -1
 	    )
 	{
-	    if(empty($query)) return array();
+        //Return an empty array if no query string is given
+	    if(empty($query))
+        {
+            return array();
+        }
+
 		$primary_module='';
 		$results = array();
 		require_once 'include/SearchForm/SearchForm2.php' ;
 		$where = '';
         $searchEmail = preg_match('/^([^%]|%)*@([^%]|%)*$/', $query);
 
-        $limit = ( !empty($GLOBALS['sugar_config']['max_spotresults_initial']) ? $GLOBALS['sugar_config']['max_spotresults_initial'] : 5 );
+        $limit = !empty($GLOBALS['sugar_config']['max_spotresults_initial']) ? $GLOBALS['sugar_config']['max_spotresults_initial'] : 5;
 		if($offset !== -1){
-			$limit = ( !empty($GLOBALS['sugar_config']['max_spotresults_more']) ? $GLOBALS['sugar_config']['max_spotresults_more'] : 20 );
+			$limit = !empty($GLOBALS['sugar_config']['max_spotresults_more']) ? $GLOBALS['sugar_config']['max_spotresults_more'] : 20;
 		}
     	$totalCounted = empty($GLOBALS['sugar_config']['disable_count_query']);
- 	
-			
-	    foreach($modules as $moduleName){
+
+
+        global $current_user;
+
+	    foreach($modules as $moduleName)
+        {
 		    if (empty($primary_module))
 		    {
 		    	$primary_module=$moduleName;
-		    } 
+		    }
 
-			$searchFields = SugarSpot::getSearchFields($moduleName);         			
-			
+			$searchFields = SugarSpot::getSearchFields($moduleName);
+
+            //Continue on to the next module if no search fields found for module
 			if (empty($searchFields[$moduleName]))
 			{
 				continue;
 			}
 
-			$class = $GLOBALS['beanList'][$moduleName];
 			$return_fields = array();
-			$seed = new $class();
-            if(!$seed->ACLAccess('ListView')) continue;
+			$seed = SugarModule::get($moduleName)->loadBean();
 
-			if ($class == 'aCase') {
-		            $class = 'Case';
-			}
-			
-			foreach($searchFields[$moduleName] as $k=>$v){
+            //Continue on to next module if we don't have ListView ACLAccess for module
+            if(!$seed->ACLAccess('ListView')) {
+               continue;
+            }
+
+            $class = $seed->object_name;
+
+			foreach($searchFields[$moduleName] as $k=>$v)
+            {
 				$keep = false;
 				$searchFields[$moduleName][$k]['value'] = $query;
+
+                //If force_unifiedsearch flag is true, we are essentially saying this field must be searched on (e.g. search_name in SearchFields.php file)
+                if(!empty($searchFields[$moduleName][$k]['force_unifiedsearch']))
+                {
+                    continue;
+                }
 
 				if(!empty($GLOBALS['dictionary'][$class]['unified_search'])){
 					if(empty($GLOBALS['dictionary'][$class]['fields'][$k]['unified_search'])){
 
 						if(isset($searchFields[$moduleName][$k]['db_field'])){
-							foreach($searchFields[$moduleName][$k]['db_field'] as $field){
-								if(!empty($GLOBALS['dictionary'][$class]['fields'][$field]['unified_search'])){
-									$keep = true;
+							foreach($searchFields[$moduleName][$k]['db_field'] as $field)
+                            {
+								if(!empty($GLOBALS['dictionary'][$class]['fields'][$field]['unified_search']))
+                                {
+                                    if(isset($GLOBALS['dictionary'][$class]['fields'][$field]['type']))
+                                    {
+                                        if(!$this->filterSearchType($GLOBALS['dictionary'][$class]['fields'][$field]['type'], $query))
+                                        {
+                                            unset($searchFields[$moduleName][$k]);
+                                            continue;
+                                        }
+                                    } else {
+									    $keep = true;
+                                    }
 								}
-							}
+							} //foreach
 						}
 						if(!$keep){
 							if(strpos($k,'email') === false || !$searchEmail) {
@@ -259,76 +292,87 @@ EOHTML;
 					{
 					   unset($searchFields[$moduleName][$k]);
 					}
-				}else{
-					switch($GLOBALS['dictionary'][$class]['fields'][$k]['type']){
-						case 'id':
-						case 'date':
-						case 'datetime':
-						case 'bool':
-							unset($searchFields[$moduleName][$k]);
-							break;
-						case 'int':
-						    if(!is_numeric($query)) {
-						        unset($searchFields[$moduleName][$k]);
-						        break;
-						    }
-					}
+				}else if(!$this->filterSearchType($GLOBALS['dictionary'][$class]['fields'][$k]['type'], $query)){
+                    unset($searchFields[$moduleName][$k]);
 				}
-			}
+			} //foreach
 
-			if (empty($searchFields[$moduleName])) continue;
+            //If no search field criteria matched then continue to next module
+			if (empty($searchFields[$moduleName]))
+            {
+                continue;
+            }
 
-			if(isset($seed->field_defs['name'])) {
+            //Variable used to store the "name" field displayed in results
+            $name_field = null;
+
+			if(isset($seed->field_defs['name']))
+            {
 			    $return_fields['name'] = $seed->field_defs['name'];
+                $name_field = 'name';
 			}
 
-			foreach($seed->field_defs as $k => $v) {
-			    if(isset($seed->field_defs[$k]['type']) && ($seed->field_defs[$k]['type'] == 'name') && !isset($return_fields[$k])) {
+
+			foreach($seed->field_defs as $k => $v)
+            {
+			    if(isset($seed->field_defs[$k]['type']) && ($seed->field_defs[$k]['type'] == 'name') && !isset($return_fields[$k]))
+                {
 				    $return_fields[$k] = $seed->field_defs[$k];
 				}
 			}
 
-			if(!isset($return_fields['name'])) {
+
+			if(!isset($return_fields['name']))
+            {
 			    // if we couldn't find any name fields, try search fields that have name in it
-			    foreach($searchFields[$moduleName] as $k => $v) {
-			        if(strpos($k, 'name') != -1 && isset($seed->field_defs[$k])
-			            && !isset($seed->field_defs[$k]['source'])) {
+			    foreach($searchFields[$moduleName] as $k => $v)
+                {
+			        if(strpos($k, 'name') != -1 && isset($seed->field_defs[$k]) && !isset($seed->field_defs[$k]['source']))
+                    {
 				        $return_fields[$k] = $seed->field_defs[$k];
+                        $name_field = $k;
 				        break;
 				    }
 			    }
 			}
 
-			if(!isset($return_fields['name'])) {
+
+			if(!isset($return_fields['name']))
+            {
 			    // last resort - any fields that have 'name' in their name
-			    foreach($seed->field_defs as $k => $v) {
-			        if(strpos($k, 'name') != -1 && isset($seed->field_defs[$k])
-			            && !isset($seed->field_defs[$k]['source'])) {
+			    foreach($seed->field_defs as $k => $v)
+                {
+                    if(strpos($k, 'name') != -1 && isset($seed->field_defs[$k]) && !isset($seed->field_defs[$k]['source']))
+                    {
 				        $return_fields[$k] = $seed->field_defs[$k];
-				        break;
+				        $name_field = $k;
+                        break;
 				    }
 			    }
 			}
 
-			if(!isset($return_fields['name'])) {
-			    // FAIL: couldn't find id & name for the module
-			    $GLOBALS['log']->error("Unable to find name for module $moduleName");
+
+			if(empty($name_field)) {
+			    // FAIL: couldn't find a name field to display a result label
+			    $GLOBALS['log']->error("Unable to find name field for module $moduleName");
 			    continue;
 			}
 
-			if(isset($return_fields['name']['fields'])) {
-			    // some names are composite
-			    foreach($return_fields['name']['fields'] as $field) {
+			if(isset($return_fields['name']['fields']))
+            {
+			    // some names are composite name fields (e.g. last_name, first_name), add these to return list
+			    foreach($return_fields['name']['fields'] as $field)
+                {
 			        $return_fields[$field] = $seed->field_defs[$field];
 			    }
-			}
-
+			} 
 
 			$searchForm = new SearchForm ( $seed, $moduleName ) ;
 			$searchForm->setup (array ( $moduleName => array() ) , $searchFields , '' , 'saved_views' /* hack to avoid setup doing further unwanted processing */ ) ;
 			$where_clauses = $searchForm->generateSearchWhere() ;
-			
-			if(empty($where_clauses)) {
+
+			if(empty($where_clauses))
+            {
 			    continue;
 			}
 			if(count($where_clauses) > 1) {
@@ -411,10 +455,15 @@ EOHTML;
             $pageData['offsets'] = array( 'current'=>$offset, 'next'=>$nextOffset, 'prev'=>$prevOffset, 'end'=>$endOffset, 'total'=>$totalCount, 'totalCounted'=>$totalCounted);
 		    $pageData['bean'] = array('objectName' => $seed->object_name, 'moduleDir' => $seed->module_dir);
 
-		    $results[$moduleName] = array("data" => $data, "pageData" => $pageData);
-		}
+            $readAccess = true;
+
+		    $results[$moduleName] = array("data"=>$data, "pageData"=>$pageData, "readAccess"=>$readAccess);
+
+		} //foreach
+
         return $results;
 	}
+
 
 	/**
      * Function used to walk the array and find keys that map the queried string.
@@ -442,4 +491,42 @@ EOHTML;
             }
         }
     }
+
+
+    /**
+     * filterSearchType
+     *
+     * This is a private function to determine if the search type field should be filtered out based on the query string value
+     * 
+     * @param String $type The string value of the field type (e.g. phone, date, datetime, int, etc.)
+     * @param String $query The search string value sent from the global search
+     * @return boolean True if the search type fits the query string value; false otherwise
+     */
+    protected function filterSearchType($type, $query)
+    {
+        switch($type)
+        {
+            case 'id':
+            case 'date':
+            case 'datetime':
+            case 'bool':
+                return false;
+                break;
+            case 'int':
+                if(!is_numeric($query)) {
+                   return false;
+                }
+                break;
+            case 'phone':
+            case 'decimal':
+            case 'float':
+                if(!preg_match('/[0-9]/', $query))
+                {
+                   return false;
+                }
+                break;
+        }
+        return true;
+    }
+
 }

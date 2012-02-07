@@ -115,31 +115,14 @@ class TemplateDatetimecombo extends TemplateRange
     	'am' => 'am',
     	'pm' => 'pm',
     );
-    
-	function __construct() 
-	{
-		parent::__construct();
-	}       
-    
-	function get_db_type(){
-	    if($GLOBALS['db']->dbType == 'oci8'){
-	        return " DATE ";
-	    } else {
-	        return " DATETIME ";
-	    }
-	}
-	
+
 	function get_db_default($modify=false){
 			return '';
 	}
 
 	function get_field_def(){
 		$def = parent::get_field_def();
-		if($GLOBALS['db']->dbType == 'oci8'){
-	        $def['dbType'] = 'date';
-	    } else {
-	        $def['dbType'] = 'datetime';
-	    }
+	    $def['dbType'] = 'datetime';
 	    if(!empty($def['default'])){
 			$def['display_default'] = $def['default'];
 			$def['default'] = '';
@@ -147,10 +130,6 @@ class TemplateDatetimecombo extends TemplateRange
 		return $def;
 	}
 	
-	function save($df){
-    	parent::save($df);
-    } 
-    
     function populateFromPost(){
     	parent::populateFromPost();
     	if(!empty($_REQUEST['defaultDate']) && !empty($_REQUEST['defaultTime'])){

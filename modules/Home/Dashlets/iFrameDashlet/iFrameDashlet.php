@@ -125,10 +125,15 @@ class iFrameDashlet extends Dashlet {
 
         $sugar_edition = 'COM';
 
+
         $out_url = str_replace(
             array('@@LANG@@','@@VER@@','@@EDITION@@'),
             array($GLOBALS['current_language'],$GLOBALS['sugar_config']['sugar_version'],$sugar_edition),
             $this->url);
-        return parent::display() . "<iframe class='teamNoticeBox' src='".$out_url."' height='".$this->height."px'></iframe>";
+        $title = $this->title;
+        if(empty($title)){
+            $title = 'empty';
+        }
+        return parent::display() . "<iframe class='teamNoticeBox' title='{$title}' src='{$out_url}' height='{$this->height}px'></iframe>";
     }
 }

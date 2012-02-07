@@ -9,12 +9,12 @@ if(!defined('sugarEntry'))define('sugarEntry', true);
     }
 
 //if we are coming from browser
-    
+
 if(isset($_REQUEST['root_directory'])){
 	if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
-        
+
     require_once('include/utils/sugar_file_utils.php');
-        
+
     //get the root directory to process
     $from = $_REQUEST['root_directory'];
     $forceReb = false;
@@ -25,8 +25,10 @@ if(isset($_REQUEST['root_directory'])){
              $js_groupings = array();
             if(isset($_REQUEST['root_directory'])){
                 require('jssource/JSGroupings.php');
+                require_once('jssource/minify_utils.php');
             }else{
                 require('JSGroupings.php');
+                require_once('minify_utils.php');
             }
 
             //iterate through array of grouped files
@@ -35,6 +37,7 @@ if(isset($_REQUEST['root_directory'])){
             //for each item in array, concatenate the source files
             foreach($grp_array as $grp){
                 foreach($grp as $original =>$concat){
+                    $concat = sugar_cached($concat);
                     //make sure both files are still valid
                     if(is_file($original)  &&  is_file($concat)){
                         //if individual file has been modifed date later than modified date of
@@ -46,24 +49,24 @@ if(isset($_REQUEST['root_directory'])){
                         }
                     }else{
                         //if files are not valid, rebuild as one file could have been deleted
-                        $forceReb = true; 
+                        $forceReb = true;
                         //no need to continue, we will rebuild
                         break;
                     }
                 }
             }
-         
+
         }
         //if boolean has been set, concatenate files
         if($forceReb){
         ConcatenateFiles("$from");
-            
-        }   
+
+        }
 
     }else{
         //We are only allowing rebuilding of concat files from browser.
-            
-    }        
+
+    }
     return;
 }else{
     //run via command line
@@ -71,82 +74,84 @@ if(isset($_REQUEST['root_directory'])){
     $from="";
 
     if(isset($argv[1]) && !empty($argv[1])){
-         $from = $argv[1];   
+         $from = $argv[1];
     }else{
      //Root Directory was not specified
      echo 'Root Directory Input was not provided';
-     return;   
+     return;
     }
-    
-//    require_once($argv[1].'/include/utils/sugar_file_utils.php');
+
+    if(!function_exists('sugar_cached')) {
+        function sugar_cached($dir) { return "cache/$dir"; }
+    }
 
     if($argv[1] == '-?'){
         $argv[2] = '-?';
     }
 
-    //if second argument is set, then process commands    
+    //if second argument is set, then process commands
     if(!empty($argv[2])){
-    
+
            if($argv[2] == '-r'){
                 //replace the compressed scripts with the backed up version
-                reverseScripts("$from/jssource/src_files","$from");
-                        
+                reverseScripts("$from/jssource/src_files",$from);
+
            }elseif($argv[2] == '-m'){
                 //replace the scripts, and then minify the scripts again
-                reverseScripts("$from/jssource/src_files","$from");
-                BackUpAndCompressScriptFiles("$from","",false,true);        
-            
+                reverseScripts("$from/jssource/src_files",$from);
+                BackUpAndCompressScriptFiles($from,"",false,true);
+
            }elseif($argv[2] == '-c'){
                 //replace the scripts, concatenate the files, and then minify the scripts again
-                reverseScripts("$from/jssource/src_files","$from");
-                BackUpAndCompressScriptFiles("$from","",false,true);        
-                ConcatenateFiles("$from",true);           
+                reverseScripts("$from/jssource/src_files",$from);
+                BackUpAndCompressScriptFiles($from,"",false,true);
+                ConcatenateFiles($from,true);
            }elseif($argv[2] == '-mo'){
                 //do not replace the scriptsjust minify the existing scripts again
-                BackUpAndCompressScriptFiles("$from","",false,true);        
-            
+                BackUpAndCompressScriptFiles($from,"",false,true);
+
            }elseif($argv[2] == '-co'){
                 //concatenate the files only
-                ConcatenateFiles("$from",true);
-            
+                ConcatenateFiles($from,true);
+
            }elseif($argv[2] == '-?'){
                 die("
     Usage : minify <root path> [[-r]|[-m]|[-c]]
-    
-    <root path> = path of directory to process.  Should be root of sugar instance.   
-     -r  = replace javascript of root with scripts from backed up jssource/src_files directory   
-     -m  = same as r, only the script is minified and then copied   
+
+    <root path> = path of directory to process.  Should be root of sugar instance.
+     -r  = replace javascript of root with scripts from backed up jssource/src_files directory
+     -m  = same as r, only the script is minified and then copied
      -c  = same as m, only the concatenated files are processed again.
      -co = concatenates only the js files that are to be concatenated.  Main use is for development when files that make up a concatenated file have been modified.
      -mo = minifies only the existing js files.  Will not use source files and will not back up scripts.  Main use is for development, when changes have been made to working javascript and you wish to recompress your scripts.
-            
-    *** note that options are mutually exclusive.  You would use -r OR -m OR -c          
-    
+
+    *** note that options are mutually exclusive.  You would use -r OR -m OR -c
+
     examples: say your patch is located in 'c:/sugar'
     You wish to have files from root directory concatenated according to file grouping array, as well as all js files compressed and backed up:
-        minify 'c:/sugar'                                
-            
+        minify 'c:/sugar'
+
     You wish to have backed up jssource files replace your current javascript files:
-        minify 'c:/sugar' -r                                
-            
+        minify 'c:/sugar' -r
+
     You wish to have backed up jssource files minified, and replace your current javascript files:
-        minify 'c:/sugar' -m                               
-            
+        minify 'c:/sugar' -m
+
     You wish to have backed up jssource files concatenated, minified, and replace your current javascript files:
-        minify 'c:/sugar' -c                               
+        minify 'c:/sugar' -c
                                         ");
-                        
+
            }
-           
+
     }else{
         //default is to concatenate the files, then back up and compress them
         if(empty($from)){
-            echo("directory root to process was not specified");   
+            echo("directory root to process was not specified");
         }
 
-        BackUpAndCompressScriptFiles("$from", '', true, true);        
-        ConcatenateFiles("$from",true);        
-        
+        BackUpAndCompressScriptFiles($from, '', true, true);
+        ConcatenateFiles($from,true);
+
     }
 }
 

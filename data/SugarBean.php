@@ -48,6 +48,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 require_once('modules/DynamicFields/DynamicField.php');
 require_once("data/Relationships/RelationshipFactory.php");
 
+
+
+
+
 /**
  * SugarBean is the base class for all business objects in Sugar.  It implements
  * the primary functionality needed for manipulating business objects: create,
@@ -58,14 +62,14 @@ require_once("data/Relationships/RelationshipFactory.php");
  * Naming convention has the bean name be the same as the module and folder name.
  * All bean names should be singular (e.g. Contact).  The primary table name for
  * a bean should be plural (e.g. contacts).
- *
+ * @api
  */
 class SugarBean
 {
     /**
-     * A pointer to the database helper object DBHelper
+     * A pointer to the database object
      *
-     * @var DBHelper
+     * @var DBManager
      */
     var $db;
 
@@ -127,14 +131,6 @@ class SugarBean
 	 * @var BOOL
 	 */
 	var $duplicates_found = false;
-
-	/**
-	 * The DBManager instance that was used to load this bean and should be used for
-	 * future database interactions.
-	 *
-	 * @var DBManager
-	 */
-	var $dbManager;
 
 	/**
 	 * true if this bean has been deleted, false otherwise.
@@ -277,7 +273,6 @@ class SugarBean
         global  $dictionary, $current_user;
         static $loaded_defs = array();
         $this->db = DBManagerFactory::getInstance();
-        $this->dbManager = DBManagerFactory::getInstance();
         if (empty($this->module_name))
             $this->module_name = $this->module_dir;
         if((false == $this->disable_vardefs && empty($loaded_defs[$this->object_name])) || !empty($GLOBALS['reload_vardefs']))
@@ -470,10 +465,10 @@ class SugarBean
             $engine = $dictionary[$this->getObjectName()]['engine'];
         }
 
-        $sql=$this->dbManager->helper->createTableSQLParams($table_name, $fieldDefs, $indices, $engine);
+        $sql=$this->db->createTableSQLParams($table_name, $fieldDefs, $indices, $engine);
 
         $msg = "Error creating table: ".$table_name. ":";
-        $this->dbManager->query($sql,true,$msg);
+        $this->db->query($sql,true,$msg);
     }
 
     /**
@@ -486,13 +481,13 @@ class SugarBean
      *
      * Internal function, do not override.
      */
-    function getTableName()
+    public function getTableName()
     {
-        global $dictionary;
         if(isset($this->table_name))
         {
             return $this->table_name;
         }
+        global $dictionary;
         return $dictionary[$this->getObjectName()]['table'];
     }
 
@@ -559,8 +554,14 @@ class SugarBean
     function getPrimaryFieldDefinition()
     {
         $def = $this->getFieldDefinition("id");
-        if (!$def)
+        if(empty($def)) {
             $def = $this->getFieldDefinition(0);
+        }
+        if (empty($def)) {
+            $defs = $this->field_defs;
+            reset($defs);
+            $def = current($defs);
+        }
         return $def;
     }
     /**
@@ -640,7 +641,7 @@ class SugarBean
         foreach($this->field_defs as $field=>$value){
             if((isset($value['default']) || !empty($value['display_default'])) && ($force || empty($this->$field))){
                 $type = $value['type'];
-                
+
                 switch($type){
                     case 'date':
                         if(!empty($value['display_default'])){
@@ -1029,8 +1030,7 @@ class SugarBean
         $fieldDefs= $this->getFieldDefinitions();
 
         if (!empty($fieldDefs)) {
-            foreach ($fieldDefs as $key=>$value_array)
-            {
+            foreach ($fieldDefs as $key=>$value_array) {
                 if ( (isset($value_array['importable'])
                         && (is_string($value_array['importable']) && $value_array['importable'] == 'false'
                             || is_bool($value_array['importable']) && $value_array['importable'] == false))
@@ -1044,20 +1044,7 @@ class SugarBean
                         $importableFields[$key]=$value_array;
                     }
                 }
-                else
-                {
-                    //Expose the cooresponding id field of a relate field if it is only defined as a link so that users can relate records by id during import
-                    if( isset($value_array['type']) && ($value_array['type'] == 'relate') && isset($value_array['id_name']) )
-                    {
-                        $idField = $value_array['id_name'];
-                        if( isset($fieldDefs[$idField]) && isset($fieldDefs[$idField]['type'] ) && $fieldDefs[$idField]['type'] == 'link' )
-                        {
-                            $tmpFieldDefs = $fieldDefs[$idField];
-                            $tmpFieldDefs['vname'] = translate($value_array['vname'], $this->module_dir) . " " . $GLOBALS['app_strings']['LBL_ID'];
-                            $importableFields[$idField]=$tmpFieldDefs;
-                        }
-                    }
-
+                else {
                     $importableFields[$key]=$value_array;
                 }
             }
@@ -1156,7 +1143,7 @@ class SugarBean
         {
             if(!$this->db->tableExists($this->table_name))
             {
-                $this->dbManager->createTable($this);
+                $this->db->createTable($this);
                     if($this->bean_implements('ACL')){
                         if(!empty($this->acltype)){
                             ACLAction::addActions($this->getACLCategory(), $this->acltype);
@@ -1196,14 +1183,14 @@ class SugarBean
             if(empty($this->table_name))return;
             if ($this->db->tableExists($this->table_name))
 
-                $this->dbManager->dropTable($this);
+                $this->db->dropTable($this);
             if ($this->db->tableExists($this->table_name. '_cstm'))
             {
-                $this->dbManager->dropTableName($this->table_name. '_cstm');
+                $this->db->dropTableName($this->table_name. '_cstm');
                 DynamicField::deleteCache();
             }
             if ($this->db->tableExists($this->get_audit_table_name())) {
-                $this->dbManager->dropTableName($this->get_audit_table_name());
+                $this->db->dropTableName($this->get_audit_table_name());
             }
 
 
@@ -1305,11 +1292,7 @@ class SugarBean
         }
         if ($this->deleted != 1)
             $this->deleted = 0;
-        if($isUpdate)
-        {
-            $query = "Update ";
-        }
-        else
+        if(!$isUpdate)
         {
             if (empty($this->date_entered))
             {
@@ -1324,10 +1307,9 @@ class SugarBean
             {
                 $this->id = create_guid();
             }
-            $query = "INSERT into ";
         }
 
-        
+
 
         require_once("data/BeanFactory.php");
         BeanFactory::registerBean($this->module_name, $this);
@@ -1361,231 +1343,27 @@ class SugarBean
 
         //construct the SQL to create the audit record if auditing is enabled.
         $dataChanges=array();
-        if ($this->is_AuditEnabled())
-        {
-            if ($isUpdate && !isset($this->fetched_row))
-            {
+        if ($this->is_AuditEnabled()) {
+            if ($isUpdate && !isset($this->fetched_row)) {
                 $GLOBALS['log']->debug('Auditing: Retrieve was not called, audit record will not be created.');
-            }
-            else
-            {
-                $dataChanges=$this->dbManager->helper->getDataChanges($this);
+            } else {
+                $dataChanges=$this->db->getDataChanges($this);
             }
         }
 
         $this->_sendNotifications($check_notify);
 
-        if ($this->db->dbType == "oci8")
-        {
+        if ($isUpdate) {
+            $this->db->update($this);
+        } else {
+            $this->db->insert($this);
         }
-        if ($this->db->dbType == 'mysql')
-        {
-            // write out the SQL statement.
-            $query .= $this->table_name." set ";
 
-            $firstPass = 0;
-
-            foreach($this->field_defs as $field=>$value)
-            {
-                if(!isset($value['source']) || $value['source'] == 'db')
-                {
-                    // Do not write out the id field on the update statement.
-                    // We are not allowed to change ids.
-                    if($isUpdate && ('id' == $field))
-                        continue;
-                    //custom fields handle there save seperatley
-                    if(isset($this->field_name_map) && !empty($this->field_name_map[$field]['custom_type']))
-                        continue;
-
-                    // Only assign variables that have been set.
-                    if(isset($this->$field))
-                    {
-                        //bug: 37908 - this is to handle the issue where the bool value is false, but strlen(false) <= so it will
-                        //set the default value. TODO change this code to esend all fields through getFieldValue() like DbHelper->insertSql
-                        if(!empty($value['type']) && $value['type'] == 'bool'){
-                            $this->$field = $this->getFieldValue($field);
-                        }
-
-                        if(strlen($this->$field) <= 0)
-                        {
-                            if(!$isUpdate && isset($value['default']) && (strlen($value['default']) > 0))
-                            {
-                                $this->$field = $value['default'];
-                            }
-                            else
-                            {
-                                $this->$field = null;
-                            }
-                        }
-                        // Try comparing this element with the head element.
-                        if(0 == $firstPass)
-                            $firstPass = 1;
-                        else
-                            $query .= ", ";
-
-                        if(is_null($this->$field))
-                        {
-                            $query .= $field."=null";
-                        }
-                        else
-                        {
-                            //added check for ints because sql-server does not like casting varchar with a decimal value
-                            //into an int.
-                            if(isset($value['type']) and $value['type']=='int') {
-                                $query .= $field."=".$this->db->quote($this->$field);
-                            } elseif ( isset($value['len']) ) {
-                                $query .= $field."='".$this->db->quote($this->db->truncate(from_html($this->$field),$value['len']))."'";
-                            } else {
-                                $query .= $field."='".$this->db->quote($this->$field)."'";
-                            }
-                        }
-                    }
-                }
-            }
-
-            if($isUpdate)
-            {
-                $query = $query." WHERE ID = '$this->id'";
-                $GLOBALS['log']->info("Update $this->object_name: ".$query);
-            }
-            else
-            {
-                $GLOBALS['log']->info("Insert: ".$query);
-            }
-            $GLOBALS['log']->info("Save: $query");
-            $this->db->query($query, true);
-        }
-        //process if type is set to mssql
-        if ($this->db->dbType == 'mssql')
-        {
-            if($isUpdate)
-            {
-                // build out the SQL UPDATE statement.
-                $query = "UPDATE " . $this->table_name." SET ";
-                $firstPass = 0;
-                foreach($this->field_defs as $field=>$value)
-                {
-                    if(!isset($value['source']) || $value['source'] == 'db')
-                    {
-                        // Do not write out the id field on the update statement.
-                        // We are not allowed to change ids.
-                        if($isUpdate && ('id' == $field))
-                            continue;
-
-                        // If the field is an auto_increment field, then we shouldn't be setting it.  This was added
-                        // specially for Bugs and Cases which have a number associated with them.
-                        if ($isUpdate && isset($this->field_name_map[$field]['auto_increment']) &&
-                            $this->field_name_map[$field]['auto_increment'] == true)
-                            continue;
-
-                        //custom fields handle their save seperatley
-                        if(isset($this->field_name_map) && !empty($this->field_name_map[$field]['custom_type']))
-                            continue;
-
-                        // Only assign variables that have been set.
-                        if(isset($this->$field))
-                        {
-                            //bug: 37908 - this is to handle the issue where the bool value is false, but strlen(false) <= so it will
-                            //set the default value. TODO change this code to esend all fields through getFieldValue() like DbHelper->insertSql
-                            if(!empty($value['type']) && $value['type'] == 'bool'){
-                                $this->$field = $this->getFieldValue($field);
-                            }
-
-                            if(strlen($this->$field) <= 0)
-                            {
-                                if(!$isUpdate && isset($value['default']) && (strlen($value['default']) > 0))
-                                {
-                                    $this->$field = $value['default'];
-                                }
-                                else
-                                {
-                                    $this->$field = null;
-                                }
-                            }
-                            // Try comparing this element with the head element.
-                            if(0 == $firstPass)
-                                $firstPass = 1;
-                            else
-                                $query .= ", ";
-
-                            if(is_null($this->$field))
-                            {
-                                $query .= $field."=null";
-                            }
-                            elseif ( isset($value['len']) )
-                           {
-                               $query .= $field."='".$this->db->quote($this->db->truncate(from_html($this->$field),$value['len']))."'";
-                           }
-                           else
-                            {
-                                $query .= $field."='".$this->db->quote($this->$field)."'";
-                            }
-                        }
-                    }
-                }
-                $query = $query." WHERE ID = '$this->id'";
-                $GLOBALS['log']->info("Update $this->object_name: ".$query);
-            }
-            else
-            {
-                $colums = array();
-                $values = array();
-                foreach($this->field_defs as $field=>$value)
-                {
-                    if(!isset($value['source']) || $value['source'] == 'db')
-                    {
-                        // Do not write out the id field on the update statement.
-                        // We are not allowed to change ids.
-                        //if($isUpdate && ('id' == $field)) continue;
-                        //custom fields handle there save seperatley
-
-                        if(isset($this->field_name_map) && !empty($this->field_name_map[$field]['custom_module']))
-                        continue;
-
-                        // Only assign variables that have been set.
-                        if(isset($this->$field))
-                        {
-                            //trim the value in case empty space is passed in.
-                            //this will allow default values set in db to take effect, otherwise
-                            //will insert blanks into db
-                            $trimmed_field = trim($this->$field);
-                            //if this value is empty, do not include the field value in statement
-                            if($trimmed_field =='')
-                            {
-                                continue;
-                            }
-                            //bug: 37908 - this is to handle the issue where the bool value is false, but strlen(false) <= so it will
-                            //set the default value. TODO change this code to esend all fields through getFieldValue() like DbHelper->insertSql
-                            if(!empty($value['type']) && $value['type'] == 'bool'){
-                                $this->$field = $this->getFieldValue($field);
-                            }
-                            //added check for ints because sql-server does not like casting varchar with a decimal value
-                            //into an int.
-                            if(isset($value['type']) and $value['type']=='int') {
-                                $values[] = $this->db->quote($this->$field);
-                            } elseif ( isset($value['len']) ) {
-                                $values[] = "'".$this->db->quote($this->db->truncate(from_html($this->$field),$value['len']))."'";
-                            } else {
-                                $values[] = "'".$this->db->quote($this->$field)."'";
-
-                            }
-                            $columns[] = $field;
-                        }
-                    }
-                }
-                // build out the SQL INSERT statement.
-                $query = "INSERT INTO $this->table_name (" .implode("," , $columns). " ) VALUES ( ". implode("," , $values). ')';
-                $GLOBALS['log']->info("Insert: ".$query);
-            }
-
-            $GLOBALS['log']->info("Save: $query");
-            $this->db->query($query, true);
-        }
         if (!empty($dataChanges) && is_array($dataChanges))
         {
             foreach ($dataChanges as $change)
             {
-                $this->dbManager->helper->save_audit_records($this,$change);
+                $this->db->save_audit_records($this,$change);
             }
         }
 
@@ -1619,14 +1397,11 @@ class SugarBean
     function has_been_modified_since($date, $modified_user_id)
     {
         global $current_user;
+        $date = $this->db->convert($this->db->quoted($date), 'datetime');
         if (isset($current_user))
         {
-            if ($this->db->dbType == 'mssql')
-                $date_modified_string = 'CONVERT(varchar(20), date_modified, 120)';
-            else
-                $date_modified_string = 'date_modified';
-
-            $query = "SELECT date_modified FROM $this->table_name WHERE id='$this->id' AND modified_user_id != '$current_user->id' AND (modified_user_id != '$modified_user_id' OR $date_modified_string > " . db_convert("'".$date."'", 'datetime') . ')';
+            $query = "SELECT date_modified FROM $this->table_name WHERE id='$this->id' AND modified_user_id != '$current_user->id'
+            	AND (modified_user_id != '$modified_user_id' OR date_modified > $date)";
             $result = $this->db->query($query);
 
             if($this->db->fetchByAssoc($result))
@@ -1846,7 +1621,7 @@ function save_relationship_changes($is_update, $exclude=array())
                 }
             }
         }
-    
+
 
         // First we handle the preset fields listed in the fixed relationship_fields array hardcoded into the OOB beans
         // TODO: remove this mechanism and replace with mechanism exclusively based on the vardefs
@@ -1988,7 +1763,7 @@ function save_relationship_changes($is_update, $exclude=array())
 				if(empty($this->$field)) continue;
 				if($field == 'date_modified' || $field == 'date_entered')
 				{
-					$this->$field = from_db_convert($this->$field, 'datetime');
+					$this->$field = $this->db->fromConvert($this->$field, 'datetime');
 					if(empty($disable_date_format)) {
 						$this->$field = $timedate->to_display_date_time($this->$field);
 					}
@@ -2004,8 +1779,6 @@ function save_relationship_changes($is_update, $exclude=array())
 
 					if($type == 'date')
 					{
-						$this->$field = from_db_convert($this->$field, 'date');
-
 						if($this->$field == '0000-00-00')
 						{
 							$this->$field = '';
@@ -2015,7 +1788,6 @@ function save_relationship_changes($is_update, $exclude=array())
 
 							if(!empty($this->$rel_field))
 							{
-								$this->$rel_field=from_db_convert($this->$rel_field, 'time');
 								if(empty($disable_date_format)) {
 									$mergetime = $timedate->merge_date_time($this->$field,$this->$rel_field);
 									$this->$field = $timedate->to_display_date($mergetime);
@@ -2037,7 +1809,6 @@ function save_relationship_changes($is_update, $exclude=array())
 						}
 						else
 						{
-							$this->$field = from_db_convert($this->$field, 'datetime');
 							if(empty($disable_date_format)) {
 								$this->$field = $timedate->to_display_date_time($this->$field, true, true);
 							}
@@ -2252,24 +2023,23 @@ function save_relationship_changes($is_update, $exclude=array())
         {
             $query .= ' ' . $custom_join['join'];
         }
-        $query .= " WHERE $this->table_name.id = '$id' ";
+        $query .= " WHERE $this->table_name.id = ".$this->db->quoted($id);
         if ($deleted) $query .= " AND $this->table_name.deleted=0";
         $GLOBALS['log']->debug("Retrieve $this->object_name : ".$query);
-        //requireSingleResult has beeen deprecated.
-        //$result = $this->db->requireSingleResult($query, true, "Retrieving record by id $this->table_name:$id found ");
         $result = $this->db->limitQuery($query,0,1,true, "Retrieving record by id $this->table_name:$id found ");
         if(empty($result))
         {
             return null;
         }
 
-        $row = $this->db->fetchByAssoc($result, -1, $encode);
+        $row = $this->db->fetchByAssoc($result, $encode);
         if(empty($row))
         {
             return null;
         }
 
         //make copy of the fetched row for construction of audit record and for business logic/workflow
+        $row = $this->convertRow($row);
         $this->fetched_row=$row;
         $this->populateFromRow($row);
 
@@ -2340,11 +2110,10 @@ function save_relationship_changes($is_update, $exclude=array())
         {
             if($field == 'user_preferences' && $this->module_dir == 'Users')
                 continue;
-            $rfield = $field; // fetch returns it in lowercase only
-            if(isset($row[$rfield]))
+            if(isset($row[$field]))
             {
-                $this->$field = $row[$rfield];
-                $owner = $rfield . '_owner';
+                $this->$field = $row[$field];
+                $owner = $field . '_owner';
                 if(!empty($row[$owner])){
                     $this->$owner = $row[$owner];
                 }
@@ -2448,20 +2217,20 @@ function save_relationship_changes($is_update, $exclude=array())
     * @param int $row_offset Optaional,default 0, starting row number
     * @param init $limit Optional, default -1
     * @param int $max Optional, default -1
-    * @param boolean $show_deleted Optioanl, default 0, if set to 1 system will show deleted records.
+    * @param boolean $show_deleted Optional, default 0, if set to 1 system will show deleted records.
     * @return array Fetched data.
     *
     * Internal function, do not override.
     *
     */
-    function get_list($order_by = "", $where = "", $row_offset = 0, $limit=-1, $max=-1, $show_deleted = 0, $singleSelect=false)
+    function get_list($order_by = "", $where = "", $row_offset = 0, $limit=-1, $max=-1, $show_deleted = 0, $singleSelect=false, $select_fields = array())
     {
         $GLOBALS['log']->debug("get_list:  order_by = '$order_by' and where = '$where' and limit = '$limit'");
         if(isset($_SESSION['show_deleted']))
         {
             $show_deleted = 1;
         }
-        $order_by=$this->process_order_by($order_by, null);
+        $order_by=$this->process_order_by($order_by);
 
         if($this->bean_implements('ACL') && ACLController::requireOwner($this->module_dir, 'list') )
         {
@@ -2479,29 +2248,27 @@ function save_relationship_changes($is_update, $exclude=array())
                 }
             }
         }
-        $query = $this->create_new_list_query($order_by, $where,array(),array(), $show_deleted,'',false,null,$singleSelect);
+        $query = $this->create_new_list_query($order_by, $where,$select_fields,array(), $show_deleted,'',false,null,$singleSelect);
         return $this->process_list_query($query, $row_offset, $limit, $max, $where);
     }
 
     /**
     * Prefixes column names with this bean's table name.
-    * This call can be ignored for  mysql since it does a better job than Oracle in resolving ambiguity.
     *
     * @param string $order_by  Order by clause to be processed
-    * @param string $submodule name of the module this order by clause is for
+    * @param SugarBean $submodule name of the module this order by clause is for
     * @return string Processed order by clause
     *
     * Internal function, do not override.
     */
-    function process_order_by ($order_by, $submodule)
+    function process_order_by ($order_by, $submodule = null)
     {
         if (empty($order_by))
             return $order_by;
-        $bean_queried = "";
         //submodule is empty,this is for list object in focus
         if (empty($submodule))
         {
-            $bean_queried = &$this;
+            $bean_queried = $this;
         }
         else
         {
@@ -2529,37 +2296,19 @@ function save_relationship_changes($is_update, $exclude=array())
                         {
                             $list_column[0] = $bean_queried->table_name ."_cstm.".$list_column[0] ;
                         }
-                        $value = implode($list_column,' ');
                         // Bug 38803 - Use CONVERT() function when doing an order by on ntext, text, and image fields
-                        if ( $this->db->dbType == 'mssql'
-                            && $source != 'non-db'
-                            && in_array(
-                                $this->db->getHelper()->getColumnType($this->db->getHelper()->getFieldType($bean_queried->field_defs[$list_column_name])),
-                                array('ntext','text','image')
-                                )
-                            ) {
-                        $value = "CONVERT(varchar(500),{$list_column[0]}) {$list_column[1]}";
+                        if ($source != 'non-db' && $this->db->isTextType($this->db->getFieldType($bean_queried->field_defs[$list_column_name]))) {
+                            $list_column[0] = $this->db->convert($list_column[0], "text2char");
                         }
-                        // Bug 29011 - Use TO_CHAR() function when doing an order by on a clob field
-                        if ( $this->db->dbType == 'oci8'
-                            && $source != 'non-db'
-                            && in_array(
-                                $this->db->getHelper()->getColumnType($this->db->getHelper()->getFieldType($bean_queried->field_defs[$list_column_name])),
-                                array('clob')
-                                )
-                            ) {
-                        $value = "TO_CHAR({$list_column[0]}) {$list_column[1]}";
-                        }
-                    }
-                    else
-                    {
+                        $value = implode(' ',$list_column);
+                    } else {
                         $GLOBALS['log']->debug("process_order_by: ($list_column[0]) does not have a vardef entry.");
                     }
                 }
             }
             $elements[$key]=$value;
         }
-        return implode($elements,',');
+        return implode(',', $elements);
 
     }
 
@@ -2740,8 +2489,8 @@ function save_relationship_changes($is_update, $exclude=array())
                         unset($list_fields[$list_key]);
                     }
                 }
-                
-                
+
+
                 if(!$subpanel_def->isCollection() && isset($list_fields[$order_by]) && isset($submodule->field_defs[$order_by])&& (!isset($submodule->field_defs[$order_by]['source']) || $submodule->field_defs[$order_by]['source'] == 'db'))
                 {
                     $order_by = $submodule->table_name .'.'. $order_by;
@@ -2754,7 +2503,7 @@ function save_relationship_changes($is_update, $exclude=array())
                 $params['joined_tables'] = $query_array['join_tables'];
                 $params['include_custom_fields'] = !$subpanel_def->isCollection();
                 $params['collection_list'] = $subpanel_def->get_inst_prop_value('collection_list');
-                
+
                 $subquery = $submodule->create_new_list_query('',$subwhere ,$list_fields,$params, 0,'', true,$parentbean);
 
                 $subquery['select'] = $subquery['select']." , '$panel_name' panel_name ";
@@ -2850,7 +2599,7 @@ function save_relationship_changes($is_update, $exclude=array())
             $all_fields = array();
             foreach($subqueries as $i => $subquery)
             {
-                $query_fields = $GLOBALS['db']->helper->getSelectFieldsFromQuery($subquery['select']);
+                $query_fields = $GLOBALS['db']->getSelectFieldsFromQuery($subquery['select']);
                 foreach($query_fields as $field => $select)
                 {
                     if (!in_array($field, $all_fields))
@@ -3068,7 +2817,7 @@ function save_relationship_changes($is_update, $exclude=array())
         //LOOP AROUND FOR FIXIN VARDEF ISSUES
         require('include/VarDefHandler/listvardefoverride.php');
         $joined_tables = array();
-        if(isset($params['joined_tables']))
+        if(!empty($params['joined_tables']))
         {
             foreach($params['joined_tables'] as $table)
             {
@@ -3164,8 +2913,8 @@ function save_relationship_changes($is_update, $exclude=array())
 
             if($data['type'] != 'relate' && isset($data['db_concat_fields']))
             {
-                $ret_array['select'] .= ", " . db_concat($this->table_name, $data['db_concat_fields']) . " as $field";
-                $selectedFields[db_concat($this->table_name, $data['db_concat_fields'])] = true;
+                $ret_array['select'] .= ", " . $this->db->concat($this->table_name, $data['db_concat_fields']) . " as $field";
+                $selectedFields[$this->db->concat($this->table_name, $data['db_concat_fields'])] = true;
             }
             //Custom relate field or relate fields built in module builder which have no link field associated.
             if ($data['type'] == 'relate' && (isset($data['custom_module']) || isset($data['ext2']))) {
@@ -3201,7 +2950,7 @@ function save_relationship_changes($is_update, $exclude=array())
                         $name_field_def = $rel_mod->field_defs['name'];
                         if(isset($name_field_def['db_concat_fields']))
                         {
-                            $nameField = db_concat($joinTableAlias, $name_field_def['db_concat_fields']);
+                            $nameField = $this->db->concat($joinTableAlias, $name_field_def['db_concat_fields']);
                         }
                     }
                     $ret_array['select'] .= ", $nameField {$data['name']} ";
@@ -3277,26 +3026,20 @@ function save_relationship_changes($is_update, $exclude=array())
                                 if(isset($rel_mod->field_defs['assigned_user_id']))
                                 {
                                     $ret_array['secondary_select'].= " , ".	$params['join_table_alias'] . ".assigned_user_id {$field}_owner, '$rel_module' {$field}_mod";
-
                                 }
                                 else
                                 {
                                     if(isset($rel_mod->field_defs['created_by']))
                                     {
                                         $ret_array['secondary_select'].= " , ".	$params['join_table_alias'] . ".created_by {$field}_owner , '$rel_module' {$field}_mod";
-
                                     }
                                 }
-
-
                             }
                         }
 
-
-
                         if(isset($data['db_concat_fields']))
                         {
-                            $ret_array['secondary_select'] .= ' , ' . db_concat($params['join_table_alias'], $data['db_concat_fields']) . ' ' . $field;
+                            $ret_array['secondary_select'] .= ' , ' . $this->db->concat($params['join_table_alias'], $data['db_concat_fields']) . ' ' . $field;
                         }
                         else
                         {
@@ -3308,15 +3051,17 @@ function save_relationship_changes($is_update, $exclude=array())
                         if(!$singleSelect)
                         {
                             $ret_array['select'] .= ", '                                                                                                                                                                                                                                                              ' $field ";
-                            $ret_array['select'] .= ", '                                    '  " . $join['rel_key'] . ' ';
                         }
                         $count_used =0;
-                        if($this->db->dbType != 'mysql') {//bug 26801, these codes are just used to duplicate rel_key in the select sql, or it will throw error in MSSQL and Oracle.
-                            foreach($used_join_key as $used_key) {
-                               if($used_key == $join['rel_key']) $count_used++;
-                            }
+                        foreach($used_join_key as $used_key) {
+                            if($used_key == $join['rel_key']) $count_used++;
                         }
                         if($count_used <= 1) {//27416, the $ret_array['secondary_select'] should always generate, regardless the dbtype
+                            // add rel_key only if it was not aready added
+                            if(!$singleSelect)
+                            {
+                                $ret_array['select'] .= ", '                                    '  " . $join['rel_key'] . ' ';
+                            }
                             $ret_array['secondary_select'] .= ', ' . $params['join_table_link_alias'].'.'. $join['rel_key'] .' ' . $join['rel_key'];
                         }
                         if(isset($data['relationship_fields']))
@@ -3341,7 +3086,7 @@ function save_relationship_changes($is_update, $exclude=array())
                     {
                         if(isset($data['db_concat_fields']))
                         {
-                            $ret_array['select'] .= ' , ' . db_concat($params['join_table_alias'], $data['db_concat_fields']) . ' ' . $field;
+                            $ret_array['select'] .= ' , ' . $this->db->concat($params['join_table_alias'], $data['db_concat_fields']) . ' ' . $field;
                         }
                         else
                         {
@@ -3391,7 +3136,7 @@ function save_relationship_changes($is_update, $exclude=array())
                     	   	  //Create three search conditions - first + last, first, last
                     	   	  $first_name_search = str_replace($data['name'], $params['join_table_alias'] . '.first_name', $search_expression);
                     	   	  $last_name_search = str_replace($data['name'], $params['join_table_alias'] . '.last_name', $search_expression);
-							  $full_name_search = str_replace($data['name'], db_concat($params['join_table_alias'], $data['db_concat_fields']), $search_expression);
+							  $full_name_search = str_replace($data['name'], $this->db->concat($params['join_table_alias'], $data['db_concat_fields']), $search_expression);
 							  $buildWhere = true;
 							  $where = str_replace($search_expression, '(' . $full_name_search . ' OR ' . $first_name_search . ' OR ' . $last_name_search . ')', $where);
                     	   }
@@ -3399,7 +3144,7 @@ function save_relationship_changes($is_update, $exclude=array())
 
                     	if(!$buildWhere)
                     	{
-	                       $db_field = db_concat($params['join_table_alias'], $data['db_concat_fields']);
+	                       $db_field = $this->db->concat($params['join_table_alias'], $data['db_concat_fields']);
 	                       $where = preg_replace('/'.$data['name'].'/', $db_field, $where);
                     	}
                     }else{
@@ -3431,14 +3176,14 @@ function save_relationship_changes($is_update, $exclude=array())
             }
 
         }
-		
+
 	if ($ifListForExport) {
 		if(isset($this->field_defs['email1'])) {
 			$ret_array['select'].= " ,email_addresses.email_address email1";
 			$ret_array['from'].= " LEFT JOIN email_addr_bean_rel on {$this->table_name}.id = email_addr_bean_rel.bean_id and email_addr_bean_rel.bean_module='{$this->module_dir}' and email_addr_bean_rel.deleted=0 and email_addr_bean_rel.primary_address=1 LEFT JOIN email_addresses on email_addresses.id = email_addr_bean_rel.email_address_id ";
 		}
 	}
-		
+
         $where_auto = '1=1';
         if($show_deleted == 0)
         {
@@ -3454,7 +3199,7 @@ function save_relationship_changes($is_update, $exclude=array())
         if(!empty($order_by))
         {
             //make call to process the order by clause
-            $ret_array['order_by'] = " ORDER BY ". $this->process_order_by($order_by, null);
+            $ret_array['order_by'] = " ORDER BY ". $this->process_order_by($order_by);
         }
         if($singleSelect)
         {
@@ -3511,7 +3256,7 @@ function save_relationship_changes($is_update, $exclude=array())
                         $field_def = $templates[$child_info['parent_type']]->field_defs['name'];
                         if(isset($field_def['db_concat_fields']))
                         {
-                            $queries[$child_info['parent_type']] .= ' , ' . db_concat($templates[$child_info['parent_type']]->table_name, $field_def['db_concat_fields']) . ' parent_name';
+                            $queries[$child_info['parent_type']] .= ' , ' . $this->db->concat($templates[$child_info['parent_type']]->table_name, $field_def['db_concat_fields']) . ' parent_name';
                         }
                         else
                         {
@@ -3573,7 +3318,7 @@ function save_relationship_changes($is_update, $exclude=array())
     function process_list_query($query, $row_offset, $limit= -1, $max_per_page = -1, $where = '')
     {
         global $sugar_config;
-        $db = &DBManagerFactory::getInstance('listviews');
+        $db = DBManagerFactory::getInstance('listviews');
         /**
         * if the row_offset is set to 'end' go to the end of the list
         */
@@ -3628,37 +3373,17 @@ function save_relationship_changes($is_update, $exclude=array())
 
         $list = Array();
 
-        if(empty($rows_found))
-        {
-            $rows_found =  $db->getRowCount($result);
-        }
-
-        $GLOBALS['log']->debug("Found $rows_found ".$this->object_name."s");
-
         $previous_offset = $row_offset - $max_per_page;
         $next_offset = $row_offset + $max_per_page;
 
         $class = get_class($this);
-        if($rows_found != 0 or $db->dbType != 'mysql')
-        {
-            //todo Bug? we should remove the magic number -99
+            //FIXME: Bug? we should remove the magic number -99
             //use -99 to return all
             $index = $row_offset;
             while ($max_per_page == -99 || ($index < $row_offset + $max_per_page))
             {
-
-                if(!empty($sugar_config['disable_count_query']))
-                {
-                    $row = $db->fetchByAssoc($result);
-                }
-                else
-                {
-                    $row = $db->fetchByAssoc($result, $index);
-                }
-                if (empty($row))
-                {
-                    break;
-                }
+                $row = $db->fetchByAssoc($result);
+                if (empty($row)) break;
 
                 //instantiate a new class each time. This is because php5 passes
                 //by reference by default so if we continually update $this, we will
@@ -3696,7 +3421,6 @@ function save_relationship_changes($is_update, $exclude=array())
 
                 $index++;
             }
-        }
         if(!empty($sugar_config['disable_count_query']) && !empty($limit))
         {
 
@@ -3708,7 +3432,10 @@ function save_relationship_changes($is_update, $exclude=array())
                 $next_offset--;
                 $previous_offset++;
             }
+        } else if(!isset($rows_found)){
+            $rows_found = $row_offset + count($list);
         }
+
         $response = Array();
         $response['list'] = $list;
         $response['row_count'] = $rows_found;
@@ -3737,12 +3464,9 @@ function save_relationship_changes($is_update, $exclude=array())
 
         $result = $this->db->query($count_query, true, "Error running count query for $this->object_name List: ");
         $row_num = 0;
-        $row = $this->db->fetchByAssoc($result, $row_num);
-        while($row)
+        while($row = $this->db->fetchByAssoc($result, true))
         {
             $num_rows_in_query += current($row);
-            $row_num++;
-            $row = $this->db->fetchByAssoc($result, $row_num);
         }
 
         return $num_rows_in_query;
@@ -3768,7 +3492,7 @@ function save_relationship_changes($is_update, $exclude=array())
     $row_offset, $limit= -1, $max_per_page = -1, $where = '', $subpanel_def, $query_row_count='', $secondary_queries = array())
 
     {
-        $db = &DBManagerFactory::getInstance('listviews');
+        $db = DBManagerFactory::getInstance('listviews');
         /**
         * if the row_offset is set to 'end' go to the end of the list
         */
@@ -3777,7 +3501,7 @@ function save_relationship_changes($is_update, $exclude=array())
         $use_count_query=false;
         $processing_collection=$subpanel_def->isCollection();
 
-        $GLOBALS['log']->debug("process_list_query: ".$query);
+        $GLOBALS['log']->debug("process_union_list_query: ".$query);
         if($max_per_page == -1)
         {
             $max_per_page 	= $sugar_config['list_max_entries_per_subpanel'];
@@ -3837,33 +3561,18 @@ function save_relationship_changes($is_update, $exclude=array())
             {
                 $result = $db->query($query,true,"Error retrieving $this->object_name list: ");
             }
-            if(empty($rows_found))
-            {
-                $rows_found =  $db->getRowCount($result);
-            }
-
-            $GLOBALS['log']->debug("Found $rows_found ".$parent_bean->object_name."s");
-            if($rows_found != 0 or $db->dbType != 'mysql')
-            {
                 //use -99 to return all
 
                 // get the current row
                 $index = $row_offset;
-                if(!empty($sugar_config['disable_count_query']))
-                {
-                    $row = $db->fetchByAssoc($result);
-                }
-                else
-                {
-                    $row = $db->fetchByAssoc($result, $index);
-                }
+                $row = $db->fetchByAssoc($result);
 
                 $post_retrieve = array();
                 $isFirstTime = true;
                 while($row)
                 {
                     $function_fields = array();
-                    if(($index < $row_offset + $max_per_page || $max_per_page == -99) or ($db->dbType != 'mysql'))
+                    if(($index < $row_offset + $max_per_page || $max_per_page == -99))
                     {
                         if ($processing_collection)
                         {
@@ -3892,13 +3601,13 @@ function save_relationship_changes($is_update, $exclude=array())
 
                             if (isset($row[$field]))
                             {
-                                $current_bean->$field = $row[$field];
+                                $current_bean->$field = $this->convertField($row[$field], $value);
                                 unset($row[$field]);
                             }
                             else if (isset($row[$this->table_name .'.'.$field]))
                             {
-                                $current_bean->$field = $row[$current_bean->table_name .'.'.$field];
-                                unset($row[$current_bean->table_name .'.'.$field]);
+                                $current_bean->$field = $this->convertField($row[$this->table_name .'.'.$field], $value);
+                                unset($row[$this->table_name .'.'.$field]);
                             }
                             else
                             {
@@ -3936,6 +3645,8 @@ function save_relationship_changes($is_update, $exclude=array())
                                     if(empty($this->$param))
                                     {
                                         $can_execute = false;
+                                    } else if($param == '$this') {
+                                        $execute_params[] = $this;
                                     }
                                     else
                                     {
@@ -3946,6 +3657,8 @@ function save_relationship_changes($is_update, $exclude=array())
                                     if(empty($current_bean->$param))
                                     {
                                         $can_execute = false;
+                                    } else if($param == '$this') {
+                                        $execute_params[] = $current_bean;
                                     }
                                     else
                                     {
@@ -3980,9 +3693,8 @@ function save_relationship_changes($is_update, $exclude=array())
                     }
                     // go to the next row
                     $index++;
-                    $row = $db->fetchByAssoc($result, $index);
+                    $row = $db->fetchByAssoc($result);
                 }
-            }
             //now handle retrieving many-to-many relationships
             if(!empty($list))
             {
@@ -4021,7 +3733,6 @@ function save_relationship_changes($is_update, $exclude=array())
             }
             if(!empty($sugar_config['disable_count_query']) && !empty($limit))
             {
-
             	//C.L. Bug 43535 - Use the $index value to set the $rows_found value here
                 $rows_found = isset($index) ? $index : $row_offset + count($list);
 
@@ -4070,7 +3781,7 @@ function save_relationship_changes($is_update, $exclude=array())
     function process_detail_query($query, $row_offset, $limit= -1, $max_per_page = -1, $where = '', $offset = 0)
     {
         global $sugar_config;
-        $GLOBALS['log']->debug("process_list_query: ".$query);
+        $GLOBALS['log']->debug("process_detail_query: ".$query);
         if($max_per_page == -1)
         {
             $max_per_page 	= $sugar_config['list_max_entries_per_page'];
@@ -4097,19 +3808,11 @@ function save_relationship_changes($is_update, $exclude=array())
 
         $result = $this->db->limitQuery($query, $offset, 1, true,"Error retrieving $this->object_name list: ");
 
-        $rows_found = $this->db->getRowCount($result);
-
-        $GLOBALS['log']->debug("Found $rows_found ".$this->object_name."s");
-
         $previous_offset = $row_offset - $max_per_page;
         $next_offset = $row_offset + $max_per_page;
 
-        if($rows_found != 0 or $this->db->dbType != 'mysql')
-        {
-            $index = 0;
-            $row = $this->db->fetchByAssoc($result, $index);
-            $this->retrieve($row['id']);
-        }
+        $row = $this->db->fetchByAssoc($result);
+        $this->retrieve($row['id']);
 
         $response = Array();
         $response['bean'] = $this;
@@ -4141,13 +3844,10 @@ function save_relationship_changes($is_update, $exclude=array())
         $isFirstTime = true;
         $bean = new $class();
 
-        //if($this->db->getRowCount($result) > 0){
-
-
         // We have some data.
-        //while ($row = $this->db->fetchByAssoc($result)) {
         while (($row = $bean->db->fetchByAssoc($result)) != null)
         {
+            $row = $this->convertRow($row);
             if(!$isFirstTime)
             {
                 $bean = new $class();
@@ -4279,14 +3979,15 @@ function save_relationship_changes($is_update, $exclude=array())
      * Fill in a link field
      */
 
-    function fill_in_link_field( $linkFieldName )
+    // fguerra@dri and jmorais@dri - fill in link fields not working
+    function fill_in_link_field( $linkFieldName, $fieldName )
     {
         if ($this->load_relationship($linkFieldName))
         {
             $list=$this->$linkFieldName->get();
-            $this->$linkFieldName = '' ; // match up with null value in $this->populateFromRow()
+            $this->$fieldName = '' ; // match up with null value in $this->populateFromRow()
             if (!empty($list))
-                $this->$linkFieldName = $list[0];
+                $this->$fieldName = $list[0];
         }
     }
 
@@ -4311,9 +4012,11 @@ function save_relationship_changes($is_update, $exclude=array())
                     // set the value of this relate field in this bean ($this->$field['name']) to the value of the 'name' field in the related module for the record identified by the value of $this->$field['id_name']
                     $related_module = $field['module'];
                     $id_name = $field['id_name'];
-                    if (empty($this->$id_name)){
-                       $this->fill_in_link_field($id_name);
+                    // fguerra@dri and jmorais@dri - fill in link fields not working
+                    if (empty($this->$id_name) && array_key_exists('link', $field)){
+                        $this->fill_in_link_field($field['link'], $id_name);
                     }
+                    // ~ fguerra@dri and jmorais@dri
                     if(!empty($this->$id_name) && ( $this->object_name != $related_module || ( $this->object_name == $related_module && $this->$id_name != $this->id ))){
                         if(isset($GLOBALS['beanList'][ $related_module])){
                             $class = $GLOBALS['beanList'][$related_module];
@@ -4355,7 +4058,7 @@ function save_relationship_changes($is_update, $exclude=array())
     */
     function create_index($query)
     {
-        $GLOBALS['log']->info($query);
+        $GLOBALS['log']->info("create_index: $query");
 
         $result = $this->db->query($query, true, "Error creating index:");
     }
@@ -4391,7 +4094,7 @@ function save_relationship_changes($is_update, $exclude=array())
                 $query = "UPDATE $this->table_name set deleted=1 , date_modified = '$date_modified' where id='$id'";
             }
             $this->db->query($query, true,"Error marking record deleted: ");
-            
+
             SugarRelationship::resaveRelatedBeans();
 
             // Take the item off the recently viewed lists
@@ -4448,7 +4151,7 @@ function save_relationship_changes($is_update, $exclude=array())
     function build_related_list($query, &$template, $row_offset = 0, $limit = -1)
     {
         $GLOBALS['log']->debug("Finding linked records $this->object_name: ".$query);
-        $db = &DBManagerFactory::getInstance('listviews');
+        $db = DBManagerFactory::getInstance('listviews');
 
         if(!empty($row_offset) && $row_offset != 0 && !empty($limit) && $limit != -1)
         {
@@ -4491,7 +4194,7 @@ function save_relationship_changes($is_update, $exclude=array())
     */
   function build_related_list_where($query, &$template, $where='', $in='', $order_by, $limit='', $row_offset = 0)
   {
-    $db = &DBManagerFactory::getInstance('listviews');
+    $db = DBManagerFactory::getInstance('listviews');
     // No need to do an additional query
     $GLOBALS['log']->debug("Finding linked records $this->object_name: ".$query);
     if(empty($in) && !empty($query))
@@ -4712,27 +4415,26 @@ function save_relationship_changes($is_update, $exclude=array())
 
     /**
      * Construct where clause from a list of name-value pairs.
-     *
+     * @param array $fields_array Name/value pairs for column checks
+     * @return string The WHERE clause
      */
-    function get_where(&$fields_array)
+    function get_where($fields_array)
     {
-        $where_clause = "WHERE ";
-        $first = 1;
+        $where_clause = "";
         foreach ($fields_array as $name=>$value)
         {
-            if ($first)
-            {
-                $first = 0;
-            }
-            else
-            {
+            if (!empty($where_clause)) {
                 $where_clause .= " AND ";
             }
+            $name = $this->db->getValidDBName($name);
 
-            $where_clause .= "$name = '".$this->db->quote($value,false)."'";
+            $where_clause .= "$name = ".$this->db->quoted($value,false);
         }
-        $where_clause .= " AND deleted=0";
-        return $where_clause;
+        if(!empty($where_clause)) {
+            return "WHERE $where_clause AND deleted=0";
+        } else {
+            return "WHERE deteled=0";
+        }
     }
 
 
@@ -4769,15 +4471,15 @@ function save_relationship_changes($is_update, $exclude=array())
         {
             return null;
         }
-        if($this->db->getRowCount($result) > 1)
-        {
-            $this->duplicates_found = true;
-        }
-        $row = $this->db->fetchByAssoc($result, -1, $encode);
+        $row = $this->db->fetchByAssoc($result, $encode);
         if(empty($row))
         {
             return null;
         }
+        // Removed getRowCount-if-clause earlier and insert duplicates_found here as it seems that we have found something
+        // if we didn't return null in the previous clause.
+        $this->duplicates_found = true;
+        $row = $this->convertRow($row);
         $this->fetched_row = $row;
         $this->fromArray($row);
         $this->fill_in_additional_detail_fields();
@@ -4821,7 +4523,7 @@ function save_relationship_changes($is_update, $exclude=array())
         $query  = 'SELECT id';
         foreach($fields as $field=>$alias){
             if(!empty($GLOBALS['dictionary'][$object]['fields'][$field]['db_concat_fields'])){
-                $query .= ' ,' .db_concat($table, $GLOBALS['dictionary'][$object]['fields'][$field]['db_concat_fields']) .  ' as ' . $alias ;
+                $query .= ' ,' .$this->db->concat($table, $GLOBALS['dictionary'][$object]['fields'][$field]['db_concat_fields']) .  ' as ' . $alias ;
             }else if(!empty($GLOBALS['dictionary'][$object]['fields'][$field]) &&
                 (empty($GLOBALS['dictionary'][$object]['fields'][$field]['source']) ||
                 $GLOBALS['dictionary'][$object]['fields'][$field]['source'] != "non-db"))
@@ -5261,6 +4963,44 @@ function save_relationship_changes($is_update, $exclude=array())
     }
 
     /**
+     * Convert row data from DB format to internal format
+     * Mostly useful for dates/times
+     * @param array $row
+     * @return array $row
+     */
+    public function convertRow($row)
+    {
+        foreach($this->field_defs as $name => $fieldDef)
+		{
+		    // skip empty fields and non-db fields
+            if (isset($name) && !empty($row[$name])) {
+                $row[$name] = $this->convertField($row[$name], $fieldDef);
+            }
+        }
+		return $row;
+    }
+
+    /**
+     * Converts the field value based on the provided fieldDef
+     * @param $fieldvalue
+     * @param $fieldDef
+     * @return string
+     */
+    public function convertField($fieldvalue, $fieldDef)
+    {
+        if (!empty($fieldvalue)) {
+            if (!(isset($fieldDef['source']) &&
+                !in_array($fieldDef['source'], array('db', 'custom_fields', 'relate'))
+                && !isset($fieldDef['dbType']))
+            ) {
+                // fromConvert other fields
+                $fieldvalue = $this->db->fromConvert($fieldvalue, $this->db->getFieldType($fieldDef));
+            }
+        }
+        return $fieldvalue;
+    }
+
+    /**
      * Loads a row of data into instance of a bean. The data is passed as an array to this function
      *
      * @param array $arr row of data fetched from the database.
@@ -5280,7 +5020,8 @@ function save_relationship_changes($is_update, $exclude=array())
         $this->call_custom_logic("process_record");
     }
 
-    function hasCustomFields(){
+    function hasCustomFields()
+    {
         return !empty($GLOBALS['dictionary'][$this->object_name]['custom_fields']);
     }
 

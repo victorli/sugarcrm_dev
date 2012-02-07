@@ -39,6 +39,10 @@ require_once('include/Dashlets/Dashlet.php');
 require_once('include/ListView/ListViewSmarty.php');
 require_once('include/generic/LayoutManager.php');
 
+/**
+ * Generic Dashlet class
+ * @api
+ */
 class DashletGeneric extends Dashlet {
    /**
      * Fields that are searchable
@@ -197,6 +201,7 @@ class DashletGeneric extends Dashlet {
                     $this->filters[$name] = $params['default'];
             }
         }
+        $currentSearchFields = array();
         foreach($this->searchFields as $name=>$params) {
             if(!empty($name)) {
                 $name = strtolower($name);
@@ -481,11 +486,14 @@ class DashletGeneric extends Dashlet {
             $options['title'] = $req['dashletTitle'];
         }
 
-        if(!empty($req['myItemsOnly'])) {
-            $options['myItemsOnly'] = $req['myItemsOnly'];
-        }
-        else {
-           $options['myItemsOnly'] = false;
+        // Don't save the options for myItemsOnly if we're not even showing the options.
+        if($this->showMyItemsOnly){
+            if(!empty($req['myItemsOnly'])) {
+                 $options['myItemsOnly'] = $req['myItemsOnly'];
+            }
+            else {
+                $options['myItemsOnly'] = false;
+            }
         }
         $options['displayRows'] = empty($req['displayRows']) ? '5' : $req['displayRows'];
         // displayColumns

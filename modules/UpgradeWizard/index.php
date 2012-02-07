@@ -47,18 +47,13 @@ if(!is_admin($current_user)) {
 }
 
 require_once('include/utils/db_utils.php');
-
 require_once('include/utils/zip_utils.php');
-
 require_once('modules/UpgradeWizard/uw_utils.php');
-
 require_once('modules/Administration/UpgradeHistory.php');
 
 $GLOBALS['top_message'] = '';
 
-
 if(!isset($locale) || empty($locale)) {
-	
 	$locale = new Localization();
 }
 global $sugar_config;
@@ -66,9 +61,8 @@ global $sugar_flavor;
 
 ///////////////////////////////////////////////////////////////////////////////
 ////	SYSTEM PREP
-$base_upgrade_dir       = getcwd().'/'.$sugar_config['upload_dir'] . "upgrades";
-$base_tmp_upgrade_dir   = "$base_upgrade_dir/temp";
-$subdirs = array('full', 'langpack', 'module', 'patch', 'theme', 'temp');
+list($base_upgrade_dir, $base_tmp_upgrade_dir) = getUWDirs();
+$subdirs = array('full', 'langpack', 'module', 'patch', 'theme');
 
 global $sugar_flavor;
 
@@ -137,28 +131,17 @@ if(isset($_REQUEST['delete_package']) && $_REQUEST['delete_package'] == 'true') 
         }
 
         // delete file in upgrades/patch
-        $delete_me = urldecode( $_REQUEST['install_file'] );
+        $delete_me = 'upload://upgrades/patch/'.basename(urldecode( $_REQUEST['install_file'] ));
         if(is_file($delete_me) && !@unlink($delete_me)) {
         	logThis('ERROR: could not delete: '.$delete_me);
             $error .= $mod_strings['ERR_UW_FILE_NOT_DELETED'].$delete_me.'<br>';
-        } 
-        
+        }
+
         // delete back up instance
-        $delete_dir = clean_path(remove_file_extension(urldecode($_REQUEST['install_file'])) . "-restore");
+        $delete_dir = 'upload://upgrades/patch/'.remove_file_extension(urldecode($_REQUEST['install_file'])) . "-restore";
         if(is_dir($delete_dir) && !@rmdir_recursive($delete_dir)) {
         	logThis('ERROR: could not delete: '.$delete_dir);
         	$error .= $mod_strings['ERR_UW_FILE_NOT_DELETED'].$delete_dir.'<br>';
-        }
-
-        // delete file in cache/upload
-        $fileS = explode('/', $delete_me);
-        $c = count($fileS);
-        $fileName = (isset($fileS[$c-1]) && !empty($fileS[$c-1])) ? $fileS[$c-1] : $fileS[$c-2];
-        $deleteUpload = getcwd().'/'.$sugar_config['upload_dir'].$fileName;
-        logThis('Trying to delete '.$deleteUpload);
-        if(is_file($deleteUpload) && !@unlink($deleteUpload)) {
-        	logThis('ERROR: could not delete: ['.$deleteUpload.']');
-        	$error .= $mod_strings['ERR_UW_FILE_NOT_DELETED'].$sugar_config['upload_dir'].$fileName;
         }
 
         if(!empty($error)) {
@@ -169,7 +152,7 @@ if(isset($_REQUEST['delete_package']) && $_REQUEST['delete_package'] == 'true') 
 			else{
 			    $GLOBALS['top_message'] = $out;
 			}
-        }	    
+        }
 }
 
 //redirect to the new upgradewizard
@@ -223,20 +206,6 @@ else{
 		);
 	}
 	else{
-        /* BEGIN TEMP FIX:
-        This can be removed post 6.1.  As this is a new string that is introduced in 6.1, we can't
-        effectively load it into a pre 6.1 instance.  Running
-
-                global $current_language;
-                $lang = $current_language;
-                if(empty($lang))
-                    $lang = $GLOBALS['sugar_config']['default_language'];
-                require_once('include/SugarObjects/LanguageManager.php');
-                LanguageManager::clearLanguageCache('UpgradeWizard',$lang);
-                LanguageManager::loadModuleLanguage('UpgradeWizard',$lang,true);
-
-        causes strange theme issues with the Upgrade Wizard.
-        */
         if (empty($mod_strings['LBL_UW_TITLE_LAYOUTS']))
             $mod_strings['LBL_UW_TITLE_LAYOUTS'] = 'Layouts';
         /* END TEMP FIX */
@@ -305,7 +274,10 @@ if($upgradeStepFile == 'end'){
     //if(isset($_SESSION['current_db_version']) && substr($_SESSION['current_db_version'],0,1) == 4){
 	    ob_start();
 		 include('modules/ACL/install_actions.php');
+		 $old_mod_strings = $mod_strings;
+		 $mod_strings = return_module_language($current_language, 'Administration');
 		 include('modules/Administration/RebuildRelationship.php');
+		 $mod_strings = $old_mod_strings;
 		 //also add the cache cleaning here.
 		if(function_exists('deleteCache')){
 			deleteCache();
@@ -330,6 +302,11 @@ $afterCurrentStep = $_REQUEST['step'] + 1;
 
 ///////////////////////////////////////////////////////////////////////////////
 ////	UPGRADE HISTORY
+// Reload language strings after copy
+if(empty($GLOBALS['current_language'])) {
+    $GLOBALS['current_language'] = 'en_us';
+}
+LanguageManager::loadModuleLanguage('UpgradeWizard', $GLOBALS['current_language'], true);
 // display installed pieces and versions
 $installeds = $uh->getAll();
 $upgrades_installed = 0;
@@ -376,14 +353,14 @@ foreach($installeds as $installed) {
 					<input type="hidden" name="delete_package" value="true">
 	        		<input type=hidden name="install_file" value="'.$filename.'" />
 	        		<input type=submit value="'.$mod_strings['LBL_BUTTON_DELETE'].'" />':'';
-				
+
 		$view = 'default';
 
 		$target_manifest = remove_file_extension( $filename ) . "-manifest.php";
 
 		// cn: bug 9174 - cleared out upgrade dirs, or corrupt entries in upgrade_history give us bad file paths
 		if(is_file($target_manifest)) {
-			require_once( "$target_manifest" );
+			require_once(getUploadRelativeName($target_manifest) );
 			$name = empty($manifest['name']) ? $filename : $manifest['name'];
 			$description = empty($manifest['description']) ? $mod_strings['LBL_UW_NONE'] : $manifest['description'];
 
@@ -391,7 +368,7 @@ foreach($installeds as $installed) {
 				$manifest_copy_files_to_dir = isset($manifest['copy_files']['to_dir']) ? clean_path($manifest['copy_files']['to_dir']) : "";
 				$manifest_copy_files_from_dir = isset($manifest['copy_files']['from_dir']) ? clean_path($manifest['copy_files']['from_dir']) : "";
 				$manifest_icon = clean_path($manifest['icon']);
-				$icon = "<img src=\"" . $manifest_copy_files_to_dir . ($manifest_copy_files_from_dir != "" ? substr($manifest_icon, strlen($manifest_copy_files_from_dir)+1) : $manifest_icon ) . "\">";
+				$icon = "<!--not_in_theme!--><img src=\"" . $manifest_copy_files_to_dir . ($manifest_copy_files_from_dir != "" ? substr($manifest_icon, strlen($manifest_copy_files_from_dir)+1) : $manifest_icon ) . "\">";
 			} else {
 				$icon = getImageForType( $manifest['type'] );
 			}
@@ -473,15 +450,15 @@ function handlePreflight(step) {
 				}
 			}
 		}
-		
+
 		var merge_necessary = true;
 		if(step == 'layouts')
 		   merge_necessary = getSelectedModulesForLayoutMerge();
-		
+
 		if(!merge_necessary){
 			document.getElementById('step').value = '{$afterCurrentStep}';
 		}
-		
+
 		return;
 	}
 
@@ -489,7 +466,7 @@ function handleUploadCheck(step, u_allow) {
 	if(step == 'upload' && !u_allow) {
 		document.getElementById('top_message').innerHTML = '<span class="error"><b>{$mod_strings['LBL_UW_FROZEN']}</b></span>';
 	}
-	  
+
 	return;
 }
 
@@ -500,24 +477,24 @@ function getSelectedModulesForLayoutMerge()
     var results = new Array();
     var table = document.getElementById('layoutSelection');
     var moduleCheckboxes = table.getElementsByTagName('input');
-    for (var i = 0; i < moduleCheckboxes.length; i++) 
-    {   
+    for (var i = 0; i < moduleCheckboxes.length; i++)
+    {
         var singleCheckbox = moduleCheckboxes[i];
-        if( typeof(singleCheckbox.type) != 'undefined' && singleCheckbox.type == 'checkbox' 
+        if( typeof(singleCheckbox.type) != 'undefined' && singleCheckbox.type == 'checkbox'
             && singleCheckbox.name.substring(0,2) == 'lm' && singleCheckbox.checked )
         {
             found_one = true;
             results.push(singleCheckbox.name.substring(3)); //remove the 'lm_' key
         }
-    }  
+    }
 
     var selectedModules = results.join('^,^');
-    
+
     var selectedModulesElement = document.createElement('input');
     selectedModulesElement.setAttribute('type', 'hidden');
     selectedModulesElement.setAttribute('name', 'layoutSelectedModules');
     selectedModulesElement.setAttribute('value', selectedModules);
-    
+
     var upgradeForms = document.getElementsByName('UpgradeWizardForm');
     upgradeForms[0].appendChild(selectedModulesElement);
     return found_one;
@@ -560,7 +537,7 @@ if(!empty($GLOBALS['top_message'])){
 if ($sugar_config['sugar_version'] < '5.5') {
 	$smarty->assign('includeContainerCSS', true);
 } else {
-	$smarty->assign('includeContainerCSS', false);	
+	$smarty->assign('includeContainerCSS', false);
 } // else
 $smarty->display('modules/UpgradeWizard/uw_main.tpl');
 ////	END PAGE OUTPUT

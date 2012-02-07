@@ -35,14 +35,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description:  Defines the English language pack for the base application.
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
- * All Rights Reserved.
- * Contributor(s): ______________________________________..
- ********************************************************************************/
-
+/**
+ * Log management
+ * @api
+ */
 class LoggerManager
 {
 	//this the the current log level
@@ -77,7 +73,7 @@ class LoggerManager
 		$level = SugarConfig::getInstance()->get('logger.level', $this->_level);
 		if (!empty($level))
 			$this->setLevel($level);
-		
+
 		if ( empty(self::$_loggers) )
 		    $this->_findAvailableLoggers();
 	}
@@ -89,7 +85,7 @@ class LoggerManager
 	 * @param string $message - also handles array as parameter, though that is deprecated.
 	 */
  	public function __call(
- 	    $method, 
+ 	    $method,
  	    $message
  	    )
  	{
@@ -98,10 +94,10 @@ class LoggerManager
  		//if the method is a direct match to our level let's let it through this allows for custom levels
  		if($method == $this->_level
                 //otherwise if we have a level mapping for the method and that level is less than or equal to the current level let's let it log
-                || (!empty(self::$_levelMapping[$method]) 
+                || (!empty(self::$_levelMapping[$method])
                     && self::$_levelMapping[$this->_level] >= self::$_levelMapping[$method]) ) {
  			//now we get the logger type this allows for having a file logger an email logger, a firebug logger or any other logger you wish you can set different levels to log differently
- 			$logger = (!empty(self::$_logMapping[$method])) ? 
+ 			$logger = (!empty(self::$_logMapping[$method])) ?
  			    self::$_logMapping[$method] : self::$_logMapping['default'];
  			//if we haven't instantiated that logger let's instantiate
  			if (!isset(self::$_loggers[$logger])) {
@@ -120,14 +116,14 @@ class LoggerManager
      * @param boolean $condition
      */
     public function assert(
-        $message, 
+        $message,
         $condition
         )
     {
         if ( !$condition )
             $this->__call('debug', $message);
 	}
-    
+
 	/**
 	 * Sets the logger to the level indicated
 	 *
@@ -140,7 +136,7 @@ class LoggerManager
         if ( isset(self::$_levelMapping[$name]) )
             $this->_level = $name;
  	}
- 	
+
  	/**
  	 * Returns a logger instance
  	 */
@@ -151,9 +147,9 @@ class LoggerManager
 		}
 		return LoggerManager::$_instance;
 	}
-	
+
 	/**
-	 * Sets the logger to use a particular backend logger for the given level. Set level to 'default' 
+	 * Sets the logger to use a particular backend logger for the given level. Set level to 'default'
 	 * to make it the default logger for the application
 	 *
 	 * @param string $level name of logger level to set it to
@@ -166,7 +162,7 @@ class LoggerManager
  	{
  	    self::$_logMapping[$level] = $logger;
  	}
- 	
+
  	/**
  	 * Finds all the available loggers in the application
  	 */
@@ -176,7 +172,7 @@ class LoggerManager
  	    foreach ( $locations as $location ) {
             if (sugar_is_dir($location) && $dir = opendir($location)) {
                 while (($file = readdir($dir)) !== false) {
-                    if ($file == ".." 
+                    if ($file == ".."
                             || $file == "."
                             || $file == "LoggerTemplate.php"
                             || $file == "LoggerManager.php"
@@ -191,18 +187,18 @@ class LoggerManager
             }
         }
  	}
- 	
+
  	public static function getAvailableLoggers()
  	{
  	    return array_keys(self::$_loggers);
  	}
- 	
+
  	public static function getLoggerLevels()
  	{
  	    $loggerLevels = self::$_levelMapping;
  	    foreach ( $loggerLevels as $key => $value )
  	        $loggerLevels[$key] = ucfirst($key);
- 	    
+
  	    return $loggerLevels;
  	}
 }

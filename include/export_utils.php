@@ -236,7 +236,7 @@ function export($type, $records = null, $members = false, $sample=false) {
          $content .= returnFakeDataRow($focus,$fields_array,$sampleRecordNum);
     }else{
         //process retrieved record
-    	while($val = $db->fetchByAssoc($result, -1, false)) {
+    	while($val = $db->fetchByAssoc($result, false)) {
 
             //order the values in the record array
             $val = get_field_order_mapping($focus->module_dir,$val);
@@ -273,13 +273,13 @@ function export($type, $records = null, $members = false, $sample=false) {
                     //if our value is a datetime field, then apply the users locale
                     case 'datetime':
                     case 'datetimecombo':
-                        $value = $timedate->to_display_date_time($value);
+                        $value = $timedate->to_display_date_time($db->fromConvert($value, 'datetime'));
                         $value = preg_replace('/([pm|PM|am|AM]+)/', ' \1', $value);
                         break;
 
                     //kbrill Bug #16296
                     case 'date':
-                        $value = $timedate->to_display_date($value, false);
+                        $value = $timedate->to_display_date($db->fromConvert($value, 'date'), false);
                         break;
 
                     // Bug 32463 - Properly have multienum field translated into something useful for the client
@@ -312,7 +312,7 @@ function export($type, $records = null, $members = false, $sample=false) {
 
     }
 	return $content;
-    
+
 }
 
 function generateSearchWhere($module, $query) {//this function is similar with function prepareSearchForm() in view.list.php
@@ -700,10 +700,6 @@ function generateSearchWhere($module, $query) {//this function is similar with f
 //to have the db names as key values, or as labels
 function get_field_order_mapping($name='',$reorderArr = '', $exclude = true){
 
-    $exemptModuleList = array('ProspectLists');
-    if(in_array($name, $exemptModuleList))
-        return $reorderArr;
-    
     //define the ordering of fields, note that the key value is what is important, and should be the db field name
     $field_order_array = array();
     $field_order_array['accounts'] = array( 'name'=>'Name', 'id'=>'ID', 'website'=>'Website', 'email_address' =>'Email Address', 'phone_office' =>'Office Phone', 'phone_alternate' => 'Alternate Phone', 'phone_fax' => 'Fax', 'billing_address_street' => 'Billing Street', 'billing_address_city' => 'Billing City', 'billing_address_state' => 'Billing State', 'billing_address_postalcode' => 'Billing Postal Code', 'billing_address_country' => 'Billing Country', 'shipping_address_street' => 'Shipping Street', 'shipping_address_city' => 'Shipping City', 'shipping_address_state' => 'Shipping State', 'shipping_address_postalcode' => 'Shipping Postal Code', 'shipping_address_country' => 'Shipping Country', 'description' => 'Description', 'account_type' => 'Type', 'industry' =>'Industry', 'annual_revenue' => 'Annual Revenue', 'employees' => 'Employees', 'sic_code' => 'SIC Code', 'ticker_symbol' => 'Ticker Symbol', 'parent_id' => 'Parent Account ID', 'ownership' =>'Ownership', 'campaign_id' =>'Campaign ID', 'rating' =>'Rating', 'assigned_user_name' =>'Assigned to',  'assigned_user_id' =>'Assigned User ID', 'team_id' =>'Team Id', 'team_name' =>'Teams', 'team_set_id' =>'Team Set ID', 'date_entered' =>'Date Created', 'date_modified' =>'Date Modified', 'modified_user_id' =>'Modified By', 'created_by' =>'Created By', 'deleted' =>'Deleted');
@@ -741,6 +737,11 @@ function get_field_order_mapping($name='',$reorderArr = '', $exclude = true){
         //if module is not defined, lets default the order to another module of the same type
         //this would apply mostly to custom modules
         if(!isset($field_order_array[strtolower($name)]) && isset($_REQUEST['module'])){
+
+            $exemptModuleList = array('ProspectLists');
+            if(in_array($name, $exemptModuleList))
+                return $newReorder;
+
             //get an instance of the bean
             global $beanList;
 	        global $beanFiles;
@@ -777,7 +778,7 @@ function get_field_order_mapping($name='',$reorderArr = '', $exclude = true){
         $lname = strtolower($name);
         if(!empty($field_order_array[$lname])) {
 	        foreach($field_order_array[$lname] as $fk=> $fv){
-	
+
 	            //if the value exists as a key in the passed in array, add to temp array and remove from reorder array.
 	            //Do not force into the temp array as we don't want to violate acl's
 	            if(array_key_exists($fk,$newReorder)){

@@ -78,6 +78,7 @@ class UserPreference extends SugarBean
         parent::SugarBean();
 
         $this->_userFocus = $user;
+        $this->tracker_visibility = false;
     }
 
     /**
@@ -368,7 +369,7 @@ class UserPreference extends SugarBean
         else {
         	if(!empty($_COOKIE['sugar_user_theme']) && !headers_sent()){
                 setcookie('sugar_user_theme', '', time() - 3600); // expire the sugar_user_theme cookie
-            }        	
+            }
             unset($_SESSION[$user->user_name."_PREFERENCES"]);
             if($user->id == $GLOBALS['current_user']->id) {
                 session_destroy();
@@ -380,9 +381,6 @@ class UserPreference extends SugarBean
             $this->setPreference('ut', $ut);
             $this->setPreference('timezone', $timezone);
             $this->savePreferencesToDB();
-            if($user->id == $GLOBALS['current_user']->id) {
-                SugarApplication::redirect('index.php');
-            }
         }
     }
 
@@ -478,4 +476,5 @@ class UserPreference extends SugarBean
         unset($newprefs);
         unset($newstr);
     }
+
 }

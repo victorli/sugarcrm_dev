@@ -116,7 +116,7 @@ class ImporterTest extends Sugar_PHPUnit_Framework_TestCase
         $result = $GLOBALS['db']->query($query);
         $row = $GLOBALS['db']->fetchByAssoc($result);
 
-        $this->assertEquals($expected_datetime, $row['date_entered'], 'Got incorrect date_entered.');
+        $this->assertEquals($expected_datetime, $GLOBALS['db']->fromConvert($row['date_entered'], 'datetime'), 'Got incorrect date_entered.');
 
     }
 }

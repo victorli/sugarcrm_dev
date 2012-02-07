@@ -69,6 +69,7 @@ $mod_strings = array (
 	'LBL_EDIT_TRACKER_KEY'=>'Tracker Key:',
 	'LBL_EDIT_OPT_OUT'=>'Opt-out Link?',
 	'LNK_CAMPAIGN_LIST'=>'Campaigns',
+	'LBL_EDIT_LAYOUT' => 'Edit Layout' /*for 508 compliance fix*/,
 );
 
 ?>

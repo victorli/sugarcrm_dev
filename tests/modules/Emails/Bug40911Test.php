@@ -77,7 +77,7 @@ class Bug40911 extends Sugar_PHPUnit_Framework_TestCase
         ob_start();
         require "modules/Emails/EmailUIAjax.php";
         $jsonOutput = ob_get_contents();
-        ob_clean();
+        ob_end_clean();
         $meta = json_decode($jsonOutput);
 
         $this->assertRegExp("/.*cc@domain.eu.*/", $meta->meta->email->cc);

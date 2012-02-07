@@ -130,6 +130,7 @@ $beanList['SavedSearch']            = 'SavedSearch';
 $beanList['UserPreferences']        = 'UserPreference';
 $beanList['MergeRecords'] = 'MergeRecord';
 $beanList['EmailAddresses'] = 'EmailAddress';
+$beanList['EmailText'] = 'EmailText';
 $beanList['Relationships'] = 'Relationship';
 $beanList['Employees']      = 'Employee';
 
@@ -203,6 +204,7 @@ $beanFiles['SavedSearch']  = 'modules/SavedSearch/SavedSearch.php';
 $beanFiles['UserPreference']  = 'modules/UserPreferences/UserPreference.php';
 $beanFiles['MergeRecord']  = 'modules/MergeRecords/MergeRecord.php';
 $beanFiles['EmailAddress'] = 'modules/EmailAddresses/EmailAddress.php';
+$beanFiles['EmailText'] = 'modules/EmailText/EmailText.php';
 
 
 
@@ -220,7 +222,7 @@ $modInvisList = array('Administration', 'Currencies', 'CustomFields', 'Connector
     'UpgradeWizard', 'Trackers', 'Connectors', 'Employees', 'Calendar',
     'Releases','Sync',
     'Users',  'Versions', 'LabelEditor','Roles','EmailMarketing'
-    ,'OptimisticLock', 'TeamMemberships', 'TeamSets', 'TeamSetModule', 'Audit', 'MailMerge', 'MergeRecords', 'EmailAddresses',
+    ,'OptimisticLock', 'TeamMemberships', 'TeamSets', 'TeamSetModule', 'Audit', 'MailMerge', 'MergeRecords', 'EmailAddresses','EmailText',
     'Schedulers','Schedulers_jobs', /*'Queues',*/ 'EmailTemplates',
     'CampaignTrackers', 'CampaignLog', 'EmailMan', 'Prospects', 'ProspectLists',
     'Groups','InboundEmail',

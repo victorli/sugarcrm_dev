@@ -57,13 +57,15 @@ function toggleDisplay(id){
 		if(this.document.getElementById(id+"link") != undefined){
 			this.document.getElementById(id+"link").style.display='none';
 		}
-        document.getElementById(id+"_options").src = 'index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=basic_search.gif';		
+        document.getElementById(id+"_options").src = 'index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=basic_search.gif';
+        document.getElementById(id+"_options").alt = LBL_HIDEOPTIONS;/*for 508 compliance fix - label defined in login.tpl*/
 	}else{
 		this.document.getElementById(id).style.display='none'
 		if(this.document.getElementById(id+"link") != undefined){
 			this.document.getElementById(id+"link").style.display='inline';
 		}
 	document.getElementById(id+"_options").src = 'index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=advanced_search.gif';	
+    document.getElementById(id+"_options").alt = LBL_SHOWOPTIONS;/*for 508 compliance fix - label defined in login.tpl*/
 	}
 }
 

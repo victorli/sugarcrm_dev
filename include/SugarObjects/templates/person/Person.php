@@ -40,7 +40,7 @@ require_once('include/SugarObjects/templates/basic/Basic.php');
 
 
 class Person extends Basic
-{	
+{
     var $picture;
     //Variable to control whether or not to invoke the getLocalFormatttedName method with title and salutation
     var $createLocaleFormattedName = true;
@@ -49,7 +49,7 @@ class Person extends Basic
 		parent::Basic();
 		$this->emailAddress = new SugarEmailAddress();
 	}
-	
+
 	// need to override to have a name field created for this class
 	function retrieve($id = -1, $encode=true) {
 		$ret_val = parent::retrieve($id, $encode);
@@ -57,11 +57,11 @@ class Person extends Basic
 		$this->emailAddress->handleLegacyRetrieve($this);
 		return $ret_val;
 	}
-	
+
 	/**
 	 * Generate the name field from the first_name and last_name fields.
 	 */
-	function _create_proper_name_field() 
+	function _create_proper_name_field()
 	{
 		global $locale, $app_list_strings;
 
@@ -104,11 +104,18 @@ class Person extends Basic
 		$this->full_name = $full_name; //used by campaigns
 	}
 	
+
 	function save($check_notify=false) {
-		$this->add_address_streets('primary_address_street');
-		$this->add_address_streets('alt_address_street');
+		//If we are saving due to relationship changes, don't bother trying to update the emails
+        if(!empty($GLOBALS['resavingRelatedBeans']))
+        {
+            parent::save($check_notify);
+            return $this->id;
+        }
+        $this->add_address_streets('primary_address_street');
+        $this->add_address_streets('alt_address_street');
         $ori_in_workflow = empty($this->in_workflow) ? false : true;
-		$this->emailAddress->handleLegacySave($this, $this->module_dir);
+        $this->emailAddress->handleLegacySave($this, $this->module_dir);
         parent::save($check_notify);
         $override_email = array();
         if(!empty($this->email1_set_in_workflow)) {
@@ -125,14 +132,14 @@ class Person extends Basic
         }
 		return $this->id;
 	}
-	
+
 	function get_summary_text() {
 		$this->_create_proper_name_field();
         return $this->name;
 	}
-	
+
 	function get_list_view_data() {
-		
+
 		global $system_config;
 		global $current_user;
 		$this->_create_proper_name_field();
@@ -143,7 +150,7 @@ class Person extends Basic
 		$temp_array['EMAIL1_LINK'] = $current_user->getEmailLink('email1', $this, '', '', 'ListView');
 		return $temp_array;
 	}
-    
+
     /**
      * @see SugarBean::populateRelatedBean()
  	 */
@@ -152,7 +159,7 @@ class Person extends Basic
         )
     {
         parent::populateRelatedBean($newbean);
-        
+
         if ( $newbean instanceOf Company ) {
             $newbean->phone_fax = $this->phone_fax;
             $newbean->phone_office = $this->phone_work;

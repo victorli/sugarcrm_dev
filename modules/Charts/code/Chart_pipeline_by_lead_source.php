@@ -142,11 +142,11 @@ $id_md5 = substr(md5($current_user->id),0,9);
 $seps				= array("-", "/");
 $dates				= array(date($GLOBALS['timedate']->dbDayFormat), $GLOBALS['timedate']->dbDayFormat);
 $dateFileNameSafe	= str_replace($seps, "_", $dates);
-$cache_file_name	= $current_user->getUserPrivGuid()."_pipeline_by_lead_source_".$dateFileNameSafe[0]."_".$dateFileNameSafe[1].".xml";
+$cache_file_name	= sugar_cached("xml/").$current_user->getUserPrivGuid()."_pipeline_by_lead_source_".$dateFileNameSafe[0]."_".$dateFileNameSafe[1].".xml";
 
 $GLOBALS['log']->debug("cache file name is: $cache_file_name");
 global $currentModule,$action;
-$tools='<div align="right"><a href="index.php?module='.$currentModule.'&action='. $action .'&pbls_refresh=true" class="tabFormAdvLink">'.SugarThemeRegistry::current()->getImage('refresh','alt="Refresh"  border="0" align="absmiddle"').'&nbsp;'.$current_module_strings['LBL_REFRESH'].'</a>&nbsp;&nbsp;<a href="javascript: toggleDisplay(\'pbls_edit\');" class="tabFormAdvLink">'.SugarThemeRegistry::current()->getImage('edit','alt="Edit"  border="0"  align="absmiddle"').'&nbsp;'. $current_module_strings['LBL_EDIT'].'</a>&nbsp;&nbsp;'.$extra_tools.'</div>';
+$tools='<div align="right"><a href="index.php?module='.$currentModule.'&action='. $action .'&pbls_refresh=true" class="tabFormAdvLink">'.SugarThemeRegistry::current()->getImage('refresh','border="0" align="absmiddle"',null,null,'.gif',$mod_strings['LBL_REFRESH']).'&nbsp;'.$current_module_strings['LBL_REFRESH'].'</a>&nbsp;&nbsp;<a href="javascript: toggleDisplay(\'pbls_edit\');" class="tabFormAdvLink">'.SugarThemeRegistry::current()->getImage('edit','border="0"  align="absmiddle"',null,null,'.gif',$mod_strings['LBL_EDIT']).'&nbsp;'. $current_module_strings['LBL_EDIT'].'</a>&nbsp;&nbsp;'.$extra_tools.'</div>';
 ?>
 
 <?php
@@ -178,12 +178,12 @@ global $app_strings;
 </p>
 <?php
 // draw table
-echo "<p align='center'>".$this->gen_xml($datax, $ids, $sugar_config['tmp_dir'].$cache_file_name, $refresh,$current_module_strings)."</p>";
+echo "<p align='center'>".$this->gen_xml($datax, $ids, $cache_file_name, $refresh,$current_module_strings)."</p>";
 echo "<P align='center'><span class='chartFootnote'>".$current_module_strings['LBL_LEAD_SOURCE_FORM_DESC']."</span></P>";
 
-	if (file_exists($sugar_config['tmp_dir'].$cache_file_name)) {
+	if (file_exists($cache_file_name)) {
 global $timedate;
-		$file_date = $timedate->asUser($timedate->fromTimestamp(filemtime($sugar_config['tmp_dir'].$cache_file_name)));
+		$file_date = $timedate->asUser($timedate->fromTimestamp(filemtime($cache_file_name)));
 	}
 	else {
 		$file_date = '';
@@ -267,10 +267,9 @@ global $timedate;
 			$subtitle = $current_module_strings['LBL_OPP_SIZE'].' '.$symbol.'1'.$current_module_strings['LBL_OPP_THOUSANDS'];
 			$fileContents = '';
 			$fileContents .= '     <pie defaultAltText="'.$current_module_strings['LBL_ROLLOVER_WEDGE_DETAILS'].'" legendStatus="on">'."\n";
-			$result = $opp->db->query($query)
-			or sugar_die("Error selecting sugarbean: ".mysql_error());
+			$result = $opp->db->query($query, true);
 			$leadSourceArr =  array();
-			while($row = $opp->db->fetchByAssoc($result, -1, false))
+			while($row = $opp->db->fetchByAssoc($result, false))
 			{
 				if($row['lead_source'] == ''){
 					$leadSource = $current_module_strings['NTC_NO_LEGENDS'];

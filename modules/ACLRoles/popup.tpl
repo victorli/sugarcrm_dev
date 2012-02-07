@@ -39,7 +39,7 @@
  ********************************************************************************/
 -->
 
-<script type="text/javascript" src="include/javascript/popup_helper.js"></script>
+<script type="text/javascript" src="{sugar_getjspath file="include/javascript/popup_helper.js"}"></script>
 <script type="text/javascript">
 <!--
 /* initialize the popup request from the parent */
@@ -49,7 +49,7 @@
 -->
 </script>
 <table cellpadding="0" cellspacing="0" width="100%" border="0" class="list view">
-	
+
 	<tr height="20">
 	<td scope="col" width="1%" >{$CHECKALL}&nbsp;</td>
 		<td scope="col" width="20%"  nowrap><slot>{$MOD.LBL_NAME}</slot></td>

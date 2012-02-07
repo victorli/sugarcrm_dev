@@ -67,7 +67,7 @@ $listView->show_mass_update_form = false; // don't want the mass update
 $listView->initNewXTemplate('modules/Schedulers/ListView.html', $current_module_strings);
 $listView->setHeaderTitle($current_module_strings['LBL_LIST_TITLE']);
 $listView->setQuery($where, $limit, $orderBy, $varName, $allowByOverride);
-$listView->xTemplateAssign("REMOVE_INLINE_PNG", SugarThemeRegistry::current()->getImage('delete_inline','align="absmiddle" alt="'.$app_strings['LNK_REMOVE'].'" border="0"'));
+$listView->xTemplateAssign("REMOVE_INLINE_PNG", SugarThemeRegistry::current()->getImage('delete_inline','align="absmiddle" border="0"',null,null,'.gif',$app_strings['LNK_REMOVE']));
 $listView->processListView($focus, "main", "SCHEDULER");
 
 $focus->displayCronInstructions(); 

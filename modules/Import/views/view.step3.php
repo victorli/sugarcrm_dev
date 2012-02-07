@@ -56,14 +56,14 @@ class ImportViewStep3 extends ImportView
     protected $currentFormID = 'importstep3';
     protected $previousAction = 'Confirm';
     protected $nextAction = 'dupcheck';
-    
+
  	/**
      * @see SugarView::display()
      */
  	public function display()
     {
         global $mod_strings, $app_strings, $current_user, $sugar_config, $app_list_strings, $locale;
-        
+
         $this->ss->assign("IMPORT_MODULE", $_REQUEST['import_module']);
         $has_header = ( isset( $_REQUEST['has_header']) ? 1 : 0 );
         $sugar_config['import_max_records_per_file'] = ( empty($sugar_config['import_max_records_per_file']) ? 1000 : $sugar_config['import_max_records_per_file'] );
@@ -123,7 +123,7 @@ class ImportViewStep3 extends ImportView
         $this->ss->assign("CUSTOM_ENCLOSURE", ( !empty($_REQUEST['custom_enclosure']) ? $_REQUEST['custom_enclosure'] : "" ));
 
        //populate import locale  values from import mapping if available, these values will be used througout the rest of the code path
-        
+
         $uploadFileName = $_REQUEST['file_name'];
 
         // Now parse the file and look for errors
@@ -468,7 +468,7 @@ class ImportViewStep3 extends ImportView
             <style>
                 textarea { width: 20em }
 				.detail tr td[scope="row"] {
-					text-align:left	
+					text-align:left
 				}
                 span.collapse{
                     background: transparent url('index.php?entryPoint=getImage&themeName=Sugar&themeName=Sugar&imageName=sugar-yui-sprites.png') no-repeat 0 -90px;
@@ -487,10 +487,10 @@ class ImportViewStep3 extends ImportView
                     background-color: transparent;
                     padding: 0px;
                 }
-                
+
                 #importNotes ul{
                 	margin: 0px;
-                	margin-top: 10px;	
+                	margin-top: 10px;
                 	padding-left: 20px;
                 }
 
@@ -515,11 +515,17 @@ EOCSS;
         $sqsWaitImage = SugarThemeRegistry::current()->getImageURL('sqsWait.gif');
 
         return <<<EOJAVASCRIPT
-document.getElementById('goback').onclick = function(){
-    document.getElementById('{$this->currentFormID}').action.value = '{$this->previousAction}';
-    return true;
-}
-
+    document.getElementById('goback').onclick = function()
+    {
+        document.getElementById('{$this->currentFormID}').action.value = '{$this->previousAction}';
+        //bug #48960: CSS didn't load when use click back in the step2 (external sources are selected for contacts)
+        //need to unset 'to_pdf' in extstep1.tpl 
+        if (document.getElementById('{$this->currentFormID}').to_pdf)
+        {
+            document.getElementById('{$this->currentFormID}').to_pdf.value = '';
+        }
+        return true;
+    }
 
 ImportView = {
 
@@ -629,7 +635,7 @@ document.getElementById('addrow').onclick = function(){
     var imgButton = document.createElement("img");
     imgButton.src = "index.php?entryPoint=getImage&themeName=Sugar&imageName=id-ff-remove.png";
     removeButton.appendChild(imgButton);
-    
+
 
     if ( document.getElementById('row_0_header') ) {
         column1 = document.getElementById('row_0_header').cloneNode(true);
@@ -642,13 +648,13 @@ document.getElementById('addrow').onclick = function(){
     newrow.appendChild(column0);
 
 
-                            
+
     column3 = document.createElement('td');
     column3.className = 'tabDetailViewDL';
     if ( !document.getElementById('row_0_header') ) {
         column3.colSpan = 2;
     }
-    
+
     newrow.appendChild(column3);
 
     column2 = document.getElementById('defaultvaluepicker_0').cloneNode(true);

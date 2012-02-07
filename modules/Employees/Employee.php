@@ -84,7 +84,7 @@ class Employee extends Person {
 	var $messenger_type;
 	var $employee_status;
 	var $error_string;
-	
+
 	var $module_dir = "Employees";
 
 
@@ -98,20 +98,20 @@ class Employee extends Person {
 	// This is used to retrieve related fields from form posts.
 	var $additional_column_fields = Array('reports_to_name');
 
-    
+
 
 	var $new_schema = true;
 
 	function Employee() {
 		parent::Person();
-		//$this->setupCustomFields('Employees');
+		$this->setupCustomFields('Users');
 		$this->emailAddress = new SugarEmailAddress();
 	}
-	
-    
+
+
 	function get_summary_text() {
         $this->_create_proper_name_field();
-        return $this->name;	
+        return $this->name;
     }
 
 
@@ -160,7 +160,7 @@ class Employee extends Person {
 	}
 
 	function get_list_view_data(){
-		
+
         global $current_user;
 		$this->_create_proper_name_field(); // create proper NAME (by combining first + last)
 		$user_fields = $this->get_list_view_array();
@@ -184,13 +184,13 @@ class Employee extends Person {
 
 	function create_export_query($order_by, $where) {
 		include('modules/Employees/field_arrays.php');
-		
+
 		$cols = '';
 		foreach($fields_array['Employee']['export_fields'] as $field) {
 			$cols .= (empty($cols)) ? '' : ', ';
 			$cols .= $field;
 		}
-		
+
 		$query = "SELECT {$cols} FROM users ";
 
 		$where_auto = " users.deleted = 0";
@@ -207,7 +207,7 @@ class Employee extends Person {
 
 		return $query;
 	}
-	
+
 	//use parent class
 	/**
 	 * Generate the name field from the first_name and last_name fields.
@@ -217,14 +217,46 @@ class Employee extends Person {
         global $locale;
         $full_name = $locale->getLocaleFormattedName($this->first_name, $this->last_name);
         $this->name = $full_name;
-        $this->full_name = $full_name; 
+        $this->full_name = $full_name;
 	}
 	*/
-	
-	function preprocess_fields_on_save(){		
-		parent::preprocess_fields_on_save();	
-				
+
+	function preprocess_fields_on_save(){
+		parent::preprocess_fields_on_save();
+
 	}
+
+
+    /**
+     * create_new_list_query
+     *
+     * Return the list query used by the list views and export button. Next generation of create_new_list_query function.
+     *
+     * We overrode this function in the Employees module to add the additional filter check so that we do not retrieve portal users for the Employees list view queries
+     *
+     * @param string $order_by custom order by clause
+     * @param string $where custom where clause
+     * @param array $filter Optioanal
+     * @param array $params Optional     *
+     * @param int $show_deleted Optional, default 0, show deleted records is set to 1.
+     * @param string $join_type
+     * @param boolean $return_array Optional, default false, response as array
+     * @param object $parentbean creating a subquery for this bean.
+     * @param boolean $singleSelect Optional, default false.
+     * @return String select query string, optionally an array value will be returned if $return_array= true.
+     */
+    function create_new_list_query($order_by, $where, $filter=array(), $params=array(), $show_deleted=0, $join_type='', $return_array=false, $parentbean=null, $singleSelect=false)
+    {
+        //create the filter for portal only users, as they should not be showing up in query results
+        if(empty($where)){
+            $where = ' users.portal_only = 0 ';
+        }else{
+            $where .= ' and users.portal_only = 0 ';
+        }
+
+        //return parent method, specifying for array to be returned
+        return parent::create_new_list_query($order_by, $where, $filter,$params, $show_deleted, $join_type, $return_array, $parentbean, $singleSelect);
+    }
 }
 
 ?>

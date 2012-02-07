@@ -50,11 +50,11 @@ else {
     $GLOBALS['current_language'] = $_SESSION['authenticated_user_language'];
     $app_strings = return_application_language($GLOBALS['current_language']);
     $mod_strings = return_module_language($GLOBALS['current_language'], 'ACL');
+	$file_type = strtolower($_REQUEST['type']);
     if(!isset($_REQUEST['isTempFile'])) {
 	    //Custom modules may have capilizations anywhere in thier names. We should check the passed in format first.
 		require('include/modules.php');
 		$module = $db->quote($_REQUEST['type']);
-		$file_type = strtolower($_REQUEST['type']);
 		if(empty($beanList[$module])) {
 			//start guessing at a module name
 			$module = ucfirst($file_type);
@@ -68,7 +68,7 @@ else {
 	    }
 
 	    $focus = BeanFactory::newBean($module);
-        if(!empty($focus) && !$focus->ACLAccess('view')){
+        if(!$focus->ACLAccess('view')){
             die($mod_strings['LBL_NO_ACCESS']);
 	    } // if
         $focus->retrieve($_REQUEST['id']);
@@ -102,24 +102,21 @@ else {
 
     } // if
 
-    $local_location = $GLOBALS['sugar_config']['upload_dir']."/".$_REQUEST['id'];
-    if (isset($_REQUEST['isTempFile']))
-    {
-        $local_location = $GLOBALS['sugar_config']['cache_dir'].'/modules/Emails/';
-        if (isset($_REQUEST['ieId'])) {
-            $local_location .= $_REQUEST['ieId'].'/';
-        }
-        $local_location .= 'attachments/'.$_REQUEST['id'];
+    if(isset($_REQUEST['ieId']) && isset($_REQUEST['isTempFile'])) {
+		$local_location = sugar_cached("modules/Emails/{$_REQUEST['ieId']}/attachments/{$_REQUEST['id']}");
+    } elseif(isset($_REQUEST['isTempFile']) && $file_type == "import") {
+    	$local_location = "upload://import/{$_REQUEST['tempName']}";
+    } else {
+		$local_location = "upload://{$_REQUEST['id']}";
     }
 
 	if(isset($_REQUEST['isTempFile']) && ($_REQUEST['type']=="SugarFieldImage")) {
-	    $local_location =  $GLOBALS['sugar_config']['upload_dir']."/".$_REQUEST['id'];
+	    $local_location =  "upload://{$_REQUEST['id']}";
     }
 
 	if(!file_exists( $local_location ) || strpos($local_location, "..")) {
 		die($app_strings['ERR_INVALID_FILE_REFERENCE']);
-	}
-	else {
+	} else {
 		$doQuery = true;
 
 		if($file_type == 'documents') {
@@ -147,19 +144,14 @@ else {
 				die($app_strings['ERROR_NO_RECORD']);
 			}
 			$name = $row['name'];
-			$download_location = $GLOBALS['sugar_config']['upload_dir']."/".$_REQUEST['id'];
+			$download_location = "upload://{$_REQUEST['id']}";
 		} else if(isset(  $_REQUEST['tempName'] ) && isset($_REQUEST['isTempFile']) ){
 			// downloading a temp file (email 2.0)
 			$download_location = $local_location;
-			$name = $_REQUEST['tempName'];
-		}
-		else if(isset($_REQUEST['isTempFile']) && ($_REQUEST['type']=="SugarFieldImage")) {
+			$name = isset($_REQUEST['tempName'])?$_REQUEST['tempName']:'';
+		} else if(isset($_REQUEST['isTempFile']) && ($_REQUEST['type']=="SugarFieldImage")) {
 			$download_location = $local_location;
-            $name = '';
-            if (isset($_REQUEST['tempName']))
-            {
-                $name = $_REQUEST['tempName'];
-            }
+			$name = isset($_REQUEST['tempName'])?$_REQUEST['tempName']:'';
 		}
 
 		if(isset($_SERVER['HTTP_USER_AGENT']) && preg_match("/MSIE/", $_SERVER['HTTP_USER_AGENT']))

@@ -67,7 +67,7 @@ class SugarCacheWincache extends SugarCacheAbstract
         $value
         )
     {
-        wincache_ucache_set($key,$value,$this->expireTimeout);
+        wincache_ucache_set($key,$value,$this->_expireTimeout);
     }
     
     /**

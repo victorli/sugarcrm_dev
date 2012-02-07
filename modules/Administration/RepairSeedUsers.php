@@ -40,7 +40,7 @@ global $current_user;
 if(is_admin($current_user)){
     if(count($_POST)){
     	if(!empty($_POST['activate'])){
-    		
+
     		$status = '';
     		if($_POST['activate'] == 'false'){
     			$status = 'Inactive';
@@ -53,13 +53,13 @@ if(is_admin($current_user)){
     }
     	$query = "SELECT status FROM users WHERE id LIKE 'seed%'";
     	$result = $GLOBALS['db']->query($query);
-		$row = $GLOBALS['db']->fetchByAssoc($result, -1, true);
+		$row = $GLOBALS['db']->fetchByAssoc($result);
 		if(!empty($row['status'])){
 			$activate = 'false';
 			if($row['status'] == 'Inactive'){
 				$activate = 'true';
 			}
-			?>	
+			?>
 				<p>
 				<form name="RepairSeedUsers" method="post" action="index.php">
 				<input type="hidden" name="module" value="Administration">
@@ -76,12 +76,12 @@ if(is_admin($current_user)){
 				</form>
 				</p>
 			<?php
-			
+
 		}else{
 			echo 'No seed Users';
 		}
 }
 else{
-	sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']); 
+	sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);
 }
 ?>

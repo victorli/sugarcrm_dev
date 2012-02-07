@@ -55,7 +55,7 @@
 	
 	SUGAR.EmailAddressWidget.prototype = {
 	    emailTemplate : '<tr id="emailAddressRow">' + 
-		'<td nowrap="NOWRAP"><input type="text" name="emailAddress{$index}" id="emailAddress0" size="30"/></td>' + 
+		'<td nowrap="NOWRAP"><input type="text" title="email address 0" name="emailAddress{$index}" id="emailAddress0" size="30"/></td>' +
 		'<td><span>&nbsp;</span><img id="removeButton0" name="0" src="index.php?entryPoint=getImage&amp;themeName=Sugar&amp;imageName=delete_inline.gif"/></td>' +
 		'<td align="center"><input type="radio" name="emailAddressPrimaryFlag" id="emailAddressPrimaryFlag0" value="emailAddress0" enabled="true" checked="true"/></td>' +
 		'<td align="center"><input type="checkbox" name="emailAddressOptOutFlag[]" id="emailAddressOptOutFlag0" value="emailAddress0" enabled="true"/></td>' + 
@@ -235,12 +235,19 @@
 		    var td7 = document.createElement("td");
 		    var td8 = document.createElement("td");
 
+            //use the value if the tabindex value for email has been passed in from metadata (defined in include/EditView/EditView.tpl
+            //else default to 0 
+            var tabIndexCount = 0;
+            if(typeof(SUGAR.TabFields) !='undefined' && typeof(SUGAR.TabFields['email1']) != 'undefined'){
+                tabIndexCount = SUGAR.TabFields['email1'];
+            }
 		    // set input field attributes
 		    newContent.setAttribute("type", "text");
 		    newContent.setAttribute("name", this.id + "emailAddress" + this.numberEmailAddresses);
 		    newContent.setAttribute("id", this.id + "emailAddress" + this.numberEmailAddresses);
-		    newContent.setAttribute("tabindex", this.tabIndex);
+		    newContent.setAttribute("tabindex", tabIndexCount);
 		    newContent.setAttribute("size", "30");
+            newContent.setAttribute("title", SUGAR.language.get('app_strings', 'LBL_EMAIL_TITLE'));
 		
 		    if(address != '') {
 		        newContent.setAttribute("value", address);
@@ -252,6 +259,7 @@
 		    removeButton.setAttribute("name", this.numberEmailAddresses);
 			removeButton.eaw = this;
 		    removeButton.setAttribute("src", "index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=id-ff-remove.png");
+            removeButton.setAttribute("tabindex", tabIndexCount);
 		    removeButton.onclick = function(){this.eaw.removeEmailAddress(this.name);};
 		    
 		    // set primary flag
@@ -260,6 +268,7 @@
 		    newContentPrimaryFlag.setAttribute("id", this.id + "emailAddressPrimaryFlag" + this.numberEmailAddresses);
 		    newContentPrimaryFlag.setAttribute("value", this.id + "emailAddress" + this.numberEmailAddresses);
 		    newContentPrimaryFlag.setAttribute("enabled", "true");
+            newContentPrimaryFlag.setAttribute("tabindex", tabIndexCount);
 
 		    // set reply-to flag
 		    newContentReplyToFlag.setAttribute("type", "radio");
@@ -267,6 +276,7 @@
 		    newContentReplyToFlag.setAttribute("id", this.id + "emailAddressReplyToFlag" + this.numberEmailAddresses);
 		    newContentReplyToFlag.setAttribute("value", this.id + "emailAddress" + this.numberEmailAddresses);
 		    newContentReplyToFlag.setAttribute("enabled", "true");
+            newContentReplyToFlag.setAttribute("tabindex", tabIndexCount);
 		    newContentReplyToFlag.eaw = this;
 		    newContentReplyToFlag['onclick']= function() {
 		    	var form = document.forms[this.eaw.emailView];
@@ -305,6 +315,7 @@
 		    newContentOptOutFlag.setAttribute("value", this.id + "emailAddress" + this.numberEmailAddresses);
 		    newContentOptOutFlag.setAttribute("enabled", "true");
 			newContentOptOutFlag.eaw = this;
+            newContentOptOutFlag.setAttribute("tabindex", tabIndexCount);
 		    newContentOptOutFlag['onClick'] = function(){this.eaw.toggleCheckbox(this)};
 	
 		    // set invalid flag
@@ -314,6 +325,7 @@
 		    newContentInvalidFlag.setAttribute("value", this.id + "emailAddress" + this.numberEmailAddresses);
 		    newContentInvalidFlag.setAttribute("enabled", "true");
 			newContentInvalidFlag.eaw = this;
+            newContentInvalidFlag.setAttribute("tabindex", tabIndexCount);
 		    newContentInvalidFlag['onClick']= function(){this.eaw.toggleCheckbox(this)};
 		    
 		    // set the verified flag and verified email value
@@ -326,6 +338,7 @@
 		    newContentVerifiedValue.setAttribute("name", this.id + "emailAddressVerifiedValue" + this.numberEmailAddresses);
 		    newContentVerifiedValue.setAttribute("id", this.id + "emailAddressVerifiedValue" + this.numberEmailAddresses);
 		    newContentVerifiedValue.setAttribute("value", address);
+            newContentVerifiedValue.setAttribute("tabindex", tabIndexCount);
 
 		    //Add to validation
 		    this.emailView = (this.emailView == '') ? 'EditView' : this.emailView;
@@ -379,6 +392,7 @@
 		    // CL Fix for 17651 (added OR condition check to see if this is the first email added)
 		    if(primaryFlag == '1' || (this.numberEmailAddresses == 0)) {
 		        newContentPrimaryFlag.setAttribute("checked", 'true');
+                newContent.setAttribute("title", SUGAR.language.get('app_strings', 'LBL_EMAIL_PRIM_TITLE'));
 		    }
 		    
 		    if(replyToFlag == '1') {
@@ -393,10 +407,12 @@
 		    
 		    if(optOutFlag == '1') {
 		        newContentOptOutFlag.setAttribute("checked", 'true');
+                newContent.setAttribute("title", SUGAR.language.get('app_strings', 'LBL_EMAIL_OPT_TITLE'));
 		    }
 		    
 		    if(invalidFlag == '1') {
 		        newContentInvalidFlag.setAttribute("checked", "true");
+                newContent.setAttribute("title", SUGAR.language.get('app_strings', 'LBL_EMAIL_INV_TITLE'));
 		    }
 		    newContent.eaw = this;
 		    newContent.onblur = function(e){this.eaw.retrieveEmailAddress(e)};
@@ -434,10 +450,12 @@
                    Dom.get(this.id + 'emailAddress' + x).setAttribute("id", this.id +"emailAddress" + (x-1));
                    
                    if(Dom.get(this.id + 'emailAddressInvalidFlag' + x)) {
+                       Dom.get(this.id + 'emailAddressInvalidFlag' + x).setAttribute("value", this.id + "emailAddress" + (x-1));
                        Dom.get(this.id + 'emailAddressInvalidFlag' + x).setAttribute("id", this.id + "emailAddressInvalidFlag" + (x-1));
                    }
                    
                    if(Dom.get(this.id + 'emailAddressOptOutFlag' + x)){
+                       Dom.get(this.id + 'emailAddressOptOutFlag' + x).setAttribute("value", this.id + "emailAddress" + (x-1));
                        Dom.get(this.id + 'emailAddressOptOutFlag' + x).setAttribute("id", this.id + "emailAddressOptOutFlag" + (x-1));
                    }
                    

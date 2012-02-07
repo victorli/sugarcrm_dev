@@ -40,7 +40,7 @@ require_once('service/core/REST/SugarRest.php');
 
 /**
  * This class is a serialize implementation of REST protocol
- *
+ * @api
  */
 class SugarRestRSS extends SugarRest
 {
@@ -60,13 +60,13 @@ class SugarRestRSS extends SugarRest
 		$this->generateItems($input);
 		$this->generateResponseFooter();
 	} // fn
-	
+
 	protected function generateResponseHeader($count)
 	{
 	    global $app_strings, $sugar_version, $sugar_flavor;
-	    
+
 		$date = TimeDate::httpTime();
-		
+
 		echo <<<EORSS
 <?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
@@ -79,11 +79,11 @@ class SugarRestRSS extends SugarRest
 
 EORSS;
 	}
-	
+
 	protected function generateItems($input)
 	{
         global $app_strings;
-	    
+
 	    if(!empty($input['entry_list'])){
             foreach($input['entry_list'] as $item){
                 $this->generateItem($item);
@@ -106,7 +106,7 @@ EORSS;
             if($displayFieldNames) $description .= '<b>' .htmlentities( $k) . ':<b>&nbsp;';
             $description .= htmlentities( $v['value']) . "<br>";
         }
-        
+
         echo <<<EORSS
     <item>
         <title>$name</title>
@@ -118,7 +118,7 @@ EORSS;
 
 EORSS;
     }
-    
+
     protected function generateResponseFooter()
     {
 		echo <<<EORSS
@@ -135,10 +135,10 @@ EORSS;
 	public function serve()
 	{
 	    global $app_strings;
-	    
+
 	    $this->fault($app_strings['ERR_RSS_INVALID_INPUT']);
 	}
-	
+
 	/**
 	 * @see SugarRest::fault()
 	 */

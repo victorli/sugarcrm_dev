@@ -43,6 +43,7 @@ require_once 'modules/Administration/updater_utils.php';
  */
 class Bug46317Test extends Sugar_PHPUnit_Framework_TestCase
 {
+
     function versionProvider()
     {
         return array(
@@ -51,6 +52,16 @@ class Bug46317Test extends Sugar_PHPUnit_Framework_TestCase
             array('6_4_0', '6.3.10', TRUE),
             array('6_3_1', '6.3.1', FALSE),
             array('6.3.0', '6_4', FALSE),
+            array('6.4.0RC3', '6.3.1', TRUE),
+            array('6.4.0RC3', '6.3.1.RC4', TRUE),
+            array('goober', 'noober', FALSE),
+            array('6.3.5b', 'noob', TRUE),
+            array('noob', '6.3.5b', FALSE),
+            array('6.5.0beta2', '6.5.0beta1', TRUE),
+            array('6.5.5.5.5', '7.5.5.5.5', FALSE),
+            array('6.3', '6.2.3.4.5.2.5.2.4superalpha', TRUE),
+            array('000000000000.1', '000000000000.1', FALSE),
+            array('000000000000.1', '000000000000.05', TRUE),
         );
     }
 

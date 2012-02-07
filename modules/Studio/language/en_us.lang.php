@@ -185,9 +185,24 @@ $mod_strings = array (
 'LBL_SP_UPLOADED'=> 'Uploaded',
 'ERROR_SP_UPLOADED'=>'Please ensure that you are uploading a css style sheet.',
 'LBL_SP_PREVIEW'=>'Here is a preview of what your style sheet will look like',
+
+	'LBL_SAVE' => 'Save' /*for 508 compliance fix*/,
+	'LBL_UNDO' => 'Undo' /*for 508 compliance fix*/,
+	'LBL_REDO' => 'Redo' /*for 508 compliance fix*/,
+	'LBL_INLINE' => 'Inline' /*for 508 compliance fix*/,
+	'LBL_DELETE' => 'Delete' /*for 508 compliance fix*/,
+	'LBL_ADD_FIELD' => 'Add Field' /*for 508 compliance fix*/,
+	'LBL_MAXIMIZE' => 'Maximize' /*for 508 compliance fix*/,
+	'LBL_MINIMIZE' => 'Minimize' /*for 508 compliance fix*/,
+	'LBL_PUBLISH' => 'Publish' /*for 508 compliance fix*/,
+	'LBL_ADDROWS' => 'Add Rows' /*for 508 compliance fix*/,
+	'LBL_ADDFIELD' => 'Add Field' /*for 508 compliance fix*/,
+	'LBL_EDIT' => 'Edit' /*for 508 compliance fix*/,
+
 'LBL_LANGUAGE_TOOLTIP' => 'Select the language to edit.',
 'LBL_SINGULAR' => 'Singular Label',
 'LBL_PLURAL' => 'Plural Label',
 'LBL_RENAME_MOD_SAVE_HELP' => 'Click <b>Save</b> to apply the changes.'
+
 );
 ?>

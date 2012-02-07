@@ -46,10 +46,10 @@ if( !isset( $install_script ) || !$install_script ){
 ///////////////////////////////////////////////////////////////////////////////
 ////    START OUTPUT
 
-
+$langHeader = get_language_header();
 $out = <<<EOQ
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<html {$langHeader}>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
@@ -83,8 +83,8 @@ $out = <<<EOQ
 						<tr>						
 						   <th>
 						      <span onclick="showtime('sys_comp');" style="cursor:pointer;cursor:hand">
-						          <span id='basic_sys_comp'><img src="themes/default/images/basic_search.gif" border="0"></span>
-						          <span id='adv_sys_comp' style='display:none'><img src="themes/default/images/advanced_search.gif" border="0"></span>
+						          <span id='basic_sys_comp'><img alt="{$mod_strings['LBL_BASIC_SEARCH']}" src="themes/default/images/basic_search.gif" border="0"></span>
+						          <span id='adv_sys_comp' style='display:none'><img alt="{$mod_strings['LBL_ADVANCED_SEARCH']}" src="themes/default/images/advanced_search.gif" border="0"></span>
 						          &nbsp;{$mod_strings['REQUIRED_SYS_COMP']}
 						      </span>
 						   </th>
@@ -98,8 +98,8 @@ $out = <<<EOQ
 						<tr>
 						    <th>
 						        <span onclick="showtime('sys_check');" style="cursor:pointer;cursor:hand">
-						            <span id='basic_sys_check'><img src="themes/default/images/basic_search.gif" border="0"></span>
-						            <span id='adv_sys_check' style='display:none'><img src="themes/default/images/advanced_search.gif" border="0"></span>
+						            <span id='basic_sys_check'><img alt="{$mod_strings['LBL_BASIC_SEARCH']}" src="themes/default/images/basic_search.gif" border="0"></span>
+						            <span id='adv_sys_check' style='display:none'><img alt="{$mod_strings['LBL_ADVANCED_SEARCH']}" src="themes/default/images/advanced_search.gif" border="0"></span>
 						            &nbsp;{$mod_strings['REQUIRED_SYS_CHK']}
 						        </span>
 						    </th>
@@ -113,8 +113,8 @@ $out = <<<EOQ
 						<tr>
 						    <th>
 							    <span onclick="showtime('installType');" style="cursor:pointer;cursor:hand">
-								    <span id='basic_installType'><img src="themes/default/images/basic_search.gif" border="0"></span>
-								    <span id='adv_installType' style='display:none'><img src="themes/default/images/advanced_search.gif" border="0"></span>
+								    <span id='basic_installType'><img alt="{$mod_strings['LBL_BASIC_TYPE']}" src="themes/default/images/basic_search.gif" border="0"></span>
+								    <span id='adv_installType' style='display:none'><img alt="{$mod_strings['LBL_ADVANCED_TYPE']}" src="themes/default/images/advanced_search.gif" border="0"></span>
 								    &nbsp;{$mod_strings['REQUIRED_INSTALLTYPE']}
 							    </span>
 						    </th>

@@ -34,16 +34,16 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-$viewdefs ['Calls'] = 
+$viewdefs ['Calls'] =
 array (
-  'QuickCreate' => 
+  'QuickCreate' =>
   array (
-    'templateMeta' => 
+    'templateMeta' =>
     array (
       'maxColumns' => '2',
-      'form' => 
+      'form' =>
       array (
-        'hidden' => 
+        'hidden' =>
         array (
           0 => '<input type="hidden" name="isSaveAndNew" value="false">',
           1 => '<input type="hidden" name="send_invites">',
@@ -51,62 +51,62 @@ array (
           3 => '<input type="hidden" name="lead_invitees">',
           4 => '<input type="hidden" name="contact_invitees">',
         ),
-        'buttons' => 
+        'buttons' =>
         array (
-          0 => 
+          0 =>
           array (
             'customCode' => '<input title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}" class="button" onclick="SUGAR.calls.fill_invitees();this.form.action.value=\'Save\'; this.form.return_action.value=\'DetailView\'; {if isset($smarty.request.isDuplicate) && $smarty.request.isDuplicate eq "true"}this.form.return_id.value=\'\'; {/if}return check_form(\'EditView\') && isValidDuration();" type="submit" name="button" value="{$APP.LBL_SAVE_BUTTON_LABEL}">',
           ),
           1 => 'CANCEL',
-          2 => 
+          2 =>
           array (
             'customCode' => '<input title="{$MOD.LBL_SEND_BUTTON_TITLE}" class="button" onclick="this.form.send_invites.value=\'1\';SUGAR.calls.fill_invitees();this.form.action.value=\'Save\';this.form.return_action.value=\'EditView\';this.form.return_module.value=\'{$smarty.request.return_module}\';return check_form(\'EditView\') && isValidDuration();" type="submit" name="button" value="{$MOD.LBL_SEND_BUTTON_LABEL}">',
           ),
-          3 => 
+          3 =>
           array (
             'customCode' => '{if $fields.status.value != "Held"}<input title="{$APP.LBL_CLOSE_AND_CREATE_BUTTON_TITLE}" accessKey="{$APP.LBL_CLOSE_AND_CREATE_BUTTON_KEY}" class="button" onclick="SUGAR.calls.fill_invitees(); this.form.status.value=\'Held\'; this.form.action.value=\'Save\'; this.form.return_module.value=\'Calls\'; this.form.isDuplicate.value=true; this.form.isSaveAndNew.value=true; this.form.return_action.value=\'EditView\'; this.form.return_id.value=\'{$fields.id.value}\'; return check_form(\'EditView\') && isValidDuration();" type="submit" name="button" value="{$APP.LBL_CLOSE_AND_CREATE_BUTTON_LABEL}">{/if}',
           ),
         ),
         'footerTpl' => 'modules/Calls/tpls/footer.tpl',
       ),
-      'widths' => 
+      'widths' =>
       array (
-        0 => 
+        0 =>
         array (
           'label' => '10',
           'field' => '30',
         ),
-        1 => 
+        1 =>
         array (
           'label' => '10',
           'field' => '30',
         ),
       ),
-      'javascript' => '<script type="text/javascript">{$JSON_CONFIG_JAVASCRIPT}</script>
-<script type="text/javascript" src="include/javascript/sugar_grp_jsolait.js?s={$SUGAR_VERSION}&c={$JS_CUSTOM_VERSION}"></script>
-<script>toggle_portal_flag();function toggle_portal_flag()  {literal} { {/literal} {$TOGGLE_JS} {literal} } {/literal} </script>',
+      'javascript' => '<script type="text/javascript">{$JSON_CONFIG_JAVASCRIPT}</script>'.
+                '{sugar_getscript file="cache/include/javascript/sugar_grp_jsolait.js"}' .
+                '<script>toggle_portal_flag();function toggle_portal_flag()  {literal} { {/literal} {$TOGGLE_JS} {literal} } {/literal} </script>',
 
       'useTabs' => false,
     ),
-    'panels' => 
+    'panels' =>
     array (
-      'default' => 
+      'default' =>
       array (
         array (
           array (
             'name' => 'name',
-            'displayParams' => 
+            'displayParams' =>
             array (
               'required' => true,
             ),
           ),
           array (
             'name' => 'status',
-            'displayParams' => 
+            'displayParams' =>
             array (
               'required' => true,
             ),
-            'fields' => 
+            'fields' =>
             array (
               array (
                 'name' => 'direction',
@@ -122,7 +122,7 @@ array (
           array (
             'name' => 'date_start',
             'type' => 'datetimecombo',
-            'displayParams' => 
+            'displayParams' =>
             array (
               'required' => true,
               'updateCallback' => 'SugarWidgetScheduler.update_time();',
@@ -140,7 +140,7 @@ array (
             'name' => 'duration_hours',
             'label' => 'LBL_DURATION',
             'customCode' => '{literal}<script type="text/javascript">function isValidDuration() { form = document.getElementById(\'EditView\'); if ( form.duration_hours.value + form.duration_minutes.value <= 0 ) { alert(\'{/literal}{$MOD.NOTICE_DURATION_TIME}{literal}\'); return false; } return true; }</script>{/literal}<input id="duration_hours" name="duration_hours" tabindex="1" size="2" maxlength="2" type="text" value="{$fields.duration_hours.value}" onkeyup="SugarWidgetScheduler.update_time();"/>{$fields.duration_minutes.value}&nbsp;<span class="dateFormat">{$MOD.LBL_HOURS_MINUTES}',
-            'displayParams' => 
+            'displayParams' =>
             array (
               'required' => true,
             ),
@@ -150,9 +150,9 @@ array (
             'customCode' => '{if $fields.reminder_checked.value == "1"}{assign var="REMINDER_TIME_DISPLAY" value="inline"}{assign var="REMINDER_CHECKED" value="checked"}{else}{assign var="REMINDER_TIME_DISPLAY" value="none"}{assign var="REMINDER_CHECKED" value=""}{/if}<input name="reminder_checked" type="hidden" value="0"><input name="reminder_checked" onclick=\'toggleDisplay("should_remind_list");\' type="checkbox" class="checkbox" value="1" {$REMINDER_CHECKED}><div id="should_remind_list" style="display:{$REMINDER_TIME_DISPLAY}">{$fields.reminder_time.value}</div>',
             'label' => 'LBL_REMINDER',
           ),
-          
+
         ),
-        
+
         array (
           array (
             'name' => 'assigned_user_name',

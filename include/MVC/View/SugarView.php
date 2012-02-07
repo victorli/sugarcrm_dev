@@ -34,6 +34,10 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
+/**
+ * Base Sugar view
+ * @api
+ */
 class SugarView
 {
     /**
@@ -118,7 +122,7 @@ class SugarView
         //For the ajaxUI, we need to use output buffering to return the page in an ajax friendly format
         if ($this->_getOption('json_output')){
 			ob_start();
-			if(!empty($_REQUEST['ajax_load']) && !empty($_REQUEST['loadLanguageJS'])){
+			if(!empty($_REQUEST['ajax_load']) && !empty($_REQUEST['loadLanguageJS'])) {
 				echo $this->_getModLanguageJS();
 			}
 		}
@@ -162,6 +166,7 @@ class SugarView
                 'title' => $this->getBrowserTitle(),
                 'action' => isset($_REQUEST['action']) ? $_REQUEST['action'] : "",
                 'record' => isset($_REQUEST['record']) ? $_REQUEST['record'] : "",
+                'favicon' => $this->getFavicon(),
             );
             if(empty($this->responseTime)) $this->_calculateFooterMetrics();
             $ajax_ret['responseTime'] = $this->responseTime;
@@ -277,6 +282,7 @@ class SugarView
         $ss->assign("THEME", $theme);
         $ss->assign("THEME_IE6COMPAT", $themeObject->ie6compat ? 'true':'false');
         $ss->assign("MODULE_NAME", $this->module);
+        $ss->assign("langHeader", get_language_header());
 
         // get browser title
         $ss->assign("SYSTEM_NAME", $this->getBrowserTitle());
@@ -301,12 +307,8 @@ class SugarView
         else
             $module_favicon = false;
 
-        $favicon = '';
-        if ( $module_favicon )
-            $favicon = $themeObject->getImageURL($this->module.'.gif',false);
-        if ( !sugar_is_file($favicon) || !$module_favicon )
-            $favicon = $themeObject->getImageURL('sugar_icon.ico',false);
-        $ss->assign('FAVICON_URL',getJSPath($favicon));
+        $favicon = $this->getFavicon();
+        $ss->assign('FAVICON_URL', $favicon['url']);
 
         // build the shortcut menu
         $shortcut_menu = array();
@@ -316,7 +318,7 @@ class SugarView
                 "LABEL"       => $menu_item[1],
                 "MODULE_NAME" => $menu_item[2],
                 "IMAGE"       => $themeObject
-                    ->getImage($menu_item[2],"alt='".$menu_item[1]."'  border='0' align='absmiddle'"),
+                    ->getImage($menu_item[2],"border='0' align='absmiddle'",null,null,'.gif',$menu_item[1]),
                 );
         $ss->assign("SHORTCUT_MENU",$shortcut_menu);
 
@@ -434,7 +436,7 @@ class SugarView
             foreach ( $history as $key => $row ) {
                 $history[$key]['item_summary_short'] = getTrackerSubstring($row['item_summary']);
                 $history[$key]['image'] = SugarThemeRegistry::current()
-                    ->getImage($row['module_name'],'border="0" align="absmiddle" alt="'.$row['item_summary'].'"');
+                    ->getImage($row['module_name'],'border="0" align="absmiddle"',null,null,'.gif',$row['item_summary']);
             }
             $ss->assign("recentRecords",$history);
         }
@@ -599,7 +601,8 @@ class SugarView
                         "LABEL"       => $menu_item[1],
                         "MODULE_NAME" => $menu_item[2],
                         "IMAGE"       => $themeObject
-                        ->getImage($menu_item[2],"alt='".$menu_item[1]."'  border='0' align='absmiddle'"),
+                        ->getImage($menu_item[2],"border='0' align='absmiddle'",null,null,'.gif',$menu_item[1]),
+                        "ID"          => $menu_item[2]."_link",
                         );
                 }
             }
@@ -672,14 +675,14 @@ class SugarView
             echo "<script>var action_sugar_grp1 = '{$_REQUEST['action']}';</script>";
         }
         echo '<script>jscal_today = 1000*' . $timedate->asUserTs($timedate->getNow()) . '; if(typeof app_strings == "undefined") app_strings = new Array();</script>';
-        if (!is_file("include/javascript/sugar_grp1.js")) {
+        if (!is_file(sugar_cached("include/javascript/sugar_grp1.js"))) {
             $_REQUEST['root_directory'] = ".";
             require_once("jssource/minify_utils.php");
             ConcatenateFiles(".");
         }
-        echo '<script type="text/javascript" src="' . getJSPath('include/javascript/sugar_grp1_yui.js') . '"></script>';
-        echo '<script type="text/javascript" src="' . getJSPath('include/javascript/sugar_grp1.js') . '"></script>';
-        echo '<script type="text/javascript" src="' . getJSPath('include/javascript/calendar.js') . '"></script>';
+        echo getVersionedScript('cache/include/javascript/sugar_grp1_yui.js');
+        echo getVersionedScript('cache/include/javascript/sugar_grp1.js');
+        echo getVersionedScript('include/javascript/calendar.js');
         echo <<<EOQ
         <script>
             if ( typeof(SUGAR) == 'undefined' ) {SUGAR = {}};
@@ -687,7 +690,7 @@ class SugarView
         </script>
 EOQ;
         if(isset( $sugar_config['disc_client']) && $sugar_config['disc_client'])
-            echo '<script type="text/javascript" src="' . getJSPath('modules/Sync/headersync.js') . '"></script>';
+            echo getVersionedScript('modules/Sync/headersync.js');
     }
 
     /**
@@ -735,65 +738,78 @@ EOQ;
 
 
         if ($this->_getOption('show_javascript')) {
-            if (!$this->_getOption('show_header'))
+            if (!$this->_getOption('show_header')) {
+                $langHeader = get_language_header();
+
                 echo <<<EOHTML
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
+<html {$langHeader}>
 <head>
 EOHTML;
+            }
 
-            echo "<script>var sugar_cache_dir = '{$GLOBALS['sugar_config']['cache_dir']}';</script>";
-            echo "<script>var sugar_upload_dir = '{$GLOBALS['sugar_config']['upload_dir']}';</script>";
+            $js_vars = array(
+                "sugar_cache_dir" => "cache/",
+                );
 
             if(isset($this->bean->module_dir)){
-                echo "<script>var module_sugar_grp1 = '{$this->bean->module_dir}';</script>";
+                $js_vars['module_sugar_grp1'] = $this->bean->module_dir;
             }
             if(isset($_REQUEST['action'])){
-                echo "<script>var action_sugar_grp1 = '{$_REQUEST['action']}';</script>";
+                $js_vars['action_sugar_grp1'] = $_REQUEST['action'];
             }
             echo '<script>jscal_today = 1000*' . $timedate->asUserTs($timedate->getNow()) . '; if(typeof app_strings == "undefined") app_strings = new Array();</script>';
-            if (!is_file("include/javascript/sugar_grp1.js") || !is_file("include/javascript/sugar_grp1_yui.js")) {
+            if (!is_file(sugar_cached("include/javascript/sugar_grp1.js")) || !is_file(sugar_cached("include/javascript/sugar_grp1_yui.js"))) {
                 $_REQUEST['root_directory'] = ".";
                 require_once("jssource/minify_utils.php");
                 ConcatenateFiles(".");
             }
-            echo '<script type="text/javascript" src="' . getJSPath('include/javascript/sugar_grp1_yui.js') . '"></script>';
-            echo '<script type="text/javascript" src="' . getJSPath('include/javascript/sugar_grp1.js') . '"></script>';
-            echo '<script type="text/javascript" src="' . getJSPath('include/javascript/calendar.js') . '"></script>';
+            echo getVersionedScript('cache/include/javascript/sugar_grp1_yui.js');
+            echo getVersionedScript('cache/include/javascript/sugar_grp1.js');
+            echo getVersionedScript('include/javascript/calendar.js');
 
             // output necessary config js in the top of the page
             $config_js = $this->getSugarConfigJS();
             if(!empty($config_js)){
                 echo "<script>\n".implode("\n", $config_js)."</script>\n";
             }
+
             if ( isset($sugar_config['email_sugarclient_listviewmaxselect']) ) {
                 echo "<script>SUGAR.config.email_sugarclient_listviewmaxselect = {$GLOBALS['sugar_config']['email_sugarclient_listviewmaxselect']};</script>";
             }
-            
+
             $image_server = (defined('TEMPLATE_URL'))?TEMPLATE_URL . '/':'';
             echo '<script type="text/javascript">SUGAR.themes.image_server="' . $image_server . '";</script>'; // cn: bug 12274 - create session-stored key to defend against CSRF
             echo '<script type="text/javascript">var name_format = "' . $locale->getLocaleFormatMacro() . '";</script>';
             echo self::getJavascriptValidation();
-            if (!is_file($GLOBALS['sugar_config']['cache_dir'] . 'jsLanguage/' . $GLOBALS['current_language'] . '.js')) {
+            if (!is_file(sugar_cached('jsLanguage/') . $GLOBALS['current_language'] . '.js')) {
                 require_once ('include/language/jsLanguage.php');
                 jsLanguage::createAppStringsCache($GLOBALS['current_language']);
             }
-            echo '<script type="text/javascript" src="' . $GLOBALS['sugar_config']['cache_dir'] . 'jsLanguage/' . $GLOBALS['current_language'] . '.js?s=' . $GLOBALS['js_version_key'] . '&c=' . $GLOBALS['sugar_config']['js_custom_version'] . '&j=' . $GLOBALS['sugar_config']['js_lang_version'] . '"></script>';
+            echo getVersionedScript('cache/jsLanguage/'. $GLOBALS['current_language'] . '.js', $GLOBALS['sugar_config']['js_lang_version']);
 
 			echo $this->_getModLanguageJS();
 
             if(isset( $sugar_config['disc_client']) && $sugar_config['disc_client'])
-                echo '<script type="text/javascript" src="' . getJSPath('modules/Sync/headersync.js') . '"></script>';
+                echo getVersionedScript('modules/Sync/headersync.js');
 
+
+            //echo out the $js_vars variables as javascript variables
+            echo "<script type='text/javascript'>\n";
+            foreach($js_vars as $var=>$value)
+            {
+                echo "var {$var} = '{$value}';\n";
+            }
+            echo "</script>\n";
         }
     }
 
 	protected function _getModLanguageJS(){
-		if (!is_file($GLOBALS['sugar_config']['cache_dir'] . 'jsLanguage/' . $this->module . '/' . $GLOBALS['current_language'] . '.js')) {
+		if (!is_file(sugar_cached('jsLanguage/') . $this->module . '/' . $GLOBALS['current_language'] . '.js')) {
 			require_once ('include/language/jsLanguage.php');
 			jsLanguage::createModuleStringsCache($this->module, $GLOBALS['current_language']);
 		}
-		return '<script type="text/javascript" src="' . $GLOBALS['sugar_config']['cache_dir'] . 'jsLanguage/' . $this->module . '/' . $GLOBALS['current_language'] . '.js?s=' . $GLOBALS['js_version_key'] . '&c=' . $GLOBALS['sugar_config']['js_custom_version'] . '&j=' . $GLOBALS['sugar_config']['js_lang_version'] . '"></script>';
+		return getVersionedScript("cache/jsLanguage/{$this->module}/". $GLOBALS['current_language'] . '.js', $GLOBALS['sugar_config']['js_lang_version']);
 	}
 
     /**
@@ -806,6 +822,7 @@ EOHTML;
         }
         global $sugar_config;
         global $app_strings;
+        global $mod_strings;
 
         //decide whether or not to show themepicker, default is to show
         $showThemePicker = true;
@@ -841,10 +858,8 @@ EOHTML;
                 $imageURL = SugarThemeRegistry::current()->getImageURL($key.'.gif');
 				$bottomLinksStr .= "<a href=\"{$href}\"";
 				$bottomLinksStr .= (isset($onclick)) ? $onclick : "";
-				$bottomLinksStr .= "><img src='{$imageURL}' alt='{$text}'></a>";
-				$bottomLinksStr .= " <a href=\"{$href}\" class=\"bottomLink\"";
-				$bottomLinksStr .= (isset($onclick)) ? $onclick : "";
-				$bottomLinksStr .= ">".$text."</a>";
+				$bottomLinksStr .= "><img src='{$imageURL}' alt=''>"; //keeping alt blank on purpose for 508 (text will be read instead)
+				$bottomLinksStr .= " ".$text."</a>";
 			}
 		}
 		$ss->assign("BOTTOMLINKS",$bottomLinksStr);
@@ -855,7 +870,7 @@ EOHTML;
         // the code and end-user application.
 
 
-        $copyright = '&copy; 2004-2011 SugarCRM Inc. The Program is provided AS IS, without warranty.  Licensed under <a href="LICENSE.txt" target="_blank" class="copyRightLink">AGPLv3</a>.<br>This program is free software; you can redistribute it and/or modify it under the terms of the <br><a href="LICENSE.txt" target="_blank" class="copyRightLink"> GNU Affero General Public License version 3</a> as published by the Free Software Foundation, including the additional permission set forth in the source code header.<br>';
+        $copyright = '&copy; 2004-2012 SugarCRM Inc. The Program is provided AS IS, without warranty.  Licensed under <a href="LICENSE.txt" target="_blank" class="copyRightLink">AGPLv3</a>.<br>This program is free software; you can redistribute it and/or modify it under the terms of the <br><a href="LICENSE.txt" target="_blank" class="copyRightLink"> GNU Affero General Public License version 3</a> as published by the Free Software Foundation, including the additional permission set forth in the source code header.<br>';
 
 
 
@@ -1099,7 +1114,7 @@ EOHTML;
     {
         global $sugar_version, $sugar_flavor, $server_unique_key, $current_language, $action;
 
-        $theTitle = "<div class='moduleTitle'>\n<h2>";
+        $theTitle = "<div class='moduleTitle'>\n";
 
         $module = preg_replace("/ /","",$this->module);
 
@@ -1111,14 +1126,19 @@ EOHTML;
 			$params = array_reverse($params);
 		}
 
+        $paramString = '';
         foreach($params as $parm){
             $index++;
-            $theTitle .= $parm;
+            $paramString .= $parm;
             if($index < $count){
-                $theTitle .= $this->getBreadCrumbSymbol();
+                $paramString .= $this->getBreadCrumbSymbol();
             }
         }
-        $theTitle .= "</h2>\n";
+
+        if(!empty($paramString)){
+               $theTitle .= "<h2> $paramString </h2>\n";
+           }
+
         if ($show_help) {
             $theTitle .= "<span class='utils'>";
 
@@ -1322,5 +1342,68 @@ EOHTML;
         }
 
         return $config_js;
+    }
+
+
+    /**
+     * getHelpText
+     *
+     * This is a protected function that returns the help text portion.  It is called from getModuleTitle.
+     *
+     * @param $module String the formatted module name
+     * @return $theTitle String the HTML for the help text
+     */
+    protected function getHelpText($module)
+    {
+        $createImageURL = SugarThemeRegistry::current()->getImageURL('create-record.gif');
+        $url = ajaxLink("index.php?module=$module&action=EditView&return_module=$module&return_action=DetailView");
+        $theTitle = <<<EOHTML
+&nbsp;
+<img src='{$createImageURL}' alt='{$GLOBALS['app_strings']['LNK_CREATE']}'>
+<a href="{$url}" class="utilsLink">
+{$GLOBALS['app_strings']['LNK_CREATE']}
+</a>
+EOHTML;
+        return $theTitle;
+    }
+
+    /**
+     * Retrieves favicon corresponding to currently requested module
+     *
+     * @return array
+     */
+    protected function getFavicon()
+    {
+        // get favicon
+        if(isset($GLOBALS['sugar_config']['default_module_favicon']))
+            $module_favicon = $GLOBALS['sugar_config']['default_module_favicon'];
+        else
+            $module_favicon = false;
+
+        $themeObject = SugarThemeRegistry::current();
+
+        $favicon = '';
+        if ( $module_favicon )
+            $favicon = $themeObject->getImageURL($this->module.'.gif',false);
+        if ( !sugar_is_file($favicon) || !$module_favicon )
+            $favicon = $themeObject->getImageURL('sugar_icon.ico',false);
+
+        $extension = pathinfo($favicon, PATHINFO_EXTENSION);
+        switch ($extension)
+        {
+            case 'png':
+                $type = 'image/png';
+                break;
+            case 'ico':
+                // fall through
+            default:
+                $type = 'image/x-icon';
+                break;
+        }
+
+        return array(
+            'url'  => getJSPath($favicon),
+            'type' => $type,
+        );
     }
 }

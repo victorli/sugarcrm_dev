@@ -50,7 +50,7 @@
 		</td>
 	
 		<td rowspan="3">
-				<img src='{sugar_getimagepath file='blank.gif'}' width='15' height='1' border='0'>
+				{sugar_getimage alt=$app_strings.LBL_BLANK name="blank" ext=".gif" width="15" height="1" other_attributes='border="0" '}
 		</td>
 		{/if}
 		{if $numCols > 1}
@@ -58,7 +58,7 @@
 
 		</td>
 		<td rowspan="3">
-				<img src='{sugar_getimagepath file='blank.gif'}' width='15' height='1' border='0'>
+				{sugar_getimage alt=$app_strings.LBL_BLANK name="blank" ext=".gif" width="15" height="1" other_attributes='border="0" '}
 		</td>
 		{/if}	
 	</tr>

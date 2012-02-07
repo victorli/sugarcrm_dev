@@ -69,7 +69,6 @@ $smarty = new Sugar_Smarty();
 $smarty->assign('mod_strings', $mod_strings);
 $smarty->assign('app_strings', $app_strings);
 $smarty->assign('theme', $theme);
-$smarty->assign('jsCustomVersion', $sugar_config['js_custom_version']);
 $smarty->assign('sugar_version', $sugar_version);
 $smarty->assign('GRIDLINE', $gridline);
 $smarty->assign('MODULE', 'InboundEmail');
@@ -111,13 +110,13 @@ $smarty->assign('editGroupFolderStyle', $editGroupFolderStyle);
 
 $smarty->assign('groupFolderName', $groupFolderName);
 $json = getJSONobj();
-$smarty->assign('group_folder_array', $json->encode($groupFoldersOrig));	
-$smarty->assign('group_folder_options', get_select_options_with_id($groupFolders, $addToGroupFolder));	
+$smarty->assign('group_folder_array', $json->encode($groupFoldersOrig));
+$smarty->assign('group_folder_options', get_select_options_with_id($groupFolders, $addToGroupFolder));
 
 
 $smarty->assign('CSS',SugarThemeRegistry::current()->getCSS());
 
 
-$smarty->assign('languageStrings', '<script type="text/javascript" src="' . $GLOBALS['sugar_config']['cache_dir'] . 'jsLanguage/' . $GLOBALS['current_language'] . '.js?s=' . $GLOBALS['js_version_key'] . '&c=' . $GLOBALS['sugar_config']['js_custom_version'] . '&j=' . $GLOBALS['sugar_config']['js_lang_version'] . '"></script>');
+$smarty->assign('languageStrings', getVersionedScript("cache/jsLanguage/{$GLOBALS['current_language']}.js",  $GLOBALS['sugar_config']['js_lang_version']));
 echo $smarty->fetch("modules/Emails/templates/_createGroupFolder.tpl");
 ?>

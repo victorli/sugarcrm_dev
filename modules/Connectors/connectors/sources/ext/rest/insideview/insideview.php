@@ -72,11 +72,6 @@ class ext_rest_insideview extends ext_rest {
         return $outModuleList;
     }
 
-    // InsideView currently has no web service to control field mappings
-    public function getMapping() {
-        return;
-    }
-
     public function saveMappingHook($mapping) {
 
         $removeList = array();

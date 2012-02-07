@@ -48,30 +48,17 @@ ob_implicit_flush(1);
 
 // load the generated persistence file if found
 $persistence = array();
-if(file_exists(getcwd().'/modules/UpgradeWizard/_persistence.php')) {
-	require_once(getcwd().'/modules/UpgradeWizard/_persistence.php');
+if(file_exists($persist = sugar_cached('/modules/UpgradeWizard/_persistence.php'))) {
+	require_once $persist;
 }
-
-if(!function_exists('getFilesForPermsCheck')) {
-	require_once('modules/UpgradeWizard/uw_utils.php');	
-}
-if(!isset($sugar_config) || empty($sugar_config)) {
-		
-}
+require_once('modules/UpgradeWizard/uw_utils.php');
 
 switch($_REQUEST['systemCheckStep']) {
 	case 'find_all_files':
 		ob_end_flush();
-		
+		$persistence['files_to_check'] = getFilesForPermsCheck();
+        break;
 
-
-
-			$persistence['files_to_check'] = getFilesForPermsCheck();
-
-
-
-	break;
-	
 	case 'check_found_files':
 		if(empty($persistence['files_to_check'])) {
 			logThis('*** ERROR: could not find persistent array of files to check');
@@ -81,15 +68,11 @@ switch($_REQUEST['systemCheckStep']) {
 			$persistence = checkFiles($persistence['files_to_check'], true);
 		}
 	break;
-	
+
 	case 'check_files_status':
 		$ret = ($persistence['filesNotWritable']) ? 'true' : 'false';
 		echo $ret;
-	break;	
+	break;
 }
 
-
-write_array_to_file('persistence', $persistence, 'modules/UpgradeWizard/_persistence.php');
-
-
-?>
+write_array_to_file('persistence', $persistence, $persist);
