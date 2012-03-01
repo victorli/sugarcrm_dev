@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -206,12 +206,10 @@ if(file_exists('include/SugarLogger/LoggerManager.php')){
 
 
 //Upgrade connectors
-/*
-if($_SESSION['current_db_version'] < '610' && function_exists('upgrade_connectors'))
-{
-   upgrade_connectors($path);
-}
-*/
+logThis('Begin upgrade_connectors', $path);
+upgrade_connectors();
+logThis('End upgrade_connectors', $path);
+
 
 // Enable the InsideView connector by default
 if($_SESSION['current_db_version'] < '621' && function_exists('upgradeEnableInsideViewConnector')) {
@@ -251,6 +249,12 @@ if(function_exists('unlinkUpgradeFiles'))
 if(function_exists('rebuildSprites') && function_exists('imagecreatetruecolor'))
 {
     rebuildSprites(true);
+}
+
+//Run RepairSearchFields.php file
+if($_SESSION['current_db_version'] < '620' && function_exists('repairSearchFields'))
+{
+    repairSearchFields($path);
 }
 
 require_once('modules/Administration/upgrade_custom_relationships.php');

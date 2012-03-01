@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -49,6 +49,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 class SugarTinyMCE {
 	var $jsroot = "include/javascript/tiny_mce/";
 	var $customConfigFile = 'custom/include/tinyButtonConfig.php';
+	var $customDefaultConfigFile = 'custom/include/tinyMCEDefaultConfig.php';
 	var $buttonConfigs = array(
 			'default' => array(
 						'buttonConfig' => "code,help,separator,bold,italic,underline,strikethrough,separator,justifyleft,justifycenter,justifyright,
@@ -101,6 +102,7 @@ class SugarTinyMCE {
 	function SugarTinyMCE() {
 	    
 		$this->overloadButtonConfigs();
+		$this->overloadDefaultConfigs();
 	}
 	
 	/**
@@ -221,6 +223,35 @@ eoq;
             {
                 if( isset($this->buttonConfigs[$k]) )
                     $this->buttonConfigs[$k] = $v;
+            }
+        }
+    }
+    
+    /**
+     * Reload the default tinyMCE config, preserving our default extended 
+     * allowable tag set.
+     *
+     */
+    private function overloadDefaultConfigs() 
+    {
+        if( file_exists( $this->customDefaultConfigFile ) )    
+        {
+            require_once($this->customDefaultConfigFile);
+            
+            if(!isset($defaultConfig))
+                return;
+            
+            foreach ($defaultConfig as $k => $v)
+            {
+                if( isset($this->defaultConfig[$k]) ){
+                	
+                	if($k == "extended_valid_elements"){
+                		$this->defaultConfig[$k] .= "," . $v;
+                	}
+                	else{
+                		$this->defaultConfig[$k] = $v;
+                	}
+                }  	
             }
         }
     }

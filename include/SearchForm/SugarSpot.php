@@ -2,7 +2,7 @@
 //if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -256,6 +256,7 @@ class SugarSpot
                 }
 
 				if(!empty($GLOBALS['dictionary'][$class]['unified_search'])){
+
 					if(empty($GLOBALS['dictionary'][$class]['fields'][$k]['unified_search'])){
 
 						if(isset($searchFields[$moduleName][$k]['db_field'])){
@@ -270,9 +271,9 @@ class SugarSpot
                                             unset($searchFields[$moduleName][$k]);
                                             continue;
                                         }
-                                    } else {
-									    $keep = true;
                                     }
+
+                                    $keep = true;
 								}
 							} //foreach
 						}
@@ -518,6 +519,11 @@ class SugarSpot
                 }
                 break;
             case 'phone':
+                //For a phone search we require at least three digits
+                if(!preg_match('/[0-9]{3,}/', $query))
+                {
+                    return false;
+                }
             case 'decimal':
             case 'float':
                 if(!preg_match('/[0-9]/', $query))

@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -132,5 +132,63 @@ class SugarSpotTest extends Sugar_PHPUnit_Framework_TestCase
 
         $this->assertNotContains('(99 more)',$returnValue);
         $this->assertContains('(99 XXmoreXX)',$returnValue);
+    }
+
+
+    /**
+     * providerTestSearchType
+     * This is the provider function for testFilterSearchType
+     *
+     */
+    public function providerTestSearchType()
+    {
+        return array(
+              array('phone', '777', true),
+              array('phone', '(777)', true),
+              array('phone', '%777', true),
+              array('phone', '77', false),
+              array('phone', '%77) 7', false),
+              array('phone', '88-88-88', false),
+              array('int', '1', true),
+              array('int', '1.0', true),
+              array('int', '.1', true),
+              array('int', 'a', false),
+              array('decimal', '1.0', true),
+              array('decimal', '1', true),
+              array('decimal', '1,000', true),
+              array('decimal', 'aaaaa', false),
+              array('float', '1.0', true),
+              array('float', '1', true),
+              array('float', '1,000', true),
+              array('float', 'aaaaa', false),
+              array('id', '1', false),
+              array('datetime', '2011-01-01 10:10:10', false),
+              array('date', '2011-01-01', false),
+              array('bool', true, false),
+              array('bool', false, false),
+              array('foo', 'foo', true),
+        );
+    }
+
+    /**
+     * testFilterSearchType
+     * This function uses a provider to test the filter search type
+     * @dataProvider providerTestSearchType
+     */
+    public function testFilterSearchType($type, $query, $expected)
+    {
+        $sugarSpot = new Bug50484SugarSpotMock();
+        $this->assertEquals($expected, $sugarSpot->filterSearchType($type, $query),
+            ('SugarSpot->filterSearchType expected type ' . $type . ' with value ' . $query . ' to return ' . $expected ? 'true' : false));
+    }
+
+}
+
+
+class Bug50484SugarSpotMock extends SugarSpot
+{
+    public function filterSearchType($type, $query)
+    {
+        return parent::filterSearchType($type, $query);
     }
 }

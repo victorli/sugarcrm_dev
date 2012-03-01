@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -363,6 +363,18 @@ class EmailTemplate extends SugarBean {
 		return $return_array;
 	}
 
+    /**
+     * Convenience method to convert raw value into appropriate type format
+     * @param string $type
+     * @param string $value
+     * @return string
+     */
+    function _convertToType($type,$value) {
+        switch($type) {
+            case 'currency' : return currency_format_number($value);
+            default: return $value;
+        }
+    }
 
 	/**
 	 * Convenience method to parse for user's values in a template
@@ -386,7 +398,8 @@ class EmailTemplate extends SugarBean {
 				}
 			} else {
 				if(isset($user->$field_def['name'])) {
-					$repl_arr["contact_user_".$field_def['name']] = $user->$field_def['name'];
+                    // bug 47647 - allow for fields to translate before adding to template
+					$repl_arr["contact_user_".$field_def['name']] = self::_convertToType($field_def['type'],$user->$field_def['name']);
 				} else {
 					$repl_arr["contact_user_".$field_def['name']] = "";
 				}
@@ -469,8 +482,10 @@ class EmailTemplate extends SugarBean {
 							$repl_arr["contact_account_".$field_def['name']] = '';
 						}
 					} else {
-						$repl_arr["account_".$field_def['name']] = $acct->$field_def['name'];
-						$repl_arr["contact_account_".$field_def['name']] = $acct->$field_def['name'];
+                        // bug 47647 - allow for fields to translate before adding to template
+                        $translated = self::_convertToType($field_def['type'],$acct->$field_def['name']);
+						$repl_arr["account_".$field_def['name']] = $translated;
+						$repl_arr["contact_account_".$field_def['name']] = $translated;
 					}
 				}
 			}
@@ -506,8 +521,10 @@ class EmailTemplate extends SugarBean {
 					}
 				} else {
 					if (isset($contact->$field_def['name'])) {
-						$repl_arr["contact_".$field_def['name']] = $contact->$field_def['name'];
-						$repl_arr["contact_account_".$field_def['name']] = $contact->$field_def['name'];
+                        // bug 47647 - allow for fields to translate before adding to template
+                        $translated = self::_convertToType($field_def['type'],$contact->$field_def['name']);
+						$repl_arr["contact_".$field_def['name']] = $translated;
+						$repl_arr["contact_account_".$field_def['name']] = $translated;
 					} // if
 				}
 			}
@@ -530,7 +547,8 @@ class EmailTemplate extends SugarBean {
 						$repl_arr[strtolower($beanList[$bean_name])."_".$field_def['name']] = '';
 					}
 				} else {
-					$repl_arr[strtolower($beanList[$bean_name])."_".$field_def['name']] = $focus->$field_def['name'];
+                    // bug 47647 - translate currencies to appropriate values
+					$repl_arr[strtolower($beanList[$bean_name])."_".$field_def['name']] = self::_convertToType($field_def['type'],$focus->$field_def['name']);
 				}
 			} else {
 				if($field_def['name'] == 'full_name') {

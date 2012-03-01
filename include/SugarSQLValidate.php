@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -121,6 +121,7 @@ class SugarSQLValidate
 	protected function validateExpression($expr, $allow_some_subqueries = false)
 	{
 	    foreach($expr as $term) {
+	        if(!is_array($term)) continue;
 	        // check subtrees
 	        if(isset($term['expr_type']) &&  $term['expr_type'] == 'subquery') {
 	            if(!$allow_some_subqueries || !$this->allowedSubquery($term)) {
@@ -220,27 +221,47 @@ class SugarSQLValidate
 	}
 
 	/**
-	 * Validate column name
-	 * @param string $name
-	 * @return bool
+	 * validateColumnName
+     * This method validates the column name portion of the SQL statement and returns true if it is deemed safe.
+     * We check against querying for the user_hash column.
+     *
+	 * @param $name String portion of the column name from SQL
+	 * @return boolean True if column name is deemed safe, false otherwise
 	 */
 	protected function validateColumnName($name)
 	{
 	    if($name == ",") return true; // sometimes , gets as column name
 	    $name = strtolower($name); // case does not matter
-	    if(preg_match("/[^a-z0-9._]/", $name)) {
-	        // bad chars in name
-	        return false;
-	    }
+
 	    $parts = explode(".", $name);
 	    if(count($parts) > 2) {
 	        // too many dots
 	        return false;
 	    }
-	    if($parts[0] == "user_hash" || (!empty($parts[1]) && $parts[1] == "user_hash")) {
-	        // this column is verboten
-	        return false;
-	    }
+
+        foreach($parts AS $part)
+        {
+            //the user_hash column is forbidden in passed in SQL
+            if($part == "user_hash")
+            {
+                return false;
+            }
+
+            //Remove leading and trailing ` characters for the part
+            if(preg_match('/^[\`](.+?)[\`]$/', $part, $matches))
+            {
+               $part = $matches[1];
+            }
+
+            //We added an exception for # symbol (see Bug 50324)
+            //This should be removed when Bug 50360 is resolved
+            if(preg_match('/[^a-z0-9._#]/', $part)) {
+                // bad chars in name
+                return false;
+            }
+
+        }
+
 	    return true;
 	}
 }

@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -151,7 +151,7 @@ class RepairAndClear
 			{
 				$repair_related_modules = array_keys($dictionary);
 				//repair DB
-				$dm = !empty($GLOBALS['sugar_config']['developerMode']);
+				$dm = inDeveloperMode();
 				$GLOBALS['sugar_config']['developerMode'] = true;
 				foreach($this->module_list as $bean_name)
 				{
@@ -354,6 +354,17 @@ class RepairAndClear
                     LanguageManager::clearLanguageCache($module_name);
             }
         }
+        // Clear app* cache values too
+        if(!empty($GLOBALS['sugar_config']['languages'])) {
+            $languages = $GLOBALS['sugar_config']['languages'];
+        } else {
+            $languages = array($GLOBALS['current_language'] => $GLOBALS['current_language']);
+        }
+        foreach(array_keys($languages) as $language) {
+        	sugar_cache_clear('app_strings.'.$language);
+        	sugar_cache_clear('app_list_strings.'.$language);
+        }
+
 	}
 
 	/**

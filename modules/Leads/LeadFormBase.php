@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -48,13 +48,19 @@ var $objectName = 'Lead';
  * This function returns the SQL String used for initial duplicate Leads check
  *
  * @see checkForDuplicates (method), ContactFormBase.php, LeadFormBase.php, ProspectFormBase.php
+ * @param $focus sugarbean
  * @param $prefix String value of prefix that may be present in $_POST variables
  * @return SQL String of the query that should be used for the initial duplicate lookup check
  */
-public function getDuplicateQuery($prefix='')
+public function getDuplicateQuery($focus, $prefix='')
 {
-	$query = "SELECT id, first_name, last_name, account_name, title FROM leads WHERE deleted != 1 AND (status <> 'Converted' OR status IS NULL) AND ";
+	$query = "SELECT id, first_name, last_name, account_name, title FROM leads ";
 
+    // Bug #46427 : Records from other Teams shown on Potential Duplicate Contacts screen during Lead Conversion
+    // add team security
+
+    $query .= " WHERE deleted != 1 AND (status <> 'Converted' OR status IS NULL) AND ";
+    
     //Use the first and last name from the $_POST to filter.  If only last name supplied use that
 	if(isset($_POST[$prefix.'first_name']) && strlen($_POST[$prefix.'first_name']) != 0 && isset($_POST[$prefix.'last_name']) && strlen($_POST[$prefix.'last_name']) != 0) {
 		$query .= " (first_name='". $_POST[$prefix.'first_name'] . "' AND last_name = '". $_POST[$prefix.'last_name'] ."')";

@@ -2,7 +2,7 @@
 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -490,8 +490,9 @@ merge_config_si_settings(true, '', '', $path);
 logThis('End merge_config_si_settings', $path);
 
 //Upgrade connectors
-/*
-*/
+logThis('Begin upgrade_connectors', $path);
+upgrade_connectors();
+logThis('End upgrade_connectors', $path);
 
 // Enable the InsideView connector by default
 if($origVersion < '621' && function_exists('upgradeEnableInsideViewConnector')) {
@@ -519,6 +520,12 @@ if(function_exists('unlinkUpgradeFiles'))
 if(function_exists('rebuildSprites') && function_exists('imagecreatetruecolor'))
 {
     rebuildSprites(true);
+}
+
+//Run RepairSearchFields.php file
+if($origVersion < '620' && function_exists('repairSearchFields'))
+{
+    repairSearchFields($path);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

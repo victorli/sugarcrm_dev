@@ -88,6 +88,18 @@ function smarty_function_sugar_field($params, &$smarty)
     if (isset($params['call_back_function'])) {
         $displayParams['call_back_function'] = $params['call_back_function'];
     }
+    
+    if(isset($params['skipClearButton'])) {
+        $displayParams['skipClearButton'] = $params['skipClearButton'];
+    }
+    
+    if(isset($params['idName'])) {
+        $displayParams['idName'] = $params['idName'];
+    }
+    
+    if(isset($params['accesskey'])) {
+        $displayParams['accesskey'] = $params['accesskey'];
+    }
 
     $_contents = $sfh->displaySmarty($params['parentFieldArray'], $params['vardef'], $params['displayType'], $displayParams, $params['tabindex']);
     

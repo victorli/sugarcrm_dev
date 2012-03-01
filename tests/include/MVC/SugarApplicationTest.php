@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -305,6 +305,22 @@ class SugarApplicationTest extends Sugar_PHPUnit_Framework_TestCase
 
         $GLOBALS['sugar_config']['http_referer']['actions'][] = 'poo';
         $this->assertTrue($this->_app->checkHTTPReferer());
+    }
+
+    /**
+     * @bug 50302
+     */
+    public function testWhitelistDefaults()
+    {
+        $_SERVER['HTTP_REFERER'] = 'http://dog';
+        $_SERVER['SERVER_NAME'] = 'cat';
+        $GLOBALS['sugar_config']['http_referer']['actions'] = array('poo');
+        $this->_app->controller->action = 'oauth';
+        $this->assertTrue($this->_app->checkHTTPReferer());
+        $this->_app->controller->action = 'index';
+        $this->assertTrue($this->_app->checkHTTPReferer());
+        $this->_app->controller->action = 'save';
+        $this->assertFalse($this->_app->checkHTTPReferer());
     }
 }
 

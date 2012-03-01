@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -148,7 +148,7 @@ class Popup_Picker
 			<input type="hidden" name="to_pdf" value="true">
 			<input type="hidden" name="return_module" value="$currentModule">
 			<input type="hidden" name="return_action" value="Popup">
-			<input type="submit" name="button" class="button" title="$lbl_save_button_title" accesskey="$lbl_save_button_key" value="  $lbl_save_button_label  " />
+			<input type="submit" name="button" class="button" title="$lbl_save_button_title" value="  $lbl_save_button_label  " />
 			<input type="button" name="button" class="button" title="{$app_strings['LBL_CANCEL_BUTTON_TITLE']}" accesskey="{$app_strings['LBL_CANCEL_BUTTON_KEY']}" value="{$app_strings['LBL_CANCEL_BUTTON_LABEL']}" onclick="toggleDisplay('addform');" />
 EOQ;
 			// if metadata contains custom inputs for the quickcreate 
@@ -186,8 +186,7 @@ EOQ;
 			$multi_select = true;
 			$button .= "<input type='hidden' name='mode' value='MultiSelect'>";
 			$button .= "<input type='button' name='button' class='button' onclick=\"send_back_selected('$currentModule',document.MassUpdate,'mass[]','" .$app_strings['ERR_NOTHING_SELECTED']."', request_data.field_to_name_array);\" title='"
-				.$app_strings['LBL_SELECT_BUTTON_TITLE']."' accesskey='"
-				.$app_strings['LBL_SELECT_BUTTON_KEY']."' value='  "
+				.$app_strings['LBL_SELECT_BUTTON_TITLE']."' value='  "
 				.$app_strings['LBL_SELECT_BUTTON_LABEL']."  ' />\n";
 		}
 
@@ -195,13 +194,11 @@ EOQ;
 		if(!$hide_clear_button)
 		{
 			$button .= "<input type='button' name='button' class='button' onclick=\"send_back('','');\" title='"
-				.$app_strings['LBL_CLEAR_BUTTON_TITLE']."' accesskey='"
-				.$app_strings['LBL_CLEAR_BUTTON_KEY']."' value='  "
+				.$app_strings['LBL_CLEAR_BUTTON_TITLE']."' value='  "
 				.$app_strings['LBL_CLEAR_BUTTON_LABEL']."  ' />\n";
 		}
 		$button .= "<input type='submit' name='button' class='button' onclick=\"window.close();\" title='"
-			.$app_strings['LBL_CANCEL_BUTTON_TITLE']."' accesskey='"
-			.$app_strings['LBL_CANCEL_BUTTON_KEY']."' value='  "
+			.$app_strings['LBL_CANCEL_BUTTON_TITLE']."' value='  "
 			.$app_strings['LBL_CANCEL_BUTTON_LABEL']."  ' />\n";
 
 		if(isset($this->_popupMeta['templateForm'])) { 

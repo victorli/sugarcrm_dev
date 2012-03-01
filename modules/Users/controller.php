@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -45,6 +45,25 @@ require_once("include/OutboundEmail/OutboundEmail.php");
 
 class UsersController extends SugarController
 {
+	/**
+	 * bug 48170
+	 * Action resetPreferences gets fired when user clicks on  'Reset User Preferences' button
+	 * This action is set in UserViewHelper.php
+	 */
+	protected function action_resetPreferences(){
+	    if($_REQUEST['record'] == $GLOBALS['current_user']->id || ($GLOBALS['current_user']->isAdminForModule('Users'))){
+	        $u = new User();
+	        $u->retrieve($_REQUEST['record']);
+	        $u->resetPreferences();
+	        if($u->id == $GLOBALS['current_user']->id) {
+	            SugarApplication::redirect('index.php');
+	        }
+	        else{
+	            SugarApplication::redirect("index.php?module=Users&record=".$_REQUEST['record']."&action=DetailView"); //bug 48170]
+	
+	        }
+	    }
+	}  
 	protected function action_delete()
 	{
 	    if($_REQUEST['record'] != $GLOBALS['current_user']->id && ($GLOBALS['current_user']->isAdminForModule('Users')

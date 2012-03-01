@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -70,6 +70,7 @@ $mod_strings = array (
     'LBL_ROW_NUMBER' => 'Row Number',
     'LBL_NONE' => 'None',
     'LBL_REQUIRED_VALUE' => 'Required value missing',
+    'LBL_ERROR_SYNC_USERS' => 'Invalid value to sync to Outlook: ',
     'LBL_ID_EXISTS_ALREADY' => 'ID already exists in this table',
     'LBL_ASSIGNED_USER' => 'If the user does not exist use the current user',
     'LBL_SHOW_HIDDEN' => 'Show fields that are not normally importable',

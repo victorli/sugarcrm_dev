@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -68,6 +68,11 @@ class AdministrationViewThemesettings extends SugarView
     {
         global $current_user;
         if (!is_admin($current_user)) sugar_die("Unauthorized access to administration.");
+
+        // Check if default_theme is valid
+        if (isset($_REQUEST['default_theme']) && !in_array($_REQUEST['default_theme'], array_keys(SugarThemeRegistry::allThemes()))) {
+            sugar_die("Default theme is invalid.");          
+        }
         
         if (isset($_REQUEST['disabled_themes']) ) {
             $toDecode = html_entity_decode  ($_REQUEST['disabled_themes'], ENT_QUOTES);

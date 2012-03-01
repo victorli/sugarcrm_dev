@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -2023,5 +2023,50 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
         $check = $this->_db->validateQuery($sql);
         $this->assertEquals($good, $check);
     }
+
+    public function testTextSizeHandling()
+    {
+        $tablename = 'testTextSize';// . mt_rand();
+        $fielddefs = array(
+                        'id' =>
+                            array (
+                            'name' => 'id',
+                            'required'=>true,
+                            'type' => 'id',
+                            ),
+                        'test' => array (
+                            'name' => 'test',
+                            'type' => 'longtext',
+                            //'len' => '255',
+                            ),
+                        'dummy' => array (
+                            'name' => 'dummy',
+                            'type' => 'longtext',
+                            //'len' => '255',
+                            ),
+                        );
+
+        $this->createTableParams($tablename, $fielddefs, array());
+        $basestr = '0123456789abcdefghijklmnopqrstuvwxyz';
+        $str = $basestr;
+        while(strlen($str) < 159900)
+        {
+            $str .= $basestr;
+        }
+
+        for($i = 0; $i < 50; $i++)
+        {
+            $str .= $basestr;
+            $size = strlen($str);
+            //echo "$size\n";
+            $this->_db->insertParams($tablename, $fielddefs, array('id' => $size, 'test' => $str, 'dummy' => $str));
+
+            $select = "SELECT test FROM $tablename WHERE id = '$size'";
+            $strresult = $this->_db->getOne($select);
+
+            $this->assertEquals(0, mb_strpos($str, $strresult));
+        }
+    }
+
 
 }

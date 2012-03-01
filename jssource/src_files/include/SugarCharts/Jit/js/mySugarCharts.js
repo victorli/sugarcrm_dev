@@ -1,6 +1,6 @@
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -46,11 +46,6 @@ var activeTab = activePage,
 		loadSugarCharts: function(activeTab) {
 			var chartFound = false;
 
-			if(typeof numCols == 'undefined')
-			{
-			var numCols = 2;
-			}
-
 			for (id in charts[activeTab]){
 				if(id != 'undefined'){
 					chartFound = true;
@@ -59,8 +54,7 @@ var activeTab = activePage,
 											 charts[activeTab][id]['chartId'], 
 											 charts[activeTab][id]['jsonFilename'],
 											 charts[activeTab][id]['css'],
-											 charts[activeTab][id]['chartConfig'],
-											 numCols
+											 charts[activeTab][id]['chartConfig']
 											 );
 				}
 			}

@@ -1,7 +1,7 @@
 {*
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,8 +41,8 @@
     {foreach from=$recentRecords item=item name=lastViewed}
     <span>
         
-        <a title="{$item.item_summary} [{$APP.LBL_ALT_HOT_KEY}{$smarty.foreach.lastViewed.iteration}]" 
-            accessKey="{$smarty.foreach.lastViewed.iteration}" 
+        <a title="{$item.item_summary}"
+            accessKey="{$smarty.foreach.lastViewed.iteration}"
             href="{sugar_link module=$item.module_name action='DetailView' record=$item.item_id link_only=1}">
             {$item.image}&nbsp;<span>{$item.item_summary_short}</span>
         </a>

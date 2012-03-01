@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -444,7 +444,8 @@ class EditView
                 if (isset($this->fieldDefs[$name]['options']) && isset($app_list_strings[$this->fieldDefs[$name]['options']]))
                 {
                     $this->fieldDefs[$name]['options'] = $app_list_strings[$this->fieldDefs[$name]['options']];
-                    if(isset($GLOBALS['sugar_config']['enable_autocomplete']) && $GLOBALS['sugar_config']['enable_autocomplete'] == true){
+                    if(isset($GLOBALS['sugar_config']['enable_autocomplete']) && $GLOBALS['sugar_config']['enable_autocomplete'] == true)
+                    {
 						$this->fieldDefs[$name]['autocomplete'] = true;
 	                	$this->fieldDefs[$name]['autocomplete_options'] = $this->fieldDefs[$name]['options']; // we need the name for autocomplete
 					} else {
@@ -459,10 +460,13 @@ class EditView
 	       			}else{
 	       				$function = $this->fieldDefs[$name]['function'];
 	       			}
+
+                    if(isset($this->fieldDefs[$name]['function']['include']) && file_exists($this->fieldDefs[$name]['function']['include']))
+                    {
+                  		require_once($this->fieldDefs[$name]['function']['include']);
+                  	}
+
 	       	 		if(!empty($this->fieldDefs[$name]['function']['returns']) && $this->fieldDefs[$name]['function']['returns'] == 'html'){
-						if(!empty($this->fieldDefs[$name]['function']['include'])){
-								require_once($this->fieldDefs[$name]['function']['include']);
-						}
 						$value = $function($this->focus, $name, $value, $this->view);
 						$valueFormatted = true;
 					}else{
@@ -539,9 +543,11 @@ class EditView
             }
         }
     }
+
+    
     /**
      * display
-     * This method makes the Smarty variable assignments and theautocomplete_ajax'vars the
+     * This method makes the Smarty variable assignments and then displays the
      * generated view.
      * @param $showTitle boolean value indicating whether or not to show a title on the resulting page
      * @param $ajaxSave boolean value indicating whether or not the operation is an Ajax save request
@@ -861,3 +867,4 @@ class EditView
         return '';
     }
 }
+

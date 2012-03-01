@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -1701,9 +1701,9 @@ $close_inline_img = SugarThemeRegistry::current()->getImage('close_inline', 'bor
 
         list($orderBy,$desc) = $this->getOrderByInfo($html_varName);
 
-		$imgArrow = "_down";
+		$imgArrow = "_up";
 		if($desc) {
-			$imgArrow = "_up";
+			$imgArrow = "_down";
 		}
 		/**
 		 * @deprecated only used by legacy opportunites listview, nothing current. Leaving for BC

@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,6 +36,22 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
 $action_view_map['authorize']= 'authorize';
 
+/*
+	global $mod_strings;
+	global $current_language;
+	global $currentModule;
+	$temp_module = $currentModule;
+	$mod_strings = return_module_language($current_language,'Calendar');
+	$currentModule = 'Calendar';
+	$args = array();
+        include_once("modules/Calendar/Calendar.php") ;
+        include_once("modules/Calendar/templates/templates_calendar.php") ;
+        $args['calendar'] = new Calendar('month');
+	$args['view'] = 'month';
+	$args['size'] = 'small';
+        template_calendar($args);
+	$mod_strings = return_module_language($current_language,$temp_module);
+	$currentModule = $_REQUEST['module'];
+*/

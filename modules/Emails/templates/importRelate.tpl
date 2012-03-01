@@ -1,7 +1,7 @@
 {*
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -92,8 +92,8 @@ function parent_typechangeQS() {
 <td nowrap="nowrap" width="37%">
 <input name="assigned_user_name" class="sqsEnabled" tabindex="2" id="assigned_user_name" size="" value="{$userName}" type="text">
 <input name="assigned_user_id" id="assigned_user_id" value="{$userId}" type="hidden">
-<input name="btn_assigned_user_name" tabindex="2" title="{$APP.LBL_SELECT_BUTTON_TITLE}" accesskey="{$APP.LBL_SELECT_BUTTON_KEY}" class="button" value="{$APP.LBL_SELECT_BUTTON_LABEL}" onclick='open_popup("Users", 600, 400, "", true, false, {literal}{"call_back_function":"set_return","form_name":"{/literal}{$formName}{literal}","field_to_name_array":{"id":"assigned_user_id","name":"assigned_user_name"}}{/literal}, "single", true);' type="button">
-<input name="btn_clr_assigned_user_name" tabindex="2" title="{$APP.LBL_CLEAR_BUTTON_TITLE}" accesskey="{$APP.LBL_CLEAR_BUTTON_KEY}" class="button" onclick="this.form.assigned_user_name.value = ''; this.form.assigned_user_id.value = '';" value="{$APP.LBL_CLEAR_BUTTON_LABEL}" type="button">
+<input name="btn_assigned_user_name" tabindex="2" title="{$APP.LBL_SELECT_BUTTON_TITLE}"  class="button" value="{$APP.LBL_SELECT_BUTTON_LABEL}" onclick='open_popup("Users", 600, 400, "", true, false, {literal}{"call_back_function":"set_return","form_name":"{/literal}{$formName}{literal}","field_to_name_array":{"id":"assigned_user_id","name":"assigned_user_name"}}{/literal}, "single", true);' type="button">
+<input name="btn_clr_assigned_user_name" tabindex="2" title="{$APP.LBL_CLEAR_BUTTON_TITLE}"  class="button" onclick="this.form.assigned_user_name.value = ''; this.form.assigned_user_id.value = '';" value="{$APP.LBL_CLEAR_BUTTON_LABEL}" type="button">
 </td>
 </tr>
 {/if}
@@ -110,7 +110,7 @@ function parent_typechangeQS() {
 <slot _moz-userdefined="">
 <input type="hidden" value="" name="parent_id" id="parent_id"/>
 <input type="text" value="" tabindex="2" name="parent_name" id="parent_name" class="sqsEnabled" autocomplete="OFF"/>
-<input type="button"  onclick='{literal} if(document["{/literal}{$formName}{literal}"].parent_type.value != ""){open_popup(document["{/literal}{$formName}{literal}"].parent_type.value,600,400,"",true,false,{"call_back_function":"set_return","form_name":"{/literal}{$formName}{literal}","field_to_name_array":{"id":"parent_id","name":"parent_name"}});}'{/literal} value="{$APP.LBL_SELECT_BUTTON_LABEL}" accesskey="{$APP.LBL_SELECT_BUTTON_KEY}" title="{$APP.LBL_SELECT_BUTTON_TITLE}" class="button" tabindex="2" name="button" id="change_parent"/>
+<input type="button"  onclick='{literal} if(document["{/literal}{$formName}{literal}"].parent_type.value != ""){open_popup(document["{/literal}{$formName}{literal}"].parent_type.value,600,400,"",true,false,{"call_back_function":"set_return","form_name":"{/literal}{$formName}{literal}","field_to_name_array":{"id":"parent_id","name":"parent_name"}});}'{/literal} value="{$APP.LBL_SELECT_BUTTON_LABEL}"  title="{$APP.LBL_SELECT_BUTTON_TITLE}" class="button" tabindex="2" name="button" id="change_parent"/>
 </slot>
 </td></tr></table>
 </td>

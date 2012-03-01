@@ -1,7 +1,7 @@
 {*
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -56,7 +56,6 @@
 			<tr>
 				<td> <input title="{$mod_strings.LBL_ADD_INBOUND_ACCOUNT}"
 	                        type='button' 
-	                        accessKey="n" 
 	                        class="button"
 	                        onClick='SUGAR.email2.accounts.showEditInboundAccountDialogue();'
 	                        name="button" id="addButton" value="{$mod_strings.LBL_ADD_INBOUND_ACCOUNT}">

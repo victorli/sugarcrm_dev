@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -111,12 +111,5 @@ if(!file_exists('custom/modules/Connectors/metadata')) {
 if(!write_array_to_file('modules_sources', $default_modules_sources, 'custom/modules/Connectors/metadata/display_config.php')) {
    $GLOBALS['log']->fatal('Cannot write file custom/modules/Connectors/metadata/display_config.php');
 }
-
-/*
-require_once('include/connectors/utils/ConnectorUtils.php');
-if(!ConnectorUtils::updateMetaDataFiles()) {
-   $GLOBALS['log']->fatal('Cannot update metadata files for connectors');
-}
-*/
 
 ?>

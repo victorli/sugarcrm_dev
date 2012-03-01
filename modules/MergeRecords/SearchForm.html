@@ -1,7 +1,7 @@
 <!--
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -53,8 +53,8 @@
 		<td align="right"><input type="hidden" name="action" value="index"/>
 			<input type="hidden" name="query" value="true"/>
 			<input type="hidden" name="module" value="Cases" />
-		<input title="{APP.LBL_SEARCH_BUTTON_TITLE}" accessKey="{APP.LBL_SEARCH_BUTTON_KEY}" class="button" type="submit" name="button" value="{APP.LBL_SEARCH_BUTTON_LABEL}" id="search_form_submit"/>
-		<input title="{APP.LBL_CLEAR_BUTTON_TITLE}" accessKey="{APP.LBL_CLEAR_BUTTON_KEY}" onclick="clear_form(this.form);" class="button" type="button" name="clear" value=" {APP.LBL_CLEAR_BUTTON_LABEL} " id="search_form_clear"/>
+		<input title="{APP.LBL_SEARCH_BUTTON_TITLE}"  class="button" type="submit" name="button" value="{APP.LBL_SEARCH_BUTTON_LABEL}" id="search_form_submit"/>
+		<input title="{APP.LBL_CLEAR_BUTTON_TITLE}"  onclick="clear_form(this.form);" class="button" type="button" name="clear" value=" {APP.LBL_CLEAR_BUTTON_LABEL} " id="search_form_clear"/>
 		<br>
 		<a href='index.php?module=Cases&action=index&advanced=true' class="tabFormAdvLink">{ADVANCED_SEARCH_PNG}</a>&nbsp;<a href='index.php?module=Cases&action=index&advanced=true' class="tabFormAdvLink">{APP.LNK_ADVANCED_SEARCH}</a>
 		</td>
@@ -83,7 +83,7 @@
 	<td width="25%" ><slot><input name='name' type="text" tabindex='1' size='25' maxlength='50' value="{NAME}"></slot></td>
 	<td width="20%" scope="row"><slot>{MOD.LBL_CASE_NUMBER}</slot></td>
 	<td width="25%" ><slot><input name='case_number' tabindex='2' size='15' type="text" value='{CASE_NUMBER}'></slot></td>
-	<td width="10%" rowspan="3" scope="row" align="right" ><slot><input title="{APP.LBL_SEARCH_BUTTON_TITLE}" accessKey="{APP.LBL_SEARCH_BUTTON_KEY}" class="button" type="submit" name="button" value="{APP.LBL_SEARCH_BUTTON_LABEL}"/>&nbsp;<input title="{APP.LBL_CLEAR_BUTTON_TITLE}" accessKey="{APP.LBL_CLEAR_BUTTON_KEY}" onclick="clear_form(this.form);" class="button" type="button" name="clear" value=" {APP.LBL_CLEAR_BUTTON_LABEL} "/>
+	<td width="10%" rowspan="3" scope="row" align="right" ><slot><input title="{APP.LBL_SEARCH_BUTTON_TITLE}" class="button" type="submit" name="button" value="{APP.LBL_SEARCH_BUTTON_LABEL}"/>&nbsp;<input title="{APP.LBL_CLEAR_BUTTON_TITLE}" onclick="clear_form(this.form);" class="button" type="button" name="clear" value=" {APP.LBL_CLEAR_BUTTON_LABEL} "/>
 		<br><a href='index.php?module=Cases&action=index&query=true' class="tabFormAdvLink">{BASIC_SEARCH_PNG}</a>&nbsp;<a href='index.php?module=Cases&action=index&query=true' class="tabFormAdvLink">{APP.LNK_BASIC_SEARCH}</a>
 		</slot></td>
 	</tr><tr>

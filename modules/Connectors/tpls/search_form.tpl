@@ -1,7 +1,7 @@
 {*
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -68,5 +68,5 @@
 {/if}
 </table>
 <input type='button' name='btn_search' id='btn_search' title="{$APP.LBL_SEARCH_BUTTON_LABEL}" accessKey="{$APP.LBL_SEARCH_BUTTON_KEY}" class="button" onClick="javascript:SourceTabs.search();" value="      {$APP.LBL_SEARCH_BUTTON_LABEL}      "/>&nbsp;
-<input type='button' name='btn_clear' title="{$APP.LBL_CLEAR_BUTTON_LABEL}" accessKey="{$APP.LBL_CLEAR_BUTTON_KEY}" class="button" onClick="javascript:SourceTabs.clearForm();" value="{$APP.LBL_CLEAR_BUTTON_LABEL}"/>
+<input type='button' name='btn_clear' title="{$APP.LBL_CLEAR_BUTTON_LABEL}" class="button" onClick="javascript:SourceTabs.clearForm();" value="{$APP.LBL_CLEAR_BUTTON_LABEL}"/>
 </form>

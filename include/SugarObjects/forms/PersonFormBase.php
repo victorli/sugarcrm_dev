@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -195,7 +195,7 @@ function checkForDuplicates($prefix='')
     require_once('include/MVC/SugarModule.php');
     $focus = SugarModule::get($this->moduleName)->loadBean();
 
-	$query = $this->getDuplicateQuery($prefix);
+	$query = $this->getDuplicateQuery($focus, $prefix);
 
     if(empty($query))
     {
@@ -257,10 +257,11 @@ function checkForDuplicates($prefix='')
  * check sequence.
  *
  * @see checkForDuplicates (method), ContactFormBase.php, LeadFormBase.php, ProspectFormBase.php
+ * @param $focus sugarbean
  * @param $prefix String value of prefix that may be present in $_POST variables
  * @return SQL String of the query that should be used for the initial duplicate lookup check
  */
-public function getDuplicateQuery($prefix='')
+public function getDuplicateQuery($focus, $prefix='')
 {
     return null;
 }

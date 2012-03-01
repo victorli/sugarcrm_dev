@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -534,14 +534,21 @@ require_once('include/EditView/EditView2.php');
      * Parse date expression and return WHERE clause
      * @param string $operator Date expression operator
      * @param string DB field name
+      * @param string DB field type
      */
-    protected function parseDateExpression($operator, $db_field)
+    protected function parseDateExpression($operator, $db_field, $field_type = '')
     {
-        $dates = TimeDate::getInstance()->parseDateRange($operator);
+        if ($field_type == "date") {
+            $type = "date";
+            $adjForTZ = false;
+        } else {
+            $type = "datetime";
+            $adjForTZ = true;
+        }
+        $dates = TimeDate::getInstance()->parseDateRange($operator, null, $adjForTZ);
         if(empty($dates)) return '';
-
-        $start = $this->seed->db->convert($this->seed->db->quoted($dates[0]->asDb()), "datetime");
-        $end = $this->seed->db->convert($this->seed->db->quoted($dates[1]->asDb()), "datetime");
+        $start = $this->seed->db->convert($this->seed->db->quoted($dates[0]->asDb()), $type);
+        $end = $this->seed->db->convert($this->seed->db->quoted($dates[1]->asDb()), $type);
         return "($db_field >= $start AND $db_field <= $end)";
     }
 
@@ -1059,7 +1066,11 @@ require_once('include/EditView/EditView2.php');
                              case 'this_year':
                              case 'last_year':
                              case 'next_year':
-                                 $where .= $this->parseDateExpression(strtolower($operator), $db_field);
+                                 if (!empty($field) && !empty($this->seed->field_name_map[$field]['type'])) {
+                                     $where .= $this->parseDateExpression(strtolower($operator), $db_field, $this->seed->field_name_map[$field]['type']);
+                                 } else {
+                                     $where .= $this->parseDateExpression(strtolower($operator), $db_field);
+                                 }
                                  break;
                              case 'isnull':
                                  $where .=  "($db_field IS NULL OR $db_field = '')";

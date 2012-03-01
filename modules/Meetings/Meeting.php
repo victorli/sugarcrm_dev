@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,7 +37,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 // Meeting is used to store customer information.
-class Meeting extends SugarBean {
+require_once('modules/Activities/Activity.php');
+
+class Meeting extends Activity {
 	// Stored fields
 	var $id;
 	var $date_entered;
@@ -405,6 +407,7 @@ class Meeting extends SugarBean {
 
 	function get_list_view_data() {
 		$meeting_fields = $this->get_list_view_array();
+
 		global $app_list_strings, $focus, $action, $currentModule;
 		if(isset($this->parent_type))
 			$meeting_fields['PARENT_MODULE'] = $this->parent_type;
@@ -412,7 +415,7 @@ class Meeting extends SugarBean {
 			//cn: added this if() to deal with sequential Closes in Meetings.	this is a hack to a hack(formbase.php->handleRedirect)
 			if(empty($action))
 			     $action = "index";
-            $setCompleteUrl = "<a onclick='SUGAR.util.closeActivityPanel.show(\"{$this->module_dir}\",\"{$this->id}\",\"Held\",\"listview\",\"1\");'>";
+            $setCompleteUrl = "<a id='{$this->id}' onclick='SUGAR.util.closeActivityPanel.show(\"{$this->module_dir}\",\"{$this->id}\",\"Held\",\"listview\",\"1\");'>";
 			$meeting_fields['SET_COMPLETE'] = $setCompleteUrl . SugarThemeRegistry::current()->getImage("close_inline"," border='0'",null,null,'.gif',translate('LBL_CLOSEINLINE'))."</a>";
 		}
 		global $timedate;
@@ -440,7 +443,14 @@ class Meeting extends SugarBean {
 		}
 
         $meeting_fields['CONTACT_ID'] = $this->contact_id;
-        $meeting_fields['CONTACT_NAME'] = $this->contact_name;
+
+        //If we have a contact id and there are more than one contacts found for this meeting then let's create a hover link
+        if($this->alter_many_to_many_query && !empty($this->contact_id) && isset($this->secondary_select_count) && $this->secondary_select_count > 1)
+        {
+           $meeting_fields['CONTACT_NAME'] = $this->createManyToManyDetailHoverLink($this->contact_name, $this->contact_id);
+        } else {
+           $meeting_fields['CONTACT_NAME'] = $this->contact_name;
+        }
 
 		$meeting_fields['PARENT_NAME'] = $this->parent_name;
 
@@ -711,6 +721,7 @@ class Meeting extends SugarBean {
         }
         return '';
     }
+
 } // end class def
 
 // External API integration, for the dropdown list of what external API's are available

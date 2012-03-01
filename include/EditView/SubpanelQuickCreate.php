@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -78,12 +78,21 @@ class SubpanelQuickCreate{
 		$this->ev->setup($module, $bean, $source);
 		unset($bean);
 
+		// Bug 49219 - Check empty before set defaults, or the settings from viewdefs above will be overridden.
+		if (!isset($this->ev->defs['templateMeta']['form']['headerTpl']))
+        {
+            $this->ev->defs['templateMeta']['form']['headerTpl'] = 'include/EditView/header.tpl';
+        }
 
-	    $this->ev->defs['templateMeta']['form']['headerTpl'] = 'include/EditView/header.tpl';
-		$this->ev->defs['templateMeta']['form']['footerTpl'] = 'include/EditView/footer.tpl';
+		if (!isset($this->ev->defs['templateMeta']['form']['footerTpl']))
+        {
+            $this->ev->defs['templateMeta']['form']['footerTpl'] = 'include/EditView/footer.tpl';
+        }
+		// Comment below, breaks many out of the box viewdefs
+		/*if (empty($this->ev->defs['templateMeta']['form']['buttons'])) $this->ev->defs['templateMeta']['form']['buttons'] = array('SUBPANELSAVE', 'SUBPANELCANCEL', 'SUBPANELFULLFORM');*/
 		$this->ev->defs['templateMeta']['form']['buttons'] = array('SUBPANELSAVE', 'SUBPANELCANCEL', 'SUBPANELFULLFORM');
-
-        //Load the parent view class if it exists.  Check for custom file first
+		
+	    //Load the parent view class if it exists.  Check for custom file first
         loadParentView('edit');
 
 		$viewEditSource = 'modules/'.$module.'/views/view.edit.php';

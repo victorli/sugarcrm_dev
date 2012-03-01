@@ -3,7 +3,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -131,7 +131,7 @@ class Importer
 
     protected function importRow($row)
     {
-        global $sugar_config, $mod_strings;
+        global $sugar_config, $mod_strings, $current_user;
 
         $focus = clone $this->bean;
         $focus->unPopulateDefaultValues();
@@ -205,17 +205,28 @@ class Importer
             }
 
             // Handle the special case "Sync to Outlook"
-            if ( $focus->object_name == "Contacts" && $field == 'sync_contact' )
+            if ( $focus->object_name == "Contact" && $field == 'sync_contact' )
             {
-                $bad_names = array();
-                $returnValue = $this->ifs->synctooutlook($rowValue,$fieldDef,$bad_names);
-                // try the default value on fail
-                if ( !$returnValue && !empty($defaultRowValue) )
-                    $returnValue = $this->ifs->synctooutlook($defaultRowValue, $fieldDef, $bad_names);
-                if ( !$returnValue )
-                {
-                    $this->importSource->writeError($mod_strings['LBL_ERROR_SYNC_USERS'], $fieldTranslated, explode(",",$bad_names));
-                    $do_save = 0;
+                /**
+                 * Bug #41194 : if true used as value of sync_contact - add curent user to list to sync
+                 */
+                if ( true == $rowValue || 'true' == strtolower($rowValue)) {
+                    $focus->sync_contact = $focus->id;
+                } elseif (false == $rowValue || 'false' == strtolower($rowValue)) {
+                    $focus->sync_contact = '';
+                } else {
+                    $bad_names = array();
+                    $returnValue = $this->ifs->synctooutlook($rowValue,$fieldDef,$bad_names);
+                    // try the default value on fail
+                    if ( !$returnValue && !empty($defaultRowValue) )
+                        $returnValue = $this->ifs->synctooutlook($defaultRowValue, $fieldDef, $bad_names);
+                    if ( !$returnValue )
+                    {
+                        $this->importSource->writeError($mod_strings['LBL_ERROR_SYNC_USERS'], $fieldTranslated, $bad_names);
+                        $do_save = 0;
+                    } else {
+                        $focus->sync_contact = $returnValue;
+                    }
                 }
             }
 
@@ -500,7 +511,7 @@ class Importer
             $focus->update_date_modified = false;
 
         $focus->optimistic_lock = false;
-        if ( $focus->object_name == "Contacts" && isset($focus->sync_contact) )
+        if ( $focus->object_name == "Contact" && isset($focus->sync_contact) )
         {
             //copy the potential sync list to another varible
             $list_of_users=$focus->sync_contact;
@@ -524,13 +535,17 @@ class Importer
             $focus->set_created_by = false;
         }
 
+        if ( $focus->object_name == "Contact" && isset($list_of_users) )
+            $focus->process_sync_to_outlook($list_of_users);
+
         $focus->save(false);
+
+        //now that save is done, let's make sure that parent and related id's were saved as relationships
+        //this takes place before the afterImportSave()
+        $this->checkRelatedIDsAfterSave($focus);
 
         // call any logic needed for the module postSave
         $focus->afterImportSave();
-
-        if ( $focus->object_name == "Contacts" && isset($list_of_users) )
-            $focus->process_sync_to_outlook($list_of_users);
 
         // Add ID to User's Last Import records
         if ( $newRecord )
@@ -846,4 +861,60 @@ class Importer
             exit(1);
         }
     }
+
+
+    /**
+	 * upon bean save, the relationships are saved by SugarBean->save_relationship_changes() method, but those values depend on
+     * the request object and is not reliable during import.  This function makes sure any defined related or parent id's are processed
+	 * and their relationship saved.
+	 */
+    public function checkRelatedIDsAfterSave($focus)
+    {
+        if(empty($focus)){
+            return false;
+        }
+
+        //check relationship fields first
+        if(!empty($focus->parent_id) && !empty($focus->parent_type)){
+            $relParentName = strtolower($focus->parent_type);
+            $relParentID = strtolower($focus->parent_id);
+        }
+        if(!empty($focus->related_id) && !empty($focus->related_type)){
+            $relName = strtolower($focus->related_type);
+            $relID = strtolower($focus->related_id);
+        }
+
+        //now refresh the bean and process for parent relationship
+        $focus->retrieve($focus->id);
+        if(!empty($relParentName) && !empty($relParentID)){
+
+            //grab the relationship and any available ids
+            if(!empty($focus->$relParentName)){
+                $rel_ids=array();
+                $focus->load_relationship($relParentName);
+                $rel_ids = $focus->$relParentName->get();
+
+                //if the current parent_id is not part of the stored rels, then add it
+                if(!in_array($relParentID, $rel_ids)){
+                    $focus->$relParentName->add($relParentID);
+                }
+            }
+        }
+
+        //now lets process any related fields
+        if(!empty($relName) && !empty($relID)){
+            if(!empty($focus->$relName)){
+                $rel_ids=array();
+                $focus->load_relationship($relName);
+                $rel_ids = $focus->$relName->get();
+
+                //if the related_id is not part of the stored rels, then add it
+                if(!in_array($relID, $rel_ids)){
+                    $focus->$relName->add($relID);
+                }
+            }
+        }
+    }
+
+
 }

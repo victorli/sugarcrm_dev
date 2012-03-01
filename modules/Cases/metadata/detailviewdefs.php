@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,11 +34,15 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
+$buttons = array('EDIT', 'DUPLICATE', 'DELETE', 'FIND_DUPLICATES');
+if(ACLController::checkAccess('KBDocuments', 'edit', true))
+{
+    array_push($buttons, array('customCode'=>'<input title="{$MOD.LBL_CREATE_KB_DOCUMENT}" accessKey="M" class="button" onclick="this.form.return_module.value=\'Cases\'; this.form.return_action.value=\'DetailView\';this.form.action.value=\'EditView\';this.form.module.value=\'KBDocuments\'" type="submit" name="button" value="{$MOD.LBL_CREATE_KB_DOCUMENT}">'));
+}
 $viewdefs['Cases']['DetailView'] = array(
-'templateMeta' => array('form' => array('buttons' =>
-										array('EDIT', 'DUPLICATE', 'DELETE', 'FIND_DUPLICATES',
-                                      ),
-                        ),
+
+'templateMeta' => array('form' => array('buttons' =>$buttons),
+
                         'maxColumns' => '2',
                         'widths' => array(
                                         array('label' => '10', 'field' => '30'),

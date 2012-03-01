@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -69,17 +69,22 @@ class SugarTestMeetingUtilities
         $meeting_ids = self::getCreatedMeetingIds();
         $GLOBALS['db']->query(sprintf("DELETE FROM meetings_contacts WHERE meeting_id IN ('%s')", implode("', '", $meeting_ids)));
     }
-    
+
     public static function addMeetingLeadRelation($meeting_id, $lead_id) {
         $id = create_guid();
         $GLOBALS['db']->query("INSERT INTO meetings_leads (id, meeting_id, lead_id) values ('{$id}', '{$meeting_id}', '{$lead_id}')");
         return $id;
     }
 
+    public static function addMeetingUserRelation($meeting_id, $user_id) {
+        $id = create_guid();
+        $GLOBALS['db']->query("INSERT INTO meetings_users (id, meeting_id, user_id) values ('{$id}', '{$meeting_id}', '{$user_id}')");
+        return $id;
+    }
+
     public static function deleteMeetingLeadRelation($id) {
         $GLOBALS['db']->query("delete from meetings_leads where id='{$id}'");
     }
-
 
     public static function addMeetingParent($meeting_id, $lead_id) {
         $sql = "update meetings set parent_type='Leads', parent_id='{$lead_id}' where id='{$meeting_id}'";

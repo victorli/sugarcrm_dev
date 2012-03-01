@@ -1,7 +1,7 @@
 {*
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -59,7 +59,7 @@
 	<input class="sqsEnabled" autocomplete="off" id="subscription_name" name="wiz_step3_subscription_name" title='{$MOD.LBL_SUBSCRIPTION_LIST_NAME}' type="text" size='35' value="{$SUBSCRIPTION_NAME}">
 	<input id='prospect_list_type_default' name='prospect_list_type_default' type="hidden" value="default" />	
 	<input id='wiz_step3_subscription_name_id' name='wiz_step3_subscription_list_id' title='Subscription List ID' type="hidden" value='{$SUBSCRIPTION_ID}'>
-	<input title="{$APP.LBL_SELECT_BUTTON_TITLE}" accessKey="{$APP.LBL_SELECT_BUTTON_KEY}" type="button"  class="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' name=btn1 id='wiz_step3_subscription_name_button'
+	<input title="{$APP.LBL_SELECT_BUTTON_TITLE}" type="button"  class="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' name=btn1 id='wiz_step3_subscription_name_button'
  	onclick='open_popup("ProspectLists", 600, 400, "&list_type=default", true, false,  {$encoded_subscription_popup_request_data}, "single", true);'>
 	</span sugar='slot'></td>
 	</tr>
@@ -76,7 +76,7 @@
 	<input  class="sqsEnabled" autocomplete="off" id="unsubscription_name" name="wiz_step3_unsubscription_name" title='{$MOD.LBL_UNSUBSCRIPTION_LIST_NAME}' type="text" size='35' value="{$UNSUBSCRIPTION_NAME}" >
 	<input id='prospect_list_type_exempt' name='prospect_list_type_exempt' type="hidden" value="exempt" />	
 	<iput id='wiz_step3_unsubscription_name_id' name='wiz_step3_unsubscription_list_id' title='UnSubscription List ID' type="hidden" value='{$UNSUBSCRIPTION_ID}'>
-	<input title="{$APP.LBL_SELECT_BUTTON_TITLE}" accessKey="{$APP.LBL_SELECT_BUTTON_KEY}" type="button"  class="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' name=btn2 id='wiz_step3_unsubscription_name_button'
+	<input title="{$APP.LBL_SELECT_BUTTON_TITLE}" type="button"  class="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' name=btn2 id='wiz_step3_unsubscription_name_button'
  	onclick='open_popup("ProspectLists", 600, 400, "&list_type=exempt", true, false,  {$encoded_unsubscription_popup_request_data}, "single", true);'>
 	</span sugar='slot'></td>
 	</tr>
@@ -93,7 +93,7 @@
 	<input  class="sqsEnabled" autocomplete="off" id="test_name" name="wiz_step3_test_name" title='{$MOD.LBL_TEST_LIST_NAME}' type="text" size='35' value="{$TEST_NAME}">
 	<input id='prospect_list_type_test' name='prospect_list_type_test' type="hidden" value="test" />	
 	<input id='wiz_step3_test_name_id' name='wiz_step3_test_list_id' title='Test List ID' type="hidden" value='{$TEST_ID}'>
-	<input title="{$APP.LBL_SELECT_BUTTON_TITLE}" accessKey="{$APP.LBL_SELECT_BUTTON_KEY}" type="button"  class="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' name=btn3 id='wiz_step3_test_name_button'
+	<input title="{$APP.LBL_SELECT_BUTTON_TITLE}" type="button"  class="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' name=btn3 id='wiz_step3_test_name_button'
  	onclick='open_popup("ProspectLists", 600, 400, "&list_type=test", true, false,  {$encoded_test_popup_request_data}, "single", true);'>	
 	</span sugar='slot'></td>
 	</tr>

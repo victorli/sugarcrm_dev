@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -65,7 +65,7 @@ $mod_strings = array (
   'LBL_LIST_PRIMARY_PHONE' => 'Primary Phone',
   'LBL_LIST_USER_NAME' => 'User Name',
   'LBL_LIST_ADMIN' => 'Admin',
-  'LBL_NEW_EMPLOYEE_BUTTON_TITLE' => 'New Employee [Alt+N]',
+  'LBL_NEW_EMPLOYEE_BUTTON_TITLE' => 'New Employee',
   'LBL_NEW_EMPLOYEE_BUTTON_LABEL' => 'New Employee',
   'LBL_NEW_EMPLOYEE_BUTTON_KEY' => 'N',
   'LBL_ERROR' => 'Error:',
@@ -109,7 +109,7 @@ $mod_strings = array (
   'LBL_EMPLOYEE_STATUS' => 'Employee Status:',
   'LBL_PRIMARY_ADDRESS' => 'Primary Address:',
   'LBL_SAVED_SEARCH' => 'Layout Options',
-  'LBL_CREATE_USER_BUTTON_TITLE' => 'Create User [Alt+N]',
+  'LBL_CREATE_USER_BUTTON_TITLE' => 'Create User',
   'LBL_CREATE_USER_BUTTON_LABEL' => 'Create User',
   'LBL_CREATE_USER_BUTTON_KEY' => 'N',
   'LBL_FAVORITE_COLOR' => 'Favorite Color:',

@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -708,8 +708,14 @@ EOQ;
 		$GLOBALS['log']->debug("Starting password change for $this->user_name");
 
 		if (!isset ($new_password) || $new_password == "") {
-			$this->error_string = $mod_strings['ERR_PASSWORD_CHANGE_FAILED_1'].$current_user['user_name'].$mod_strings['ERR_PASSWORD_CHANGE_FAILED_2'];
+			$this->error_string = $mod_strings['ERR_PASSWORD_CHANGE_FAILED_1'].$current_user->user_name.$mod_strings['ERR_PASSWORD_CHANGE_FAILED_2'];
 			return false;
+		}
+
+		// Check new password against rules set by admin
+		if (!$this->check_password_rules($new_password)) {
+		    $this->error_string = $mod_strings['ERR_PASSWORD_CHANGE_FAILED_1'].$current_user->user_name.$mod_strings['ERR_PASSWORD_CHANGE_FAILED_3'];
+		    return false;
 		}
 
 		$old_user_hash = strtolower(md5($user_password));
@@ -737,7 +743,53 @@ EOQ;
         $_SESSION['hasExpiredPassword'] = '0';
 		return true;
 	}
-
+	
+	/**
+	 * Check new password against rules set by admin
+	 * @param string $password
+	 * @return boolean
+	 */
+	function check_password_rules($password) {
+	    $length = mb_strlen($password);
+	
+	    // Min length
+	    if(!empty($GLOBALS["sugar_config"]["passwordsetting"]["minpwdlength"]) && $GLOBALS["sugar_config"]["passwordsetting"]["minpwdlength"] > 0 && $length < $GLOBALS["sugar_config"]["passwordsetting"]["minpwdlength"]) {
+	        return false;
+	    }
+	
+	    // Max length
+	    if(!empty($GLOBALS['sugar_config']['passwordsetting']['maxpwdlength']) && $GLOBALS['sugar_config']['passwordsetting']['maxpwdlength'] > 0 && $length > $GLOBALS['sugar_config']['passwordsetting']['maxpwdlength']) {
+	        return false;
+	    }
+	
+	    // One lower case
+	    if(!empty($GLOBALS["sugar_config"]["passwordsetting"]["onelower"]) && !preg_match('/[a-z]+/', $password)){
+	        return false;
+	    }
+	
+	    // One upper case
+	    if(!empty($GLOBALS["sugar_config"]["passwordsetting"]["oneupper"]) && !preg_match('/[A-Z]+/', $password)){
+	        return false;
+	    }
+	
+	    // One number
+	    if(!empty($GLOBALS["sugar_config"]["passwordsetting"]["onenumber"]) && !preg_match('/[0-9]+/', $password)){
+	        return false;
+	    }
+	
+	    // One special character
+	    if(!empty($GLOBALS["sugar_config"]["passwordsetting"]["onespecial"]) && !preg_match('/[|}{~!@#$%^&*()_+=-]+/', $password)){
+	        return false;
+	    }
+	
+	    // Custom regex
+	    if(!empty($GLOBALS["sugar_config"]["passwordsetting"]["customregex"]) && !preg_match($GLOBALS["sugar_config"]["passwordsetting"]["customregex"], $password)){
+	        return false;
+	    }
+	
+	    return true;
+	}
+	
 	function is_authenticated() {
 		return $this->authenticated;
 	}
@@ -858,7 +910,19 @@ EOQ;
 			$user_fields['IS_GROUP_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '',null,null,'.gif',$mod_strings['LBL_CHECKMARK']);
 		else
 			$user_fields['IS_GROUP_IMAGE'] = '';
-		$user_fields['NAME'] = empty ($this->name) ? '' : $this->name;
+
+
+        if ($this->is_admin) {
+      			$user_fields['IS_ADMIN_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '',null,null,'.gif',translate('LBL_CHECKMARK', 'Users'));
+        } elseif (!$this->is_admin) {
+              $user_fields['IS_ADMIN'] = '';
+        }
+
+      	if ($this->is_group) {
+      		$user_fields['IS_GROUP_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '',null,null,'.gif',translate('LBL_CHECKMARK', 'Users'));
+        } else {
+            $user_fields['NAME'] = empty ($this->name) ? '' : $this->name;
+        }
 
 		$user_fields['REPORTS_TO_NAME'] = $this->reports_to_name;
 

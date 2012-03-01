@@ -1,7 +1,7 @@
  <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -85,7 +85,7 @@ class ViewRelationships extends SugarView
             $ajax->addCrumb ( translate('LBL_STUDIO'), 'ModuleBuilder.main("studio")' ) ;
             $ajax->addCrumb ( $translatedModule, 'ModuleBuilder.getContent("module=ModuleBuilder&action=wizard&view_module=' . $moduleName . '")' ) ;
             $ajax->addCrumb ( translate('LBL_RELATIONSHIPS'), '' ) ;
-            $ajax->addSection ( 'center', $moduleName . ' ' . translate('LBL_RELATIONSHIPS'), $smarty->fetch ( 'modules/ModuleBuilder/tpls/studioRelationships.tpl' ) ) ;
+            $ajax->addSection ( 'center', $moduleName . ' ' . translate('LBL_RELATIONSHIPS'), $this->fetchTemplate($smarty, 'modules/ModuleBuilder/tpls/studioRelationships.tpl'));
 
         } else
         {
@@ -107,8 +107,7 @@ class ViewRelationships extends SugarView
             $ajax->addCrumb ( $package->name, 'ModuleBuilder.getContent("module=ModuleBuilder&action=package&package=' . $package->name . '")' ) ;
             $ajax->addCrumb ( $moduleName, 'ModuleBuilder.getContent("module=ModuleBuilder&action=module&view_package=' . $package->name . '&view_module=' . $moduleName . '")' ) ;
             $ajax->addCrumb ( translate('LBL_RELATIONSHIPS'), '' ) ;
-            $ajax->addSection ( 'center', $moduleName . ' ' . translate('LBL_RELATIONSHIPS'), //$smarty->fetch('modules/ModuleBuilder/tpls/MBRelationship/relationships.tpl'));
-            $smarty->fetch ( 'modules/ModuleBuilder/tpls/studioRelationships.tpl' ) ) ;
+            $ajax->addSection ( 'center', $moduleName . ' ' . translate('LBL_RELATIONSHIPS'), $this->fetchTemplate($smarty, 'modules/ModuleBuilder/tpls/studioRelationships.tpl'));
         }
         echo $ajax->getJavascript () ;
     }
@@ -148,5 +147,18 @@ class ViewRelationships extends SugarView
             $ajaxrels [] = $rel ;
         }
         return $ajaxrels ;
+    }
+
+    /**
+     * fetchTemplate
+     * This function overrides fetchTemplate from SugarView.
+     *
+     * @param FieldViewer $mixed the Sugar_Smarty instance
+     * @param string $template the file to fetch
+     * @return string contents from calling the fetch method on the Sugar_Smarty instance
+     */
+    protected function fetchTemplate($smarty, $template)
+    {
+        return $smarty->fetch($this->getCustomFilePathIfExists($template));
     }
 }

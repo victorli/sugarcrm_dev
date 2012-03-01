@@ -2,7 +2,7 @@
 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -75,7 +75,7 @@
 <br>
 {if $NOTETEXT != ''}
     <p>
-        <input title="{$MOD.LBL_SHOW_ADVANCED_OPTIONS}" accessKey="" id="toggleNotes" class="button" type="button"
+        <input title="{$MOD.LBL_SHOW_ADVANCED_OPTIONS}"  id="toggleNotes" class="button" type="button"
                        name="button" value="  {$MOD.LBL_SHOW_NOTES}  ">
         <div id="importNotes" style="display: none;">
             <ul>
@@ -128,7 +128,7 @@
     </td>
     {if $item.show_remove}
     <td colspan="2">
-        <input title="{$MOD.LBL_REMOVE_ROW}" accessKey=""
+        <input title="{$MOD.LBL_REMOVE_ROW}" 
             id="deleterow_{$smarty.foreach.rows.index}" class="button" type="button"
             value="  {$MOD.LBL_REMOVE_ROW}  ">
     </td>
@@ -145,7 +145,7 @@
 {/foreach}
 <tr>
     <td align="left" colspan="4">
-        <input title="{$MOD.LBL_ADD_ROW}" accessKey="" id="addrow" class="button" type="button"
+        <input title="{$MOD.LBL_ADD_ROW}"  id="addrow" class="button" type="button"
             name="button" value="  {$MOD.LBL_ADD_ROW}  "> {sugar_help text=$MOD.LBL_ADD_FIELD_HELP}
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </td>
@@ -157,8 +157,8 @@
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
 <tr>
     <td align="left">
-        <input title="{$MOD.LBL_BACK}" accessKey="" id="goback" class="button" type="submit" name="button" value="  {$MOD.LBL_BACK}  ">&nbsp;
-        <input title="{$MOD.LBL_NEXT}" accessKey="" id="gonext" class="button" type="submit" name="button" value="  {$MOD.LBL_NEXT}  ">
+        <input title="{$MOD.LBL_BACK}"  id="goback" class="button" type="submit" name="button" value="  {$MOD.LBL_BACK}  ">&nbsp;
+        <input title="{$MOD.LBL_NEXT}"  id="gonext" class="button" type="submit" name="button" value="  {$MOD.LBL_NEXT}  ">
     </td>
 </tr>
 </table>

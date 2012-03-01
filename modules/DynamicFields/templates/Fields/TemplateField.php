@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -424,8 +424,22 @@ class TemplateField{
 
 	function populateFromPost(){
 		foreach($this->vardef_map as $vardef=>$field){
-			if(isset($_REQUEST[$vardef])){
+			if(isset($_REQUEST[$vardef])){		    
 				$this->$vardef = $_REQUEST[$vardef];
+
+				// Bug 49774, 49775: Strip html tags from 'formula' and 'dependency'. 
+				// Add to the list below if we need to do the same for other fields.
+				if (!empty($this->$vardef) && in_array($vardef, array('formula', 'dependency'))){
+				    $this->$vardef = to_html(strip_tags(from_html($this->$vardef)));
+				}
+
+                //Remove potential xss code from help field
+                if($field == 'help' && !empty($this->$vardef))
+                {
+                    $help = htmlspecialchars_decode($this->$vardef, ENT_QUOTES);
+                    $this->$vardef = htmlentities(remove_xss($help));
+                }
+
 				if($vardef != $field){
 					$this->$field = $this->$vardef;
 				}

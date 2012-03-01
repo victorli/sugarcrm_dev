@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -121,7 +121,7 @@ class TabGroupHelper{
 
         // Force a rebuild of the app language
         global $current_user;
-        include('modules/Administration/RebuildJSLang.php');
+        include(get_custom_file_if_exists('modules/Administration/RebuildJSLang.php'));
     	sugar_cache_clear('app_strings.'.$grouptab_lang);
      	$newFile = create_custom_directory('include/tabConfig.php');
      	write_array_to_file("GLOBALS['tabStructure']", $tabGroups, $newFile);

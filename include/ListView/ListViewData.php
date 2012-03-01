@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -232,7 +232,7 @@ class ListViewData {
 	 * @param string:'id' $id_field
 	 * @return array('data'=> row data 'pageData' => page data information
 	 */
-	function getListViewData($seed, $where, $offset=-1, $limit = -1, $filter_fields=array(),$params=array(),$id_field = 'id') {
+	function getListViewData($seed, $where, $offset=-1, $limit = -1, $filter_fields=array(),$params=array(),$id_field = 'id',$singleSelect=true) {
         global $current_user;
         SugarVCR::erase($seed->module_dir);
         $this->seed =& $seed;
@@ -296,7 +296,7 @@ class ListViewData {
 			$orderBy = 'last_name '.$order['sortOrder'].', first_name '.$order['sortOrder'];
 		}
 
-		$ret_array = $seed->create_new_list_query($orderBy, $where, $filter_fields, $params, 0, '', true, $seed, true);
+		$ret_array = $seed->create_new_list_query($orderBy, $where, $filter_fields, $params, 0, '', true, $seed, $singleSelect);
         $ret_array['inner_join'] = '';
         if (!empty($this->seed->listview_inner_join)) {
             $ret_array['inner_join'] = ' ' . implode(' ', $this->seed->listview_inner_join) . ' ';
@@ -343,21 +343,22 @@ class ListViewData {
 		$count = 0;
         $idIndex = array();
         $id_list = '';
-		while($row = $this->db->fetchByAssoc($result)) {
-			if($count < $limit) {
-				if(!empty($id_list)) {
-					$id_list = '(';
-				}else{
-					$id_list .= ',';
-				}
-				$id_list .= '\''.$row[$id_field].'\'';
-				//handles date formating and such
-				$idIndex[$row[$id_field]][] = count($rows);
-				$rows[] = $seed->convertRow($row);
-			}
-			$count++;
-		}
-		if (!empty($id_list)) $id_list .= ')';
+
+   		while(($row = $this->db->fetchByAssoc($result)) != null)
+        {
+   			if($count < $limit)
+            {
+   				$id_list .= ',\''.$row[$id_field].'\'';
+   				$idIndex[$row[$id_field]][] = count($rows);
+   				$rows[] = $seed->convertRow($row);
+   			}
+   			$count++;
+   		}
+
+        if (!empty($id_list))
+        {
+            $id_list = '('.substr($id_list, 1).')';
+        }
 
         SugarVCR::store($this->seed->module_dir,  $main_query);
 		if($count != 0) {
@@ -365,15 +366,24 @@ class ListViewData {
 			if(!empty($ret_array['secondary_select'])) {
 				$secondary_query = $ret_array['secondary_select'] . $ret_array['secondary_from'] . ' WHERE '.$this->seed->table_name.'.id IN ' .$id_list;
 				$secondary_result = $this->db->query($secondary_query);
+
+                $ref_id_count = array();
 				while($row = $this->db->fetchByAssoc($secondary_result)) {
+
+                    $ref_id_count[$row['ref_id']][] = true;
 					foreach($row as $name=>$value) {
 						//add it to every row with the given id
 						foreach($idIndex[$row['ref_id']] as $index){
 						    $rows[$index][$name]=$value;
 						}
-
 					}
 				}
+
+                $rows_keys = array_keys($rows);
+                foreach($rows_keys as $key)
+                {
+                    $rows[$key]['secondary_select_count'] = count($ref_id_count[$rows[$key]['ref_id']]);
+                }
 			}
 
             // retrieve parent names
@@ -399,6 +409,7 @@ class ListViewData {
 
 			reset($rows);
 			while($row = current($rows)){
+
                 $temp = clone $seed;
 			    $dataIndex = count($data);
 

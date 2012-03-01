@@ -1,6 +1,6 @@
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -3167,7 +3167,65 @@ SUGAR.util = function () {
                     }
                 }
                 this._doWhenLocked = false;
-            }
+            },
+        buildAccessKeyLabels : function()
+                {
+                    if (typeof(Y.env.ua) !== 'undefined'){
+                        envStr = '';
+                        browserOS = Y.env.ua['os'];
+                        isIE = Y.env.ua['ie'];
+                        isCR = Y.env.ua['chrome'];
+                        isFF = Y.env.ua['gecko'];
+                        isWK = Y.env.ua['webkit'];
+                        isOP = Y.env.ua['opera'];
+                        controlKey = '';
+
+                        //first determine the OS
+                        if(browserOS=='macintosh'){
+                            //we got a mac, lets use the mac specific commands while we check the browser
+                            if(isIE){
+                                //IE on a Mac? Not possible, but let's assign alt anyways for completions sake
+                                controlKey = 'Alt+';
+                            }else if(isWK){
+                                //Chrome or safari on a mac
+                                controlKey = 'Ctrl+Opt+';
+                            }else if(isOP){
+                                //Opera on a mac
+                                controlKey = 'Shift+Esc: ';
+                            }else{
+                                //default FF and everything else on a mac
+                                controlKey = 'Ctrl+';
+                            }
+                        }else{
+                            //this is not a mac so let's use the windows/unix commands while we check the browser
+                            if(isFF){
+                                //FF on windows/unix
+                                controlKey = 'Alt+Shift+';
+                            }else if(isOP){
+                                //Opera on windows/unix
+                                controlKey = 'Shift+Esc: ';
+                            }else {
+                                //this is the default for safari, IE and Chrome
+                                //if this is webkit and is NOT google, then we are most likely looking at Safari
+                                controlKey = 'Alt+';
+                            }
+
+                        }
+
+                        //now lets retrieve all elements of type input
+                        allButtons = document.getElementsByTagName('input');
+                        //iterate through list and modify title if the accesskey is not empty
+                        for(i=0;i<allButtons.length;i++){
+                            if(allButtons[i].getAttribute('accesskey') && allButtons[i].getAttribute('type') && allButtons[i].getAttribute('type')=='button'){
+                                allButtons[i].setAttribute('title',allButtons[i].getAttribute('title')+' ['+controlKey+allButtons[i].getAttribute('accesskey')+']');
+                            }
+                        }
+                        //now change the text in the help div
+			if(typeof(keyboardhelpText) =='string'){
+                                keyboardhelpText = keyboardhelpText.replace(/Alt\+/g,controlKey);
+                        }
+                    }// end if (typeof(Y.env.ua) !== 'undefined')
+                }//end buildAccessKeyLabels()
 	};
 }(); // end util
 SUGAR.util.additionalDetailsCache = new Array();

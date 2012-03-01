@@ -1,7 +1,7 @@
 {*
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -54,9 +54,9 @@
 </td>
 <td width="*">
 {{if $displayParams.maxlength}}
-<textarea id="{{$street}}" name="{{$street}}" maxlength="{{$displayParams.maxlength}}" rows="{{$displayParams.rows|default:4}}" cols="{{$displayParams.cols|default:60}}" {{if !empty($tabindex)}} tabindex="{{$tabindex}}" {{/if}} >{$fields.{{$street}}.value}</textarea>
+<textarea id="{{$street}}" name="{{$street}}" maxlength="{{$displayParams.maxlength}}" rows="{{$displayParams.rows|default:4}}" cols="{{$displayParams.cols|default:60}}" {{if !empty($tabindex)}} tabindex="{{$tabindex}}" {{/if}} {{if !empty($displayParams.accesskey)}} accesskey='{{$displayParams.accesskey}}' {{/if}}  >{$fields.{{$street}}.value}</textarea>
 {{else}}
-<textarea id="{{$street}}" name="{{$street}}" rows="{{$displayParams.rows|default:4}}" cols="{{$displayParams.cols|default:60}}"  {{if !empty($tabindex)}} tabindex="{{$tabindex}}" {{/if}}>{$fields.{{$street}}.value}</textarea>
+<textarea id="{{$street}}" name="{{$street}}" rows="{{$displayParams.rows|default:4}}" cols="{{$displayParams.cols|default:60}}"  {{if !empty($tabindex)}} tabindex="{{$tabindex}}" {{/if}} {{if !empty($displayParams.accesskey)}} accesskey='{{$displayParams.accesskey}}' {{/if}}  >{$fields.{{$street}}.value}</textarea>
 {{/if}}
 </td>
 </tr>

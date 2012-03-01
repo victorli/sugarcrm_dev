@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -79,6 +79,12 @@ class SugarAutoLoader{
             require_once($viewPath);
             return true;
         }
+        $reportWidget = self::getFilenameForSugarWidget($class);
+        if (!empty($reportWidget))
+        {
+            require_once($reportWidget);
+            return true;
+        }
 
   		return false;
 	}
@@ -113,6 +119,40 @@ class SugarAutoLoader{
                 }
             }
         }
+    }
+
+    /**
+     * getFilenameForSugarWidget
+     * This method attempts to autoload classes starting with name "SugarWidget".  It first checks for the file
+     * in custom/include/generic/SugarWidgets directory and if not found defaults to include/generic/SugarWidgets.
+     * This method is used so that we can easily customize and extend these SugarWidget classes.
+     *
+     * @static
+     * @param $class String name of the class to load
+     * @return String file of the SugarWidget class; false if none found
+     */
+    protected static function getFilenameForSugarWidget($class)
+    {
+        //Only bother to check if the class name starts with SugarWidget
+        if(strpos($class, 'SugarWidget') !== false)
+        {
+            if(strpos($class, 'SugarWidgetField') !== false)
+            {
+                //We need to lowercase the portion after SugarWidgetField
+                $name = substr($class, 16);
+                if(!empty($name))
+                {
+                    $class = 'SugarWidgetField' . strtolower($name);
+                }
+            }
+
+            $file = get_custom_file_if_exists("include/generic/SugarWidgets/{$class}.php");
+            if(file_exists($file))
+            {
+               return $file;
+            }
+        }
+        return false;
     }
 
 	public static function loadAll(){

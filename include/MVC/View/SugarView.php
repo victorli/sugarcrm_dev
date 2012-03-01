@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -619,7 +619,7 @@ class SugarView
         global $mod_strings;
         $mod_strings = $bakModStrings;
         $headerTpl = $themeObject->getTemplate('header.tpl');
-        if ( isset($GLOBALS['sugar_config']['developerMode']) && $GLOBALS['sugar_config']['developerMode'] )
+        if (inDeveloperMode() )
             $ss->clear_compiled_tpl($headerTpl);
 
         if ($retModTabs)
@@ -1022,8 +1022,61 @@ EOHTML;
             $return .= " misses ({$cacheStats['misses']}/{$cacheStats['requests']}=" . round($cacheStats['misses']*100/$cacheStats['requests'], 0) . "%)<br />";
         }
 
+        $return .= $this->logMemoryStatistics();
+
         return $return;
     }
+
+    /**
+     * logMemoryStatistics
+     *
+     * This function returns a string message containing the memory statistics as well as writes to the memory_usage.log
+     * file the memory statistics for the SugarView invocation.
+     *
+     * @param $newline String of newline character to use (defaults to </ br>)
+     * @return $message String formatted message about memory statistics
+     */
+    protected function logMemoryStatistics($newline='<br>')
+    {
+        $log_message = '';
+
+        if(!empty($GLOBALS['sugar_config']['log_memory_usage']))
+        {
+            if(function_exists('memory_get_usage'))
+            {
+                $memory_usage = memory_get_usage();
+                $bytes = $GLOBALS['app_strings']['LBL_SERVER_MEMORY_BYTES'];
+                $data = array($memory_usage, $bytes);
+                $log_message = string_format($GLOBALS['app_strings']['LBL_SERVER_MEMORY_USAGE'], $data) . $newline;
+            }
+
+            if(function_exists('memory_get_peak_usage'))
+            {
+                $memory_peak_usage = memory_get_peak_usage();
+                $bytes = $GLOBALS['app_strings']['LBL_SERVER_MEMORY_BYTES'];
+                $data = array($memory_peak_usage, $bytes);
+                $log_message .= string_format($GLOBALS['app_strings']['LBL_SERVER_PEAK_MEMORY_USAGE'], $data) . $newline;
+            }
+
+            if(!empty($log_message))
+            {
+                $data = array
+                (
+                   !empty($this->module) ? $this->module : $GLOBALS['app_strings']['LBL_LINK_NONE'],
+                   !empty($this->action) ? $this->action : $GLOBALS['app_strings']['LBL_LINK_NONE'],
+                );
+
+                $output = string_format($GLOBALS['app_strings']['LBL_SERVER_MEMORY_LOG_MESSAGE'], $data) . $newline;
+                $output .= $log_message;
+                $fp = fopen("memory_usage.log", "ab");
+                fwrite($fp, $output);
+                fclose($fp);
+            }
+        }
+
+        return $log_message;
+    }
+
 
     /**
      * Loads the module shortcuts menu
@@ -1264,9 +1317,9 @@ EOHTML;
     	else {
 		    if (!empty($iconPath) && !$browserTitle) {
 				return "<a href='index.php?module={$this->module}&action=index'>"
-				     . "<img src='{$iconPath}' alt='".$this->module."' title='".$this->module."' align='absmiddle'></a>";
+				     . "<img src='{$iconPath}' alt='".$firstParam."' title='".$firstParam."' align='absmiddle'></a>";
 			} else {
-				return "{$firstParam}";
+				return $firstParam;
 			}
     	}
     }
@@ -1406,4 +1459,53 @@ EOHTML;
             'type' => $type,
         );
     }
+
+
+    /**
+     * getCustomFilePathIfExists
+     *
+     * This function wraps a call to get_custom_file_if_exists from include/utils.php
+     *
+     * @param $file String of filename to check
+     * @return $file String of filename including custom directory if found
+     */
+    protected function getCustomFilePathIfExists($file)
+    {
+        return get_custom_file_if_exists($file);
+    }
+
+
+    /**
+     * fetchTemplate
+     *
+     * This function wraps the call to the fetch function of the Smarty variable for the view
+     *
+     * @param $file String path of the file to fetch
+     * @return $content String content from resulting Smarty fetch operation on template
+     */
+    protected function fetchTemplate($file)
+    {
+        return $this->ss->fetch($file);
+    }
+
+    /**
+	 * Determines whether the state of the post global array indicates there was an error uploading a
+     * file that exceeds the post_max_size setting.  Such an error can be detected if:
+     *  1. The Server['REQUEST_METHOD'] will still point to POST
+     *  2. POST and FILES global arrays will be returned empty despite the request method
+     * This also results in a redirect to the home page (due to lack of module and action in POST)
+     *
+	 * @return boolean indicating true or false
+	 */
+    public function checkPostMaxSizeError(){
+         //if the referrer is post, and the post array is empty, then an error has occurred, most likely
+         //while uploading a file that exceeds the post_max_size.
+         if(empty($_FILES) && empty($_POST) && isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) == 'post'){
+             $GLOBALS['log']->fatal($GLOBALS['app_strings']['UPLOAD_ERROR_HOME_TEXT']);
+             return true;
+        }
+        return false;
+    }
+
+
 }

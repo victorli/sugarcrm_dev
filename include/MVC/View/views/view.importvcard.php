@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -68,12 +68,7 @@ class ViewImportvcard extends SugarView
         $params[] = "<a href='index.php?module={$_REQUEST['module']}&action=index'>{$mod_strings['LBL_MODULE_NAME']}</a>";
         $params[] = $app_strings['LBL_IMPORT_VCARD_BUTTON_LABEL'];
 		echo getClassicModuleTitle($mod_strings['LBL_MODULE_NAME'], $params, true);
-
-
-        if ( file_exists('custom/include/MVC/View/tpls/Importvcard.tpl') )
-            $this->ss->display('custom/include/MVC/View/tpls/Importvcard.tpl');
-        else
-            $this->ss->display('include/MVC/View/tpls/Importvcard.tpl');
+        $this->ss->display($this->getCustomFilePathIfExists('include/MVC/View/tpls/Importvcard.tpl'));
  	}
 }
 ?>

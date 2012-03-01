@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -144,12 +144,24 @@ foreach($config_params as $group => $gdata) {
             } else {
                 $type = '';
             }
+
             $form .= <<<FORM
             <td nowrap><b>{$mod_strings[$value["label"]]}</b></td>
             <td align="left">
-			<input type="$type" name="$name" id="$name" value="$sessval">
-			</td></tr>
 FORM;
+            //if the type is password, set a hidden field to capture the value.  This is so that we can properly encode special characters, which is a limitation with password fields
+            if($type=='password'){
+                $form .= "<input type='$type' name='{$name}_entry' id='{$name}_entry' value='".urldecode($sessval)."'><input type='hidden' name='$name' id='$name' value='".urldecode($sessval)."'>";
+            }else{
+                $form .= "<input type='$type' name='$name' id='$name' value='$sessval'>";
+            }
+
+
+
+            $form .= <<<FORM
+            </td></tr>
+FORM;
+
         } else {
             $form .= "<input name=\"$name\" id=\"$name\" value=\"\" type=\"hidden\">\n";
         }
@@ -180,6 +192,9 @@ $dbUSRDD  .= "</select><br>&nbsp;";
 
 
 
+$setup_db_sugarsales_password = urldecode($_SESSION['setup_db_sugarsales_password']);
+$setup_db_sugarsales_user = urldecode($_SESSION['setup_db_sugarsales_user']);
+$setup_db_sugarsales_password_retype = urldecode($_SESSION['setup_db_sugarsales_password_retype']);
 
 $out2 .=<<<EOQ2
 
@@ -200,12 +215,13 @@ $out2 .=<<<EOQ2
 <tr>
     <td>&nbsp;</td>
     <td nowrap><b>{$mod_strings['LBL_DBCONF_DB_PASSWORD']}</b></td>
-    <td nowrap align="left"><input type="password" name="setup_db_sugarsales_password" value="{$_SESSION['setup_db_sugarsales_password']}" /></td>
+    <td nowrap align="left"><input type="password" name="setup_db_sugarsales_password_entry" value="{$setup_db_sugarsales_password}" /><input type="hidden" name="setup_db_sugarsales_password" value="{$setup_db_sugarsales_password}" /></td>
+    <input type="hidden" name="setup_db_sugarsales_password" value="{$_SESSION['setup_db_sugarsales_password']}" /></td>
 </tr>
 <tr>
     <td>&nbsp;</td>
     <td nowrap><b>{$mod_strings['LBL_DBCONF_DB_PASSWORD2']}</b></td>
-    <td nowrap align="left"><input type="password" name="setup_db_sugarsales_password_retype" value="{$_SESSION['setup_db_sugarsales_password_retype']}" /></td>
+    <td nowrap align="left"><input type="password" name="setup_db_sugarsales_password_retype_entry" value="{$setup_db_sugarsales_password_retype}"  /><input type="hidden" name="setup_db_sugarsales_password_retype" value="{$setup_db_sugarsales_password_retype}" /></td>
 </tr></table>
 </span>
 
@@ -336,8 +352,13 @@ function callDBCheck(){
 
                 }//end success
 
-                //set loading message and create url
 
+                //copy the db values over to the hidden field counterparts
+                document.setConfig.setup_db_admin_password.value = document.setConfig.setup_db_admin_password_entry.value;
+
+
+
+                //set loading message and create url
                 postData = "checkDBSettings=true&to_pdf=1&sugar_body_only=1";
                 postData += "&setup_db_database_name="+document.setConfig.setup_db_database_name.value;
                 if(typeof(document.setConfig.setup_db_host_instance) != 'undefined'){
@@ -348,15 +369,17 @@ function callDBCheck(){
                 }
                 postData += "&setup_db_host_name="+document.setConfig.setup_db_host_name.value;
                 postData += "&setup_db_admin_user_name="+document.setConfig.setup_db_admin_user_name.value;
-                postData += "&setup_db_admin_password="+document.setConfig.setup_db_admin_password.value;
+                postData += "&setup_db_admin_password="+encodeURIComponent(document.setConfig.setup_db_admin_password.value);
                 if(typeof(document.setConfig.setup_db_sugarsales_user) != 'undefined'){
                     postData += "&setup_db_sugarsales_user="+document.setConfig.setup_db_sugarsales_user.value;
                 }
                 if(typeof(document.setConfig.setup_db_sugarsales_password) != 'undefined'){
-                    postData += "&setup_db_sugarsales_password="+document.setConfig.setup_db_sugarsales_password.value;
+                document.setConfig.setup_db_sugarsales_password.value = document.setConfig.setup_db_sugarsales_password_entry.value;
+                    postData += "&setup_db_sugarsales_password="+encodeURIComponent(document.setConfig.setup_db_sugarsales_password.value);
                 }
                 if(typeof(document.setConfig.setup_db_sugarsales_password_retype) != 'undefined'){
-                    postData += "&setup_db_sugarsales_password_retype="+document.setConfig.setup_db_sugarsales_password_retype.value;
+                    document.setConfig.setup_db_sugarsales_password_retype.value = document.setConfig.setup_db_sugarsales_password_retype_entry.value;
+                    postData += "&setup_db_sugarsales_password_retype="+encodeURIComponent(document.setConfig.setup_db_sugarsales_password_retype.value);
                 }
                 if(typeof(document.setConfig.dbUSRData) != 'undefined'){
                     postData += "&dbUSRData="+document.getElementById('dbUSRData').value;

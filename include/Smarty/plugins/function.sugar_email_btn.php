@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -50,9 +50,9 @@ function smarty_function_sugar_email_btn($params, &$smarty)
 	$pdfButtons = '';
 	$client = $current_user->getPreference('email_link_type');
 	if ($client != 'sugar') {
-		$pdfButtons = '<input title="'. $app_strings["LBL_EMAIL_COMPOSE"] . '" accessKey="'. $app_strings["LBL_EMAIL_PDF_BUTTON_KEY"] . '" class="button" type="submit" name="button" value="'. $app_strings["LBL_EMAIL_COMPOSE"] . '" onclick="location.href=\'mailto:\';return false;"> ';
+		$pdfButtons = '<input title="'. $app_strings["LBL_EMAIL_COMPOSE"] . '" class="button" type="submit" name="button" value="'. $app_strings["LBL_EMAIL_COMPOSE"] . '" onclick="location.href=\'mailto:\';return false;"> ';
 	} else {
-		$pdfButtons = '<input title="'. $app_strings["LBL_EMAIL_PDF_BUTTON_TITLE"] . '" accessKey="'. $app_strings["LBL_EMAIL_PDF_BUTTON_KEY"] . '" class="button" type="submit" name="button" value="'. $app_strings["LBL_EMAIL_PDF_BUTTON_LABEL"] . '" onclick="this.form.email_action.value=\'EmailLayout\';"> ';
+		$pdfButtons = '<input title="'. $app_strings["LBL_EMAIL_PDF_BUTTON_TITLE"] . '" class="button" type="submit" name="button" value="'. $app_strings["LBL_EMAIL_PDF_BUTTON_LABEL"] . '" onclick="this.form.email_action.value=\'EmailLayout\';"> ';
 	}
 	return $pdfButtons;
 }

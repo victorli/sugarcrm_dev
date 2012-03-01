@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,7 +37,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 
-require_once('include/generic/SugarWidgets/SugarWidgetSubPanelTopButton.php');
+
 
 class SugarWidgetSubPanelTopCreateCampaignLogEntryButton extends SugarWidgetSubPanelTopButton
 {
@@ -50,7 +50,6 @@ class SugarWidgetSubPanelTopCreateCampaignLogEntryButton extends SugarWidgetSubP
 
 
         $this->title = $app_strings['LBL_SELECT_BUTTON_TITLE'];
-        $this->accesskey = $app_strings['LBL_SELECT_BUTTON_KEY'];
         $this->value = $app_strings['LBL_SELECT_BUTTON_LABEL'];
         $this->module = 'Campaigns';//'CampaignLog';
         $this->module_name = 'Campaigns';
@@ -143,7 +142,6 @@ class SugarWidgetSubPanelTopCreateCampaignLogEntryButton extends SugarWidgetSubP
         return '<form action="index.php?module=CampaignLog&action=AddCampaignLog&type=contact">' . "\n"
             . ' <input type="button" name="' . $this->getWidgetId() . '_select_button" id="' . $this->getWidgetId() . '_select_button" class="button"' . "\n"
                 . ' title="' . $this->title . '"'
-            . ' accesskey="' . $this->accesskey . '"'
             . ' value="' . $this->value . "\"\n"
             . " onclick='open_popup(\"$this->module_name\",600,400,\"$initial_filter\",true,true,$json_encoded_php_array,\"$popup_mode\",$create);' /></form>\n";
     }

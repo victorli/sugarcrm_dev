@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -67,6 +67,7 @@ $mod_strings = array (
 	'ERR_LAST_ADMIN_2'					=> '" is the last user with administrator access.	At least one user must be an administrator.',
 	'ERR_PASSWORD_CHANGE_FAILED_1'		=> 'User password change failed for ',
 	'ERR_PASSWORD_CHANGE_FAILED_2'		=> ' failed.	The new password must be set.',
+	'ERR_PASSWORD_CHANGE_FAILED_3'		=> '.	The new password is invalid.',
 	'ERR_PASSWORD_INCORRECT_OLD_1'		=> 'Incorrect current password for user ',
 	'ERR_PASSWORD_INCORRECT_OLD_2'		=> '. Re-enter password information.',
 	'ERR_PASSWORD_MISMATCH'				=> 'The passwords do not match.',
@@ -179,7 +180,7 @@ $mod_strings = array (
     'LBL_GENERATE_PASSWORD_BUTTON_KEY'  => 'G',
     'LBL_SYSTEM_GENERATED_PASSWORD'     =>'System Generated Password',
     'LBL_GENERATE_PASSWORD_BUTTON_LABEL'   => 'Reset Password',
-    'LBL_GENERATE_PASSWORD_BUTTON_TITLE'   => 'Reset Password [Alt+G]',
+    'LBL_GENERATE_PASSWORD_BUTTON_TITLE'   => 'Reset Password',
     'LBL_GENERATE_PASSWORD'             => 'Reset Password',
 	'LBL_GROUP_DESC'					=> 'Use for assigning items to a group (example: for Inbound Email).  This type cannot login through the Sugar web interface.',
 	'LBL_GROUP_USER_STATUS'				=> 'Group User',
@@ -220,7 +221,7 @@ $mod_strings = array (
 	// LOGIN PAGE STRINGS
 	'LBL_LOGIN_BUTTON_KEY'				=> 'L',
 	'LBL_LOGIN_BUTTON_LABEL'			=> 'Log In',
-	'LBL_LOGIN_BUTTON_TITLE'			=> 'Log In [Alt+L]',
+	'LBL_LOGIN_BUTTON_TITLE'			=> 'Log In',
 	'LBL_LOGIN_WELCOME_TO'				=> 'Welcome to',
 	'LBL_LOGIN_OPTIONS'					=> 'Options',
     'LBL_LOGIN_FORGOT_PASSWORD'         => 'Forgot Password?',
@@ -267,7 +268,7 @@ $mod_strings = array (
 	'LBL_NEW_USER_PASSWORD_3'			=> 'Password was created successfully.',
 	'LBL_NEW_USER_BUTTON_KEY'			=> 'N',
 	'LBL_NEW_USER_BUTTON_LABEL'			=> 'New User',
-	'LBL_NEW_USER_BUTTON_TITLE'			=> 'New User [Alt+N]',
+	'LBL_NEW_USER_BUTTON_TITLE'			=> 'New User',
 	'LBL_NORMAL_LOGIN'					=> 'Switch to Normal View',
 	'LBL_NOTES'							=> 'Notes',
 	'LBL_OFFICE_PHONE'					=> 'Office Phone',
@@ -420,7 +421,7 @@ $mod_strings = array (
 	'LBL_SSL'							=> 'Use SSL',
 	'LBL_SSL_DESC'						=> 'Use Secure Socket Layer when connecting to your mail server.',
 	'LBL_TEST_BUTTON_KEY'				=> 't',
-	'LBL_TEST_BUTTON_TITLE'				=> 'Test [Alt+T]',
+	'LBL_TEST_BUTTON_TITLE'				=> 'Test',
 	'LBL_TEST_SETTINGS'					=> 'Test Settings',
 	'LBL_TEST_SUCCESSFUL'				=> 'Connection completed successfully.',
 	'LBL_TLS_DESC'						=> 'Use Transport Layer Security when connecting to the mail server - only use this if your mail server supports this protocol.',

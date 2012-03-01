@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -780,9 +780,21 @@ protected function checkQuery($sql, $object_name = false)
 
 		// do column comparisions
 		$sql .=	"/*COLUMNS*/\n";
-		foreach ($fielddefs as $value) {
+		foreach ($fielddefs as $name => $value) {
 			if (isset($value['source']) && $value['source'] != 'db')
 				continue;
+
+            // Bug #42406. Skipping breaked vardef without type or name
+            if (isset($value['name']) == false || $value['name'] == false)
+            {
+                $sql .= "/* NAME IS MISSING IN VARDEF $tablename::$name */\n";
+                continue;
+            }
+            else if (isset($value['type']) == false || $value['type'] == false)
+            {
+                $sql .= "/* TYPE IS MISSING IN VARDEF $tablename::$name */\n";
+                continue;
+            }
 
 			$name = strtolower($value['name']);
 			// add or fix the field defs per what the DB is expected to give us back
@@ -3152,12 +3164,16 @@ protected function checkQuery($sql, $object_name = false)
 				$item = trim($item, '"');
 			}
 			if($item[0] == '+') {
-				$must_terms[] = substr($item, 1);
-				continue;
+                if (strlen($item) > 1) {
+                    $must_terms[] = substr($item, 1);
+                }
+                continue;
 			}
 			if($item[0] == '-') {
-				$not_terms[] = substr($item, 1);
-				continue;
+                if (strlen($item) > 1) {
+				    $not_terms[] = substr($item, 1);
+                }
+                continue;
 			}
 			$terms[] = $item;
 		}

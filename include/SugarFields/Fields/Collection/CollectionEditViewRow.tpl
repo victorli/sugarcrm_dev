@@ -1,7 +1,7 @@
 {*
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -71,7 +71,7 @@
             <input type="text" name="{$vardef.name}_collection_0" class="sqsEnabled {$displayParams.class}" tabindex="{$tabindex}" id="{$vardef.name}_collection_0" size="{$displayParams.size}" value="" title='{$vardef.help}' autocomplete="off" {$displayParams.readOnly} {$displayParams.field}>
             <input type="hidden" name="id_{$vardef.name}_collection_0" id="id_{$vardef.name}_collection_0" value="">
             {if $showSelectButton}
-           		<input type="button" name="btn_{$vardef.name}_collection_0" tabindex="{$tabindex}" title="{sugar_translate label="{{$displayParams.accessKeySelectTitle}}" accessKey="{sugar_translate label="{{$displayParams.accessKeySelect}}" class="button" value="{sugar_translate label="{{$displayParams.accessKeySelectLabel}}" onclick='open_popup("{$module}", 600, 400, "", true, false, {$displayParams.popupData}, "single", true);'>
+           		<input type="button" name="btn_{$vardef.name}_collection_0" tabindex="{$tabindex}" title="{sugar_translate label="{{$displayParams.accessKeySelectTitle}}" class="button" value="{sugar_translate label="{{$displayParams.accessKeySelectLabel}}" onclick='open_popup("{$module}", 600, 400, "", true, false, {$displayParams.popupData}, "single", true);'>
             {/if}
         </td>
         {foreach item=extra_field from=$displayParams.collection_field_list key=key_extra}

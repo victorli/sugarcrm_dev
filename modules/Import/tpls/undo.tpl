@@ -2,7 +2,7 @@
 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -53,10 +53,10 @@
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
 <tr>
     <td align="left">
-       <input title="{$MOD.LBL_MODULE_NAME}&nbsp;{$MODULENAME}" accessKey="" class="button" type="submit" name="button"
+       <input title="{$MOD.LBL_MODULE_NAME}&nbsp;{$MODULENAME}"  class="button" type="submit" name="button"
             value="{$MOD.LBL_MODULE_NAME}&nbsp;{$MODULENAME}">
 
-        <input title="{$MOD.LBL_FINISHED}{$MODULENAME}" accessKey="" class="button" type="submit"
+        <input title="{$MOD.LBL_FINISHED}{$MODULENAME}"  class="button" type="submit"
             name="finished" id="finished" value="{$MOD.LBL_IMPORT_COMPLETE}">
     </td>
 </tr>

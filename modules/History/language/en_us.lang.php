@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -84,19 +84,19 @@ $mod_strings = array (
   'LBL_HISTORY' => 'History',
   'LBL_UPCOMING' => 'My Upcoming Appointments',
   'LBL_TODAY' => 'through ',
-  'LBL_NEW_TASK_BUTTON_TITLE' => 'Create Task [Alt+N]',
+  'LBL_NEW_TASK_BUTTON_TITLE' => 'Create Task',
   'LBL_NEW_TASK_BUTTON_KEY' => 'N',
   'LBL_NEW_TASK_BUTTON_LABEL' => 'Create Task',
-  'LBL_SCHEDULE_MEETING_BUTTON_TITLE' => 'Schedule Meeting [Alt+M]',
+  'LBL_SCHEDULE_MEETING_BUTTON_TITLE' => 'Schedule Meeting',
   'LBL_SCHEDULE_MEETING_BUTTON_KEY' => 'M',
   'LBL_SCHEDULE_MEETING_BUTTON_LABEL' => 'Schedule Meeting',
-  'LBL_SCHEDULE_CALL_BUTTON_TITLE' => 'Log Call [Alt+C]',
+  'LBL_SCHEDULE_CALL_BUTTON_TITLE' => 'Log Call',
   'LBL_SCHEDULE_CALL_BUTTON_KEY' => 'C',
   'LBL_SCHEDULE_CALL_BUTTON_LABEL' => 'Log Call',
-  'LBL_NEW_NOTE_BUTTON_TITLE' => 'Create Note or Attachment [Alt+T]',
+  'LBL_NEW_NOTE_BUTTON_TITLE' => 'Create Note or Attachment',
   'LBL_NEW_NOTE_BUTTON_KEY' => 'T',
   'LBL_NEW_NOTE_BUTTON_LABEL' => 'Create Note or Attachment',
-  'LBL_TRACK_EMAIL_BUTTON_TITLE' => 'Archive Email [Alt+K]',
+  'LBL_TRACK_EMAIL_BUTTON_TITLE' => 'Archive Email',
   'LBL_TRACK_EMAIL_BUTTON_KEY' => 'K',
   'LBL_TRACK_EMAIL_BUTTON_LABEL' => 'Archive Email',
   'LBL_LIST_STATUS' => 'Status',

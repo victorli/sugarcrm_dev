@@ -3,7 +3,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -106,19 +106,23 @@ class MeetingsViewListbytype extends ViewList {
         $_REQUEST = $oldRequest;
     }
 
- 	function processSearchForm(){
- 		// $type = 'LotusLiveDirect';
- 		$type = 'LotusLive';
- 		$where =  " meetings.type = '$type' AND meetings.status != 'Held' AND meetings.status != 'Not Held' AND meetings.date_start > UTC_TIMESTAMP() - 7200 AND ( meetings.assigned_user_id = '".$GLOBALS['db']->quote($GLOBALS['current_user']->id)."' OR exists ( SELECT id FROM meetings_users WHERE meeting_id = meetings.id AND user_id = '".$GLOBALS['db']->quote($GLOBALS['current_user']->id)."' AND deleted = 0 ) ) ";
+    function processSearchForm(){
+   		// $type = 'LotusLiveDirect';
+   		$type = 'LotusLive';
+          global $timedate;
 
-        if ( isset($_REQUEST['name_basic']) ) {
-            $name_search = trim($_REQUEST['name_basic']);
-            if ( ! empty($name_search) ) {
-                $where .= " AND meetings.name LIKE '".$GLOBALS['db']->quote($name_search)."%' ";
-            }
-        }
+         $two_hours_ago = $GLOBALS['db']->convert($GLOBALS['db']->quoted($timedate->asDb($timedate->getNow()->get("-2 hours"))), 'datetime');
 
-        $this->where = $where;
- 	}
+   		$where =  " meetings.type = '$type' AND meetings.status != 'Held' AND meetings.status != 'Not Held' AND meetings.date_start > {$two_hours_ago} AND ( meetings.assigned_user_id = '".$GLOBALS['db']->quote($GLOBALS['current_user']->id)."' OR exists ( SELECT id FROM meetings_users WHERE meeting_id = meetings.id AND user_id = '".$GLOBALS['db']->quote($GLOBALS['current_user']->id)."' AND deleted = 0 ) ) ";
+
+          if ( isset($_REQUEST['name_basic']) ) {
+              $name_search = trim($_REQUEST['name_basic']);
+              if ( ! empty($name_search) ) {
+                  $where .= " AND meetings.name LIKE '".$GLOBALS['db']->quote($name_search)."%' ";
+              }
+          }
+
+          $this->where = $where;
+   	}
 
 }

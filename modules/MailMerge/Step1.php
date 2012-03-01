@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -103,7 +103,8 @@ else if(isset($_REQUEST['entire']) && $_REQUEST['entire'] == 'true') {
     $beginWhere = substr(trim($where), 0, 5);
     if ($beginWhere == "where")
         $where = substr(trim($where), 5, strlen($where));
-	$query = $focus->create_export_query('',$where);
+    $orderBy = '';
+	$query = $focus->create_export_query($orderBy,$where);
 
 	$result = $db->query($query,true,"Error mail merging {$_SESSION['MAILMERGE_MODULE']}: "."<BR>$query");
 

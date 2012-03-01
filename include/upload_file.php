@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -224,9 +224,20 @@ class UploadFile
 		    return false;
 		}
 
+        //check to see if there are any errors from upload
 		if($_FILES[$this->field_name]['error'] != UPLOAD_ERR_OK) {
 		    if($_FILES[$this->field_name]['error'] != UPLOAD_ERR_NO_FILE) {
-                $GLOBALS['log']->error('File upload error: '.self::$filesError[$_FILES[$this->field_name]['error']]);
+                if($_FILES[$this->field_name]['error'] == UPLOAD_ERR_INI_SIZE) {
+                    //log the error, the string produced will read something like:
+                    //ERROR: There was an error during upload. Error code: 1 - UPLOAD_ERR_INI_SIZE - The uploaded file exceeds the upload_max_filesize directive in php.ini. upload_maxsize is 16
+                    $errMess = string_format($GLOBALS['app_strings']['UPLOAD_ERROR_TEXT_SIZEINFO'],array($_FILES['filename_file']['error'], self::$filesError[$_FILES['filename_file']['error']],$sugar_config['upload_maxsize']));
+                    $GLOBALS['log']->fatal($errMess);
+                }else{
+                    //log the error, the string produced will read something like:
+                    //ERROR: There was an error during upload. Error code: 3 - UPLOAD_ERR_PARTIAL - The uploaded file was only partially uploaded.
+                    $errMess = string_format($GLOBALS['app_strings']['UPLOAD_ERROR_TEXT'],array($_FILES['filename_file']['error'], self::$filesError[$_FILES['filename_file']['error']]));
+                    $GLOBALS['log']->fatal($errMess);
+                }
 		    }
 		    return false;
 		}

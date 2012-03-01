@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -535,10 +535,10 @@ class SugarChart {
 			$processed = array();
 
 			if (isset($drill_down) && $drill_down != ''){
-
-               /*
-                * We have to iterate users in order they are in super_set for every group.
-                * That is required for correct pileup user links to user colors in a chart.
+                /*
+                * Bug 44696 - Ivan D.
+                * We have to iterate users in order since they are in the super_set for every group.
+                * This is required to display the correct links for each user in a drill down chart.
                 */
                 foreach ($this->super_set as $superSetKey => $superSetValue)
                 {
@@ -588,13 +588,13 @@ class SugarChart {
                         {
                             $data .= $this->nullGroup($superSetValue, $url);
                         }
+
                     }
                     else
                     {
                         $data .= $this->nullGroup($superSetValue, $url);
                     }
                 }
-
 			}
 
 			$data .= $this->tab('</subgroups>',3);
@@ -603,6 +603,7 @@ class SugarChart {
 		return $data;
 	}
 
+
     /**
      * nullGroup
      * This function sets a null group by clause
@@ -610,7 +611,7 @@ class SugarChart {
      * @param $sugarSetValue Mixed value
      * @param $url String value of URL for the link
      */
-    public function nullGroup($superSetValue, $url) {
+    private function nullGroup($superSetValue, $url) {
         return $this->processDataGroup(4, $superSetValue, 'NULL', '', $url);
     }
 
@@ -759,16 +760,17 @@ class SugarChart {
 		return $templateFile;
 	}
 
+ 	        
 	function getDashletScript($id,$xmlFile="") {
 
-	$xmlFile = (!$xmlFile) ? sugar_cached("xml/"). $current_user->id . '_' . $this->id . '.xml' : $xmlFile;
-	$chartStringsXML = sugar_cached("xml/").'chart_strings.' . $current_language .'.lang.xml';
+	$xmlFile = (!$xmlFile) ? $sugar_config['tmp_dir']. $current_user->id . '_' . $this->id . '.xml' : $xmlFile;
+	$chartStringsXML = $GLOBALS['sugar_config']['tmp_dir'].'chart_strings.' . $current_language .'.lang.xml';
 
 	$this->ss->assign('chartName', $id);
     $this->ss->assign('chartXMLFile', $xmlFile);
     $this->ss->assign('chartStyleCSS', SugarThemeRegistry::current()->getCSSURL('chart.css'));
     $this->ss->assign('chartColorsXML', SugarThemeRegistry::current()->getImageURL('sugarColors.xml'));
-    $this->ss->assign('chartLangFile', sugar_cached("xml/").'chart_strings.' . $GLOBALS['current_language'] .'.lang.xml');
+    $this->ss->assign('chartLangFile', $GLOBALS['sugar_config']['tmp_dir'].'chart_strings.' . $GLOBALS['current_language'] .'.lang.xml');
 
 		$templateFile = "";
 		return $templateFile;

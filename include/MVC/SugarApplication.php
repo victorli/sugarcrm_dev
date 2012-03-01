@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -473,6 +473,7 @@ class SugarApplication
 		'Trackers' => array('trackersettings'),
 	    'SugarFavorites' => array('tag'),
 	    'Import' => array('last', 'undo'),
+	    'Users' => array('changepassword', "generatepassword"),
 	);
 
 	protected function isModifyAction()
@@ -482,7 +483,7 @@ class SugarApplication
 	        return true;
 	    }
 	    if(isset($this->modifyModules[$this->controller->module])) {
-	        if($this->modifyModules[$this->controller->module] == true) {
+	        if($this->modifyModules[$this->controller->module] === true) {
 	            return true;
 	        }
 	        if(in_array($this->controller->action, $this->modifyModules[$this->controller->module])) {
@@ -499,6 +500,12 @@ class SugarApplication
         return false;
 	}
 
+    /**
+     * The list of the actions excepted from referer checks by default
+     * @var array
+     */
+	protected $whiteListActions = array('index', 'ListView', 'DetailView', 'EditView', 'oauth', 'Authenticate', 'Login', 'SupportPortal');
+
 	/**
 	 *
 	 * Checks a request to ensure the request is coming from a valid source or it is for one of the white listed actions
@@ -506,7 +513,9 @@ class SugarApplication
 	protected function checkHTTPReferer($dieIfInvalid = true)
 	{
 		global $sugar_config;
-		$whiteListActions = (!empty($sugar_config['http_referer']['actions']))?$sugar_config['http_referer']['actions']:array('index', 'ListView', 'DetailView', 'EditView','oauth', 'Authenticate', 'Login', 'SupportPortal');
+		if(!empty($sugar_config['http_referer']['actions'])) {
+		    $this->whiteListActions = array_merge($sugar_config['http_referer']['actions'], $this->whiteListActions);
+		}
 
 		$strong = empty($sugar_config['http_referer']['weak']);
 
@@ -517,9 +526,9 @@ class SugarApplication
 			$whiteListReferers = array_merge($whiteListReferers,$sugar_config['http_referer']['list']);
 		}
 
-		if($strong && empty($_SERVER['HTTP_REFERER']) && !in_array($this->controller->action, $whiteListActions) && $this->isModifyAction()) {
+		if($strong && empty($_SERVER['HTTP_REFERER']) && !in_array($this->controller->action, $this->whiteListActions ) && $this->isModifyAction()) {
 		    $http_host = explode(':', $_SERVER['HTTP_HOST']);
-
+            $whiteListActions = $this->whiteListActions;
 			$whiteListActions[] = $this->controller->action;
 			$whiteListString = "'" . implode("', '", $whiteListActions) . "'";
             if ( $dieIfInvalid ) {
@@ -535,11 +544,12 @@ class SugarApplication
 		} else
 		if(!empty($_SERVER['HTTP_REFERER']) && !empty($_SERVER['SERVER_NAME'])){
 			$http_ref = parse_url($_SERVER['HTTP_REFERER']);
-			if($http_ref['host'] !== $_SERVER['SERVER_NAME']  && !in_array($this->controller->action, $whiteListActions) &&
+			if($http_ref['host'] !== $_SERVER['SERVER_NAME']  && !in_array($this->controller->action, $this->whiteListActions) &&
 
 				(empty($whiteListReferers) || !in_array($http_ref['host'], $whiteListReferers))){
                 if ( $dieIfInvalid ) {
                     header("Cache-Control: no-cache, must-revalidate");
+                    $whiteListActions = $this->whiteListActions;
                     $whiteListActions[] = $this->controller->action;
                     $whiteListString = "'" . implode("', '", $whiteListActions) . "'";
 
@@ -585,6 +595,9 @@ class SugarApplication
         }
 
 	}
+
+
+
 
 	function endSession(){
 		session_destroy();

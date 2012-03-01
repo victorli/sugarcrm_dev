@@ -1,7 +1,7 @@
 {*
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -145,7 +145,6 @@
 					<td NOWRAP colspan="2" style="padding-bottom: 15px">
 				<input title="{$ie_mod_strings.LBL_TEST_BUTTON_TITLE}"
 							type='button'
-							accessKey="{$ie_mod_strings.LBL_TEST_BUTTON_KEY}"
 							class="button"
 							onClick='SUGAR.email2.accounts.testSettings();'
 							name="button" id="testButton" value="  {$ie_mod_strings.LBL_TEST_SETTINGS}  ">
@@ -227,14 +226,13 @@
 					<td scope="row" colspan="2">
 					<input title="{$ie_mod_strings.LBL_EMAIL_SAVE}"
 							type='button'
-							accessKey="s"
+							accessKey="{$app_strings.LBL_SAVE_BUTTON_KEY}"
 							class="button"
 							onClick='SUGAR.email2.accounts.saveIeAccount();'
 							name="button" id="saveButton" value="  {$app_strings.LBL_EMAIL_DONE_BUTTON_LABEL}  ">
 					   &nbsp;
 					   <input title="{$app_strings.LBL_EMAIL_SETTINGS_ADD_ACCOUNT}"
                         type='button'
-                        accessKey="n"
                         class="button"
                         onClick='SUGAR.email2.accounts.clearInboundAccountEditScreen();SE.accounts.setPortDefault();'
                         name="button" id="clearButton" value="  {$app_strings.LBL_EMAIL_SETTINGS_ADD_ACCOUNT}  ">

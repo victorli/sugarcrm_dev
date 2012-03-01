@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -66,8 +66,10 @@ class SugarThemeTest extends Sugar_PHPUnit_Framework_TestCase
         $this->_themeObjectChild = SugarThemeRegistry::get($this->_themeDefChild['dirName']);
 
         // test assumes developerMode is off, so css minifying happens
-        if ( isset($GLOBALS['sugar_config']['developerMode']) )
+        if (inDeveloperMode())
+        {
             $this->_olddeveloperMode = $GLOBALS['sugar_config']['developerMode'];
+        }
         $GLOBALS['sugar_config']['developerMode'] = false;
     }
 

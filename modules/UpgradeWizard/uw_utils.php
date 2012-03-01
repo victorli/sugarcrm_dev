@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -2261,7 +2261,7 @@ function testThis2($dir, $id=0, $hide=false) {
 
 	$doHide = ($hide) ? 'none' : '';
 	$out = "<div id='{$id}' style='display:{$doHide};'>";
-	$out .= "<table cellpadding='1' cellspacing='0' border='0' style='border:0px solid #ccc'>\n";
+	$out .= "<table cellpadding='1' cellspacing='0' style='border:0px solid #ccc'>\n";
 
 	while($file = readdir($dh)) {
 		if($file == '.' || $file == '..' || $file == 'CVS' || $file == '.cvsignore')
@@ -3882,56 +3882,21 @@ function merge_config_si_settings($write_to_upgrade_log=false, $config_location=
 
 /**
  * upgrade_connectors
- * This function handles support for upgrading connectors, in particular the Hoovers connector
- * that needs the wsdl and endpoint modifications in the config.php file as well as the search
- * term change (from bal.specialtyCriteria.companyKeyword to bal.specialtyCriteria.companyName).
- * @param $path String variable for the log path
+ *
+ * This function handles support for upgrading connectors it is invoked from both end.php and silentUpgrade_step2.php
+ *
  */
-function upgrade_connectors($path='') {
-    logThis('Begin upgrade_connectors', $path);
-
-    $filePath = 'custom/modules/Connectors/connectors/sources/ext/soap/hoovers/config.php';
-    if(file_exists($filePath))
-    {
-       logThis("{$filePath} file", $path);
-       require($filePath);
-       if(!is_null($config))
-       {
-          $modified = false;
-          if(isset($config['properties']['hoovers_endpoint']))
-          {
-             $config['properties']['hoovers_endpoint'] = 'http://hapi.hoovers.com/HooversAPI-33';
-             $modified = true;
-          }
-
-          if(isset($config['properties']['hoovers_wsdl']))
-          {
-             $config['properties']['hoovers_wsdl'] = 'http://hapi.hoovers.com/HooversAPI-33/hooversAPI/hooversAPI.wsdl';
-             $modified = true;
-          }
-
-          if($modified)
-          {
-              if(!write_array_to_file('config', $config, $filePath)) {
-                 logThis("Could not write new configuration to {$filePath} file", $path);
-              } else {
-                 logThis('Modified file successfully with new configuration entries', $path);
-              }
-          }
-       }
+function upgrade_connectors() {
+    require_once('include/connectors/utils/ConnectorUtils.php');
+    if(!ConnectorUtils::updateMetaDataFiles()) {
+       $GLOBALS['log']->fatal('Cannot update metadata files for connectors');
     }
 
-    $filePath = 'custom/modules/Connectors/connectors/sources/ext/soap/hoovers/vardefs.php';
-    if(file_exists($filePath))
+    //Delete the custom connectors.php file if it exists so that it may be properly rebuilt
+    if(file_exists('custom/modules/Connectors/metadata/connectors.php'))
     {
-       logThis("Modifying {$filePath} file", $path);
-       require($filePath);
-       $fileContents = file_get_contents($filePath);
-       $out = str_replace('bal.specialtyCriteria.companyKeyword', 'bal.specialtyCriteria.companyName', $fileContents);
-       file_put_contents($filePath, $out);
+        unlink('custom/modules/Connectors/metadata/connectors.php');
     }
-
-    logThis('End upgrade_connectors', $path);
 }
 
 /**
@@ -4380,4 +4345,53 @@ function rebuildSprites($fromUpgrade=true)
     // generate the sprite goodies
     // everything is saved into cache/sprites
     $sb->createSprites();
+}
+
+
+/**
+ * repairSearchFields
+ *
+ * This method goes through the list of SearchFields files based and calls TemplateRange::repairCustomSearchFields
+ * method on the files in an attempt to ensure the range search attributes are properly set in SearchFields.php.
+ *
+ * @param $globString String value used for glob search defaults to searching for all SearchFields.php files in modules directory
+ * @param $path String value used to point to log file should logging be required.  Defaults to empty.
+ *
+ */
+function repairSearchFields($globString='modules/*/metadata/SearchFields.php', $path='')
+{
+	if(!empty($path))
+	{
+		logThis('Begin repairSearchFields', $path);
+	}
+
+	require_once('include/dir_inc.php');
+	require_once('modules/DynamicFields/templates/Fields/TemplateRange.php');
+	require('include/modules.php');
+
+	global $beanList;
+	$searchFieldsFiles = glob($globString);
+
+	foreach($searchFieldsFiles as $file)
+	{
+		if(preg_match('/modules\/(.*?)\/metadata\/SearchFields\.php/', $file, $matches) && isset($beanList[$matches[1]]))
+		{
+			$module = $matches[1];
+			$beanName = $beanList[$module];
+			VardefManager::loadVardef($module, $beanName);
+			if(isset($GLOBALS['dictionary'][$beanName]['fields']))
+			{
+				if(!empty($path))
+				{
+					logThis('Calling TemplateRange::repairCustomSearchFields for module ' . $module, $path);
+				}
+				TemplateRange::repairCustomSearchFields($GLOBALS['dictionary'][$beanName]['fields'], $module);
+			}
+		}
+	}
+
+	if(!empty($path))
+	{
+		logThis('End repairSearchFields', $path);
+	}
 }

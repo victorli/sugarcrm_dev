@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -537,7 +537,6 @@ $xtpl->assign('encoded_users_popup_request_data', $json->encode($popup_request_d
 
 $change_parent_button = '<input type="button" name="button" tabindex="2" class="button" '
 	. 'title="' . $app_strings['LBL_SELECT_BUTTON_TITLE'] . '" '
-	. 'accesskey="' . $app_strings['LBL_SELECT_BUTTON_KEY'] . '" '
 	. 'value="'	. $app_strings['LBL_SELECT_BUTTON_LABEL'] . '" '
 	. "onclick='ValidateParentType();' />\n"
 	.'<script>function ValidateParentType() {
@@ -558,21 +557,18 @@ if(!ACLController::checkAccess('Contacts', 'list', true)){
 
 $change_to_addrs_button = '<input type="button" name="to_button" tabindex="3" class="button" '
 	. 'title="' . $app_strings['LBL_SELECT_BUTTON_TITLE'] . '" '
-	. 'accesskey="' . $app_strings['LBL_SELECT_BUTTON_KEY'] . '" '
 	. 'value="'	. $mod_strings['LBL_EMAIL_SELECTOR'] . '" '
 	. "onclick='button_change_onclick(this);' $button_attr />\n";
 $xtpl->assign("CHANGE_TO_ADDRS_BUTTON", $change_to_addrs_button);
 
 $change_cc_addrs_button = '<input type="button" name="cc_button" tabindex="3" class="button" '
 	. 'title="' . $app_strings['LBL_SELECT_BUTTON_TITLE'] . '" '
-	. 'accesskey="' . $app_strings['LBL_SELECT_BUTTON_KEY'] . '" '
 	. 'value="'	. $mod_strings['LBL_EMAIL_SELECTOR'] . '" '
 	. "onclick='button_change_onclick(this);' $button_attr />\n";
 $xtpl->assign("CHANGE_CC_ADDRS_BUTTON", $change_cc_addrs_button);
 
 $change_bcc_addrs_button = '<input type="button" name="bcc_button" tabindex="3" class="button" '
 	. 'title="' . $app_strings['LBL_SELECT_BUTTON_TITLE'] . '" '
-	. 'accesskey="' . $app_strings['LBL_SELECT_BUTTON_KEY'] . '" '
 	. 'value="'	. $mod_strings['LBL_EMAIL_SELECTOR'] . '" '
 	. "onclick='button_change_onclick(this);' $button_attr />\n";
 $xtpl->assign("CHANGE_BCC_ADDRS_BUTTON", $change_bcc_addrs_button);

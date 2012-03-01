@@ -1,7 +1,7 @@
 <!--
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -111,7 +111,7 @@
 							{MOD.LBL_DESCRIPTION}
 						</td>
 						<td colspan="3" >
-							<textarea name='description' tabindex='0' cols="90" rows="1" style="height: 1.6.em; overflow-y:auto; font-family:sans-serif,monospace; font-size:inherit;" id="subjectfield">{DESCRIPTION}</textarea>
+							<textarea name='description' tabindex='0' cols="90" rows="1" style="height: 1.6.em; overflow-y:auto; font-family:sans-serif,monospace; font-size:inherit;" id="description">{DESCRIPTION}</textarea>
 						</td>
 					</tr>
 					<tr>
@@ -215,7 +215,7 @@
 		<input type="hidden" id="documentId" name="seldoc" tabindex="0" />
 		<input type="hidden" id="docRevId" name="seldoc" tabindex="0" />
 		<input type="hidden" id="documentType" name="seldoc" tabindex="0" />
-		<input type="button" name="add_doc" onclick="selectDoc();" value='{MOD.LBL_SUGAR_DOCUMENT}' class="button" />
+		<input type="button" name="add_doc" id="add_doc" onclick="selectDoc();" value='{MOD.LBL_SUGAR_DOCUMENT}' class="button" />
 	</div>
 	<div id="attachments_div">
 	</div>

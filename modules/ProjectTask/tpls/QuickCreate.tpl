@@ -2,7 +2,7 @@
 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -91,8 +91,7 @@
 	<td ><slot><input type="text" class="sqsEnabled" tabindex="2" autocomplete="off" name="parent_name" id="parent_name"
 	value="{$parent_name}" tabindex="16" /><input type="hidden" name="project_id" id="project_id"
 	value="{$project_id}" />&nbsp;<input
-	title="{$APP.LBL_SELECT_BUTTON_TITLE}"
-	accessKey="{$APP.LBL_SELECT_BUTTON_KEY}" type="button" class="button"
+	title="{$APP.LBL_SELECT_BUTTON_TITLE}" type="button" class="button"
 	value="{$APP.LBL_SELECT_BUTTON_LABEL}" name="change_parent" tabindex="2"
 	onclick='open_popup("Project", 600, 400, "", true, false, {$encoded_parent_popup_request_data});'
 	/></slot></td>	{/if}

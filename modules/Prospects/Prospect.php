@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -225,24 +225,27 @@ class Prospect extends Person {
         global  $beanList, $beanFiles;
         $module_name = $this->module_dir;
 
-        if(empty($module)){
-            $pattern = '/AND related_type = #(.*)#/i';
-            if(preg_match($pattern, $query, $matches) && count($matches) > 1){
+        if(empty($module))
+        {
+            //The call to retrieveTargetList contains a query that may contain a pound token
+            $pattern = '/AND related_type = [\'#]([a-zA-Z]+)[\'#]/i';
+            if(preg_match($pattern, $query, $matches))
+            {
                 $module_name = $matches[1];
                 $query = preg_replace($pattern, "", $query);
             }
-             $GLOBALS['log']->debug("PROSPECT QUERY: ".$query);
         }
-        $GLOBALS['log']->debug(var_export($matches, true));
+
         $count = count($fields);
         $index = 1;
         $sel_fields = "";
-        if(!empty($fields)){
+        if(!empty($fields))
+        {
             foreach($fields as $field){
                 if($field == 'id'){
                 	$sel_fields .= 'prospect_lists_prospects.id id';
                 }else{
-                	$sel_fields .= $module_name.".".$field;
+                	$sel_fields .= strtolower($module_name).".".$field;
                 }
                 if($index < $count){
                     $sel_fields .= ",";

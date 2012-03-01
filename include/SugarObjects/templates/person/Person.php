@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -58,8 +58,12 @@ class Person extends Basic
 		return $ret_val;
 	}
 
+
 	/**
-	 * Generate the name field from the first_name and last_name fields.
+     * _create_proper_name_field
+     *
+	 * This function helps generate the name and full_name member field variables from the salutation, title, first_name and last_name fields.
+     * It takes into account the locale format settings as well as ACL settings if supported.
 	 */
 	function _create_proper_name_field()
 	{
@@ -68,22 +72,22 @@ class Person extends Basic
         // Bug# 46125 - make first name, last name, salutation and title of Contacts respect field level ACLs
         $first_name = ""; $last_name = ""; $salutation = ""; $title = "";
 
-                // first name has at least read access
+           // first name has at least read access
            $first_name = $this->first_name;
 
-                // last name has at least read access
+            // last name has at least read access
             $last_name = $this->last_name;
 
 
-                // salutation has at least read access
+            // salutation has at least read access
             if(isset($this->field_defs['salutation']['options'])
 			  && isset($app_list_strings[$this->field_defs['salutation']['options']])
 			  && isset($app_list_strings[$this->field_defs['salutation']['options']][$this->salutation]) ) {
 
 			        $salutation = $app_list_strings[$this->field_defs['salutation']['options']][$this->salutation];
-			    }   // if
+			} // if
 
-                // last name has at least read access
+            // last name has at least read access
             $title = $this->title;
 
         // Corner Case:

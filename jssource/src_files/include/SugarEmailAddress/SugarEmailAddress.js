@@ -1,6 +1,6 @@
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -223,7 +223,8 @@
 		    var newContentInvalidFlag = document.createElement("input");
 		    var newContentVerifiedFlag = document.createElement("input");
 		    var newContentVerifiedValue = document.createElement("input");
-		    var removeButton = document.createElement("img");
+		    var removeButton = document.createElement("button");
+            var removeButtonImg = document.createElement('img');
 		    var tbody = document.createElement("tbody");
 		    var tr = document.createElement("tr");
 		    var td1 = document.createElement("td");
@@ -252,15 +253,18 @@
 		    if(address != '') {
 		        newContent.setAttribute("value", address);
 		    }
+
+            // inner structure of remove button
+            removeButtonImg.setAttribute('src', "index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=id-ff-remove-nobg.png");
 		    
 		    // remove button
 		    removeButton.setAttribute("id", this.id + "removeButton" + this.numberEmailAddresses);
 			removeButton.setAttribute("class", "id-ff-remove");
 		    removeButton.setAttribute("name", this.numberEmailAddresses);
 			removeButton.eaw = this;
-		    removeButton.setAttribute("src", "index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=id-ff-remove.png");
             removeButton.setAttribute("tabindex", tabIndexCount);
 		    removeButton.onclick = function(){this.eaw.removeEmailAddress(this.name);};
+            removeButton.appendChild(removeButtonImg);
 		    
 		    // set primary flag
 		    newContentPrimaryFlag.setAttribute("type", "radio");
@@ -428,7 +432,7 @@
 		    
 		    // Add validation to field
             this.EmailAddressValidation(this.emailView, this.id+ 'emailAddress' + this.numberEmailAddresses,this.emailIsRequired, SUGAR.language.get('app_strings', 'LBL_EMAIL_ADDRESS_BOOK_EMAIL_ADDR'));
-		    this.numberEmailAddresses++;
+            this.numberEmailAddresses++;
 			this.addInProgress = false;
 		}, //addEmailAddress
 
@@ -440,8 +444,9 @@
 		removeEmailAddress : function(index) {
 			removeFromValidate(this.emailView, this.id + 'emailAddress' + index);
             var oNodeToRemove = Dom.get(this.id +  'emailAddressRow' + index);
+            var form = Dom.getAncestorByTagName(oNodeToRemove, "form");
             oNodeToRemove.parentNode.removeChild(oNodeToRemove);
-            
+
             var removedIndex = parseInt(index);
             //If we are not deleting the last email address, we need to shift the numbering to fill the gap
             if(this.numberEmailAddresses != removedIndex) {
@@ -492,6 +497,7 @@
                Dom.get(this.id + 'emailAddressPrimaryFlag0').checked = true;
                Dom.get(this.id + 'emailAddressPrimaryFlag0').value = this.id + 'emailAddress0';
             }
+
         },
 		
 		toggleCheckbox : function (el)

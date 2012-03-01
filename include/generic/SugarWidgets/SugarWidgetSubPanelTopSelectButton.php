@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,7 +38,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 
-require_once('include/generic/SugarWidgets/SugarWidgetSubPanelTopButton.php');
+
 
 class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 {
@@ -55,7 +55,7 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 		$initial_filter = '';
 	
 		$this->title = $app_strings['LBL_SELECT_BUTTON_TITLE'];
-		$this->accesskey = $app_strings['LBL_SELECT_BUTTON_KEY'];
+		//$this->accesskey = $app_strings['LBL_SELECT_BUTTON_KEY'];
 		$this->value = $app_strings['LBL_SELECT_BUTTON_LABEL'];		
 
 		if (is_array($this->button_properties)) {
@@ -63,7 +63,7 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 				$this->title = $app_strings[$this->button_properties['title']];
 			}
 			if( isset($this->button_properties['accesskey'])) {
-				$this->accesskey = $app_strings[$this->button_properties['accesskey']];
+				//$this->accesskey = $app_strings[$this->button_properties['accesskey']];
 			}
 			if( isset($this->button_properties['form_value'])) {
 				$this->value = $app_strings[$this->button_properties['form_value']];
@@ -157,7 +157,6 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 		$json_encoded_php_array = $this->_create_json_encoded_popup_request($popup_request_data);
 		return ' <input type="button" name="' . $this->getWidgetId() . '_select_button" id="' . $this->getWidgetId() . '_select_button" class="button"' . "\n"
 				. ' title="' . $this->title . '"'
-			. ' accesskey="' . $this->accesskey . '"'
 			. ' value="' . $this->value . "\"\n"
 			. " onclick='open_popup(\"$this->module_name\",600,400,\"$initial_filter\",true,true,$json_encoded_php_array,\"$popup_mode\",$create);' />\n";
 	}

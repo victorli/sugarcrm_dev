@@ -1,7 +1,7 @@
 <!--
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -66,7 +66,7 @@
 	</tr>
 	<tr>
 	<td width="15%" scope="row"><slot>{MOD.LBL_EDIT_TRACKER_NAME}<span class="required">&nbsp;{APP.LBL_REQUIRED_SYMBOL}</span></slot></td>
-	<td width="35%" ><slot><input type="text" size="30" tabindex='1' name="tracker_name" value="{TRACKER_NAME}"></slot></td>
+	<td width="35%" ><slot><input type="text" size="30" tabindex='1' name="tracker_name" id="tracker_name" value="{TRACKER_NAME}"></slot></td>
 	<td width="15%" scope="row"><slot>{MOD.LBL_EDIT_OPT_OUT}</slot></td>
     <td width="35%" ><slot><input onclick="toggle_tracker_url(this);" name="is_optout" id="is_optout" tabindex='2' class="checkbox" type="checkbox" {IS_OPTOUT_CHECKED}/></slot></td>	
 	</tr>

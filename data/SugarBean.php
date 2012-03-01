@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -439,6 +439,19 @@ class SugarBean
         return $this->getTableName().'_audit';
     }
 
+    /**
+     * Returns the name of the custom table.
+     * Custom table's name is based on implementing class' table name.
+     *
+     * @return String Custom table name.
+     *
+     * Internal function, do not override.
+     */
+    public function get_custom_table_name() 
+    { 
+        return $this->getTableName().'_cstm'; 
+    }
+    
     /**
      * If auditing is enabled, create the audit table.
      *
@@ -1494,7 +1507,7 @@ class SugarBean
                 if(!$notify_mail->Send()) {
                     $GLOBALS['log']->fatal("Notifications: error sending e-mail (method: {$notify_mail->Mailer}), (error: {$notify_mail->ErrorInfo})");
                 }else{
-                    $GLOBALS['log']->fatal("Notifications: e-mail successfully sent");
+                    $GLOBALS['log']->info("Notifications: e-mail successfully sent");
                 }
             }
 
@@ -2816,6 +2829,11 @@ function save_relationship_changes($is_update, $exclude=array())
         $jtcount = 0;
         //LOOP AROUND FOR FIXIN VARDEF ISSUES
         require('include/VarDefHandler/listvardefoverride.php');
+        if (file_exists('custom/include/VarDefHandler/listvardefoverride.php'))
+        {
+            require('custom/include/VarDefHandler/listvardefoverride.php');
+        }
+
         $joined_tables = array();
         if(!empty($params['joined_tables']))
         {
@@ -4375,11 +4393,11 @@ function save_relationship_changes($is_update, $exclude=array())
                 //cn: if $field is a _dom, detect and return VALUE not KEY
                 //cl: empty function check for meta-data enum types that have values loaded from a function
                 else if (((!empty($value['type']) && ($value['type'] == 'enum' || $value['type'] == 'radioenum') ))  && empty($value['function'])){
-                    if(!empty($app_list_strings[$value['options']][$this->$field])){
+                    if(!empty($value['options']) && !empty($app_list_strings[$value['options']][$this->$field])){
                         $return_array[$cache[$field]] = $app_list_strings[$value['options']][$this->$field];
                     }
                     //nsingh- bug 21672. some modules such as manufacturers, Releases do not have a listing for select fields in the $app_list_strings. Must also check $mod_strings to localize.
-                    elseif(!empty($mod_strings[$value['options']][$this->$field]))
+                    elseif(!empty($value['options']) && !empty($mod_strings[$value['options']][$this->$field]))
                     {
                         $return_array[$cache[$field]] = $mod_strings[$value['options']][$this->$field];
                     }

@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -464,6 +464,9 @@ eoq;
 						$even = !$even; $newhtml .= $this->addDatetime($displayname,  $field["name"]); break;
 						case "datetime":
 						case "date":$even = !$even; $newhtml .= $this->addDate($displayname,  $field["name"]); break;
+                        default:
+                            $newhtml .= $this->addDefault($displayname,  $field, $even); break;
+                            break;
 					}
 				}
 
@@ -636,7 +639,7 @@ EOJS;
 			//
 			///////////////////////////////////////
 
-			$change_parent_button = "<span class='id-ff'><button title='".$app_strings['LBL_SELECT_BUTTON_TITLE']."' accessKey='".$app_strings['LBL_SELECT_BUTTON_KEY']."'  type='button' class='button' value='".$app_strings['LBL_SELECT_BUTTON_LABEL']
+			$change_parent_button = "<span class='id-ff'><button title='".$app_strings['LBL_SELECT_BUTTON_TITLE']."'  type='button' class='button' value='".$app_strings['LBL_SELECT_BUTTON_LABEL']
 			."' name='button_parent_name' onclick='open_popup(document.MassUpdate.{$field['type_name']}.value, 600, 400, \"\", true, false, {$encoded_popup_request_data});'>
 			".SugarThemeRegistry::current()->getImage("id-ff-select", '', null, null, ".png", $app_strings['LBL_ID_FF_SELECT'])."
 			</button></span>";
@@ -771,7 +774,6 @@ EOQ;
     <input name='{$varname}' id='mass_{$varname}' class='sqsEnabled' autocomplete='off' type='text' value=''>
     <input name='{$id_name}' id='mass_{$id_name}' type='hidden' value=''>&nbsp;
     <input title='{$app_strings['LBL_SELECT_BUTTON_TITLE']}'
-        accessKey='{$app_strings['LBL_SELECT_BUTTON_KEY']}'
         type='button' class='button' value='{$app_strings['LBL_SELECT_BUTTON_LABEL']}' name='button'
         onclick='open_popup("$mod_type", 600, 400, "", true, false, {$encoded_popup_request_data});'
         />
@@ -841,7 +843,6 @@ EOHTML;
     <input name='{$id_name}' id='mass_{$id_name}' type='hidden' value=''>
 	<span class="id-ff multiple">
     <button title='{$app_strings['LBL_SELECT_BUTTON_TITLE']}'
-        accessKey='{$app_strings['LBL_SELECT_BUTTON_KEY']}'
         type='button' class='button' value='{$app_strings['LBL_SELECT_BUTTON_LABEL']}' name='button'
         onclick='open_popup("$mod_type", 600, 400, "", true, false, {$encoded_popup_request_data});'
         /><img alt="$img" src="$img"></button></span>
@@ -907,8 +908,7 @@ EOHTML;
 							$html = '<td scope="row">' . $displayname . " </td>\n"
 							. '<td><input class="sqsEnabled" type="text" autocomplete="off" id="mass_' . $varname .'" name="' . $varname . '" value="" /><input id="mass_' . $id_name . '" type="hidden" name="'
 							. $id_name . '" value="" />&nbsp;<span class="id-ff multiple"><button type="button" name="btn1" class="button" title="'
-							. $app_strings['LBL_SELECT_BUTTON_LABEL'] . '" accesskey="'
-							. $app_strings['LBL_SELECT_BUTTON_KEY'] . '" value="' . $app_strings['LBL_SELECT_BUTTON_LABEL'] . '" onclick='
+							. $app_strings['LBL_SELECT_BUTTON_LABEL'] . '"  value="' . $app_strings['LBL_SELECT_BUTTON_LABEL'] . '" onclick='
 							. "'open_popup(\"Accounts\",600,400,\"\",true,false,{$encoded_popup_request_data});' /><img alt=\"$img\" src=\"$img\"></button></span></td>\n";
 							$html .= '<script type="text/javascript" language="javascript">if(typeof sqs_objects == \'undefined\'){var sqs_objects = new Array;}sqs_objects[\'MassUpdate_' . $varname . '\'] = ' .
 							$json->encode($qsParent) . '; registerSingleSmartInputListener(document.getElementById(\'mass_' . $varname . '\'));
@@ -950,7 +950,7 @@ EOHTML;
 						$html = <<<EOQ
 		<td width="15%" scope="row">$displayname</td>
 		<td ><input class="sqsEnabled" autocomplete="off" id="mass_assigned_user_name" name='assigned_user_name' type="text" value=""><input id='mass_assigned_user_id' name='assigned_user_id' type="hidden" value="" />
-		<span class="id-ff multiple"><button id="mass_assigned_user_name_btn" title="{$app_strings['LBL_SELECT_BUTTON_TITLE']}" accessKey="{$app_strings['LBL_SELECT_BUTTON_KEY']}" type="button" class="button" value='{$app_strings['LBL_SELECT_BUTTON_LABEL']}' name=btn1
+		<span class="id-ff multiple"><button id="mass_assigned_user_name_btn" title="{$app_strings['LBL_SELECT_BUTTON_TITLE']}" type="button" class="button" value='{$app_strings['LBL_SELECT_BUTTON_LABEL']}' name=btn1
 				onclick='open_popup("Users", 600, 400, "", true, false, $encoded_popup_request_data);' /><img src="$img"></button></span>
 		</td>
 EOQ;
@@ -1319,6 +1319,18 @@ EOQ;
         }
 
         return false;
+    }
+
+     /**
+     * Have to be overridden in children
+     * @param string $displayname field label
+     * @param string $field field name
+     * @param bool $even even or odd
+     * @return string html field data
+     */
+    protected function addDefault($displayname,  $field, & $even)
+    {
+        return '';
     }
 }
 

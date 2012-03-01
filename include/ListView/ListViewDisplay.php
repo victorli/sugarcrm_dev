@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -121,7 +121,7 @@ class ListViewDisplay {
         }
 		if(!empty($params['massupdate']) && $params['massupdate'] != false) {
 			$this->show_mass_update_form = true;
-			$this->mass = new MassUpdate();
+			$this->mass = $this->getMassUpdate();
 			$this->mass->setSugarBean($seed);
 			if(!empty($params['handleMassupdate']) || !isset($params['handleMassupdate'])) {
                 $this->mass->handleMassUpdate();
@@ -324,7 +324,7 @@ EOHTML;
         if ( $this->email )
 			$menuItems .= $this->buildComposeEmailLink($this->data['pageData']['offsets']['total']);
 		// mass update
-		$mass = new MassUpdate();
+		$mass = $this->getMassUpdate();
 		$mass->setSugarBean($this->seed);
 		if ( ( ACLController::checkAccess($this->seed->module_dir,'edit',true) && ACLController::checkAccess($this->seed->module_dir,'massupdate',true) ) && $this->showMassupdateFields && $mass->doMassUpdateFieldsExistForFocus() )
             $menuItems .= $this->buildMassUpdateLink();
@@ -666,5 +666,12 @@ EOF;
 		return $str;
 	}
 
+     /**
+     * @return MassUpdate instance
+     */
+    protected function getMassUpdate()
+    {
+        return new MassUpdate();
+    }
 }
 ?>

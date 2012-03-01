@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -330,9 +330,6 @@ function insert_popup_header(
 {
     global $app_strings, $sugar_config;
 
-    $charset = isset($app_strings['LBL_CHARSET'])
-        ? $app_strings['LBL_CHARSET'] : $sugar_config['default_charset'];
-
     $themeCSS = SugarThemeRegistry::current()->getCSS();
 
     $langHeader = get_language_header();
@@ -344,12 +341,19 @@ function insert_popup_header(
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html {$langHeader}>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset="{$charset}">
 EOHTML;
     }
+
+    if (isset($sugar_config['meta_tags']) && isset($sugar_config['meta_tags']['IE_COMPAT_MODE']))
+    {
+        echo $sugar_config['meta_tags']['IE_COMPAT_MODE'];
+    }
+
     echo "<title>{$app_strings['LBL_BROWSER_TITLE']}</title>" . $themeCSS;
     if ($includeJS)
     {
+        $charset = isset($app_strings['LBL_CHARSET']) ? $app_strings['LBL_CHARSET'] : $sugar_config['default_charset'];
+        echo '<meta http-equiv="Content-Type" content="text/html; charset="{$charset}">';
         echo '<script type="text/javascript" src="' . getJSPath('cache/include/javascript/sugar_grp1_yui.js') . '"></script>';
         echo '<script type="text/javascript" src="' . getJSPath('cache/include/javascript/sugar_grp1.js') . '"></script>';
         echo '</head>';

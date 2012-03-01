@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -167,7 +167,7 @@ $form_top = <<<EOQ
 			<input type="hidden" name="return_module" value="$focus->merge_module">
 			<input type="hidden" name="return_id" value="$return_id">
 			<input type="hidden" name="return_action" value="DetailView">
-			<input title="$button_title" accessKey="$button_key" class="button" onclick="return verify_selection(this);" type="submit" name="button" value="  $button_label  " >
+			<input title="$button_title" class="button" onclick="return verify_selection(this);" type="submit" name="button" value="  $button_label  " >
             <input title="$cancel_title" accessKey="$cancel_key" class="button" onclick="this.form.action.value='DetailView';this.form.module.value='$focus->merge_module';this.form.module.record='$return_id'" type="submit" name="button" value=" $cancel_label   " >
 		</form>
         <script>

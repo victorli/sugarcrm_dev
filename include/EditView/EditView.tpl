@@ -1,7 +1,7 @@
 {*
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,8 +38,7 @@
 {{include file=$headerTpl}}
 {sugar_include include=$includes}
 
-{{** SUGAR.TabFields variable will be used to track tabindexes for references **}}
-<span id='tabcounterJS'><script>SUGAR.TabFields=new Array();</script></span>
+<span id='tabcounterJS'><script>SUGAR.TabFields=new Array();//this will be used to track tabindexes for references</script></span>
 
 <div id="{{$form_name}}_tabs"
 {{if $useTabs}}
@@ -57,6 +56,8 @@ class="yui-navset"
     </ul>
     {{/if}}
     <div {{if $useTabs}}class="yui-content"{{/if}}>
+
+{{assign var='tabIndexVal' value=0}}
 {{* Loop through all top level panels first *}}
 {{counter name="panelCount" start=-1 print=false assign="panelCount"}}
 
@@ -88,7 +89,7 @@ class="yui-navset"
 {{/if}}
 
 {{assign var='rowCount' value=0}}
-{{assign var='tabIndexVal' value=0}}
+{{assign var='ACCKEY' value=''}}
 {{foreach name=rowIteration from=$panel key=row item=rowData}}
 {counter name="fieldsUsed" start=0 print=false assign="fieldsUsed"}
 {capture name="tr" assign="tableRow"}
@@ -146,6 +147,7 @@ class="yui-navset"
 		{{/if}}
 		{counter name="fieldsUsed"}
 		{{math assign="tabIndexVal" equation="$tabIndexVal + 1"}}
+		{{if $tabIndexVal==1}} {{assign var='ACCKEY' value=$APP.LBL_FIRST_INPUT_EDIT_VIEW_KEY}}{{else}}{{assign var='ACCKEY' value=''}}{{/if}}
 		{{if !empty($colData.field.tabindex)  && $colData.field.tabindex !=0}}
 		    {{assign var='tabindex' value=$colData.field.tabindex}}
             {{** instead of tracking tabindex values for all fields, just track for email as email does not get created directly from
@@ -182,16 +184,16 @@ class="yui-navset"
 			    {{foreach from=$colData.field.fields item=subField}}
 			        {{if $fields[$subField.name]}}
 			        	{counter name="panelFieldCount"}
-			            {{sugar_field parentFieldArray='fields' tabindex=$tabindex vardef=$fields[$subField.name] displayType='EditView' displayParams=$subField.displayParams formName=$form_name}}&nbsp;
+			            {{sugar_field parentFieldArray='fields'  accesskey=$ACCKEY tabindex=$tabindex vardef=$fields[$subField.name] displayType='EditView' displayParams=$subField.displayParams formName=$form_name}}&nbsp;
 			        {{/if}}
 			    {{/foreach}}
 			{{elseif !empty($colData.field.customCode) && empty($colData.field.customCodeRenderField)}}
 				{counter name="panelFieldCount"}
-				{{sugar_evalcolumn var=$colData.field.customCode colData=$colData tabindex=$tabindex}}
+				{{sugar_evalcolumn var=$colData.field.customCode colData=$colData  accesskey=$ACCKEY tabindex=$tabindex}}
 			{{elseif $fields[$colData.field.name]}}
 				{counter name="panelFieldCount"}
 			    {{$colData.displayParams}}
-				{{sugar_field parentFieldArray='fields' tabindex=$tabindex vardef=$fields[$colData.field.name] displayType='EditView' displayParams=$colData.field.displayParams typeOverride=$colData.field.type formName=$form_name}}
+				{{sugar_field parentFieldArray='fields'  accesskey=$ACCKEY tabindex=$tabindex vardef=$fields[$colData.field.name] displayType='EditView' displayParams=$colData.field.displayParams typeOverride=$colData.field.type formName=$form_name}}
 			{{/if}}
 	{{if !empty($colData.field.customCode) && !empty($colData.field.customCodeRenderField)}}
 	    {counter name="panelFieldCount"}

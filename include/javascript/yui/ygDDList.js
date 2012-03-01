@@ -29,12 +29,32 @@ ygDDList.prototype = new YAHOO.util.DDProxy();
 ygDDList.prototype.borderDiv = null;
 ygDDList.prototype.originalDisplayProperties = Array();
 
+// Bug #47097 : Dashlets not displayed after moving them
+ygDDList.prototype.dashletID = null;
+ygDDList.prototype.needsReloadAfterDrop = false;
+
 ygDDList.prototype.startDrag = function(x, y) {
 	//this.logger.debug(this.id + " startDrag");
 
 	var dragEl = this.getDragEl();
 	var clickEl = this.getEl();
 
+    // Bug #47097 : Dashlets not displayed after moving them
+    this.needsReloadAfterDrop = false;
+    var chartContainer = YAHOO.util.Dom.getElementsByClassName('chartContainer', 'div', clickEl);
+    if ( chartContainer.length != 0 ) {
+        // try to find OBJECT tab in canvas if success - SWF used and it needs to be reloaded
+        var cee_canvas = YAHOO.util.Dom.get(this.dashletID+'-canvas');
+        if ( typeof cee_canvas != 'undefined' && cee_canvas ) {
+            // if there is object tag
+            var canvas_objects = YAHOO.util.Dom.getElementsBy(function(el){ return true;}, 'OBJECT', cee_canvas);
+            if ( canvas_objects.length != 0 ) {
+                this.needsReloadAfterDrop = true;
+            }
+        }
+        chartContainer.innerHTML = '';
+    }
+    
 	dragEl.innerHTML = clickEl.innerHTML;
 	dragElObjects = dragEl.getElementsByTagName('object');
 
@@ -86,6 +106,11 @@ ygDDList.prototype.endDrag = function(e) {
 	dragEl.innerHTML = '';
 
 	this.afterEndDrag(e);
+    
+    // Bug #47097 : Dashlets not displayed after moving them
+    if ( this.needsReloadAfterDrop && this.dashletID ) {
+        SUGAR.mySugar.retrieveDashlet(this.dashletID); //"predefined_chart"
+    }
 };
 
 ygDDList.prototype.afterEndDrag = function(e) {

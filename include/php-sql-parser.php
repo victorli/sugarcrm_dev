@@ -768,6 +768,15 @@ EOREGEX
 
 		}
 
+		private function trimSubquery($sq)
+		{
+		    $sq = trim($sq);
+		    if(empty($sq)) return '';
+            while($sq[0] == '(' && substr($sq, -1) == ')') {
+                $sq = substr($sq, 1, -1);
+            }
+            return $sq;
+		}
 
 		private function process_from(&$tokens) {
 
@@ -807,7 +816,7 @@ EOREGEX
 				if(preg_match("/^\\s*\\(\\s*select/i",$token)) {
 					$type = 'subquery';
 					$table = "DEPENDENT-SUBQUERY";
-					$sub_tree = $this->parse(trim($token,'() '));
+					$sub_tree = $this->parse($this->trimSubquery($token));
 					$subquery = $token;
 				}
 
@@ -908,7 +917,7 @@ EOREGEX
 						}
 
 						if(substr(trim($table),0,1) == '(') {
-							$base_expr=trim($table,'() ');
+							$base_expr=$this->trimSubquery(trim);
 							$join_type = 'JOIN';
 							$sub_tree = $this->process_from($this->split_sql($base_expr));
 							$alias="";
@@ -916,7 +925,7 @@ EOREGEX
 
 
 						if($join_type == "") $join_type='JOIN';
-						$expr[] = array('table'=>$table, 'alias'=>$alias,'join_type'=>$join_type,'ref_type'=> $ref_type,'ref_clause'=>trim($ref_expr,'() '), 'base_expr' => $base_expr, 'sub_tree' => $sub_tree);
+						$expr[] = array('table'=>$table, 'alias'=>$alias,'join_type'=>$join_type,'ref_type'=> $ref_type,'ref_clause'=>$this->trimSubquery($ref_expr), 'base_expr' => $base_expr, 'sub_tree' => $sub_tree);
 						$modifier = "";
 						#$join_type=$saved_join_type;
 
@@ -945,7 +954,7 @@ EOREGEX
 				++$i;
 		  	}
 			if(substr(trim($table),0,1) == '(') {
-				$base_expr=trim($table,'() ');
+				$base_expr=$this->trimSubquery($table);
 				$join_type = 'JOIN';
 				$sub_tree = $this->process_from($this->split_sql($base_expr));
 				$alias = "";
@@ -954,7 +963,7 @@ EOREGEX
 			}
 			if($join_type == "") $saved_join_type='JOIN';
 
-			$expr[] = array('table'=>$table, 'alias'=>$alias,'join_type'=>$saved_join_type,'ref_type'=> $ref_type,'ref_clause'=> trim($ref_expr,'() '), 'base_expr' => $base_expr, 'sub_tree' => $sub_tree);
+			$expr[] = array('table'=>$table, 'alias'=>$alias,'join_type'=>$saved_join_type,'ref_type'=> $ref_type,'ref_clause'=> $this->trimSubquery($ref_expr), 'base_expr' => $base_expr, 'sub_tree' => $sub_tree);
 
 
 			return $expr;
@@ -1080,7 +1089,7 @@ EOREGEX
 					$type = 'subquery';
 					#tokenize and parse the subquery.
 					#we remove the enclosing parenthesis for the tokenizer
-					$processed = $this->parse(trim($token,' ()'));
+					$processed = $this->parse($this->trimSubquery($token));
 
 
 				/* is it an inlist */
@@ -1321,7 +1330,7 @@ EOREGEX
 			if(!$cols) {
 				$cols = 'ALL';
 			} else {
-				$cols = explode(",", trim($cols,'() '));
+				$cols = explode(",", $this->trimSubquery($cols));
 			}
 			unset($tokens['INTO']);
 			$tokens[$token_category] =  array('table'=>$table, 'cols'=>$cols);

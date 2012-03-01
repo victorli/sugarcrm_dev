@@ -97,6 +97,15 @@ function smarty_function_sugar_evalcolumn($params, &$smarty)
     	   }
     	   $code = str_replace(array_keys($str_replace), array_values($str_replace), $code);
     	}
+
+        if(isset($params['accesskey']) && preg_match_all("'(<[ ]*?)(textarea|input|select)([^>]*?)(>)'si", $code, $matches, PREG_PATTERN_ORDER)) {
+    	   $str_replace = array();
+    	   $accesskey = ' accesskey="' . $params['accesskey'] . '" ';
+    	   foreach($matches[3] as $match) {
+    	   	       $str_replace[$match] = $accesskey . $match;
+    	   }
+    	   $code = str_replace(array_keys($str_replace), array_values($str_replace), $code);
+    	}
     	
         // Add a string replace to swap out @@FIELD@@ for the actual field,
         // we can't do this through customCode directly because the sugar_field smarty function returns smarty code to run on the second pass

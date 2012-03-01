@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,7 +38,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  
 
 
-require_once('include/generic/SugarWidgets/SugarWidgetSubPanelTopButtonQuickCreate.php');
+
 
 class SugarWidgetSubPanelTopCreateAccountNameButton extends SugarWidgetSubPanelTopButtonQuickCreate
 {
@@ -50,7 +50,7 @@ class SugarWidgetSubPanelTopCreateAccountNameButton extends SugarWidgetSubPanelT
 		global $currentModule;
 
 		$title = $app_strings['LBL_NEW_BUTTON_TITLE'];
-		$accesskey = $app_strings['LBL_NEW_BUTTON_KEY'];
+		//$accesskey = $app_strings['LBL_NEW_BUTTON_KEY'];
 		$value = $app_strings['LBL_NEW_BUTTON_LABEL'];
 		$this->module = 'Contacts';
 		if( ACLController::moduleSupportsACL($defines['module'])  && !ACLController::checkAccess($defines['module'], 'edit', true)){
@@ -74,7 +74,7 @@ class SugarWidgetSubPanelTopCreateAccountNameButton extends SugarWidgetSubPanelT
 		
 		
 		$button = $this->_get_form($defines, $additionalFormFields);
-		$button .= "<input title='$title' accesskey='$accesskey' class='button' type='submit' name='{$this->getWidgetId()}_create_button' id='{$this->getWidgetId()}_create_button' value='  $value  '/>\n";
+		$button .= "<input title='$title' class='button' type='submit' name='{$this->getWidgetId()}_create_button' id='{$this->getWidgetId()}_create_button' value='  $value  '/>\n";
 		$button .= "</form>";
 		return $button;
 	}

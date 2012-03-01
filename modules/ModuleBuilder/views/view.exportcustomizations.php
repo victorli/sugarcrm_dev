@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -70,7 +70,7 @@ class ViewExportcustomizations extends SugarView
  		$smarty->assign('moduleList',$GLOBALS['app_list_strings']['moduleList']);  
 		$ajax = new AjaxCompose();
 		$ajax->addCrumb($mod_strings['LBL_STUDIO'], 'ModuleBuilder.getContent("module=ModuleBuilder&action=wizard")');
-		$ajax->addSection('center', $mod_strings['LBL_EC_TITLE'],$smarty->fetch('modules/ModuleBuilder/tpls/exportcustomizations.tpl'));
+		$ajax->addSection('center', $mod_strings['LBL_EC_TITLE'],$smarty->fetch($this->getCustomFilePathIfExists('modules/ModuleBuilder/tpls/exportcustomizations.tpl')));
 		echo $ajax->getJavascript();
  	}
 }

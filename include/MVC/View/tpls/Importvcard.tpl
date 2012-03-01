@@ -2,7 +2,7 @@
 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -64,6 +64,6 @@ function validate_vcard()
 
 <input size="60" name="vcard" id="vcard_file" type="file" />&nbsp;
 <input class='button' type="button" onclick='validate_vcard()' value="{$APP.LBL_IMPORT_VCARD_BUTTON_LABEL}" 
-    title="{$APP.LBL_IMPORT_VCARD_BUTTON_TITLE}" accesskey="{$APP.LBL_IMPORT_VCARD_BUTTON_KEY}"/>
+    title="{$APP.LBL_IMPORT_VCARD_BUTTON_TITLE}" />
 </form>
 

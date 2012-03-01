@@ -3,7 +3,7 @@ if(!defined('sugarEntry') || !sugarEntry)
 	die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -677,6 +677,11 @@ SugarThemeRegistry::clearAllCaches();
 logThis("Rebuilding language cache");
 sugar_cache_reset_full();
 LanguageManager::clearLanguageCache();
+
+//pause tracking again so as to not call newly copied tracker code which may contain calls to new methods not currently loaded
+$trackerManager = TrackerManager::getInstance();
+$trackerManager->pause();
+$trackerManager->unsetMonitors();
 
 // re-minify the JS source files
 $_REQUEST['root_directory'] = getcwd();

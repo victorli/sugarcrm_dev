@@ -3,7 +3,7 @@ if (! defined ( 'sugarEntry' ) || ! sugarEntry)
     die ( 'Not A Valid Entry Point' ) ;
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -206,7 +206,7 @@ class ParserLabel extends ModuleBuilderParser
 	        {
             if (! isset ( $mod_strings [ $key ] ) || strcmp ( $value, $mod_strings [ $key ] ) != 0)
 	            {
-                $mod_strings [$key] = html_entity_decode_utf8($value, ENT_QUOTES ); // must match encoding used in view.labels.php
+                    $mod_strings [$key] = htmlentities(html_entity_decode_utf8($value, ENT_QUOTES ), ENT_QUOTES ); // must match encoding used in view.labels.php
 	                $changed = true ;
 	            }
 	        }

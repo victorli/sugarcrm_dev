@@ -1,6 +1,6 @@
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -1076,8 +1076,8 @@ function addFilterInputRelate(row,field,filter) {
 
 	var cell = document.createElement('td');
 	var new_input = document.createElement("input");
-	new_input.title= lbl_select+"[Alt+G]";
-	new_input.accessKey="G";
+	new_input.title= lbl_select;
+//	new_input.accessKey="G";
 	new_input.type="button";
 	new_input.value=lbl_select;
 	new_input.name=field.module;

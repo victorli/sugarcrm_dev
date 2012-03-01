@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -325,8 +325,22 @@ class ViewModulefield extends SugarView
         }
 
         $fv->ss->assign('help_group', $edit_or_add);
-        $body = $fv->ss->fetch('modules/ModuleBuilder/tpls/MBModule/field.tpl');
+        $body = $this->fetchTemplate($fv, 'modules/ModuleBuilder/tpls/MBModule/field.tpl');
         $ac->addSection('east', translate('LBL_SECTION_FIELDEDITOR','ModuleBuilder'), $body );
         return $ac;
+    }
+
+    /**
+     * fetchTemplate
+     * This function overrides fetchTemplate from SugarView.  For view.modulefield.php we go through the FieldViewer
+     * class to fetch the display contents.
+     *
+     * @param FieldViewer $mixed the FieldViewer instance
+     * @param string $template the file to fetch
+     * @return string contents from calling the fetch method on the FieldViewer Sugar_Smarty instance
+     */
+    protected function fetchTemplate($fv, $template)
+    {
+        return $fv->ss->fetch($this->getCustomFilePathIfExists($template));
     }
 }

@@ -1,6 +1,6 @@
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -327,6 +327,9 @@ SUGAR.mySugar = function() {
 					dashletEntire = document.getElementById('dashlet_entire_' + data.responseText);
 					dd = new ygDDList('dashlet_' + data.responseText); // make it draggable
 					dd.setHandleElId('dashlet_header_' + data.responseText);
+                    // Bug #47097 : Dashlets not displayed after moving them
+                    // add new property to save real id of dashlet, it needs to have ability reload dashlet by id
+                    dd.dashletID = data.responseText;
 					dd.onMouseDown = SUGAR.mySugar.onDrag;  
 					dd.onDragDrop = SUGAR.mySugar.onDrop;
 
@@ -598,9 +601,18 @@ SUGAR.mySugar = function() {
 		
 		
 		renderDashletsDialog: function(){	
+            var minHeight = 120;
+            var maxHeight = 520;
+            var minMargin = 16;
+
+            // adjust dialog height according to current page height
+            var pageHeight = document.documentElement.clientHeight;
+            var height = Math.min(maxHeight, pageHeight - minMargin * 2);
+            height = Math.max(height, minHeight);
+
 			SUGAR.mySugar.dashletsDialog = new YAHOO.widget.Dialog("dashletsDialog", 
 			{ width : "480px",
-			  height: "520px",
+			  height: height + "px",
 			  fixedcenter : true,
 			  draggable:false,
 			  visible : false, 

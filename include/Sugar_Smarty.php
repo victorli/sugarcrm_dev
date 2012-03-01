@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -63,9 +63,11 @@ class Sugar_Smarty extends Smarty
 		$this->cache_dir = SUGAR_SMARTY_DIR . 'cache';
 		$this->request_use_auto_globals = true; // to disable Smarty from using long arrays
 
-		$plugins_dir = array('include/Smarty/plugins');
 		if(file_exists('custom/include/Smarty/plugins'))
+        {
 			$plugins_dir[] = 'custom/include/Smarty/plugins';
+        }
+		$plugins_dir[] = 'include/Smarty/plugins';
 		$this->plugins_dir = $plugins_dir;
 
 		$this->assign("VERSION_MARK", getVersionedPath(''));

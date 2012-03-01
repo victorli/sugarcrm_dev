@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -421,9 +421,9 @@ class ImportViewStep3 extends ImportView
         $this->ss->assign('required_fields',implode(', ',$required));
         $this->ss->assign('CSS', $this->_getCSS());
 
-        $content = $this->ss->fetch('modules/Import/tpls/step3.tpl');
+        $content = $this->ss->fetch($this->getCustomFilePathIfExists('modules/Import/tpls/step3.tpl'));
         $this->ss->assign("CONTENT",$content);
-        $this->ss->display('modules/Import/tpls/wizardWrapper.tpl');
+        $this->ss->display($this->getCustomFilePathIfExists('modules/Import/tpls/wizardWrapper.tpl'));
 
     }
 
@@ -510,16 +510,17 @@ EOCSS;
 
         $print_required_array = "";
         foreach ($required as $name=>$display) {
-            $print_required_array .= "required['$name'] = '". $display . "';\n";
+            $print_required_array .= "required['$name'] = '". sanitize($display) . "';\n";
         }
         $sqsWaitImage = SugarThemeRegistry::current()->getImageURL('sqsWait.gif');
 
         return <<<EOJAVASCRIPT
+
     document.getElementById('goback').onclick = function()
     {
         document.getElementById('{$this->currentFormID}').action.value = '{$this->previousAction}';
         //bug #48960: CSS didn't load when use click back in the step2 (external sources are selected for contacts)
-        //need to unset 'to_pdf' in extstep1.tpl 
+        //need to unset 'to_pdf' in extstep1.tpl
         if (document.getElementById('{$this->currentFormID}').to_pdf)
         {
             document.getElementById('{$this->currentFormID}').to_pdf.value = '';

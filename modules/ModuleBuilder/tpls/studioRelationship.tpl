@@ -1,7 +1,7 @@
 {*
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -66,7 +66,7 @@
 			<input type='button' name='saverelbtn' value='{$mod_strings.LBL_BTN_SAVE}' onclick='if(check_form("relform")){ldelim} this.form.action.value="SaveRelationshipLabel"; ModuleBuilder.submitForm("relform");{rdelim}' class='button'>
 			{/if}
 			<input type='button' name='cancelbtn' value='{$mod_strings.LBL_BTN_CANCEL}' onclick='ModuleBuilder.tabPanel.removeTab(ModuleBuilder.findTabById("relEditor"));' class='button'>
-			{if $rel.from_studio || !$rel.readonly && !$is_new}
+            {if $hideLevel < 3 && ($rel.from_studio || !$rel.readonly && !$is_new)}
 			<input type='button' name='deleterelbtn' value='{$mod_strings.LBL_BTN_DELETE}' onclick='ModuleBuilder.deleteRel()' class='button'>
             {/if}
 

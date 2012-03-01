@@ -1,7 +1,7 @@
 <!--
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -70,7 +70,6 @@
 				<input title="{APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{APP.LBL_CANCEL_BUTTON_KEY}" class="button" id="emailCancel" onclick="this.form.action.value='{RETURN_ACTION}'; this.form.module.value='{RETURN_MODULE}'; this.form.record.value='{RETURN_ID}'; if(this.form.record.value == '' && this.form.origin_id.value != '') this.form.record.value=this.form.origin_id.value;" type="submit" name="button" value="  {APP.LBL_CANCEL_BUTTON_LABEL}  ">
 				<input title="{MOD.LBL_TEST_BUTTON_TITLE}"
 					type='button'
-					accessKey="{MOD.LBL_TEST_BUTTON_KEY}"
 					class="button"
 					id="emailTestSettings"
 					onClick='ie_test_open_popup_with_submit("InboundEmail", "Popup", "Popup", 400, 300, trim(this.form.server_url.value), this.form.protocol.value, trim(this.form.port.value), trim(this.form.email_user.value), Rot13.write(this.form.email_password.value), trim(this.form.mailbox.value), this.form.ssl.checked, this.form.personal.value, "EditView", this.form.origin_id.value?this.form.origin_id.value:this.form.record.value);'

@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -147,7 +147,7 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
 				$get_and_post = array_merge($_GET, $_POST);
 				foreach($get_and_post as $param => $value) {
 
-					if($param == 'redirect_url' || $param == 'submit')
+					if($param == 'redirect_url' && $param == 'submit')
 						continue;
 					
 					if($first_iteration){
@@ -218,5 +218,7 @@ if (!empty($_POST['redirect'])) {
     	die();
     }
 }
+
 echo $mod_strings['LBL_SERVER_IS_CURRENTLY_UNAVAILABLE'];
+
 ?>

@@ -1,7 +1,7 @@
 {*
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -195,8 +195,8 @@
 									{counter name="oCount"}
 									{sugar_translate label=$params.options select=$item}{if $oCount !=  count($vals)},{/if} 
 								{/foreach}
-						{else}	
-							{$rowData.$col}
+                        {else}
+                            {sugar_field parentFieldArray=$rowData vardef=$params displayType=ListView field=$col}
 						{/if}
 					</td>
 					{counter name="colCounter"}

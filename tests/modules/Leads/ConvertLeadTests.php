@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2011 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -467,5 +467,23 @@ class TestViewConvertLead extends ViewConvertLead
 
     public function copyActivityWrapper($activity, $bean) {
         parent::copyActivityAndRelateToBean($activity, $bean);
+    }
+
+    public function testMeetingsUsersRelationships()
+    {
+        global $current_user;
+        
+        $bean = SugarTestMeetingUtilities::createMeeting();
+        $convert_lead = SugarTestViewConvertLeadUtilities::createViewConvertLead();
+        
+        if ($bean->object_name == "Meeting")
+        {
+            $convert_lead->setMeetingsUsersRelationship($bean);
+        }
+        
+        $this->assertTrue(is_object($bean->users), "Relationship wasn't set.");
+        
+        SugarTestMeetingUtilities::removeMeetingUsers();
+        SugarTestMeetingUtilities::removeAllCreatedMeetings();
     }
 }
