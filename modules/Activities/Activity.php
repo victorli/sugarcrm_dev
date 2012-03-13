@@ -45,7 +45,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  */
 
 require_once('data/SugarBean.php');
-abstract class Activity extends SugarBean
+class Activity extends SugarBean
 {
 
     //Member variable to store value of related records when secondary selects are made via create_new_list_query

@@ -1,5 +1,5 @@
 <?php
-// created: 2012-02-29 15:51:29
+// created: 2012-03-12 10:50:53
 $md5_string = array (
   './LICENSE.txt' => 'd3f150e4a5bed444763ebe8a81742a95',
   './.htaccess' => 'd41d8cd98f00b204e9800998ecf8427e',
@@ -1173,7 +1173,7 @@ $md5_string = array (
   './themes/Sugar5/css/print.css' => 'c00fb2d3011318e43c4b1332080d1698',
   './themes/Sugar5/css/deprecated.css' => 'b5471d86d506bea8630df869fbfbe9cb',
   './themes/Sugar5/css/chart.css' => '78bf9d159067f20c5e3fc6adf7762f1c',
-  './sugar_version.php' => '5dac7dda0b72d3938b61289c3ada16c3',
+  './sugar_version.php' => '9e9b8cd083f1750d83cc883a0a3a4e69',
   './soap/SoapTypes.php' => '6dd557894d504db5527eceb5dab0a26f',
   './soap/SoapSugarUsers.php' => '929ace28687ade89743d2a661746244a',
   './soap/SoapStudio.php' => '0fd81758942a52940c119f3afa134fcd',
@@ -1188,9 +1188,9 @@ $md5_string = array (
   './soap.php' => 'b507c82aa35ff6765a082a1b875d4865',
   './service/v4_1/soap.php' => '7c63568c21b0ee71eb6aac6b5adebc5d',
   './service/v4_1/rest.php' => '0a622cbfedd7592f7b4cc174bd8245c8',
-  './service/v4_1/registry.php' => '02002bf41e3614f8b15de925ef4155aa',
+  './service/v4_1/registry.php' => 'd26ac7142d9c2b8491754f2d01711088',
   './service/v4_1/SugarWebServiceUtilv4_1.php' => '914b66c8b3dff76e428d9be01c4442ab',
-  './service/v4_1/SugarWebServiceImplv4_1.php' => '7be626b473a94beb92af78470868ddfe',
+  './service/v4_1/SugarWebServiceImplv4_1.php' => '2b19d928d604d18e82183db988bc6f26',
   './service/v4/soap.php' => '846a967557552767c6ae0d366d4d3d2e',
   './service/v4/rest.php' => '0721bd365d3151c72db6f95ce4b7e186',
   './service/v4/registry.php' => 'eb5f47fb4e4a536aad58984a433b41d5',
@@ -3023,7 +3023,7 @@ $md5_string = array (
   './modules/Activities/language/en_us.lang.php' => '915ca75c37f8eaf6212cb4638e1b5bbc',
   './modules/Activities/config.php' => '263bbe4872534909a02db8be2f6ab95a',
   './modules/Activities/SubPanelViewContacts.html' => 'ba5a475b493fcfb2b9dcec79380f9137',
-  './modules/Activities/Activity.php' => 'f4f67a4dfa43195a30f4c33be12f5233',
+  './modules/Activities/Activity.php' => '4dde8c1760bd9021b0f2b27346e17df2',
   './modules/Activities/SubPanelView.html' => '9dc12c6183eb5c4d4dcb907f9732f142',
   './modules/Activities/SetAcceptStatus.php' => '99917cfe39ceb08a60bb806e63254f11',
   './modules/Activities/OpenListView.php' => '4eea6e4645852f3139c66e31cb69e772',
@@ -4172,7 +4172,7 @@ $md5_string = array (
   './include/utils/layout_utils.php' => '8e9ba2ade862c13f6b5af45f5713eb2c',
   './include/utils/file_utils.php' => 'd27f493aaffe0d4ecc32db336be9d0b0',
   './include/utils/external_cache.php' => 'a0e044ccf54743fddb2da7b1d6208a07',
-  './include/utils/mvc_utils.php' => '8e9f321db0392a138cd61b8574686659',
+  './include/utils/mvc_utils.php' => '0f9fb4f2c9aec99a611775aaadc09e59',
   './include/utils/encryption_utils.php' => 'aed0886450487779feb6612dae1b68c9',
   './include/utils/db_utils.php' => '3d000220b95163739f8b9290e211cd9f',
   './include/utils/autoloader.php' => '3d86e0d26ac8fc289c5d5ca1e8cc6d5a',
@@ -7153,7 +7153,7 @@ $md5_string = array (
   './ModuleInstall/PackageManager/PackageManager.php' => 'a9996b2cdb5bf8711174c20752bccbe3',
   './ModuleInstall/PackageManager/PackageController.php' => 'af8c746cbb6ba5142568d34e535d0a94',
   './ModuleInstall/PackageManager/ListViewPackages.php' => '9ad64855ae4721d76eac402fd7adc524',
-  './ModuleInstall/ModuleScanner.php' => '4c7a1ac1ca7b8913fa6c1b39f9802052',
+  './ModuleInstall/ModuleScanner.php' => 'b124cc2069f4419ae8c50335a6ffdbf2',
   './ModuleInstall/ModuleInstaller.php' => '968eddb60d3da05bbae7eeb0fa3b430d',
   './HandleAjaxCall.php' => 'e8f0cb63050a3f85e26d5f295c54d8b6',
 );
