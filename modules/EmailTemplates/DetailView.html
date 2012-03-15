@@ -50,7 +50,20 @@
 			<input type="hidden" name="return_id">
 			{PORTAL_ON}
 		<tr>
-		<td><!-- BEGIN: edit --><input title="{APP.LBL_EDIT_BUTTON_TITLE}" accessKey="{APP.LBL_EDIT_BUTTON_KEY}" class="button primary" onclick="this.form.return_module.value='EmailTemplates'; this.form.return_action.value='DetailView'; this.form.return_id.value='{ID}'; this.form.action.value='EditView'" type="submit" name="button" value="  {APP.LBL_EDIT_BUTTON_LABEL}  "> <input title="{APP.LBL_DUPLICATE_BUTTON_TITLE}" accessKey="{APP.LBL_DUPLICATE_BUTTON_KEY}" class="button" onclick="this.form.return_module.value='EmailTemplates'; this.form.return_action.value='index'; this.form.isDuplicate.value=true; this.form.action.value='EditView'" type="submit" name="button" value=" {APP.LBL_DUPLICATE_BUTTON_LABEL} "><!-- END: edit --> <input title="{APP.LBL_DELETE_BUTTON_TITLE}" accessKey="{APP.LBL_DELETE_BUTTON_KEY}" class="button" onclick="check_deletable_EmailTemplate();" type="button" name="button" value=" {APP.LBL_DELETE_BUTTON_LABEL} "></td>
+		<td>
+            <ul class="clickMenu">
+                <li>
+                    <!-- BEGIN: edit -->
+                    <a title="{APP.LBL_EDIT_BUTTON_TITLE}" accessKey="{APP.LBL_EDIT_BUTTON_KEY}" onclick="$('#editEmailTemplatesButton').click();">{APP.LBL_EDIT_BUTTON_LABEL}</a>
+                    <button style="display: none;" id="editEmailTemplatesButton" onclick="this.form.return_module.value='EmailTemplates'; this.form.return_action.value='DetailView'; this.form.return_id.value='{ID}'; this.form.action.value='EditView'" type="submit"></button>
+                    <ul class="subnav multi">
+                    <li><input title="{APP.LBL_DUPLICATE_BUTTON_TITLE}" accessKey="{APP.LBL_DUPLICATE_BUTTON_KEY}" class="button" onclick="this.form.return_module.value='EmailTemplates'; this.form.return_action.value='index'; this.form.isDuplicate.value=true; this.form.action.value='EditView'" type="submit" name="button" value=" {APP.LBL_DUPLICATE_BUTTON_LABEL} "></li>
+                    <!-- END: edit -->
+                    <li><input title="{APP.LBL_DELETE_BUTTON_TITLE}" accessKey="{APP.LBL_DELETE_BUTTON_KEY}" class="button" onclick="check_deletable_EmailTemplate();" type="button" name="button" value=" {APP.LBL_DELETE_BUTTON_LABEL} "></li>
+                    </ul>
+                </li>
+            </ul>
+        </td>
 		<td align='right'>{ADMIN_EDIT}</td>
 		</tr></table>
 
@@ -59,7 +72,10 @@
 <div class="detail view">
 <table width="100%" border="0" cellspacing="{GRIDLINE}" cellpadding="0">
 {PAGINATION}
-
+    <tr>
+    <td scope="row" width='15%'><slot>{MOD.LBL_TYPE}</slot></td>
+    <td colspan="3"><slot>{TYPE}</slot></td>
+    </tr>
 	<tr>
 	<td scope="row" width='15%'><slot>{MOD.LBL_NAME}</slot></td>
 	<td><slot>{NAME}&nbsp;</slot></td>

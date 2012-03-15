@@ -109,6 +109,11 @@ $subpanel_layout = array(
 			'widget_class'			=> 'SubPanelEditButton',
 			 'width'				=> '2%',
 		),
+        'remove_button' => array(
+            'vname' => 'LBL_REMOVE',
+             'widget_class'			=> 'SubPanelRemoveButton',
+             'width'				=> '2%',
+        ),
 		'filename' => array(
 			'usage'					=> 'query_only',
 			'force_exists'			=> true

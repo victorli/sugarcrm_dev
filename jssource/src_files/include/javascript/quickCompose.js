@@ -5,7 +5,7 @@ SUGAR.quickCompose = {};
 
 SUGAR.quickCompose = function() {
 	return {
-		
+
 		parentPanel : null,
 		dceMenuPanel : null,
 		options: null,
@@ -13,9 +13,9 @@ SUGAR.quickCompose = function() {
 		frameLoaded : false,
 		resourcesLoaded: false,
 		tinyLoaded : false,
-		
+
 		/**
-		 * Get the required compose package in an ajax call required for 
+		 * Get the required compose package in an ajax call required for
 		 * the quick compose.
 		 * @method initComposePackage
 		 * @param {Array} c Options containing compose package and full return url.
@@ -25,44 +25,44 @@ SUGAR.quickCompose = function() {
 		{
 		    //Init fix for YUI 2.7.0 datatable sort.
 	        SUGAR.email2.addressBook.initFixForDatatableSort();
-	        
+
 		    //JS resources must have been loaded if we reach this step.
 		    SUGAR.quickCompose.resourcesLoaded = true;
-            var callback = 
-	        { 
-	           success: function(o) 
+            var callback =
+	        {
+	           success: function(o)
 	           {
 	               var responseData = JSON.parse(o.responseText);
 	               //Create and insert the necessary script tag
 	               var scriptTag = document.createElement('script');
 	               scriptTag.id = 'quickComposeScript';
                    scriptTag.setAttribute('type','text/javascript');
-                   
+
                    if(YAHOO.env.ua.ie > 0) //IE hack
                    		scriptTag.text = responseData.jsData;
                    else  //Everybody else
                    		scriptTag.appendChild(document.createTextNode(responseData.jsData));
-                   
+
                    document.getElementsByTagName("head")[0].appendChild(scriptTag);
-                   
+
                    //Create and insert the necessary div elements and html markup
 	               var divTag = document.createElement("div");
 	               divTag.innerHTML = responseData.divData;
 	               divTag.id = 'quickCompose';
 	               YAHOO.util.Dom.insertBefore(divTag, 'footer');
-	               
+
 	               //Set the flag that we loaded the compose package.
 	               SUGAR.quickCompose.frameLoaded = true;
 	               //Init the UI
                    SUGAR.quickCompose.initUI(c.data);
 	           }
-	       } 
-	       
+	       }
+
 	       if(!SUGAR.quickCompose.frameLoaded)
-		      YAHOO.util.Connect.asyncRequest('GET', 'index.php?entryPoint=GenerateQuickComposeFrame', callback, null);   
+		      YAHOO.util.Connect.asyncRequest('GET', 'index.php?entryPoint=GenerateQuickComposeFrame', callback, null);
 		   else
 		      SUGAR.quickCompose.initUI(c.data);
-		       
+
 		},
 		/**
 		 * Initalize the UI for the quick compose
@@ -75,12 +75,12 @@ SUGAR.quickCompose = function() {
 		{
 			var SQ = SUGAR.quickCompose;
 			this.options = options;
-		     
+
 			//Hide the loading div
 			loadingMessgPanl.hide();
-			
+
     		var dce_mode = (typeof this.dceMenuPanel != 'undefined' && this.dceMenuPanel != null) ? true : false;
-			
+
 			//Destroy the previous quick compose panel to get a clean slate
     		if (SQ.parentPanel != null)
     		{
@@ -91,17 +91,17 @@ SUGAR.quickCompose = function() {
     			SQ.parentPanel.destroy();
     			SQ.parentPanel = null;
     		}
-    		
+
 			var theme = SUGAR.themes.theme_name;
-	
+
 			//The quick compose utalizes the EmailUI compose functionality which allows for multiple compose
 			//tabs.  Quick compose always has only one compose screen with an index of 0.
-			var idx = 0;  
+			var idx = 0;
 
 		    //Get template engine with template
-    		if (!SE.composeLayout.composeTemplate) 
+    		if (!SE.composeLayout.composeTemplate)
     			SE.composeLayout.composeTemplate = new YAHOO.SUGAR.Template(SE.templates['compose']);
-    		
+
     		var panel_modal = dce_mode ? false : true,
     		    panel_width = '880px',
 			    panel_constrain = dce_mode ? false : true,
@@ -110,7 +110,7 @@ SUGAR.quickCompose = function() {
     		    panel_draggable = dce_mode ? false : true,
     		    panel_resize = dce_mode ? false : true,
     		    panel_close = dce_mode ? false : true;
-    		
+
         	SQ.parentPanel = new YAHOO.widget.Panel("container1", {
                 modal: panel_modal,
 				visible: true,
@@ -122,26 +122,26 @@ SUGAR.quickCompose = function() {
 				resize: panel_resize,
 				close: panel_close
             });
-		
+
         	if(!dce_mode) {
         		SQ.parentPanel.setHeader( SUGAR.language.get('app_strings','LBL_EMAIL_QUICK_COMPOSE')) ;
         	}
-        	
+
             SQ.parentPanel.setBody("<div class='email'><div id='htmleditordiv" + idx + "'></div></div>");
-			
+
 			var composePanel = SE.composeLayout.getQuickComposeLayout(SQ.parentPanel,this.options);
-			
-			if(!dce_mode) {			
-				var resize = new YAHOO.util.Resize('container1', { 
-                    handles: ['br'], 
-                    autoRatio: false, 
-                    minWidth: 400, 
-                    minHeight: 350, 
+
+			if(!dce_mode) {
+				var resize = new YAHOO.util.Resize('container1', {
+                    handles: ['br'],
+                    autoRatio: false,
+                    minWidth: 400,
+                    minHeight: 350,
                     status: false
                 });
-                
-                resize.on('resize', function(args) { 
-                    var panelHeight = args.height; 
+
+                resize.on('resize', function(args) {
+                    var panelHeight = args.height;
                     this.cfg.setProperty("height", panelHeight + "px");
 					var layout = SE.composeLayout[SE.composeLayout.currentInstanceId];
 					layout.set("height", panelHeight - 50);
@@ -158,13 +158,13 @@ SUGAR.quickCompose = function() {
                     SE.composeLayout.resizeEditor(SE.composeLayout.currentInstanceId);
                 });
             }
-			
+
 			YAHOO.util.Dom.setStyle("container1", "z-index", 1);
-			
+
 			if (!SQ.tinyLoaded)
 			{
 				//TinyMCE bug, since we are loading the js file dynamically we need to let tiny know that the
-				//dom event has fired.  
+				//dom event has fired.
 				tinymce.dom.Event.domLoaded = true;
 
 				tinyMCE.init({
@@ -185,14 +185,14 @@ SUGAR.quickCompose = function() {
 		    	 });
 				SQ.tinyLoaded = true;
 			}
-			
+
 			SQ.parentPanel.show();
-			
+
 			//Re-declare the close function to handle appropriattely.
 			SUGAR.email2.composeLayout.forceCloseCompose = function(o){SUGAR.quickCompose.parentPanel.hide(); }
-				
-			
-			
+
+
+
 			if(!dce_mode) {
 				SQ.parentPanel.center();
 			}
@@ -210,7 +210,7 @@ SUGAR.quickCompose = function() {
 			  } else {
 			     this.dceMenuPanel = null;
 			  }
-			 
+
               loadingMessgPanl = new YAHOO.widget.SimpleDialog('loading', {
         			width: '200px',
         			close: true,
@@ -219,13 +219,13 @@ SUGAR.quickCompose = function() {
         			fixedcenter: true,
         	        constraintoviewport: true,
         	        draggable: false
-		      });		    	 
-			 
+		      });
+
               loadingMessgPanl.setHeader(SUGAR.language.get('app_strings','LBL_EMAIL_PERFORMING_TASK'));
 		      loadingMessgPanl.setBody(SUGAR.language.get('app_strings','LBL_EMAIL_ONE_MOMENT'));
 		      loadingMessgPanl.render(document.body);
 		      loadingMessgPanl.show();
-                 
+
 		      //If JS files havn't been loaded, perform the load.
 		      if(! SUGAR.quickCompose.resourcesLoaded )
 		          this.loadResources(o);
@@ -252,16 +252,16 @@ SUGAR.quickCompose = function() {
 				    allowRollup: true,
 				    base: "include/javascript/yui/build/"
 				});
-				
-				//TiinyMCE cannot be added into the sugar_grp_quickcomp file as it breaks the build, needs to be loaded 
-				//seperately.
+
+				//TiinyMCE cannot be added into the sugar_grp_quickcomp file as it breaks the build, needs to be loaded
+				//separately.
 				loader.addModule({
 				    name :"tinymce",
 				    type : "js",
 				    varName: "TinyMCE",
 				    fullpath: "include/javascript/tiny_mce/tiny_mce.js"
 				});
-				
+
 				//Load the Sugar widgets with dependancies on the yui library.
 				loader.addModule({
 				    name :"sugarwidgets",
@@ -270,7 +270,7 @@ SUGAR.quickCompose = function() {
 				    varName: "YAHOO.SUGAR",
 				    requires: ["datatable", "dragdrop", "treeview", "tabview"]
 				});
-			
+
 				//Load the main components for the quick create compose screen.
 				loader.addModule({
 				    name :"sugarquickcompose",
@@ -279,14 +279,14 @@ SUGAR.quickCompose = function() {
 				    requires: ["layout", "sugarwidgets", "tinymce"],
 				    fullpath: "cache/include/javascript/sugar_grp_quickcomp.js"
 				});
-				
+
 				//Load the css needed for the quickCompose.
 				loader.addModule({
 				    name :"sugarquickcomposecss",
 				    type : "css",
 				    fullpath: "modules/Emails/EmailUI.css"
 				});
-				
+
 				loader.insert();
 	    }
 	};

@@ -103,7 +103,7 @@ class ImportDuplicateCheck
      */
     public function getDuplicateCheckIndexes()
     {
-        $super_language_pack = sugarArrayMerge(
+        $super_language_pack = sugarLangArrayMerge(
             return_module_language($GLOBALS['current_language'], $this->_focus->module_dir),
             $GLOBALS['app_strings']
             );

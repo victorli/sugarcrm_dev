@@ -102,14 +102,11 @@ array (
           ),
         ),
         array (
-          array (
-            'name' => 'reminder_checked',
-            'fields' => 
-            array (
-              'reminder_checked',
-              'reminder_time',
+          array(
+            'name' => 'reminder_time',
+            'customCode' => '{include file="modules/Meetings/tpls/reminders.tpl"}',
+            'label' => 'LBL_REMINDER',
             ),
-          ),
           'location',
         ),
         array (

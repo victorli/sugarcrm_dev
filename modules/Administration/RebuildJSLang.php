@@ -42,9 +42,9 @@ if(is_admin($current_user)){
 
     //remove the js language files
     LanguageManager::removeJSLanguageFiles();
-    
-    //remove lanugage cache files
-    LanguageManager::clearLanguageCache(); 
+
+    //remove language cache files
+    LanguageManager::clearLanguageCache();
 }
 else{
 	sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);

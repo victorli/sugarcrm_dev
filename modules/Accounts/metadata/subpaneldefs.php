@@ -115,16 +115,11 @@ $layout_defs['Accounts'] = array(
 				),
 				'emails' => array(
 					'module' => 'Emails',
-					'subpanel_name' => 'ForHistory',
-					'get_subpanel_data' => 'emails',
+					'subpanel_name' => 'ForUnlinkedEmailHistory',
+            		'get_subpanel_data' => 'function:get_emails_by_assign_or_link',
+          			'function_parameters' => array('import_function_file' => 'include/utils.php', 'link' => 'contacts'),
+                    'generate_select'=>true,
 				),
-				'linkedemails' => array(
-	                'module' => 'Emails',
-	                'subpanel_name' => 'ForUnlinkedEmailHistory',
-	                'get_subpanel_data' => 'function:get_unlinked_email_query',
-	                'generate_select'=>true,
-	                'function_parameters' => array('return_as_array'=>'true'),
-	    		),
 			)
 		),
         'documents' => array(

@@ -150,7 +150,7 @@
                                 <div id="comfirm_pwd_match" class="error" style="display: none;">{$MOD.ERR_PASSWORD_MISMATCH}</div>
                                      {*<span id="ext-gen63" class="x-panel-header-text">
                                         Requirements
-                                        <span id="Filter.1_help" onmouseout="return nd();" onmouseover="return overlib(help(), FGCLASS, 'olFgClass', CGCLASS, 'olCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olCapFontClass', CLOSEFONTCLASS, 'olCloseFontClass' );">
+                                        <span id="Filter.1_help" onclick="return SUGAR.util.showHelpTips(this,help());">
                                             <img src="themes/default/images/help.gif"/>
                                         </span>
                                     </span>*}
@@ -235,11 +235,7 @@
                             <slot>{$MOD.LBL_REMINDER}:</slot>&nbsp;{sugar_help text=$MOD.LBL_REMINDER_TEXT }
                             </td>
                             <td valign="top"  nowrap>
-                                <slot>
-                                <input tabindex='12' name='mailmerge_on' type='hidden' value='0'>
-                                <input name='should_remind' size='2' maxlength='2' tabindex='12' onclick='toggleDisplay("should_remind_list");' type="checkbox" class="checkbox" value='1' {$REMINDER_CHECKED}>
-                                <div id='should_remind_list' style='display:{$REMINDER_TIME_DISPLAY}'>
-                                    <select tabindex='12' name='reminder_time'  >{$REMINDER_TIME_OPTIONS}</select></div></slot>
+                                <slot>{include file="modules/Meetings/tpls/reminders.tpl"}</slot>
                             </td>
                         </tr>
                         <tr>
@@ -380,8 +376,20 @@
             </tr>
                         <tr>
                             <td width="17%" scope="row"><slot>{$MOD.LBL_PUBLISH_KEY}:</slot>&nbsp;{sugar_help text=$MOD.LBL_CHOOSE_A_KEY}</td>
-                            <td width="20%" ><slot><input name='calendar_publish_key' tabindex='17' size='25' maxlength='25' type="text" value="{$CALENDAR_PUBLISH_KEY}"></slot></td>
+                            <td width="20%" ><slot><input id='calendar_publish_key' name='calendar_publish_key' tabindex='17' size='25' maxlength='25' type="text" value="{$CALENDAR_PUBLISH_KEY}"></slot></td>
                             <td width="63%" ><slot>&nbsp;</slot></td>
+                        </tr>
+                        <tr>
+                            <td width="15%" scope="row"><slot><nobr>{$MOD.LBL_YOUR_PUBLISH_URL|strip_semicolon}:</nobr></slot></td>
+                            <td colspan=2><slot>{$CALENDAR_PUBLISH_URL}</slot></td>
+                        </tr>
+                        <tr>
+                            <td width="17%" scope="row"><slot>{$MOD.LBL_SEARCH_URL|strip_semicolon}:</slot></td>
+                            <td colspan=2><slot>{$CALENDAR_SEARCH_URL}</slot></td>
+                        </tr>
+                        <tr>
+                            <td width="15%" scope="row"><slot>{$MOD.LBL_ICAL_PUB_URL|strip_semicolon}: {sugar_help text=$MOD.LBL_ICAL_PUB_URL_HELP}</slot></td>
+                            <td colspan=2><slot>{$CALENDAR_ICAL_URL}</slot></td>
                         </tr>
                     </table>
         </div>
@@ -394,7 +402,7 @@
 </div>
 
 <script type="text/javascript">
-<!--
+
 var mail_smtpport = '{$MAIL_SMTPPORT}';
 var mail_smtpssl = '{$MAIL_SMTPSSL}';
 {literal}
@@ -408,8 +416,16 @@ function Admin_check(){
 	else
 		return true;
 }
+
+$(document).ready(function() {
+    $('#calendar_publish_key').keypress(function(){
+        $('#cal_pub_key_span').html( $(this).val());
+    });
+    $('#calendar_publish_key').change(function(){
+            $('#cal_pub_key_span').html( $(this).val());
+    });
+});
 {/literal}
--->
 </script>
 {$JAVASCRIPT}
 {literal}
@@ -421,6 +437,8 @@ currencies = {$currencySymbolJSON};
 themeGroupList = {$themeGroupListJSON};
 
 onUserEditView();
+
+
 </script>
 
 </form>
@@ -450,16 +468,25 @@ onUserEditView();
 		</form>
 	</div>
 </div>
-
+{literal}
+<style>
+    .actionsContainer ul, .actionsContainer li {
+        list-style:none;
+    }
+    .actionsContainer li {
+        float:left;
+    }
+</style>
+{/literal}
 <table width="100%" cellpadding="0" cellspacing="0" border="0" class="actionsContainer">
     <tr>
         <td>
-            <input	id="Save" title="{$APP.LBL_SAVE_BUTTON_TITLE}" 
+            <li><input	id="Save" title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}"
                     class="button primary" onclick="if (!set_password(document.forms['EditView'],newrules('{$PWDSETTINGS.minpwdlength}','{$PWDSETTINGS.maxpwdlength}','{$REGEX}'))) return false; if (!Admin_check()) return false; document.forms['EditView'].action.value='Save'; {$CHOOSER_SCRIPT} {$REASSIGN_JS} if(verify_data(EditView)) document.forms['EditView'].submit();"
-                    type="button" name="button" value="{$APP.LBL_SAVE_BUTTON_LABEL}" >
-            <input	title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}"
+                    type="button" name="button" value="{$APP.LBL_SAVE_BUTTON_LABEL}" ></li>
+            <li><input	title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}"
                     class="button" onclick="document.forms['EditView'].action.value='{$RETURN_ACTION}'; document.forms['EditView'].module.value='{$RETURN_MODULE}'; document.forms['EditView'].record.value='{$RETURN_ID}'; document.forms['EditView'].submit()"
-                    type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}">
+                    type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}"></li>
             {$BUTTONS}
         </td>
         <td align="right" nowrap>

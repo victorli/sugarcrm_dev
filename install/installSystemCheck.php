@@ -209,6 +209,18 @@ if(file_exists('./config.php') && (!(make_writable('./config.php')) ||  !(is_wri
       </tr>';
 }
 
+// config_override.php
+if(file_exists('./config_override.php') && (!(make_writable('./config_override.php')) ||  !(is_writable('./config_override.php')))) {
+    installLog("ERROR:: {$mod_strings['ERR_CHECKSYS_CONFIG_OVERRIDE_NOT_WRITABLE']}");
+    $configStatus = "<b><span class='stop'>{$mod_strings['ERR_CHECKSYS_CONFIG_OVERRIDE_NOT_WRITABLE']}</span></b>";
+    $error_found = true;
+    $error_txt .= '
+      <tr>
+        <td><strong>'.$mod_strings['LBL_CHECKSYS_OVERRIDE_CONFIG'].'</strong></td>
+        <td class="error">'.$configStatus.'</td>
+      </tr>';
+}
+
 // custom dir
 if(!make_writable('./custom')) {
     $customStatus = "<b><span class='stop'>{$mod_strings['ERR_CHECKSYS_CUSTOM_NOT_WRITABLE']}</font></b>";

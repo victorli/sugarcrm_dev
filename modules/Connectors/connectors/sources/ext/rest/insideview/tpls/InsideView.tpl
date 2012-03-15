@@ -51,13 +51,47 @@ SUGAR.util.doWhen("typeof(markSubPanelLoaded) != 'undefined' && document.getElem
 	if(div_cookies['insideview_v']){ldelim}
 		if(div_cookies['insideview_v'] == 'none')
 		{ldelim}
-			hideSubPanel('insideview');
-			document.getElementById('hide_link_insideview').style.display='none';
-			document.getElementById('show_link_insideview').style.display='';
+            hideInsideViewSubPanel();
 		{rdelim}
 	{rdelim}
+    else
+    {ldelim}
+        var cookieKey = DCMenu.module + '_divs';
+        var tmpCookie = Get_Cookie(cookieKey);
+        if(tmpCookie)
+        {ldelim}
+            var subCookies = tmpCookie.split('#');
+            var foundInsideViewCookie = false;
+            for(var x=0;x<subCookies.length;x++ )
+            {ldelim}
+                var subCookie = subCookies[x];
+                var pars = subCookie.split('=');
+                if(pars.length == 2)
+                {ldelim}
+                    if(pars[0] == 'insideview_v')
+                        foundInsideViewCookie = true;
+                {rdelim}
+            {rdelim}
+            if(!foundInsideViewCookie)
+            {ldelim}
+                hideInsideViewSubPanel()
+            {rdelim}
+        {rdelim}
+        else
+        {ldelim}
+            hideInsideViewSubPanel();
+        {rdelim}
+
+    {rdelim}
+
 	toggleGettingStartedButton();
 {rdelim});
+
+function hideInsideViewSubPanel(){ldelim}
+    hideSubPanel('insideview');
+    document.getElementById('hide_link_insideview').style.display='none';
+    document.getElementById('show_link_insideview').style.display='';
+{rdelim}
 
 function toggleGettingStartedButton(){ldelim}
 	var acceptBox  = document.getElementById( "insideview_accept_box" );

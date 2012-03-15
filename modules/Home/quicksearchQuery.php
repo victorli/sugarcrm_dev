@@ -328,6 +328,15 @@ class quicksearchQuery {
         
         return $listJson;
     }
+
+    function fts_query()
+    {
+        require_once('include/SugarSearchEngine/SugarSearchEngineFactory.php');
+        $_REQUEST['q'] = trim($_REQUEST['term']);
+        $view = new ViewFts();
+        $view->init();
+        echo $view->display(TRUE, TRUE);
+    }
 }
 
 $json = getJSONobj();

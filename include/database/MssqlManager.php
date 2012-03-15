@@ -137,7 +137,8 @@ class MssqlManager extends DBManager
             'relate'   => 'varchar',
             'multienum'=> 'text',
             'html'     => 'text',
-            'datetime' => 'datetime',
+			'longhtml' => 'text',
+    		'datetime' => 'datetime',
             'datetimecombo' => 'datetime',
             'time'     => 'datetime',
             'bool'     => 'bit',
@@ -361,7 +362,7 @@ class MssqlManager extends DBManager
 
         //process if there are elements
         if ($unionOrderByCount){
-            //we really want the last ordery by, so reconstruct string
+            //we really want the last order by, so reconstruct string
             //adding a 1 to count, as we dont wish to process the last element
             $unionsql = '';
             while ($unionOrderByCount>$arr_count+1) {
@@ -395,7 +396,7 @@ class MssqlManager extends DBManager
             $rowNumOrderBy = 'id';
             $unionOrderBy = '';
         }
-        //Unions need the column name being sorted on to match acroos all queries in Union statement
+        //Unions need the column name being sorted on to match across all queries in Union statement
         //so we do not want to strip the alias like in other queries.  Just add the "order by" string and
         //pass column name as is
         if ($unionOrderBy != '') {
@@ -501,7 +502,7 @@ class MssqlManager extends DBManager
                                 $distinctSQLARRAY[1] = substr($distinctSQLARRAY[1],0,$ob_pos);
                             }
 
-                            // strip off last closing parathese from the where clause
+                            // strip off last closing parentheses from the where clause
                             $distinctSQLARRAY[1] = preg_replace('/\)\s$/',' ',$distinctSQLARRAY[1]);
                         }
 
@@ -512,7 +513,7 @@ class MssqlManager extends DBManager
                         foreach ($grpByArr as $gb) {
                             $gb = trim($gb);
 
-                            //clean out the extra stuff added if we are concating first_name and last_name together
+                            //clean out the extra stuff added if we are concatenating first_name and last_name together
                             //this way both fields are added in correctly to the group by
                             $gb = str_replace("isnull(","",$gb);
                             $gb = str_replace("'') + ' ' + ","",$gb);
@@ -704,7 +705,7 @@ class MssqlManager extends DBManager
         $paren_array = $this->removePatternFromSQL($new_sql, "(", ")", "par_");
         $new_sql = array_pop($paren_array);
 
-        //all functions should be removed now, so split the array on comma's
+        //all functions should be removed now, so split the array on commas
         $mstr_sql_array = explode(",", $new_sql);
         foreach($mstr_sql_array as $token ) {
             if (strpos($token, $alias)) {
@@ -1094,7 +1095,7 @@ class MssqlManager extends DBManager
         $GLOBALS['log']->debug('MSSQL about to wakeup FTS');
 
         if($this->getDatabase()) {
-                //create wakup catalog
+                //create wakeup catalog
                 $FTSqry[] = "if not exists(  select * from sys.fulltext_catalogs where name ='wakeup_catalog' )
                 CREATE FULLTEXT CATALOG wakeup_catalog
                 ";
@@ -1806,7 +1807,7 @@ EOQ;
 		    or !isset($app_strings['ERR_MSSQL_DB_CONTEXT'])
 			or !isset($app_strings['ERR_MSSQL_WARNING']) ) {
         //ignore the message from sql-server if $app_strings array is empty. This will happen
-        //only if connection if made before languge is set.
+        //only if connection if made before language is set.
 		    return false;
         }
 
@@ -1875,13 +1876,13 @@ EOQ;
         if (strpos($sql, "'") === false)
             return $sql;
 
-        // Flag if there are odd number of single quotes, just continue w/o trying to append N
+        // Flag if there are odd number of single quotes, just continue without trying to append N
         if ((substr_count($sql, "'") & 1)) {
             $GLOBALS['log']->error("SQL statement[" . $sql . "] has odd number of single quotes.");
             return $sql;
         }
 
-        //The only location of three subsequent ' will be at the begning or end of a value.
+        //The only location of three subsequent ' will be at the beginning or end of a value.
         $sql = preg_replace('/(?<!\')(\'{3})(?!\')/', "'<@#@#@PAIR@#@#@>", $sql);
 
         // Remove any remaining '' and do not parse... replace later (hopefully we don't even have any)

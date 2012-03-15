@@ -230,9 +230,9 @@ class ListViewData {
 		$params['include_custom_fields'] = (on by default)
         $params['custom_XXXX'] = append custom statements to query
 	 * @param string:'id' $id_field
-	 * @return array('data'=> row data 'pageData' => page data information
+	 * @return array('data'=> row data, 'pageData' => page data information, 'query' => original query string)
 	 */
-	function getListViewData($seed, $where, $offset=-1, $limit = -1, $filter_fields=array(),$params=array(),$id_field = 'id',$singleSelect=true) {
+	function getListViewData($seed, $where, $offset=-1, $limit = -1, $filter_fields=array(),$params=array(),$id_field = 'id') {
         global $current_user;
         SugarVCR::erase($seed->module_dir);
         $this->seed =& $seed;
@@ -296,7 +296,7 @@ class ListViewData {
 			$orderBy = 'last_name '.$order['sortOrder'].', first_name '.$order['sortOrder'];
 		}
 
-		$ret_array = $seed->create_new_list_query($orderBy, $where, $filter_fields, $params, 0, '', true, $seed, $singleSelect);
+		$ret_array = $seed->create_new_list_query($orderBy, $where, $filter_fields, $params, 0, '', true, $seed, true);
         $ret_array['inner_join'] = '';
         if (!empty($this->seed->listview_inner_join)) {
             $ret_array['inner_join'] = ' ' . implode(' ', $this->seed->listview_inner_join) . ' ';
@@ -343,22 +343,21 @@ class ListViewData {
 		$count = 0;
         $idIndex = array();
         $id_list = '';
-
-   		while(($row = $this->db->fetchByAssoc($result)) != null)
-        {
-   			if($count < $limit)
-            {
-   				$id_list .= ',\''.$row[$id_field].'\'';
-   				$idIndex[$row[$id_field]][] = count($rows);
-   				$rows[] = $seed->convertRow($row);
-   			}
-   			$count++;
-   		}
-
-        if (!empty($id_list))
-        {
-            $id_list = '('.substr($id_list, 1).')';
-        }
+		while($row = $this->db->fetchByAssoc($result)) {
+			if($count < $limit) {
+				if(!empty($id_list)) {
+					$id_list = '(';
+				}else{
+					$id_list .= ',';
+				}
+				$id_list .= '\''.$row[$id_field].'\'';
+				//handles date formating and such
+				$idIndex[$row[$id_field]][] = count($rows);
+				$rows[] = $seed->convertRow($row);
+			}
+			$count++;
+		}
+		if (!empty($id_list)) $id_list .= ')';
 
         SugarVCR::store($this->seed->module_dir,  $main_query);
 		if($count != 0) {
@@ -366,24 +365,15 @@ class ListViewData {
 			if(!empty($ret_array['secondary_select'])) {
 				$secondary_query = $ret_array['secondary_select'] . $ret_array['secondary_from'] . ' WHERE '.$this->seed->table_name.'.id IN ' .$id_list;
 				$secondary_result = $this->db->query($secondary_query);
-
-                $ref_id_count = array();
 				while($row = $this->db->fetchByAssoc($secondary_result)) {
-
-                    $ref_id_count[$row['ref_id']][] = true;
 					foreach($row as $name=>$value) {
 						//add it to every row with the given id
 						foreach($idIndex[$row['ref_id']] as $index){
 						    $rows[$index][$name]=$value;
 						}
+
 					}
 				}
-
-                $rows_keys = array_keys($rows);
-                foreach($rows_keys as $key)
-                {
-                    $rows[$key]['secondary_select_count'] = count($ref_id_count[$rows[$key]['ref_id']]);
-                }
 			}
 
             // retrieve parent names
@@ -409,7 +399,6 @@ class ListViewData {
 
 			reset($rows);
 			while($row = current($rows)){
-
                 $temp = clone $seed;
 			    $dataIndex = count($data);
 
@@ -474,8 +463,34 @@ class ListViewData {
         if(!$this->seed->ACLAccess('ListView')) {
             $pageData['error'] = 'ACL restricted access';
         }
+        
+        $queryString = '';
 
-		return array('data'=>$data , 'pageData'=>$pageData);
+        if( isset($_REQUEST["searchFormTab"]) && $_REQUEST["searchFormTab"] == "advanced_search")
+        {
+            $queryString = "-advanced_search";
+        }
+        else if (isset($_REQUEST["searchFormTab"]) && $_REQUEST["searchFormTab"] == "basic_search")
+        {
+            $searchMetaData = SearchForm::retrieveSearchDefs($seed->module_dir);
+            $basicSearchFields = array();
+
+            if( isset($searchMetaData['searchdefs']) && isset($searchMetaData['searchdefs'][$seed->module_dir]['layout']['basic_search']) )
+                $basicSearchFields = $searchMetaData['searchdefs'][$seed->module_dir]['layout']['basic_search'];
+
+            foreach( $basicSearchFields as $basicSearchField)
+            {
+                $field_name = $basicSearchField['name'] . "_basic";
+                if( isset($_REQUEST[$field_name])  && (!isset($basicSearchField['type']) || $basicSearchField['type'] == 'text') )
+                {
+                    $queryString = htmlentities($_REQUEST[$field_name]);
+                    break;
+                }
+            }
+        }
+
+
+		return array('data'=>$data , 'pageData'=>$pageData, 'query' => $queryString);
 	}
 
 
@@ -526,9 +541,9 @@ class ListViewData {
 
         $jscalendarImage = SugarThemeRegistry::current()->getImageURL('info_inline.gif');
 
-        $extra = "<span id='adspan_" . $id . "' onmouseout=\"return SUGAR.util.clearAdditionalDetailsCall()\" "
-                . "onmouseover=\"lvg_dtails('$id')\" "
-				. "onmouseout=\"return nd(1000);\" style='position: relative;'><!--not_in_theme!--><img vertical-align='middle' class='info' border='0' alt='".$app_strings['LBL_ADDITIONAL_DETAILS']."' src='$jscalendarImage'></span>";
+        $extra = "<span id='adspan_" . $id . "' "
+                . "onclick=\"lvg_dtails('$id')\" "
+				. " style='position: relative;'><!--not_in_theme!--><img vertical-align='middle' class='info' border='0' alt='".$app_strings['LBL_ADDITIONAL_DETAILS']."' src='$jscalendarImage'></span>";
 
         return array('fieldToAddTo' => $this->additionalDetailsFieldToAdd, 'string' => $extra);
 	}
@@ -554,50 +569,27 @@ class ListViewData {
         {
             $results['string'] = $app_strings['LBL_NONE'];
         }
-
-        $extra = "<span onmouseover=\"return overlib('" .
-            str_replace(array("\rn", "\r", "\n"), array('','','<br />'), $results['string'])
-            . "', CAPTION, '<div style=\'float:left\'>{$app_strings['LBL_ADDITIONAL_DETAILS']}</div><div style=\'float: right\'>";
-
-        if($editAccess && !empty($results['editLink']))
-        {
-            $extra .=  "<a title=\'{$app_strings['LBL_EDIT_BUTTON']}\' href={$results['editLink']}><img style=\'margin-left: 2px;\' border=\'0\' src=\'".SugarThemeRegistry::current()->getImageURL('edit_inline.gif')."\'></a>";
-        }
-
-        $extra .= (!empty($results['viewLink']) ? "<a title=\'{$app_strings['LBL_VIEW_BUTTON']}\' href={$results['viewLink']}><img style=\'margin-left: 2px;\' border=\'0\' src=".SugarThemeRegistry::current()->getImageURL('view_inline.gif')."></a>" : '')
-            . "', DELAY, 200, STICKY, MOUSEOFF, 1000, WIDTH, "
-            . (empty($results['width']) ? '300' : $results['width'])
-            . ", CLOSETEXT, '<img alt=\'{$app_strings['LBL_CLOSEINLINE']}\' style=\'margin-left:2px; margin-right: 2px; border=0;\' src=".SugarThemeRegistry::current()->getImageURL('close.gif')."></div>', "
-            . "CLOSETITLE, '{$app_strings['LBL_ADDITIONAL_DETAILS_CLOSE_TITLE']}', CLOSECLICK, FGCLASS, 'olFgClass', "
-            . "CGCLASS, 'olCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olCapFontClass', CLOSEFONTCLASS, 'olCloseFontClass');\" "
-            . "onmouseout=\"return nd(1000);\"><img alt=\'{$app_strings['LBL_INFOINLINE']}\' style=\'padding: 0px 5px 0px 2px\' border=\'0\' src='".SugarThemeRegistry::current()->getImageURL('info_inline.png')."' ></span>";
-
-
-        $results = $adFunction($fields);
-
-        $results['string'] = str_replace(array("&#039", "'"), '\&#039', $results['string']); // no xss!
-
-        if(trim($results['string']) == '')
-        {
-            $results['string'] = $app_strings['LBL_NONE'];
-        }
-
-        $extra = "<span onmouseover=\"return overlib('" .
-            str_replace(array("\rn", "\r", "\n"), array('','','<br />'), $results['string'])
-            . "', CAPTION, '<div style=\'float:left\'>{$app_strings['LBL_ADDITIONAL_DETAILS']}</div><div style=\'float: right\'>";
-
-        if($editAccess && !empty($results['editLink']))
-        {
-            $extra .=  "<a title=\'{$app_strings['LBL_EDIT_BUTTON']}\' href={$results['editLink']}><img style=\'margin-left: 2px;\' border=\'0\' src=\'".SugarThemeRegistry::current()->getImageURL('edit_inline.gif')."\'></a>";
-        }
-
-        $extra .= (!empty($results['viewLink']) ? "<a title=\'{$app_strings['LBL_VIEW_BUTTON']}\' href={$results['viewLink']}><img style=\'margin-left: 2px;\' border=\'0\' src=".SugarThemeRegistry::current()->getImageURL('view_inline.gif')."></a>" : '')
-            . "', DELAY, 200, STICKY, MOUSEOFF, 1000, WIDTH, "
-            . (empty($results['width']) ? '300' : $results['width'])
-            . ", CLOSETEXT, '<img alt=\'{$app_strings['LBL_CLOSEINLINE']}\' style=\'margin-left:2px; margin-right: 2px; border=0;\' src=".SugarThemeRegistry::current()->getImageURL('close.gif')."></div>', "
-            . "CLOSETITLE, '{$app_strings['LBL_ADDITIONAL_DETAILS_CLOSE_TITLE']}', CLOSECLICK, FGCLASS, 'olFgClass', "
-            . "CGCLASS, 'olCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olCapFontClass', CLOSEFONTCLASS, 'olCloseFontClass');\" "
-            . "onmouseout=\"return nd(1000);\"><img alt='{$app_strings['LBL_INFOINLINE']}' style='padding: 0px 5px 0px 2px' border='0' src='".SugarThemeRegistry::current()->getImageURL('info_inline.png')."' ></span>";
+         	$close = false;   
+            $extra = "<img alt='{$app_strings['LBL_INFOINLINE']}' style='padding: 0px 5px 0px 2px' border='0' onclick=\"SUGAR.util.getStaticAdditionalDetails(this,'";
+            
+            $extra .= str_replace(array("\rn", "\r", "\n"), array('','','<br />'), $results['string']) ;
+            $extra .= "','<div style=\'float:left\'>{$app_strings['LBL_ADDITIONAL_DETAILS']}</div><div style=\'float: right\'>";
+            
+	        if($editAccess && !empty($results['editLink']))
+	        {
+	            $extra .=  "<a title=\'{$app_strings['LBL_EDIT_BUTTON']}\' href={$results['editLink']}><img style=\'margin-left: 2px;\' border=\'0\' src=\'".SugarThemeRegistry::current()->getImageURL('edit_inline.png')."\'></a>";
+	            $close = true;
+	        }
+	        $close = (!empty($results['viewLink'])) ? true : $close;
+	        $extra .= (!empty($results['viewLink']) ? "<a title=\'{$app_strings['LBL_VIEW_BUTTON']}\' href={$results['viewLink']}><img style=\'margin-left: 2px;\' border=\'0\' src=".SugarThemeRegistry::current()->getImageURL('view_inline.png')."></a>" : '');
+            
+            if($close == true) {
+            	$closeVal = "true";	
+            	$extra .=  "<a title=\'{$app_strings['LBL_ADDITIONAL_DETAILS_CLOSE_TITLE']}\' href=\'javascript: SUGAR.util.closeStaticAdditionalDetails();\'><img style=\'margin-left: 2px;\' border=\'0\' src=\'".SugarThemeRegistry::current()->getImageURL('close.png')."\'></a>";
+            } else {
+            	$closeVal = "false";	
+            }
+            $extra .= "',".$closeVal.")\" src='".SugarThemeRegistry::current()->getImageURL('info_inline.png')."' class='info'>";
 
         return array('fieldToAddTo' => $results['fieldToAddTo'], 'string' => $extra);
     }

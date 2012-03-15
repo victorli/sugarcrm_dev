@@ -205,6 +205,7 @@ $mod_strings = array (
     'LBL_CLEAR_PDF_FONT_CACHE_DESC'=>'Removes cached file used to store PDF fonts data',
     'LBL_CONFIG_CHECK' =>'Config Check',
     'LBL_CONFIG_AJAX' => 'Configure AJAX User Interface',
+    'LBL_CONFIG_FTS' => 'Configure Full Text Search Engine',
     'LBL_CONFIG_AJAX_DESC' => 'Performance and page-rendering times are improved in AJAX UI-enabled modules because full page refreshes are not required in those modules. If you are experiencing display issues with modules that are not compatible with AJAX, the AJAX UI for those modules can be disabled.',
     'LBL_CONFIG_AJAX_HELP' => 'Drag and drop the names of the modules below to enable or disable the use of the AJAX UI in those modules.',
     'LBL_CONFIG_TABS'=>'Display Module Tabs and Subpanels',
@@ -320,6 +321,8 @@ $mod_strings = array (
     'LBL_FORECAST_DESC'=> 'Define time periods for the Forecasts module. These time periods display in the Time Periods drop-down menus in the Forecasts Module.',
     'LBL_GLOBAL_SEARCH_SETTINGS' => 'Global Search',
 	'LBL_GLOBAL_SEARCH_SETTINGS_DESC' => 'Configure the global search options for the system.',
+    'LBL_FTS_SETTINGS' => 'Full-Text Search',
+   	'LBL_FTS_SETTINGS_DESC' => 'Configure the full-text search system.',
     'LBL_GLOBAL_TEAM_DESC' => 'Globally Visible',
     'LBL_GLOBAL_TEAM_SELECT' => 'A default global team was not found. Please select a team from this list.',
     'LBL_GLOBAL_TEAM' => 'Rebuild access to global team.',
@@ -1129,5 +1132,24 @@ $mod_strings = array (
     'LBL_SPRITES_PROCESSING_DIR' => 'Processing directory {0}',
     'LBL_SPRITES_ADDED' => 'Added sprite {0}',
     'LBL_SPRITES_EXCLUDING_FILE' => 'Excluding file: {0}',
-	);
+
+    //FTS
+    'LBL_FTS_TYPE' => 'System Type',
+    'LBL_FTS_HOST' => 'Host',
+    'LBL_FTS_PORT' => 'Port',
+    'LBL_FTS_TYPE_HELP' => 'Type of engine for full text search',
+    'LBL_FTS_HOST_HELP' => 'The hostname where the full text search engine resides.',
+    'LBL_FTS_PORT_HELP' => 'The port number where the full text search engine resides. ',
+
+    'LBL_FTS_SETTINGS_TITLE' => 'Full Text Search Settings',
+    'LBL_FTS_TEST' => 'Test',
+    'LBL_SAVE_SCHED_BUTTON' => 'Schedule Full System Index',
+    'LBL_SAVE_SCHED_WARNING' => 'Are you sure sure?',
+    'LBL_FTS_SCHED_ENABLED' => 'A Full System Index operation has been scheduled, to see additional details please visit the <a href="index.php?module=Schedulers&action=DetailView&record={0}">schedulers</a> page',
+    'LBL_FTS_NO_MODULES' => 'Select at least one module to search.',
+    'LBL_FTS_ADVANCED_LINK' => 'Enable Modules',
+    'LBL_FTS_ADVANCED_LINK_HELP' => 'Select the module(s) that users will be able to search against using the Full Text Search.',
+    'LBL_FTS_CONN_SUCCESS' => 'The connection was successfully set up and we are recommend performing a full system index. Please click on the Schedule full system index button when you are ready.',
+	'LBL_FTS_CONN_SUCCESS_SHORT' => 'A Full System Index operation has been scheduled.'
+    );
 

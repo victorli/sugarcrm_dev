@@ -39,11 +39,11 @@
  ********************************************************************************/
 *}
 
-	<input type="hidden" id="existing_target_count" name="existing_target_count" value={$TARGET_COUNT}>			
-	<input type="hidden" id="added_target_count" name="added_target_count" value=''>				
-	<input type="hidden" id="wiz_list_of_existing_targets" name="wiz_list_of_existing_targets" value="">				
-	<input type="hidden" id="wiz_list_of_targets" name="wiz_list_of_targets" value="">				
-	<input type="hidden" id="wiz_remove_target_list" name="wiz_remove_target_list" value="">				
+	<input type="hidden" id="existing_target_count" name="existing_target_count" value={$TARGET_COUNT}>
+	<input type="hidden" id="added_target_count" name="added_target_count" value=''>
+	<input type="hidden" id="wiz_list_of_existing_targets" name="wiz_list_of_existing_targets" value="">
+	<input type="hidden" id="wiz_list_of_targets" name="wiz_list_of_targets" value="">
+	<input type="hidden" id="wiz_remove_target_list" name="wiz_remove_target_list" value="">
 
 
 
@@ -61,8 +61,8 @@
 	<input id="popup_target_list_name" name="popup_target_list_name" type="hidden" value="">
 	<input id='popup_target_list_id' name='popup_target_list_id' title='List ID' type="hidden" value=''>
 	<input title="{$APP.LBL_SELECT_BUTTON_TITLE}" type="button"  class="button" value='{$APP.LBL_SELECT_BUTTON_LABEL}' name=btn3 id='target_list_button'
- 	onclick='open_popup("ProspectLists", 600, 400, "", true, false,  {$encoded_target_list_popup_request_data}, "single", true);'>	
-	</span sugar='slot'>	
+ 	onclick='open_popup("ProspectLists", 600, 400, "", true, false,  {$encoded_target_list_popup_request_data}, "single", true);'>
+	</span sugar='slot'>
 	</td>
 	<td>&nbsp;</td>
 	</tr>
@@ -91,33 +91,33 @@
 	<table width = '100%' class='detail view'>
 		<tr><td>{$MOD.LBL_TRACKERS_ADDED}</td></tr>
 		<tr><td>
-		
+
 			<table border=1 width='100%'><tr class='detail view'>
 				<th scope='col' width='25%'><b>{$MOD.LBL_TARGET_NAME}</b></th>
 			    <th scope='col' width='25%'><b>{$MOD.LBL_TARGET_TYPE}</b></th><td>&nbsp;</td>
-			    <td width='25%'><b>&nbsp;</b></td>			    
+			    <td width='25%'><b>&nbsp;</b></td>
 		    </tr>
 			</table>
 			<div id='added_targets'>
 				{$EXISTING_TARGETS}
 			</div>
-	
-	
+
+
 		</td></tr>
 	</table>
-	
+
 	<p>
 
 
 		<script>
 		var image_path = '{$IMAGE_PATH}';
 		{literal}
-		
+
 			//create variables that will be used to monitor the number of target url
 			var targets_added = 0;
 			//variable that will be passed back to server to specify list of targets
 			var wiz_list_of_targets_array = new Array();
-			
+
 			//this function adds selected target to list
 			function add_target(from_popup){
 
@@ -130,9 +130,9 @@
 				if(from_popup == 'true'){
 					TRGTNAME = 'popup_target_list_name'
 					TRGTID = 'popup_target_list_id'
-					TRGTYPE = 'popup_target_list_type'										
+					TRGTYPE = 'popup_target_list_type'
 				}
-				
+
 				//increment target count value
 					targets_added++;
 					document.getElementById('added_target_count').value = targets_added ;
@@ -141,11 +141,11 @@
 					var trgt_id = document.getElementById(TRGTID);
 					var trgt_type = document.getElementById(TRGTYPE);
 //					var selInd = trgt_type.selectedIndex;
-//                    trgt_type_text_value = trgt_type.options[selInd].text		
+//                    trgt_type_text_value = trgt_type.options[selInd].text
 					var trgt_type_text = trgt_type.value ;
 					{/literal}
 					//display the selected display text, not the value
-					{$PL_DOM_STMT}			
+					{$PL_DOM_STMT}
 					{literal}
 					//construct html to display chosen tracker
 					var trgt_name_html = "<input id='target_name"+targets_added +"' type='hidden' size='20' maxlength='255' name='added_target_name"+targets_added+"' value='"+trgt_name.value+"' >"+trgt_name.value;
@@ -158,15 +158,15 @@
                     var trgt_html = "<div id='trgt_added_"+targets_added+"'> <table width='100%' class='tabDetailViewDL2'><tr class='tabDetailViewDL2' ><td width='25%'>"+trgt_name_html+"</td><td width='25%'>"+trgt_type_html+"</td><td>"+trgt_id_html+"<a href='#' onclick=\"remove_target('trgt_added_"+targets_added+"','"+targets_added+"'); \" >  "+'{sugar_getimage name="delete_inline" ext=".gif" width="12" height="12" alt=$alt_remove other_attributes='align="absmiddle" border="0" '}'+"{$MOD.LBL_REMOVE}</a></td></tr></table></div>";
 					document.getElementById('added_targets').innerHTML = document.getElementById('added_targets').innerHTML + trgt_html;
 
-					//add values to array in string, seperated by "@@" characters
-					wiz_list_of_targets_array[targets_added] = trgt_id.value+"@@"+trgt_name.value+"@@"+trgt_type.value;					
+					//add values to array in string, separated by "@@" characters
+					wiz_list_of_targets_array[targets_added] = trgt_id.value+"@@"+trgt_name.value+"@@"+trgt_type.value;
 					//assign array to hidden input, which will be used by server to process array of targets
-					document.getElementById('wiz_list_of_targets').value = wiz_list_of_targets_array.toString();					
-					
-					//now lets clear the form to allow input of new target	
+					document.getElementById('wiz_list_of_targets').value = wiz_list_of_targets_array.toString();
+
+					//now lets clear the form to allow input of new target
 					trgt_name.value = '';
 					trgt_id.value = '';
-					trgt_type.value = 'default';				
+					trgt_type.value = 'default';
 
 					{literal}
 					if(targets_added ==1){
@@ -174,7 +174,7 @@
 					}
 				}
 			}
-			
+
 			//this function will remove the selected target from the ui, and from the target array
 			function remove_target(div,num){
 					//clear UI
@@ -183,8 +183,8 @@
 					parentNE=trgt_div.parentNode;
 					parentNE.removeChild(trgt_div);
 					//clear target array from this entry and assign to form input
-					wiz_list_of_targets_array[num] = '';										
-					document.getElementById('wiz_list_of_targets').value = wiz_list_of_targets_array.toString();					
+					wiz_list_of_targets_array[num] = '';
+					document.getElementById('wiz_list_of_targets').value = wiz_list_of_targets_array.toString();
 			}
 
 			//this function will remove the existing target from the ui, and add it's value to an array for removal upon save
@@ -195,16 +195,16 @@
 					parentNE=trgt_div.parentNode;
 					parentNE.removeChild(trgt_div);
 					//assign this id to form input for removal
-					document.getElementById('wiz_remove_target_list').value += ','+id;					
+					document.getElementById('wiz_remove_target_list').value += ','+id;
 			}
 
-					
-		
+
+
 	   /*
 	     * this is the custom validation script that will validate the fields on step3 of wizard
 	     * this is called directly from the add target button
 	     */
-	    
+
 	    function validate_step4(from_popup){
 			if(from_popup=='true'){
 				return true;
@@ -213,10 +213,10 @@
 	        var stepname = 'wiz_step3_';
 	        var has_error = 0;
 	        var fields = new Array();
-	        fields[0] = 'target_list_name'; 
+	        fields[0] = 'target_list_name';
 	        fields[1] = 'target_list_type';
 	        //loop through and check for empty strings ('  ')
-	        var field_value = ''; 
+	        var field_value = '';
 	        if( (trim(document.getElementById(fields[0]).value) !='') ||  (trim(document.getElementById(fields[1]).value) !='')){
 	            for (i=0; i < fields.length; i++){
 	                field_value = trim(document.getElementById(fields[i]).value);
@@ -234,13 +234,13 @@
 	            return false;
 	        }
 	        return true;
-	
-	    } 
+
+	    }
 
 
 			/**
 			*This function will iterate through list of targets and gather all the values.  It will
-			*populate these values, seperated by delimiters into hidden inputs for processing
+			*populate these values, separated by delimiters into hidden inputs for processing
 			*/
 			function gathertargets(){
 				//start with the newly added targets, get count of total added
@@ -257,8 +257,8 @@
 						final_list_of_targets_array[i] = document.getElementById('target_name'+i).value+"@@"+opt_val+"@@"+document.getElementById('target_url'+i).value;
 					}
 				}
-				//assign array of target entries to hidden input, which will be used by server to process array of targets				
-				document.getElementById('wiz_list_of_targets').value = final_list_of_targets_array.toString();					
+				//assign array of target entries to hidden input, which will be used by server to process array of targets
+				document.getElementById('wiz_list_of_targets').value = final_list_of_targets_array.toString();
 
 				//Now lets process existing targets, get count of existing targets
 				count = parseInt(document.getElementById('existing_target_count').value);
@@ -274,8 +274,8 @@
 						final_list_of_existing_targets_array[i] = document.getElementById('existing_target_id'+i).value+"@@"+document.getElementById('existing_target_name'+i).value+"@@"+opt_val+"@@"+document.getElementById('existing_target_url'+i).value;
 					}
 				}
-				//assign array of target entries to hidden input, which will be used by server to process array of targets				
-				document.getElementById('wiz_list_of_existing_targets').value = final_list_of_existing_targets_array.toString();					
+				//assign array of target entries to hidden input, which will be used by server to process array of targets
+				document.getElementById('wiz_list_of_existing_targets').value = final_list_of_existing_targets_array.toString();
 
 
 			}
@@ -288,8 +288,8 @@
 			{
 				var form_name = popup_reply_data.form_name;
 				var name_to_value_array = popup_reply_data.name_to_value_array;
-				
-				
+
+
 				for (var the_key in name_to_value_array)
 				{
 					if(the_key == 'toJSON')

@@ -36,7 +36,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-$dictionary['Opportunity'] = array('table' => 'opportunities','audited'=>true, 'unified_search' => true, 'unified_search_default_enabled' => true, 'duplicate_merge'=>true,
+$dictionary['Opportunity'] = array('table' => 'opportunities','audited'=>true, 'unified_search' => true, 'full_text_search' => true, 'unified_search_default_enabled' => true, 'duplicate_merge'=>true,
 		'comment' => 'An opportunity is the target of selling activities',
 		'fields' => array (
   'name' =>
@@ -47,6 +47,7 @@ $dictionary['Opportunity'] = array('table' => 'opportunities','audited'=>true, '
     'dbType' => 'varchar',
     'len' => '50',
     'unified_search' => true,
+    'full_text_search' => array('boost' => 3),
     'comment' => 'Name of the opportunity',
     'merge_filter' => 'selected',
     'importable' => 'required',

@@ -52,7 +52,7 @@ textEl.setAttribute('name','slot_field_'+field_count_MSI);textEl.setAttribute('i
 return name;}
 function removeFieldFromTable(field,table)
 {var table=document.getElementById(table);var rows=table.rows;for(i=0;i<rows.length;i++){cells=rows[i].cells;for(j=0;j<cells.length;j++){cell=rows[i].cells[j];children=cell.childNodes;for(k=0;k<children.length;k++){child=children[k];if(child.nodeType==1){if(child.getAttribute('id')=='slot_'+field){table.deleteRow(i);return;}}}}}}
-function setMouseOverForField(field,on){if(on){field.onmouseover=function(){return overlib(document.getElementById(this.id+'b').innerHTML,FGCLASS,'olFgClass',CGCLASS,'olCgClass',BGCLASS,'olBgClass',TEXTFONTCLASS,'olFontClass',CAPTIONFONTCLASS,'olCapFontClass');};field.onmouseout=function(){return nd();};}else{field.onmouseover=function(){};field.onmouseout=function(){};}}
+function setMouseOverForField(field,on){if(on){field.onmouseover=function(){$(this).tipTip({maxWidth:"auto",edgeOffset:10,content:document.getElementById(this.id+'b').innerHTML});};field.onmouseout=function(){return nd();};}else{field.onmouseover=function(){};field.onmouseout=function(){};}}
 var lastIDClick='';var lastIDClickTime=0;var dblDelay=500;function wasDoubleClick(id){var d=new Date();var now=d.getTime();if(lastIDClick==id&&(now-lastIDClickTime)<dblDelay){lastIDClick='';return true;}
 lastIDClickTime=now;lastIDClick=id;return false;}
 function confirmNoSave(){return confirm(SUGAR.language.get('Studio','LBL_CONFIRM_UNSAVE'));}

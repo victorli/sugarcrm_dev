@@ -424,16 +424,54 @@ EOQ;
 	function get_buttons($thisPanel,$panel_query=null)
 	{
 		$subpanel_def = $thisPanel->get_buttons();
-		$layout_manager = $this->getLayoutManager();
-		$widget_contents = '<span><table cellpadding="0" cellspacing="0"><tr>';
+        $count = 0;
+        if (empty($subpanel_def)) {
+            return;
+            $layout_manager = $this->getLayoutManager();
+            $widget_contents = '<span><table cellpadding="0" cellspacing="0"><tr>' . "\n";
+            $widget_contents .= '<td class="buttons">' . "\n";
+            $widget_contents .= '<ul class="clickMenu">' . "\n";
+            $widget_contents .= '<li>' . "\n";
+            $widget_contents .= '<a id=""  href="javascript: void(0);">Actions</a>' . "\n";
+
+            $widget_contents .= '<ul class="subnav">' . "\n";
+        }
+        //for action button at the top of each subpanel
 		foreach($subpanel_def as $widget_data)
 		{
-			$widget_data['query']=urlencode($panel_query);
-			$widget_data['action'] = $_REQUEST['action'];
-			$widget_data['module'] =  $thisPanel->get_inst_prop_value('module');
-			$widget_data['focus'] = $this->focus;
-			$widget_data['subpanel_definition'] = $thisPanel;
-			$widget_contents .= '<td class="buttons">' . "\n";
+            $widget_data['query']=urlencode($panel_query);
+            $widget_data['action'] = $_REQUEST['action'];
+            $widget_data['module'] = $thisPanel->get_inst_prop_value('module');
+            $widget_data['focus'] = $this->focus;
+            $widget_data['subpanel_definition'] = $thisPanel;
+
+            if ($count == 0)
+            {
+                $layout_manager = $this->getLayoutManager();
+                $widget_contents = '<span><table cellpadding="0" cellspacing="0"><tr>' . "\n";
+                $widget_contents .= '<td class="buttons">' . "\n";
+                $widget_contents .= '<ul class="clickMenu fancymenu">' . "\n";
+                if(count($subpanel_def) == 1)
+                {
+                	$widget_contents .= '<li class="single">' . "\n";
+                }
+                else
+                {
+                	$widget_contents .= '<li>' . "\n";
+                }
+                	//referencing <id>_old because of the sanatizing that happens in jquery.sugarMenu.js
+                    $widget_contents .= "<a id='". $layout_manager->widgetDisplay($widget_data, false, false, true)
+                                        ."' onclick='$(\"#".$layout_manager->widgetDisplay($widget_data, false, false, true)."_old\").click();' href='javascript: void(0);'>"
+                                        . $layout_manager->widgetDisplay($widget_data, false, true) . "</a>";
+
+
+                $widget_contents .= '<ul class="subnav' . "\n";
+                if( count($subpanel_def) > 1)
+                {
+                	$widget_contents .= " multi";	
+                }
+                $widget_contents .= '">';
+            }
 
 			if(empty($widget_data['widget_class']))
 			{
@@ -441,12 +479,24 @@ EOQ;
 			}
 			else
 			{
-				$widget_contents .= $layout_manager->widgetDisplay($widget_data);
+                if ($count == 0)
+                {
+                    $hide = " style='display:none' ";
+                }
+                else
+                {
+                    $hide = '';
+                }
+				$widget_contents .= "<li".$hide.">".$layout_manager->widgetDisplay($widget_data)."</li>";
 			}
 
-			$widget_contents .= '</td>';
-		}
-
+            $count++;
+        }
+		
+		$widget_contents .= ' </ul>' . "\n";
+        $widget_contents .= '</li>' . "\n";
+        $widget_contents .= '</ul>' . "\n";
+		$widget_contents .= '</td>';
 		$widget_contents .= '</tr></table></span>';
 		return $widget_contents;
 	}

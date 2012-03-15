@@ -107,10 +107,17 @@ if(empty($GLOBALS['installing']) && !file_exists('config.php'))
 
 // config|_override.php
 if(is_file('config.php')) {
-    require_once('config.php'); // provides $sugar_config
+    if ( !is_readable('config.php') ) {
+        $GLOBALS['log']->fatal("Unable to read the config.php file. Check the file permissions");
+    }
+	require_once('config.php'); // provides $sugar_config
 }
+
 // load up the config_override.php file.  This is used to provide default user settings
 if(is_file('config_override.php')) {
+    if ( !is_readable('config_override.php') ) {
+        $GLOBALS['log']->fatal("Unable to read the config_override.php file. Check the file permissions");
+    }
 	require_once('config_override.php');
 }
 if(empty($GLOBALS['installing']) &&empty($sugar_config['dbconfig']['db_name']))
@@ -125,6 +132,7 @@ require_once 'include/SugarObjects/SugarConfig.php';
 ///////////////////////////////////////////////////////////////////////////////
 ////	DATA SECURITY MEASURES
 require_once('include/utils.php');
+require_once('include/clean.php');
 clean_special_arguments();
 clean_incoming_data();
 ////	END DATA SECURITY MEASURES
@@ -180,12 +188,14 @@ if (!defined('SUGAR_PATH')) {
     define('SUGAR_PATH', realpath(dirname(__FILE__) . '/..'));
 }
 require_once SUGAR_PATH . '/include/SugarObjects/SugarRegistry.php';
+
 if(empty($GLOBALS['installing'])){
 ///////////////////////////////////////////////////////////////////////////////
 ////	SETTING DEFAULT VAR VALUES
 $GLOBALS['log'] = LoggerManager::getLogger('SugarCRM');
 $error_notice = '';
 $use_current_user_login = false;
+
 // Allow for the session information to be passed via the URL for printing.
 if(isset($_GET['PHPSESSID'])){
     if(!empty($_COOKIE['PHPSESSID']) && strcmp($_GET['PHPSESSID'],$_COOKIE['PHPSESSID']) == 0) {
@@ -194,6 +204,7 @@ if(isset($_GET['PHPSESSID'])){
         unset($_GET['PHPSESSID']);
     }
 }
+
 if(!empty($sugar_config['session_dir'])) {
 	session_save_path($sugar_config['session_dir']);
 }
@@ -222,6 +233,8 @@ $current_entity = null;
 $system_config = new Administration();
 $system_config->retrieveSettings();
 }
+
+
 ////	END SETTING DEFAULT VAR VALUES
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -917,7 +917,7 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
     public function testAddIndexes()
     {
         //TODO Fix test with normal index inspection
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
               'TODO Reimplement test not using compareIndexInTables.'
             );
         $tablename1 = 'test17_' . mt_rand();
@@ -985,7 +985,7 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
     public function testDropIndexes()
     {
         //TODO Fix test with normal index inspection
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
               'TODO Reimplement test not using compareIndexInTables.'
             );
 
@@ -1067,7 +1067,7 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
     public function testModifyIndexes()
     {
         //TODO Fix test with normal index inspection
-        $this->markTestSkipped(
+        $this->markTestIncomplete(
               'TODO Reimplement test not using compareIndexInTables.'
             );
         $tablename1 = 'test21_' . mt_rand();

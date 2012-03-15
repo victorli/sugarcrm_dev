@@ -44,12 +44,15 @@ class SugarViewTest extends Sugar_PHPUnit_Framework_TestCase
         $this->_view = new SugarViewTestMock();
         $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
         $GLOBALS['mod_strings'] = return_module_language($GLOBALS['current_language'], 'Users');
+        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
     }
     
     public function tearDown()
     {
     	unset($GLOBALS['mod_strings']);
     	unset($GLOBALS['app_strings']);
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        unset($GLOBALS['current_user']);
     }
     
     public function testGetModuleTab()

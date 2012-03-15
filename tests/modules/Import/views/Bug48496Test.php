@@ -46,7 +46,6 @@ class Bug48496Test extends Sugar_PHPUnit_Framework_OutputTestCase
     public function setUp()
     {
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-        $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
         $GLOBALS['module']='Imports';
         $_REQUEST['module']='Imports';
         $_REQUEST['import_module']='Accounts';
@@ -61,7 +60,6 @@ class Bug48496Test extends Sugar_PHPUnit_Framework_OutputTestCase
         unlink('upload/import/status_'.$GLOBALS['current_user']->id.'.csv');
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset($GLOBALS['current_user']);
-        unset($GLOBALS['app_strings']);
         unset($GLOBALS['module']);
         unset($_REQUEST['module']);
         unset($_REQUEST['import_module']);

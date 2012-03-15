@@ -90,6 +90,7 @@ $mod_strings = array(
     'ERR_CHECKSYS_SESSION_SAVE_PATH_NOT_SET'       => 'The session.save_path setting in your php configuration file (php.ini) is not set or is set to a folder which did not exist. You might need to set the save_path setting in php.ini or verify that the folder sets in save_path exist.',
     'ERR_CHECKSYS_SESSION_SAVE_PATH_NOT_WRITABLE'  => 'The session.save_path setting in your php configuration file (php.ini) is set to a folder which is not writeable.  Please take the necessary steps to make the folder writeable.  <br>Depending on your Operating system, this might require you to change the permissions by running chmod 766, or to right click on the filename to access the properties and uncheck the read only option.',
     'ERR_CHECKSYS_CONFIG_NOT_WRITABLE'  => 'The config file exists but is not writeable.  Please take the necessary steps to make the file writeable.  Depending on your Operating system, this might require you to change the permissions by running chmod 766, or to right click on the filename to access the properties and uncheck the read only option.',
+    'ERR_CHECKSYS_CONFIG_OVERRIDE_NOT_WRITABLE'  => 'The config override file exists but is not writeable.  Please take the necessary steps to make the file writeable.  Depending on your Operating system, this might require you to change the permissions by running chmod 766, or to right click on the filename to access the properties and uncheck the read only option.',
     'ERR_CHECKSYS_CUSTOM_NOT_WRITABLE'  => 'The Custom Directory exists but is not writeable.  You may have to change permissions on it (chmod 766) or right click on it and uncheck the read only option, depending on your Operating System.  Please take the needed steps to make the file writeable.',
     'ERR_CHECKSYS_FILES_NOT_WRITABLE'   => "The files or directories listed below are not writeable or are missing and cannot be created.  Depending on your Operating System, correcting this may require you to change permissions on the files or parent directory (chmod 766), or to right click on the parent directory and uncheck the 'read only' option and apply it to all subfolders.",
 	//'ERR_CHECKSYS_SAFE_MODE'			=> 'Safe Mode is On (please disable in php.ini)',
@@ -172,6 +173,7 @@ $mod_strings = array(
     'LBL_CHECKSYS_COMPONENT'			=> 'Component',
 	'LBL_CHECKSYS_COMPONENT_OPTIONAL'	=> 'Optional Components',
 	'LBL_CHECKSYS_CONFIG'				=> 'Writable SugarCRM Configuration File (config.php)',
+	'LBL_CHECKSYS_CONFIG_OVERRIDE'		=> 'Writable SugarCRM Configuration File (config_override.php)',
 	'LBL_CHECKSYS_CURL'					=> 'cURL Module',
     'LBL_CHECKSYS_SESSION_SAVE_PATH'    => 'Session Save Path Setting',
 	'LBL_CHECKSYS_CUSTOM'				=> 'Writeable Custom Directory',
@@ -524,6 +526,7 @@ $mod_strings = array(
     'LBL_OOTB_CAMPAIGN'		=> 'Run Nightly Mass Email Campaigns',
 	'LBL_OOTB_PRUNE'		=> 'Prune Database on 1st of Month',
     'LBL_OOTB_TRACKER'		=> 'Prune tracker tables',
+    'LBL_OOTB_SEND_EMAIL_REMINDERS'	=> 'Run Email Reminder Notifications',
     'LBL_UPDATE_TRACKER_SESSIONS' => 'Update tracker_sessions table',
 
 

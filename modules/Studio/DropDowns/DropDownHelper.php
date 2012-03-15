@@ -48,9 +48,9 @@ class DropDownHelper{
                 $this->scanForDropDowns('modules/'. $entry . '/EditView.php', $entry);
             }
         }
-        
+
     }
-    
+
     function scanForDropDowns($filepath, $module){
         $contents = file_get_contents($filepath);
         $matches = array();
@@ -60,15 +60,15 @@ class DropDownHelper{
             foreach($matches[1] as $match){
                 $this->modules[$module][$match] = $match;
             }
-   
-        }       
-        
+
+        }
+
     }
-    
+
     /**
      * Allow for certain dropdowns to be filtered when edited by pre 5.0 studio (eg. Rename Tabs)
-     * 
-     * @param string name 
+     *
+     * @param string name
      * @param array dropdown
      * @return array Filtered dropdown list
      */
@@ -90,33 +90,33 @@ class DropDownHelper{
                 break;
             default: //By default perform no filtering
                 $results = $dropdown;
-                
+
         }
-    
+
         return $results;
     }
-    
-    
+
+
     /**
-     * Takes in the request params from a save request and processes 
+     * Takes in the request params from a save request and processes
      * them for the save.
      *
      * @param REQUEST params  $params
      */
     function saveDropDown($params){
-       $count = 0; 
+       $count = 0;
        $dropdown = array();
        $dropdown_name = $params['dropdown_name'];
        $selected_lang = (!empty($params['dropdown_lang'])?$params['dropdown_lang']:$_SESSION['authenticated_user_language']);
        $my_list_strings = return_app_list_strings_language($selected_lang);
        while(isset($params['slot_' . $count])){
-           
+
            $index = $params['slot_' . $count];
-           $key = (isset($params['key_' . $index]))?to_html(remove_xss(from_html($params['key_' . $index]))): 'BLANK';
-           $value = (isset($params['value_' . $index]))?to_html(remove_xss(from_html($params['value_' . $index]))): '';
+           $key = (isset($params['key_' . $index]))?SugarCleaner::stripTags($params['key_' . $index]): 'BLANK';
+           $value = (isset($params['value_' . $index]))?SugarCleaner::stripTags($params['value_' . $index]): '';
            if($key == 'BLANK'){
                $key = '';
-               
+
            }
          	$key = trim($key);
          	$value = trim($value);
@@ -125,15 +125,15 @@ class DropDownHelper{
            }
            $count++;
        }
-      
+
        if($selected_lang == $GLOBALS['current_language']){
-       
+
            $GLOBALS['app_list_strings'][$dropdown_name] = $dropdown;
        }
         $contents = return_custom_app_list_strings_file_contents($selected_lang);
-        
-        
- 
+
+
+
        //get rid of closing tags they are not needed and are just trouble
         $contents = str_replace("?>", '', $contents);
 		if(empty($contents))$contents = "<?php";
@@ -157,7 +157,7 @@ class DropDownHelper{
         	//add the new ones
         	$contents .= "\n\$app_list_strings['$dropdown_name']=" . var_export_helper($dropdown) . ";";
         }
-       
+
         // Bug 40234 - If we have no contents, we don't write the file. Checking for "<?php" because above it's set to that if empty
         if($contents != "<?php"){
             save_custom_app_list_strings_contents($contents, $selected_lang);
@@ -170,9 +170,9 @@ class DropDownHelper{
         $repairAndClear->clearJsLangFiles();
         // ~~~~~~~~
     }
-    
 
-    
+
+
 }
 
 

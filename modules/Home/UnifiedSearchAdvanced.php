@@ -170,7 +170,6 @@ class UnifiedSearchAdvanced {
 		global $modListHeader, $beanList, $beanFiles, $current_language, $app_strings, $current_user, $mod_strings;
 		$home_mod_strings = return_module_language($current_language, 'Home');
 
-		$overlib = true;
 		$this->query_string = $GLOBALS['db']->quote(securexss(from_html(clean_string($this->query_string, 'UNIFIED_SEARCH'))));
 
 		if(!empty($_REQUEST['advanced']) && $_REQUEST['advanced'] != 'false') {
@@ -334,12 +333,6 @@ class UnifiedSearchAdvanced {
                 $lv->select = false;
                 $lv->showMassupdateFields = false;
                 $lv->email = false;
-                if($overlib) {
-                    $lv->overlib = true;
-                    $overlib = false;
-                } else {
-                	$lv->overlib = false;
-                }
 
                 $lv->setup($seed, 'include/ListView/ListViewNoMassUpdate.tpl', $where, $params, 0, 10);
 

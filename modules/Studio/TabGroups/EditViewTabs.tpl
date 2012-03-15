@@ -39,7 +39,6 @@
 
 *}
 
-{overlib_includes}
 <br />
 <script type="text/javascript" src="{sugar_getjspath file='modules/Studio/JSTransaction.js'}" ></script>
 <script>

@@ -334,7 +334,32 @@ if(true) {
 
 	////    END ATTACHMENTS
 	///////////////////////////////////////
-
+    $templateType = !empty($focus->type) ? $focus->type : '';
+    if($has_campaign) {
+        if (empty($_REQUEST['record']))
+        {
+            // new record, default to campaign
+            $xtpl->assign("TYPEDROPDOWN", get_select_options_with_id($app_list_strings['emailTemplates_type_list_campaigns'],'campaign'));
+        }
+        else
+        {
+            $xtpl->assign("TYPEDROPDOWN", get_select_options_with_id($app_list_strings['emailTemplates_type_list_campaigns'],$templateType));
+        }
+    }
+    else
+    {
+        // if the type is workflow, we will show it
+        // otherwise we don't allow user to select workflow type because workflow type email template
+        // should be created from within workflow module because it requires more fields (such as base module, etc)
+        if ($templateType == 'workflow')
+        {
+            $xtpl->assign("TYPEDROPDOWN", get_select_options_with_id($app_list_strings['emailTemplates_type_list'],$templateType));
+        }
+        else
+        {
+            $xtpl->assign("TYPEDROPDOWN", get_select_options_with_id($app_list_strings['emailTemplates_type_list_no_workflow'],$templateType));
+        }
+    }
 	// done and parse
 	$xtpl->parse("main.textarea");
 }

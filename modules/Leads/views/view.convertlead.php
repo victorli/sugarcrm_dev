@@ -392,6 +392,10 @@ class ViewConvertLead extends SugarView
 
             	$this->populateNewBean($module, $beans[$module], $beans['Contacts'], $lead);
 
+                // when creating a new contact, do not populate it with lead's old account_id
+                if ($module == 'Contacts') {
+                    $beans[$module]->account_id = '';
+                }
             }
             //If an existing bean was selected, relate it to the contact
             else if (!empty($vdef['ConvertLead']['select'])) 
@@ -560,7 +564,7 @@ class ViewConvertLead extends SugarView
                     $bean->id = create_guid();
 		            $bean->new_with_id = true;
                 }
-                if( isset($_POST['lead_conv_ac_op_sel']) && $_POST['lead_conv_ac_op_sel'] != $app_strings['LBL_NONE'])
+                if( isset($_POST['lead_conv_ac_op_sel']) && $_POST['lead_conv_ac_op_sel'] != 'None')
                 {
 	                foreach($activities as $activity)
 			    	{

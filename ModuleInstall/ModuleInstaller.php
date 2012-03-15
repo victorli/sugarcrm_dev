@@ -980,7 +980,18 @@ class ModuleInstaller{
                 if(!isset($field['duplicate_merge']))$field['duplicate_merge'] = 0;
                 if(!isset($field['help']))$field['help'] = '';
 
-				if(file_exists($beanFiles[$class])){
+                //Merge contents of the sugar field extension if we copied one over
+                if (file_exists("custom/Extension/modules/{$field['module']}/Ext/Vardefs/sugarfield_{$field['name']}.php"))
+                {
+                    $dictionary = array();
+                    include ("custom/Extension/modules/{$field['module']}/Ext/Vardefs/sugarfield_{$field['name']}.php");
+                    $obj = BeanFactory::getObjectName($field['module']);
+                    if (!empty($dictionary[$obj]['fields'][$field['name']])) {
+                        $field = array_merge($dictionary[$obj]['fields'][$field['name']], $field);
+                    }
+                }
+
+                if(file_exists($beanFiles[$class])){
 					require_once($beanFiles[$class]);
 					$mod = new $class();
 					$installed = true;

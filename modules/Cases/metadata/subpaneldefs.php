@@ -132,10 +132,12 @@ $layout_defs['Cases'] = array(
 				),
 				'emails' => array(
 					'module' => 'Emails',
-					'subpanel_name' => 'ForHistory',
-					'get_subpanel_data' => 'emails',
+					'subpanel_name' => 'ForUnlinkedEmailHistory',
+            		'get_subpanel_data' => 'function:get_emails_by_assign_or_link',
+          			'function_parameters' => array('import_function_file' => 'include/utils.php', 'link' => 'contacts'),
+                    'generate_select'=>true,
 				),
-			)
+	        )
 		),
         'documents' => array(
             'order' => 25,

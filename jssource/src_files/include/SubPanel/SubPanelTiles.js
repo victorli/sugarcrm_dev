@@ -223,43 +223,9 @@ function got_data(args, inline)
 		var child_field = request_map[args.request_id].toLowerCase();
 		if(inline){
 
-			//CCL - 21752
-			//if this is an inline operation, get the original buttons in the td element
-			//so that we may replace them later
-			buttonHTML = '';
-			trEls = list_subpanel.getElementsByTagName('tr');
-			if(trEls && trEls.length > 0) {
-				for(x in trEls) {
-					if(trEls[x] && trEls[x].className == 'pagination') {
-					   tableEls = trEls[x].getElementsByTagName('table');
-					   tdEls = tableEls[0].getElementsByTagName('td');
-					   span = tdEls[0].getElementsByTagName('span');
-					   if(span) {
-					      buttonHTML = span[0].innerHTML;
-					   }
-					   break;
-					}
-				}
-			}
-
 			child_field_loaded[child_field] = 2;
 			list_subpanel.innerHTML='';
-			list_subpanel.innerHTML=args.responseText;
-
-			//now if the trPagination element is set then let's replace the new tr element with this
-			if(buttonHTML != '') {
-				list_subpanel = document.getElementById('list_subpanel_'+request_map[args.request_id].toLowerCase());
-				trEls = list_subpanel.getElementsByTagName('tr');
-				for(x in trEls) {
-					if(trEls[x] && trEls[x].className == 'pagination') {
-					   tableEls = trEls[x].getElementsByTagName('table');
-					   tdEls = tableEls[0].getElementsByTagName('td');
-					   span = tdEls[0].getElementsByTagName('span');
-					   span[0].innerHTML = buttonHTML;
-					   break;
-					}
-				}
-			}
+			list_subpanel.innerHTML=args.responseText;			
 
 		} else {
 			child_field_loaded[child_field] = 1;
@@ -284,6 +250,10 @@ function got_data(args, inline)
 			//hideSubPanel(current_child_field);
 		}
 		current_child_field = child_field;
+		//reinit action menus
+		$("ul.clickMenu").each(function(index, node){
+	  		$(node).sugarActionMenu();
+	  	});
 	}
 }
 

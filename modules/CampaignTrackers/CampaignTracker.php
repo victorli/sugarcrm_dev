@@ -37,9 +37,9 @@
 /*********************************************************************************
 
  * Description: The primary Function of this file is to manage all the data
- * used by other files in this nodule. It should extend the SugarBean which impelments
+ * used by other files in this nodule. It should extend the SugarBean which implements
  * all the basic database operations. Any custom behaviors can be implemented here by
- * implemeting functions available in the SugarBean.
+ * implementing functions available in the SugarBean.
  ********************************************************************************/
 
 
@@ -49,7 +49,7 @@
 
 class CampaignTracker extends SugarBean {
     /* Foreach instance of the bean you will need to access the fields in the table.
-    * So define a variable for each one of them, the varaible name should be same as the field name
+    * So define a variable for each one of them, the variable name should be same as the field name
     * Use this module's vardef file as a reference to create these variables.
     */
     var $id;
@@ -124,7 +124,7 @@ class CampaignTracker extends SugarBean {
 
 
     /* This method is used to generate query for the list form. The base implementation of this method
-    * uses the table_name and list_field varaible to generate the basic query and then  adds the custom field
+    * uses the table_name and list_field variable to generate the basic query and then  adds the custom field
     * join and team filter. If you are implementing this function do not forget to consider the additional conditions.
     */
 

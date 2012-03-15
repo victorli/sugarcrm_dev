@@ -78,18 +78,18 @@ $subpanel_layout = array(
 		),
 		'email1'=>array(
 			'vname' => 'LBL_LIST_EMAIL',
-			'width' => '25%',
+			'width' => '20%',
 			'widget_class' => 'SubPanelEmailLink',
 		),
 		'phone_work'=>array (
 			'vname' => 'LBL_LIST_PHONE',
-			'width' => '21%',
+			'width' => '10%',
 		),
 		'remove_button'=>array(
 			'vname' => 'LBL_REMOVE',
 			'widget_class' => 'SubPanelRemoveButtonMeetings',
 		 	'module' => 'Users',
-			'width' => '4%',
+			'width' => '10%',
 			'linked_field' => 'users',
 		),
 	),

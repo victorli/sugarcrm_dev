@@ -61,5 +61,4 @@
 <script type="text/javascript" src='{sugar_getjspath file ='modules/ModuleBuilder/javascript/JSTransaction.js'}' ></script>
 <script type="text/javascript" src='{sugar_getjspath file ='include/javascript/tiny_mce/tiny_mce.js'}' ></script>
 
-<script src='{sugar_getjspath file='cache/include/javascript/sugar_grp_overlib.js'}' type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="{sugar_getjspath file="modules/ModuleBuilder/tpls/MB.css"}" />

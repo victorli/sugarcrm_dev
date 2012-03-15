@@ -83,6 +83,7 @@ $out =<<<EOQ
     <script type="text/javascript" src="install/dbConfig.js"></script>
     <link REL="SHORTCUT ICON" HREF="include/images/sugar_icon.ico">
     <script src="cache/include/javascript/sugar_grp1_yui.js?s={$sugar_version}&c={$js_custom_version}"></script>
+    <script src="cache/include/javascript/sugar_grp1_jquery.js?s={$sugar_version}&c={$js_custom_version}"></script>
     <script type="text/javascript">
     <!--
     if ( YAHOO.env.ua )
@@ -228,12 +229,6 @@ $out2 .=<<<EOQ2
 EOQ2;
 }
 
-//set demo dropdown
-//$supported_demodata = array(
-//	'en_us' => 'English (US)',
-//	'zh_cn' => '简体中文',
-//	'ja_jp' => 'Japanese - 日本語',
-//);
 $demoDD = "<select name='demoData' id='demoData'><option value='no' >".$mod_strings['LBL_NO']."</option><option value='yes'>".$mod_strings['LBL_YES']."</option>";
 $demoDD .= "</select><br>&nbsp;";
 
@@ -250,6 +245,7 @@ $out3 =<<<EOQ3
 </tr>
 </table>
 EOQ3;
+
 
 
 $out4 =<<<EOQ4
@@ -276,6 +272,26 @@ $out4 =<<<EOQ4
 <br>
 
 <script>
+
+$('#fts_type').change(function(){
+    if($(this).val() == '')
+        hideFTSSettings();
+    else
+        showFTSSettings();
+});
+
+function showFTSSettings()
+{
+    $('#fts_port_row').show();
+    $('#fts_host_row').show();
+}
+
+function hideFTSSettings()
+{
+    $('#fts_port_row').hide();
+    $('#fts_host_row').hide();
+}
+
 function toggleDBUser(){
      if(typeof(document.getElementById('dbUSRData')) !='undefined'
      && document.getElementById('dbUSRData') != null){
@@ -386,6 +402,7 @@ function callDBCheck(){
                 }
 
 EOQ4;
+
 
 $out_dd = 'postData += "&demoData="+document.setConfig.demoData.value;';
 $out5 =<<<EOQ5

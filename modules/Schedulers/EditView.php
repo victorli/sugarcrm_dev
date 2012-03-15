@@ -196,13 +196,13 @@ $xtpl = new XTemplate('modules/Schedulers/EditView.html');
 ////	PARSING FOR BASIC SETUP
 // Days of the week
 $xtpl->assign('USE_ADV_BOOL', 'false');
-$xtDays = array(0 => 'MON',
-				1 => 'TUE',
-				2 => 'WED',
-				3 => 'THU',
-				4 => 'FRI',
-				5 => 'SAT',
-				6 => 'SUN');
+$xtDays = array(1 => 'MON',
+				2 => 'TUE',
+				3 => 'WED',
+				4 => 'THU',
+				5 => 'FRI',
+				6 => 'SAT',
+				0 => 'SUN');
 
 if($exInterval[4] == '*') {
 	$xtpl->assign('ALL', "CHECKED");

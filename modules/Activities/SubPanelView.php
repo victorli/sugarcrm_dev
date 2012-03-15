@@ -55,7 +55,7 @@ global $action;
 
 global $app_strings;
 global $app_list_strings;
-//we don't want the parent module's string file, but rather the string file specifc to this subpanel
+//we don't want the parent module's string file, but rather the string file specific to this subpanel
 global $current_language;
 $current_module_strings = return_module_language($current_language, 'Activities');
 global $timedate;

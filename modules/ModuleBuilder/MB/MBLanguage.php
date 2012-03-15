@@ -112,7 +112,7 @@ class MBLanguage{
 		function getModStrings($language='en_us'){
 			$language .= '.lang.php';
 			if(!empty($this->strings[$language]) && $language != 'en_us.lang.php'){
-			    return sugarArrayMerge($this->strings['en_us.lang.php'], $this->strings[$language]);
+			    return sugarLangArrayMerge($this->strings['en_us.lang.php'], $this->strings[$language]);
 			}
 			if(!empty($this->strings['en_us.lang.php']))return $this->strings['en_us.lang.php'];
 			$empty = array();
@@ -121,7 +121,7 @@ class MBLanguage{
 		function getAppListStrings($language='en_us'){
 			$language .= '.lang.php';
 			if(!empty($this->appListStrings[$language]) && $language != 'en_us.lang.php'){
-			    return sugarArrayMerge($this->appListStrings['en_us.lang.php'], $this->appListStrings[$language]);
+			    return sugarLangArrayMerge($this->appListStrings['en_us.lang.php'], $this->appListStrings[$language]);
 			}
 			if(!empty($this->appListStrings['en_us.lang.php']))return $this->appListStrings['en_us.lang.php'];
 			$empty = array();
@@ -194,7 +194,7 @@ class MBLanguage{
 				}
 				
 
-				$values = sugarArrayMerge($values, $app_list_strings);
+				$values = sugarLangArrayMerge($values, $app_list_strings);
 				$values['moduleList'][$key_name]= $this->label;
 				
 				

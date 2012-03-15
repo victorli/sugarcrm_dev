@@ -48,10 +48,7 @@ SUGAR.ajaxUI = {
         try{
             var r = YAHOO.lang.JSON.parse(o.responseText);
             cont = r.content;
-            if (r.moduleList)
-            {
-                SUGAR.themes.setModuleTabs(r.moduleList);
-            }
+
             if (r.title)
             {
                 document.title = html_entity_decode(r.title);
@@ -68,6 +65,11 @@ SUGAR.ajaxUI = {
             var c = document.getElementById("content");
             c.innerHTML = cont;
             SUGAR.util.evalScript(cont);
+
+            if (r.moduleList)
+            {
+                SUGAR.themes.setModuleTabs(r.moduleList);
+            }
 
 
             // set response time from ajax response

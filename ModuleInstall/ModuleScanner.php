@@ -263,11 +263,11 @@ class ModuleScanner{
 	 * @param string $contents File contents
 	 * @return boolean
 	 */
-	public function isPHPFile($contents)
+	protected function isPHPFile($contents)
 	{
 	    if(stripos($contents, '<?php') !== false) return true;
 	    for($tag=0;($tag = stripos($contents, '<?', $tag)) !== false;$tag++) {
-            if(strncasecmp(substr($contents, $tag, 13), '<?xml version', 13) == 0) {
+            if(strncasecmp(substr($contents, $tag, 13), '<?xml version', 13)) {
                 // <?xml version is OK, skip it
                 $tag++;
                 continue;

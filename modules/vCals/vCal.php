@@ -236,7 +236,29 @@ class vCal extends SugarBean {
             $focus->user_id = $user_focus->id;
             $focus->save();
         }
-
+        
+	/**
+	 * get ics file content for meeting invite email
+	 */
+	public static function get_ical_event(SugarBean $bean, User $user){        
+		$str = "";
+		
+		$str .= "BEGIN:VCALENDAR\n";
+		$str .= "VERSION:2.0\n";
+		$str .= "PRODID:-//SugarCRM//SugarCRM Calendar//EN\n";
+		$str .= "BEGIN:VEVENT\n";
+		$str .= "UID:".$bean->id."\n";
+		$str .= "ORGANIZER;CN=".$user->full_name.":".$user->email1."\n";
+		$str .= "DTSTART:".SugarDateTime::createFromFormat($GLOBALS['timedate']->get_db_date_time_format(),$bean->date_start)->format(self::UTC_FORMAT)."\n";
+		$str .= "DTEND:".SugarDateTime::createFromFormat($GLOBALS['timedate']->get_db_date_time_format(),$bean->date_end)->format(self::UTC_FORMAT)."\n";
+		$str .= "DTSTAMP:". $GLOBALS['timedate']->getNow(false)->format(self::UTC_FORMAT) ."\n";
+		$str .= "SUMMARY:" . $bean->name . "\n";
+		$str .= "DESCRIPTION:" . $bean->description . "\n";		
+		$str .= "END:VEVENT\n";
+		$str .= "END:VCALENDAR\n";
+				
+		return $str;		
+	}
 
 }
 

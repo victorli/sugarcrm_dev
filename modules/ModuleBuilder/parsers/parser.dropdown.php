@@ -65,7 +65,7 @@ require_once('modules/ModuleBuilder/parsers/ModuleBuilderParser.php');
         {
             foreach ( $temp as $item )
             {
-                $dropdown[ remove_xss(from_html($item [ 0 ])) ] = remove_xss(from_html($item [ 1 ])) ;
+                $dropdown[ SugarCleaner::stripTags(from_html($item [ 0 ]), false) ] = SugarCleaner::stripTags(from_html($item [ 1 ]), false) ;
             }
         }
 		if(array_key_exists($emptyMarker, $dropdown)){
@@ -81,7 +81,7 @@ require_once('modules/ModuleBuilder/parsers/ModuleBuilderParser.php');
 
 		if($type != 'studio'){
 			$mb = new ModuleBuilder();
-			$module =& $mb->getPackageModule($params['view_package'], $params['view_module']);
+			$module = $mb->getPackageModule($params['view_package'], $params['view_module']);
 			$this->synchMBDropDown($dropdown_name, $dropdown, $selected_lang, $module);
 			//Can't use synch on selected lang as we want to overwrite values, not just keys
 			$module->mblanguage->appListStrings[$selected_lang.'.lang.php'][$dropdown_name] = $dropdown;

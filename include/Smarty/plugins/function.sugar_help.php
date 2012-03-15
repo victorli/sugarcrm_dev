@@ -43,7 +43,7 @@ r32202 - 2008-02-29 11:05:08 -0800 (Fri, 29 Feb 2008) - jmertic - Have sugar_hel
 Update usage in step1.tpl and step3.tpl.
 
 r32200 - 2008-02-29 10:44:55 -0800 (Fri, 29 Feb 2008) - jmertic - Add string placeholders for several tooltips on Step 3.
-Pushed code for help popups into smarty function sugar_help and the code for including the overlib stuff into overlib_includes.
+Pushed code for help popups into smarty function sugar_help.
 
 
 */
@@ -54,10 +54,9 @@ Pushed code for help popups into smarty function sugar_help and the code for inc
  * @package Smarty
  * @subpackage plugins
  *
- * This is a Smarty plugin to handle the creation of overlib popups for inline help
+ * This is a Smarty plugin to handle the creation of jquery ui dialog popups for inline help
  *
  * NOTE: Be sure to include the following code somewhere on the page you'll be using this on.
- * {overlib_includes}
  *
  *
  * @author John Mertic {jmertic@sugarcrm.com}
@@ -74,22 +73,21 @@ function smarty_function_sugar_help($params, &$smarty)
 {
     $text = str_replace("'","\'",htmlspecialchars($params['text']));
 	//append any additional parameters.
-	$onmouseover  = "return overlib('$text', FGCLASS, 'olFgClass', CGCLASS, 'olCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olCapFontClass', CLOSEFONTCLASS, 'olCloseFontClass', WIDTH, -1, NOFOLLOW, 'ol_nofollow'";
+	$click  = "return SUGAR.util.showHelpTips(this,'$text'";
 
 	if (count( $params) > 1){
-		unset($params['text']);
-		foreach($params as $prop => $value){
-			$onmouseover .=",".$prop.",".$value;
-		}
+
+			$click .=",'".$params['myPos']."','".$params['atPos']."'";
 	}
-    $helpImage = SugarThemeRegistry::current()->getImageURL('helpInline.gif');
-	$onmouseover .= " );" ;
+    $helpImage = SugarThemeRegistry::current()->getImageURL('helpInline.png');
+	$click .= " );" ;
     $alt_tag = $GLOBALS['app_strings']['LBL_ALT_INFO'];
     return <<<EOHTML
-<img border="0" onmouseout="return nd();"
-    onmouseover="$onmouseover"
+<img border="0"
+    onclick="$click"
     src="$helpImage"
     alt="$alt_tag"
+    class="inlineHelpTip"
     />
 EOHTML;
 }

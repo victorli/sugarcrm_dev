@@ -92,8 +92,10 @@ class MyEmailsDashlet extends DashletGeneric {
         $tasksURL = "\"" . SugarThemeRegistry::current()->getImageURL('Tasks.gif') . "\"";
         $script = <<<EOQ
         <script>
-        function quick_create_overlib(id, theme) {
-            return overlib('<a style=\'width: 150px\' class=\'menuItem\' onmouseover=\'hiliteItem(this,"yes");\' onmouseout=\'unhiliteItem(this);\' href=\'index.php?module=Cases&action=EditView&inbound_email_id=' + id + '\'>' +
+        function quick_create_overlib(id, theme, el) {
+        	
+        var \$dialog = \$('<div></div>')
+		.html('<a style=\'width: 150px\' class=\'menuItem\' onmouseover=\'hiliteItem(this,"yes");\' onmouseout=\'unhiliteItem(this);\' href=\'index.php?module=Cases&action=EditView&inbound_email_id=' + id + '\'>' +
             "<!--not_in_theme!--><img border='0' src='" + {$casesImageURL} + "' style='margin-right:5px'>" + '{$mod_strings['LBL_LIST_CASE']}' + '</a>' +
 
             
@@ -115,11 +117,19 @@ class MyEmailsDashlet extends DashletGeneric {
              "<a style='width: 150px' class='menuItem' onmouseover='hiliteItem(this,\"yes\");' onmouseout='unhiliteItem(this);' href='index.php?module=Tasks&action=EditView&inbound_email_id=" + id + "'>" +
                     "<!--not_in_theme!--><img border='0' src='" + {$tasksURL} + "' style='margin-right:5px'>"
 
-                   + '{$mod_strings['LBL_LIST_TASK']}' + "</a>"
-            , CAPTION, '{$mod_strings['LBL_QUICK_CREATE']}'
-            , STICKY, MOUSEOFF, 3000, CLOSETEXT, '<div style="float:right"><!--not_in_theme!--><img border=0 src="themes/default/images/close_inline.gif"></div>', WIDTH, 150, CLOSETITLE, SUGAR.language.get('app_strings', 'LBL_ADDITIONAL_DETAILS_CLOSE_TITLE'), CLOSECLICK, FGCLASS, 'olOptionsFgClass',
-
-            CGCLASS, 'olOptionsCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olOptionsCapFontClass', CLOSEFONTCLASS, 'olOptionsCloseFontClass');
+                   + '{$mod_strings['LBL_LIST_TASK']}' + "</a>")
+		.dialog({
+			autoOpen: false,
+			title: '{$mod_strings['LBL_QUICK_CREATE']}',
+			width: 150,
+			position: { 
+				    my: 'right top',
+				    at: 'left top',
+				    of: $(el)
+			  }
+		});
+		\$dialog.dialog('open');
+          
         }
         </script>
 EOQ;

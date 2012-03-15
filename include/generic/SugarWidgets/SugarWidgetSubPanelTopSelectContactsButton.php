@@ -48,17 +48,22 @@ class SugarWidgetSubPanelTopSelectContactsButton extends SugarWidgetSubPanelTopS
 		$this->button_properties=$button_properties;
 	}
 
-	//widget_data is the collection of attributes assoicated with the button in the layout_defs file.
+    public function getWidgetId()
+    {
+        return parent::getWidgetId() . '_select_button';
+    }
+
+	//widget_data is the collection of attributes associated with the button in the layout_defs file.
 	function display(&$widget_data)
 	{
 		global $app_strings;
 		$initial_filter = '';
-		
+
 		$this->title = $app_strings['LBL_SELECT_CONTACT_BUTTON_TITLE'];
 		//$this->accesskey = $app_strings['LBL_SELECT_CONTACT_BUTTON_KEY'];
 		$this->value = $app_strings['LBL_SELECT_CONTACT_BUTTON_LABEL'];
-		
-		$this->module_name = 'Contacts';		
+
+		$this->module_name = 'Contacts';
 
 		if (is_array($this->button_properties)) {
 			if( isset($this->button_properties['title'])) {
@@ -74,10 +79,10 @@ class SugarWidgetSubPanelTopSelectContactsButton extends SugarWidgetSubPanelTopS
 				$this->module_name = $this->button_properties['module'];
 			}
 		}
-		
+
 		$focus = $widget_data['focus'];
 		if(ACLController::moduleSupportsACL($widget_data['module']) && !ACLController::checkAccess($widget_data['module'], 'list', true)){
-			$button = ' <input type="button" name="' .$this->getWidgetId() . '_select_button" id="' .$this->getWidgetId() . '_select_button" class="button"' . "\"\n"
+			$button = ' <input type="button" name="' .$this->getWidgetId() . '" id="' .$this->getWidgetId() . '" class="button"' . "\"\n"
 			. ' title="' . $this->title . '"'
 			. ' value="' . $this->value . "\"\n"
 			.' disabled />';
@@ -91,20 +96,20 @@ class SugarWidgetSubPanelTopSelectContactsButton extends SugarWidgetSubPanelTopS
 		}
 
 		$subpanel_definition = $widget_data['subpanel_definition'];
-				
+
 		$button_definition = $subpanel_definition->get_buttons();
 		$subpanel_name = $subpanel_definition->get_module_name();
 		if (empty($this->module_name)) {
 			$this->module_name = $subpanel_name;
 		}
-		
+
 		if ($subpanel_name == 'Project'){
 			$link_field_name = 'contact_resources';
 		}
 		else{
 			$link_field_name = $subpanel_definition->get_data_source_name(true);
 		}
-				
+
 		$popup_mode='Single';
 		if(isset($widget_data['mode'])){
 			$popup_mode=$widget_data['mode'];
@@ -124,14 +129,14 @@ class SugarWidgetSubPanelTopSelectContactsButton extends SugarWidgetSubPanelTopS
 		}
 		$return_module = $_REQUEST['module'];
 		$return_action = 'SubPanelViewer';
-		$return_id = $_REQUEST['record']; 
-		
+		$return_id = $_REQUEST['record'];
+
 		//field_to_name_array
 		$fton_array= array('id' => 'subpanel_id');
 		if(isset($widget_data['field_to_name_array']) && is_array($widget_data['field_to_name_array'])){
 			$fton_array=array_merge($fton_array,$widget_data['field_to_name_array']);
 		}
-			
+
 		$return_url = "index.php?module=$return_module&action=$return_action&subpanel=$subpanel_name&record=$return_id&sugar_body_only=1";
 
 		$popup_request_data = array(
@@ -146,13 +151,13 @@ class SugarWidgetSubPanelTopSelectContactsButton extends SugarWidgetSubPanelTopS
 				'refresh_page'=>true,
 			),
 		);
-		
+
 		if (is_array($this->button_properties) && !empty($this->button_properties['add_to_passthru_data'])) {
 			$popup_request_data['passthru_data']= array_merge($popup_request_data['passthru_data'],$this->button_properties['add_to_passthru_data']);
-		}		
-		
+		}
+
 		if (is_array($this->button_properties) && !empty($this->button_properties['add_to_passthru_data']['return_type'])) {
-			
+
 			if ($this->button_properties['add_to_passthru_data']['return_type']=='report') {
 				$initial_filter = "&module_name=". urlencode($widget_data['module']);
 			}
@@ -163,9 +168,9 @@ class SugarWidgetSubPanelTopSelectContactsButton extends SugarWidgetSubPanelTopS
 			}
 		}
 		$json_encoded_php_array = $this->_create_json_encoded_popup_request($popup_request_data);
-			
+
 		return '<form action="index.php">' . "\n"
-			. ' <input type="button" name="' .$this->getWidgetId() . '_select_button" id="' .$this->getWidgetId() . '_select_button" class="button"' . "\"\n"
+			. ' <input type="button" name="' .$this->getWidgetId() . '" id="' .$this->getWidgetId() . '" class="button"' . "\"\n"
 				. ' title="' . $this->title . '"'
 			. ' value="' . $this->value . "\"\n"
 			. " onclick='open_popup(\"$this->module_name\",600,400,\"$initial_filter\",true,true,$json_encoded_php_array,\"$popup_mode\",$create);' /></form>\n";

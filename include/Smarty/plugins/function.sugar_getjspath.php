@@ -18,7 +18,6 @@ r50375 - 2009-08-24 18:07:43 -0700 (Mon, 24 Aug 2009) - dwong - branch kobe2 fro
 
 r42807 - 2008-12-29 11:16:59 -0800 (Mon, 29 Dec 2008) - dwong - Branch from trunk/sugarcrm r42806 to branches/tokyo/sugarcrm
 
-r32629 - 2008-03-11 00:44:13 -0700 (Tue, 11 Mar 2008) - majed - fixes issues with overlib and templating
 
 
 */

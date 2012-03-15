@@ -65,7 +65,7 @@ class DetailView2 extends EditView
         )
     {
         $this->th = new TemplateHandler();
-        $this->th->ss =& $this->ss;
+        $this->th->ss = $this->ss;
         $this->focus = $focus;
         $this->tpl = $tpl;
         $this->module = $module;

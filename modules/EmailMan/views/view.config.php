@@ -164,7 +164,6 @@ class ViewConfig extends SugarView
             $this->ss->assign($k."Checked", 'CHECKED');
         }
 
-        //clean_xss('here');
         ////	END EMAIL SECURITY
         ///////////////////////////////////////////////////////////////////////////////
 

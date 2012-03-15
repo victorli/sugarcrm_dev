@@ -710,7 +710,7 @@ class SugarEmailAddress extends SugarBean {
                 ORDER BY ear.reply_to_address, ear.primary_address DESC";
         $r = $this->db->query($q);
 
-        while($a = $this->db->fetchByAssoc($r)) {
+        while($a = $this->db->fetchByAssoc($r, FALSE)) {
             $return[] = $a;
         }
 

@@ -62,6 +62,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
             $prefix.'modules/Emails'                => true,
             $prefix.'jssource'                      => true,
             $prefix.'modules/ModuleBuilder'			=> true,
+            $prefix.'include/javascript/jquery'     => true,
         );
 
         return $compress_exempt_files;
@@ -78,7 +79,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
      * @from_path root directory where processing should take place
      */
     function ConcatenateFiles($from_path){
-
         $js_groupings = array();
         if(isset($_REQUEST['root_directory'])){
             require('jssource/JSGroupings.php');
@@ -98,7 +98,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
                 $relpath = $loc;
                 $loc = $from_path.'/'.$loc;
                 $trgt = sugar_cached($trgt);
-
                 //check to see that source file exists, that it is a file, and is readable
                 if(file_exists($loc) && is_file($loc)  && is_readable($loc)){
                     $currPerm = fileperms($loc);
@@ -121,6 +120,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
                         }
 
                     }else{
+                        if(!function_exists('mkdir_recursive')) {
+                            require_once($from_path.'/include/dir_inc.php');
+                        }
                         mkdir_recursive(dirname($trgt));
                         //create and open target file
                         if(function_exists('sugar_fopen')){

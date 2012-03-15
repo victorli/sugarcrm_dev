@@ -95,13 +95,13 @@ addForm('popup_form');
                 {$field_types[$vardef.type]}
             {/if}
             {if empty($field_types[$vardef.type]) && !empty($vardef.type)}({$vardef.type}){/if}
-            <input type='hidden' name='type' value={$vardef.type}>
+            <input type='hidden' name='type' value={$vardef.type} />
     </td>
 </tr>
 </table>
 {$fieldLayout}
-
 </form>
+
 <script>
 {literal}
 function validate_type_selection(){
@@ -120,4 +120,4 @@ function validate_type_selection(){
 {/literal}
 ModuleBuilder.helpSetup('fieldsEditor','{$help_group}');
 </script>
-<script>//Need this to work in FF4. Bug where last script isn't executed.</script>
+{* <script>//Need this to work in FF4. Bug where last script isn't executed.</script> *}

@@ -268,7 +268,7 @@ class SearchForm {
                 if(is_array($parms['value'])) {
                     $field_value = '';
 
-                    // If it is a custom field of mutliselect we have to do some special processing
+                    // If it is a custom field of multiselect we have to do some special processing
                     if($customField && !empty($this->bean->field_name_map[$field]['isMultiSelect']) && $this->bean->field_name_map[$field]['isMultiSelect']) {
 	                    $operator = 'custom_enum';
 	                    $db_field = $this->bean->table_name .  "_cstm." . $field;

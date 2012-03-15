@@ -41,7 +41,7 @@ var uploads_count_map=new Object();
 var uploads_count = -1;
 var current_uploads_id = -1;
 var append = false; // Ed has method InsertHTML which inserts at cursor point - plain does not
-//following varaibles store references to input fields grouped with the clicked email selection button (select).
+//following variables store references to input fields grouped with the clicked email selection button (select).
 var current_contact = '';
 var current_contact_id = '';
 var current_contact_email = '';
@@ -919,8 +919,10 @@ function clear_email_addresses() {
 	}
 }
 
-function quick_create_overlib(id, theme) {
-    return overlib('<a style=\'width: 150px\' class=\'menuItem\' onmouseover=\'hiliteItem(this,"yes");\' onmouseout=\'unhiliteItem(this);\' href=\'index.php?module=Cases&action=EditView&inbound_email_id=' + id + '\'>' +
+function quick_create_overlib(id, theme, el) {
+
+		var $dialog = $('<div></div>')
+		.html('<a style=\'width: 150px\' class=\'menuItem\' onmouseover=\'hiliteItem(this,"yes");\' onmouseout=\'unhiliteItem(this);\' href=\'index.php?module=Cases&action=EditView&inbound_email_id=' + id + '\'>' +
             "<img border='0' src='index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=Cases.gif' style='margin-right:5px'>" + SUGAR.language.get('Emails', 'LBL_LIST_CASE') + '</a>' +
             "<a style='width: 150px' class='menuItem' onmouseover='hiliteItem(this,\"yes\");' onmouseout='unhiliteItem(this);' href='index.php?module=Leads&action=EditView&inbound_email_id=" + id + "'>" +
                     "<img border='0' src='index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=Leads.gif' style='margin-right:5px'>"
@@ -934,9 +936,19 @@ function quick_create_overlib(id, theme) {
              "<a style='width: 150px' class='menuItem' onmouseover='hiliteItem(this,\"yes\");' onmouseout='unhiliteItem(this);' href='index.php?module=Tasks&action=EditView&inbound_email_id=" + id + "'>" +
                     "<img border='0' src='index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=Tasks.gif' style='margin-right:5px'>"
                    + SUGAR.language.get('Emails', 'LBL_LIST_TASK') + "</a>"
-            , CAPTION, SUGAR.language.get('Emails', 'LBL_QUICK_CREATE')
-            , STICKY, MOUSEOFF, 3000, CLOSETEXT, '<img border=0  style="margin-left:2px; margin-right: 2px;" src="index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=close.gif">', WIDTH, 150, CLOSETITLE, SUGAR.language.get('app_strings', 'LBL_ADDITIONAL_DETAILS_CLOSE_TITLE'), CLOSECLICK, FGCLASS, 'olOptionsFgClass',
-            CGCLASS, 'olOptionsCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olOptionsCapFontClass', CLOSEFONTCLASS, 'olOptionsCloseFontClass');
+                   )
+		.dialog({
+			autoOpen: false,
+			title:  SUGAR.language.get('Emails', 'LBL_QUICK_CREATE'),
+			width: 150,
+			position: {
+				    my: 'right top',
+				    at: 'left top',
+				    of: $(el)
+			  }
+		});
+		$dialog.dialog('open');
+
 }
 
 

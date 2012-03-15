@@ -83,23 +83,26 @@ class UsersViewDetail extends ViewDetail {
             && $sugar_config['default_user_name'] == $this->bean->user_name
             && isset($sugar_config['lock_default_user_name'])
             && $sugar_config['lock_default_user_name']) {
-            $buttons .= "<input id='edit_button' title='".$app_strings['LBL_EDIT_BUTTON_TITLE']."' accessKey='".$app_strings['LBL_EDIT_BUTTON_KEY']."' class='button primary' onclick=\"this.form.return_module.value='Users'; this.form.return_action.value='DetailView'; this.form.return_id.value='".$this->bean->id."'; this.form.action.value='EditView'\" type='submit' name='Edit' value='".$app_strings['LBL_EDIT_BUTTON_LABEL']."'>  ";
+            $buttons .= "<a id='edit_button' title='".$app_strings['LBL_EDIT_BUTTON_TITLE']."' onclick='$(\"#userEditButton_old\").click();' accessKey='".$app_strings['LBL_EDIT_BUTTON_KEY']."' name='Edit'>".$app_strings['LBL_EDIT_BUTTON_LABEL']."</a>  ";
+            $buttons .= "<input id='userEditButton' onclick=\"this.form.return_module.value='Users'; this.form.return_action.value='DetailView'; this.form.return_id.value='".$this->bean->id."'; this.form.action.value='EditView'\" type='submit' style='display:none; value='" . $app_strings['LBL_EDIT_BUTTON_LABEL'] .  "'>";
         }
         elseif (is_admin($current_user)|| ($GLOBALS['current_user']->isAdminForModule('Users')&& !$this->bean->is_admin)
                 || $_REQUEST['record'] == $current_user->id) {
-            $buttons .= "<input id='edit_button' title='".$app_strings['LBL_EDIT_BUTTON_TITLE']."' accessKey='".$app_strings['LBL_EDIT_BUTTON_KEY']."' class='button primary' onclick=\"this.form.return_module.value='Users'; this.form.return_action.value='DetailView'; this.form.return_id.value='".$this->bean->id."'; this.form.action.value='EditView'\" type='submit' name='Edit' value='".$app_strings['LBL_EDIT_BUTTON_LABEL']."'>  ";
+            $buttons .= "<a id='edit_button' title='".$app_strings['LBL_EDIT_BUTTON_TITLE']."' onclick='$(\"#userEditButton_old\").click();' accessKey='".$app_strings['LBL_EDIT_BUTTON_KEY']."' name='Edit'>".$app_strings['LBL_EDIT_BUTTON_LABEL']."</a>  ";
+            $buttons .= "<input id='userEditButton' onclick=\"this.form.return_module.value='Users'; this.form.return_action.value='DetailView'; this.form.return_id.value='".$this->bean->id."'; this.form.action.value='EditView'\" type='submit' style='display:none;' value='" . $app_strings['LBL_EDIT_BUTTON_LABEL'] .  "'>";
+            $buttons .= "<ul class='subnav multi'>";
             if ((is_admin($current_user)|| $GLOBALS['current_user']->isAdminForModule('Users')
                     )) {
                 if (!$current_user->is_group){
-                    $buttons .= "<input title='".$app_strings['LBL_DUPLICATE_BUTTON_TITLE']."' accessKey='".$app_strings['LBL_DUPLICATE_BUTTON_KEY']."' class='button' onclick=\"this.form.return_module.value='Users'; this.form.return_action.value='DetailView'; this.form.isDuplicate.value=true; this.form.action.value='EditView'\" type='submit' name='Duplicate' value='".$app_strings['LBL_DUPLICATE_BUTTON_LABEL']."'>  ";
+                    $buttons .= "<li><input title='".$app_strings['LBL_DUPLICATE_BUTTON_TITLE']."' accessKey='".$app_strings['LBL_DUPLICATE_BUTTON_KEY']."' class='button' onclick=\"this.form.return_module.value='Users'; this.form.return_action.value='DetailView'; this.form.isDuplicate.value=true; this.form.action.value='EditView'\" type='submit' name='Duplicate' value='".$app_strings['LBL_DUPLICATE_BUTTON_LABEL']."'></li> ";
                     
                     if($this->bean->id != $current_user->id) {
-                        $buttons .="<input type='button' class='button' onclick='confirmDelete();' value='".$app_strings['LBL_DELETE_BUTTON_LABEL']."' /> ";
+                        $buttons .="<li><input type='button' class='button' onclick='confirmDelete();' value='".$app_strings['LBL_DELETE_BUTTON_LABEL']."' /></li> ";
                     }
                     
                     if (!$this->bean->portal_only && !$this->bean->is_group && !$this->bean->external_auth_only
                         && isset($sugar_config['passwordsetting']['SystemGeneratedPasswordON']) && $sugar_config['passwordsetting']['SystemGeneratedPasswordON']){
-                        $buttons .= "<input title='".translate('LBL_GENERATE_PASSWORD_BUTTON_TITLE','Users')."'  class='button' LANGUAGE=javascript onclick='generatepwd(\"".$this->bean->id."\");' type='button' name='password' value='".translate('LBL_GENERATE_PASSWORD_BUTTON_LABEL','Users')."'>  ";
+                        $buttons .= "<li><input title='".translate('LBL_GENERATE_PASSWORD_BUTTON_TITLE','Users')."' class='button' LANGUAGE=javascript onclick='generatepwd(\"".$this->bean->id."\");' type='button' name='password' value='".translate('LBL_GENERATE_PASSWORD_BUTTON_LABEL','Users')."'></li>  ";
                     }
                 }
             }

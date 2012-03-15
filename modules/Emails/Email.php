@@ -35,14 +35,8 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
 
- * Description:
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc. All Rights
- * Reserved. Contributor(s): ______________________________________..
- *********************************************************************************/
 require_once('include/SugarPHPMailer.php');
-require_once('include/Pear/HTML_Safe/Safe.php');
 require_once 'include/upload_file.php';
 
 class Email extends SugarBean {
@@ -157,9 +151,6 @@ class Email extends SugarBean {
 	    $this->cachePath = sugar_cached('modules/Emails');
 		parent::SugarBean();
 
-		$this->safe = new HTML_Safe();
-		$this->safe->whiteProtocols[] = "cid";
-		$this->safe->clear();
 		$this->emailAddress = new SugarEmailAddress();
 
 		$this->imagePrefix = rtrim($GLOBALS['sugar_config']['site_url'], "/")."/cache/images/";
@@ -169,6 +160,7 @@ class Email extends SugarBean {
 		require_once('modules/Emails/EmailUI.php');
 		$this->et = new EmailUI();
 	}
+
 	function bean_implements($interface){
 		switch($interface){
 			case 'ACL': return true;
@@ -1010,8 +1002,8 @@ class Email extends SugarBean {
 			$this->cc_addrs_names = $this->cleanEmails($this->cc_addrs_names);
 			$this->bcc_addrs_names = $this->cleanEmails($this->bcc_addrs_names);
 			$this->reply_to_addr = $this->cleanEmails($this->reply_to_addr);
-			$this->description = to_html($this->safeText(from_html($this->description)));
-			$this->description_html = $this->safeText($this->description_html);
+			$this->description = SugarCleaner::cleanHtml($this->description);
+			$this->description_html = SugarCleaner::cleanHtml($this->description_html);
 			$this->saveEmailText();
 			$this->saveEmailAddresses();
 
@@ -1189,10 +1181,10 @@ class Email extends SugarBean {
 
 		if($ret) {
 			$ret->retrieveEmailText();
+		    $ret->raw_source = SugarCleaner::cleanHtml($ret->raw_source);
+			$ret->description = to_html($ret->description);
+            $ret->description_html = SugarCleaner::cleanHtml($ret->description_html);
 			$ret->retrieveEmailAddresses();
-			$ret->raw_source = to_html($ret->safeText(from_html($ret->raw_source)));
-			$ret->description = to_html($ret->safeText(from_html($ret->description)));
-			$ret->description_html = $ret->safeText($ret->description_html);
 
 			$ret->date_start = '';
 			$ret->time_start = '';
@@ -1405,46 +1397,6 @@ class Email extends SugarBean {
 		$out = "<div style='border-left:1px solid #00c; padding:5px; margin-left:10px;'>{$text}</div>";
 
 		return $out;
-	}
-
-
-
-	///////////////////////////////////////////////////////////////////////////
-	////	LEGACY CODE
-	/**
-	 * Safes description text (both HTML and Plain Text) for display
-	 * @param string str The text to safe
-	 * @return string Safed text
-	 */
-	function safeText($str)
-	{
-        if(empty($str)) return $str;
-
-        if(!strchr($str, "<")) {
-            return $str;
-        }
-    	// Safe_HTML
-    	$this->safe->clear();
-    	$ret = $this->safe->parse($str);
-
-		// Julian's XSS cleaner
-		$potentials = clean_xss($ret, false);
-
-		if(is_array($potentials) && !empty($potentials)) {
-			//_ppl($potentials);
-			foreach($potentials as $bad) {
-				$ret = str_replace($bad, "", $ret);
-			}
-		}
-
-		// clean <HTML> and <BODY> tags
-		$html = '#<\\\\\?HTML[\w =\'\"\&]*>#sim';
-		$body = '#<\\\\\?BODY[\w =\'\"\&]*>#sim';
-
-		$ret = preg_replace($html, "", $ret);
-		$ret = preg_replace($body, "", $ret);
-
-		return $ret;
 	}
 
 	/**
@@ -2017,7 +1969,6 @@ class Email extends SugarBean {
 		return $mail;
 	}
 
-
 	/**
 	 * Retrieve function from handlebody() to unit test easily
 	 * @param SugarPHPMailer $mail SugarPHPMailer instance
@@ -2500,7 +2451,7 @@ class Email extends SugarBean {
         // Coming from the home page via Dashlets
         if($currentModule != 'Email')
         	$mod_strings = return_module_language($current_language, 'Emails');
-        return $mod_strings['LBL_QUICK_CREATE']."&nbsp;<a id='$this->id' onclick='return quick_create_overlib(\"{$this->id}\", \"".SugarThemeRegistry::current()->__toString()."\");' href=\"#\" >".SugarThemeRegistry::current()->getImage("advanced_search","border='0' align='absmiddle'", null,null,'.gif',$mod_strings['LBL_QUICK_CREATE'])."</a>";
+        return $mod_strings['LBL_QUICK_CREATE']."&nbsp;<a id='$this->id' onclick='return quick_create_overlib(\"{$this->id}\", \"".SugarThemeRegistry::current()->__toString()."\", this);' href=\"#\" >".SugarThemeRegistry::current()->getImage("advanced_search","border='0' align='absmiddle'", null,null,'.gif',$mod_strings['LBL_QUICK_CREATE'])."</a>";
     }
 
     /**
@@ -2699,10 +2650,9 @@ class Email extends SugarBean {
 
         $isDateFromSearchSet = !empty($_REQUEST['searchDateFrom']);
         $isdateToSearchSet = !empty($_REQUEST['searchDateTo']);
-
         $bothDateRangesSet = $isDateFromSearchSet & $isdateToSearchSet;
 
-        //Hanlde date from and to seperately
+        //Hanlde date from and to separately
         if($bothDateRangesSet)
         {
             $dbFormatDateFrom = $timedate->to_db_date($_REQUEST['searchDateFrom'], false);

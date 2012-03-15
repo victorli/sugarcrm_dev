@@ -406,8 +406,10 @@ class Contact extends Person {
 		global $current_user;
 
 		$this->load_relationship("user_sync");
-        $beans = $this->user_sync->getBeans();
-        if (!empty($beans[$current_user->id]))
+
+        $beanIDs = $this->user_sync->get();
+
+        if( in_array($current_user->id, $beanIDs) )
         {
             $this->contacts_users_id = $current_user->id;
         }

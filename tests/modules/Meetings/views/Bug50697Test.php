@@ -69,11 +69,11 @@ public function testProcessSearchForm()
     $_REQUEST = array();
     $mlv = new MeetingsViewListbytype();
     $mlv->processSearchForm();
-    $this->assertRegExp('/meetings\.date_start.*?\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}/', $mlv->where, 'Failed to create datetime query for meetings.date_start');
+    $this->assertRegExp('/meetings\.date_start > \d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}/', $mlv->where, 'Failed to create datetime query for meetings.date_start');
 
     $_REQUEST['name_basic'] = 'Bug50697Test';
     $mlv->processSearchForm();
-    $this->assertRegExp('/meetings\.date_start.*?\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}/', $mlv->where, 'Failed to create datetime query for meetings.date_start');
+    $this->assertRegExp('/meetings\.date_start > \d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}/', $mlv->where, 'Failed to create datetime query for meetings.date_start');
     $this->assertRegExp('/meetings\.name LIKE \'Bug50697Test%\'/', $mlv->where, 'Failed to generate meetings.name search parameter');
 }
 

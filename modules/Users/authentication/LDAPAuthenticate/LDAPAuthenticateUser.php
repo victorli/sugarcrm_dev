@@ -86,7 +86,7 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 		// MRF - Bug #18578 - punctuation was being passed as HTML entities, i.e. &amp;
 		$bind_password = html_entity_decode($password,ENT_QUOTES);
 		$GLOBALS['log']->info("ldapauth: Binding user " . $bind_user);
-		
+
 		$bind = ldap_bind($ldapconn, $bind_user, $bind_password);
 		 $error = ldap_errno($ldapconn);
         if($this->loginError($error)){
@@ -105,7 +105,7 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 			$attrs = array_keys($GLOBALS['ldapConfig']['users']['fields']);
 			$base_dn = $GLOBALS['ldap_config']->settings['ldap_base_dn'];
 			$name_filter = $this->getUserNameFilter($name);
-			
+
 			//add the group user attribute that we will compare to the group attribute for membership validation if group membership is turned on
 			if(!empty($GLOBALS['ldap_config']->settings['ldap_group']) && !empty($GLOBALS['ldap_config']->settings['ldap_group_user_attr']) && !empty($GLOBALS['ldap_config']->settings['ldap_group_attr'])){
 				if(!in_array($attrs, $GLOBALS['ldap_config']->settings['ldap_group_user_attr'])){
@@ -126,9 +126,9 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
        		if($this->loginError($error)){
         		return '';
 			}
-			
-			
-			
+
+
+
 			$GLOBALS['log']->debug("ldapauth: User info from Directory fetched.");
 
 			// some of these don't seem to work
@@ -140,7 +140,7 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 					$this->ldapUserInfo[$value] = $info[0][$key][0];
 				}
 			}
-			
+
 			//we should check that a user is a member of a specific group
 			if(!empty($GLOBALS['ldap_config']->settings['ldap_group'])){
 				$GLOBALS['log']->debug("LDAPAuth: scanning group for user membership");
@@ -161,11 +161,11 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 					ldap_close($ldapconn);
 					return '';
 				}
-				
-				
+
+
 			}
-			
-			
+
+
 
 			ldap_close($ldapconn);
 			$dbresult = $GLOBALS['db']->query("SELECT id, status FROM users WHERE user_name='" . $name . "' AND deleted = 0");
@@ -192,7 +192,7 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 			return '';
 		}
 	}
-	
+
 	/**
 	 * takes in a name and creates the appropriate search filter for that user name including any additional filters specified in the system settings page
 	 * @param $name
@@ -204,7 +204,7 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 			if(!empty($GLOBALS['ldap_config']->settings['ldap_login_filter'])){
 				$add_filter = $GLOBALS['ldap_config']->settings['ldap_login_filter'];
 				if(substr($add_filter, 0, 1) !== "("){
-					$add_filter = "(" . $add_filter . ")";	
+					$add_filter = "(" . $add_filter . ")";
 				}
 				$name_filter = "(&" . $name_filter . $add_filter . ")";
 			}
@@ -307,7 +307,7 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 		if(!empty($GLOBALS['ldap_config']->settings['ldap_authentication'])){
        		$admin_user = htmlspecialchars_decode($GLOBALS['ldap_config']->settings['ldap_admin_user']);
         	$admin_password = htmlspecialchars_decode($GLOBALS['ldap_config']->settings['ldap_admin_password']);
-		}else{ 
+		}else{
 			$admin_user = '';
         	$admin_password = '';
 		}
@@ -323,7 +323,7 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 		}
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // required for AD
-        //if we are going to connect anonymously lets atleast try to connect with the user connecting
+        //if we are going to connect anonymously lets at least try to connect with the user connecting
         if(empty($admin_user)){
 			$bind = @ldap_bind($ldapconn, $user_name, $password);
         	$error = ldap_errno($ldapconn);
@@ -352,7 +352,7 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 
 		// If we get here we were able to bind somehow
         $search_filter = $this->getUserNameFilter($user_name);
-        
+
         $GLOBALS['log']->info("ldapauth.ldap_rdn_lookup: Bind succeeded, searching for $user_attr=$user_name");
         $GLOBALS['log']->debug("ldapauth.ldap_rdn_lookup: base_dn:$base_dn , search_filter:$search_filter");
 

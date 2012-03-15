@@ -154,7 +154,7 @@ class SugarFieldFile extends SugarFieldBase {
                 $bean->$docType = $params[$prefix . $field . '_old_doctype'];
             }
 		} else if ( !empty($params[$prefix . $field . '_remoteName']) ) {
-            // We ain't moving, we might need to do some remote linking
+            // We aren't moving, we might need to do some remote linking
             $displayParams = array();
             $this->fillInOptions($vardef,$displayParams);
             

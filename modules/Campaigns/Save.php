@@ -90,18 +90,18 @@ if( !empty($_REQUEST['duplicateSave']) &&  !empty($_REQUEST['duplicateId']) ){
 }
 
 
-//if type is set to newsletter then make sure there are propsect lists attached
+//if type is set to newsletter then make sure there are prospect lists attached
 if($focus->campaign_type =='NewsLetter'){
-		//if this is a duplicate, and the "relate_to" and "relate_id" elements are not cleared out, 
+		//if this is a duplicate, and the "relate_to" and "relate_id" elements are not cleared out,
 		//then prospect lists will get related to the original campaign on save of the prospect list, and then
-		//will get related to the new newsletter campaign, meaning the same (un)subscription list will belong to 
+		//will get related to the new newsletter campaign, meaning the same (un)subscription list will belong to
 		//two campaigns, which is wrong
 		if((isset($_REQUEST['duplicateSave']) && $_REQUEST['duplicateSave']) || (isset($_REQUEST['isDuplicate']) && $_REQUEST['isDuplicate']) ){
 			$_REQUEST['relate_to'] = '';
 			$_REQUEST['relate_id'] = '';
-		
+
 		}
-	
+
         //add preformatted dates for 2nd save, to avoid formatting conversion errors
         $focus->start_date = $preformat_start_date ;
         $focus->end_date = $preformat_end_date ;
@@ -113,8 +113,8 @@ if($focus->campaign_type =='NewsLetter'){
             global $mod_strings;
             //if no prospect lists are attached, then lets create a subscription and unsubscription
             //default prospect lists as these are required for newsletters.
-                    
-             //create subscription list     
+
+             //create subscription list
              $subs = new ProspectList();
              $subs->name = $focus->name.' '.$mod_strings['LBL_SUBSCRIPTION_LIST'];
              $subs->assigned_user_id= $current_user->id;
@@ -129,14 +129,14 @@ if($focus->campaign_type =='NewsLetter'){
              $unsubs->list_type = "exempt";
              $unsubs->save();
              $focus->prospectlists->add($unsubs->id);
-             
+
              //create unsubscription list
              $test_subs = new ProspectList();
              $test_subs->name = $focus->name.' '.$mod_strings['LBL_TEST_LIST'];
              $test_subs->assigned_user_id= $current_user->id;
              $test_subs->list_type = "test";
              $test_subs->save();
-             $focus->prospectlists->add($test_subs->id);             
+             $focus->prospectlists->add($test_subs->id);
         }
         //save new relationships
         $focus->save();

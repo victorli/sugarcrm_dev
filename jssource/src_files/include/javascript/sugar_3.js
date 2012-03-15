@@ -2257,12 +2257,37 @@ sugarListView.prototype.save_checks = function(offset, moduleString) {
 sugarListView.prototype.check_item = function(cb, form) {
 	if(cb.checked) {
 		sugarListView.update_count(1, true);
+
 	}else{
 		sugarListView.update_count(-1, true);
 		if(typeof form != 'undefined' && form != null) {
 			sugarListView.prototype.updateUid(cb, form);
 		}
 	}
+	sugarListView.prototype.toggleSelected();
+}
+
+sugarListView.prototype.toggleSelected = function() {
+
+	var numSelected = sugarListView.get_num_selected();
+	var selectedRecords = document.getElementById("selectedRecordsTop");
+	var selectActions = document.getElementById("selectActions");
+	var selectActionsDisabled = document.getElementById("selectActionsDisabled");
+	if(numSelected > 0) {
+		selectedRecords.style.display = "inline-block";
+        $(".selectActionsDisabled").css("display", "none");
+        jQuery('ul[name=selectActions]').each(function () {
+            jQuery(this).css("display", "inline-block");
+        });
+
+	} else {
+		selectedRecords.style.display = "none";
+        $(".selectActionsDisabled").css("display", "inline-block");
+        jQuery('ul[name=selectActions]').each(function () {
+                    jQuery(this).css("display", "none");
+        });
+	}
+
 }
 
 /**#28000, remove the  unselect record id from MassUpdate.uid **/
@@ -2292,9 +2317,8 @@ sugarListView.prototype.check_entire_list = function(form, field, value, list_co
 		}
 	}
 	document.MassUpdate.select_entire_list.value = 1;
-	//if(value)
 	sugarListView.update_count(list_count, false);
-	//else sugarListView.update_count(-1 * count, true);
+    sugarListView.prototype.toggleSelected();
 }
 
 sugarListView.prototype.check_all = function(form, field, value, pageTotal) {
@@ -2325,6 +2349,8 @@ sugarListView.prototype.check_all = function(form, field, value, pageTotal) {
 		sugarListView.update_count(count, true);
 	else
 		sugarListView.update_count(-1 * count, true);
+
+	sugarListView.prototype.toggleSelected();
 }
 sugarListView.check_all = sugarListView.prototype.check_all;
 sugarListView.confirm_action = sugarListView.prototype.confirm_action;
@@ -2489,6 +2515,7 @@ sugarListView.prototype.clear_all = function() {
 	document.MassUpdate.massall.checked = false;
 	document.MassUpdate.massall.disabled = false;
 	sugarListView.update_count(0);
+	sugarListView.prototype.toggleSelected();
 }
 
 sListView = new sugarListView();
@@ -2980,35 +3007,143 @@ SUGAR.util = function () {
 		},
 
 		/**
+		 * Renders Query UI Help Dialog
+		 */
+		showHelpTips: function(el,helpText,myPos,atPos) {
+				if(myPos == undefined || myPos == "") {
+					myPos = "left top";
+				}
+				if(atPos == undefined || atPos == "") {
+					atPos = "right top";
+				}
+
+					var $dialog = $('<div></div>')
+					.html(helpText)
+					.dialog({
+						autoOpen: false,
+						title: SUGAR.language.get('app_strings', 'LBL_HELP'),
+						position: {
+						    my: myPos,
+						    at: atPos,
+						    of: $(el)
+					 	}
+					});
+
+
+					var width = $dialog.dialog( "option", "width" );
+					var pos = $(el).offset();
+					var ofWidth = $(el).width();
+
+					if((pos.left + ofWidth) - 40 < width) {
+						$dialog.dialog("option","position",{my: 'left top',at: 'right top',of: $(el)})	;
+					}
+					$dialog.dialog('open');
+
+
+		},
+		getStaticAdditionalDetails: function(el, body, caption, show_buttons) {
+			if(typeof show_buttons == "undefined") {
+				show_buttons = false;
+			}
+
+			$(".ui-dialog").find(".open").dialog("close");
+
+			var $dialog = $('<div class="open"></div>')
+			.html(body)
+			.dialog({
+				autoOpen: false,
+				title: caption,
+				width: 300,
+				position: {
+				    my: 'right top',
+				    at: 'left top',
+				    of: $(el)
+			  }
+			});
+
+			if(show_buttons) {
+				$(".ui-dialog").find('.ui-dialog-titlebar-close').css("display","none");
+				$(".ui-dialog").find('.ui-dialog-title').css("width","100%");
+			}
+
+
+			var width = $dialog.dialog( "option", "width" );
+			var pos = $(el).offset();
+			var ofWidth = $(el).width();
+
+			if((pos.left + ofWidth) - 40 < width) {
+				$dialog.dialog("option","position",{my: 'left top',at: 'right top',of: $(el)})	;
+			}
+
+			$dialog.dialog('open');
+
+		},
+
+		closeStaticAdditionalDetails: function() {
+			$(".ui-dialog").find(".open").dialog("close");
+		},
+		/**
 		 * Retrieves additional details dynamically
 		 */
-		getAdditionalDetails: function(bean, id, spanId) {
+		getAdditionalDetails: function(bean, id, spanId, show_buttons) {
+			if(typeof show_buttons == "undefined")
+				show_buttons = false;
+				var el = '#'+spanId;
 			go = function() {
 				oReturn = function(body, caption, width, theme) {
-					var _refx = 25-width;
-					return overlib(body, CAPTION, caption, STICKY, MOUSEOFF, 1000, WIDTH, width, CLOSETEXT, ('<img border=0 style="margin-left:2px; margin-right: 2px;" src=index.php?entryPoint=getImage&themeName='+SUGAR.themes.theme_name+'&imageName=close.gif>'), CLOSETITLE, SUGAR.language.get('app_strings','LBL_ADDITIONAL_DETAILS_CLOSE_TITLE'), CLOSECLICK, FGCLASS, 'olFgClass', CGCLASS, 'olCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olCapFontClass', CLOSEFONTCLASS, 'olCloseFontClass', REF, spanId, REFC, 'LL', REFX, _refx);
+
+					$(".ui-dialog").find(".open").dialog("close");
+
+					var $dialog = $('<div class="open"></div>')
+					.html(body)
+					.dialog({
+						autoOpen: false,
+						title: caption,
+						width: 300,
+						position: {
+						    my: 'right top',
+						    at: 'left top',
+						    of: $(el)
+					  }
+					});
+				if(show_buttons) {
+					$(".ui-dialog").find('.ui-dialog-titlebar-close').css("display","none");
+					$(".ui-dialog").find('.ui-dialog-title').css("width","100%");
+				}
+
+					var width = $dialog.dialog( "option", "width" );
+					var pos = $(el).offset();
+					var ofWidth = $(el).width();
+
+					if((pos.left + ofWidth) - 40 < width) {
+						$dialog.dialog("option","position",{my: 'left top',at: 'right top',of: $(el)})	;
+					}
+
+					$dialog.dialog('open');
 				}
 
 				success = function(data) {
 					eval(data.responseText);
 
-					SUGAR.util.additionalDetailsCache[spanId] = new Array();
-					SUGAR.util.additionalDetailsCache[spanId]['body'] = result['body'];
-					SUGAR.util.additionalDetailsCache[spanId]['caption'] = result['caption'];
-					SUGAR.util.additionalDetailsCache[spanId]['width'] = result['width'];
-					SUGAR.util.additionalDetailsCache[spanId]['theme'] = result['theme'];
+					SUGAR.util.additionalDetailsCache[id] = new Array();
+					SUGAR.util.additionalDetailsCache[id]['body'] = result['body'];
+					SUGAR.util.additionalDetailsCache[id]['caption'] = result['caption'];
+					SUGAR.util.additionalDetailsCache[id]['width'] = result['width'];
+					SUGAR.util.additionalDetailsCache[id]['theme'] = result['theme'];
 					ajaxStatus.hideStatus();
-					return oReturn(SUGAR.util.additionalDetailsCache[spanId]['body'], SUGAR.util.additionalDetailsCache[spanId]['caption'], SUGAR.util.additionalDetailsCache[spanId]['width'], SUGAR.util.additionalDetailsCache[spanId]['theme']);
+					return oReturn(SUGAR.util.additionalDetailsCache[id]['body'], SUGAR.util.additionalDetailsCache[id]['caption'], SUGAR.util.additionalDetailsCache[id]['width'], SUGAR.util.additionalDetailsCache[id]['theme']);
 				}
 
-				if(typeof SUGAR.util.additionalDetailsCache[spanId] != 'undefined')
-					return oReturn(SUGAR.util.additionalDetailsCache[spanId]['body'], SUGAR.util.additionalDetailsCache[spanId]['caption'], SUGAR.util.additionalDetailsCache[spanId]['width'], SUGAR.util.additionalDetailsCache[spanId]['theme']);
+				if(typeof SUGAR.util.additionalDetailsCache[id] != 'undefined')
+					return oReturn(SUGAR.util.additionalDetailsCache[id]['body'], SUGAR.util.additionalDetailsCache[id]['caption'], SUGAR.util.additionalDetailsCache[id]['width'], SUGAR.util.additionalDetailsCache[id]['theme']);
 
-				if(typeof SUGAR.util.additionalDetailsCalls[spanId] != 'undefined') // call already in progress
+				if(typeof SUGAR.util.additionalDetailsCalls[id] != 'undefined') // call already in progress
 					return;
 				ajaxStatus.showStatus(SUGAR.language.get('app_strings', 'LBL_LOADING'));
 				url = 'index.php?to_pdf=1&module=Home&action=AdditionalDetailsRetrieve&bean=' + bean + '&id=' + id;
-				SUGAR.util.additionalDetailsCalls[spanId] = YAHOO.util.Connect.asyncRequest('GET', url, {success: success, failure: success});
+				if(show_buttons)
+					url += '&show_buttons=true';
+				SUGAR.util.additionalDetailsCalls[id] = YAHOO.util.Connect.asyncRequest('GET', url, {success: success, failure: success});
 
 				return false;
 			}
@@ -3461,7 +3596,7 @@ SUGAR.searchForm = function() {
                 if ( typeof(elem.type) == 'undefined' ) {
                     continue;
                 }
-                
+
                 if ( typeof(elem.type) != 'undefined' && typeof(skipElementNames) != 'undefined'
                         && SUGAR.util.arrayIndexOf(skipElementNames, elem.name) != -1 )
                 {
@@ -4091,7 +4226,7 @@ function open_popup(module_name, width, height, initial_filter, close_popup, hid
  */
 var from_popup_return  = false;
 
-//Function replaces special HTML chars for usage in text boxes 
+//Function replaces special HTML chars for usage in text boxes
 function replaceHTMLChars(value) {
 	return value.replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&#039;/gi,'\'').replace(/&quot;/gi,'"');
 }
@@ -4160,14 +4295,14 @@ function set_return(popup_reply_data)
 				}
 			}
 		}
-		
+
         if(label_data_str != label_str && current_label_data_str != label_str){
         	// Bug 48726 Start
         	if (typeof popupConfirm != 'undefined')
         	{
         		if (popupConfirm > -1) {
         			set_return_basic(popup_reply_data,/\S/);
-        		} 
+        		}
         	}
         	// Bug 48726 End
         	else if(confirm(SUGAR.language.get('app_strings', 'NTC_OVERWRITE_ADDRESS_PHONE_CONFIRM') + '\n\n' + label_data_str))
@@ -4474,13 +4609,15 @@ closeActivityPanel: {
     }
 },
 
-setEmailPasswordDisplay: function(id, exists) {
+setEmailPasswordDisplay: function(id, exists, formName) {
 	link = document.getElementById(id+'_link');
 	pwd = document.getElementById(id);
 	if(!pwd || !link) return;
 	if(exists) {
     	pwd.style.display = 'none';
     	link.style.display = '';
+        if(typeof(formName) != 'undefined')
+            removeFromValidate(formName, id);
 	} else {
     	pwd.style.display = '';
     	link.style.display = 'none';

@@ -81,7 +81,7 @@ $etag = '"'.md5_file($filename).'"';
 header("Cache-Control: private");
 header("Pragma: dummy=bogus");
 header("Etag: $etag");
-header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 86400));
+header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 2592000));
 
 $ifmod = isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
     ? strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $last_modified_time : null;

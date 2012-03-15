@@ -36,8 +36,8 @@
 
 require_once('include/SugarFields/Fields/Enum/SugarFieldEnum.php');
 
-class SugarFieldMultienum extends SugarFieldEnum 
-{   
+class SugarFieldMultienum extends SugarFieldEnum
+{
     function setup($parentFieldArray, $vardef, $displayParams, $tabindex, $twopass=true) {
         if ( !isset($vardef['options_list']) && isset($vardef['options']) && !is_array($vardef['options'])) {
             $vardef['options_list'] = $GLOBALS['app_list_strings'][$vardef['options']];
@@ -75,14 +75,14 @@ class SugarFieldMultienum extends SugarFieldEnum
         else  if (isset($params[$prefix.$field.'_multiselect']) && $params[$prefix.$field.'_multiselect']==true) {
 			// if the value in db is not empty and
 			// if the data is not set in params (means the user has deselected everything) and
-			// if the coorespoding multiselect flag is true
+			// if the corresponding multiselect flag is true
 			// then set field to ''
 			if (!empty($bean->$field)) {
 				$bean->$field = '';
 			}
 		}
     }
-    
+
     /**
      * @see SugarFieldBase::importSanitize()
      */
@@ -99,7 +99,7 @@ class SugarFieldMultienum extends SugarFieldEnum
         else {
             // If someone was using the old style multienum import technique
             $value = str_replace("^","",$value);
-            
+
             // We will need to break it apart to put test it.
             $enum_list = explode(",",$value);
         }
@@ -115,7 +115,7 @@ class SugarFieldMultienum extends SugarFieldEnum
             }
         }
         $value = encodeMultienumValue($enum_list);
-        
+
         return $value;
     }
 }

@@ -548,9 +548,9 @@ EOJS;
 			if(!empty($vardef['function']['include'])){
 				require_once($vardef['function']['include']);
 			}
-			return $function($focus, $vardef['name'], '', 'MassUpdate');
+			return call_user_func($function, $focus, $vardef['name'], '', 'MassUpdate');
 		}else{
-			return $function($focus, $vardef['name'], '', 'MassUpdate');
+			return call_user_func($function, $focus, $vardef['name'], '', 'MassUpdate');
 		}
 	}
 
@@ -970,7 +970,7 @@ EOQ;
 	function addStatus($displayname, $varname, $options){
 		global $app_strings, $app_list_strings;
 
-		// cn: added "mass_" to the id tag to diffentieate from the status id in StoreQuery
+		// cn: added "mass_" to the id tag to differentiate from the status id in StoreQuery
 		$html = '<td scope="row" width="15%">'.$displayname.'</td><td>';
 		if(is_array($options)){
 			if(!isset($options['']) && !isset($options['0'])){
@@ -1013,7 +1013,7 @@ EOQ;
 		}
 		$options = get_select_options_with_id_separate_key($options, $options, '', true);;
 
-		// cn: added "mass_" to the id tag to diffentieate from the status id in StoreQuery
+		// cn: added "mass_" to the id tag to differentiate from the status id in StoreQuery
 		$html = '<td scope="row" width="15%">'.$displayname.'</td>
 			 <td><select id="mass_'.$varname.'" name="'.$varname.'[]" size="5" MULTIPLE>'.$options.'</select></td>';
 		return $html;
@@ -1220,7 +1220,7 @@ EOQ;
             }elseif(file_exists('modules/'.$module.'/metadata/metafiles.php')){
                 require('modules/'.$module.'/metadata/metafiles.php');
             }
-            
+
             $searchFields = $this->getSearchFields($module);
             $searchdefs = $this->getSearchDefs($module);
 

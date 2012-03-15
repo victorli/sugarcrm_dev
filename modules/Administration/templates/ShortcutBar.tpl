@@ -52,7 +52,11 @@
 	<input type="hidden" name="return_module" value="{$RETURN_MODULE}">
 	<input type="hidden" name="return_action" value="{$RETURN_ACTION}">
 
-	<table border="0" cellspacing="1" cellpadding="1">
+    <br>
+    <p>{$MOD.LBL_CONFIGURE_SHORTCUT_BAR_HELP}</p>
+	<br>
+    <table border="0" cellspacing="1" cellpadding="1">
+        
 		<tr>
 			<td>
 				<input title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}" class="button primary" onclick="SUGAR.saveShortcutBar();" type="button" name="button" value="{$APP.LBL_SAVE_BUTTON_LABEL}" > 

@@ -57,7 +57,7 @@ class Bug40911 extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testSaveNewFolder()
     {
-        $this->markTestSkipped('This test takes to long to run');
+        $this->markTestIncomplete('This test takes to long to run');
         return;
         
         global $current_user, $app_strings;

@@ -546,6 +546,7 @@ $mod_strings = array(
 'LBL_BTN_VIEW_RELATIONSHIPS'=>'View Relationships',
 'LBL_BTN_ADD_RELATIONSHIP'=>'Add Relationship',
 'LBL_BTN_RENAME_MODULE' => 'Change Module Name',
+'LBL_BTN_INSERT'=>'Insert',
 //TABS
 
 
@@ -655,6 +656,7 @@ $mod_strings = array(
 
 //POPUP HELP
 'LBL_POPHELP_FIELD_DATA_TYPE'=>'Select the appropriate data type based on the type of data that will be entered into the field.',
+'LBL_POPHELP_SEARCHABLE'=>'You have to perform a full system index after you change boost level.',
 'LBL_POPHELP_IMPORTABLE'=>'<b>Yes</b>: The field will be included in an import operation.<br><b>No</b>: The field will not be included in an import.<br><b>Required</b>: A value for the field must be provided in any import.',
 'LBL_POPHELP_IMAGE_WIDTH'=>'Enter a number for Width, as measured in pixels.<br> The uploaded image will be scaled to this Width.',
 'LBL_POPHELP_IMAGE_HEIGHT'=>'Enter a number for the Height, as measured in pixels.<br> The uploaded image will be scaled to this Height.',

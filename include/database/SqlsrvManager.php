@@ -124,6 +124,7 @@ class SqlsrvManager extends MssqlManager
             'relate'   => 'nvarchar',
             'multienum'=> 'nvarchar(max)',
             'html'     => 'nvarchar(max)',
+            'longhtml' => 'nvarchar(max)',
             'datetime' => 'datetime',
             'datetimecombo' => 'datetime',
             'time'     => 'datetime',

@@ -40,10 +40,7 @@
 
 *}
 
-{include file="modules/DynamicFields/templates/Fields/Forms/coreTop.tpl"}
-<script language="Javascript">
-app_list_strings = {$app_list_strings};
-</script>
+ {include file="modules/DynamicFields/templates/Fields/Forms/coreTop.tpl"}
 
 <tr>
 	<td class='mbLBL'>{sugar_translate module="DynamicFields" label="LBL_DROP_DOWN_LIST"}:</td>
@@ -66,7 +63,7 @@ app_list_strings = {$app_list_strings};
 	</td>
 </tr>
 <tr>
-	<td class='mbLBL'>{sugar_translate module="DynamicFields" label="COLUMN_TITLE_MASS_UPDATE"}:</td>
+	<td class='mbLBL' >{sugar_translate module="DynamicFields" label="COLUMN_TITLE_MASS_UPDATE"}:</td>
 	<td>
 	{if $hideLevel < 5}
 		<input type="checkbox" id="massupdate"  name="massupdate" value="1" {if !empty($vardef.massupdate)}checked{/if}/>

@@ -50,7 +50,7 @@ require_once('include/MVC/View/views/view.list.php');
 class ProjectTaskViewList extends ViewList{
  	function ProjectTaskViewList(){
  		parent::ViewList();
- 		
+
  	}
 
  	function display(){
@@ -85,13 +85,13 @@ class ProjectTaskViewList extends ViewList{
         require_once($metadataFile);
 
 		$seed = $this->bean;
-        if(!empty($this->bean->object_name) && isset($_REQUEST[$module.'2_'.strtoupper($this->bean->object_name).'_offset'])) {//if you click the pagination button, it will poplate the search criteria here
+        if(!empty($this->bean->object_name) && isset($_REQUEST[$module.'2_'.strtoupper($this->bean->object_name).'_offset'])) {//if you click the pagination button, it will populate the search criteria here
             if(!empty($_REQUEST['current_query_by_page'])) {//The code support multi browser tabs pagination
                 $blockVariables = array('mass', 'uid', 'massupdate', 'delete', 'merge', 'selectCount', 'request_data', 'current_query_by_page', $module.'2_'.strtoupper($this->bean->object_name).'_ORDER_BY');
 		        if(isset($_REQUEST['lvso'])){
 		        	$blockVariables[] = 'lvso';
 		        }
-		        
+
                 $current_query_by_page = unserialize(base64_decode($_REQUEST['current_query_by_page']));
                 foreach($current_query_by_page as $search_key=>$search_value) {
                     if($search_key != $module.'2_'.strtoupper($this->bean->object_name).'_offset' && !in_array($search_key, $blockVariables)) {
@@ -100,7 +100,7 @@ class ProjectTaskViewList extends ViewList{
                 }
             }
         }
-        
+
         if(!empty($_REQUEST['saved_search_select']) && $_REQUEST['saved_search_select']!='_none') {
             if(empty($_REQUEST['button']) && (empty($_REQUEST['clear_query']) || $_REQUEST['clear_query']!='true')) {
                 $this->saved_search = loadBean('SavedSearch');
@@ -113,14 +113,14 @@ class ProjectTaskViewList extends ViewList{
                 unset($_REQUEST['saved_search_select_name']);
             }
         }
-        
+
 		$lv = new ListViewSmarty();
 		$displayColumns = array();
 		if(!empty($_REQUEST['displayColumns'])) {
 		    foreach(explode('|', $_REQUEST['displayColumns']) as $num => $col) {
-		        if(!empty($listViewDefs[$module][$col])) 
+		        if(!empty($listViewDefs[$module][$col]))
 		            $displayColumns[$col] = $listViewDefs[$module][$col];
-		    }    
+		    }
 		}
 		else {
 		    foreach($listViewDefs[$module] as $col => $params) {
@@ -128,9 +128,9 @@ class ProjectTaskViewList extends ViewList{
 		            $displayColumns[$col] = $params;
 		    }
 		}
-		
+
 		global $current_user;
-		
+
 		if (!is_admin($current_user)){
 			$params = array( 'massupdate' => false );
 			$lv->export = false;
@@ -138,7 +138,7 @@ class ProjectTaskViewList extends ViewList{
 		else{
 			$params = array( 'massupdate' => true, 'export' => true);
 		}
-		 
+
 		if(!empty($_REQUEST['orderBy'])) {
 		    $params['orderBy'] = $_REQUEST['orderBy'];
 		    $params['overrideOrder'] = true;
@@ -148,16 +148,16 @@ class ProjectTaskViewList extends ViewList{
 
 		$this->seed = $seed;
 		$this->module = $module;
-		
+
 		$searchForm = null;
 	 	$storeQuery = new StoreQuery();
 		if(!isset($_REQUEST['query'])){
 			$storeQuery->loadQuery($this->module);
 			$storeQuery->populateRequest();
 		}else{
-			$storeQuery->saveFromRequest($this->module);	
+			$storeQuery->saveFromRequest($this->module);
 		}
-	
+
 		//search
 		$view = 'basic_search';
 		if(!empty($_REQUEST['search_form_view']))
@@ -172,7 +172,7 @@ class ProjectTaskViewList extends ViewList{
 				$view = 'basic_search';
 			}
 		}
-		
+
 		$use_old_search = true;
 		if(file_exists('modules/'.$this->module.'/SearchForm.html')){
 			require_once('include/SearchForm/SearchForm.php');
@@ -180,8 +180,8 @@ class ProjectTaskViewList extends ViewList{
 		}else{
 			$use_old_search = false;
 			require_once('include/SearchForm/SearchForm2.php');
-			
-					
+
+
 			if (file_exists('custom/modules/'.$this->module.'/metadata/searchdefs.php'))
 			{
 			    require_once('custom/modules/'.$this->module.'/metadata/searchdefs.php');
@@ -194,22 +194,22 @@ class ProjectTaskViewList extends ViewList{
 			{
 			    require_once('modules/'.$this->module.'/metadata/searchdefs.php');
 			}
-				
-				
+
+
 			if(!empty($metafiles[$this->module]['searchfields']))
 				require_once($metafiles[$this->module]['searchfields']);
 			elseif(file_exists('modules/'.$this->module.'/metadata/SearchFields.php'))
 				require_once('modules/'.$this->module.'/metadata/SearchFields.php');
-				
-		
+
+
 			$searchForm = new SearchForm($this->seed, $this->module, $this->action);
 			$searchForm->setup($searchdefs, $searchFields, 'include/SearchForm/tpls/SearchFormGeneric.tpl', $view, $listViewDefs);
 			$searchForm->lv = $lv;
 		}
-		
+
 		if(isset($this->options['show_title']) && $this->options['show_title']) {
 			$moduleName = isset($this->seed->module_dir) ? $this->seed->module_dir : $GLOBALS['mod_strings']['LBL_MODULE_NAME'];
-			echo getClassicModuleTitle($moduleName, array($GLOBALS['mod_strings']['LBL_MODULE_TITLE']), FALSE); 
+			echo getClassicModuleTitle($moduleName, array($GLOBALS['mod_strings']['LBL_MODULE_TITLE']), FALSE);
 		}
 
 		$where = '';
@@ -221,10 +221,10 @@ class ProjectTaskViewList extends ViewList{
 	    	}
 	    	else {
                 $searchForm->populateFromRequest();
-	    	}  	
+	    	}
 			$where_clauses = $searchForm->generateSearchWhere(true, $this->seed->module_dir);
 			if (count($where_clauses) > 0 )$where = '('. implode(' ) AND ( ', $where_clauses) . ')';
-			$GLOBALS['log']->info("List View Where Clause: $where");   
+			$GLOBALS['log']->info("List View Where Clause: $where");
 		}
 		if($use_old_search){
 			switch($view) {
@@ -245,7 +245,7 @@ class ProjectTaskViewList extends ViewList{
 		}
 		if(!$headers)
 			return;
-	    
+
 		if(empty($_REQUEST['search_form_only']) || $_REQUEST['search_form_only'] == false){
 			if (!is_admin($current_user)){
 				$lv->setup($seed, 'include/ListView/ListViewNoMassUpdate.tpl', $where, $params);

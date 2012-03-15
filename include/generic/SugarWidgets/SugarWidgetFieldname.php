@@ -106,7 +106,7 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
 			return parent::_get_column_select($layout_def);
 		}
 
-		//	 'fields' are the two fields to concat to create the name
+		//	 'fields' are the two fields to concatenate to create the name.
 		if ( ! empty($layout_def['table_alias'])) {
 		    $alias = $this->reporter->db->concat($layout_def['table_alias'], $field_def['fields']);
 		} elseif (! empty($layout_def['name'])) {
@@ -128,7 +128,7 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
             $field_def = array();
         }
 
-        //	 'fields' are the two fields to concat to create the name
+        //	 'fields' are the two fields to concatenate to create the name
         if(!isset($field_def['fields']))
         {
 			return $this->_get_normal_column_select($layout_def);

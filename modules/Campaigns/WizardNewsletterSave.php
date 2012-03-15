@@ -51,42 +51,42 @@ global $mod_strings;
     if(isset($_REQUEST['record'])) {
         $campaign_focus->retrieve($_REQUEST['record']);
     }
-    
+
     $camp_steps[] = 'wiz_step1_';
     $camp_steps[] = 'wiz_step2_';
 
     $campaign_focus = populateFromPost('', $campaign_focus);
-        
+
     foreach($camp_steps as $step){
-       $campaign_focus =  populate_wizard_bean_from_request($campaign_focus,$step);    
+       $campaign_focus =  populate_wizard_bean_from_request($campaign_focus,$step);
     }
-    
+
     //save here so we can link relationships
         $campaign_focus->save();
         $GLOBALS['log']->debug("Saved record with id of ".$campaign_focus->id);
-    
+
     //process prospect lists
-        
+
         //process subscription lists if this is a newsletter
         if($campaign_focus->campaign_type =='NewsLetter'){
             $pl_list = process_subscriptions_from_request($campaign_focus->name);
-    
+
             $campaign_focus->load_relationship('prospectlists');
-            $existing_pls = $campaign_focus->prospectlists->get(); 
+            $existing_pls = $campaign_focus->prospectlists->get();
             $ui_ids = array();
-            
+
             //for each list returned, add the list to the relationship
             foreach($pl_list as $pl){
                 $campaign_focus->prospectlists->add($pl->id);
                 //populate array with id's from UI'
-                $ui_ids[] = $pl->id; 
+                $ui_ids[] = $pl->id;
             }
 
             //now remove the lists that may have existed before, but were not specified in UI.
             //this will enforce that Newsletters only have 3 available target lists.
             foreach($existing_pls as $pl_del){
                 if (!in_array($pl_del, $ui_ids)){
-                    $campaign_focus->prospectlists->delete($campaign_focus->id, $pl_del);    
+                    $campaign_focus->prospectlists->delete($campaign_focus->id, $pl_del);
                 }
             }
         }else{
@@ -94,17 +94,17 @@ global $mod_strings;
             //remove Target Lists if defined
 
             if(isset($_REQUEST['wiz_remove_target_list'])){
-        
+
                 $remove_target_strings = explode(",", $_REQUEST['wiz_remove_target_list']);
                 foreach($remove_target_strings as $remove_trgt_string){
                         if(!empty($remove_trgt_string)){
                         //load relationship and add to the list
                             $campaign_focus->load_relationship('prospectlists');
                             $campaign_focus->prospectlists->delete($campaign_focus->id,$remove_trgt_string);
-                        }          
+                        }
                 }
             }
-        
+
 
     //create new campaign tracker and save if defined
     if(isset($_REQUEST['wiz_list_of_targets'])){
@@ -112,12 +112,12 @@ global $mod_strings;
         foreach($target_strings as $trgt_string){
             $target_values = explode("@@", $trgt_string);
             if(count($target_values)==3){
-                
+
                 if(!empty($target_values[0])){
                     //this is a selected target, as the id is already populated, retrieve and link
                     $trgt_focus = new ProspectList();
                     $trgt_focus->retrieve($target_values[0]);
-            
+
                     //load relationship and add to the list
                     $campaign_focus->load_relationship('prospectlists');
                     $campaign_focus->prospectlists->add($trgt_focus ->id);
@@ -128,10 +128,10 @@ global $mod_strings;
                     $trgt_focus->name = $target_values[1];
                     $trgt_focus->list_type = $target_values[2];
                     $trgt_focus->save();
-            
+
                     //load relationship and add to the list
                     $campaign_focus->load_relationship('prospectlists');
-                    $campaign_focus->prospectlists->add($trgt_focus->id);          
+                    $campaign_focus->prospectlists->add($trgt_focus->id);
                 }
 
             }
@@ -140,11 +140,11 @@ global $mod_strings;
         }
     }
 
-            
+
         }
 
 
-    
+
     //remove campaign trackers if defined
     if(isset($_REQUEST['wiz_remove_tracker_list'])){
 
@@ -154,7 +154,7 @@ global $mod_strings;
                 //load relationship and add to the list
                     $campaign_focus->load_relationship('tracked_urls');
                     $campaign_focus->tracked_urls->delete($campaign_focus->id,$remove_trkr_string);
-                }          
+                }
         }
     }
 
@@ -171,10 +171,10 @@ global $mod_strings;
                 $ct_focus->is_optout = $tracker_values[2];
                 $ct_focus->tracker_url = $tracker_values[3];
                 $ct_focus->save();
-        
+
                 //load relationship and add to the list
                 $campaign_focus->load_relationship('tracked_urls');
-                $campaign_focus->tracked_urls->add($ct_focus->id);          
+                $campaign_focus->tracked_urls->add($ct_focus->id);
             }
         }
     }
@@ -191,10 +191,10 @@ global $mod_strings;
                 $ct_focus->is_optout = $tracker_values[1];
                 $ct_focus->tracker_url = $tracker_values[2];
                 $ct_focus->save();
-        
+
                 //load relationship and add to the list
                 $campaign_focus->load_relationship('tracked_urls');
-                $campaign_focus->tracked_urls->add($ct_focus->id);          
+                $campaign_focus->tracked_urls->add($ct_focus->id);
                 // save campaign_trkrs after populating campaign id
                 $ct_focus->save();
             }
@@ -210,7 +210,7 @@ $_REQUEST['record'] = $campaign_focus->id;;
 
 $action = '';
 if(isset($_REQUEST['wiz_direction'])  &&  $_REQUEST['wiz_direction']== 'continue'){
-    $action = 'WizardMarketing';    
+    $action = 'WizardMarketing';
 }else{
     $action = 'WizardHome&record='.$campaign_focus->id;
 }
@@ -225,7 +225,7 @@ $GLOBALS['log']->debug("about to post header URL of: $header_URL");
  * This function will populate the passed in bean with the post variables
  * that contain the specified prefix
  */
-function populate_wizard_bean_from_request($bean,$prefix){ 
+function populate_wizard_bean_from_request($bean,$prefix){
     foreach($_REQUEST as $key=> $val){
      $key = trim($key);
      if((strstr($key, $prefix )) && (strpos($key, $prefix )== 0)){
@@ -235,7 +235,7 @@ function populate_wizard_bean_from_request($bean,$prefix){
               $value = $_REQUEST[$key];
               $bean->$field = $value;
           }
-     }   
+     }
     }
 
     return $bean;
@@ -252,7 +252,7 @@ function process_subscriptions_from_request($campaign_name){
     $pl_list = array();
 
     //process default target list
-    $create_new = true;     
+    $create_new = true;
     $pl_subs = new ProspectList($campaign_name);
     if(!empty($_REQUEST['wiz_step3_subscription_list_id'])){
         //if subscription list is specified then attach
@@ -264,7 +264,7 @@ function process_subscriptions_from_request($campaign_name){
        }
 
     }
-    //create new bio if one was not retrieved succesfully    
+    //create new bio if one was not retrieved successfully
     if($create_new){
         //use default name if one has not been specified
         $name = $campaign_name . " ".$mod_strings['LBL_SUBSCRIPTION_LIST'];
@@ -276,23 +276,23 @@ function process_subscriptions_from_request($campaign_name){
         $pl_subs->list_type = 'default';
         $pl_subs->assigned_user_id= $GLOBALS['current_user']->id;
         $pl_subs->save();
-        $pl_list[] = $pl_subs; 
+        $pl_list[] = $pl_subs;
     }
 
     //process exempt target list
-    $create_new = true;    
+    $create_new = true;
     $pl_un_subs = new ProspectList();
     if(!empty($_REQUEST['wiz_step3_unsubscription_list_id'])){
-        //if unsubscription list is specified then attach 
+        //if unsubscription list is specified then attach
         $pl_un_subs->retrieve($_REQUEST['wiz_step3_unsubscription_list_id']);
         //check to see name matches the bean, if not, then the user has chosen to create new bean
         if($pl_un_subs->name == $_REQUEST['wiz_step3_unsubscription_name']){
-            $pl_list[] = $pl_un_subs; 
+            $pl_list[] = $pl_un_subs;
             $create_new = false;
        }
 
     }
-    //create new bean if one was not retrieved succesfully
+    //create new bean if one was not retrieved successfully
     if($create_new){
         //use default name if one has not been specified
         $name = $campaign_name . " ".$mod_strings['LBL_UNSUBSCRIPTION_LIST'];
@@ -304,36 +304,36 @@ function process_subscriptions_from_request($campaign_name){
         $pl_un_subs->list_type = 'exempt';
         $pl_un_subs->assigned_user_id= $GLOBALS['current_user']->id;
         $pl_un_subs->save();
-        $pl_list[] = $pl_un_subs; 
+        $pl_list[] = $pl_un_subs;
     }
-    
+
     //process test target list
     $pl_test = new ProspectList();
     $create_new = true;
     if(!empty($_REQUEST['wiz_step3_test_list_id'])){
-        //if test list is specified then attach         
+        //if test list is specified then attach
         $pl_test->retrieve($_REQUEST['wiz_step3_test_list_id']);
-        //check to see name matches the bean, if not, then the user has chosen to create new bean        
+        //check to see name matches the bean, if not, then the user has chosen to create new bean
         if($pl_test->name == $_REQUEST['wiz_step3_test_name']){
             $pl_list[] = $pl_test;
             $create_new = false;
         }
     }
-    //create new bio if one was not retrieved succesfully
+    //create new bio if one was not retrieved successfully
     if($create_new){
-        //use default name if one has not been specified        
+        //use default name if one has not been specified
         $name = $campaign_name . " ".$mod_strings['LBL_TEST_LIST'];
         if(isset($_REQUEST['wiz_step3_test_name']) && !empty($_REQUEST['wiz_step3_test_name'])){
             $name = $_REQUEST['wiz_step3_test_name'];
         }
-        //if test list is not specified then create and attach default one        
-        $pl_test->name = $name; 
+        //if test list is not specified then create and attach default one
+        $pl_test->name = $name;
         $pl_test->list_type = 'test';
         $pl_test->assigned_user_id= $GLOBALS['current_user']->id;
         $pl_test->save();
-        $pl_list[] = $pl_test; 
+        $pl_list[] = $pl_test;
     }
-    
+
     return $pl_list;
 }
 ?>

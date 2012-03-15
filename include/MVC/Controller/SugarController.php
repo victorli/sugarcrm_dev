@@ -510,6 +510,13 @@ class SugarController{
 		$this->bean->save(!empty($this->bean->notify_on_save));
 	}
 
+
+    public function action_spot()
+    {
+            $this->view = 'spot';
+    }
+
+
 	/**
 	 * Specify what happens after the save has occurred.
 	 */
@@ -592,7 +599,7 @@ class SugarController{
             $temp_req = array('current_query_by_page' => $_REQUEST['current_query_by_page'], 'return_module' => $_REQUEST['return_module'], 'return_action' => $_REQUEST['return_action']);
             if($_REQUEST['return_module'] == 'Emails') {
                 if(!empty($_REQUEST['type']) && !empty($_REQUEST['ie_assigned_user_id'])) {
-                    $this->req_for_email = array('type' => $_REQUEST['type'], 'ie_assigned_user_id' => $_REQUEST['ie_assigned_user_id']); //specificly for My Achieves
+                    $this->req_for_email = array('type' => $_REQUEST['type'], 'ie_assigned_user_id' => $_REQUEST['ie_assigned_user_id']); // Specifically for My Achieves
                 }
             }
             $_REQUEST = array();

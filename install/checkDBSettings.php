@@ -189,6 +189,7 @@ function checkDBSettings($silent=false) {
             }
         }
 
+
         if($silent){
             return $errors;
         }else{
@@ -239,6 +240,11 @@ function copyInputsIntoSession(){
             if(isset($_REQUEST['setup_db_admin_password'])){$_SESSION['setup_db_admin_password']    = $_REQUEST['setup_db_admin_password'];}
             if(isset($_REQUEST['setup_db_database_name'])){$_SESSION['setup_db_database_name']      = $_REQUEST['setup_db_database_name'];}
             if(isset($_REQUEST['setup_db_host_name'])){$_SESSION['setup_db_host_name']              = $_REQUEST['setup_db_host_name'];}
+
+            //FTS Support
+            $_SESSION['fts_type'] = isset($_REQUEST['fts_type']) ? $_REQUEST['fts_type'] : "";
+            if(isset($_REQUEST['fts_host'])){$_SESSION['fts_host']              = $_REQUEST['fts_host'];}
+            if(isset($_REQUEST['fts_port'])){$_SESSION['fts_port']              = $_REQUEST['fts_port'];}
 
             if(isset($_SESSION['setup_db_type']) && (!isset($_SESSION['setup_db_manager']) || isset($_REQUEST['setup_db_type']))) {
                 $_SESSION['setup_db_manager'] = DBManagerFactory::getManagerByType($_SESSION['setup_db_type']);

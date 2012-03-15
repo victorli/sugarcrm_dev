@@ -34,15 +34,15 @@
  ********************************************************************************/
 SUGAR.ajaxUI={loadingWindow:false,callback:function(o)
 {var cont;if(typeof window.onbeforeunload=="function")
-window.onbeforeunload=null;scroll(0,0);SUGAR.ajaxUI.hideLoadingPanel();try{var r=YAHOO.lang.JSON.parse(o.responseText);cont=r.content;if(r.moduleList)
-{SUGAR.themes.setModuleTabs(r.moduleList);}
-if(r.title)
+window.onbeforeunload=null;scroll(0,0);SUGAR.ajaxUI.hideLoadingPanel();try{var r=YAHOO.lang.JSON.parse(o.responseText);cont=r.content;if(r.title)
 {document.title=html_entity_decode(r.title);}
 if(r.action)
 {action_sugar_grp1=r.action;}
 if(r.favicon)
 {SUGAR.ajaxUI.setFavicon(r.favicon);}
-var c=document.getElementById("content");c.innerHTML=cont;SUGAR.util.evalScript(cont);if(typeof(r.responseTime)!='undefined'){var rt=document.getElementById('responseTime');if(rt!=null){rt.innerHTML=r.responseTime;}}}catch(e){SUGAR.ajaxUI.showErrorMessage(o.responseText);}},showErrorMessage:function(errorMessage)
+var c=document.getElementById("content");c.innerHTML=cont;SUGAR.util.evalScript(cont);if(r.moduleList)
+{SUGAR.themes.setModuleTabs(r.moduleList);}
+if(typeof(r.responseTime)!='undefined'){var rt=document.getElementById('responseTime');if(rt!=null){rt.innerHTML=r.responseTime;}}}catch(e){SUGAR.ajaxUI.showErrorMessage(o.responseText);}},showErrorMessage:function(errorMessage)
 {if(!SUGAR.ajaxUI.errorPanel){SUGAR.ajaxUI.errorPanel=new YAHOO.widget.Panel("ajaxUIErrorPanel",{modal:false,visible:true,constraintoviewport:true,width:"800px",height:"600px",close:true});}
 var panel=SUGAR.ajaxUI.errorPanel;panel.setHeader(SUGAR.language.get('app_strings','ERR_AJAX_LOAD'));panel.setBody('<iframe id="ajaxErrorFrame" style="width:780px;height:550px;border:none;marginheight="0" marginwidth="0" frameborder="0""></iframe>');panel.setFooter(SUGAR.language.get('app_strings','ERR_AJAX_LOAD_FOOTER'));panel.render(document.body);SUGAR.util.doWhen(function(){var f=document.getElementById("ajaxErrorFrame");return f!=null&&f.contentWindow!=null&&f.contentWindow.document!=null;},function(){document.getElementById("ajaxErrorFrame").contentWindow.document.body.innerHTML=errorMessage;window.setTimeout('throw "AjaxUI error parsing response"',300);});SUGAR.ajaxUI.errorMessage=errorMessage;window.setTimeout('if((typeof(document.getElementById("ajaxErrorFrame")) == "undefined" || typeof(document.getElementById("ajaxErrorFrame")) == null  || document.getElementById("ajaxErrorFrame").contentWindow.document.body.innerHTML == "")){document.getElementById("ajaxErrorFrame").contentWindow.document.body.innerHTML=SUGAR.ajaxUI.errorMessage;}',3000);panel.show();panel.center();throw"AjaxUI error parsing response";},canAjaxLoadModule:function(module)
 {var checkLS=/&LicState=check/.exec(window.location.search);if(checkLS||(typeof(SUGAR.config.disableAjaxUI)!='undefined'&&SUGAR.config.disableAjaxUI==true)){return false;}

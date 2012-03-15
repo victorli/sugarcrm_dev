@@ -66,12 +66,6 @@ function additionalDetailsMeeting($fields) {
 	
 	$editLink = "index.php?action=EditView&module=Meetings&record={$fields['ID']}"; 
 	$viewLink = "index.php?action=DetailView&module=Meetings&record={$fields['ID']}";	
-
-	$return_module = empty($_REQUEST['module']) ? 'Meetings' : $_REQUEST['module'];
-	$return_action = empty($_REQUEST['action']) ? 'ListView' : $_REQUEST['action'];
-	
-	$editLink .= "&return_module=$return_module&return_action=$return_action";
-	$viewLink .= "&return_module=$return_module&return_action=$return_action";
 	
 	return array('fieldToAddTo' => 'NAME', 
 				 'string' => $overlib_string, 
@@ -80,6 +74,4 @@ function additionalDetailsMeeting($fields) {
 	
 }
  
- ?>
- 
- 
+?>

@@ -51,10 +51,6 @@
 </style>
 {/literal}
 
-<!-- begin includes for overlib -->
-<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000"></div>
-<script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_overlib.js'}"></script>
-<!-- end includes for overlib -->
 
 <script type="text/javascript">
 var numPages = {$numPages};

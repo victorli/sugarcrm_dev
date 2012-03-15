@@ -836,6 +836,10 @@ margin-top: 0;
     word-wrap: normal;
 }
 
+.list td.inlineButtons {
+	text-align: right;
+	min-width: 75px;	
+}
 /* style for page content tables */
 .other
 {
@@ -3658,7 +3662,412 @@ div#chartDashlets
     white-space: nowrap;
 }
 
-
 td.teamset-row, .edit tr td.teamset-row, .edit tr td table tr td.teamset-row {
     padding: 5px !important;
 }
+/* competible for SugarActionMenu */
+
+ul.clickMenu {
+	list-style: none;
+	padding: 0px 3px 0px 0px;	
+	margin: 0 !important;
+	vertical-align: bottom;
+    background-color: #ECF1F4;
+    background-image: url("../../../../index.php?entryPoint=getImage&imageName=bgBtn.gif");
+    border: 1px solid #ABC3D7;
+    color: #000000;
+	display: inline-block;
+}
+ul.SugarActionMenuIESub {
+}
+
+ul.clickMenu:hover {
+   		background-color: #4e8ccf;
+   		background-image: none;
+		border-color: #4e8ccf;
+		color: #fff;	
+}
+ul#globalLinksSubnav.SugarActionMenuIESub li a:hover, ul#quickCreateULSubnav.SugarActionMenuIESub li a:hover,
+ul.clickMenu:hover > li > span > a, ul.clickMenu:hover > li > a {
+	color: #fff !important;	
+}
+
+ul.clickMenu:hover > li > span {
+	background-position: 6px 0px;
+}
+ul.clickMenu li, ul.SugarActionMenuIESub li {
+	float: left;
+	margin: 0;	
+	padding: 0 0 0 0;
+	list-style: none;
+	position: relative; /*--Declare X and Y axis base--*/
+    cursor: pointer;
+}
+ul.SugarActionMenuIESub li a,
+ul.clickMenu li a, .list tr.pagination td.buttons ul.clickMenu > li > a:link, .list tr.pagination td.buttons ul.clickMenu > li > a{
+	display: block;
+	text-decoration: none;
+	float: left;
+	font-weight: normal !important;
+	padding: 1px 10px 1px 10px !important;
+	color: #000;
+	font-size: 12px;
+}
+
+.list tr.pagination td.buttons ul.clickMenu:hover > li > a:link, .list tr.pagination td.buttons ul.clickMenu:hover > li > a{		
+	color: #fff;
+}
+
+ul.clickMenu li.single a{ 
+	padding-right: 8px !important;	
+}
+
+ul.clickMenu li a:hover{
+text-decoration: none !important;
+}
+ul.clickMenu li > span { /*--Drop down trigger styles--*/
+	width: 17px;
+	height: 16px;
+	float: left;
+	background: url(../../../../index.php?entryPoint=getImage&imageName=actionMenuArrow.png) no-repeat 6px -28px;
+	cursor: pointer;
+}
+
+ul.clickMenu li > span.ab { /*--Drop down trigger styles--*/
+    border-left: 1px #aaa solid;
+    padding-left: 5px;
+}
+ul.clickMenu li span.subhover {
+	cursor: pointer;
+	} /*--Hover effect for trigger--*/
+ul.clickMenu li ul.subnav, ul.clickMenu ul.subnav-sub, ul.SugarActionMenuIESub {
+	list-style: none;
+	position: absolute; /*--Important - Keeps subnav from affecting main navigation flow--*/
+	left: 0; top: 18px;
+	background: #fff;
+	margin: 0;
+	display: none;
+	float: left;
+	width: auto;
+	border: 1px solid #ccc;
+	box-shadow: #999 0px 5px 10px;
+	-moz-box-shadow: #999 0px 5px 10px;
+	-webkit-box-shadow: #999 0px 5px 10px;
+	padding: 8px 0px;
+	z-index: 10;
+	overflow:hidden;
+}
+
+ul.clickMenu li ul.subnav li, ul.clickMenu ul.subnav-sub li, ul.SugarActionMenuIESub li{
+	margin: 0; 
+	padding: 0px;
+	clear: both;
+	/*width: 170px;*/
+	width:100%;
+	white-space: nowrap;
+
+}
+ul.clickMenu.subpanel.records {
+	background-color: #eee;
+	border: 1px solid #ddd;	
+	background-image: none;
+}
+
+ul.clickMenu.subpanel.records:hover {
+	background-color: #4e8ccf !important;
+	background-image: none !important;
+	border-color: #4e8ccf !important;
+}
+
+ul.clickMenu.subpanel.records li a{ 
+	color: #aaa;	
+}
+ul.clickMenu.subpanel.records:hover > li div a{ 
+	color: #fff !important;	
+}
+
+ul.clickMenu.subpanel.records li > span{ 
+	opacity: .5;
+    height: 16px;
+    padding: 0 !important;
+    width: 15px;
+    background-position: right -28px;
+}
+
+ul.clickMenu.subpanel.records:hover li > span{ 
+
+}
+
+ul.clickMenu.subpanel.records li ul.subnav li a span {
+	height: 0px;
+	width: 0px;
+	background-image: none;
+}
+
+ul.clickMenu.button li > span {
+	width: auto;
+	background-position: right -20px;	
+	padding: 3px 15px 3px 10px !important;
+	height: auto;
+}
+
+ul.clickMenu.button:hover li > span {
+	background-position: right 0px;
+}
+
+ul.clickMenu.button li > span a {
+	padding: 0px !important;
+}
+
+ul.clickMenu.button {
+	padding-right: 5px;
+}
+
+ul.clickMenu.button li ul.subnav {
+	width: auto;	
+}
+
+ul.clickMenu li a.disabled {
+    color:gray !important;
+    cursor:default !important;
+}
+
+.oddListRowS1:hover td ul.clickMenu.subpanel.records , .evenListRowS1:hover td ul.clickMenu.subpanel.records {
+		background-image: -moz-linear-gradient(center top, 
+		#ffffff 0%,
+		#eeeeee 10%,
+		#dfdfdf 100%
+		);
+		background-image: -webkit-gradient(
+	    linear,
+	    left top,
+	    left bottom,
+	    color-stop(0, #ffffff),
+	    color-stop(.10, #eeeeee),
+	    color-stop(1, #dfdfdf)
+	   );	
+	   border: 1px solid #AAAAAA;
+}
+
+.oddListRowS1:hover td ul.clickMenu.subpanel.records li a, .evenListRowS1:hover td ul.clickMenu.subpanel.records li a {
+	color: #000;
+}
+
+.oddListRowS1:hover td ul.clickMenu.subpanel.records li span, .evenListRowS1:hover td ul.clickMenu.subpanel.records li span {
+	opacity: 1;
+}
+
+ul.clickMenu li ul.subnav li a,ul.clickMenu li ul.subnav li input, ul.subnav-sub li a, ul.SugarActionMenuIESub li a {
+	float: left;
+	background: #fff;
+	padding: 1px 10px !important;
+	border: 0px !important;
+	/*width: 150px;*/
+	width:100%;
+	text-align: left;
+	font-size: 12px !important;
+	color: #000;
+
+}
+
+ul.clickMenu li ul.subnav li input {
+	padding: 2px 10px !important;
+	/*width: 170px;*/
+	width:100%	
+}
+ul.SugarActionMenuIESub li a:hover,
+ul.clickMenu li ul.subnav li a:hover,ul.clickMenu li ul.subnav li input:hover, ul.clickMenu.subpanel.records li ul.subnav li a:hover, ul.clickMenu ul.subnav-sub li a:hover { /*--Hover effect for subnav links--*/
+background-color: #355b7e;
+color: #fff;
+font-weight: normal !important;
+font-size: 12px !important;
+cursor: pointer;
+text-shadow: none;
+border-radius: 0px;
+-webkit-border-radius: 0px;
+
+}
+
+
+ul.clickMenu.showLess .moreOverflow , ul.clickMenu.showLess .moduleMenuOverFlowLess, ul.clickMenu.showMore .moduleMenuOverFlowMore {
+	display:none;
+}
+
+#globalLinksDivider {
+	float: right;
+	margin-right: 0px;	
+}
+ul#globalLinksSubnav, ul#quickCreateULSubnav{
+    font-family: Arial;
+}
+ul#globalLinks.clickMenu {
+	background: none;
+	border: 0px none;
+	padding-right: 0px;
+	font-family: Arial;
+}
+
+ul#globalLinks.clickMenu li > span {
+	height: 43px;
+	background-image: url(../../../../index.php?entryPoint=getImage&imageName=tabDownArrowOff.png);
+	background-position: right center;
+	width: auto;
+	margin-right: 10px;
+    padding-right: 8px;
+}
+
+ul#globalLinks.clickMenu li > span a {
+    color: #FFFFFF;
+    font-size: 14px;
+    margin-top: 13px;
+	padding: 0px 10px !important;
+}
+
+
+ul#globalLinks.clickMenu li ul.subnav {
+	top: 43px;
+	right: 0px;
+	left: auto;
+}
+
+ul#globalLinks.clickMenu > li > a {
+	color: #fff;
+	font-size: 14px;
+    padding: 14px 7px !important;	
+}
+
+ul#selectLink.clickMenu {
+	height: 17px;
+	min-width: 20px;
+	background-image: none;
+}
+
+ul#selectLink.clickMenu #massall{
+	float: left;
+	margin: 1px 4px;
+}
+
+ul#selectLink.clickMenu > li > a{
+	padding-left: 0px !important;
+}
+
+ul#selectLink.clickMenu li span {
+	height: 17px;
+}
+
+ul#selectLink.clickMenu li ul.subnav {
+
+}
+
+ul#detailViewActions.clickMenu {
+	margin-top: 2px !important;
+}
+
+#selectActions.clickMenu {
+	display: none;
+}
+
+#selectActionsDisabled {
+	display: inline-block;
+	background-color: #eee;
+	border: 1px solid #ddd;	
+	-webkit-border-radius: 1px; 
+	-moz-border-radius: 1px; 
+	border-radius: 1px; 
+	vertical-align: bottom;
+	padding: 0 3px 0 10px;
+}
+
+#selectActionsDisabled span {
+	width: 17px;
+	height: 17px;
+	float: left;
+	background: url(../../../../index.php?entryPoint=getImage&imageName=actionMenuArrow.png) no-repeat 6px -28px;
+	opacity: .5;
+	}
+
+#selectActionsDisabled span.ab {
+    border-left: 1px #ccc solid;
+    margin-left: 10px;
+    padding-left: 5px;
+}
+
+#selectActionsDisabled a, #selectActionsDisabled a:hover {
+	float: left;
+	display: block;
+	text-decoration: none !important;
+	color: #999 !important;
+	padding: 1px 0px 0px 0px!important;
+	text-shadow: 1px 1px #FFFFFF;
+	font-weight: normal;
+	font-size: 13px;
+}
+
+#quickCreate {
+	float: right;	
+}
+
+#quickCreate ul.clickMenu {
+	background: none;
+	border: 0px none;
+	padding-right: 0px;
+	font-family: Arial;
+}
+
+
+#quickCreate ul.clickMenu > li {
+	width: 50px;
+	height: 43px;
+
+}
+#quickCreate ul.clickMenu li > span {
+	background: url(../../../../index.php?entryPoint=getImage&imageName=quick-create.png) no-repeat center center;
+	height: 43px;
+	width: 50px;
+}
+
+#quickCreate ul.clickMenu > li:hover {
+	background-color: #276499;
+}
+ul#globalLinksSubnav li { min-width: 120px;}
+ul#globalLinksSubnav, ul#quickCreateULSubnav,
+#quickCreate ul.clickMenu li ul.subnav, #globalLinksModule ul.clickMenu li ul.subnav{
+	top: 43px;
+	right: 0;
+	left: auto;
+	padding: 10px 0px;
+	border: 1px solid #999;
+	width: 100%;
+}
+
+#quickCreate ul.clickMenu li ul.subnav {
+	width: auto;		
+}
+
+#globalLinksSubnav li a, #quickCreateULSubnav li a,
+#quickCreate ul.clickMenu li ul.subnav li a, #globalLinksModule ul.clickMenu li ul.subnav li a {
+	padding: 4px 10px !important;
+	font-size: 13px !important;
+	color: #666666 !important;
+	line-height: 1.45;
+}
+#quickCreateULSubnav li.moduleMenuOverFlowLess a, #quickCreateULSubnav li.moduleMenuOverFlowMore a,
+#quickCreate ul.clickMenu li ul.subnav li.moduleMenuOverFlowMore a, #quickCreate ul.clickMenu li ul.subnav li.moduleMenuOverFlowLess a {
+	color: #999 !important;
+}
+
+#quickCreate ul.clickMenu li ul.subnav li a:hover, #globalLinksModule ul.clickMenu li ul.subnav li a:hover, #quickCreate ul.clickMenu li ul.subnav li.moduleMenuOverFlowMore a:hover, #quickCreate ul.clickMenu li ul.subnav li.moduleMenuOverFlowLess a:hover {
+	color: #fff !important;
+}
+
+ul.clickMenu li ul.subnav li a:hover .showLessArrow, ul.clickMenu li ul.subnav li a:hover .showMoreArrow {
+	background-position: center 8px;
+	opacity: 1;
+}
+
+
+#quickCreate ul.clickMenu li ul.subnav li.moduleMenuOverFlowMore a img, #quickCreate ul.clickMenu li ul.subnav li.moduleMenuOverFlowLess a img
+{
+	opacity: .6;
+}
+

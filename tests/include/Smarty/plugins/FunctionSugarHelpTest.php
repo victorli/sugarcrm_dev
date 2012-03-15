@@ -74,8 +74,8 @@ class FunctionSugarHelpTest extends Sugar_PHPUnit_Framework_TestCase
     {
         $string = 'my string';
         
-        $output = smarty_function_sugar_help(array('text'=>$string,'foo'=>'bar'),$this->_smarty);
+        $output = smarty_function_sugar_help(array('text'=>$string,'myPos'=>'foo', 'atPos'=>'bar'),$this->_smarty);
         
-        $this->assertContains(",foo,bar",$output);
+        $this->assertContains(",'foo','bar'",$output);
     }
 }

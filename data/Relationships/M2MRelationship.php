@@ -283,14 +283,14 @@ class M2MRelationship extends SugarRelationship
      * @param  $link Link2 loads the relationship for this link.
      * @return void
      */
-    public function load($link)
+    public function load($link, $params = array())
     {
         $db = DBManagerFactory::getInstance();
-        $query = $this->getQuery($link);
+        $query = $this->getQuery($link, $params);
         $result = $db->query($query);
         $rows = Array();
         $idField = $link->getSide() == REL_LHS ? $this->def['join_key_rhs'] : $this->def['join_key_lhs'];
-        while ($row = $db->fetchByAssoc($result))
+        while ($row = $db->fetchByAssoc($result, FALSE))
         {
             if (empty($row['id']) && empty($row[$idField]))
                 continue;
@@ -300,30 +300,55 @@ class M2MRelationship extends SugarRelationship
         return array("rows" => $rows);
     }
 
+    protected function linkIsLHS($link) {
+        return $link->getSide() == REL_LHS;
+    }
+
     public function getQuery($link, $params = array())
     {
-        if ($link->getSide() == REL_LHS) {
+        if ($this->linkIsLHS($link)) {
             $knownKey = $this->def['join_key_lhs'];
             $targetKey = $this->def['join_key_rhs'];
+            if (!empty($params['where']))
+                $whereTable = (empty($params['right_join_table_alias']) ? BeanFactory::getBean($this->getRHSModule())->table_name : $params['right_join_table_alias']);
         }
         else
         {
             $knownKey = $this->def['join_key_rhs'];
             $targetKey = $this->def['join_key_lhs'];
+            if (!empty($params['where']))
+                $whereTable = (empty($params['left_join_table_alias']) ? BeanFactory::getBean($this->getLHSModule())->table_name : $params['left_join_table_alias']);
         }
         $rel_table = $this->getRelationshipTable();
 
         $where = "$rel_table.$knownKey = '{$link->getFocus()->id}'" . $this->getRoleWhere();
 
+        //Add any optional where clause
+        if (!empty($params['where'])){
+            $add_where = $this->getOptionalWhereClause($params['where']);
+            if (!empty($add_where))
+                $where .= " AND $rel_table.$targetKey=$whereTable.id AND $whereTable.$add_where";
+        }
+
+        $deleted = !empty($params['deleted']) ? 1 : 0;
+        $from = $rel_table;
+        if (!empty($params['where']))
+            $from .= ", $whereTable";
+
         if (empty($params['return_as_array'])) {
-            return "SELECT $targetKey id FROM $rel_table WHERE $where AND deleted=0";
+            $query = "SELECT $targetKey id FROM $from WHERE $where AND $rel_table.deleted=$deleted";
+            //Limit is not compatible with return_as_array
+            if (!empty($params['limit']) && $params['limit'] > 0) {
+                $query = DBManagerFactory::getInstance()->limitQuery($query, 0, $params['limit'], false, "", false);
+            }
+            return $query;
         }
         else
         {
             return array(
                 'select' => "SELECT $targetKey id",
-                'from' => "FROM $rel_table",
-                'where' => "WHERE $where AND $rel_table.deleted=0",
+                'from' => "FROM $from",
+                'where' => "WHERE $where AND $rel_table.deleted=$deleted",
             );
         }
     }
@@ -417,7 +442,7 @@ class M2MRelationship extends SugarRelationship
 
         $where = "$startingTable.$startingKey=$joinTable.$startingJoinKey AND $joinTable.$joinKey='{$link->getFocus()->$targetKey}'";
 
-        //Check if we should ignore the role fileter;
+        //Check if we should ignore the role filter.
         $ignoreRole = !empty($params['ignore_role']);
 
         //First join the relationship table

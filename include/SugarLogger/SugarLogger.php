@@ -242,6 +242,9 @@ class SugarLogger implements LoggerTemplate
 	public function __destruct()
 	{
 		if ($this->fp)
+        {
 			fclose($this->fp);
+            $this->fp = FALSE;
+        }
 	}
 }

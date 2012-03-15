@@ -259,9 +259,28 @@ function send_back_selected(module, form, field, error_message, request_data)
 
 function toggleMore(spanId, img_id, module, action, params){
 	toggle_more_go = function() {
-		oReturn = function(body, caption, width, theme) {
-					return overlib(body, CAPTION, caption, STICKY, MOUSEOFF, 1000, WIDTH, width, CLOSETEXT, ('<img border=0 style="margin-left:2px; margin-right: 2px;" src=themes/' + theme + '/images/close.gif>'), CLOSETITLE, 'Click to Close', CLOSECLICK, FGCLASS, 'olFgClass', CGCLASS, 'olCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olCapFontClass', CLOSEFONTCLASS, 'olCloseFontClass', REF, spanId, REFC, 'LL', REFX, 13);
+				oReturn = function(body, caption, width, theme) {
+					
+					$(".ui-dialog").find(".open").dialog("close");
+
+					var $dialog = $('<div class="open"></div>')
+					.html(body)
+					.dialog({
+						autoOpen: false,
+						title: caption,
+						width: 300,
+						position: { 
+						    my: 'right top',
+						    at: 'left top',
+						    of: $('#'+spanId+ ' img')
+					  }
+					});
+					
+					
+					$dialog.dialog('open');
+				
 				}
+				
 		success = function(data) {
 					eval(data.responseText);
 

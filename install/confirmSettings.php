@@ -324,7 +324,7 @@ if(empty($memory_limit)){
     $memory_limit = "-1";
 }
 if(!defined('SUGARCRM_MIN_MEM')) {
-    define('SUGARCRM_MIN_MEM', 40);
+    define('SUGARCRM_MIN_MEM', 40*1024*1024);
 }
 $sugarMinMem = constant('SUGARCRM_MIN_MEM');
 // logic based on: http://us2.php.net/manual/en/ini.core.php#ini.memory-limit
@@ -334,8 +334,18 @@ if( $memory_limit == "" ){          // memory_limit disabled at compile time, no
     $memory_msg = "{$mod_strings['LBL_CHECKSYS_MEM_UNLIMITED']}";
 } else {
     $mem_display = $memory_limit;
-    rtrim($memory_limit, 'M');
-    $memory_limit_int = (int) $memory_limit;
+    preg_match('/^\s*([0-9.]+)\s*([KMGTPE])B?\s*$/i', $memory_limit, $matches);
+    $num = (float)$matches[1];
+    // Don't break so that it falls through to the next case.
+    switch (strtoupper($matches[2])) {
+        case 'G':
+            $num = $num * 1024;
+        case 'M':
+            $num = $num * 1024;
+        case 'K':
+            $num = $num * 1024;
+    }
+    $memory_limit_int = intval($num);
     $SUGARCRM_MIN_MEM = (int) constant('SUGARCRM_MIN_MEM');
     if( $memory_limit_int < constant('SUGARCRM_MIN_MEM') ){
         $memory_msg = "<span class='stop'><b>$memory_limit{$mod_strings['ERR_CHECKSYS_MEM_LIMIT_1']}" . constant('SUGARCRM_MIN_MEM') . "{$mod_strings['ERR_CHECKSYS_MEM_LIMIT_2']}</b></span>";

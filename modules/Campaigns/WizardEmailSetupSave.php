@@ -73,7 +73,7 @@ if(isset($_POST['tracking_entities_location_type'])) {
 if(!isset($_POST['mail_smtpauth_req'])) { $_POST['mail_smtpauth_req'] = 0; }
 //default ssl use to false
 if(!isset($_POST['mail_smtpssl'])) { $_POST['mail_smtpssl'] = 0; }
-//reuse existing saveconfig functinality
+//reuse existing saveconfig functionality
 $focus->saveConfig();
 
 
@@ -82,7 +82,7 @@ $focus->saveConfig();
 //perform this if the option to create new mail box has been checked
 if(isset($_REQUEST['wiz_new_mbox']) && ($_REQUEST['wiz_new_mbox']=='1')){
     
-   //Populate the Request variables that inboundemail expects 
+   //Populate the Request variables that inboundemail expects
     $_REQUEST['mark_read'] = 1;
     $_REQUEST['only_since'] = 1;
     $_REQUEST['mailbox_type'] = 'bounce';

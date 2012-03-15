@@ -89,7 +89,7 @@ class ViewPopup extends SugarView{
 	    	require_once('modules/'.$this->module.'/metadata/searchdefs.php');
 		}
 
-		//if you click the pagination button, it will poplate the search criteria here
+		//if you click the pagination button, it will populate the search criteria here
         if(!empty($this->bean) && isset($_REQUEST[$this->module.'2_'.strtoupper($this->bean->object_name).'_offset'])) {
             if(!empty($_REQUEST['current_query_by_page'])) {
                 $blockVariables = array('mass', 'uid', 'massupdate', 'delete', 'merge', 'selectCount',
@@ -126,7 +126,7 @@ class ViewPopup extends SugarView{
 	    	$popup->displayColumns = $displayColumns;
 	    	$popup->filter_fields = $filter_fields;
 	    	$popup->mergeDisplayColumns = true;
-	    	//check to see if popupdes contains searchdefs
+	    	//check to see if popupdefs contains searchdefs
 	    	$popup->_popupMeta = $popupMeta;
             $popup->listviewdefs = $listViewDefs;
 	    	$popup->searchdefs = $searchdefs;
@@ -144,7 +144,7 @@ class ViewPopup extends SugarView{
 			$popup->massUpdateData = $massUpdateData;
 
 			$popup->setup('include/Popups/tpls/PopupGeneric.tpl');
-			
+
             //We should at this point show the header and javascript even if to_pdf is true.
             //The insert_popup_header javascript is incomplete and shouldn't be relied on.
             if (isset($this->options['show_all']) && $this->options['show_all'] == false)

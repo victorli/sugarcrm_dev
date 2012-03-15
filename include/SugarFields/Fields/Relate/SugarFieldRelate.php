@@ -331,7 +331,7 @@ class SugarFieldRelate extends SugarFieldBase {
                     && $idField != $vardef['name']
                     && !empty($vardef['rname'])
                     && !empty($vardef['table'])) {
-                // Bug 27562 - Check db_concat_fields first to see if the field name is a concat
+                // Bug 27562 - Check db_concat_fields first to see if the field name is a concatenation.
                 $relatedFieldDef = $newbean->getFieldDefinition($vardef['rname']);
                 if ( isset($relatedFieldDef['db_concat_fields'])
                         && is_array($relatedFieldDef['db_concat_fields']) )

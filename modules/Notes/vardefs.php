@@ -38,7 +38,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 $dictionary['Note'] = array(
 
     'table' => 'notes',
-	'unified_search' => true, 'unified_search_default_enabled' => true,
+	'unified_search' => true, 'full_text_search' => true, 'unified_search_default_enabled' => true,
 
 	'comment' => 'Notes and Attachments'
                                ,'fields' => array (
@@ -131,6 +131,7 @@ $dictionary['Note'] = array(
     'type' => 'name',
     'len' => '255',
 	'unified_search' => true,
+	'full_text_search' => array('boost' => 3),
     'comment' => 'Name of the note',
     'importable' => 'required',
     'required' => true,

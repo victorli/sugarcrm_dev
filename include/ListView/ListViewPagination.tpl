@@ -39,6 +39,7 @@
 
 *}
 
+
 {assign var="alt_start" value=$navStrings.start}
 {assign var="alt_next" value=$navStrings.next}
 {assign var="alt_prev" value=$navStrings.previous}
@@ -49,6 +50,15 @@
 			<table border='0' cellpadding='0' cellspacing='0' width='100%' class='paginationTable'>
 				<tr>
 					<td nowrap="nowrap" width='2%' class='paginationActionButtons'>
+						{if $prerow}
+				
+
+								{$selectLink}
+								
+					
+						{/if}
+
+		
 						{$actionsLink}&nbsp;
 						&nbsp;{$selectedObjectsSpan}		
 					</td>

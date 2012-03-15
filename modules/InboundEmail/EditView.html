@@ -574,9 +574,9 @@ possibleActionChange();
 var warningForAutoChange = '{MOD.LBL_WARNING_CHANGING_AUTO_IMPORT}';
 var warningForAutoChangeWithCreateCase = '{MOD.LBL_WARNING_CHANGING_AUTO_IMPORT_WITH_CREATE_CASE}';
 if(window.addEventListener){
-    window.addEventListener("load", function() { SUGAR.util.setEmailPasswordDisplay('email_password', {HAS_PASSWORD}); }, false);
+    window.addEventListener("load", function() { SUGAR.util.setEmailPasswordDisplay('email_password', {HAS_PASSWORD},'EditView'); }, false);
 }else{
-    window.attachEvent("onload", function() { SUGAR.util.setEmailPasswordDisplay('email_password', {HAS_PASSWORD}); });
+    window.attachEvent("onload", function() { SUGAR.util.setEmailPasswordDisplay('email_password', {HAS_PASSWORD},'EditView'); });
 }
 </script>
 {JAVASCRIPT}

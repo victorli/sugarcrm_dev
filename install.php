@@ -138,7 +138,7 @@ if(file_exists("install/language/{$current_language}.lang.php")) {
 if($current_language != 'en_us') {
 	$my_mod_strings = $mod_strings;
 	include('install/language/en_us.lang.php');
-	$mod_strings = sugarArrayMerge($mod_strings, $my_mod_strings);
+	$mod_strings = sugarLangArrayMerge($mod_strings, $my_mod_strings);
 }
 ////	END INSTALLER LANGUAGE
 ///////////////////////////////////////////////////////////////////////////////

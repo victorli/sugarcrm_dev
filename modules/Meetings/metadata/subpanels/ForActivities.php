@@ -52,12 +52,6 @@ $subpanel_layout = array(
 			'image2'=>'__VARIABLE',
  		 	'image2_ext_url_field'=>'displayed_url',
 		),
-		'close_button'=>array(
-			'widget_class' => 'SubPanelCloseButton',
-			'vname' => 'LBL_LIST_CLOSE',
-			'sortable'=>false,
-			'width' => '6%',
-		),
 		'name'=>array(
 			 'vname' => 'LBL_LIST_SUBJECT',
 			 'widget_class' => 'SubPanelDetailViewLink',
@@ -105,6 +99,12 @@ $subpanel_layout = array(
 			'vname' => 'LBL_EDIT_BUTTON',
 			 'widget_class' => 'SubPanelEditButton',
 			 'width' => '2%',
+		),
+		'close_button'=>array(
+			'widget_class' => 'SubPanelCloseButton',
+			'vname' => 'LBL_LIST_CLOSE',
+			'sortable'=>false,
+			'width' => '6%',
 		),
 		'remove_button'=>array(
 			'vname' => 'LBL_REMOVE',

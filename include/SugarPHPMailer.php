@@ -103,7 +103,7 @@ class SugarPHPMailer extends PHPMailer
 		$oe = new OutboundEmail();
 		$oe = $oe->getUserMailerSettings($current_user, $mailer_id, $ieId);
 
-		// ssl or tcp - keeping outside isSMTP b/c a default may inadvertantly set ssl://
+		// ssl or tcp - keeping outside isSMTP b/c a default may inadvertently set ssl://
 		$this->protocol = ($oe->mail_smtpssl) ? "ssl://" : "tcp://";
 
 		if($oe->mail_sendtype == "SMTP")
@@ -227,7 +227,7 @@ class SugarPHPMailer extends PHPMailer
 		global $locale;
 
 		if($this->preppedForOutbound == false) {
-			//bug 28534. We should not set it to true to circumvent the following convertion as each email is independent.
+			//bug 28534. We should not set it to true to circumvent the following conversion as each email is independent.
 			//$this->preppedForOutbound = true; // flag so we don't redo this
 			$OBCharset = $locale->getPrecedentPreference('default_email_charset');
 

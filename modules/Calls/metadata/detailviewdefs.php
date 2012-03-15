@@ -107,13 +107,10 @@ array (
             'customCode' => '{$fields.duration_hours.value}{$MOD.LBL_HOURS_ABBREV} {$fields.duration_minutes.value}{$MOD.LBL_MINSS_ABBREV}&nbsp;',
             'label' => 'LBL_DURATION',
           ),
-          array (
-            'name' => 'reminder_checked',
-            'fields' => 
-            array (
-              'reminder_checked',
-              'reminder_time',
-            ),
+          array(
+            'name' => 'reminder_time',
+            'customCode' => '{include file="modules/Meetings/tpls/reminders.tpl"}',
+            'label' => 'LBL_REMINDER',
           ),
         ),
         array (

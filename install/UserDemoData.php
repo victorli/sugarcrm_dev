@@ -110,7 +110,7 @@ class UserDemoData {
 		$u->employee_status = 'Active';
 		$u->is_admin = $is_admin;
 		//$u->user_password = $u->encrypt_password($user_name);
-		$u->user_hash = strtolower(md5($user_name));
+		$u->user_hash = User::getPasswordHash($user_name);
 		$u->reports_to_id = $reports_to;
 		$u->reports_to_name = $reports_to_name;
 		//$u->email1 = $email;

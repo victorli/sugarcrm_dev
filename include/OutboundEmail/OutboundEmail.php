@@ -331,7 +331,7 @@ class OutboundEmail {
 	}
 
 	/**
-	 *  Determine if the user is alloweed to use the current system outbound connection.
+	 *  Determine if the user is allowed to use the current system outbound connection.
 	 */
 	function isAllowUserAccessToSystemDefaultOutbound()
 	{

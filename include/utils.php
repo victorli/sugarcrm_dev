@@ -212,6 +212,18 @@ function make_sugar_config(&$sugar_config)
 	    'systexpirationlogin' => '',
 		) : $passwordsetting,
 		'use_sprites' => function_exists('imagecreatetruecolor'),
+    	'search_wildcard_infront' => false,
+        'search_wildcard_char' => '%',
+		'jobs' => array(
+		    'min_retry_interval' => 60, // minimal job retry delay
+		    'max_retries' => 5, // how many times to retry the job
+		    'timeout' => 86400, // how long a job may spend as running before being force-failed
+		),
+		"cron" => array(
+			'max_cron_jobs' => 10, // max jobs per cron schedule run
+		    'max_cron_runtime' => 60, // max runtime for cron jobs
+		    'min_cron_interval' => 30, // minimal interval between cron jobs
+		),
 	);
 }
 
@@ -340,12 +352,13 @@ function get_sugar_config_defaults() {
 	  'show_calls_by_default' => true,
 	  'show_tasks_by_default' => true,
 	  'editview_width' => 990,
-	  'editview_height' => 480,
+	  'editview_height' => 485,
 	  'day_timestep' => 15,
 	  'week_timestep' => 30,
-	  'month_timestep' => 60,
 	  'items_draggable' => true,
-	  'mouseover_expand' => true,
+	  'items_resizable' => true,
+	  'enable_repeat' => true,
+	  'max_repeat_count' => 1000,
 	),
 	'passwordsetting' => empty($passwordsetting) ? array (
 	    'SystemGeneratedPasswordON' => '',
@@ -360,8 +373,21 @@ function get_sugar_config_defaults() {
 	    'systexpirationtype' => '0',
 	    'systexpirationlogin' => '',
 		) : $passwordsetting,
-	'use_real_names' => true,
-	);
+		'use_real_names' => true,
+
+		'search_wildcard_infront' => false,
+        'search_wildcard_char' => '%',
+		'jobs' => array(
+		    'min_retry_interval' => 30, // 30 seconds minimal job retry
+		    'max_retries' => 5, // how many times to retry the job
+		    'timeout' => 86400, // how long a job may spend as running before being force-failed
+		),
+		"cron" => array(
+			'max_cron_jobs' => 10, // max jobs per cron schedule run
+		    'max_cron_runtime' => 30, // max runtime for cron jobs
+		    'min_cron_interval' => 30, // minimal interval between cron jobs
+		),
+    );
 
 	if(!is_object($locale)) {
 		$locale = new Localization();
@@ -801,7 +827,7 @@ function return_app_list_strings_language($language)
 
     $app_list_strings = array();
     foreach ( $app_list_strings_array as $app_list_strings_item ) {
-        $app_list_strings = sugarArrayMerge($app_list_strings, $app_list_strings_item);
+        $app_list_strings = sugarLangArrayMerge($app_list_strings, $app_list_strings_item);
     }
 
     foreach ( $langs as $lang ) {
@@ -926,7 +952,7 @@ function return_application_language($language)
 
 	$app_strings = array();
     foreach ( $app_strings_array as $app_strings_item ) {
-        $app_strings = sugarArrayMerge($app_strings, $app_strings_item);
+        $app_strings = sugarLangArrayMerge($app_strings, $app_strings_item);
     }
 
 	if(!isset($app_strings)) {
@@ -1010,14 +1036,14 @@ function return_module_language($language, $module, $refresh=false)
 
 	// cn: bug 6048 - merge en_us with requested language
 	if($language != $sugar_config['default_language'])
-        $loaded_mod_strings = sugarArrayMerge(
+        $loaded_mod_strings = sugarLangArrayMerge(
             LanguageManager::loadModuleLanguage($module, $sugar_config['default_language'],$refresh),
                 $loaded_mod_strings
             );
 
     // Load in en_us strings by default
     if($language != 'en_us' && $sugar_config['default_language'] != 'en_us')
-        $loaded_mod_strings = sugarArrayMerge(
+        $loaded_mod_strings = sugarLangArrayMerge(
             LanguageManager::loadModuleLanguage($module, 'en_us', $refresh),
                 $loaded_mod_strings
             );
@@ -1090,7 +1116,7 @@ function return_mod_list_strings_language($language,$module) {
 	}
 
 	// cn: bug 6048 - merge en_us with requested language
-	$mod_list_strings = sugarArrayMerge($en_mod_list_strings, $mod_list_strings);
+	$mod_list_strings = sugarLangArrayMerge($en_mod_list_strings, $mod_list_strings);
 
 	// if we still don't have a language pack, then log an error
 	if(!isset($mod_list_strings)) {
@@ -1746,22 +1772,17 @@ function getDefaultXssTags() {
 /**
  * Remove potential xss vectors from strings
  * @param string str String to search for XSS attack vectors
- * @param bool cleanImg Flag to allow <img> tags to survive - only used by InboundEmail for inline images.
+ * @deprecated
  * @return string
  */
-function remove_xss($str, $cleanImg=true)
+function remove_xss($str)
 {
-    $potentials = clean_xss($str, $cleanImg);
-    if(is_array($potentials) && !empty($potentials)) {
-        foreach($potentials as $bad) {
-            $str = str_replace($bad, "", $str);
-        }
-    }
-    return $str;
+    return SugarCleaner::cleanHtml($str, false);
 }
 
 /**
  * Detects typical XSS attack patterns
+ * @deprecated
  * @param string str String to search for XSS attack vectors
  * @param bool cleanImg Flag to allow <img> tags to survive - only used by InboundEmail for inline images.
  * @return array Array of matches, empty on clean string
@@ -2332,6 +2353,58 @@ function get_unlinked_email_query($type, $bean) {
 	return $return_array['select'] . $return_array['from'] . $return_array['where'] . $return_array['join'] ;
 } // fn
 
+function get_emails_by_assign_or_link($params)
+{
+    $relation = $params['link'];
+	$bean = $GLOBALS['app']->controller->bean;
+    if(empty($bean->$relation)) {
+        $bean->load_relationship($relation);
+    }
+    if(empty($bean->$relation)) {
+        $GLOBALS['log']->error("Bad relation '$relation' for bean '{$bean->object_name}' id '{$bean->id}'");
+        return array();
+    }
+    $rel_module = $bean->$relation->getRelatedModuleName();
+    $rel_join = $bean->$relation->getJoin(array(
+    	'join_table_alias' => 'link_bean',
+    	'join_table_link_alias' => 'linkt',
+    ));
+    $rel_join = str_replace("{$bean->table_name}.id", "'{$bean->id}'", $rel_join);
+    $return_array['select']='SELECT emails.id ';
+    $return_array['from'] = "FROM emails ";
+    $return_array['join'] = " INNER JOIN (".
+        // directly assigned emails
+        	"select eb.email_id FROM emails_beans eb where eb.bean_module = '{$bean->module_dir}' AND eb.bean_id = '{$bean->id}' AND eb.deleted=0 ".
+            " UNION ".
+        // Assigned to contacts
+        	"select DISTINCT eb.email_id FROM emails_beans eb
+                $rel_join AND link_bean.id = eb.bean_id
+        		where eb.bean_module = '$rel_module' AND eb.deleted=0".
+        	" UNION ".
+        // Related by directly by email
+            "select DISTINCT eear.email_id from emails_email_addr_rel eear INNER JOIN email_addr_bean_rel eabr
+            	ON eabr.bean_id ='{$bean->id}' AND eabr.bean_module = '{$bean->module_dir}' AND
+    			eabr.email_address_id = eear.email_address_id and eabr.deleted=0 where eear.deleted=0".
+            " UNION ".
+        // Related by email to linked contact
+            "select DISTINCT eear.email_id FROM emails_email_addr_rel eear INNER JOIN email_addr_bean_rel eabr
+            	ON eabr.email_address_id=eear.email_address_id AND eabr.bean_module = '$rel_module' AND eabr.deleted=0
+            	$rel_join AND link_bean.id = eabr.bean_id
+            	where eear.deleted=0".
+            ") email_ids ON emails.id=email_ids.email_id ";
+        $return_array['where']=" WHERE emails.deleted=0 ";
+
+    	//$return_array['join'] = '';
+        $return_array['join_tables'][0] = '';
+
+        if(0 && $bean->object_name == "Case" && !empty($bean->case_number)) {
+            $where = str_replace("%1", $bean->case_number, 	$bean->getEmailSubjectMacro());
+    	    $return_array["where"] .= "\n AND emails.name LIKE '%$where%'";
+        }
+
+        return $return_array;
+}
+
 /**
  * Check to see if the number is empty or non-zero
  * @param $value
@@ -2441,7 +2514,7 @@ function display_notice($msg = false){
 	}
 }
 
-/* checks if it is a number that atleast has the plus at the beggining
+/* checks if it is a number that at least has the plus at the beginning.
  */
 function skype_formatted($number){
 	//kbrill - BUG #15375
@@ -2799,6 +2872,7 @@ function sugar_cleanup($exit = false) {
 	if(
 		(isset($_SESSION['USER_PREFRENCE_ERRORS']) && $_SESSION['USER_PREFRENCE_ERRORS'])
 		&& ($_REQUEST['action']!='modulelistmenu' && $_REQUEST['action']!='DynamicAction')
+		&& ($_REQUEST['action']!='favorites' && $_REQUEST['action']!='DynamicAction')
 		&& (empty($_REQUEST['to_pdf']) || !$_REQUEST['to_pdf'] )
 		&& (empty($_REQUEST['sugar_body_only']) || !$_REQUEST['sugar_body_only'] )
 
@@ -3538,6 +3612,53 @@ function setPhpIniSettings() {
 	}
 }
 
+/**
+ * Identical to sugarArrayMerge but with some speed improvements and used specifically to merge
+ * language files.  Language file merges do not need to account for null values so we can get some
+ * performance increases by using this specialized function. Note this merge function does not properly
+ * handle null values.
+ *
+ * @param $gimp
+ * @param $dom
+ * @return array
+ */
+function sugarLangArrayMerge($gimp, $dom)
+{
+	if(is_array($gimp) && is_array($dom))
+    {
+		foreach($dom as $domKey => $domVal)
+        {
+			if(isset($gimp[$domKey]))
+            {
+				if(is_array($domVal))
+                {
+					$tempArr = array();
+                    foreach ( $domVal as $domArrKey => $domArrVal )
+                        $tempArr[$domArrKey] = $domArrVal;
+                    foreach ( $gimp[$domKey] as $gimpArrKey => $gimpArrVal )
+                        if ( !isset($tempArr[$gimpArrKey]) )
+                            $tempArr[$gimpArrKey] = $gimpArrVal;
+                    $gimp[$domKey] = $tempArr;
+				}
+                else
+                {
+					$gimp[$domKey] = $domVal;
+				}
+			}
+            else
+            {
+				$gimp[$domKey] = $domVal;
+			}
+		}
+	}
+    // if the passed value for gimp isn't an array, then return the $dom
+    elseif(is_array($dom))
+    {
+        return $dom;
+    }
+
+	return $gimp;
+}
 /**
  * like array_merge() but will handle array elements that are themselves arrays;
  * PHP's version just overwrites the element with the new one.
@@ -4456,6 +4577,38 @@ function order_beans($beans, $field_name)
     return $beans;
 }
 
+/**
+ * Return search like string
+ * This function takes a user input string and returns a string that contains wild card(s) that can be used in db query.
+ * @param string $str  string to be searched
+ * @param string $like_char  Database like character, usually '%'
+ * @return string Returns a string to be searched in db query
+ */
+function sql_like_string($str, $like_char, $wildcard = '%', $appendWildcard = true) {
+
+    // override default wildcard character
+    if (isset($GLOBALS['sugar_config']['search_wildcard_char']) &&
+        strlen($GLOBALS['sugar_config']['search_wildcard_char']) == 1) {
+        $wildcard = $GLOBALS['sugar_config']['search_wildcard_char'];
+    }
+
+    // add wildcard at the beginning of the search string
+    if (isset($GLOBALS['sugar_config']['search_wildcard_infront']) &&
+        $GLOBALS['sugar_config']['search_wildcard_infront'] == true) {
+        if (substr($str,0,1) <> $wildcard)
+          $str = $wildcard.$str;
+    }
+
+    // add wildcard at the end of search string (default)
+    if ($appendWildcard) {
+        if(substr($str,-1) <> $wildcard) {
+            $str .= $wildcard;
+        }
+    }
+
+    return str_replace($wildcard, $like_char, $str);
+}
+
 //check to see if custom utils exists
 if(file_exists('custom/include/custom_utils.php')){
 	include_once('custom/include/custom_utils.php');
@@ -4477,6 +4630,32 @@ function sanitize($input, $quotes = ENT_QUOTES, $charset = 'UTF-8', $remove = fa
     return htmlentities($input, $quotes, $charset);
 }
 
+/**
+ * @return string - the full text search engine name
+ */
+function getFTSEngineType()
+{
+    if (isset($GLOBALS['sugar_config']['full_text_engine']) && is_array($GLOBALS['sugar_config']['full_text_engine'])) {
+        foreach ($GLOBALS['sugar_config']['full_text_engine'] as $name => $defs) {
+            return $name;
+        }
+    }
+    return '';
+}
+
+/**
+ * @param string $optionName - name of the option to be retrieved from app_list_strings
+ * @return array - the array to be used in option element
+ */
+function getFTSBoostOptions($optionName)
+{
+    if (isset($GLOBALS['app_list_strings'][$optionName])) {
+        return $GLOBALS['app_list_strings'][$optionName];
+    }
+    else {
+        return array();
+    }
+}
 
 /**
  * utf8_recursive_encode

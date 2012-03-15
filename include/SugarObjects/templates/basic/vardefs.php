@@ -54,6 +54,7 @@ $vardefs = array(
 		'dbType' => 'varchar',
 	    'len'=>255,
         'unified_search' => true,
+        'full_text_search' => array('boost' => 3),
         'required'=>true,
 		'importable' => 'required',
         'duplicate_merge' => 'enabled',

@@ -111,7 +111,7 @@ EOQ;
     */
     public function testJSInjection()
     {
-    	$this->markTestSkipped('Marked as skipped for now... too problematic');
+    	$this->markTestIncomplete('Marked as skipped for now... too problematic');
     	return;
         require_once('include/utils/layout_utils.php');
         $_SERVER['REQUEST_METHOD'] = "POST";

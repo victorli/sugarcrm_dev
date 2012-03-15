@@ -323,7 +323,7 @@ function generateSearchWhere($module, $query) {//this function is similar with f
             $searchForm = new SearchForm($module, $seed);
         }
         elseif(!empty($_SESSION['export_where'])) { //bug 26026, sometimes some module doesn't have a metadata/SearchFields.php, the searchfrom is generated in the ListView.php.
-        //So currently massupdate will not gernerate the where sql. It will use the sql stored in the SESSION. But this will cause bug 24722, and it cannot be avoided now.
+        // Currently, massupdate will not generate the where sql. It will use the sql stored in the SESSION. But this will cause bug 24722, and it cannot be avoided now.
             $where = $_SESSION['export_where'];
             $whereArr = explode (" ", trim($where));
             if ($whereArr[0] == trim('where')) {

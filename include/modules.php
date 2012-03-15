@@ -245,6 +245,7 @@ $adminOnlyList = array(
                     'ACLRoles'=>array('all'=>1),
                     'UpgradeWizard' => array('all' => 1),
                     'Studio' => array('all' => 1),
+                    'Schedulers' => array('all' => 1),
                     );
 
 

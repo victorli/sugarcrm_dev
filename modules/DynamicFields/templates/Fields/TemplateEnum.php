@@ -51,13 +51,19 @@ class TemplateEnum extends TemplateText{
     	// ensure that the field dependency information is read in from any _REQUEST
     	$this->localVardefMap = array (
     		'trigger' => 'trigger',
-    		'action' => 'action' , ) ;
+    		'action' => 'action' ,
+            'visibility_grid' => 'visibility_grid',
+        ) ;
     	$this->vardef_map = array_merge ( $this->vardef_map , $this->localVardefMap ) ;
     }
 
     function populateFromPost ()
     {
     	parent::populateFromPost();
+        if (!empty($this->visibility_grid) && is_string($this->visibility_grid))
+        {
+            $this->visibility_grid = json_decode(html_entity_decode($this->visibility_grid), true);
+        }
     	// now convert trigger,action pairs into a dependency array representation
     	// we expect the dependencies in the following format:
     	// trigger = [ trigger for action 1 , trigger for action 2 , ... , trigger for action n ]
@@ -144,6 +150,9 @@ class TemplateEnum extends TemplateText{
 		// this class may be extended, so only do the unserialize for genuine TemplateEnums
 		if (get_class( $this ) == 'TemplateEnum' && empty($def['dependency']) )
 			$def['dependency'] = isset($this->ext4)? unserialize(html_entity_decode($this->ext4)) : null ;
+        if (!empty($this->visibility_grid))
+            $def['visibility_grid'] = $this->visibility_grid;
+
 		return $def;
 	}
 
@@ -182,6 +191,10 @@ class TemplateEnum extends TemplateText{
 		if (!empty($this->default) && is_array($this->default)) {
 			$this->default = $this->default[0];
 		}
+        if (!empty($this->visibility_grid) && is_string($this->visibility_grid))
+        {
+            $this->visibility_grid = json_decode($this->visibility_grid, true);
+        }
 		parent::save($df);
 	}
 }

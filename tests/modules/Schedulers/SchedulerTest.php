@@ -34,6 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
+require_once 'include/SugarQueue/SugarJobQueue.php';
 require_once 'modules/Schedulers/Scheduler.php';
 
 class SchedulersTest extends Sugar_PHPUnit_Framework_TestCase
@@ -68,6 +69,8 @@ class SchedulersTest extends Sugar_PHPUnit_Framework_TestCase
     public function tearDown()
     {
         $this->timedate->setNow($this->now);
+        $GLOBALS['db']->query("DELETE FROM schedulers WHERE id='{$this->scheduler->id}'");
+        $GLOBALS['db']->query("DELETE FROM job_queue WHERE scheduler_id='{$this->scheduler->id}'");
     }
 
     /**
@@ -175,11 +178,11 @@ class SchedulersTest extends Sugar_PHPUnit_Framework_TestCase
              array("0::2::1::*::*", "1/31/2011 2:00am", null, false),
              array("0::2::1::*::*", "2/2/2011 2:00am", null, false),
              // Every 15 mins on Mon, Tue
-             array("*/15::*::*::*::0,1", "5/16/2011 2:00pm", null, true),
-             array("*/15::*::*::*::0,1", "5/17/2011 2:00pm", null, true),
-             array("*/15::*::*::*::0,1", "5/18/2011 2:00pm", null, false),
-             array("*/15::*::*::*::0,1", "5/17/2011 2:10pm", "5/17/2011 2:00pm", false),
-             array("*/15::*::*::*::0,1", "5/17/2011 2:15pm", "5/17/2011 2:00pm", true),
+             array("*/15::*::*::*::1,2", "5/16/2011 2:00pm", null, true),
+             array("*/15::*::*::*::1,2", "5/17/2011 2:00pm", null, true),
+             array("*/15::*::*::*::1,2", "5/18/2011 2:00pm", null, false),
+             array("*/15::*::*::*::1,2", "5/17/2011 2:10pm", "5/17/2011 2:00pm", false),
+             array("*/15::*::*::*::1,2", "5/17/2011 2:15pm", "5/17/2011 2:00pm", true),
              );
     }
 
@@ -204,6 +207,145 @@ class SchedulersTest extends Sugar_PHPUnit_Framework_TestCase
         } else {
             $this->assertFalse($this->scheduler->fireQualified());
         }
+    }
+
+    public function testScheduleJob()
+    {
+        $this->scheduler->job_interval =  "*::*::*::*::*";
+        $this->scheduler->new_with_id = true;
+        $this->scheduler->status = "Active";
+        $this->scheduler->job = "test::test";
+        $this->scheduler->save();
+        $queue = new MockSchedulerQueue();
+        $this->scheduler->checkPendingJobs($queue);
+        $this->assertNotEmpty($queue->jobs, "Job was not submitted");
+        $ourjob = null;
+        foreach($queue->jobs as $job) {
+            if($job->scheduler_id == $this->scheduler->id) {
+                $ourjob = $job;
+                break;
+            }
+        }
+        $this->assertNotEmpty($ourjob, "Could not find our job in the queue");
+        $this->assertEquals(SchedulersJob::JOB_STATUS_QUEUED, $ourjob->status, "Wrong status");
+    }
+
+    public function testScheduleJobRepeat()
+    {
+        $this->scheduler->job_interval =  "*::*::*::*::*";
+        $this->scheduler->job = "test::test";
+        $this->scheduler->status = "Active";
+        $this->scheduler->new_with_id = true;
+        $this->scheduler->save();
+        $queue = new MockSchedulerQueue();
+        $this->scheduler->checkPendingJobs($queue);
+        $this->assertNotEmpty($queue->jobs, "Job was not submitted");
+        $ourjob = null;
+        foreach($queue->jobs as $job) {
+            if($job->scheduler_id == $this->scheduler->id) {
+                $ourjob = $job;
+                break;
+            }
+        }
+        $this->assertNotEmpty($ourjob, "Could not find our job in the queue");
+        // Do that again
+        $queue = new MockSchedulerQueue();
+        $this->scheduler->checkPendingJobs($queue);
+        $ourjob2 = null;
+        foreach($queue->jobs as $job) {
+            if($job->scheduler_id == $this->scheduler->id) {
+                $ourjob2 = $job;
+                break;
+            }
+        }
+        $this->assertEmpty($ourjob2, "Copy job submitted");
+        // set job to running
+        $ourjob->status = SchedulersJob::JOB_STATUS_RUNNING;
+        $ourjob->save();
+        $queue = new MockSchedulerQueue();
+        $this->scheduler->checkPendingJobs($queue);
+        $ourjob2 = null;
+        foreach($queue->jobs as $job) {
+            if($job->scheduler_id == $this->scheduler->id) {
+                $ourjob2 = $job;
+                break;
+            }
+        }
+        $this->assertEmpty($ourjob2, "Copy job submitted");
+        // set job to done
+        $ourjob->status = SchedulersJob::JOB_STATUS_DONE;
+        $ourjob->save();
+        $queue = new MockSchedulerQueue();
+        $this->scheduler->checkPendingJobs($queue);
+        $ourjob2 = null;
+        foreach($queue->jobs as $job) {
+            if($job->scheduler_id == $this->scheduler->id) {
+                $ourjob2 = $job;
+                break;
+            }
+        }
+        $this->assertNotEmpty($ourjob, "Could not find our job in the queue");
+    }
+
+    public function testJobsCleanupReschedule()
+    {
+        $this->scheduler->job_interval =  "*::*::*::*::*";
+        $this->scheduler->job = "test::test";
+        $this->scheduler->status = "Active";
+        $this->scheduler->new_with_id = true;
+        $this->scheduler->save();
+
+        $job = new SchedulersJob();
+        $job->status = SchedulersJob::JOB_STATUS_RUNNING;
+        $job->scheduler_id = $this->scheduler->id;
+        $job->execute_time = $GLOBALS['timedate']->nowDb();
+        $job->date_entered = '2010-01-01 12:00:00';
+        $job->date_modified = '2010-01-01 12:00:00';
+        $job->name = "Unit test Job 1";
+        $job->target = "test::test";
+        $job->assigned_user_id = $GLOBALS['current_user']->id;
+        $job->save();
+        $jobid = $job->id;
+        // try queue run with old job stuck
+        $queue = new MockSchedulerQueue();
+        $this->scheduler->checkPendingJobs($queue);
+        $ourjob = null;
+        foreach($queue->jobs as $job) {
+            if($job->scheduler_id == $this->scheduler->id) {
+                $ourjob = $job;
+                break;
+            }
+        }
+        $this->assertEmpty($ourjob, "Duplicate job found");
+        // now cleanup the job
+        $queue->cleanup();
+        $job = new SchedulersJob();
+        $job->retrieve($jobid);
+        $this->assertEquals(SchedulersJob::JOB_STATUS_DONE, $job->status, "Wrong status");
+        $this->assertEquals(SchedulersJob::JOB_FAILURE, $job->resolution, "Wrong resolution");
+        // now try again - should schedule now
+        $queue = new MockSchedulerQueue();
+        $this->scheduler->checkPendingJobs($queue);
+        $ourjob = null;
+        foreach($queue->jobs as $job) {
+            if($job->scheduler_id == $this->scheduler->id) {
+                $ourjob = $job;
+                break;
+            }
+        }
+        $this->assertNotEmpty($ourjob, "Could not find our job in the queue");
+    }
+
+}
+
+class MockSchedulerQueue extends SugarJobQueue
+{
+    public $jobs = array();
+
+    public function submitJob($job)
+    {
+        $this->jobs[] = $job;
+        parent::submitJob($job);
     }
 }
 

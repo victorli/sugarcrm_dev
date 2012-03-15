@@ -280,21 +280,40 @@ class SugarFolder {
 	    $r = $this->db->query($query);
 	}
 
-	function generateSugarsDynamicFolderQuery() {
+	protected function generateArchiveFolderQuery()
+	{
+		global $current_user;
+	    $q = <<<ENDQ
+SELECT emails.id , emails.name, emails.date_sent, emails.status, emails.type, emails.flagged, emails.reply_to_status, emails_text.from_addr, emails_text.to_addrs, 'Emails' polymorphic_module FROM emails
+JOIN emails_text on emails.id = emails_text.email_id
+WHERE emails.deleted=0 AND emails.type NOT IN ('out', 'draft') AND emails.status NOT IN ('sent', 'draft') AND emails.id IN (
+SELECT eear.email_id FROM emails_email_addr_rel eear
+JOIN email_addr_bean_rel eabr ON eabr.email_address_id=eear.email_address_id AND eabr.bean_id = '{$current_user->id}' AND eabr.bean_module = 'Users'
+WHERE eear.deleted=0
+)
+ENDQ;
+        return $q;
+	}
+
+	function generateSugarsDynamicFolderQuery()
+	{
 		global $current_user;
 		$type = $this->folder_type;
+		if($type == 'archived') {
+		    return $this->generateArchiveFolderQuery();
+		}
 		$status = $type;
 		if($type == "sent") {
 			$type = "out";
 		}
 		if($type == 'inbound') {
-			$ret = " AND status NOT IN ('sent', 'archived', 'draft') AND type NOT IN ('out', 'archived', 'draft')";
+			$ret = " AND emails.status NOT IN ('sent', 'archived', 'draft') AND emails.type NOT IN ('out', 'archived', 'draft')";
 		} else {
-			$ret = " AND status NOT IN ('archived') AND type NOT IN ('archived')";
+			$ret = " AND emails.status NOT IN ('archived') AND emails.type NOT IN ('archived')";
 		}
 		$q = "SELECT emails.id , emails.name, emails.date_sent, emails.status, emails.type, emails.flagged, emails.reply_to_status, emails_text.from_addr, emails_text.to_addrs, 'Emails' polymorphic_module FROM emails" .
 								   " JOIN emails_text on emails.id = emails_text.email_id
-                                   WHERE (type = '{$type}' OR status = '{$status}') AND assigned_user_id = '{$current_user->id}' AND emails.deleted = '0'";
+                                   WHERE (type = '{$type}' OR status = '{$status}') AND assigned_user_id = '{$current_user->id}' AND emails.deleted=0";
 		return $q . $ret;
 	} // fn
 
@@ -569,12 +588,12 @@ class SugarFolder {
 		{
 		   unset($a['dynamic_query']);
 		}
-		
-		for($i=0; $i<$this->_depth; $i++) 
+
+		for($i=0; $i<$this->_depth; $i++)
 		{
 			$a['name'] = ".".$a['name'];
 		}
-		
+
 		$collection[] = $a;
 
 		if($a['has_child'] == 1) {

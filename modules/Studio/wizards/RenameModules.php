@@ -779,7 +779,7 @@ class RenameModules
             $search = call_user_func($modifier, $search);
             $replace = call_user_func($modifier, $replace);
         }
-        
+
         return str_replace($search, $replace, $oldStringValue);
     }
 
@@ -868,9 +868,10 @@ class RenameModules
         while(isset($params['slot_' . $count]))
         {
             $index = $params['slot_' . $count];
-            $key = (isset($params['key_' . $index]))?to_html(remove_xss(from_html($params['key_' . $index]))): 'BLANK';
-            $value = (isset($params['value_' . $index]))?to_html(remove_xss(from_html($params['value_' . $index]))): '';
-            $svalue = (isset($params['svalue_' . $index]))?to_html(remove_xss(from_html($params['svalue_' . $index]))): $value;
+
+            $key = (isset($params['key_' . $index]))?SugarCleaner::stripTags($params['key_' . $index]): 'BLANK';
+            $value = (isset($params['value_' . $index]))?SugarCleaner::stripTags($params['value_' . $index]): '';
+            $svalue = (isset($params['svalue_' . $index]))?SugarCleaner::stripTags($params['svalue_' . $index]): $value;
             if($key == 'BLANK')
                $key = '';
 

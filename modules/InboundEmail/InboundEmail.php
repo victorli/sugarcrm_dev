@@ -35,18 +35,8 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description:  TODO: To be written.
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
- * All Rights Reserved.
- * Contributor(s): ______________________________________..
- ********************************************************************************/
-
-
 
 require_once('include/OutboundEmail/OutboundEmail.php');
-require_once('include/Pear/HTML_Safe/Safe.php');
 
 function this_callback($str) {
 	foreach($str as $match) {
@@ -134,7 +124,6 @@ class InboundEmail extends SugarBean {
 												5 => 'OTHER'
 											);
 	// object attributes
-	var $safe; // place holder for HTML_Safe class
 	var $compoundMessageId; // concatenation of messageID and deliveredToEmail
 	var $serverConnectString;
 	var $disable_row_level_security	= true;
@@ -190,10 +179,6 @@ class InboundEmail extends SugarBean {
 			imap_timeout(2, 60);
 			imap_timeout(3, 60);
 		}
-
-		$this->safe = new HTML_Safe();
-		$this->safe->whiteProtocols[] = "cid";
-		$this->safe->clear();
 
 		$this->smarty = new Sugar_Smarty();
 		$this->overview = new Overview();
@@ -820,8 +805,7 @@ class InboundEmail extends SugarBean {
 						break;
 
 						default:
-							$overview->$colDef['name'] = from_html($overview->$colDef['name']);
-							$overview->$colDef['name'] = $this->cleanContent($overview->$colDef['name']);
+							$overview->$colDef['name'] = SugarCleaner::cleanHtml(from_html($overview->$colDef['name']));
 							$values .= $this->db->quoted($overview->$colDef['name']);
 						break;
 					}
@@ -3103,15 +3087,11 @@ class InboundEmail extends SugarBean {
 		} // end else clause
 
 		$msgPart = $this->customGetMessageText($msgPart);
-		/* cn: bug 9176 - htmlEntitites hide XSS attacks.
-		 * decode to pass refreshed HTML to HTML_Safe */
-		if ($type == 'PLAIN')
-		    return $this->cleanXssContent(to_html($msgPart));
-		else
-		{
-            $safedMsgPart = $this->cleanContent($msgPart);
-	   	    return str_replace("<img />", '', $safedMsgPart); /*SKIP_IMAGE_TAG*/
+		/* cn: bug 9176 - htmlEntitites hide XSS attacks. */
+		if($type == 'PLAIN') {
+		    return SugarCleaner::cleanHtml(to_html($msgPart), false);
 		}
+        return SugarCleaner::cleanHtml($msgPart, false);
 	}
 
 	/**
@@ -3618,23 +3598,11 @@ class InboundEmail extends SugarBean {
 
 		// generate compound messageId
 		$this->compoundMessageId = trim($message_id).trim($deliveredTo);
-		// if the length > 255 then md5 it so that the data will be of smaller length
-		if (strlen($this->compoundMessageId) > 255) {
-			$this->compoundMessageId = md5($this->compoundMessageId);
-		} // if
-
 		if (empty($this->compoundMessageId)) {
 			$GLOBALS['log']->error('Inbound Email found a message without a header and message_id');
 			return false;
 		} // if
-
-		$potentials = clean_xss($this->compoundMessageId, false);
-
-		if(is_array($potentials) && !empty($potentials)) {
-			foreach($potentials as $bad) {
-				$this->compoundMessageId = str_replace($bad, "", $this->compoundMessageId);
-			}
-		}
+		$this->compoundMessageId = md5($this->compoundMessageId);
 
 		$query = 'SELECT count(emails.id) AS c FROM emails WHERE emails.message_id = \''.$this->compoundMessageId.'\' and emails.deleted = 0';
 		$r = $this->db->query($query, true);
@@ -3667,72 +3635,7 @@ class InboundEmail extends SugarBean {
 		return $ret;
 	}
 
-   /**
-	* URL cleanup function
-	* Until we have comprehensive CSRF protection, we need to sanitize URLs in emails
-	* to avoid CSRF attacks
-	*/
-	public function urlCleaner($attr, $value)
-	{
-	// hrefs are ok
-	    if(strtolower($attr) == "href") return true;
-	    $items = parse_url($value);
-	    if(empty($items)) return false;
-	    if(!empty($items['scheme']) && strtolower($items['scheme']) != 'http' && strtolower($items['scheme']) != 'https') {
-	        // do not touch non-HTTP URLs
-	        return true;
-	    }
-	// don't allow relative URLs
-		if(empty($items['host'])) return false;
-	// allow URLs with no query
-		if(empty($items['query'])) return true;
-	// allow URLs that don't start with /? or /index.php?
-		if(!empty($items['path']) && $items['path'] != '/' && strtolower(substr($items['path'], -10)) != '/index.php') {
-			return true;
-		}
-	// now we have blah-blah/index.php?query - let's see if query looks dangerous
-		$query_items = array();
-		parse_str(from_html($items['query']), $query_items);
-	// weird query, probably harmless
-		if(empty($query_items)) return true;
-	// suspiciously like SugarCRM query, reject
-		if(!empty($query_items['module']) && !empty($query_items['action'])) return false;
-	// looks like non-download entry point - allow only specific entry points
-		if(!empty($query_items['entryPoint']) && !in_array($query_items['entryPoint'], array('download', 'image', 'getImage'))) {
-			return false;
-		}
 
-		return true;
-	}
-
-	/**
-	 * Cleans content for XSS and other types of attack vectors
-	 * @param string str String to clean
-	 * @return string
-	 */
-	function cleanContent($str) {
-		// Safe_HTML
-		$this->safe->clear();
-		$this->safe->setUrlCallback(array($this, "urlCleaner"));
-		$str = $this->safe->parse($str, false);
-		return $this->cleanXssContent($str);
-	}
-
-	/**
-	 * Cleans content for XSS
-	 * @param string str String to clean
-	 * @return string
-	 */
-	function cleanXssContent($str) {
-
-		$potentials = clean_xss($str, false);
-		if(is_array($potentials) && !empty($potentials)) {
-			foreach($potentials as $bad) {
-				$str = str_replace($bad, "", $str);
-			}
-		}
-		return $str;
-	}
 	/**
 	 * Calculates the appropriate display date/time sent for an email.
 	 * @param string headerDate The date sent of email in MIME header format
@@ -5229,7 +5132,7 @@ eoq;
 	 */
 	function getTempFilename($nameOnly=false) {
 
-        $str = md5($this->compoundMessageId);
+        $str = $this->compoundMessageId;
 
 		if(!$nameOnly) {
 			$str = $str.$this->attachmentCount;

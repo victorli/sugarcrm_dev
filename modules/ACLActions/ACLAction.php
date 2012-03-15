@@ -255,7 +255,7 @@ class ACLAction  extends SugarBean{
                     WHERE acl_actions.deleted=0 $additional_where ORDER BY category,name";
         $result = $db->query($query);
         $selected_actions = array();
-        while($row = $db->fetchByAssoc($result) ){
+        while($row = $db->fetchByAssoc($result, FALSE) ){
             $acl = new ACLAction();
             $isOverride  = false;
             $acl->populateFromRow($row);

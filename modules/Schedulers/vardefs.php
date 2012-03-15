@@ -35,7 +35,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-$dictionary['schedulers'] = array('table' => 'schedulers',
+$dictionary['Scheduler'] = array('table' => 'schedulers',
 	'fields' => array (
 		'id' => array (
 			'name' => 'id',
@@ -127,17 +127,37 @@ $dictionary['schedulers'] = array('table' => 'schedulers',
 			'required' => true,
 			'reportable' => false,
 		),
+		'job_url' => array (
+			'name' => 'job_url',
+			'vname' => 'LBL_JOB_URL',
+			'type' => 'varchar',
+			'len' => '255',
+			'required' => false,
+			'reportable' => false,
+			'source' => 'non-db',
+			'dependency' => 'equal($job_function, "url::")'
+		),
+		'job_function' => array (
+			'name' => 'job_function',
+			'vname' => 'LBL_JOB',
+			'type' => 'enum',
+			'function' => array('name' => array('Scheduler', 'getJobsList'), 'params' => array()),
+			'len' => '255',
+			'required' => false,
+			'reportable' => false,
+			'source' => 'non-db',
+		),
 		'date_time_start' => array (
 			'name' => 'date_time_start',
-			'vname' => 'LBL_SCHEDULER_DATE_TIME_START',
-			'type' => 'datetime',
+			'vname' => 'LBL_DATE_TIME_START',
+			'type' => 'datetimecombo',
 			'required' => true,
 			'reportable' => false,
 		),
 		'date_time_end' => array (
 			'name' => 'date_time_end',
-			'vname' => 'LBL_SCHEDULER_DATE_TIME_END',
-			'type' => 'datetime',
+			'vname' => 'LBL_DATE_TIME_END',
+			'type' => 'datetimecombo',
 			'reportable' => false,
 		),
 		'job_interval' => array (
@@ -148,6 +168,15 @@ $dictionary['schedulers'] = array('table' => 'schedulers',
 			'required' => true,
 			'reportable' => false,
 		),
+		'adv_interval' => array (
+			'name' => 'adv_interval',
+			'vname' => 'LBL_ADV_OPTIONS',
+			'type' => 'bool',
+			'required' => false,
+			'reportable' => false,
+			'source' => 'non-db',
+		),
+
 		'time_from' => array (
 			'name' => 'time_from',
 			'vname' => 'LBL_TIME_FROM',
@@ -240,12 +269,11 @@ $dictionary['schedulers'] = array('table' => 'schedulers',
 			'lhs_table'						=> 'schedulers',
 			'lhs_key' 						=> 'id',
 			'rhs_module'					=> 'SchedulersJobs',
-			'rhs_table'						=> 'schedulers_times',
+			'rhs_table'						=> 'job_queue',
 			'rhs_key' 						=> 'scheduler_id',
-			//'join_table'					=> 'schedulers_times',
 			'relationship_type' 			=> 'one-to-many',
 		),
 	)
 );
 
-?>
+//VardefManager::createVardef('Schedulers','Scheduler', array('default'));

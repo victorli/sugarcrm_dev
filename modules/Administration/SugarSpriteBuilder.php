@@ -306,7 +306,7 @@ class SugarSpriteBuilder
 				);
 			}
 
-			// use seperate class to arrange the images
+			// use separate class to arrange the images
 			$sp = new SpritePlacement($dirs, $config);
 			$sp->processSprites();
 

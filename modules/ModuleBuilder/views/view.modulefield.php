@@ -132,7 +132,7 @@ class ViewModulefield extends SugarView
         //C.L. - Add support to mark related module id columns as reserved keywords
         require_once 'modules/ModuleBuilder/parsers/relationships/DeployedRelationships.php';
         $relatedModules = array_keys(DeployedRelationships::findRelatableModules()) ;
-        global $beanList;
+        global $beanList, $current_language;
         foreach($relatedModules as $relModule)
         {
             if(isset($beanList[$relModule]))
@@ -184,12 +184,19 @@ class ViewModulefield extends SugarView
             
             //Check if autoincrement fields are allowed
             $allowAutoInc = true;
+            $enumFields = array();
             foreach($module->field_defs as $field => $def)
             {
             	if (!empty($def['type']) && $def['type'] == "int" && !empty($def['auto_increment'])) {
             	   $allowAutoInc = false;
             	   break;
             	}
+                if (!empty($def['type']) && $def['type'] == "enum" && $field != $vardef['name'])
+                {
+                    $enumFields[$field] = translate($def['vname'], $moduleName);
+                    if (substr($enumFields[$field], -1) == ":")
+                        $enumFields[$field] = substr($enumFields[$field], 0, strlen($enumFields[$field]) - 1);
+                }
             }
             $fv->ss->assign( 'allowAutoInc', $allowAutoInc);   
 
@@ -250,6 +257,18 @@ class ViewModulefield extends SugarView
 			if(empty($module->mbvardefs->vardefs['fields']['parent_name']) || (isset($vardef['type']) && $vardef['type'] == 'parent'))
 				$field_types['parent'] = $GLOBALS['mod_strings']['parent'];
 
+            $enumFields = array();
+            foreach($module->mbvardefs->vardefs as $field => $def)
+            {
+                if (!empty($def['type']) && $def['type'] == "enum" && $field != $vardef['name'])
+                {
+                    $enumFields[$field] = isset($module->mblanguage->strings[$current_language][$def['vname']]) ?
+                        $this->mbModule->mblanguage->strings[$current_language][$def['vname']] : $field;
+                    if (substr($enumFields[$field], -1) == ":")
+                        $enumFields[$field] = substr($enumFields[$field], 0, strlen($enumFields[$field]) -1);
+                }
+            }
+
             $edit_or_add = 'mbeditField';
         }
 
@@ -262,7 +281,7 @@ class ViewModulefield extends SugarView
             $fv->ss->assign('lbl_value', htmlentities($_REQUEST['labelValue'], ENT_QUOTES, 'UTF-8'));
         }
 
-        foreach(array("formula", "default", "comments", "help") as $toEscape)
+        foreach(array("formula", "default", "comments", "help", "visiblityGrid") as $toEscape)
 		{
 			if (!empty($vardef[$toEscape]) && is_string($vardef[$toEscape])) {
 	        	$vardef[$toEscape] = htmlentities($vardef[$toEscape], ENT_QUOTES, 'UTF-8');
@@ -277,11 +296,14 @@ class ViewModulefield extends SugarView
 
         $fv->ss->assign('action',$action);
         $fv->ss->assign('isClone', ($isClone ? 1 : 0));
+        $fv->ss->assign("module_dd_fields", $enumFields);
         $json = getJSONobj();
 
         $fv->ss->assign('field_name_exceptions', $json->encode($field_name_exceptions));
         ksort($field_types);
         $fv->ss->assign('field_types',$field_types);
+
+
         $fv->ss->assign('importable_options', $GLOBALS['app_list_strings']['custom_fields_importable_dom']);
         $fv->ss->assign('duplicate_merge_options', $GLOBALS['app_list_strings']['custom_fields_merge_dup_dom']);
 

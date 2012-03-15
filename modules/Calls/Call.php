@@ -44,8 +44,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 // Call is used to store customer information.
-require_once('modules/Activities/Activity.php');
-class Call extends Activity
+class Call extends SugarBean
 {
 	var $field_name_map;
 	// Stored fields
@@ -73,6 +72,9 @@ class Call extends Activity
 	var $reminder_time;
 	var $reminder_time_options;
 	var $reminder_checked;
+	var $email_reminder_time;
+	var $email_reminder_checked;
+	var $email_reminder_sent;
 	var $required;
 	var $accept_status;
 	var $created_by;
@@ -103,6 +105,8 @@ class Call extends Activity
 	var $object_name = "Call";
 	var $new_schema = true;
 	var $importable = true;
+	var $syncing = false;
+	var $recurring_source;
 
 	// This is used to retrieve related fields from form posts.
 	var $additional_column_fields = array('assigned_user_name', 'assigned_user_id', 'contact_id', 'user_id', 'contact_name');
@@ -131,7 +135,28 @@ class Call extends Activity
          if(!empty($GLOBALS['app_list_strings']['duration_intervals']))
         	$this->minutes_values = $GLOBALS['app_list_strings']['duration_intervals'];
 	}
-
+	
+	/**
+	 * Disable edit if call is recurring and source is not Sugar. It should be edited only from Outlook.
+	 * @param $view string
+	 * @param $is_owner bool
+	 */
+	function ACLAccess($view,$is_owner = 'not_set'){
+		// don't check if call is being synced from Outlook
+		if($this->syncing == false){
+			$view = strtolower($view);
+			switch($view){
+				case 'edit':
+				case 'save':
+				case 'editview':
+				case 'delete':
+					if(!empty($this->recurring_source) && $this->recurring_source != "Sugar"){
+						return false;
+					}
+			}
+		}
+		return parent::ACLAccess($view,$is_owner);
+	}
     // save date_end by calculating user input
     // this is for calendar
 	function save($check_notify = FALSE) {
@@ -168,6 +193,11 @@ class Call extends Activity
         if (empty($this->status) ) {
             $this->status = $this->getDefaultStatus();
         }
+        
+		// prevent a mass mailing for recurring meetings created in Calendar module
+		if (empty($this->id) && !empty($_REQUEST['module']) && $_REQUEST['module'] == "Calendar" && !empty($_REQUEST['repeat_type']) && !empty($this->repeat_parent_id)) {
+			$check_notify = false;
+		}       
 		/*nsingh 7/3/08  commenting out as bug #20814 is invalid
 		if($current_user->getPreference('reminder_time')!= -1 &&  isset($_POST['reminder_checked']) && isset($_POST['reminder_time']) && $_POST['reminder_checked']==0  && $_POST['reminder_time']==-1){
 			$this->reminder_checked = '1';
@@ -375,6 +405,15 @@ class Call extends Activity
 		}
 		$this->reminder_checked = $this->reminder_time == -1 ? false : true;
 
+		if (empty($this->email_reminder_time)) {
+			$this->email_reminder_time = -1;
+		}
+		if(empty($this->id)){ 
+			$reminder_t = $GLOBALS['current_user']->getPreference('email_reminder_time');
+			if(isset($reminder_t))
+		    		$this->email_reminder_time = $reminder_t;
+		}
+		$this->email_reminder_checked = $this->email_reminder_time == -1 ? false : true;
 
 		if (isset ($_REQUEST['parent_type'])) {
 			$this->parent_type = $_REQUEST['parent_type'];
@@ -426,17 +465,12 @@ class Call extends Activity
 		}
 
         $call_fields['CONTACT_ID'] = $this->contact_id;
-        //If we have a contact id and there are more than one contacts found for this meeting then let's create a hover link
-        if($this->alter_many_to_many_query && !empty($this->contact_id) && isset($this->secondary_select_count) && $this->secondary_select_count > 1)
-        {
-           $call_fields['CONTACT_NAME'] = $this->createManyToManyDetailHoverLink($this->contact_name, $this->contact_id);
-        } else {
-           $call_fields['CONTACT_NAME'] = $this->contact_name;
-        }
+        $call_fields['CONTACT_NAME'] = $this->contact_name;
 
 		$call_fields['PARENT_NAME'] = $this->parent_name;
 
         $call_fields['REMINDER_CHECKED'] = $this->reminder_time==-1 ? false : true;
+	$call_fields['EMAIL_REMINDER_CHECKED'] = $this->email_reminder_time==-1 ? false : true;
 
 		return $call_fields;
 	}
@@ -689,5 +723,13 @@ class Call extends Activity
             }
         }
         return '';
+    }
+    
+    public function mark_deleted($id)
+    {
+        require_once("modules/Calendar/CalendarUtils.php");
+        CalendarUtils::correctRecurrences($this, $id);
+                
+        parent::mark_deleted($id);
     }
 }

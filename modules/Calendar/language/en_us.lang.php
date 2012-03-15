@@ -40,7 +40,7 @@ $mod_strings = array (
 
 	'LBL_MODULE_NAME' => 'Calendar',
 	'LBL_MODULE_TITLE' => 'Calendar',
-	'LNK_NEW_CALL' => 'Log Call',
+	'LNK_NEW_CALL' => 'Schedule Call',
 	'LNK_NEW_MEETING' => 'Schedule Meeting',
 	'LNK_NEW_APPOINTMENT' => 'Create Appointment',
 	'LNK_NEW_TASK' => 'Create Task',
@@ -81,9 +81,10 @@ $mod_strings = array (
 	'LBL_ASSIGNED_TO_NAME' => 'Assigned to',
 	'LBL_DATE' => 'Start Date & Time',  
 	'LBL_CREATE_MEETING' => 'Schedule Meeting',
-	'LBL_CREATE_CALL' => 'Log Call',  
+	'LBL_CREATE_CALL' => 'Log Call',
 	'LBL_HOURS_ABBREV' => 'h',
 	'LBL_MINS_ABBREV' => 'm',
+
 
 	'LBL_YES' => 'Yes',
 	'LBL_NO' => 'No',
@@ -91,7 +92,9 @@ $mod_strings = array (
 	'LBL_CREATE_NEW_RECORD' => 'Create Activity',
 	'LBL_LOADING' => 'Loading ......',
 	'LBL_SAVING' => 'Saving ......',
+	'LBL_SENDING_INVITES' => 'Sending Invites .....',
 	'LBL_CONFIRM_REMOVE' => 'Are you sure you want to remove the record?',
+	'LBL_CONFIRM_REMOVE_ALL_RECURRING' => 'Are you sure you want to remove all recurring records?',
 	'LBL_EDIT_RECORD' => 'Edit Activity',
 	'LBL_ERROR_SAVING' => 'Error while saving',
 	'LBL_ERROR_LOADING' => 'Error while loading',
@@ -102,8 +105,8 @@ $mod_strings = array (
 
 	'LBL_INFO_TITLE' => 'Additional Details',
 	'LBL_INFO_DESC' => 'Description',
-	'LBL_INFO_START_DT' => 'Start Date Time',
-	'LBL_INFO_DUE_DT' => 'Due Date Time',
+	'LBL_INFO_START_DT' => 'Start Date',
+	'LBL_INFO_DUE_DT' => 'Due Date',
 	'LBL_INFO_DURATION' => 'Duration',
 	'LBL_INFO_NAME' => 'Subject',
 	'LBL_INFO_RELATED_TO' => 'Related to',
@@ -116,9 +119,9 @@ $mod_strings = array (
 
 
 	'LBL_SETTINGS_TITLE' => 'Settings',
+	'LBL_SETTINGS_CALENDAR_STYLE' => 'Calendar Style:',
 	'LBL_SETTINGS_TIME_STARTS'=>'Start time:', 
 	'LBL_SETTINGS_TIME_ENDS'=>'End time:', 
-	'LBL_SETTINGS_CALENDAR_STYLE' => 'Calendar Style:',
 	'LBL_SETTINGS_CALLS_SHOW' => 'Show Calls:',
 	'LBL_SETTINGS_TASKS_SHOW' => 'Show Tasks:', 
 
@@ -130,19 +133,26 @@ $mod_strings = array (
 	'LBL_CLOSE_BUTTON' => 'Close',
 
 	'LBL_GENERAL_TAB' => 'Details',
-	'LBL_PARTICIPANTS_TAB' =>'Invitees',
+	'LBL_PARTICIPANTS_TAB' => 'Invitees',
+	'LBL_REPEAT_TAB' => 'Occurrence',	
+	
+	'LBL_REPEAT_TYPE' => 'Repeat',
+	'LBL_REPEAT_INTERVAL' => 'Interval',
+	'LBL_REPEAT_END' => 'End',	
+	'LBL_REPEAT_END_AFTER' => 'After',
+	'LBL_REPEAT_OCCURRENCES' => 'occurrences',
+	'LBL_REPEAT_END_BY' => 'By',	
+	'LBL_REPEAT_DOW' => 'On',	
+	'LBL_REPEAT_UNTIL' => 'Repeat Until',
+	'LBL_REPEAT_COUNT' => 'Number of occurrences',
+	'LBL_REPEAT_LIMIT_ERROR' => 'Your request was going to create more than $limit meetings.',
+	
+	'LBL_EDIT_ALL_RECURRENCES' => 'Edit All Occurrences',
+	'LBL_REMOVE_ALL_RECURRENCES' => 'Remove All Occurrences',
 
 );
 
 $mod_list_strings = array(
-	'repeat_types' => 
-	array(
-		''	=>	'None',
-		'Daily'	=>	'Daily',
-		'Weekly' =>	'Weekly',
-		'Monthly' =>	'Monthly',
-		'Yearly' =>	'Yearly',
-	),
 	'dom_cal_weekdays'=>
 		array(
 			"Sun",

@@ -91,7 +91,7 @@ function add_prospects_to_prospect_list($query,$parent_module,$parent_type,$pare
 
 		$GLOBALS['log']->debug('add_prospects_to_prospect_list:relationship_attribute:'.$relationship_attribute);
 
-		//load relationship for the first time or on change of relationship atribute.
+		//load relationship for the first time or on change of relationship attribute.
 		if (empty($focus->$relationship_attribute)) {
 			$focus->load_relationship($relationship_attribute);
 		}
@@ -161,7 +161,7 @@ if (isset($_REQUEST['return_type'])  && $_REQUEST['return_type'] == 'report') {
     //if param is set to "addcampaignlog", then we need to create a campaign log entry
     //for each campaign id passed in.
 
-    //get list of campaign's selected'
+    // Get a list of campaigns selected.
     if (isset($_REQUEST['subpanel_id'])  && !empty($_REQUEST['subpanel_id'])) {
         $campaign_ids = $_REQUEST['subpanel_id'];
         global $beanFiles;

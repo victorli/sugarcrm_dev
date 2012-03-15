@@ -55,15 +55,11 @@ height: 10px;
 </style>
 {/literal}
 
-<!-- begin includes for overlib -->
-{sugar_getscript file="cache/include/javascript/sugar_grp_overlib.js"}
-<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000"></div>
-<!-- end includes for overlib -->
 
 
 {sugar_getscript file="cache/include/javascript/sugar_grp_yui_widgets.js"}
 {sugar_getscript file='include/javascript/dashlets.js'}
-<link rel='stylesheet' href='{sugar_getjspath file='include/ytree/TreeView/css/folders/tree.css'}'>
+
 {$chartResources}
 {$mySugarChartResources}
 

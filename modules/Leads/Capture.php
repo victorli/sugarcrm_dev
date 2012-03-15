@@ -54,13 +54,11 @@ if(file_exists('leadCapture_override.php')){
 	include('leadCapture_override.php');
 }
 if (!empty($_POST['user']) && !empty($users[$_POST['user']])) {
-    
+
     $current_user = new User();
 	$current_user->user_name = $users[$_POST['user']]['name'];
 
-	if($current_user->authenticate_user($users[$_POST['user']]['pass'])){
-		$userid = $current_user->retrieve_user_id($users[$_REQUEST['user']]['name']);
-		$current_user->retrieve($userid);
+	if($current_user->load_user($users[$_POST['user']]['pass'], true)){
 		$leadForm = new LeadFormBase();
 		$prefix = '';
 		if(!empty($_POST['prefix'])){
@@ -68,7 +66,7 @@ if (!empty($_POST['user']) && !empty($users[$_POST['user']])) {
 		}
 
 		if( !isset($_POST['assigned_user_id']) || !empty($_POST['assigned_user_id']) ){
-			$_POST['prefix'] = $userid;
+			$_POST['prefix'] = $current_user->id;
 		}
 
 		$_POST['record'] ='';

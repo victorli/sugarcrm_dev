@@ -45,31 +45,31 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 require_once('modules/Users/authentication/SugarAuthenticate/SugarAuthenticateUser.php');
 class EmailAuthenticateUser extends SugarAuthenticateUser {
     var $passwordLength = 4;
-    
+
 
     /**
-	 * this is called when a user logs in 
+	 * this is called when a user logs in
 	 *
 	 * @param STRING $name
 	 * @param STRING $password
 	 * @return boolean
 	 */
     function loadUserOnLogin($name, $password) {
-      
+
         global $login_error;
-         
+
         $GLOBALS['log']->debug("Starting user load for ". $name);
         if(empty($name) || empty($password)) return false;
-       
+
         if(empty($_SESSION['lastUserId'])){
-            $user_hash = SugarAuthenticate::encodePassword($password);
-            $user_id = $this->authenticateUser($name, $user_hash);
+            $input_hash = SugarAuthenticate::encodePassword($password);
+            $user_id = $this->authenticateUser($name, $input_hash);
             if(empty($user_id)) {
                 $GLOBALS['log']->fatal('SECURITY: User authentication for '.$name.' failed');
                 return false;
             }
         }
-        
+
         if(empty($_SESSION['emailAuthToken'])){
             $_SESSION['lastUserId'] = $user_id;
             $_SESSION['lastUserName'] = $name;
@@ -89,39 +89,39 @@ class EmailAuthenticateUser extends SugarAuthenticateUser {
                 unset($_SESSION['emailAuthToken']);
                 return true;
             }
-             
+
         }
-        
+
          $_SESSION['login_error'] = 'Please Enter Your User Name and Emailed Session Token';
         return false;
     }
-    
-    
+
+
     /**
-     * Sends the users password to the email address or sends 
+     * Sends the users password to the email address or sends
      *
      * @param unknown_type $user_id
      * @param unknown_type $password
      */
     function sendEmailPassword($user_id, $password){
-	
+
 	    $result = $GLOBALS['db']->query("SELECT email1, email2, first_name, last_name FROM users WHERE id='$user_id'");
 	    $row = $GLOBALS['db']->fetchByAssoc($result);
-	   
+
 	    global $sugar_config;
 	    if(empty($row['email1']) && empty($row['email2'])){
-	       
+
 	        $_SESSION['login_error'] = 'Please contact an administrator to setup up your email address associated to this account';
 	       return;
 	    }
-	    
+
 	    require_once("include/SugarPHPMailer.php");
 		global $locale;
         $OBCharset = $locale->getPrecedentPreference('default_email_charset');
         $notify_mail = new SugarPHPMailer();
 		$notify_mail->CharSet = $sugar_config['default_charset'];
 		$notify_mail->AddAddress(((!empty($row['email1']))?$row['email1']: $row['email2']),$locale->translateCharsetMIME(trim($row['first_name'] . ' ' . $row['last_name']), 'UTF-8', $OBCharset));
-    
+
 		if (empty($_SESSION['authenticated_user_language'])) {
 			$current_language = $sugar_config['default_language'];
 		}
@@ -140,11 +140,11 @@ class EmailAuthenticateUser extends SugarAuthenticateUser {
         else {
             $GLOBALS['log']->info("Notifications: e-mail successfully sent");
         }
-			
-			
-		
+
+
+
 	}
-    
+
 
 }
 

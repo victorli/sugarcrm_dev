@@ -246,8 +246,8 @@ function setMouseOverForField(field, on){
 
     if(on){
         field.onmouseover = function(){
-            return overlib(document.getElementById(this.id + 'b').innerHTML,  FGCLASS, 'olFgClass',
-            CGCLASS, 'olCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olCapFontClass');
+        	
+        	$(this).tipTip({maxWidth: "auto", edgeOffset: 10, content: document.getElementById(this.id + 'b').innerHTML});
 
         };
         field.onmouseout = function(){

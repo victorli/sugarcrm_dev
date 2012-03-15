@@ -42,6 +42,11 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 class SugarWidgetSubPanelTopComposeEmailButton extends SugarWidgetSubPanelTopButton
 {
+    public function getWidgetId()
+    {
+        return parent::getWidgetId() . '_'.preg_replace('[ ]', '', strtolower($this->form_value)).'_button';
+    }
+
 	function display($defines)
 	{
 		global $app_strings,$current_user,$sugar_config,$beanList,$beanFiles;
@@ -64,10 +69,10 @@ class SugarWidgetSubPanelTopComposeEmailButton extends SugarWidgetSubPanelTopBut
 			// awu: Not all beans have emailAddress property, we must account for this
 			if (isset($bean->emailAddress)){
 				$to_addrs = $bean->emailAddress->getPrimaryAddress($bean);
-				$button = "<input class='button' type='button'  value='$value'  id='".preg_replace('[ ]', '', strtolower($value))."_button'  name='".preg_replace('[ ]', '', $value)."_button'   title='$title' onclick=\"location.href='mailto:$to_addrs';return false;\" />";
+				$button = "<input class='button' type='button'  value='$value'  id='". $this->getWidgetId() . "'  name='".preg_replace('[ ]', '', $value)."_button'   title='$title' onclick=\"location.href='mailto:$to_addrs';return false;\" />";
 			}
 			else{
-				$button = "<input class='button' type='button'  value='$value'  id='".preg_replace('[ ]', '', strtolower($value))."_button'  name='".preg_replace('[ ]', '', $value)."_button'  title='$title' onclick=\"location.href='mailto:';return false;\" />";
+				$button = "<input class='button' type='button'  value='$value'  id='". $this->getWidgetId() ."'  name='".preg_replace('[ ]', '', $value)."_button'  title='$title' onclick=\"location.href='mailto:';return false;\" />";
 			}
 		} else {
 			//Generate the compose package for the quick create options.
@@ -76,7 +81,7 @@ class SugarWidgetSubPanelTopComposeEmailButton extends SugarWidgetSubPanelTopBut
             $eUi = new EmailUI();
             $j_quickComposeOptions = $eUi->generateComposePackageForQuickCreate($composeData, http_build_query($composeData), false, $defines['focus']);
 
-            $button = "<input title='$title'  id='".preg_replace('[ ]', '', strtolower($value))."_button'  onclick='SUGAR.quickCompose.init($j_quickComposeOptions);' class='button' type='submit' name='".preg_replace('[ ]', '', $value)."_button' value='$value' />";
+            $button = "<input title='$title'  id='". $this->getWidgetId()."_button'  onclick='SUGAR.quickCompose.init($j_quickComposeOptions);' class='button' type='submit' name='".preg_replace('[ ]', '', $value)."_button' value='$value' />";
 		}
 		return $button;
 	}

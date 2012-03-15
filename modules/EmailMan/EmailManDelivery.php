@@ -85,7 +85,7 @@ $emailman = new EmailMan();
         //find all the message that meet the following criteria.
         //1. scheduled send date time is now
         //2. campaign matches the current campaign
-        //3. recipient belongs to a propsect list of type test, attached to this campaign
+        //3. recipient belongs to a prospect list of type test, attached to this campaign
 
         $select_query =" SELECT em.* FROM emailman em";
         $select_query.=" join prospect_list_campaigns plc on em.campaign_id = plc.campaign_id";
@@ -195,7 +195,7 @@ do {
 			$emailman->$name = $value;
 		}
 
-		//for the campaign process the supression lists.
+		//for the campaign process the suppression lists.
 		if (!isset($current_campaign_id) or empty($current_campaign_id) or $current_campaign_id != $row['campaign_id']) {
 			$current_campaign_id= $row['campaign_id'];
 

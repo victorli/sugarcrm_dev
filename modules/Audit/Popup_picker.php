@@ -46,7 +46,7 @@ require_once('include/utils/db_utils.php');
 require_once('modules/Audit/Audit.php');
 
 global $beanList, $beanFiles, $currentModule, $focus, $action, $app_strings, $app_list_strings, $current_language, $timedate, $mod_strings;
-//we don't want the parent module's string file, but rather the string file specifc to this subpanel
+//we don't want the parent module's string file, but rather the string file specific to this subpanel
 
 
 
@@ -79,13 +79,13 @@ class Popup_Picker
 		global $currentModule;
 		global $odd_bg;
  		global $even_bg;
- 		
+
         global $audit;
         global $current_language;
-		
+
 		$audit_list =  Audit::get_audit_list();
         $xtpl=new XTemplate ('modules/Audit/Popup_picker.html');
-		
+
 		$xtpl->assign('MOD', $mod_strings);
 		$xtpl->assign('APP', $app_strings);
 		insert_popup_header($theme);
@@ -93,7 +93,7 @@ class Popup_Picker
 		//output header
 		echo "<table width='100%' cellpadding='0' cellspacing='0'><tr><td>";
 		$mod_strings = return_module_language($current_language, $focus->module_dir);
-		
+
 		$printImageURL = SugarThemeRegistry::current()->getImageURL('print.gif');
 		$titleExtra = <<<EOHTML
 <a href="javascript:void window.open('index.php?{$GLOBALS['request_string']}','printwin','menubar=1,status=0,resizable=1,scrollbars=1,toolbar=0,location=1')" class='utilsLink'>
@@ -102,13 +102,13 @@ class Popup_Picker
 {$GLOBALS['app_strings']['LNK_PRINT']}
 </a>
 EOHTML;
-		
+
 		$params = array();
 		$params[] = translate('LBL_MODULE_NAME', $focus->module_dir);
 		$params[] = $focus->get_summary_text();
 		$params[] = translate('LBL_CHANGE_LOG', 'Audit');
 		echo str_replace('</div>',"<span class='utils'>$titleExtra</span></div>",getClassicModuleTitle($focus->module_dir, $params, false));
-		
+
 		$oddRow = true;
 		$audited_fields = $focus->getAuditEnabledFieldDefinitions();
 		asort($audited_fields);
@@ -116,7 +116,7 @@ EOHTML;
 		$field_count = count($audited_fields);
 		$start_tag = "<table><tr><td >";
 		$end_tag = "</td></tr></table>";
-		
+
 		if($field_count > 0)
 		{
 			$index = 0;
@@ -135,7 +135,7 @@ EOHTML;
     				$fields .= ", ";
     			}
     		}
-    		
+
     		echo $start_tag.translate('LBL_AUDITED_FIELDS', 'Audit').$fields.$end_tag;
     	}
     	else

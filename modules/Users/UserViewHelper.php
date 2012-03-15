@@ -182,8 +182,8 @@ class UserViewHelper {
             if(isset($_REQUEST['record'])){
                 $user_preference_url .= "&record=".$_REQUEST['record'];
             }
-            $buttons .="<input type='button' class='button' onclick='if(confirm(\"{$reset_pref_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$user_preference_url."&reset_preferences=true\";' value='".translate('LBL_RESET_PREFERENCES','Users')."' />";
-            $buttons .="&nbsp;<input type='button' class='button' onclick='if(confirm(\"{$reset_home_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$the_query_string."&reset_homepage=true\";' value='".translate('LBL_RESET_HOMEPAGE','Users')."' />";
+            $buttons .="<li><input type='button' class='button' onclick='if(confirm(\"{$reset_pref_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$user_preference_url."&reset_preferences=true\";' value='".translate('LBL_RESET_PREFERENCES','Users')."' /></li>";
+            $buttons .="\n<li><input type='button' class='button' onclick='if(confirm(\"{$reset_home_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$the_query_string."&reset_homepage=true\";' value='".translate('LBL_RESET_HOMEPAGE','Users')."' /></li>";
         }
         if (isset($buttons)) $this->ss->assign("BUTTONS", $buttons);
         
@@ -404,18 +404,19 @@ class UserViewHelper {
             $this->ss->assign('NO_OPPS', 'CHECKED');
         }
 
-        $reminder_time = $this->bean->getPreference('reminder_time');
-        if(empty($reminder_time)){
-            $reminder_time = -1;
-        }
-        $this->ss->assign("REMINDER_TIME_OPTIONS", get_select_options_with_id($app_list_strings['reminder_time_options'],$reminder_time));
-        if($reminder_time > -1){
-            $this->ss->assign("REMINDER_TIME_DISPLAY", 'inline');
-            $this->ss->assign("REMINDER_CHECKED", 'checked');
-            $this->ss->assign("REMINDER_TIME", $app_list_strings['reminder_time_options'][$reminder_time]);
-        }else{
-            $this->ss->assign("REMINDER_TIME_DISPLAY", 'none');
-        }
+	$reminder_time = $this->bean->getPreference('reminder_time');
+	if(empty($reminder_time)){
+		$reminder_time = -1;
+	}	
+	$email_reminder_time = $this->bean->getPreference('email_reminder_time');
+	if(empty($email_reminder_time)){
+		$email_reminder_time = -1;
+	}
+        $this->ss->assign("REMINDER_TIME_OPTIONS", $app_list_strings['reminder_time_options']);	
+        $this->ss->assign("EMAIL_REMINDER_TIME_OPTIONS", $app_list_strings['reminder_time_options']);	        
+	$this->ss->assign("REMINDER_TIME", $reminder_time);
+	$this->ss->assign("EMAIL_REMINDER_TIME", $email_reminder_time);
+	$this->ss->assign("REMINDER_TABINDEX", "12");
         $this->ss->assign('CALENDAR_PUBLISH_KEY', $this->bean->getPreference('calendar_publish_key' ));
 
         $publish_url = $sugar_config['site_url'].'/vcal_server.php';
@@ -429,7 +430,7 @@ class UserViewHelper {
             }
         }
         
-        $publish_url .= $token.'type=vfb&source=outlook&key='.$this->bean->getPreference('calendar_publish_key' );
+        $publish_url .= $token.'type=vfb&source=outlook&key=<span id="cal_pub_key_span">'.$this->bean->getPreference('calendar_publish_key' ) . '</span>';
         if (! empty($this->bean->email1)) {
             $publish_url .= '&email='.$this->bean->email1;
         } else {
@@ -437,7 +438,7 @@ class UserViewHelper {
         }
         $this->ss->assign("CALENDAR_PUBLISH_URL", $publish_url);
         $this->ss->assign("CALENDAR_SEARCH_URL", $sugar_config['site_url'].'/vcal_server.php/type=vfb&email=%NAME%@%SERVER%');
-        
+        $this->ss->assign("CALENDAR_ICAL_URL", $sugar_config['site_url'].'/ical_server.php');
 
         $this->ss->assign("SETTINGS_URL", $sugar_config['site_url']);
 
@@ -531,7 +532,8 @@ class UserViewHelper {
         
         $chooser->args['left_label'] =  translate('LBL_DISPLAY_TABS','Users');
         $chooser->args['right_label'] =  translate('LBL_HIDE_TABS','Users');
-        $chooser->args['title'] =  translate('LBL_EDIT_TABS','Users').' <!--not_in_theme!--><img border="0" src="themes/default/images/helpInline.gif" onmouseover="return overlib(\'Choose which tabs are displayed.\', FGCLASS, \'olFgClass\', CGCLASS, \'olCgClass\', BGCLASS, \'olBgClass\', TEXTFONTCLASS, \'olFontClass\', CAPTIONFONTCLASS, \'olCapFontClass\', CLOSEFONTCLASS, \'olCloseFontClass\', WIDTH, -1, NOFOLLOW, \'ol_nofollow\' );" onmouseout="return nd();"/>';
+        require_once('include/Smarty/plugins/function.sugar_help.php');
+        $chooser->args['title'] =  translate('LBL_EDIT_TABS','Users').smarty_function_sugar_help(array("text"=>"Choose which tabs are displayed."),$ss);
         
         $this->ss->assign('TAB_CHOOSER', $chooser->display());
         $this->ss->assign('CHOOSER_SCRIPT','set_chooser();');

@@ -153,9 +153,9 @@ function sugar_cache_retrieve($key)
  * @param String $key -- Global namespace cache.  Key for the data.
  * @param Serializable $value -- The value to store in the cache.
  */
-function sugar_cache_put($key, $value)
+function sugar_cache_put($key, $value, $ttl = null)
 {
-    SugarCache::instance()->$key = $value;
+    SugarCache::instance()->set($key,$value, $ttl);
 }
 
 /**

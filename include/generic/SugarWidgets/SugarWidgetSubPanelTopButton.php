@@ -91,6 +91,11 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
 		}
 	}
 
+    public function getWidgetId()
+    {
+        return parent::getWidgetId() . '_'.preg_replace('[ ]', '', strtolower($this->form_value)).'_button';
+    }
+
     function &_get_form($defines, $additionalFormFields = null, $asUrl = false)
     {
         global $app_strings;
@@ -255,14 +260,12 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
     }
 
 	/** This default function is used to create the HTML for a simple button */
-	function display($defines, $additionalFormFields = null)
+	function display($defines, $additionalFormFields = null, $nonbutton = false)
 	{
 		$temp='';
-		$inputID = $this->getWidgetId() . '_'.preg_replace('[ ]', '', strtolower($this->form_value)).'_button';
+		$inputID = $this->getWidgetId();
 
 		if(!empty($this->acl) && ACLController::moduleSupportsACL($defines['module'])  &&  !ACLController::checkAccess($defines['module'], $this->acl, true)){
-			$inputID = $this->getWidgetId() . '_'.preg_replace('[ ]', '', strtolower($this->form_value)).'_button';
-			$button = "<input title='$this->title'  class='button' type='button' name='$inputID' id='$inputID' value='  $this->form_value  ' disabled/>\n</form>";
 			return $temp;
 		}
 
@@ -271,10 +274,14 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
         if ( isset($_REQUEST['layout_def_key']) && $_REQUEST['layout_def_key'] == 'UserEAPM' ) {
             // Subpanels generally don't go on the editview, so we have to handle this special
             $megaLink = $this->_get_form($defines, $additionalFormFields,true);
-            $button = "<input title='$this->title'  class='button' type='submit' name='$inputID' id='$inputID' value='  $this->form_value  ' onclick='javascript:document.location=\"index.php?".$megaLink."\"; return false;'/>";
+            $button = "<input title='$this->title' accesskey='$this->access_key' class='button' type='submit' name='$inputID' id='$inputID' value='$this->form_value' onclick='javascript:document.location=\"index.php?".$megaLink."\"; return false;'/>";
         } else {
             $button = $this->_get_form($defines, $additionalFormFields);
-            $button .= "<input title='$this->title' class='button' type='submit' name='$inputID' id='$inputID' value='  $this->form_value  ' />\n</form>";
+            $button .= "<input title='$this->title' accesskey='$this->access_key' class='button' type='submit' name='$inputID' id='$inputID' value='$this->form_value' />\n</form>";
+        }
+
+        if ($nonbutton) {
+            $button = "<a onclick=''>$this->form_value";
         }
         return $button;
 	}

@@ -45,7 +45,7 @@ else {
     require_once("data/BeanFactory.php");
     $file_type=''; // bug 45896
     require_once("data/BeanFactory.php");
-    ini_set('zlib.output_compression','Off');//bug 27089, if use gzip here, the Content-Length in hearder may be incorrect.
+    ini_set('zlib.output_compression','Off');//bug 27089, if use gzip here, the Content-Length in header may be incorrect.
     // cn: bug 8753: current_user's preferred export charset not being honored
     $GLOBALS['current_user']->retrieve($_SESSION['authenticated_user_id']);
     $GLOBALS['current_language'] = $_SESSION['authenticated_user_language'];
@@ -53,7 +53,7 @@ else {
     $mod_strings = return_module_language($GLOBALS['current_language'], 'ACL');
 	$file_type = strtolower($_REQUEST['type']);
     if(!isset($_REQUEST['isTempFile'])) {
-	    //Custom modules may have capilizations anywhere in thier names. We should check the passed in format first.
+	    //Custom modules may have capitalizations anywhere in their names. We should check the passed in format first.
 		require('include/modules.php');
 		$module = $db->quote($_REQUEST['type']);
 		if(empty($beanList[$module])) {
@@ -178,7 +178,7 @@ else {
 		// disable content type sniffing in MSIE
 		header("X-Content-Type-Options: nosniff");
 		header("Content-Length: " . filesize($local_location));
-		header("Expires: 0");
+		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 2592000));
 		set_time_limit(0);
 
 		@ob_end_clean();

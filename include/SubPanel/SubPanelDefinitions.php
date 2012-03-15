@@ -451,7 +451,7 @@ class aSubPanel
 		return $this->name ;
 	}
 
-	//load subpanel mdoule's table name and column fields.
+	//load subpanel module's table name and column fields.
 	function load_module_info ()
 	{
 		global $beanList ;

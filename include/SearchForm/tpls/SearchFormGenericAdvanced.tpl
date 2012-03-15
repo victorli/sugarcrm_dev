@@ -1,3 +1,23 @@
+
+<script>
+{literal}
+	$(function() {
+	var $dialog = $('<div></div>')
+		.html(SUGAR.language.get('app_strings', 'LBL_SEARCH_HELP_TEXT'))
+		.dialog({
+			autoOpen: false,
+			title: SUGAR.language.get('app_strings', 'LBL_SEARCH_HELP_TITLE'),
+			width: 700
+		});
+		
+		$('.help-search').click(function() {
+		$dialog.dialog('open');
+		// prevent the default action, e.g., following a link
+	});
+	
+	});
+{/literal}
+</script>
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 <tr>
 {{assign var='accesskeycount' value=0}}  {{assign var='ACCKEY' value=''}}
@@ -16,7 +36,7 @@
         {if $isHelperShown==0}
             {assign var="isHelperShown" value="1"}
             <td class="helpIcon" width="*">
-                <img alt="{$APP.LBL_SEARCH_HELP_TITLE}" id="helper_popup_image" border="0" src='{sugar_getimagepath file="help-dashlet.gif"}' onmouseover="return overlib(SUGAR.language.get('app_strings', 'LBL_SEARCH_HELP_TEXT'), STICKY, MOUSEOFF, 1000,WIDTH, 700, LEFT,CAPTION,'<div style=\'float:left\'>'+SUGAR.language.get('app_strings', 'LBL_SEARCH_HELP_TITLE')+'</div>', CLOSETEXT, '<div style=\'float: right\'><img border=0 style=\'margin-left:2px; margin-right: 2px;\' src={sugar_getimagepath file='close.gif'}></div>',CLOSETITLE, SUGAR.language.get('app_strings', 'LBL_SEARCH_HELP_CLOSE_TOOLTIP'), CLOSECLICK,FGCLASS, 'olFgClass', CGCLASS, 'olCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olCapFontClass');" class="help-search">
+                <img alt="{$APP.LBL_SEARCH_HELP_TITLE}" id="helper_popup_image" border="0" src='{sugar_getimagepath file="help-dashlet.gif"}' class="help-search">
             </td>
         {else}
             <td>&nbsp;</td>
@@ -97,7 +117,7 @@
 	</td>
 	<td class="help">
 	    {if $DISPLAY_SEARCH_HELP}
-	    <img  border='0' src='{sugar_getimagepath file="help-dashlet.gif"}' onmouseover="return overlib(SUGAR.language.get('app_strings', 'LBL_SEARCH_HELP_TEXT'), STICKY, MOUSEOFF,1000,WIDTH, 700, LEFT,CAPTION,'<div style=\'float:left\'>'+SUGAR.language.get('app_strings', 'LBL_SEARCH_HELP_TITLE')+'</div>', CLOSETEXT, '<div style=\'float: right\'><img border=0 style=\'margin-left:2px; margin-right: 2px;\' src={sugar_getimagepath file='close.gif'}></div>',CLOSETITLE, SUGAR.language.get('app_strings', 'LBL_SEARCH_HELP_CLOSE_TOOLTIP'), CLOSECLICK,FGCLASS, 'olFgClass', CGCLASS, 'olCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olCapFontClass');" class="help-search">
+	    <img  border='0' src='{sugar_getimagepath file="help-dashlet.gif"}' class="help-search">
 	    {/if}
     </td>
 </tr>

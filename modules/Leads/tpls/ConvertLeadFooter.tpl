@@ -35,7 +35,6 @@
  ********************************************************************************/
 
 *}
-{sugar_getscript file="cache/include/javascript/sugar_grp_overlib.js"}
 {literal}
 <script type="text/javascript">
     var accountText = document.getElementById('account_name');

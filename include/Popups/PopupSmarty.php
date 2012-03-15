@@ -142,7 +142,6 @@ class PopupSmarty extends ListViewSmarty{
 		$this->th->ss->assign('searchForm', $this->searchForm->display(false));
         //rrs
 
-		if($this->overlib) $this->th->ss->assign('overlib', true);
 		if($this->export) $this->th->ss->assign('exportLink', $this->buildExportLink());
 		$this->th->ss->assign('quickViewLinks', $this->quickViewLinks);
 		if($this->mailMerge) $this->th->ss->assign('mergeLink', $this->buildMergeLink()); // still check for mailmerge access

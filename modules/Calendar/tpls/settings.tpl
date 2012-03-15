@@ -47,6 +47,17 @@
 		<table class='edit view tabForm'>
 				<tr>
 					<td scope="row" valign="top">
+						{$MOD.LBL_SETTINGS_CALENDAR_STYLE}
+					</td>
+					<td>	
+						<select size="1" name="calendar_style" tabindex="102">
+							<option value='basic' {if $settings_style == 'basic'}selected{/if}>{$MOD.LBL_STYLE_BASIC}</option>
+							<option value='advanced' {if $settings_style == 'advanced'}selected{/if}>{$MOD.LBL_STYLE_ADVANCED}</option>								
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td scope="row" valign="top">
 						{$MOD.LBL_SETTINGS_TIME_STARTS}
 					</td>
 					<td>

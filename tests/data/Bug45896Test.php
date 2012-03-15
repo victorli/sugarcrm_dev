@@ -122,7 +122,7 @@ class Bug45896Test extends Sugar_PHPUnit_Framework_TestCase
 	 */
 	public function testDownload($queryString)
 	{
-        $this->markTestSkipped('Need mgusev to fix this test');
+        $this->markTestIncomplete('Need mgusev to fix this test');
         return;
         curl_setopt($this->curl, CURLOPT_HEADER, true);
         curl_setopt($this->curl, CURLOPT_NOBODY, false);

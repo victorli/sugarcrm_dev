@@ -48,6 +48,7 @@ class SugarWidget
 {
 	var $layout_manager = null;
 	var $widget_id;
+    protected $form_value;
 
 	function SugarWidget(&$layout_manager)
 	{
@@ -76,6 +77,10 @@ class SugarWidget
 		$this->widget_id = $id;
 	}
 
+    public function getDisplayName()
+    {
+        return $this->form_value;
+    }
    /**
     * getTruncatedColumnAlias
     * This function ensures that a column alias is no more than 28 characters.  Should the column_name

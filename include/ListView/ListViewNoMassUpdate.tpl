@@ -40,10 +40,6 @@
 
 *}
 
-{if $overlib}
-<script type='text/javascript' src='cache/include/javascript/sugar_grp_overlib.js'></script>
-<div id='overDiv' style='position:absolute; visibility:hidden; z-index:1000;'></div>
-{/if}
 
 <table cellpadding='0' cellspacing='0' width='100%' border='0' class='list View'>
 	{include file='include/ListView/ListViewPagination.tpl'}

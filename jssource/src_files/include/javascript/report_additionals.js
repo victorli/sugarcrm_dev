@@ -2789,7 +2789,7 @@ function buildOuterJoinHTML(info) {
 		}
 	}
 	text = " <input class='checkbox' type='checkbox' name='outer_" + info['select']['name'] + "' id='outer_" + info['select']['name'] + "' value=1 " + checked + " onChange='updateOuterJoin(this);'> " + lbl_outer_join_checkbox;
-	text += '<img border="0" onmouseout="return nd();" onmouseover="return overlib(\'' + lbl_optional_help + '\', FGCLASS, \'olFgClass\', CGCLASS, \'olCgClass\', BGCLASS, \'olBgClass\', TEXTFONTCLASS, \'olFontClass\', CAPTIONFONTCLASS, \'olCapFontClass\', CLOSEFONTCLASS, \'olCloseFontClass\' );" src="' + image_path +'help.gif"/>';
+	text += '<img border="0" class="inlineHelpTip" src="' + image_path +'help.gif" onclick="SUGAR.util.showHelpTips(this,\''+ lbl_optional_help +'\')"/>';
 
 	return text;
 }

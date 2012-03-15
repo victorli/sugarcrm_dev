@@ -39,7 +39,6 @@
 
 *}
 
-<script type='text/javascript' src="{sugar_getjspath file='include/javascript/overlibmws.js'}"></script>
 <script type='text/javascript'>var fileFields = new Array();</script>
 <BR>
 <form name="ConfigureSugarpdfSettings" enctype='multipart/form-data' method="POST" action="index.php?action=SugarpdfSettings&module=Configurator" onSubmit="if(checkFileType(null,1))return (check_form('ConfigureSugarpdfSettings'));else return false;">

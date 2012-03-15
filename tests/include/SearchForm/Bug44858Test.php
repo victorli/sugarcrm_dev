@@ -61,7 +61,7 @@ class Bug44858Test extends Sugar_PHPUnit_Framework_TestCase
         //test to check that if value of a dropdown field is already set in REQUEST object (from any form such as mass update form instead of search form)
         //i.e. search is made on empty string, but REQUEST object gets value of that dropdown field from some other form on the same page
         //then on clicking serach button, value of that field should not be used as filter in where clause
-        $this->markTestSkipped('This test should actually check that the $whereArray is indeed populated');
+        $this->markTestIncomplete('This test should actually check that the $whereArray is indeed populated');
         return;
         
     	//array to simulate REQUEST object

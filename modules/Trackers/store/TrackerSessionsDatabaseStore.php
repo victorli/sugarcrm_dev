@@ -49,9 +49,9 @@ class TrackerSessionsDatabaseStore implements Store {
         global $db;
        $metrics = $monitor->getMetrics();
 
-       if(isset($monitor->client_ip) && strlen($monitor->client_ip) > 20)
+       if(isset($monitor->client_ip) && strlen($monitor->client_ip) > 45)
        {
-          $monitor->client_ip = substr($monitor->client_ip, 0, 20);
+          $monitor->client_ip = substr($monitor->client_ip, 0, 45);
        }
 
        $columns = array();

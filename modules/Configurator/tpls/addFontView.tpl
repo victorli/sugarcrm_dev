@@ -39,7 +39,6 @@
 
 *}
 
-<script type='text/javascript' src="{sugar_getjspath file='include/javascript/overlibmws.js'}"></script>
 <p>
 {$MODULE_TITLE}
 </p>

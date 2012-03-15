@@ -342,7 +342,7 @@ $dictionary['emails_text'] = array(
 		'description_html' => array (
 			'name'			=> 'description_html',
 			'vname'			=> 'LBL_HTML_BODY',
-			'type'			=> 'longtext',
+			'type'			=> 'longhtml',
             'reportable'	=> false,
 			'comment'		=> 'Email body in HTML format',
 		),

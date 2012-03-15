@@ -39,7 +39,6 @@
 
 
 *}
-<script type='text/javascript' src='{sugar_getjspath file='cache/include/javascript/sugar_grp_overlib.js'}'></script>
 <form name="ConfigureSettings" enctype='multipart/form-data' method="POST" action="index.php" onSubmit="return (add_checks(document.ConfigureSettings) && check_form('ConfigureSettings'));">
 <input type='hidden' name='action' value='SaveConfig'/>
 <input type='hidden' name='module' value='Configurator'/>
@@ -142,7 +141,7 @@
         {$MOD.CURRENT_LOGO}&nbsp;{sugar_help text=$MOD.CURRENT_LOGO_HELP}
         </td>
         <td width='35%' >
-            <img id="company_logo_image" src='{$company_logo}' alt=$mod_strings.LBL_LOGO height="40" width="212">
+            <img id="company_logo_image" src='{$company_logo}' alt=$mod_strings.LBL_LOGO>
         </td>
     </tr>
     <tr>
@@ -159,6 +158,24 @@
             <td> <select name="lead_conv_activity_opt">{$lead_conv_activities}</select></td>
             <td><a href="./index.php?module=Administration&action=ConfigureAjaxUI" id="configure_ajax">{$MOD.LBL_CONFIG_AJAX}</a>&nbsp;{sugar_help text=$MOD.LBL_CONFIG_AJAX_DESC}</td>
     </tr>
+
+    <tr>
+        <td  scope="row" nowrap>{$MOD.LBL_DISALBE_CONVERT_LEAD}: &nbsp;{sugar_help text=$MOD.LBL_DISALBE_CONVERT_LEAD_DESC}</td>
+        {if !empty($config.disable_convert_lead)}
+            {assign var='disable_convert_lead' value='CHECKED'}
+        {else}
+            {assign var='disable_convert_lead' value=''}
+        {/if}
+        <td>
+            <input type='hidden' name='disable_convert_lead' value='false'>
+            <input name='disable_convert_lead'  type="checkbox" value="true" {$disable_convert_lead}>
+        </td>
+        <td colspan="2">&nbsp;</td>
+    </tr>
+
+
+
+
 </table>
 
 <table width="100%" border="0" cellspacing="1" cellpadding="0" class="edit view">

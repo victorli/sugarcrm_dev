@@ -439,7 +439,7 @@ class SugarWidgetFieldDateTime extends SugarWidgetReportField
                 $td = $timedate->to_display_date_time($content);
                 return $td;
             }else{// if date only field
-                $td = $timedate->to_display_date($content, false); // avoid php notice of returing by reference
+                $td = $timedate->to_display_date($content, false); // Avoid PHP notice of returning by reference.
                 return $td;
             }
         }

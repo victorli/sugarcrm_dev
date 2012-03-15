@@ -49,7 +49,7 @@
 <div style="float:left; text-align: right; width: 50%; font-size: 12px;">
 	{if $view != 'year'}
 	<span class="dateTime">
-					<img border="0" src="{$cal_img}" alt="Enter Date" id="goto_date_trigger" align="absmiddle">					
+					<img border="0" src="{$cal_img}" alt="{$APP.LBL_ENTER_DATE}" id="goto_date_trigger" align="absmiddle">					
 					<input type="hidden" id="goto_date" name="goto_date" value="{$current_date}">		
 					<script type="text/javascript">
 					Calendar.setup ({literal}{{/literal}
@@ -75,7 +75,7 @@
 					</script>
 	</span>
 	{/if}
-	<input type="button" class="button" id="cal_settings" onclick="CAL.toggle_settings()" value="{$MOD.LBL_SETTINGS}">
+	<input type="button" class="button" onclick="CAL.toggle_settings()" value="{$MOD.LBL_SETTINGS}">
 </div>
 
 <div style='clear: both;'></div>

@@ -37,7 +37,6 @@
 
 
 *}
-<script type='text/javascript' src="{sugar_getjspath file='include/javascript/overlibmws.js'}"></script>
 <form name="ConfigurePasswordSettings" method="POST" action="index.php" >
 <input type='hidden' name='action' value='PasswordManager'/>
 <input type='hidden' name='module' value='Administration'/>

@@ -102,12 +102,12 @@ function complexLayoutInit() {
         
         init : function(){
             // initialize state manager, we will use cookies
-//                Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
         	var viewHeight = document.documentElement ? document.documentElement.clientHeight : self.innerHeight;
+            var heightOffset = $('#dcmenu').length > 0 ? $('#dcmenu').height() : $('#header').height();
         	se.complexLayout = new YAHOO.widget.Layout("container", {
         		border:true,
                 hideOnLayout: true,
-                height: Dom.getViewportHeight() - (document.getElementById('header').clientHeight ) - 65,
+                height: Dom.getViewportHeight() - heightOffset - 65,
                 width: Dom.getViewportWidth() - 40,
                 units: [{
                 	position: "center",

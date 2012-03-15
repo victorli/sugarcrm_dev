@@ -139,7 +139,6 @@ class="yui-navset"
               {{elseif isset($fields[$colData.field.name].popupHelp)}}
                 {capture name="popupText" assign="popupText"}{sugar_translate label="{{$fields[$colData.field.name].popupHelp}}" module='{{$module}}'}{/capture}
               {{/if}}
-              {capture name="overlibStuff" assign="overlibStuff"}{overlib_includes}{/capture}
               {sugar_help text=$popupText WIDTH=-1}
             {{/if}}
 
@@ -179,6 +178,7 @@ class="yui-navset"
 				{{/if}}
 			{{/if}}
 
+		{{$colData.field.prefix}}
 
 			{{if $fields[$colData.field.name] && !empty($colData.field.fields) }}
 			    {{foreach from=$colData.field.fields item=subField}}
@@ -224,7 +224,6 @@ class="yui-navset"
 {{/foreach}}
 </div></div>
 {{include file=$footerTpl}}
-{$overlibStuff}
 {{if $useTabs}}
 {sugar_getscript file="cache/include/javascript/sugar_grp_yui_widgets.js"}
 <script type="text/javascript">

@@ -111,9 +111,9 @@ class MeetingsViewListbytype extends ViewList {
    		$type = 'LotusLive';
           global $timedate;
 
-         $two_hours_ago = $GLOBALS['db']->convert($GLOBALS['db']->quoted($timedate->asDb($timedate->getNow()->get("-2 hours"))), 'datetime');
+          $two_days_ago = $timedate->asDb($timedate->getNow()->get("-2 hours"));
 
-   		$where =  " meetings.type = '$type' AND meetings.status != 'Held' AND meetings.status != 'Not Held' AND meetings.date_start > {$two_hours_ago} AND ( meetings.assigned_user_id = '".$GLOBALS['db']->quote($GLOBALS['current_user']->id)."' OR exists ( SELECT id FROM meetings_users WHERE meeting_id = meetings.id AND user_id = '".$GLOBALS['db']->quote($GLOBALS['current_user']->id)."' AND deleted = 0 ) ) ";
+   		$where =  " meetings.type = '$type' AND meetings.status != 'Held' AND meetings.status != 'Not Held' AND meetings.date_start > {$two_days_ago} AND ( meetings.assigned_user_id = '".$GLOBALS['db']->quote($GLOBALS['current_user']->id)."' OR exists ( SELECT id FROM meetings_users WHERE meeting_id = meetings.id AND user_id = '".$GLOBALS['db']->quote($GLOBALS['current_user']->id)."' AND deleted = 0 ) ) ";
 
           if ( isset($_REQUEST['name_basic']) ) {
               $name_search = trim($_REQUEST['name_basic']);

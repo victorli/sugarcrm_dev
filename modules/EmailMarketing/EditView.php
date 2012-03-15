@@ -120,7 +120,7 @@ $xtpl->assign("DATE_START", $focus->date_start);
 $xtpl->assign("TIME_START", $time_start);
 $xtpl->assign("TIME_FORMAT", '('. $timedate->get_user_time_format().')');
 
-$email_templates_arr = get_bean_select_array(true, 'EmailTemplate','name','','name');
+$email_templates_arr = get_bean_select_array(true, 'EmailTemplate','name',"(type IS NULL OR type='' OR type='campaign')",'name');
 if($focus->template_id) {
 	$xtpl->assign("TEMPLATE_ID", $focus->template_id);
 	$xtpl->assign("EMAIL_TEMPLATE_OPTIONS", get_select_options_with_id($email_templates_arr, $focus->template_id));

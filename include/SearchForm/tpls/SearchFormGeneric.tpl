@@ -41,6 +41,25 @@
 {else}
     {assign var="basicMaxColumns" value=$templateMeta.maxColumnsBasic}
 {/if}
+<script>
+{literal}
+	$(function() {
+	var $dialog = $('<div></div>')
+		.html(SUGAR.language.get('app_strings', 'LBL_SEARCH_HELP_TEXT'))
+		.dialog({
+			autoOpen: false,
+			title: SUGAR.language.get('app_strings', 'LBL_HELP'),
+			width: 700
+		});
+		
+		$('#filterHelp').click(function() {
+		$dialog.dialog('open');
+		// prevent the default action, e.g., following a link
+	});
+	
+	});
+{/literal}
+</script>
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 <tr>
@@ -87,6 +106,6 @@
 	    &nbsp;&nbsp;<a id="advanced_search_link" onclick="SUGAR.searchForm.searchFormSelect('{$module}|advanced_search','{$module}|basic_search')" href="javascript:void(0);" accesskey="{$APP.LBL_ADV_SEARCH_LNK_KEY}" >{$APP.LNK_ADVANCED_SEARCH}</a>
 	    {/if}
     </td>
-	<td class="helpIcon" width="*"><img alt="Help" border='0' src='{sugar_getimagepath file="help-dashlet.gif"}' onmouseover="return overlib(SUGAR.language.get('app_strings', 'LBL_SEARCH_HELP_TEXT'), STICKY, MOUSEOFF,1000,WIDTH, 700, LEFT,CAPTION,'<div style=\'float:left\'>'+SUGAR.language.get('app_strings', 'LBL_SEARCH_HELP_TITLE')+'</div>', CLOSETEXT, '<div style=\'float: right\'><img border=0 style=\'margin-left:2px; margin-right: 2px;\' src={sugar_getimagepath file='close.gif'}></div>',CLOSETITLE, SUGAR.language.get('app_strings', 'LBL_SEARCH_HELP_CLOSE_TOOLTIP'), CLOSECLICK,FGCLASS, 'olFgClass', CGCLASS, 'olCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olCapFontClass');" class="help-search"></td>
+	<td class="helpIcon" width="*"><img alt="Help" border='0' id="filterHelp" src='{sugar_getimagepath file="help-dashlet.gif"}'></td>
 	</tr>
 </table>

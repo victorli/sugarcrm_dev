@@ -36,7 +36,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
 if(isset($_GET['DynamicAction']) && $_GET['DynamicAction'] == "saveImage") {
 	$filename = pathinfo($_POST['filename'], PATHINFO_BASENAME);
 	$ext = pathinfo($filename, PATHINFO_EXTENSION);

@@ -39,7 +39,7 @@ require_once 'ModuleInstall/ModuleScanner.php';
 class ModuleScannerTest extends Sugar_PHPUnit_Framework_TestCase
 {
     var $fileLoc;
-
+    
 	public function setUp()
 	{
         $this->fileLoc = "cache/moduleScannerTemp.php";
@@ -50,39 +50,16 @@ class ModuleScannerTest extends Sugar_PHPUnit_Framework_TestCase
 		if (is_file($this->fileLoc))
 			unlink($this->fileLoc);
 	}
-
-	public function phpSamples()
-	{
-	    return array(
-	        array("<?php echo blah;", true),
-	        array("<? echo blah;", true),
-	        array("blah <? echo blah;", true),
-	        array("blah <?xml echo blah;", true),
-	        array("<?xml version=\"1.0\"></xml>", false),
-	        array("<?xml \n echo blah;", true),
-	        array("<?xml version=\"1.0\"><? blah ?></xml>", true),
-	        array("<?xml version=\"1.0\"><?php blah ?></xml>", true),
-	        );
-	}
-
-	/**
-	 * @dataProvider phpSamples
-	 */
-	public function testPHPFile($content, $is_php)
-	{
-        $ms = new MockModuleScanner();
-	    $this->assertEquals($is_php, $ms->isPHPFile($content), "Bad PHP file result");
-	}
-
-	public function testFileTemplatePass()
+	
+	public function testFileTemplatePass() 
     {
-
+        
     	$fileModContents = <<<EOQ
 <?PHP
 require_once('include/SugarObjects/templates/file/File.php');
 
 class testFile_sugar extends File {
-	function fileT_testFiles_sugar(){
+	function fileT_testFiles_sugar(){	
 		parent::File();
 		\$this->file = new File();
 		\$file = "file";
@@ -95,20 +72,20 @@ EOQ;
 		$errors = $ms->scanFile($this->fileLoc);
 		$this->assertTrue(empty($errors));
     }
-
-	public function testFileFunctionFail()
+    
+	public function testFileFunctionFail() 
     {
-
+        
     	$fileModContents = <<<EOQ
 <?PHP
 require_once('include/SugarObjects/templates/file/File.php');
 
 class testFile_sugar extends File {
-	function fileT_testFiles_sugar(){
+	function fileT_testFiles_sugar(){	
 		parent::File();
 		\$this->file = new File();
 		\$file = file('test.php');
-
+		
 	}
 }
 ?>
@@ -118,10 +95,10 @@ EOQ;
 		$errors = $ms->scanFile($this->fileLoc);
 		$this->assertTrue(!empty($errors));
     }
-
-	public function testCallUserFunctionFail()
+    
+	public function testCallUserFunctionFail() 
     {
-
+        
     	$fileModContents = <<<EOQ
 <?PHP
 	call_user_func("sugar_file_put_contents", "test2.php", "test");
@@ -132,13 +109,7 @@ EOQ;
 		$errors = $ms->scanFile($this->fileLoc);
 		$this->assertTrue(!empty($errors));
     }
+    
+    
 
 }
-
-class MockModuleScanner extends  ModuleScanner
-{
-    public function isPHPFile($contents) {
-        return parent::isPHPFile($contents);
-    }
-}
-

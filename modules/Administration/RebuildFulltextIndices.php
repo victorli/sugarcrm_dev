@@ -60,7 +60,7 @@ foreach ($beanFiles as $beanname=>$beanpath) {
 		$indices=array();
 	}
 
-	//clean vardef defintions.. removed indexes not value for this dbtype.
+	//clean vardef definitions.. removed indexes not value for this dbtype.
 	//set index name as the key.
 	$var_indices=array();
 	foreach ($indices as $definition) {

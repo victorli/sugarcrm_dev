@@ -53,18 +53,14 @@ class SugarWidgetSubPanelEditButton extends SugarWidgetField
 	function displayList($layout_def)
 	{
 		global $app_strings;
-
-		if(empty(self::$edit_icon_html)) {
-		    self::$edit_icon_html = SugarThemeRegistry::current()->getImage( 'edit_inline', 'align="absmiddle" border="0"',null,null,'.gif','');//setting alt to blank on purpose on subpanels for 508
-		}
-
+		
         $onclick ='';
         if($layout_def['EditView']) {
 			return "<a href='#' onMouseOver=\"javascript:subp_nav('".$layout_def['module']."', '".$layout_def['fields']['ID']."', 'e', this"
 			. (empty($layout_def['linked_field']) ? "" : ", '{$layout_def['linked_field']}'") . ");\""
 			. " onFocus=\"javascript:subp_nav('".$layout_def['module']."', '".$layout_def['fields']['ID']."', 'e', this"
 			. (empty($layout_def['linked_field']) ? "" : ", '{$layout_def['linked_field']}'") . ");\""
-			. ' class="listViewTdToolsS1">' . self::$edit_icon_html . '&nbsp;' . $app_strings['LNK_EDIT'] .'</a>&nbsp;';
+			. ' class="listViewTdToolsS1">'. $app_strings['LNK_EDIT'] .'</a>';
 		}
 
         return '';

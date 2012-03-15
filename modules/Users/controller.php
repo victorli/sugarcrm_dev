@@ -99,7 +99,7 @@ class UsersController extends SugarController
 	    $_POST['record'] = $current_user->id;
 	    $_POST['is_admin'] = ( $current_user->is_admin ? 'on' : '' );
 	    $_POST['use_real_names'] = true;
-	    $_POST['should_remind'] = '1';
+	    $_POST['reminder_checked'] = '1';
 	    $_POST['reminder_time'] = 1800;
         $_POST['mailmerge_on'] = 'on';
         $_POST['receive_notifications'] = $current_user->receive_notifications;
@@ -110,5 +110,11 @@ class UsersController extends SugarController
 	    $_REQUEST['return_action'] = 'index';
 		require('modules/Users/Save.php');
 	}
+
+    protected function action_saveftsmodules()
+    {
+        $this->view = 'fts';
+        $GLOBALS['current_user']->setPreference('fts_disabled_modules', $_REQUEST['disabled_modules']);
+    }
 }	
 ?>

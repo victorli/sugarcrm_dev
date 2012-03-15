@@ -35,7 +35,13 @@
  ********************************************************************************/
 
 
-
+/**
+ * @param $focus
+ * @param $field
+ * @param $value
+ * @param $view
+ * @return string
+ */
 function getDurationMinutesOptions($focus, $field, $value, $view) {
 
     if (isset($_REQUEST['duration_minutes'])) {
@@ -71,6 +77,15 @@ function getDurationMinutesOptions($focus, $field, $value, $view) {
     return $focus->duration_minutes;		
 }
 
+/**
+ * @param $focus
+ * @param $field
+ * @param $value
+ * @param $view
+ * @return string
+ *
+ * @deprecated 6.5.0
+ */
 function getReminderTime($focus, $field, $value, $view) {
 
 	global $current_user, $app_list_strings;

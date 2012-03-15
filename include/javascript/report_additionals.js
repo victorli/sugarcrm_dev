@@ -392,7 +392,7 @@ saved_attrs.push(attr);text+="<option value=\""+encodeURI(option['value'])+"\" "
 text+=">"+option['text']+"</option>";}
 text+="</select>";return text;}
 function buildOuterJoinHTML(info){var text;var checked;checked='';if(report_def.link_joins!=null){for(key in report_def.link_joins){if(report_def.link_joins[key]==1){checked='CHECKED';}}}
-text=" <input class='checkbox' type='checkbox' name='outer_"+info['select']['name']+"' id='outer_"+info['select']['name']+"' value=1 "+checked+" onChange='updateOuterJoin(this);'> "+lbl_outer_join_checkbox;text+='<img border="0" onmouseout="return nd();" onmouseover="return overlib(\''+lbl_optional_help+'\', FGCLASS, \'olFgClass\', CGCLASS, \'olCgClass\', BGCLASS, \'olBgClass\', TEXTFONTCLASS, \'olFontClass\', CAPTIONFONTCLASS, \'olCapFontClass\', CLOSEFONTCLASS, \'olCloseFontClass\' );" src="'+image_path+'help.gif"/>';return text;}
+text=" <input class='checkbox' type='checkbox' name='outer_"+info['select']['name']+"' id='outer_"+info['select']['name']+"' value=1 "+checked+" onChange='updateOuterJoin(this);'> "+lbl_outer_join_checkbox;text+='<img border="0" class="inlineHelpTip" src="'+image_path+'help.gif" onclick="SUGAR.util.showHelpTips(this,\''+lbl_optional_help+'\')"/>';return text;}
 function updateOuterJoin(obj){table_key=obj.id.replace("outer_","");if(obj.checked==true){full_table_list[table_key].optional=true;}
 else{full_table_list[table_key].optional=false;}}
 function saved_chart_drilldown(group_value,group_key,id){var report_url='index.php?module=Reports&page=report&action=index&id='+id+'#'+group_value;document.location=report_url;}

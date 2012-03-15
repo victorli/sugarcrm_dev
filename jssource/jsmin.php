@@ -120,7 +120,7 @@ class SugarMin {
                                 continue;
                             }
 
-                            if ($js[$j + 1] == "\n") {
+                            if (!isset($js[$j + 1]) || $js[$j + 1] == "\n") {
                                 break;
                             }
 
@@ -180,7 +180,7 @@ class SugarMin {
         // Split our string up into an array and iterate over each line
         // to do processing.
         $input = explode("\n", $stripped_js);
-        $primedInput = '';
+        $primedInput = array();
 
         // Pass 2, remove space and tabs from each line.
         for ($index = 0; $index < count($input); $index++) {

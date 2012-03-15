@@ -53,11 +53,18 @@ var user_detailview_tabs = new YAHOO.widget.TabView("user_detailview_tabs");
 user_detailview_tabs.on('contentReady', function(e){
 {/literal}
 });
+{literal}
+$(document).ready(function(){
+        $("ul.clickMenu").each(function(index, node){
+            $(node).sugarActionMenu();
+        });
+    });
+{/literal}
 </script>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="actionsContainer">
 <tr>
-<td>
+<td width="20%">
 
 <form action="index.php" method="post" name="DetailView" id="form">
     <input type="hidden" name="module" value="Users">
@@ -74,7 +81,19 @@ user_detailview_tabs.on('contentReady', function(e){
     <input type="hidden" name="return_id">
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 
-    <tr><td colspan='2' width="100%" nowrap>{$EDITBUTTONS}{$BUTTONS}</td></tr>
+    <tr><td colspan='2' width="100%" nowrap>
+        <ul class="clickMenu">
+            <li>
+                {php}
+                    $ACTION_BUTTONS = $this->get_template_vars('EDITBUTTONS').$this->get_template_vars('BUTTONS');
+                    if(substr($ACTION_BUTTONS, -4) != "</li>")
+                        $ACTION_BUTTONS .= "</li>";
+                    $this->assign('ACTION_BUTTONS', $ACTION_BUTTONS);
+                {/php}
+                {$ACTION_BUTTONS}
+            </li>
+        </ul>
+    </td></tr>
 </table>
 </form>
 

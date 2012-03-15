@@ -95,7 +95,7 @@ class Link {
 
 		$this->_db = DBManagerFactory::getInstance();
 
-	
+
 		//Following behavior is tied to a property(ignore_role) value in the vardef. It alters the values of 2 properties, ignore_role_filter and add_distinct.
 		//the property values can be altered again before any requests are made.
 		if (!empty($fieldDef) && is_array($fieldDef)) {
@@ -712,7 +712,7 @@ class Link {
                 if(!empty($GLOBALS['dictionary'][$this->_relationship_name]['true_relationship_type']) &&
 					($GLOBALS['dictionary'][$this->_relationship_name]['true_relationship_type'] == 'one-to-one'))
                 {
-                    //Remove all existing links with either bean. 
+                    //Remove all existing links with either bean.
                     $old_rev = isset($this->_relationship->reverse) ? false : $this->_relationship->reverse;
                     $this->_relationship->reverse = true;
                     $this->delete($key);
@@ -856,12 +856,12 @@ class Link {
 
 
 
-	/* this method operates on all related record, takes action based on cardinality of the relationship.
+	/* This method operates on all related record, takes action based on cardinality of the relationship.
 	 * one-to-one, one-to-many: update the rhs table's parent id with null
 	 * many-to-one: update the lhs table's parent-id with null.
-	 * many-to-many: delete rows from the link table. related table must have delted and date_modified column.
-	 * if related_is is null, the methods assumes that the parent bean (whose id is passed) is being deleted.
-	 * if both id and related_id are passed the metod unlinks a single relationship.
+	 * many-to-many: delete rows from the link table. related table must have deleted and date_modified column.
+	 * If related_id is null, the methods assumes that the parent bean (whose id is passed) is being deleted.
+	 * If both id and related_id are passed, the method unlinks a single relationship.
 	 * parameters: id of the bean being deleted.
 	 *
 	 */

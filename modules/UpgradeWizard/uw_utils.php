@@ -1781,6 +1781,7 @@ function prepSystemForUpgrade() {
 	global $sugar_config;
 	global $sugar_flavor;
 	global $mod_strings;
+    global $current_language;
 	global $subdirs;
 	global $base_upgrade_dir;
 	global $base_tmp_upgrade_dir;
@@ -1841,8 +1842,8 @@ function prepSystemForUpgrade() {
 
 	if($upload_max_filesize_bytes < constant('SUGARCRM_MIN_UPLOAD_MAX_FILESIZE_BYTES')) {
 		$GLOBALS['log']->debug("detected upload_max_filesize: $upload_max_filesize");
-
-		echo '<p class="error">'.$mod_strings['MSG_INCREASE_UPLOAD_MAX_FILESIZE'].' '.get_cfg_var('cfg_file_path')."</p>\n";
+        $admin_strings = return_module_language($current_language, 'Administration');
+		echo '<p class="error">'.$admin_strings['MSG_INCREASE_UPLOAD_MAX_FILESIZE'].' '.get_cfg_var('cfg_file_path')."</p>\n";
 	}
 }
 

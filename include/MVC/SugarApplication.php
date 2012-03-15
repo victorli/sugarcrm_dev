@@ -69,7 +69,7 @@ class SugarApplication
 		insert_charset_header();
 		$this->setupPrint();
 		$this->controller = ControllerFactory::getController($module);
-        // if the entry point is defined to not need auth, then don't authenicate
+        // If the entry point is defined to not need auth, then don't authenticate.
 		if( empty($_REQUEST['entryPoint'])
                 || $this->controller->checkEntryPointRequiresAuth($_REQUEST['entryPoint']) ){
             $this->loadUser();

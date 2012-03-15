@@ -731,7 +731,7 @@ SE.autoComplete = {
     },
 
     /**
-     * Redisplays the textareas after an address is commited
+     * Redisplays the textareas after an address is committed.
      */
     toggleTextareaShow : function(sType, aArgs) {
         var textBoxId = aArgs[0]._oTextbox.id; // "addressTo0"
@@ -2041,7 +2041,7 @@ SE.composeLayout = {
                 setTimeout("SE.composeLayout.setContentOnThisTiny(true);", 3000);
                 return;
             }
-            
+
             //bug 48179
             //check tinyHTML for closing tags
             var body = tinyHTML.lastIndexOf('</body>');

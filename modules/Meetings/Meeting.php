@@ -37,9 +37,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 // Meeting is used to store customer information.
-require_once('modules/Activities/Activity.php');
-
-class Meeting extends Activity {
+class Meeting extends SugarBean {
 	// Stored fields
 	var $id;
 	var $date_entered;
@@ -69,6 +67,9 @@ class Meeting extends Activity {
 	var $meeting_id;
 	var $reminder_time;
 	var $reminder_checked;
+	var $email_reminder_time;
+	var $email_reminder_checked;
+	var $email_reminder_sent;
 	var $required;
 	var $accept_status;
 	var $parent_name;
@@ -81,6 +82,8 @@ class Meeting extends Activity {
 	var $assigned_user_name;
 	var $outlook_id;
 	var $sequence;
+	var $syncing = false;
+	var $recurring_source;
 
 	var $update_vcal = true;
 	var $contacts_arr;
@@ -119,6 +122,28 @@ class Meeting extends Activity {
             $this->minutes_values = $GLOBALS['app_list_strings']['duration_intervals'];
         }
 	}
+	
+	/**
+	 * Disable edit if meeting is recurring and source is not Sugar. It should be edited only from Outlook.
+	 * @param $view string
+	 * @param $is_owner bool
+	 */
+	function ACLAccess($view,$is_owner = 'not_set'){
+		// don't check if meeting is being synced from Outlook
+		if($this->syncing == false){
+			$view = strtolower($view);
+			switch($view){
+				case 'edit':
+				case 'save':
+				case 'editview':
+				case 'delete':
+					if(!empty($this->recurring_source) && $this->recurring_source != "Sugar"){
+						return false;
+					}
+			}
+		}
+		return parent::ACLAccess($view,$is_owner);
+	}
 
 	/**
 	 * Stub for integration
@@ -141,6 +166,10 @@ class Meeting extends Activity {
         	if(isset($this->date_start) && isset($this->duration_hours) && isset($this->duration_minutes))
 	        {
 	    	    $td = $timedate->fromDb($this->date_start);
+	    	    if(!$td){
+	    	    		$this->date_start = $timedate->to_db($this->date_start);
+	    	    		$td = $timedate->fromDb($this->date_start);
+	    	    }
 	    	    if($td)
 	    	    {
 		        	$this->date_end = $td->modify("+{$this->duration_hours} hours {$this->duration_minutes} mins")->asDb();
@@ -168,6 +197,10 @@ class Meeting extends Activity {
 			$this->reminder_checked = '1';
 			$this->reminder_time = $current_user->getPreference('reminder_time');
 		}*/
+
+		// prevent a mass mailing for recurring meetings created in Calendar module
+		if(empty($this->id) && !empty($_REQUEST['module']) && $_REQUEST['module'] == "Calendar" && !empty($_REQUEST['repeat_type']) && !empty($this->repeat_parent_id))
+			$check_notify = false;
 
         if (empty($this->status) ) {
             $this->status = $this->getDefaultStatus();
@@ -230,6 +263,9 @@ class Meeting extends Activity {
 	// this is for calendar
 	function mark_deleted($id) {
 
+		require_once("modules/Calendar/CalendarUtils.php");
+		CalendarUtils::correctRecurrences($this, $id);		
+		
 		global $current_user;
 
 		parent::mark_deleted($id);
@@ -376,6 +412,21 @@ class Meeting extends Activity {
 		if (is_null($this->duration_minutes))
 			$this->duration_minutes = "1";
 
+		if(empty($this->id) && !empty($_REQUEST['date_start'])){
+			$this->date_start = $_REQUEST['date_start'];
+		}
+		if(!empty($this->date_start)) {
+		    $start = SugarDateTime::createFromFormat($GLOBALS['timedate']->get_date_time_format(),$this->date_start);
+		    if (!empty($start)) {
+		        if (!empty($this->duration_hours) || !empty($this->duration_minutes)) {
+		            $this->date_end = $start->modify("+{$this->duration_hours} Hours +{$this->duration_minutes} Minutes")
+		            ->format($GLOBALS['timedate']->get_date_time_format());
+		        }
+		    } else {
+		        $GLOBALS['log']->fatal("Meeting::save: Bad date {$this->date_start} for format ".$GLOBALS['timedate']->get_date_time_format());
+		    }
+		}
+
 		global $app_list_strings;
 		$parent_types = $app_list_strings['record_type_display'];
 		$disabled_parent_types = ACLController::disabledModuleList($parent_types,false, 'list');
@@ -397,6 +448,16 @@ class Meeting extends Activity {
 		}
 		$this->reminder_checked = $this->reminder_time == -1 ? false : true;
 
+		if (empty($this->email_reminder_time)) {
+			$this->email_reminder_time = -1;
+		}
+		if(empty($this->id)){ 
+			$reminder_t = $GLOBALS['current_user']->getPreference('email_reminder_time');
+			if(isset($reminder_t))
+		    		$this->email_reminder_time = $reminder_t;
+		}
+		$this->email_reminder_checked = $this->email_reminder_time == -1 ? false : true;
+
 		if (isset ($_REQUEST['parent_type'])) {
 			$this->parent_type = $_REQUEST['parent_type'];
 		} elseif (is_null($this->parent_type)) {
@@ -407,7 +468,6 @@ class Meeting extends Activity {
 
 	function get_list_view_data() {
 		$meeting_fields = $this->get_list_view_array();
-
 		global $app_list_strings, $focus, $action, $currentModule;
 		if(isset($this->parent_type))
 			$meeting_fields['PARENT_MODULE'] = $this->parent_type;
@@ -443,18 +503,12 @@ class Meeting extends Activity {
 		}
 
         $meeting_fields['CONTACT_ID'] = $this->contact_id;
-
-        //If we have a contact id and there are more than one contacts found for this meeting then let's create a hover link
-        if($this->alter_many_to_many_query && !empty($this->contact_id) && isset($this->secondary_select_count) && $this->secondary_select_count > 1)
-        {
-           $meeting_fields['CONTACT_NAME'] = $this->createManyToManyDetailHoverLink($this->contact_name, $this->contact_id);
-        } else {
-           $meeting_fields['CONTACT_NAME'] = $this->contact_name;
-        }
+        $meeting_fields['CONTACT_NAME'] = $this->contact_name;
 
 		$meeting_fields['PARENT_NAME'] = $this->parent_name;
 
         $meeting_fields['REMINDER_CHECKED'] = $this->reminder_time==-1 ? false : true;
+        $meeting_fields['EMAIL_REMINDER_CHECKED'] = $this->email_reminder_time==-1 ? false : true;
 
 
 		return $meeting_fields;
@@ -494,6 +548,8 @@ class Meeting extends Activity {
 		$xtpl->assign("MEETING_TYPE", isset($meeting->type)? $typestring:"");
 		$startdate = $timedate->fromDb($meeting->date_start);
 		$xtpl->assign("MEETING_STARTDATE", $timedate->asUser($startdate, $notifyUser)." ".TimeDate::userTimezoneSuffix($startdate, $notifyUser));
+		$enddate = $timedate->fromDb($meeting->date_end);
+		$xtpl->assign("MEETING_ENDDATE", $timedate->asUser($enddate, $notifyUser)." ".TimeDate::userTimezoneSuffix($enddate, $notifyUser));		
 		$xtpl->assign("MEETING_HOURS", $meeting->duration_hours);
 		$xtpl->assign("MEETING_MINUTES", $meeting->duration_minutes);
 		$xtpl->assign("MEETING_DESCRIPTION", $meeting->description);
@@ -503,6 +559,33 @@ class Meeting extends Activity {
         }
 
 		return $xtpl;
+	}
+	
+	/**
+	 * Redefine method to attach ics file to notification email
+	 */
+	public function create_notification_email($notify_user){
+		$notify_mail = parent::create_notification_email($notify_user);
+						
+		$path = SugarConfig::getInstance()->get('upload_dir','upload/') . $this->id;
+
+		require_once("modules/vCals/vCal.php");
+		$content = vCal::get_ical_event($this, $GLOBALS['current_user']);
+				
+		if(file_put_contents($path,$content)){
+			$notify_mail->AddAttachment($path, 'meeting.ics', 'base64', 'text/calendar');
+		}
+		return $notify_mail;		
+	}
+	
+	/**
+	 * Redefine method to remove ics after email is sent
+	 */
+	public function send_assignment_notifications($notify_user, $admin){
+		parent::send_assignment_notifications($notify_user, $admin);
+		
+		$path = SugarConfig::getInstance()->get('upload_dir','upload/') . $this->id;
+		unlink($path);
 	}
 
 	function get_meeting_users() {
@@ -721,7 +804,6 @@ class Meeting extends Activity {
         }
         return '';
     }
-
 } // end class def
 
 // External API integration, for the dropdown list of what external API's are available

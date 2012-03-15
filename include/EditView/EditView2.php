@@ -467,10 +467,13 @@ class EditView
                   	}
 
 	       	 		if(!empty($this->fieldDefs[$name]['function']['returns']) && $this->fieldDefs[$name]['function']['returns'] == 'html'){
-						$value = $function($this->focus, $name, $value, $this->view);
+						if(!empty($this->fieldDefs[$name]['function']['include'])){
+								require_once($this->fieldDefs[$name]['function']['include']);
+						}
+						$value = call_user_func($function, $this->focus, $name, $value, $this->view);
 						$valueFormatted = true;
 					}else{
-						$this->fieldDefs[$name]['options'] = $function($this->focus, $name, $value, $this->view);
+						$this->fieldDefs[$name]['options'] = call_user_func($function, $this->focus, $name, $value, $this->view);
 					}
 	       	 	}
 

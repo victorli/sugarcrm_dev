@@ -42,7 +42,7 @@ class Bug47949Test extends Sugar_PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->markTestSkipped('Marking this skipped until we figure out why it is failing.');
+        $this->markTestIncomplete('Marking this skipped until we figure out why it is failing.');
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
     }
 

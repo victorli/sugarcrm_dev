@@ -144,9 +144,9 @@ array (
               'required' => true,
             ),
           ),
-          array (
+          array(
             'name' => 'reminder_time',
-            'customCode' => '{if $fields.reminder_checked.value == "1"}{assign var="REMINDER_TIME_DISPLAY" value="inline"}{assign var="REMINDER_CHECKED" value="checked"}{else}{assign var="REMINDER_TIME_DISPLAY" value="none"}{assign var="REMINDER_CHECKED" value=""}{/if}<input name="reminder_checked" type="hidden" value="0"><input name="reminder_checked" onclick=\'toggleDisplay("should_remind_list");\' type="checkbox" class="checkbox" value="1" {$REMINDER_CHECKED}><div id="should_remind_list" style="display:{$REMINDER_TIME_DISPLAY}">{$fields.reminder_time.value}</div>',
+            'customCode' => '{include file="modules/Meetings/tpls/reminders.tpl"}',
             'label' => 'LBL_REMINDER',
           ),
 

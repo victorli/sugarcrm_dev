@@ -44,8 +44,8 @@ $subpanel_layout = array(
 	),
 
 	'where' => '',
-	
-	
+
+
 
 	'list_fields' => array(
 		'object_image'=>array(
@@ -61,33 +61,31 @@ $subpanel_layout = array(
         'name'=>array(
  			'vname' => 'LBL_LIST_SUBJECT',
 			'widget_class' => 'SubPanelDetailViewLink',
-			'width' => '9999%',
+			'width' => '50%',
 		),
-/*todo AG
-		array( // this column does not exist on
-		    'name' => '$filename',
-			'vname' => 'LBL_LIST_FILENAME',
-			'width' => '9999%',
-		),
-		*/
 		'contact_name'=>array(
 			'module' => 'Contacts',
 			'vname' => 'LBL_LIST_CONTACT_NAME',
-		    'width' => '9999%',
+		    'width' => '20%',
             'target_record_key' => 'contact_id',
             'target_module' => 'Contacts',
             'widget_class' => 'SubPanelDetailViewLink',
 		),
 		'date_modified'=>array(
 		 	'vname' => 'LBL_LIST_DATE_MODIFIED',
-			'width' => '9999%',
+			'width' => '10%',
 		),
 		'edit_button'=>array(
 			'vname' => 'LBL_EDIT_BUTTON',
 			'widget_class' => 'SubPanelEditButton',
 		 	'module' => 'Notes',
-			'width' => '9999%',
+			'width' => '5%',
 		),
+        'remove_button'=>array(
+            'vname' => 'LBL_REMOVE',
+             'widget_class' => 'SubPanelRemoveButton',
+             'width' => '2%',
+        ),
 		'file_url'=>array(
 			'usage'=>'query_only'
 			),

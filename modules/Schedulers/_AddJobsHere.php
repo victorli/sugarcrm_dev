@@ -63,6 +63,7 @@ $job_strings = array (
 	3 => 'pruneDatabase',
 	4 => 'trimTracker',
 	/*4 => 'securityAudit()',*/
+    12 => 'sendEmailReminders',
 
 );
 
@@ -423,6 +424,17 @@ function pollMonitoredInboxesForBouncedCampaignEmails() {
 }
 
 
+
+
+/**
+ * Job 12
+ */
+function sendEmailReminders(){
+	$GLOBALS['log']->info('----->Scheduler fired job of type sendEmailReminders()');
+	require_once("modules/Activities/EmailReminder.php");
+	$reminder = new EmailReminder();
+	return $reminder->process();
+}
 
 
 

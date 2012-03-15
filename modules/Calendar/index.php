@@ -76,6 +76,6 @@ if($cal->view == "shared")
 	$display->display_shared_html();
 $display->display_calendar_header();
 $display->display();
-$display->display_calendar_footer();
+$display->display_calendar_footer();	
 
 ?>

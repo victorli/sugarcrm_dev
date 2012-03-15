@@ -38,7 +38,7 @@ require_once 'modules/ModuleBuilder/Module/StudioModule.php' ;
 
 class StudioModuleFactory
 {
-	function getStudioModule($module)
+	public static function getStudioModule($module)
 	{
 		$studioModClass = "{$module}StudioModule";
 		if (file_exists("modules/{$module}/{$studioModClass}.php"))

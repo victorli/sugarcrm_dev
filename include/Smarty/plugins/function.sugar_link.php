@@ -101,6 +101,7 @@ function smarty_function_sugar_link($params, &$smarty)
 	$class = (!empty($params['class']))?' class="'.$params['class'].'"':'';
 	$style = (!empty($params['style']))?' style="'.$params['style'].'"':'';
 	$title = (!empty($params['title']))?' title="'.$params['title'].'"':'';
+    $module = ' module="'.$params['module'].'"';
 	$accesskey = (!empty($params['accesskey']))?' accesskey="'.$params['accesskey'].'" ':'';
     $options = (!empty($params['options']))?' '.$params['options'].'':'';
     if(!empty($params['data']) && is_array($params['data']))
@@ -110,6 +111,6 @@ function smarty_function_sugar_link($params, &$smarty)
 	else
 	    $label = (!empty($GLOBALS['app_list_strings']['moduleList'][$params['module']]))?$GLOBALS['app_list_strings']['moduleList'][$params['module']]:$params['module'];
 
-    $link = '<a href="'.ajaxLink($link_url).'"'.$id.$class.$style.$options.'>'.$label.'</a>';
+    $link = '<a href="'.ajaxLink($link_url).'"'.$id.$class.$style.$options.$title.$module.'>'.$label.'</a>';
     return $link;
 }

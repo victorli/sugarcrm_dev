@@ -37,7 +37,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-require_once("include/templates/Template.php"); 
+require_once("include/templates/Template.php");
 
 class TemplateDragDropChooser extends Template {
     var $args;
@@ -46,9 +46,9 @@ class TemplateDragDropChooser extends Template {
 
 /*
  * This function creates the html and uses the args parameter to call the class file
- * ideally, you would want to call the displayScriptTags() function, 
+ * ideally, you would want to call the displayScriptTags() function,
  * followed by the displayDefinitionScript();
- * and lastly call the display function 
+ * and lastly call the display function
  */
     function display(){
 
@@ -57,7 +57,7 @@ class TemplateDragDropChooser extends Template {
    *   args['mid_header'] = value of middle table header
    *   args['right_header'] = value of right table header
    *   args['left_data'] = array to use in left data.
-   *   args['mid_data'] = array to use in middle data.   
+   *   args['mid_data'] = array to use in middle data.
    *   args['right_data'] =array to use in right data.
    *   args['title'] =  title (if any) to be used.
    *   args['classname'] =  name to be used as class. This helps when defining multiple templates on one screen.
@@ -65,15 +65,15 @@ class TemplateDragDropChooser extends Template {
    *   args['mid_div_name'] = Name to be used for middle div (should be unique)
    *   args['right_div_name'] = Name to be used for right div (should be unique)
    *   args['gridcount'] = Number of grids to show.  Acceptable Values are 'one','two' and 'three'
-   *                       The string is converted to numeric values, so you could also set these directly  
+   *                       The string is converted to numeric values, so you could also set these directly
    *                       The values are Zero Based, so to display one column, set to '0'
    *                       To display two columns set to '1', to display three columns set to '2'.
    * $this->args['return_array']= if this is set to true, then 'display()' function returns html and javascript
    *                              in array format.  This will allow granular control of html so that you can
-   *                              seperate the tables and customize the grid   
-   */    
-   
- 
+   *                              separate the tables and customize the grid
+   */
+
+
         //convert values for gridcount in case they are in string form
         if($this->args['gridcount'] == 'one'){
             $this->args['gridcount'] = 0;
@@ -82,7 +82,7 @@ class TemplateDragDropChooser extends Template {
         }elseif(
             $this->args['gridcount'] == 'three'){$this->args['gridcount'] = 2;
         }
- 
+
         if(!isset($this->args['classname']) || empty($this->args['classname'])){
             $this->args['classname'] = 'DragDropGrid';
         }
@@ -92,14 +92,14 @@ class TemplateDragDropChooser extends Template {
         $this->args['left_data'][] = array(' ', ' ');
         $data0_enc = $json->encode($this->args['left_data']);
         $left_div_name = $this->args['left_div_name'];
-        
+
         //if count is set to 1, then we are displaying two columns, set the 2 column variables
         if($this->args['gridcount']==1){
         	$this->args['right_data'][] = array(' ', ' ');
             $data1_enc = $json->encode($this->args['right_data']);
             $right_div_name = $this->args['right_div_name'];
-        }        
-        
+        }
+
         //if count is set to 2, then we are displaying three columns, set the 3 column variables
         if($this->args['gridcount']==2){
         	$this->args['mid_data'][] = array(' ', ' ');
@@ -116,12 +116,12 @@ class TemplateDragDropChooser extends Template {
          $html_str .=   "<tr><td width='180px' class='tabDetailViewDF'><div id='$left_div_name' class='ygrid-mso' style='width:180px;height:270px;overflow:hidden;'> </div></td>";
          $html_str_arr['left'] = "<tr><td width='180px' class='tabDetailViewDF'><div id='$left_div_name' class='ygrid-mso' style='width:180px;height:270px;overflow:hidden;'> </div></td>";
         //set the middle column only if we are displaying 3 columns
-         if($this->args['gridcount']==2){                        
+         if($this->args['gridcount']==2){
             $html_str .=   "<td width='180px' class='tabDetailViewDF'><div id='$mid_div_name' class='ygrid-mso' style='width:180px;height:270px;overflow:hidden;'> </div></td>";
             $html_str_arr['middle'] = "<td width='180px' class='tabDetailViewDF'><div id='$mid_div_name' class='ygrid-mso' style='width:180px;height:270px;overflow:hidden;'> </div></td>";
          }
          //set the right column if we are not in 1 column only mode
-         if($this->args['gridcount']>0){                        
+         if($this->args['gridcount']>0){
             $html_str .=   "<td width='180px' class='tabDetailViewDF'><div id='$right_div_name' class='ygrid-mso' style='width:180px;height:270px;overflow:hidden;'> </div></td>";
             $html_str_arr['right'] = "<td width='180px' class='tabDetailViewDF'><div id='$right_div_name' class='ygrid-mso' style='width:180px;height:270px;overflow:hidden;'> </div></td>";
          }
@@ -137,7 +137,7 @@ class TemplateDragDropChooser extends Template {
             $j_str .= $this->args['classname'] . ".hdr1 = '{$this->args['right_header']}';\n";
         }
         if($this->args['gridcount']==2){
-            $j_str .= $this->args['classname'] . ".rows1 = {$data1_enc}; \n";            
+            $j_str .= $this->args['classname'] . ".rows1 = {$data1_enc}; \n";
             $j_str .= $this->args['classname'] . ".rows2 = {$data2_enc}; \n";
             $j_str .= $this->args['classname'] . ".hdr1 = '{$this->args['mid_header']}'; \n";
             $j_str .= $this->args['classname'] . ".hdr2 = '{$this->args['right_header']}'; \n";
@@ -145,22 +145,22 @@ class TemplateDragDropChooser extends Template {
         $divs_str = "'".$left_div_name ."'";
         if($this->args['gridcount']==2){$divs_str .= ", '".$mid_div_name."'";}
         if($this->args['gridcount']>0) {$divs_str .= ", '".$right_div_name."'";}
-        
+
         $j_str .= $this->args['classname'] . ".divs = [$divs_str]; ";
 
         $j_str .= "YAHOO.util.Event.on(window, 'load', " . $this->args['classname'] . ".init); ";
         $j_str .= "</script> ";
         //return display string
         $str = $j_str . '  ' . $html_str;
-        $html_str_arr['script'] = $j_str;        
-            
+        $html_str_arr['script'] = $j_str;
+
         if(isset($this->args['return_array']) && $this->args['return_array']){
-            return $html_str_arr;    
+            return $html_str_arr;
         }else{
             return $str;
         }
     }
-    
+
 	/*
 	 * This script is the javascript class definition for the template drag drop object.  This
 	 * makes use of the args['classname'] parameter to name the class and to prefix variables with.  This is done
@@ -178,9 +178,9 @@ class TemplateDragDropChooser extends Template {
         }elseif(
             $this->args['gridcount'] == 'three'){$this->args['gridcount'] = 2;
         }
- 
 
-        
+
+
         //default class name
         if(!isset($this->args['classname']) || empty($this->args['classname'])){
             $this->args['classname'] = 'DragDropGrid';
@@ -205,24 +205,24 @@ class TemplateDragDropChooser extends Template {
 
         //create javascript that defines the javascript class for this instance
         //start by defining the variables that the grids will be referenced by
-        $j_str =   "  
+        $j_str =   "
         <script>
            var container = new YAHOO.util.Element('grid_Div').addClass('yui-skin-sam');
            var " . $this->args['classname'] . "_grid2, " . $this->args['classname'] . "_grid1, " . $this->args['classname'] . "_grid0;
            var " . $this->args['classname'] . "_sugar_grid2, " . $this->args['classname'] . "_sugar_grid1, " . $this->args['classname'] . "_sugar_grid0;
-           
+
            /*
             * This invokes the grid objects
             */
-            
+
             " . $this->args['classname'] . " =  {" ;
 	    $j_str .=   "
             rows0 : [],
             rows1 : [],
-            rows2 : [],     
-            hdr0 : [],     
+            rows2 : [],
+            hdr0 : [],
             hdr1 : [],
-            hdr2 : [],  
+            hdr2 : [],
             divs : [],
             formatter : function(elCell, oRecord, oColumn, oData) {
                 if (oRecord.getData()[0] == ' ' ) {
@@ -240,22 +240,22 @@ class TemplateDragDropChooser extends Template {
                     {key:'label', label:{$this->args['classname']}.hdr$count, formatter: {$this->args['classname']}.formatter}
                 ];
                 {$this->args['classname']}_grid$count = new YAHOO.SUGAR.DragDropTable(
-                    {$this->args['classname']}.divs[$count], {$this->args['classname']}_grid{$count}cols, {$this->args['classname']}_grid{$count}source, 
+                    {$this->args['classname']}.divs[$count], {$this->args['classname']}_grid{$count}cols, {$this->args['classname']}_grid{$count}source,
                     {
                         trackMouseOver: false,
                         height: '250px'
                     }
                 );";
-                    
+
                 $j_str .= "
                 {$this->args['classname']}_sugar_grid$count = {$this->args['classname']}_grid$count;";
-	                    
+
                 $count = $count+1;
-            }                               
-        $j_str.=" 
+            }
+        $j_str.="
             }
         };
-        
+
         </script>
         ";
         //all done, return final script
@@ -267,16 +267,16 @@ class TemplateDragDropChooser extends Template {
  * this function returns the src style sheet and script tags that need to be included
  * for the template chooser to work
  */
-    
+
     function displayScriptTags() {
         global $sugar_version, $sugar_config;
-    	$j_str =   "  
+    	$j_str =   "
         <link rel='stylesheet' type='text/css' href='include/javascript/yui/build/datatable/assets/skins/sam/datatable.css'/>
         <script type='text/javascript' src='cache/include/javascript/sugar_grp_yui_widgets.js'></script>";
-            
+
         return $j_str;
     }
-      
+
 }
 
 ?>

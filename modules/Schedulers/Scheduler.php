@@ -35,10 +35,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description:
- ********************************************************************************/
+require_once 'modules/SchedulersJobs/SchedulersJob.php';
 
 class Scheduler extends SugarBean {
 	// table columns
@@ -76,14 +73,16 @@ class Scheduler extends SugarBean {
 	var $timeOutMins = 60;
 	// standard SugarBean attrs
 	var $table_name				= "schedulers";
-	var $object_name			= "schedulers";
+	var $object_name			= "Scheduler";
 	var $module_dir				= "Schedulers";
 	var $new_schema				= true;
 	var $process_save_dates 	= true;
 	var $order_by;
 
+	public static $job_strings;
 
-    function Scheduler($init=true) {
+    public function __construct($init=true)
+    {
         parent::SugarBean();
         if($init) {
             $user = new User();
@@ -111,131 +110,19 @@ class Scheduler extends SugarBean {
             }
             $this->user = $user;
         }
+        $job = new SchedulersJob();
+        $this->job_queue_table = $job->table_name;
     }
 
 
 	///////////////////////////////////////////////////////////////////////////
 	////	SCHEDULER HELPER FUNCTIONS
-	/**
-	 * executes Scheduled job
-	 */
-	function fire() {
-		if(empty($this->job)) { // only execute when valid
-			$GLOBALS['log']->fatal('Scheduler tried to fire an empty job!!');
-			return false;
-		}
-
-		$exJob = explode('::', $this->job);
-		if(is_array($exJob)) {
-			// instantiate a new SchedulersJob object and prep it
-
-
-			$trackerManager = TrackerManager::getInstance();
-			$trackerManager->pause();
-			$job				= new SchedulersJob();
-			$job->scheduler_id	= $this->id;
-			$job->scheduler		= $this;
-			$job->execute_time	= $job->handleDateFormat('now');
-			$jobId = $job->save();
-			$trackerManager->unPause();
-			$job->retrieve($jobId);
-
-			if($exJob[0] == 'function') {
-				$GLOBALS['log']->debug('----->Scheduler found a job of type FUNCTION');
-				require_once('modules/Schedulers/_AddJobsHere.php');
-
-				$job->setJobFlag(1);
-
-				$func = $exJob[1];
-				$GLOBALS['log']->debug('----->SchedulersJob firing '.$func);
-
-				$res = call_user_func($func);
-				if($res) {
-					$job->setJobFlag(2);
-					$job->finishJob();
-					return true;
-				} else {
-					$job->setJobFlag(3);
-					return false;
-				}
-			} elseif($exJob[0] == 'url') {
-				if(function_exists('curl_init')) {
-					$GLOBALS['log']->debug('----->SchedulersJob found a job of type URL');
-					$job->setJobFlag(1);
-
-					$GLOBALS['log']->debug('----->SchedulersJob firing URL job: '.$exJob[1]);
-					if($job->fireUrl($exJob[1])) {
-						$job->setJobFlag(2);
-						$job->finishJob();
-						return true;
-					} else {
-						$job->setJobFlag(3);
-						return false;
-					}
-				} else {
-					$job->setJobFlag(4);
-					return false;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * flushes dead or hung jobs
-	 */
-	function flushDeadJobs() {
-		$GLOBALS['log']->debug('-----> Scheduler flushing dead jobs');
-
-		$lowerLimit = mktime(0, 0, 0, 1, 1, 2005); // jan 01, 2005, GMT-0
-		$now = TimeDate::getInstance()->getNow()->ts; // current timestamp
-
-		$q = "	SELECT s.id, s.name FROM schedulers s WHERE s.deleted=0 AND s.status = 'In Progress'";
-		$r = $this->db->query($q);
-
-		if($r != null) {
-			while($a = $this->db->fetchByAssoc($r)) {
-				$q2 = "	SELECT st.id, st.execute_time FROM schedulers_times st
-						WHERE st.deleted=0
-						AND st.scheduler_id = '{$a['id']}'
-						ORDER BY st.execute_time DESC";
-				$r2 = $this->db->query($q2);
-				if($r2 != null) {
-					$a2 = $this->db->fetchByAssoc($r2); // we only care about the newest
-                    $a2['execute_time'] = $this->db->fromConvert($a2['execute_time'],'datetime');
-					if($a2 != null) {
-						$GLOBALS['log']->debug("-----> Scheduler found [ {$a['name']} ] 'In Progress' with most recent Execute Time at [ {$a2['execute_time']} GMT-0 ]");
-
-						$execTime = TimeDate::getInstance()->fromDB($a2['execute_time'])->ts;
-
-                        $GLOBALS['log']->debug("-----> Checking if Scheduler execTime ($execTime) is higher than lowerLimit ($lowerLimit)");
-
-						if($execTime > $lowerLimit) {
-							if(($now - $execTime) >= (60 * $this->timeOutMins)) {
-								$GLOBALS['log']->info("-----> Scheduler found a dead Job.  Flushing status and reseting Job");
-								$q3 = "UPDATE schedulers SET status = 'Active' WHERE id = '{$a['id']}'";
-								$this->db->query($q3);
-
-								$GLOBALS['log']->info("-----> Scheduler setting Job Instance status to 'failed'");
-								$q4 = "UPDATE schedulers_times SET status = 'failed' WHERE id = '{$a2['id']}'";
-								$this->db->query($q4);
-							} else {
-								$GLOBALS['log']->debug("-----> Scheduler will wait for job to complete - not past threshold of [ ".($this->timeOutMins * 60)."secs ] - timeDiff is ".($now - $execTime)." secs");
-							}
-						} else {
-							$GLOBALS['log']->fatal("-----> Scheduler got a bad execute time: 	[ {$a2['execute_time']} GMT-0 ]");
-						}
-
-					}
-				}
-			}
-		} // if
-	}
 
 	/**
 	 * calculates if a job is qualified to run
 	 */
-	function fireQualified() {
+	public function fireQualified()
+	{
 		if(empty($this->id)) { // execute only if we have an instance
 			$GLOBALS['log']->fatal('Scheduler called fireQualified() in a non-instance');
 			return false;
@@ -255,22 +142,35 @@ class Scheduler extends SugarBean {
 	}
 
 	/**
-	 * Checks if any jobs qualify to run at this moment
+	 * Create a job from this scheduler
+	 * @return SchedulersJob
 	 */
-	function checkPendingJobs() {
-		$this->cleanJobLog();
-		$allSchedulers = $this->get_full_list('', 'schedulers.status=\'Active\'');
+	public function createJob()
+	{
+	    $job = new SchedulersJob();
+	    $job->scheduler_id = $this->id;
+        $job->name = $this->name;
+        $job->execute_time = $GLOBALS['timedate']->nowDb();
+        $job->assigned_user_id = $this->user->id;
+        $job->target = $this->job;
+        return $job;
+	}
+
+	/**
+	 * Checks if any jobs qualify to run at this moment
+	 * @param SugarJobQueue $queue
+	 */
+	public function checkPendingJobs($queue)
+	{
+		$allSchedulers = $this->get_full_list('', "schedulers.status='Active' AND NOT EXISTS(SELECT id FROM {$this->job_queue_table} WHERE scheduler_id=schedulers.id AND status!='".SchedulersJob::JOB_STATUS_DONE."')");
 
 		$GLOBALS['log']->info('-----> Scheduler found [ '.count($allSchedulers).' ] ACTIVE jobs');
 
 		if(!empty($allSchedulers)) {
 			foreach($allSchedulers as $focus) {
 				if($focus->fireQualified()) {
-					if($focus->fire()) {
-						$GLOBALS['log']->debug('----->Scheduler Job completed successfully');
-					} else {
-						$GLOBALS['log']->fatal('----->Scheduler Job FAILED');
-					}
+				    $job = $focus->createJob();
+				    $queue->submitJob($job, $this->user);
 				}
 			}
 		} else {
@@ -289,7 +189,8 @@ class Scheduler extends SugarBean {
 	 * 						the	 job_interval attribute
 	 * @return	false		If we the Scheduler is not in scope, return false.
 	 */
-	function deriveDBDateTimes($focus) {
+	function deriveDBDateTimes($focus)
+	{
         global $timedate;
 		$GLOBALS['log']->debug('----->Schedulers->deriveDBDateTimes() got an object of type: '.$focus->object_name);
 		/* [min][hr][dates][mon][days] */
@@ -334,7 +235,7 @@ class Scheduler extends SugarBean {
 			}
 
 			// check the day to be in scope:
-			if(!in_array(($today['wday']+6)%7, $dayName)) {//$dayName starts from Monday, while $today['wday'] starts from Sunday
+			if(!in_array($today['wday'], $dayName)) {
 				return false;
 			}
 		} else {
@@ -628,13 +529,13 @@ class Scheduler extends SugarBean {
 	function handleIntervalType($type, $value, $mins, $hours) {
 		global $mod_strings;
 		/* [0]:min [1]:hour [2]:day of month [3]:month [4]:day of week */
-		$days = array (	0 => $mod_strings['LBL_MON'],
-						1 => $mod_strings['LBL_TUE'],
-						2 => $mod_strings['LBL_WED'],
-						3 => $mod_strings['LBL_THU'],
-						4 => $mod_strings['LBL_FRI'],
-						5 => $mod_strings['LBL_SAT'],
-						6 => $mod_strings['LBL_SUN'],
+		$days = array (	1 => $mod_strings['LBL_MON'],
+						2 => $mod_strings['LBL_TUE'],
+						3 => $mod_strings['LBL_WED'],
+						4 => $mod_strings['LBL_THU'],
+						5 => $mod_strings['LBL_FRI'],
+						6 => $mod_strings['LBL_SAT'],
+						0 => $mod_strings['LBL_SUN'],
 						'*' => $mod_strings['LBL_ALL']);
 		switch($type) {
 			case 0: // minutes
@@ -767,7 +668,7 @@ class Scheduler extends SugarBean {
 			$this->datesArray[$i] = $i;
 		}
 
-		$this->dayInt = array('*',1,2,3,4,5,6,7);
+		$this->dayInt = array('*',1,2,3,4,5,6,0);
 		$this->dayLabel = array('*',$mod_strings['LBL_MON'],$mod_strings['LBL_TUE'],$mod_strings['LBL_WED'],$mod_strings['LBL_THU'],$mod_strings['LBL_FRI'],$mod_strings['LBL_SAT'],$mod_strings['LBL_SUN']);
 		$this->monthsInt = array(0,1,2,3,4,5,6,7,8,9,10,11,12);
 		$this->monthsLabel = $app_list_strings['dom_cal_month_long'];
@@ -796,15 +697,6 @@ class Scheduler extends SugarBean {
 						);
 
 		$this->intervalParsed = $intA;
-	}
-
-	/**
-	 * soft-deletes all job logs older than 24 hours
-	 */
-	function cleanJobLog()
-	{
-		$GLOBALS['log']->info('DELETE FROM schedulers_times WHERE date_entered < '.db_convert("'" . TimeDate::getInstance()->getNow()->get("-1 day")->asDb() . "'", 'datetime'));
-		$this->db->query('DELETE FROM schedulers_times WHERE date_entered < '.db_convert("'" . TimeDate::getInstance()->getNow()->get("-1 day")->asDb() . "'", 'datetime'));
 	}
 
 	/**
@@ -902,7 +794,6 @@ class Scheduler extends SugarBean {
 		global $mod_strings;
 		// truncate scheduler-related tables
 		$this->db->query('DELETE FROM schedulers');
-		$this->db->query('DELETE FROM schedulers_times');
 
 
         $sched3 = new Scheduler();
@@ -968,6 +859,17 @@ class Scheduler extends SugarBean {
 
 
 
+        $sched12 = new Scheduler();
+        $sched12->name               = $mod_strings['LBL_OOTB_SEND_EMAIL_REMINDERS'];
+        $sched12->job                = 'function::sendEmailReminders';
+        $sched12->date_time_start    = create_date(2008,1,1) . ' ' . create_time(0,0,1);
+        $sched12->date_time_end      = create_date(2020,12,31) . ' ' . create_time(23,59,59);
+        $sched12->job_interval       = '*::*::*::*::*';
+        $sched12->status             = 'Active';
+        $sched12->created_by         = '1';
+        $sched12->modified_user_id   = '1';
+        $sched12->catch_up           = '0';
+        $sched12->save();
 
 	}
 
@@ -1004,7 +906,8 @@ class Scheduler extends SugarBean {
 	/**
 	 * function overrides the one in SugarBean.php
 	 */
-	function get_list_view_data(){
+	function get_list_view_data()
+	{
 		global $mod_strings;
 		$temp_array = $this->get_list_view_array();
         $temp_array["ENCODED_NAME"]=$this->name;
@@ -1023,10 +926,24 @@ class Scheduler extends SugarBean {
 	/**
 	 * returns the bean name - overrides SugarBean's
 	 */
-	function get_summary_text() {
+	function get_summary_text()
+	{
 		return $this->name;
 	}
 	////	END STANDARD SUGARBEAN OVERRIDES
 	///////////////////////////////////////////////////////////////////////////
+	static public function getJobsList()
+	{
+		if(empty(self::$job_strings)) {
+			global $mod_strings;
+			include_once('modules/Schedulers/_AddJobsHere.php');
+
+			// job functions
+			self::$job_strings = array('url::' => 'URL');
+			foreach($job_strings as $k=>$v){
+				self::$job_strings['function::' . $v] = $mod_strings['LBL_'.strtoupper($v)];
+			}
+		}
+		return self::$job_strings;
+	}
 } // end class definition
-?>

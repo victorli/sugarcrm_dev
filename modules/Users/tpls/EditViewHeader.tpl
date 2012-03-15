@@ -41,7 +41,6 @@
 <script type="text/javascript" src="{sugar_getjspath file='modules/Emails/javascript/vars.js'}"></script>
 <script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_emails.js'}"></script>
 <link rel="stylesheet" type="text/css" href="{sugar_getjspath file='modules/Users/PasswordRequirementBox.css'}">
-<script type='text/javascript' src='{sugar_getjspath file='cache/include/javascript/sugar_grp_overlib.js'}'></script>
 <script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_yui_widgets.js'}"></script>
 <script type='text/javascript' src='{sugar_getjspath file='include/SubPanel/SubPanelTiles.js'}'></script>
 <script type='text/javascript'>
@@ -103,6 +102,12 @@ EditView_tabs.on('contentReady', function(e){
     {/literal}{if !$SHOW_THEMES}{literal}eapmTabIndex = 3;{/literal}{/if}{literal}
     EditView_tabs.getTab(eapmTabIndex).set('dataSrc','index.php?sugar_body_only=1&module=Users&subpanel=eapm&action=SubPanelViewer&inline=1&record={/literal}{$ID}{literal}&layout_def_key=UserEAPM&inline=1&ajaxSubpanel=true');
     EditView_tabs.getTab(eapmTabIndex).set('cacheData',true);
+    EditView_tabs.getTab(eapmTabIndex).on('dataLoadedChange',function(){
+        //reinit action menus
+        $("ul.clickMenu").each(function(index, node){
+            $(node).sugarActionMenu();
+        });
+    });
 
     if ( document.location.hash == '#tab5' ) {
         EditView_tabs.selectTab(eapmTabIndex);
@@ -115,13 +120,19 @@ EditView_tabs.on('contentReady', function(e){
 <table width="100%" cellpadding="0" cellspacing="0" border="0" class="actionsContainer">
     <tr>
         <td>
-            <input	id="Save" title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}"
-                    class="button primary" onclick="if (!set_password(form,newrules('{$PWDSETTINGS.minpwdlength}','{$PWDSETTINGS.maxpwdlength}','{$REGEX}'))) return false; if (!Admin_check()) return false; this.form.action.value='Save'; {$CHOOSER_SCRIPT} {$REASSIGN_JS} if(verify_data(EditView)) this.form.submit();"
-                    type="button" name="button" value="{$APP.LBL_SAVE_BUTTON_LABEL}" >
-            <input	title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}"
+            <ul class="clickMenu" id="userEditActions">
+                <li>
+                    <a	id="Save" title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}"
+                    onclick="var _form = $('#EditView')[0]; if (!set_password(_form,newrules('{$PWDSETTINGS.minpwdlength}','{$PWDSETTINGS.maxpwdlength}','{$REGEX}'))) return false; if (!Admin_check()) return false; _form.action.value='Save'; {$CHOOSER_SCRIPT} {$REASSIGN_JS} if(verify_data(EditView)) _form.submit();"
+                    name="button">{$APP.LBL_SAVE_BUTTON_LABEL}</a>
+                    <ul class="subnav multi">
+                    <li><input	title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}"
                     class="button" onclick="this.form.action.value='{$RETURN_ACTION}'; this.form.module.value='{$RETURN_MODULE}'; this.form.record.value='{$RETURN_ID}'; this.form.submit()"
-                    type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}">
+                    type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}"></li>
             {$BUTTONS}
+                    </ul>
+                </li>
+            </ul>
         </td>
         <td align="right" nowrap>
             <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span> {$APP.NTC_REQUIRED}

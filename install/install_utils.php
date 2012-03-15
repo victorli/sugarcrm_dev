@@ -744,8 +744,13 @@ function handleSugarConfig() {
     $sugar_config['host_name']                      = $setup_site_host_name;
     $sugar_config['js_custom_version']              = '';
     $sugar_config['use_real_names']                 = true;
+    $sugar_config['disable_convert_lead']           = false;
     $sugar_config['log_dir']                        = $setup_site_log_dir;
     $sugar_config['log_file']                       = $setup_site_log_file;
+
+    //Setup FTS
+    if(!empty($_SESSION['fts_type']))
+        $sugar_config['full_text_engine']               = array($_SESSION['fts_type'] => array('host'=> $_SESSION['fts_host'], 'port' => $_SESSION['fts_port']));
 
 	/*nsingh(bug 22402): Consolidate logger settings under $config['logger'] as liked by the new logger! If log4pphp exists,
 		these settings will be overwritten by those in log4php.properties when the user access admin->system settings.*/
@@ -849,6 +854,25 @@ RedirectMatch 403 {$ignoreCase}/+cache/+diagnostic
 RedirectMatch 403 {$ignoreCase}/+files\.md5$
 # END SUGARCRM RESTRICTIONS
 EOQ;
+
+$cache_headers = <<<EOQ
+
+<FilesMatch "\.(jpg|png|gif|js|css|ico)$">
+        <IfModule mod_headers.c>
+                Header set ETag ""
+                Header set Cache-Control "max-age=2592000"
+                Header set Expires "01 Jan 2112 00:00:00 GMT"
+        </IfModule>
+</FilesMatch>
+<IfModule mod_expires.c>
+        ExpiresByType text/css "access plus 1 month"
+        ExpiresByType text/javascript "access plus 1 month"
+        ExpiresByType application/x-javascript "access plus 1 month"
+        ExpiresByType image/gif "access plus 1 month"
+        ExpiresByType image/jpg "access plus 1 month"
+        ExpiresByType image/png "access plus 1 month"
+</IfModule>
+EOQ;
 	if(file_exists($htaccess_file)){
 	 	$fp = fopen($htaccess_file, 'r');
 	 	$skip = false;
@@ -859,7 +883,7 @@ EOQ;
 	 		if(preg_match("/\s*#\s*END\s*SUGARCRM\s*RESTRICTIONS/i", $line))$skip = false;
 	 	}
 	}
-	$status =  file_put_contents($htaccess_file, $contents . $restrict_str);
+	$status =  file_put_contents($htaccess_file, $contents . $restrict_str . $cache_headers);
     if( !$status ) {
         echo "<p>{$mod_strings['ERR_PERFORM_HTACCESS_1']}<span class=stop>{$htaccess_file}</span> {$mod_strings['ERR_PERFORM_HTACCESS_2']}</p>\n";
         echo "<p>{$mod_strings['ERR_PERFORM_HTACCESS_3']}</p>\n";
@@ -926,26 +950,52 @@ function handleWebConfig()
     $xmldoc->setIndentString(' ');
     $xmldoc->startDocument('1.0','UTF-8');
     $xmldoc->startElement('configuration');
-    $xmldoc->startElement('system.webServer');
-    $xmldoc->startElement('rewrite');
-    $xmldoc->startElement('rules');
-    for ($i = 0; $i < count($config_array); $i++) {
-        $xmldoc->startElement('rule');
-        $xmldoc->writeAttribute('name', "redirect$i");
-        $xmldoc->writeAttribute('stopProcessing', 'true');
-        $xmldoc->startElement('match');
-        $xmldoc->writeAttribute('url', $config_array[$i]['1']);
-        $xmldoc->endElement();
-        $xmldoc->startElement('action');
-        $xmldoc->writeAttribute('type', 'Redirect');
-        $xmldoc->writeAttribute('url', $config_array[$i]['2']);
-        $xmldoc->writeAttribute('redirectType', 'Found');
-        $xmldoc->endElement();
-        $xmldoc->endElement();
-    }
-    $xmldoc->endElement();
-    $xmldoc->endElement();
-    $xmldoc->endElement();
+	    $xmldoc->startElement('system.webServer');
+		    $xmldoc->startElement('rewrite');
+			    $xmldoc->startElement('rules');
+			    for ($i = 0; $i < count($config_array); $i++) {
+			        $xmldoc->startElement('rule');
+			        	$xmldoc->writeAttribute('name', "redirect$i");
+			        	$xmldoc->writeAttribute('stopProcessing', 'true');
+			        	$xmldoc->startElement('match');
+			        		$xmldoc->writeAttribute('url', $config_array[$i]['1']);
+			        	$xmldoc->endElement();
+			        	$xmldoc->startElement('action');
+			        		$xmldoc->writeAttribute('type', 'Redirect');
+			       			$xmldoc->writeAttribute('url', $config_array[$i]['2']);
+			        		$xmldoc->writeAttribute('redirectType', 'Found');
+			        	$xmldoc->endElement();
+			        $xmldoc->endElement();
+			    }
+			    $xmldoc->endElement();
+			    $xmldoc->startElement('outboundRules');
+			    	$xmldoc->startElement('rule');
+			    		$xmldoc->writeAttribute('name', 'Remove ETag');
+			    		$xmldoc->startElement('match');
+			    			$xmldoc->writeAttribute('serverVariable', 'RESPONSE_ETag');
+							$xmldoc->writeAttribute('pattern', '.+');
+						$xmldoc->endElement();
+						$xmldoc->startElement('action');
+							$xmldoc->writeAttribute('type', 'Rewrite');
+							$xmldoc->writeAttribute('value', '');
+						$xmldoc->endElement();
+			    	$xmldoc->endElement();
+			    $xmldoc->endElement();
+		    $xmldoc->endElement();
+		    $xmldoc->startElement('caching');
+		    	$xmldoc->startElement('profiles');
+		    		$xmldoc->startElement('remove');
+		    			$xmldoc->writeAttribute('extension', ".php");
+		    		$xmldoc->endElement();
+		    	$xmldoc->endElement();
+		    $xmldoc->endElement();
+		    $xmldoc->startElement('staticContent');
+		    	$xmldoc->startElement("clientCache");
+		    		$xmldoc->writeAttribute('cacheControlMode', 'UseMaxAge');
+		    		$xmldoc->writeAttribute('cacheControlMaxAge', '30.00:00:00');
+		    	$xmldoc->endElement();
+		    $xmldoc->endElement();
+	    $xmldoc->endElement();
     $xmldoc->endElement();
     $xmldoc->endDocument();
     $xmldoc->flush();
@@ -996,36 +1046,24 @@ function create_default_users(){
     global $setup_site_admin_user_name;
     global $create_default_user;
     global $sugar_config;
-    global $current_user;
+
 	require_once('install/UserDemoData.php');
 
     //Create default admin user
-    $current_user = new User();
-    $current_user->id = 1;
-    $current_user->new_with_id = true;
-    $current_user->last_name = 'Administrator';
-    //$user->user_name = 'admin';
-    $current_user->user_name = $setup_site_admin_user_name;
-    $current_user->title = "Administrator";
-    $current_user->status = 'Active';
-    $current_user->is_admin = true;
-	$current_user->employee_status = 'Active';
-    //$user->user_password = $user->encrypt_password($setup_site_admin_password);
-    $current_user->user_hash = strtolower(md5($setup_site_admin_password));
-    $current_user->email = '';
-    $current_user->picture = UserDemoData::_copy_user_image($current_user->id);
-    $current_user->save();
+    $user = new User();
+    $user->id = 1;
+    $user->new_with_id = true;
+    $user->last_name = 'Administrator';
+    $user->user_name = $setup_site_admin_user_name;
+    $user->title = "Administrator";
+    $user->status = 'Active';
+    $user->is_admin = true;
+	$user->employee_status = 'Active';
+    $user->user_hash = User::getPasswordHash($setup_site_admin_password);
+    $user->email = '';
+    $user->picture = UserDemoData::_copy_user_image($user->id);
+    $user->save();
 
-    // echo 'Creating RSS Feeds';
-    //$feed = new Feed();
-    //$feed->createRSSHomePage($user->id);
-
-
-    // We need to change the admin user to a fixed id of 1.
-    // $query = "update users set id='1' where user_name='$user->user_name'";
-    // $result = $db->query($query, true, "Error updating admin user ID: ");
-
-    $GLOBALS['log']->info("Created ".$current_user->table_name." table. for user $current_user->id");
 
     if( $create_default_user ){
         $default_user = new User();
@@ -1035,21 +1073,16 @@ function create_default_users(){
         if( isset($sugar_config['default_user_is_admin']) && $sugar_config['default_user_is_admin'] ){
             $default_user->is_admin = true;
         }
-        //$default_user->user_password = $default_user->encrypt_password($sugar_config['default_password']);
-        $default_user->user_hash = strtolower(md5($sugar_config['default_password']));
+        $default_user->user_hash = User::getPasswordHash($sugar_config['default_password']);
         $default_user->save();
-        //$feed->createRSSHomePage($user->id);
     }
 }
 
 function set_admin_password( $password ) {
     global $db;
 
-    $user = new User();
-    $encrypted_password = $user->encrypt_password($password);
-    $user_hash = strtolower(md5($password));
+    $user_hash = User::getPasswordHash($password);
 
-    //$query = "update users set user_password='$encrypted_password', user_hash='$user_hash' where id='1'";
     $query = "update users set user_hash='$user_hash' where id='1'";
 
     $db->query($query);
@@ -1922,7 +1955,7 @@ function create_past_date()
     global $timedate;
     $now = $timedate->getNow(true);
     $day=$now->day-mt_rand(1, 365);
-    return $timedate->asUserDate($now->get_day_begin($day));
+    return $timedate->asDbDate($now->get_day_begin($day));
 }
 
 /**
