@@ -674,14 +674,38 @@ class SugarEmailAddress extends SugarBean {
         return '';
     }
 
-    function getReplyToAddress($focus) {
+    /**
+     * As long as this function is used not only to retrieve user's Reply-To
+     * address, but also notification address and so on, there were added
+     * $replyToOnly optional parameter used to retrieve only address marked as
+     * Reply-To (bug #43643).
+     *
+     * @param SugarBean $focus
+     * @param bool $replyToOnly
+     * @return string
+     */
+    function getReplyToAddress($focus, $replyToOnly = false) {
         $q = "SELECT ea.email_address FROM email_addresses ea
                 LEFT JOIN email_addr_bean_rel ear ON ea.id = ear.email_address_id
                 WHERE ear.bean_module = '{$focus->module_dir}'
                 AND ear.bean_id = '{$focus->id}'
                 AND ear.deleted = 0
-                AND ea.invalid_email = 0
+                AND ea.invalid_email = 0";
+
+        if (!$replyToOnly)
+        {
+            // retrieve reply-to address if it exists or any other address
+            // otherwise
+            $q .= "
                 ORDER BY ear.reply_to_address DESC";
+        }
+        else
+        {
+            // retrieve reply-to address only
+            $q .= "
+                AND ear.reply_to_address = 1";
+        }
+
         $r = $this->db->query($q);
         $a = $this->db->fetchByAssoc($r);
 

@@ -107,9 +107,6 @@ class SubPanelTilesTabs extends SubPanelTiles
         if($selectedGroup=='All')
         	$selectedGroup=translate('LBL_TABGROUP_ALL');
 
-    	require_once 'include/SubPanel/SubPanelDefinitions.php' ;
-    	$spd = new SubPanelDefinitions ( $this->focus ) ;
-
     	// Set up a mapping from subpanelID, found in the $tabs list, to the source module name
     	// As the $GLOBALS['tabStructure'] array holds the Group Tabs by module name we need to efficiently convert between the two
     	// when constructing the subpanel tabs
@@ -120,7 +117,9 @@ class SubPanelTilesTabs extends SubPanelTiles
     	$moduleNames = array () ;
     	foreach ( $tabs as $subpanelID )
     	{
-    		$subpanel =  $spd->load_subpanel( $subpanelID );
+            // Bug #44344 : Custom relationships under same module only show once in subpanel tabs
+            // use object property instead new object to have ability run unit test (can override subpanel_definitions)
+            $subpanel =  $this->subpanel_definitions->load_subpanel( $subpanelID );
     		if ($subpanel !== false)
     		  $moduleNames [ $subpanelID ] = $subpanel->get_module_name() ;
     	}
@@ -135,9 +134,9 @@ class SubPanelTilesTabs extends SubPanelTiles
     			foreach ( $tabs as $subpanelID )
                     if (isset($moduleNames[ $subpanelID ] ) && strcasecmp( $subModule , $moduleNames[ $subpanelID ] ) === 0)
                     {
-                    	$groups [ translate ( $mainTab ) ] [ 'modules' ] [ $key ] = $subpanelID ;
+                        // Bug #44344 : Custom relationships under same module only show once in subpanel tabs
+                        $groups [ translate ( $mainTab ) ] [ 'modules' ] [] = $subpanelID ;
                     	$found [ $subpanelID ] = true ;
-                    	break;
                 	}
             }
         }

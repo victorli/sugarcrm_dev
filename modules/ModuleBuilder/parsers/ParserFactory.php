@@ -52,12 +52,30 @@ class ParserFactory
      * @return AbstractMetaDataParser
      */
 
-    function getParser ( $view , $moduleName , $packageName = null , $subpanelName = null )
+    public static function getParser ( $view , $moduleName , $packageName = null , $subpanelName = null )
     {
         $GLOBALS [ 'log' ]->info ( "ParserFactory->getParser($view,$moduleName,$packageName,$subpanelName )" ) ;
-		if ( empty ( $packageName ) || ( $packageName == 'studio' ) )
-			$packageName = null ;
-        switch ( strtolower ( $view ))
+		$sm = null;
+        $lView = strtolower ( $view );
+        if ( empty ( $packageName ) || ( $packageName == 'studio' ) )
+        {
+            $packageName = null ;
+            //For studio modules, check for view parser overrides
+            $parser = self::checkForStudioParserOverride($view, $moduleName, $packageName);
+            if ($parser) return $parser;
+            $sm = StudioModuleFactory::getStudioModule($moduleName);
+            //If we didn't find a specofic parser, see if there is a view to type mapping
+            foreach($sm->sources as $file => $def)
+            {
+                if (!empty($def['view']) && $def['view'] == $view && !empty($def['type']))
+                {
+                    $lView = strtolower($def['type']);
+                    break;
+                }
+            }
+        }
+
+        switch ( $lView)
         {
             case MB_EDITVIEW :
             case MB_DETAILVIEW :
@@ -93,27 +111,67 @@ class ParserFactory
                 require_once 'modules/ModuleBuilder/parsers/parser.visibility.php' ;
                 return new ParserVisibility ( $moduleName, $packageName ) ;
             default :
-                $prefix = '';
-                if(!is_null ( $packageName )){
-                    $prefix = empty($packageName) ? 'build' :'modify';
-                }
-                $fileName = "modules/ModuleBuilder/parsers/parser." . strtolower ( $prefix . $view ) . ".php" ;
-                if (file_exists ( $fileName ))
-                {
-                    require_once $fileName ;
-                    $class = 'Parser' . $prefix . ucfirst ( $view ) ;
-                    if (class_exists ( $class ))
-                    {
-                        $GLOBALS [ 'log' ]->debug ( 'Using ModuleBuilder Parser ' . $fileName ) ;
-                        $parser = new $class ( ) ;
-                        return $parser ;
-                    }
-                }
+                $parser = self::checkForParserClass($view, $moduleName, $packageName);
+                if ($parser)
+                    return $parser;
 
         }
 
-        $GLOBALS [ 'log' ]->fatal ( get_class ( $this ) . ": cannot create ModuleBuilder Parser $fileName" ) ;
+        $GLOBALS [ 'log' ]->fatal ("ParserFactory: cannot create ModuleBuilder Parser $view" ) ;
 
+    }
+
+    protected static function checkForParserClass($view, $moduleName, $packageName, $nameOverride = false)
+    {
+        $prefix = '';
+        if(!is_null ( $packageName )){
+            $prefix = empty($packageName) ? 'build' :'modify';
+        }
+        $fileNames = array(
+            "custom/modules/$moduleName/parsers/parser." . strtolower ( $prefix . $view ) . ".php",
+            "modules/$moduleName/parsers/parser." . strtolower ( $prefix . $view ) . ".php",
+            "custom/modules/ModuleBuilder/parsers/parser." . strtolower ( $prefix . $view ) . ".php",
+            "modules/ModuleBuilder/parsers/parser." . strtolower ( $prefix . $view ) . ".php",
+        );
+        foreach($fileNames as $fileName)
+        {
+            if (file_exists ( $fileName ))
+            {
+                require_once $fileName ;
+                $class = 'Parser' . $prefix . ucfirst ( $view ) ;
+                if (class_exists ( $class ))
+                {
+                    $GLOBALS [ 'log' ]->debug ( 'Using ModuleBuilder Parser ' . $fileName ) ;
+                    $parser = new $class ( ) ;
+                    return $parser ;
+                }
+            }
+        }
+        return false;
+    }
+
+    protected static function checkForStudioParserOverride($view, $moduleName, $packageName)
+    {
+        $sm = StudioModuleFactory::getStudioModule($moduleName);
+        foreach($sm->sources as $file => $def)
+        {
+            if (!empty($def['view']) && $def['view'] == strtolower($view) && !empty($def['parser']))
+            {
+                $pName = $def['parser'];
+                $path = "module/ModuleBuilder/parsers/views/{$pName}.php";
+                if (file_exists("custom/$path"))
+                    require_once("custom/$path");
+                else if (file_exists($path))
+                    require_once($path);
+                if (class_exists ( $pName ))
+                    return new $pName($view, $moduleName, $packageName);
+                //If it wasn't defined directly, check for a generic parser name for the view
+                $parser = self::checkForParserClass($view, $moduleName, $packageName);
+                if ($parser)
+                    return $parser;
+            }
+        }
+        return false;
     }
 
 }

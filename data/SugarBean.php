@@ -1555,7 +1555,7 @@ class SugarBean
         if(in_array('set_notification_body', get_class_methods($this))) {
             $xtpl = $this->set_notification_body($xtpl, $this);
         } else {
-            $xtpl->assign("OBJECT", $this->object_name);
+            $xtpl->assign("OBJECT", translate('LBL_MODULE_NAME'));
             $template_name = "Default";
         }
         if(!empty($_SESSION["special_notification"]) && $_SESSION["special_notification"]) {
@@ -1617,23 +1617,34 @@ function save_relationship_changes($is_update, $exclude=array())
         $new_rel_id = false;
         $new_rel_link = false;
 
-        //this allows us to dynamically relate modules without adding it to the relationship_fields array
-        if(!empty($_REQUEST['relate_id']) && !empty($_REQUEST['relate_to']) && !in_array($_REQUEST['relate_to'], $exclude) && $_REQUEST['relate_id'] != $this->id){
-            $new_rel_id = $_REQUEST['relate_id'];
-            $new_rel_relname = $_REQUEST['relate_to'];
-            if(!empty($this->in_workflow) && !empty($this->not_use_rel_in_req)) {
-                $new_rel_id = !empty($this->new_rel_id) ? $this->new_rel_id : '';
-                $new_rel_relname = !empty($this->new_rel_relname) ? $this->new_rel_relname : '';
-            }
-            $new_rel_link = $new_rel_relname;
+        // check incoming data
+        if(isset($this->not_use_rel_in_req) && $this->not_use_rel_in_req)
+        {
+            // if we should use relation data from properties (for REQUEST-independent calls)
+            $rel_id=isset($this->new_rel_id) ? $this->new_rel_id : '';
+            $rel_link=isset($this->new_rel_relname) ? $this->new_rel_relname : '';
+        }
+        else 
+        {  
+            // if we should use relation data from REQUEST
+            $rel_id=isset($_REQUEST['relate_id']) ? $_REQUEST['relate_id'] : '';
+            $rel_link=isset($_REQUEST['relate_to']) ? $_REQUEST['relate_to'] : '';
+        }
+
+        // filter relation data
+        if($rel_id && $rel_link && !in_array($rel_link, $exclude) && $rel_id != $this->id)
+        {
+            $new_rel_id = $rel_id;
+            $new_rel_link = $rel_link;
             //Try to find the link in this bean based on the relationship
-            foreach ( $this->field_defs as $key => $def ) {
-                if (isset($def['type']) && $def['type'] == 'link'
-                && isset($def['relationship']) && $def['relationship'] == $new_rel_relname) {
+            foreach ($this->field_defs as $key => $def)
+            {
+                if (isset($def['type']) && $def['type'] == 'link' && isset($def['relationship']) && $def['relationship'] == $new_rel_link)
+                {
                     $new_rel_link = $key;
                 }
             }
-        }
+         }
 
 
         // First we handle the preset fields listed in the fixed relationship_fields array hardcoded into the OOB beans
@@ -3435,6 +3446,31 @@ function save_relationship_changes($is_update, $exclude=array())
                 if($temp->hasCustomFields()) $temp->custom_fields->fill_relationships();
                 $temp->call_custom_logic("process_record");
 
+                // fix defect #44206. implement the same logic as sugar_currency_format
+                // Smarty modifier does.
+                if (property_exists($temp, 'currency_id') && -99 == $temp->currency_id)
+                {
+                    // manually retrieve default currency object as long as it's
+                    // not stored in database and thus cannot be joined in query
+                    require_once 'modules/Currencies/Currency.php';
+                    $currency = new Currency();
+                    $currency->retrieve($temp->currency_id);
+
+                    // walk through all currency-related fields
+                    foreach ($temp->field_defs as $temp_field)
+                    {
+                        if (isset($temp_field['type']) && 'relate' == $temp_field['type']
+                            && isset($temp_field['module'])  && 'Currencies' == $temp_field['module']
+                            && isset($temp_field['id_name']) && 'currency_id' == $temp_field['id_name'])
+                        {
+                            // populate related properties manually
+                            $temp_property     = $temp_field['name'];
+                            $currency_property = $temp_field['rname'];
+                            $temp->$temp_property = $currency->$currency_property;
+                        }
+                    }
+                }
+
                 $list[] = $temp;
 
                 $index++;
@@ -3997,15 +4033,20 @@ function save_relationship_changes($is_update, $exclude=array())
      * Fill in a link field
      */
 
-    // fguerra@dri and jmorais@dri - fill in link fields not working
-    function fill_in_link_field( $linkFieldName, $fieldName )
+    function fill_in_link_field( $linkFieldName , $def)
     {
+        $idField = $linkFieldName;
+        //If the id_name provided really was an ID, don't try to load it as a link. Use the normal link
+        if (!empty($this->field_defs[$linkFieldName]['type']) && $this->field_defs[$linkFieldName]['type'] == "id" && !empty($def['link']))
+        {
+            $linkFieldName = $def['link'];
+        }
         if ($this->load_relationship($linkFieldName))
         {
             $list=$this->$linkFieldName->get();
-            $this->$fieldName = '' ; // match up with null value in $this->populateFromRow()
+            $this->$idField = '' ; // match up with null value in $this->populateFromRow()
             if (!empty($list))
-                $this->$fieldName = $list[0];
+                $this->$idField = $list[0];
         }
     }
 
@@ -4032,29 +4073,28 @@ function save_relationship_changes($is_update, $exclude=array())
                     // set the value of this relate field in this bean ($this->$field['name']) to the value of the 'name' field in the related module for the record identified by the value of $this->$field['id_name']
                     $related_module = $field['module'];
                     $id_name = $field['id_name'];
-                    // fguerra@dri and jmorais@dri - fill in link fields not working
-                    if (empty($this->$id_name) && array_key_exists('link', $field))
+
+                    if (empty($this->$id_name))
                     {
-                        $this->fill_in_link_field($field['link'], $id_name);
+                       $this->fill_in_link_field($id_name, $field);
                     }
-                    // ~ fguerra@dri and jmorais@dri
-                    if(!empty($this->$id_name) && ( $this->object_name != $related_module || ( $this->object_name == $related_module && $this->$id_name != $this->id )))
-                    {
-                        if(isset($GLOBALS['beanList'][ $related_module]))
-                        {
-                            if(!empty($this->$id_name) && isset($this->$name))
-                            {
-                                $mod = BeanFactory::getBean($related_module, $this->$id_name);
-                                if($mod)
-                                {
-                                    if (!empty($field['rname']))
-                                    {
-                                        $this->$name = $mod->$field['rname'];
-                                    }
-                                    else if (isset($mod->name))
-                                    {
-                                        $this->$name = $mod->name;
-                                    }
+                    if(!empty($this->$id_name) && ( $this->object_name != $related_module || ( $this->object_name == $related_module && $this->$id_name != $this->id ))){
+                        if(isset($GLOBALS['beanList'][ $related_module])){
+                            $class = $GLOBALS['beanList'][$related_module];
+
+                            if(!empty($this->$id_name) && file_exists($GLOBALS['beanFiles'][$class]) && isset($this->$name)){
+                                require_once($GLOBALS['beanFiles'][$class]);
+                                $mod = new $class();
+
+                                // disable row level security in order to be able
+                                // to retrieve related bean properties (bug #44928)
+
+                                $mod->retrieve($this->$id_name);
+
+                                if (!empty($field['rname'])) {
+                                    $this->$name = $mod->$field['rname'];
+                                } else if (isset($mod->name)) {
+                                    $this->$name = $mod->name;
                                 }
                             }
                         }
@@ -4381,6 +4421,7 @@ function save_relationship_changes($is_update, $exclude=array())
         // cn: bug 12270 - sensitive fields being passed arbitrarily in listViews
         $sensitiveFields = array('user_hash' => '');
 
+        
         $return_array = Array();
         global $app_list_strings, $mod_strings;
         foreach($this->field_defs as $field=>$value){

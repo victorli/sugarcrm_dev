@@ -55,14 +55,13 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
             $prefix.sugar_cached('')                => true,
             $prefix.'include/javascript/tiny_mce'   => true,
             $prefix.'include/javascript/yui'        => true,
-            $prefix.'include/javascript/yui-old'    => true,
-            $prefix.'include/javascript/ext-1.1.1'  => true,
-            $prefix.'include/javascript/ext-2.0'    => true,
-            $prefix.'include/javascript/tiny_mce'   => true,
             $prefix.'modules/Emails'                => true,
             $prefix.'jssource'                      => true,
-            $prefix.'modules/ModuleBuilder'			=> true,
+            $prefix.'modules/ModuleBuilder'         => true,
             $prefix.'include/javascript/jquery'     => true,
+            $prefix.'tests/PHPUnit/PHP/CodeCoverage/Report/HTML/Template' => true,
+            $prefix.'tests/jssource/minify/expect'  => true,
+            $prefix.'tests/jssource/minify/test'    => true,
         );
 
         return $compress_exempt_files;
@@ -79,6 +78,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
      * @from_path root directory where processing should take place
      */
     function ConcatenateFiles($from_path){
+
+        // Minifying the group files takes a long time sometimes.
+        @ini_set('max_execution_time', 300);
         $js_groupings = array();
         if(isset($_REQUEST['root_directory'])){
             require('jssource/JSGroupings.php');
@@ -90,16 +92,24 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
         $files_opened = array();
         $currPerm = '';
 
+        $excludedFiles = get_exclude_files($from_path);
         //for each item in array, concatenate the source files
         foreach($file_groups as $fg){
 
             //process each group array
             foreach($fg as $loc=>$trgt){
+                $already_minified = FALSE;
+                $minified_loc = str_replace('.js', '-min.js', $loc);
+                if(is_file($minified_loc)) {
+                    $loc = $minified_loc;
+                    $already_minified = TRUE;
+                }
                 $relpath = $loc;
                 $loc = $from_path.'/'.$loc;
+
                 $trgt = sugar_cached($trgt);
-                //check to see that source file exists, that it is a file, and is readable
-                if(file_exists($loc) && is_file($loc)  && is_readable($loc)){
+                //check to see that source file is a file, and is readable.
+                if(is_file($loc) && is_readable($loc)){
                     $currPerm = fileperms($loc);
                     //check to see if target exists, if it does then open file
                     if(file_exists($trgt)){
@@ -120,9 +130,11 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
                         }
 
                     }else{
+
                         if(!function_exists('mkdir_recursive')) {
-                            require_once($from_path.'/include/dir_inc.php');
+                            require_once('include/dir_inc.php');
                         }
+
                         mkdir_recursive(dirname($trgt));
                         //create and open target file
                         if(function_exists('sugar_fopen')){
@@ -148,10 +160,13 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
                 //make sure we have handles to both source and target file
                 if ($trgt_handle) {
-                        $buffer = file_get_contents($loc);
-                        $buffer .= "// End of File $relpath
+                        if($already_minified || isset($excludedFiles[dirname($loc)])) {
+                            $buffer = file_get_contents($loc);
+                        } else {
+                            $buffer = SugarMin::minify(file_get_contents($loc));
+                        }
 
-";
+                        $buffer .= "/* End of File $relpath */\n\n";
                         $num = fwrite($trgt_handle, $buffer);
 
                         if( $num=== false){
@@ -303,7 +318,16 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
                 //minify javascript
                 //$jMin = new JSMin($from_path,$to_path,$lic_arr);
-                $out = $lic_str . JSMin::minify(file_get_contents($from_path));
+                $min_file = str_replace('.js', '-min.js', $from_path);
+                if(strpos($from_path, '-min.js') !== FALSE) {
+                    $min_file = $from_path;
+                }
+
+                if(is_file($min_file)) {
+                    $out = file_get_contents($min_file);
+                } else {
+                    $out = $lic_str . SugarMin::minify(file_get_contents($from_path));
+                }
 
             	if(function_exists('sugar_fopen') && $fh = @sugar_fopen( $to_path, 'w' ) )
 			    {
@@ -418,53 +442,57 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
             //process only if file/directory is not in exclude list
             if(!isset($exclude_files[$from_path])){
 
-            //get correct path for backup
-            $bu_path = $to_path.'/jssource/src_files';
-            $bu_path .= substr($from_path, strlen($to_path));
+                //get correct path for backup
+                $bu_path = $to_path.'/jssource/src_files';
+                $bu_path .= substr($from_path, strlen($to_path));
 
-                    //if this is a directory, then read it and process files
-                    if(is_dir("$from_path")){
-                        //grab file / directory and read it.
-                        $handle = opendir("$from_path");
-                        //loop over the directory and go into each child directory
-                        while (false !== ($dir = readdir($handle))) {
+                //if this is a directory, then read it and process files
+                if(is_dir("$from_path")){
+                    //grab file / directory and read it.
+                    $handle = opendir("$from_path");
+                    //loop over the directory and go into each child directory
+                    while (false !== ($dir = readdir($handle))) {
 
-                          //make sure you go into directory tree and not out of tree
-                          if($dir!= '.' && $dir!= '..'){
-                            //make recursive call to process this directory
-                            BackUpAndCompressScriptFiles($from_path.'/'.$dir, $to_path,$backup);
-                          }
-                        }
-                    }
-
-
-                    //if this is not a directory, then
-                    //check if this is a javascript file, then process
-                    $path_parts = pathinfo($from_path);
-                    if(is_file("$from_path") && isset($path_parts['extension']) && $path_parts['extension'] =='js'){
-
-                        if($backup){
-                            $bu_dir = dirname($bu_path);
-                            if(!file_exists($bu_dir)){
-                                create_backup_folder($bu_dir);
-                            }
-
-                            //delete backup src file if it exists already
-                            if(file_exists($bu_path)){
-                                unlink($bu_path);
-                            }
-                            //copy original file into a source file
-                              rename($from_path, $bu_path);
-                        }else{
-                            //no need to backup, but remove file that is about to be copied
-                            //if it exists in both backed up scripts and working directory
-                            if(file_exists($from_path) && file_exists($bu_path)){unlink($from_path);}
-                        }
-
-                        //now make call to minify and overwrite the original file.
-                        CompressFiles($bu_path, $from_path);
-
+                      //make sure you go into directory tree and not out of tree
+                      if($dir!= '.' && $dir!= '..'){
+                        //make recursive call to process this directory
+                        BackUpAndCompressScriptFiles($from_path.'/'.$dir, $to_path,$backup);
+                      }
                     }
                 }
+
+
+                //if this is not a directory, then
+                //check if this is a javascript file, then process
+                // Also, check if there's a min counterpart, in which case, don't use this file.
+                $path_parts = pathinfo($from_path);
+                if(is_file("$from_path") && isset($path_parts['extension']) && $path_parts['extension'] =='js'){
+                    /*$min_file_path = $path_parts['dirname'].'/'.$path_parts['filename'].'-min.'.$path_parts['extension'];
+                    if(is_file($min_file_path)) {
+                        $from_path = $min_file_path;
+                    }*/
+                    if($backup){
+                        $bu_dir = dirname($bu_path);
+                        if(!file_exists($bu_dir)){
+                            create_backup_folder($bu_dir);
+                        }
+
+                        //delete backup src file if it exists already
+                        if(file_exists($bu_path)){
+                            unlink($bu_path);
+                        }
+                        //copy original file into a source file
+                          rename($from_path, $bu_path);
+                    }else{
+                        //no need to backup, but remove file that is about to be copied
+                        //if it exists in both backed up scripts and working directory
+                        if(file_exists($from_path) && file_exists($bu_path)){unlink($from_path);}
+                    }
+
+                    //now make call to minify and overwrite the original file.
+                    CompressFiles($bu_path, $from_path);
+
+                }
+            }
 
         }

@@ -100,6 +100,7 @@ $mod_strings = array (
 	'LBL_REMINDER' => 'Reminders:',
 	'LBL_REMINDER_POPUP' => 'Popup',
 	'LBL_REMINDER_EMAIL' => 'Email',
+    'LBL_EMAIL_REMINDER_TIME' => 'Email Reminder Time',
     'LBL_REMOVE' => 'rem',
 	'LBL_SCHEDULING_FORM_TITLE' => 'Scheduling',
 	'LBL_SEARCH_BUTTON'=> 'Search',

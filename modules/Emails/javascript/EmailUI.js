@@ -438,10 +438,10 @@ SE.accounts = {
 		document.getElementById("smtp_auth1").style.display = smtpauth_req.checked ? "" : "none";
 		document.getElementById("smtp_auth2").style.display = smtpauth_req.checked ? "" : "none";
 	},
-	
+
 	smtp_setDefaultSMTPPort : function() {
 		useSSLPort = !document.getElementById("mail_smtpssl").options[0].selected;
-    
+
         if ( useSSLPort && document.getElementById("mail_smtpport").value == '25' ) {
             document.getElementById("mail_smtpport").value = '465';
         }
@@ -1313,7 +1313,7 @@ SE.contextMenus = {
             uids[i] = SE.grid.getRecord(rows[i]).getData().uid;
         }
         var ser = YAHOO.lang.JSON.stringify(uids);
-        
+
         AjaxObject.startRequest(callbackRelateEmail, urlStandard + '&emailUIAction=getRelateForm&uid=' + ser + "&ieId=" + ieId + "&mbox=" + folder);
     },
 
@@ -3209,7 +3209,7 @@ SE.listView = {
 
     refreshGrid : function() {
         SE.grid.getDataSource().sendRequest(
-    	    SUGAR.util.paramsToUrl(SE.grid.params),
+    	    encodeParamsToUrl(SE.grid.params),
     		SE.grid.onDataReturnInitializeTable,
     		SE.grid
     	);
@@ -3457,7 +3457,7 @@ SE.settings = {
 
 
     lazyLoadRules : function() {
-        if(false/*!SE.settings.rules*/) {
+        if(false) {
             AjaxObject.startRequest(callbackLoadRules, urlStandard + "&emailUIAction=loadRulesForSettings");
         }
 
@@ -3542,4 +3542,18 @@ function setSigEditButtonVisibility() {
         editButt.style.visibility = "hidden";
         deleteButt.style.visibility = "hidden";
     }
+}
+
+//this function is used by emailUI.js and grid.js to create an encoded url from param values
+//basically same as SUGAR.util.paramsToUrl plus the encoding
+function encodeParamsToUrl(params) {
+    var parts = [];
+    for (var i in params)
+    {
+        if (params.hasOwnProperty(i))
+        {
+            parts.push(encodeURIComponent(i) + '=' + encodeURIComponent(params[i]));
+        }
+    }
+    return parts.join("&");
 }

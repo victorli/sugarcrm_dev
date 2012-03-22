@@ -41,7 +41,7 @@ class FieldViewer{
 	function getLayout($vardef){
 
 		if(empty($vardef['type']))$vardef['type'] = 'varchar';
-		$mod = return_module_language($GLOBALS['current_language'], 'EditCustomFields');
+		$mod = return_module_language($GLOBALS['current_language'], 'DynamicFields');
 		$this->ss->assign('vardef', $vardef);
 		$this->ss->assign('MOD', $mod);
 		$this->ss->assign('APP', $GLOBALS['app_strings']);

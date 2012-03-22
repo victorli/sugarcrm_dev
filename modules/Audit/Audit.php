@@ -148,6 +148,13 @@ class Audit extends SugarBean {
 										$temp_list[$field['name']]=$timedate->to_display_date($temp_list[$field['name']], false);
 									}
 								 }
+								 elseif(($field['name'] == 'before_value_string' || $field['name'] == 'after_value_string') && ($row['data_type'] == "datetimecombo")) {
+								 	if (!empty($temp_list[$field['name']]) && $temp_list[$field['name']] != 'NULL') {
+								 	    $temp_list[$field['name']]=$timedate->to_display_date_time($temp_list[$field['name']]);
+								 	} else {
+								 		$temp_list[$field['name']] = '';
+								 	}
+								 }
 								 elseif($field['name'] == 'field_name')
 								 {
 									global $mod_strings;

@@ -122,9 +122,9 @@ $mod_strings = array (
 	'LOG_SLOW_QUERIES'=>'Log slow queries',
     'LOCK_HOMEPAGE_HELP'=>'This setting is to prevent<BR> 1) the addition of any dashlets to the home page, <BR>2) customization of dashlet placement in the home pages by dragging and dropping.',
     'CURRENT_LOGO'=>'Current Logo:',
-    'CURRENT_LOGO_HELP'=>'This logo is displayed at the top left-hand corner of the Sugar application.',
+    'CURRENT_LOGO_HELP'=>'This logo is displayed in the left-hand corner of the footer of the Sugar application.',
     'NEW_LOGO'=>'Select Logo:',
-	'NEW_LOGO_HELP'=>'The image file format can be either .png or .jpg.<BR>The recommended size is 212x40 px.',
+	'NEW_LOGO_HELP'=>'The image file format can be either .png or .jpg. The maximum height is 25 px; the recommended height is 15 px.',
     'NEW_QUOTE_LOGO'=>'Upload new Quotes logo',
     'NEW_QUOTE_LOGO_HELP'=>'The required image file format is .jpg.<BR>The recommended size is 867x74 px.',
     'QUOTES_CURRENT_LOGO'=>'Quotes logo',
@@ -171,7 +171,7 @@ $mod_strings = array (
     'LBL_LDAP_AUTO_CREATE_USERS_DESC'=> 'If an authenticated user does not exist one will be created in Sugar.',
     'LBL_LDAP_ENC_KEY'	=> 'Encryption Key:',
     'DEVELOPER_MODE'=>'Developer Mode',
-	
+
 	'SHOW_DOWNLOADS_TAB' =>'Display Downloads Tab',
 	'SHOW_DOWNLOADS_TAB_HELP' =>'When selected, the Download tab will appear in the User settings and provide users with access to Sugar plug-ins and other available files',
     'LBL_LDAP_ENC_KEY_DESC'	=> 'For SOAP authentication when using LDAP.',
@@ -275,7 +275,7 @@ $mod_strings = array (
 
     'PDF_OWNER_PASSWORD' => 'Owner Password',
     'PDF_OWNER_PASSWORD_INFO' => 'If you don\\\'t set any password, the document will open as usual. <br>If you set a user password, the PDF viewer will ask for it before displaying the document. <br>The master password, if different from the user one, can be used to get full access.',
-    
+
     'PDF_ACL_ACCESS' => 'Access Control',
     'PDF_ACL_ACCESS_INFO' => 'Default Access Control for the PDF generation.',
 

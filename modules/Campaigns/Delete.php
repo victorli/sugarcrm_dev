@@ -44,28 +44,18 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 if(!isset($_REQUEST['record']))
+{
 	sugar_die("A record number must be specified to delete the campaign.");
-
-
+}
 
 $focus = new Campaign();
 $focus->retrieve($_REQUEST['record']);
 
-if (isset($_REQUEST['mode']) and  $_REQUEST['mode']=='Test') {
+if (isset($_REQUEST['mode']) and $_REQUEST['mode']=='Test') {
 	//deletes all data associated with the test run.
-    $query = "UPDATE emails SET emails.deleted=1 WHERE id IN (
-    	SELECT related_id FROM campaign_log INNER JOIN prospect_lists
-    		ON campaign_log.list_id = prospect_lists.id
-    			AND prospect_lists.list_type='test'
-    			AND campaign_log.campaign_id = '{$focus->id}')";
-    $focus->db->query($query);
-
-    $query="DELETE FROM emailman WHERE list_id IN (
-        SELECT prospect_list_id FROM prospect_list_campaigns INNER JOIN prospect_lists
-        	ON prospect_list_campaigns.prospect_list_id = prospect_lists.id
-        		AND prospect_lists.list_type='test'
-        		AND prospect_list_campaigns.campaign_id = '{$focus->id}')";
-    $focus->db->query($query);
+    require_once('modules/Campaigns/DeleteTestCampaigns.php');
+    $deleteTest = new DeleteTestCampaigns();
+    $deleteTest->deleteTestRecords($focus);
 } else {
 	if(!$focus->ACLAccess('Delete')){
 		ACLController::displayNoAccess(true);
@@ -73,6 +63,7 @@ if (isset($_REQUEST['mode']) and  $_REQUEST['mode']=='Test') {
 	}
 	$focus->mark_deleted($_REQUEST['record']);
 }
+
 $return_id=!empty($_REQUEST['return_id'])?$_REQUEST['return_id']:$focus->id;
 require_once ('include/formbase.php');
 handleRedirect($return_id, $_REQUEST['return_module']);

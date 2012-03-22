@@ -45,7 +45,7 @@
 <input type="hidden" name="lead_invitees" id="lead_invitees">
 <input type="hidden" name="send_invites" id="send_invites">
 
-{if $enable_repeat}
+
 <input type="hidden" name="edit_all_recurrences" id="edit_all_recurrences">
 <input type="hidden" name="repeat_parent_id" id="repeat_parent_id">
 <input type="hidden" name="repeat_type" id="repeat_type">
@@ -53,7 +53,7 @@
 <input type="hidden" name="repeat_count" id="repeat_count">
 <input type="hidden" name="repeat_until" id="repeat_until">
 <input type="hidden" name="repeat_dow" id="repeat_dow">
-{/if}
+
 
 <div style="padding: 4px 0; font-size: 12px;">
 	{literal}

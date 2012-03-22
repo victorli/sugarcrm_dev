@@ -165,6 +165,7 @@ $dictionary['Opportunity'] = array('table' => 'opportunities','audited'=>true, '
     'duplicate_merge'=>'0',
     'audited'=>true,
     'comment' => 'Formatted amount of the opportunity',
+    'studio' => array('wirelesseditview'=>false, 'wirelessdetailview'=>false, 'editview'=>false, 'detailview'=>false, 'quickcreate'=>false,),
   ),
   'currency_id' =>
   array (

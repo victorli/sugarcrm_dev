@@ -43,6 +43,7 @@ class Bug49069Test extends  Sugar_PHPUnit_Framework_TestCase
 
 	public function setUp()
     {
+        $GLOBALS['app'] = new SugarApplication();
     	$GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
     	$this->sugar_config_old = $GLOBALS['sugar_config'];
     	$_REQUEST['user_name'] = 'foo';

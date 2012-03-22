@@ -1,4 +1,3 @@
-
 (function(){var JSON=YAHOO.lang.JSON;SUGAR.quickCompose={};SUGAR.quickCompose=function(){return{parentPanel:null,dceMenuPanel:null,options:null,loadingMessgPanl:null,frameLoaded:false,resourcesLoaded:false,tinyLoaded:false,initComposePackage:function(c)
 {SUGAR.email2.addressBook.initFixForDatatableSort();SUGAR.quickCompose.resourcesLoaded=true;var callback={success:function(o)
 {var responseData=JSON.parse(o.responseText);var scriptTag=document.createElement('script');scriptTag.id='quickComposeScript';scriptTag.setAttribute('type','text/javascript');if(YAHOO.env.ua.ie>0)

@@ -148,6 +148,68 @@ function sugar_file_put_contents($filename, $data, $flags=null, $context=null){
 	}
 }
 
+
+/**
+ * sugar_file_put_contents_atomic
+ * This is an atomic version of sugar_file_put_contents.  It attempts to circumvent the shortcomings of file_put_contents
+ * by creating a temporary unique file and then doing an atomic rename operation.
+ *
+ * @param $filename - String value of the file to create
+ * @param $data - The data to be written to the file
+ * @param string $mode String value of the parameter to specify the type of access you require to the file stream
+ * @param boolean $use_include_path set to '1' or TRUE if you want to search for the file in the include_path too
+ * @param context $context Context to pass into fopen operation
+ * @return int - Returns the number of bytes written to the file, false otherwise.
+ */
+function sugar_file_put_contents_atomic($filename, $data, $mode='wb', $use_include_path=false, $context=null){
+	//check to see if the file exists, if not then use touch to create it.
+	if(!file_exists($filename))
+    {
+	   sugar_touch($filename);
+	}
+
+	if(!is_writable($filename) ) {
+	   $GLOBALS['log']->error("File $filename cannot be written to");
+	   return false;
+	}
+
+    $filedir = dirname($filename);
+    $temp = tempnam($filedir, 'temp');
+
+    if(!file_exists($temp))
+    {
+   	   sugar_touch($temp);
+   	}
+
+    if (!($f = @fopen($temp, $mode)))
+    {
+        $temp = $filedir . DIRECTORY_SEPARATOR . uniqid('temp');
+
+        if(!file_exists($temp))
+        {
+       	   sugar_touch($temp);
+       	}
+
+        if (!($f = @fopen($temp, $mode)))
+        {
+            $GLOBALS['log']->error("sugar_file_put_contents_atomic() : error writing temporary file '{$temp}'");
+            return false;
+        }
+    }
+
+    fwrite($f, $data);
+    fclose($f);
+
+    if (!@rename($temp, $filename))
+    {
+        @unlink($filename);
+        @rename($temp, $filename);
+    }
+    return true;
+}
+
+
+
 /**
  * sugar_file_get_contents
  *

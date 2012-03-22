@@ -58,6 +58,8 @@ parse_str($display_tabs_def,$DISPLAY_ARR);
 parse_str($hide_tabs_def,$HIDE_ARR);
 parse_str($remove_tabs_def,$REMOVE_ARR);
 
+
+
 if (isset($_POST['id']))
 	sugar_die("Unauthorized access to administration.");
 if (isset($_POST['record']) && !is_admin($current_user)
@@ -70,12 +72,15 @@ sugar_die ("Unauthorized access to user administration.");
 $focus = new User();
 $focus->retrieve($_POST['record']);
 
+//update any ETag seeds that are tied to the user object changing
+$focus->incrementETag("mainMenuETag");
+
 // Flag to determine whether to save a new password or not.
 // Bug 43241 - Changed $focus->id to $focus->user_name to make sure that a system generated password is made when converting employee to user
 if(empty($focus->user_name))
 {
     $newUser = true;
-    clear_register_value('user_array');
+    clear_register_value('user_array',$focus->object_name);
 } else {
     $newUser = false;
 }
@@ -223,7 +228,7 @@ if(!$current_user->is_admin  && !$GLOBALS['current_user']->isAdminForModule('Use
         
         if(isset($_POST['user_theme']))
         {
-            $focus->setPreference('user_theme', $_POST['user_theme'], 0, 'global');
+            $focus->setPreference('user_theme', $_POST['user_theme'], 0, 'global');            
             $_SESSION['authenticated_user_theme'] = $_POST['user_theme'];
         }
         

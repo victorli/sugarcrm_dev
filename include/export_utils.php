@@ -47,15 +47,15 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * @return string the delimiter
  */
 function getDelimiter() {
-	global $sugar_config;
-	global $current_user;
+    global $sugar_config;
+    global $current_user;
 
-	$delimiter = ','; // default to "comma"
-	$userDelimiter = $current_user->getPreference('export_delimiter');
-	$delimiter = empty($sugar_config['export_delimiter']) ? $delimiter : $sugar_config['export_delimiter'];
-	$delimiter = empty($userDelimiter) ? $delimiter : $userDelimiter;
+    $delimiter = ','; // default to "comma"
+    $userDelimiter = $current_user->getPreference('export_delimiter');
+    $delimiter = empty($sugar_config['export_delimiter']) ? $delimiter : $sugar_config['export_delimiter'];
+    $delimiter = empty($userDelimiter) ? $delimiter : $userDelimiter;
 
-	return $delimiter;
+    return $delimiter;
 }
 
 
@@ -66,134 +66,136 @@ function getDelimiter() {
  * @return string delimited string for export
  */
 function export($type, $records = null, $members = false, $sample=false) {
-	global $beanList;
-	global $beanFiles;
-	global $current_user;
-	global $app_strings;
-	global $app_list_strings;
-	global $timedate;
+    global $beanList;
+    global $beanFiles;
+    global $current_user;
+    global $app_strings;
+    global $app_list_strings;
+    global $timedate;
     global $mod_strings;
     global $current_language;
     $sampleRecordNum = 5;
-	$contact_fields = array(
-		"id"=>"Contact ID"
-		,"lead_source"=>"Lead Source"
-		,"date_entered"=>"Date Entered"
-		,"date_modified"=>"Date Modified"
-		,"first_name"=>"First Name"
-		,"last_name"=>"Last Name"
-		,"salutation"=>"Salutation"
-		,"birthdate"=>"Lead Source"
-		,"do_not_call"=>"Do Not Call"
-		,"email_opt_out"=>"Email Opt Out"
-		,"title"=>"Title"
-		,"department"=>"Department"
-		,"birthdate"=>"Birthdate"
-		,"do_not_call"=>"Do Not Call"
-		,"phone_home"=>"Phone (Home)"
-		,"phone_mobile"=>"Phone (Mobile)"
-		,"phone_work"=>"Phone (Work)"
-		,"phone_other"=>"Phone (Other)"
-		,"phone_fax"=>"Fax"
-		,"email1"=>"Email"
-		,"email2"=>"Email (Other)"
-		,"assistant"=>"Assistant"
-		,"assistant_phone"=>"Assistant Phone"
-		,"primary_address_street"=>"Primary Address Street"
-		,"primary_address_city"=>"Primary Address City"
-		,"primary_address_state"=>"Primary Address State"
-		,"primary_address_postalcode"=>"Primary Address Postalcode"
-		,"primary_address_country"=>"Primary Address Country"
-		,"alt_address_street"=>"Other Address Street"
-		,"alt_address_city"=>"Other Address City"
-		,"alt_address_state"=>"Other Address State"
-		,"alt_address_postalcode"=>"Other Address Postalcode"
-		,"alt_address_country"=>"Other Address Country"
-		,"description"=>"Description"
-	);
+    $contact_fields = array(
+        "id"=>"Contact ID"
+        ,"lead_source"=>"Lead Source"
+        ,"date_entered"=>"Date Entered"
+        ,"date_modified"=>"Date Modified"
+        ,"first_name"=>"First Name"
+        ,"last_name"=>"Last Name"
+        ,"salutation"=>"Salutation"
+        ,"birthdate"=>"Lead Source"
+        ,"do_not_call"=>"Do Not Call"
+        ,"email_opt_out"=>"Email Opt Out"
+        ,"title"=>"Title"
+        ,"department"=>"Department"
+        ,"birthdate"=>"Birthdate"
+        ,"do_not_call"=>"Do Not Call"
+        ,"phone_home"=>"Phone (Home)"
+        ,"phone_mobile"=>"Phone (Mobile)"
+        ,"phone_work"=>"Phone (Work)"
+        ,"phone_other"=>"Phone (Other)"
+        ,"phone_fax"=>"Fax"
+        ,"email1"=>"Email"
+        ,"email2"=>"Email (Other)"
+        ,"assistant"=>"Assistant"
+        ,"assistant_phone"=>"Assistant Phone"
+        ,"primary_address_street"=>"Primary Address Street"
+        ,"primary_address_city"=>"Primary Address City"
+        ,"primary_address_state"=>"Primary Address State"
+        ,"primary_address_postalcode"=>"Primary Address Postalcode"
+        ,"primary_address_country"=>"Primary Address Country"
+        ,"alt_address_street"=>"Other Address Street"
+        ,"alt_address_city"=>"Other Address City"
+        ,"alt_address_state"=>"Other Address State"
+        ,"alt_address_postalcode"=>"Other Address Postalcode"
+        ,"alt_address_country"=>"Other Address Country"
+        ,"description"=>"Description"
+    );
 
-	$account_fields = array(
-		"id"=>"Account ID",
-		"name"=>"Account Name",
-		"website"=>"Website",
-		"industry"=>"Industry",
-		"account_type"=>"Type",
-		"ticker_symbol"=>"Ticker Symbol",
-		"employees"=>"Employees",
-		"ownership"=>"Ownership",
-		"phone_office"=>"Phone",
-		"phone_fax"=>"Fax",
-		"phone_alternate"=>"Other Phone",
-		"email1"=>"Email",
-		"email2"=>"Other Email",
-		"rating"=>"Rating",
-		"sic_code"=>"SIC Code",
-		"annual_revenue"=>"Annual Revenue",
-		"billing_address_street"=>"Billing Address Street",
-		"billing_address_city"=>"Billing Address City",
-		"billing_address_state"=>"Billing Address State",
-		"billing_address_postalcode"=>"Billing Address Postalcode",
-		"billing_address_country"=>"Billing Address Country",
-		"shipping_address_street"=>"Shipping Address Street",
-		"shipping_address_city"=>"Shipping Address City",
-		"shipping_address_state"=>"Shipping Address State",
-		"shipping_address_postalcode"=>"Shipping Address Postalcode",
-		"shipping_address_country"=>"Shipping Address Country",
-		"description"=>"Description"
-	);
-	$focus = 0;
-	$content = '';
+    $account_fields = array(
+        "id"=>"Account ID",
+        "name"=>"Account Name",
+        "website"=>"Website",
+        "industry"=>"Industry",
+        "account_type"=>"Type",
+        "ticker_symbol"=>"Ticker Symbol",
+        "employees"=>"Employees",
+        "ownership"=>"Ownership",
+        "phone_office"=>"Phone",
+        "phone_fax"=>"Fax",
+        "phone_alternate"=>"Other Phone",
+        "email1"=>"Email",
+        "email2"=>"Other Email",
+        "rating"=>"Rating",
+        "sic_code"=>"SIC Code",
+        "annual_revenue"=>"Annual Revenue",
+        "billing_address_street"=>"Billing Address Street",
+        "billing_address_city"=>"Billing Address City",
+        "billing_address_state"=>"Billing Address State",
+        "billing_address_postalcode"=>"Billing Address Postalcode",
+        "billing_address_country"=>"Billing Address Country",
+        "shipping_address_street"=>"Shipping Address Street",
+        "shipping_address_city"=>"Shipping Address City",
+        "shipping_address_state"=>"Shipping Address State",
+        "shipping_address_postalcode"=>"Shipping Address Postalcode",
+        "shipping_address_country"=>"Shipping Address Country",
+        "description"=>"Description"
+    );
+    //Array of fields that should not be exported, and are only used for logic
+    $remove_from_members = array("ea_deleted", "ear_deleted", "primary_address");
+    $focus = 0;
+    $content = '';
 
-	$bean = $beanList[$type];
-	require_once($beanFiles[$bean]);
-	$focus = new $bean;
+    $bean = $beanList[$type];
+    require_once($beanFiles[$bean]);
+    $focus = new $bean;
     $searchFields = array();
-	$db = DBManagerFactory::getInstance();
+    $db = DBManagerFactory::getInstance();
 
-	if($records) {
-		$records = explode(',', $records);
-		$records = "'" . implode("','", $records) . "'";
-		$where = "{$focus->table_name}.id in ($records)";
-	} elseif (isset($_REQUEST['all']) ) {
-		$where = '';
-	} else {
-		if(!empty($_REQUEST['current_post'])) {
-			$ret_array = generateSearchWhere($type, $_REQUEST['current_post']);
+    if($records) {
+        $records = explode(',', $records);
+        $records = "'" . implode("','", $records) . "'";
+        $where = "{$focus->table_name}.id in ($records)";
+    } elseif (isset($_REQUEST['all']) ) {
+        $where = '';
+    } else {
+        if(!empty($_REQUEST['current_post'])) {
+            $ret_array = generateSearchWhere($type, $_REQUEST['current_post']);
 
-			$where = $ret_array['where'];
-			$searchFields = $ret_array['searchFields'];
-		} else {
-			$where = '';
-		}
-	}
-	$order_by = "";
-	if($focus->bean_implements('ACL')){
-		if(!ACLController::checkAccess($focus->module_dir, 'export', true)){
-			ACLController::displayNoAccess();
-			sugar_die('');
-		}
-		if(ACLController::requireOwner($focus->module_dir, 'export')){
-			if(!empty($where)){
-				$where .= ' AND ';
-			}
-			$where .= $focus->getOwnerWhere($current_user->id);
-		}
+            $where = $ret_array['where'];
+            $searchFields = $ret_array['searchFields'];
+        } else {
+            $where = '';
+        }
+    }
+    $order_by = "";
+    if($focus->bean_implements('ACL')){
+        if(!ACLController::checkAccess($focus->module_dir, 'export', true)){
+            ACLController::displayNoAccess();
+            sugar_die('');
+        }
+        if(ACLController::requireOwner($focus->module_dir, 'export')){
+            if(!empty($where)){
+                $where .= ' AND ';
+            }
+            $where .= $focus->getOwnerWhere($current_user->id);
+        }
 
-	}
+    }
     // Export entire list was broken because the where clause already has "where" in it
     // and when the query is built, it has a "where" as well, so the query was ill-formed.
     // Eliminating the "where" here so that the query can be constructed correctly.
     if($members == true){
-   		$query = $focus->create_export_members_query($records);
+           $query = $focus->create_export_members_query($records);
     }else{
-		$beginWhere = substr(trim($where), 0, 5);
-	    if ($beginWhere == "where")
-	        $where = substr(trim($where), 5, strlen($where));
+        $beginWhere = substr(trim($where), 0, 5);
+        if ($beginWhere == "where")
+            $where = substr(trim($where), 5, strlen($where));
         $ret_array = create_export_query_relate_link_patch($type, $searchFields, $where);
         if(!empty($ret_array['join'])) {
-        	$query = $focus->create_export_query($order_by,$ret_array['where'],$ret_array['join']);
+            $query = $focus->create_export_query($order_by,$ret_array['where'],$ret_array['join']);
         } else {
-	    	$query = $focus->create_export_query($order_by,$ret_array['where']);
+            $query = $focus->create_export_query($order_by,$ret_array['where']);
         }
     }
 
@@ -204,32 +206,31 @@ function export($type, $records = null, $members = false, $sample=false) {
         if( $focus->_get_num_rows_in_query($query)<1 ){
             $populate = true;
         }
-	}else{
+    }
+    else {
         $result = $db->query($query, true, $app_strings['ERR_EXPORT_TYPE'].$type.": <BR>.".$query);
     }
 
 
-	$fields_array = $db->getFieldsArray($result,true);
+    $fields_array = $db->getFieldsArray($result,true);
 
     //set up the order on the header row
     $fields_array = get_field_order_mapping($focus->module_dir, $fields_array);
 
     //set up labels to be used for the header row
-    $field_labels = $fields_array;
-    foreach($fields_array as $dbname){
+    $field_labels = array();
+    foreach($fields_array as $key=>$dbname){
+        //Remove fields that are only used for logic
+        if($members && (in_array($dbname, $remove_from_members)))
+            continue;
+        
         //default to the db name of label does not exist
-        $field_labels[$dbname] = translateForExport($dbname,$focus);
+        $field_labels[$key] = translateForExport($dbname,$focus);
     }
 
-	// setup the "header" line with proper delimiters
-	$header = implode("\"".getDelimiter()."\"", array_values($field_labels));
-	if($members){
-		$header = str_replace('"ea_deleted"'.getDelimiter().'"ear_deleted"'.getDelimiter().'"primary_address"'.getDelimiter().'','',$header);
-	}
-	$header = "\"" .$header;
-	$header .= "\"\r\n";
-	$content .= $header;
-	$pre_id = '';
+    // setup the "header" line with proper delimiters
+    $content = "\"".implode("\"".getDelimiter()."\"", array_values($field_labels))."\"\r\n";
+    $pre_id = '';
 
     if($populate){
         //this is a sample request with no data, so create fake datarows
@@ -334,7 +335,7 @@ function generateSearchWhere($module, $query) {//this function is similar with f
             //expects the results in an array, not just a string. So rather than fixing the caller, I felt it would be best for
             //the function to return the results in a standard format.
             $ret_array['where'] = $where;
-    		$ret_array['searchFields'] =array();
+            $ret_array['searchFields'] =array();
             return $ret_array;
         }
         else {
@@ -382,7 +383,7 @@ function generateSearchWhere($module, $query) {//this function is similar with f
             return;
         }
         $searchForm = new SearchForm($seed, $module);
-        $searchForm->setup($searchdefs, $searchFields, 'include/SearchForm/tpls/SearchFormGeneric.tpl');
+        $searchForm->setup($searchdefs, $searchFields, 'SearchFormGeneric.tpl');
     }
     $searchForm->populateFromArray(unserialize(base64_decode($query)));
     $where_clauses = $searchForm->generateSearchWhere(true, $module);
@@ -744,7 +745,7 @@ function get_field_order_mapping($name='',$reorderArr = '', $exclude = true){
 
             //get an instance of the bean
             global $beanList;
-	        global $beanFiles;
+            global $beanFiles;
 
             $bean = $beanList[$_REQUEST['module']];
             require_once($beanFiles[$bean]);
@@ -815,3 +816,4 @@ function get_field_order_mapping($name='',$reorderArr = '', $exclude = true){
     }
 
 }
+?>

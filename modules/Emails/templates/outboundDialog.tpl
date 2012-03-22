@@ -83,7 +83,7 @@
                         <span id="other" class="yui-button yui-radio-button yui-button-checked">
                             <span class="first-child">
                                 <button type="button" name="mail_smtptype" value="other">
-                                    &nbsp;&nbsp;&nbsp;&nbsp;{$app_strings.LBL_TABGROUP_OTHER}&nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;{$app_strings.LBL_SMTPTYPE_OTHER}&nbsp;&nbsp;&nbsp;&nbsp;
                                 </button>
                             </span>
                         </span>

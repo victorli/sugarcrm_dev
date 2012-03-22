@@ -106,15 +106,7 @@ if(!isset($_POST['fromuser']) && !isset($_GET['execute'])){
 <BR>
 <select name="fromuser" id='fromuser'>
 <?php
-$active_users = get_user_array(FALSE);
-$inactive_users = get_user_array(FALSE, "Inactive");
-$all_users = array_merge($active_users, $inactive_users);
-// sb - issue with php array_merge causing array index '1' to change to '0'
-if(isset($all_users[0])){
-	$all_users[1] = 'admin';
-	unset($all_users[0]);
-}
-asort($all_users);
+$all_users = User::getAllUsers();
 echo get_select_options_with_id($all_users, isset($_SESSION['reassignRecords']['fromuser']) ? $_SESSION['reassignRecords']['fromuser'] : '');
 ?>
 </select>

@@ -710,7 +710,7 @@ class PackageManager{
 
                 $packages[] = array('name' => $name, 'version' => $version, 'published_date' => $published_date,
                 	'description' => $description, 'uninstallable' =>$uninstallable, 'type' => $type,
-                	'file' => fileToHash($upgrade_content), 'file_install' => fileToHash($upgrade_content));
+                	'file' => fileToHash($upgrade_content), 'file_install' => fileToHash($upgrade_content), 'unFile' => fileToHash($upgrade_content));
             }//fi
         }//rof
         return $packages;

@@ -47,37 +47,37 @@ class Importer
     /**
      * @var ImportFieldSanitizer
      */
-    private $ifs;
+    protected $ifs;
 
     /**
      * @var Currency
      */
-    private $defaultUserCurrency;
+    protected $defaultUserCurrency;
 
     /**
      * @var importColumns
      */
-    private $importColumns;
+    protected $importColumns;
 
     /**
      * @var importSource
      */
-    private $importSource;
+    protected $importSource;
 
     /**
      * @var $isUpdateOnly
      */
-    private $isUpdateOnly;
+    protected $isUpdateOnly;
 
     /**
      * @var  $bean
      */
-    private $bean;
+    protected $bean;
 
     /**
      * @var sugarToExternalSourceFieldMap
      */
-    private $sugarToExternalSourceFieldMap = array();
+    protected $sugarToExternalSourceFieldMap = array();
 
 
     public function __construct($importSource, $bean)

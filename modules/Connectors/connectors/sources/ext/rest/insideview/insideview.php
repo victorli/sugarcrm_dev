@@ -41,6 +41,9 @@ require_once('include/connectors/sources/ext/rest/rest.php');
 class ext_rest_insideview extends ext_rest {
 	protected $_enable_in_wizard = false;
 	protected $_enable_in_hover = false;
+    protected $_enable_in_admin_properties = false;
+    protected $_enable_in_admin_mapping = false;
+    protected $_enable_in_admin_search = false;
 	protected $_has_testing_enabled = false;
 
     protected $orgId;

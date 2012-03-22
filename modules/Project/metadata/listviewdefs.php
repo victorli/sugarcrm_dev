@@ -74,7 +74,7 @@ $listViewDefs['ProjectTemplates'] = array(
 		'label' => 'LBL_LIST_NAME', 
 		'link' => true,
         'default' => true,
-        'customCode'=>'<a href="index.php?record={$ID}&action=ProjectTemplatesDetailView&module=Project" >{$NAME}</a>'),
+        'customCode'=>'<a href="index.php?offset={$OFFSET}&record={$ID}&action=ProjectTemplatesDetailView&module=Project" >{$NAME}</a>'),
     'ESTIMATED_START_DATE' => array(
         'width' => '20',  
         'label' => 'LBL_DATE_START', 

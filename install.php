@@ -560,11 +560,13 @@ EOQ;
         create_writable_dir(sugar_cached('custom_fields'));
         create_writable_dir(sugar_cached('dyn_lay'));
         create_writable_dir(sugar_cached('images'));
+        create_writable_dir(sugar_cached('modules'));
         create_writable_dir(sugar_cached('layout'));
         create_writable_dir(sugar_cached('pdf'));
         create_writable_dir(sugar_cached('upload/import'));
         create_writable_dir(sugar_cached('xml'));
         create_writable_dir(sugar_cached('include/javascript'));
+        recursive_make_writable(sugar_cached('modules'));
 
         // check whether we're getting this request from a command line tool
         // we want to output brief messages if we're outputting to a command line tool
@@ -587,7 +589,12 @@ EOQ;
 
 
 $the_file = clean_string($the_file, 'FILE');
+
+installerHook('pre_installFileRequire', array('the_file' => $the_file));
+
 // change to require to get a good file load error message if the file is not available.
 require('install/' . $the_file);
+
+installerHook('post_installFileRequire', array('the_file' => $the_file));
 
 ?>

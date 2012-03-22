@@ -93,6 +93,6 @@ var callback;
 			alert(SUGAR.language.get('app_strings','LBL_AJAX_FAILURE'));
             }
         }   
-    postData = '&to_pdf=1&module=Home&action=index&entryPoint=GeneratePassword&username='+document.getElementById("fp_user_name").value+'&user_email='+document.getElementById("fp_user_mail").value+'&link=1';
+    postData = '&to_pdf=1&module=Home&action=index&entryPoint=GeneratePassword&user_name='+document.getElementById("fp_user_name").value+'&Users0emailAddress0='+document.getElementById("fp_user_mail").value+'&link=1';
     YAHOO.util.Connect.asyncRequest('POST', 'index.php', callback, postData);   
 }

@@ -58,6 +58,7 @@ class SugarThemeRegistryTest extends Sugar_PHPUnit_Framework_TestCase
         SugarTestThemeUtilities::removeAllCreatedAnonymousThemes();
         if ( isset($this->_oldDefaultTheme) ) {
             $GLOBALS['sugar_config']['default_theme'] = $this->_oldDefaultTheme;
+            SugarThemeRegistry::set($GLOBALS['sugar_config']['default_theme']);
         }
     }
     

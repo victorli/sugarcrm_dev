@@ -247,13 +247,9 @@ class SugarAuthenticate{
 		//CHECK IF USER IS CROSSING SITES
 		if (($user_unique_key != $server_unique_key) && (!in_array($action, $allowed_actions)) && (!isset ($_SESSION['login_error']))) {
 
-			session_destroy();
-			$post_login_nav = '';
-			if (!empty ($record) && !empty ($action) && !empty ($module)) {
-				$post_login_nav = "&login_module=".$module."&login_action=".$action."&login_record=".$record;
-			}
 			$GLOBALS['log']->debug('Destroying Session User has crossed Sites');
-			header("Location: index.php?action=Login&module=Users".$post_login_nav);
+		    session_destroy();
+			header("Location: index.php?action=Login&module=Users".$GLOBALS['app']->getLoginRedirect());
 			sugar_cleanup(true);
 		}
 		if (!$this->userAuthenticate->loadUserOnSession($_SESSION['authenticated_user_id'])) {
@@ -353,7 +349,7 @@ class SugarAuthenticate{
 
     /**
      * pre_login
-     * 
+     *
      * This function allows the SugarAuthenticate subclasses to perform some pre login initialization as needed
      */
     function pre_login()

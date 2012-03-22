@@ -595,6 +595,6 @@ class Lead extends Person {
         
         return $return_array;
     }
+
 }
 
-?>

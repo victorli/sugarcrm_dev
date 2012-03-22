@@ -182,8 +182,8 @@ class Currency extends SugarBean
 	 	}
 	 	return '';
 	}
-
-     function retrieve($id, $encode = true){
+	
+    function retrieve($id, $encode = true, $deleted = true){
      	if($id == '-99'){
      		$this->name = 	$this->getDefaultCurrencyName();
      		$this->symbol = $this->getDefaultCurrencySymbol();
@@ -195,7 +195,7 @@ class Currency extends SugarBean
      		$this->hide = '<!--';
      		$this->unhide = '-->';
      	}else{
-     		parent::retrieve($id, $encode);
+     		parent::retrieve($id, $encode, $deleted);
      	}
      	if(!isset($this->name) || $this->deleted == 1){
      		$this->name = 	$this->getDefaultCurrencyName();

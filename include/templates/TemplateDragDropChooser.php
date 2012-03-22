@@ -230,14 +230,28 @@ class TemplateDragDropChooser extends Template {
                 }
                 elCell.innerHTML = '<span id=\"' + oRecord.getData()[1] + '_row\">' + oRecord.getData()[0] + '</span>';
             },
+            // bug50219 - added sorting for field labels
+            customSort: function( a , b , desc , field )  {
+                var comp = YAHOO.util.Sort.compare;
+                var aString = a._oData[0].replace(/<[^>]*>/g, '');
+                var bString = b._oData[0].replace(/<[^>]*>/g, '');
+                return comp(aString, bString, desc);
+            },
             init : function(){
             ";
             $count = 0;
             while($count<$this->args['gridcount']+1){
+                // bug50219 Set up default strings for sortable grids
+                $sortParams = "sortable: false";
+                // set strings to sortable if it is SUGAR_GRID_grid0
+                if( $count == 0 )  {
+                    $sortParams = "sortable: true, sortOptions:{sortFunction: {$this->args['classname']}.customSort} ";
+                }
+
                 $j_str .= "
                 {$this->args['classname']}_grid{$count}source = new YAHOO.util.LocalDataSource({$this->args['classname']}.rows$count);
                 {$this->args['classname']}_grid{$count}cols = [
-                    {key:'label', label:{$this->args['classname']}.hdr$count, formatter: {$this->args['classname']}.formatter}
+                    {key:'label', {$sortParams} , label:{$this->args['classname']}.hdr$count, formatter: {$this->args['classname']}.formatter}
                 ];
                 {$this->args['classname']}_grid$count = new YAHOO.SUGAR.DragDropTable(
                     {$this->args['classname']}.divs[$count], {$this->args['classname']}_grid{$count}cols, {$this->args['classname']}_grid{$count}source,

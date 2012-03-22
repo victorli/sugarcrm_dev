@@ -88,7 +88,7 @@ class EditView
      */
     function setup($module, $focus = null, $metadataFile = null, $tpl = 'include/EditView/EditView.tpl', $createFocus = true)
     {
-        $this->th = new TemplateHandler();
+        $this->th = $this->getTemplateHandler();
         $this->th->ss =& $this->ss;
         $this->tpl = $tpl;
         $this->module = $module;
@@ -422,7 +422,6 @@ class EditView
             {
                 $this->focus->assigned_user_name = get_assigned_user_name($this->focus->assigned_user_id);
             }
-
 
             foreach ($this->focus->toArray() as $name => $value)
             {
@@ -868,6 +867,15 @@ class EditView
         }
 
         return '';
+    }
+
+    /**
+     * Get template handler object
+     * @return TemplateHandler
+     */
+    protected function getTemplateHandler()
+    {
+        return new TemplateHandler();
     }
 }
 

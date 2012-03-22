@@ -46,28 +46,6 @@
 {/if}
 <tr><td class='mbLBL'>{sugar_translate module="DynamicFields" label="COLUMN_TITLE_AUDIT"}:</td><td><input type="checkbox" name="audited" value="1" {if !empty($vardef.audited) }CHECKED{/if} {if $hideLevel > 5}disabled{/if}/>{if $hideLevel > 5}<input type="hidden" name="audited" value="{$vardef.audited}">{/if}</td></tr>
 
-{if $hideLevel < 5 && $show_fts}
-<tr>
-    <td class='mbLBL'>{sugar_translate module="DynamicFields" label="COLUMN_TITLE_FTS"}:</td>
-    <td>
-        {if empty($vardef.full_text_search) || empty($vardef.full_text_search.boost)}
-            {html_options name="full_text_search[boost]" id="full_text_search" selected="0" options=$fts_options}
-        {else}
-            {html_options name="full_text_search[boost]" id="full_text_search" selected=$vardef.full_text_search.boost options=$fts_options}
-        {/if}
-        {sugar_getimage alt=$mod_strings.LBL_HELP name="helpInline" ext=".gif" other_attributes='id="ftsTipIcon" '}
-              <script>
-                  if (!ModuleBuilder.ftsToolTip)
-                       ModuleBuilder.ftsToolTip = new YAHOO.widget.Tooltip("ftsTipPopup", {ldelim}
-                          context:"ftsTipIcon", text:"{$mod_strings.LBL_POPHELP_SEARCHABLE}"
-                       {rdelim});
-                  else
-                      ModuleBuilder.ftsToolTip.cfg.setProperty("context", "ftsTipIcon");
-              </script>
-    </td>
-</tr>
-{/if}
-
 
 {if !$hideImportable}
 <tr><td class='mbLBL'>{sugar_translate module="DynamicFields" label="COLUMN_TITLE_IMPORTABLE"}:</td><td>

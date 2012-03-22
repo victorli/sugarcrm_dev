@@ -277,7 +277,9 @@ SUGAR.append(SUGAR.themes, {
          * Handles changing the sub menu items when using grouptabs
          */
         YAHOO.util.Event.onAvailable('subModuleList',IKEADEBUG);
-    }
+    },
+    //dummy function to make classic theme work with 6.5
+    setCurrentTab: function(){}
 });
 
 YAHOO.util.Event.onDOMReady(SUGAR.themes.loadModuleList, SUGAR.themes, true);

@@ -270,7 +270,7 @@ class VardefManager{
         if($cacheCustom){
             require_once("modules/DynamicFields/DynamicField.php");
             $df = new DynamicField ($module) ;
-            $df->buildCache($module);
+            $df->buildCache($module, false);
         }
 
         //great! now that we have loaded all of our vardefs.

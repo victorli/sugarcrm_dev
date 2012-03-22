@@ -126,8 +126,8 @@ var callbackIndex = 16;
 var allowblank = 8;
 var validate = new Array();
 var maxHours = 24;
-var requiredTxt = 'Missing Required Field:'
-var invalidTxt = 'Invalid Value:'
+var requiredTxt = 'Missing Required Field:';
+var invalidTxt = 'Invalid Value:';
 var secondsSinceLoad = 0;
 var inputsWithErrors = new Array();
 var tabsWithErrors = new Array();
@@ -215,7 +215,7 @@ function toggleDisplay(id) {
 			this.document.getElementById(id+"_anchor").innerHTML='[ - ]';
 	}
 	else {
-		this.document.getElementById(id).style.display = 'none'
+		this.document.getElementById(id).style.display = 'none';
 		if(this.document.getElementById(id+"link") != undefined) {
 			this.document.getElementById(id+"link").style.display = '';
 		}
@@ -262,30 +262,30 @@ function addToValidateCallback(formname, name, type, required, msg, callback)
 
 function addToValidateRange(formname, name, type,required,  msg,min,max) {
 	addToValidate(formname, name, type,required,  msg);
-	validate[formname][validate[formname].length - 1][jstypeIndex] = 'range'
+	validate[formname][validate[formname].length - 1][jstypeIndex] = 'range';
 	validate[formname][validate[formname].length - 1][minIndex] = min;
 	validate[formname][validate[formname].length - 1][maxIndex] = max;
 }
 
 function addToValidateIsValidDate(formname, name, type, required, msg) {
 	addToValidate(formname, name, type, required, msg);
-	validate[formname][validate[formname].length - 1][jstypeIndex] = 'date'
+	validate[formname][validate[formname].length - 1][jstypeIndex] = 'date';
 }
 
 function addToValidateIsValidTime(formname, name, type, required, msg) {
 	addToValidate(formname, name, type, required, msg);
-	validate[formname][validate[formname].length - 1][jstypeIndex] = 'time'
+	validate[formname][validate[formname].length - 1][jstypeIndex] = 'time';
 }
 
 function addToValidateDateBefore(formname, name, type, required, msg, compareTo) {
 	addToValidate(formname, name, type,required,  msg);
-	validate[formname][validate[formname].length - 1][jstypeIndex] = 'isbefore'
+	validate[formname][validate[formname].length - 1][jstypeIndex] = 'isbefore';
 	validate[formname][validate[formname].length - 1][compareToIndex] = compareTo;
 }
 
 function addToValidateDateBeforeAllowBlank(formname, name, type, required, msg, compareTo, allowBlank) {
 	addToValidate(formname, name, type,required,  msg);
-	validate[formname][validate[formname].length - 1][jstypeIndex] = 'isbefore'
+	validate[formname][validate[formname].length - 1][jstypeIndex] = 'isbefore';
 	validate[formname][validate[formname].length - 1][compareToIndex] = compareTo;
 	validate[formname][validate[formname].length - 1][allowblank] = allowBlank;
 }
@@ -694,7 +694,7 @@ function add_error_style(formname, input, txt, flash) {
     {
 		// We only need to setup the flashy-flashy on the first entry, it loops through all fields automatically
 	    if ( inputsWithErrors.length == 1 ) {
-	      for(wp = 1; wp <= 10; wp++) {
+	      for(var wp = 1; wp <= 10; wp++) {
 	        window.setTimeout('fade_error_style(style, '+wp*10+')',1000+(wp*50));
 	      }
 	    }
@@ -880,6 +880,13 @@ function validate_form(formname, startsWith){
 							break;
 						case 'DBName':
 							if(!isDBName(trim(form[validate[formname][i][nameIndex]].value))){
+								isError = true;
+								add_error_style(formname, validate[formname][i][nameIndex], invalidTxt + " " +	validate[formname][i][msgIndex]);
+							}
+							break;
+                        // Bug #49614 : Check value without trimming before
+						case 'DBNameRaw':
+							if(!isDBName(form[validate[formname][i][nameIndex]].value)){
 								isError = true;
 								add_error_style(formname, validate[formname][i][nameIndex], invalidTxt + " " +	validate[formname][i][msgIndex]);
 							}
@@ -1600,8 +1607,15 @@ function sendAndRetrieve(theForm, theDiv, loadingStr) {
 	}
 	if(typeof loadingStr == 'undefined') SUGAR.language.get('app_strings', 'LBL_LOADING');
 	ajaxStatus.showStatus(loadingStr);
-	YAHOO.util.Connect.setForm(theForm);
-	var cObj = YAHOO.util.Connect.asyncRequest('POST', 'index.php', {success: success, failure: success});
+    oForm = new YAHOO.util.Element(theForm);
+    if ( oForm.get('enctype') && oForm.get('enctype') == 'multipart/form-data' ) {
+        // the second argument is true to indicate file upload.
+        YAHOO.util.Connect.setForm(theForm, true);
+        var cObj = YAHOO.util.Connect.asyncRequest('POST', 'index.php', {upload: success, failure: success});
+    } else {
+        YAHOO.util.Connect.setForm(theForm);
+        var cObj = YAHOO.util.Connect.asyncRequest('POST', 'index.php', {success: success, failure: success});
+    }
 	return false;
 }
 
@@ -1615,8 +1629,15 @@ function sendAndRedirect(theForm, loadingStr, redirect_location) {
 	}
 	if(typeof loadingStr == 'undefined') SUGAR.language.get('app_strings', 'LBL_LOADING');
 	ajaxStatus.showStatus(loadingStr);
-	YAHOO.util.Connect.setForm(theForm);
-	var cObj = YAHOO.util.Connect.asyncRequest('POST', 'index.php', {success: success, failure: success});
+    oForm = new YAHOO.util.Element(theForm);
+    if ( oForm.get('enctype') && oForm.get('enctype') == 'multipart/form-data' ) {
+        // the second argument is true to indicate file upload.
+        YAHOO.util.Connect.setForm(theForm, true);
+        var cObj = YAHOO.util.Connect.asyncRequest('POST', 'index.php', {upload: success, failure: success});
+    } else {
+        YAHOO.util.Connect.setForm(theForm);
+        var cObj = YAHOO.util.Connect.asyncRequest('POST', 'index.php', {success: success, failure: success});
+    }
 	return false;
 }
 
@@ -1830,7 +1851,7 @@ sugarListView.prototype.confirm_action = function(del) {
 sugarListView.get_num_selected = function () {
 	if(typeof document.MassUpdate != 'undefined') {
 		the_form = document.MassUpdate;
-		for(wp = 0; wp < the_form.elements.length; wp++) {
+		for(var wp = 0; wp < the_form.elements.length; wp++) {
 			if(typeof the_form.elements[wp].name != 'undefined' && the_form.elements[wp].name == 'selectCount[]') {
 				return the_form.elements[wp].value;
 			}
@@ -1842,7 +1863,7 @@ sugarListView.get_num_selected = function () {
 sugarListView.update_count = function(count, add) {
 	if(typeof document.MassUpdate != 'undefined') {
 		the_form = document.MassUpdate;
-		for(wp = 0; wp < the_form.elements.length; wp++) {
+		for(var wp = 0; wp < the_form.elements.length; wp++) {
 			if(typeof the_form.elements[wp].name != 'undefined' && the_form.elements[wp].name == 'selectCount[]') {
 				if(add)	{
 					the_form.elements[wp].value = parseInt(the_form.elements[wp].value,10) + count;
@@ -2367,7 +2388,7 @@ sugarListView.prototype.check_boxes = function() {
 		if (theForm.select_entire_list.value == 1)
 			document.MassUpdate.massall.disabled = true;
 
-		for(wp = 0 ; wp < inputs_array.length; wp++) {
+		for(var wp = 0 ; wp < inputs_array.length; wp++) {
 			if(inputs_array[wp].name == "mass[]") {
 				inputsCount++;
 				if (theForm.select_entire_list.value == 1) {
@@ -2380,19 +2401,15 @@ sugarListView.prototype.check_boxes = function() {
 						if(inputs_array[wp].value == checked_items[i]) {
 							checkedCount++;
 							inputs_array[wp].checked = true;
+							sugarListView.prototype.check_item(inputs_array[wp], document.MassUpdate);
 						}
 					}
 				}
 			}
 		}
-		if (theForm.select_entire_list.value == 0)
-			sugarListView.update_count(checked_items.length);
-		else
-			sugarListView.update_count(0, true);
-
 	}
 	else {
-		for(wp = 0 ; wp < inputs_array.length; wp++) {
+		for(var wp = 0 ; wp < inputs_array.length; wp++) {
 			if(inputs_array[wp].name == "mass[]") {
 				inputs_array[wp].checked = false;
 				inputs_array[wp].disabled = false;
@@ -2406,7 +2423,6 @@ sugarListView.prototype.check_boxes = function() {
 	}
 	if(checkedCount > 0 && checkedCount == inputsCount)
 		document.MassUpdate.massall.checked = true;
-
 }
 
 
@@ -2448,7 +2464,7 @@ sugarListView.prototype.send_mass_update = function(mode, no_record_txt, del) {
 
 	switch(mode) {
 		case 'selected':
-			for(wp = 0; wp < document.MassUpdate.elements.length; wp++) {
+			for(var wp = 0; wp < document.MassUpdate.elements.length; wp++) {
 				var reg_for_existing_uid = new RegExp('^'+RegExp.escape(document.MassUpdate.elements[wp].value)+'[\s]*,|,[\s]*'+RegExp.escape(document.MassUpdate.elements[wp].value)+'[\s]*,|,[\s]*'+RegExp.escape(document.MassUpdate.elements[wp].value)+'$|^'+RegExp.escape(document.MassUpdate.elements[wp].value)+'$');
 				//when the uid is already in document.MassUpdate.uid.value, we should not add it to ar.
 				if(typeof document.MassUpdate.elements[wp].name != 'undefined'
@@ -2839,7 +2855,7 @@ SUGAR.util = function () {
 					var script = document.createElement('script');
                   	script.type= 'text/javascript';
                   	if(result[1].indexOf("src=") > -1){
-						var srcRegex = /.*src=['"]([a-zA-Z0-9_\&\/\.\?=:-]*)['"].*/igm;
+						var srcRegex = /.*src=['"]([a-zA-Z0-9_\-\&\/\.\?=:-]*)['"].*/igm;
 						var srcResult =  result[1].replace(srcRegex, '$1');
 						script.src = srcResult;
                   	}else{
@@ -3038,6 +3054,7 @@ SUGAR.util = function () {
 						$dialog.dialog("option","position",{my: 'left top',at: 'right top',of: $(el)})	;
 					}
 					$dialog.dialog('open');
+					$(".ui-dialog").appendTo("#content");
 
 
 		},
@@ -3076,6 +3093,7 @@ SUGAR.util = function () {
 			}
 
 			$dialog.dialog('open');
+			$(".ui-dialog").appendTo("#content");
 
 		},
 
@@ -3120,6 +3138,7 @@ SUGAR.util = function () {
 					}
 
 					$dialog.dialog('open');
+					$(".ui-dialog").appendTo("#content");
 				}
 
 				success = function(data) {
@@ -4206,6 +4225,25 @@ function open_popup(module_name, width, height, initial_filter, close_popup, hid
 		URL+='&metadata='+metadata;
 	}
 
+    // Bug #46842 : The relate field field_to_name_array fails to copy over custom fields 
+    // post fields that should be populated from popup form
+	if(popup_request_data.jsonObject) {
+		var request_data = popup_request_data.jsonObject;
+	} else {
+		var request_data = popup_request_data;
+	}
+    var field_to_name_array_url = '';
+    if (request_data && request_data.field_to_name_array != 'undefined') {        
+        for(var key in request_data.field_to_name_array) {
+            if ( key.toLowerCase() != 'id' ) {
+                field_to_name_array_url += '&field_to_name[]='+encodeURIComponent(key.toLowerCase());
+            }
+        }
+    }
+    if ( field_to_name_array_url ) {
+        URL+=field_to_name_array_url;
+    }
+    
 	win = SUGAR.util.openWindow(URL, windowName, windowFeatures);
 
 	if(window.focus)
@@ -4302,6 +4340,8 @@ function set_return(popup_reply_data)
         	{
         		if (popupConfirm > -1) {
         			set_return_basic(popup_reply_data,/\S/);
+        		} else {
+        			set_return_basic(popup_reply_data,/account/);
         		}
         	}
         	// Bug 48726 End

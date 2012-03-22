@@ -1,37 +1,4 @@
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- *
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- *
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- *
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
+
 function SugarClass(){this.init();}
 SugarClass.prototype.init=function(){}
 SugarClass.inherit=function(className,parentClassName){var str=className+".prototype = new "+parentClassName+"();";str+=className+".prototype.constructor = "+className+";";str+=className+".superclass = "+parentClassName+".prototype;";try{eval(str);}catch(e){}}
@@ -59,43 +26,9 @@ SugarDateTime.parseUTCDate=SugarDateTime.prototype.parseUTCDate;SugarDateTime.pr
 new_date=new Date(new_date.getTime()+gmt_offset_secs*1000);}}
 return new_date;}
 SugarDateTime.parseAdjustedDate=SugarDateTime.prototype.parseAdjustedDate;SugarDateTime.prototype.getUTCHash=function(startdate){var month=(startdate.getUTCMonth()<10)?"0"+startdate.getUTCMonth():""+startdate.getUTCMonth();var day=(startdate.getUTCDate()<10)?"0"+startdate.getUTCDate():""+startdate.getUTCDate();var hours=(startdate.getUTCHours()<10)?"0"+startdate.getUTCHours():""+startdate.getUTCHours();var minutes=(startdate.getUTCMinutes()<10)?"0"+startdate.getUTCMinutes():""+startdate.getUTCMinutes();return startdate.getUTCFullYear()+month+day+hours+minutes;}
-SugarDateTime.getUTCHash=SugarDateTime.prototype.getUTCHash;
-// End of File include/javascript/jsclass_base.js
+SugarDateTime.getUTCHash=SugarDateTime.prototype.getUTCHash;/* End of File include/javascript/jsclass_base.js */
 
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- *
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- *
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- *
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
+
 function method_callback(o){var resp=YAHOO.lang.JSON.parse(o.responseText),request_id=o.tId,result=resp.result;if(result==null){return;}
 reqid=global_request_registry[request_id];if(typeof(reqid)!='undefined'){widget=global_request_registry[request_id][0];method_name=global_request_registry[request_id][1];widget[method_name](result);}}
 SugarClass.inherit("SugarVCalClient","SugarClass");function SugarVCalClient(){this.init();}
@@ -120,43 +53,9 @@ SugarVCalClient.parseResults=SugarVCalClient.prototype.parseResults;SugarRPCClie
 SugarRPCClient.prototype.allowed_methods=['retrieve','query','get_objects_from_module'];SugarRPCClient.prototype.init=function(){this._showError=function(e){alert("ERROR CONNECTING to: ./index.php?entryPoint=json_server, ERROR:"+e);}
 this.serviceURL='./index.php?entryPoint=json_server';}
 SugarRPCClient.prototype.call_method=function(method,args,synchronous){var result,transaction,post_data=YAHOO.lang.JSON.stringify({method:method,id:1,params:[args]});synchronous=synchronous||false;try{if(synchronous){result=http_fetch_sync(this.serviceURL,post_data);result=YAHOO.lang.JSON.parse(result.responseText).result;return result;}else{transaction=YAHOO.util.Connect.asyncRequest('POST',this.serviceURL,{success:method_callback,failure:method_callback},post_data);return transaction.tId;}}catch(e){this._showError(e);}}
-var global_rpcClient=new SugarRPCClient();
-// End of File include/javascript/jsclass_async.js
+var global_rpcClient=new SugarRPCClient();/* End of File include/javascript/jsclass_async.js */
 
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- *
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- *
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- *
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
+
 SugarClass.inherit("SugarWidgetListView","SugarClass");function SugarWidgetListView(){this.init();}
 SugarWidgetListView.prototype.init=function(){}
 SugarWidgetListView.prototype.load=function(parentNode){this.parentNode=parentNode;this.display();}
@@ -256,6 +155,5 @@ SugarWidgetScheduleRow.prototype.add_freebusy_nodes=function(tr,attendee){var ho
 for(var i=0;i<this.timeslots.length;i++){var td=document.createElement('td');tr.appendChild(td);td.innerHTML='&nbsp;';if(typeof(this.timeslots[i]['is_start'])!='undefined'){td.className='schedulerSlotCellStartTime';}
 if(typeof(this.timeslots[i]['is_end'])!='undefined'){td.className='schedulerSlotCellEndTime';}
 if(is_loaded){if(typeof(GLOBAL_REGISTRY['freebusy_adjusted'][this.focus_bean.fields.id][this.timeslots[i].hash])!='undefined'){td.style.backgroundColor="#4D5EAA";if(td.className=='schedulerSlotCellStartTime'){fb_limit=1;if(typeof(GLOBAL_REGISTRY.focus.orig_users_arr_hash)!='undefined'&&typeof(GLOBAL_REGISTRY.focus.orig_users_arr_hash[this.focus_bean.fields.id])!='undefined'){fb_limit=2;}
-if(GLOBAL_REGISTRY['freebusy_adjusted'][this.focus_bean.fields.id][this.timeslots[i].hash]>=fb_limit){td.style.backgroundColor="#AA4D4D";}else{td.style.backgroundColor="#4D5EAA";}}}}}}
-// End of File modules/Meetings/jsclass_scheduler.js
+if(GLOBAL_REGISTRY['freebusy_adjusted'][this.focus_bean.fields.id][this.timeslots[i].hash]>=fb_limit){td.style.backgroundColor="#AA4D4D";}else{td.style.backgroundColor="#4D5EAA";}}}}}}/* End of File modules/Meetings/jsclass_scheduler.js */
 

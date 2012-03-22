@@ -56,7 +56,7 @@
 	<tr id="repeat_interval_row" style="display: none;">
 		<td width="12.5%" valign="top" scope="row">{$MOD.LBL_REPEAT_INTERVAL}:</td>
 		<td width="37.5%" valign="top">
-			<select name="repeat_interval">{html_options options=$repeat_intevals selected="1"}</select>
+			<select name="repeat_interval">{html_options options=$repeat_intervals selected="1"}</select> <span id="repeat-interval-text"></span>
 		</td>
 	</tr>
 	
@@ -123,6 +123,11 @@
 			repeat_dow_row.style.display = "";
 		}else{
 			repeat_dow_row.style.display = "none";
+		}
+		
+		var intervalTextElm = document.getElementById('repeat-interval-text');		
+		if (intervalTextElm && typeof SUGAR.language.languages.app_list_strings['repeat_intervals'] != 'undefined') {
+			intervalTextElm.innerHTML = SUGAR.language.languages.app_list_strings['repeat_intervals'][document.forms['CalendarRepeatForm'].repeat_type.value];
 		}
 	}
 

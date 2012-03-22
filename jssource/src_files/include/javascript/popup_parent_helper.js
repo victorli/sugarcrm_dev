@@ -95,6 +95,25 @@ function open_popup(module_name, width, height, initial_filter, close_popup, hid
 		URL+='&metadata='+metadata;	
 	}
 	
+    // Bug #46842 : The relate field field_to_name_array fails to copy over custom fields
+    // post fields that should be populated from popup form
+	if(popup_request_data.jsonObject) {
+		var request_data = popup_request_data.jsonObject;
+	} else {
+		var request_data = popup_request_data;
+	}
+    var field_to_name_array_url = '';
+    if (request_data && request_data.field_to_name_array != 'undefined') {        
+        for(var key in request_data.field_to_name_array) {
+            if ( key.toLowerCase() != 'id' ) {
+                field_to_name_array_url += '&field_to_name[]='+encodeURIComponent(key.toLowerCase());
+            }
+        }
+    }
+    if ( field_to_name_array_url ) {
+        URL+=field_to_name_array_url;
+    }
+    
 	win = window.open(URL, windowName, windowFeatures);
 
 	if(window.focus)

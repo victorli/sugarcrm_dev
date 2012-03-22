@@ -167,7 +167,7 @@ class SugarFieldParent extends SugarFieldRelate {
         $dynamicParentType = '{/literal}{if !empty($fields.parent_type.value)}{$fields.parent_type.value}{else}Accounts{/if}{literal}';
         
         //Get the parent sqs definition
-        $qsd = new QuickSearchDefaults();
+        $qsd = QuickSearchDefaults::getQuickSearchDefaults();
         $qsd->setFormName($formName);
         $sqsFieldArray = $qsd->getQSParent($dynamicParentTypePlaceHolder);
         $qsFieldName = $formName . "_" . $vardef['name'];

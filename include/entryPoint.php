@@ -107,17 +107,11 @@ if(empty($GLOBALS['installing']) && !file_exists('config.php'))
 
 // config|_override.php
 if(is_file('config.php')) {
-    if ( !is_readable('config.php') ) {
-        $GLOBALS['log']->fatal("Unable to read the config.php file. Check the file permissions");
-    }
 	require_once('config.php'); // provides $sugar_config
 }
 
 // load up the config_override.php file.  This is used to provide default user settings
 if(is_file('config_override.php')) {
-    if ( !is_readable('config_override.php') ) {
-        $GLOBALS['log']->fatal("Unable to read the config_override.php file. Check the file permissions");
-    }
 	require_once('config_override.php');
 }
 if(empty($GLOBALS['installing']) &&empty($sugar_config['dbconfig']['db_name']))
@@ -232,6 +226,8 @@ $current_user = new User();
 $current_entity = null;
 $system_config = new Administration();
 $system_config->retrieveSettings();
+
+LogicHook::initialize()->call_custom_logic('', 'after_entry_point');
 }
 
 

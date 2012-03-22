@@ -151,6 +151,11 @@ function enableQS(noReload){
                     	inputElement: qsFields[qsField],
                     	//YUI requires the data, even POST, to be URL encoded
                     	generateRequest : function(sQuery) {
+                            //preprocess values
+                            var item_id = this.inputElement.form_id + '_' + this.inputElement.name;
+                            if (QSCallbacksArray[item_id]) {
+                                QSCallbacksArray[item_id](this.sqs);
+                            }
 	                    	var out = SUGAR.util.paramsToUrl({
 	                    		to_pdf: 'true',
 	                            module: 'Home',
@@ -351,4 +356,5 @@ function registerSingleSmartInputListener(input) {
 if(typeof QSFieldsArray == 'undefined') {
    QSFieldsArray = new Array();
    QSProcessedFieldsArray = new Array();
+   QSCallbacksArray = new Array();
 }

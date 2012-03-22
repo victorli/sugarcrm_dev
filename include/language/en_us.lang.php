@@ -262,7 +262,7 @@ $app_list_strings = array (
   'sales_stage_default_key' => 'Prospecting',
   'fts_type' => array (
       '' => '',
-      'Elastic' => 'Elastic Search'
+      'Elastic' => 'elasticsearch'
   ),
   'sales_stage_dom' =>
   array (
@@ -897,6 +897,14 @@ $app_list_strings = array (
 	'Weekly' => 'Weekly',
 	'Monthly' => 'Monthly',
 	'Yearly' => 'Yearly',
+    ),
+    
+    'repeat_intervals' => array(
+        '' => '',
+        'Daily' => 'day(s)',
+        'Weekly' => 'week(s)',
+        'Monthly' => 'month(s)',
+        'Yearly' => 'year(s)',
     ),
     
     'duration_dom' => array(
@@ -1555,6 +1563,7 @@ $app_strings = array (
   'LBL_SMTPTYPE_GMAIL'                    => 'Gmail',
   'LBL_SMTPTYPE_YAHOO'                    => 'Yahoo! Mail',
   'LBL_SMTPTYPE_EXCHANGE'                 => 'Microsoft Exchange',
+    'LBL_SMTPTYPE_OTHER'                  => 'Other',
     'LBL_EMAIL_SPACER_MAIL_SERVER'          => '[ Remote Folders ]',
     'LBL_EMAIL_SPACER_LOCAL_FOLDER'         => '[ Sugar Folders ]',
     'LBL_EMAIL_SUBJECT'                     => 'Subject',
@@ -2388,6 +2397,9 @@ $app_strings = array (
     //External API Error Messages
     'ERR_GOOGLE_API_415' => 'Google Docs does not support the file format you provided.',
 
+    'LBL_EMPTY' => 'Empty',
+    'LBL_IS_EMPTY' => 'Is empty',
+    'LBL_IS_NOT_EMPTY' => 'Is not empty',
     //IMPORT SAMPLE TEXT
     'LBL_IMPORT_SAMPLE_FILE_TEXT' => '
 "This is a sample import file which provides an example of the expected contents of a file that is ready for import."
@@ -2471,6 +2483,7 @@ $app_strings = array (
     'LBL_KEYBOARD_SHORTCUTS_HELP_TITLE' => 'Keyboard Shortcuts',
     'LBL_KEYBOARD_SHORTCUTS_HELP' => '<p><strong>Form Functionality - Alt+</strong><br/> I = ed<b>I</b>t (detailview)<br/> U = d<b>U</b>plicate (detailview)<br/> D = <b>D</b>elete (detailview)<br/> A = s<b>A</b>ve (editview)<br/> L = cance<b>L</b> (editview) <br/><br/></p><p><strong>Search and Navigation  - Alt+</strong><br/> 7 = first input on Edit form<br/> 8 = Advanced Search link<br/> 9 = First Search Form input<br/> 0 = Unified search input<br></p>' ,
 
+    'ERR_CONNECTOR_NOT_ARRAY' => 'connector array in {0} been defined incorrectly or is empty and could not be used.',
     );
 
 $app_list_strings['moduleList']['Library'] = 'Library';

@@ -197,9 +197,9 @@ abstract class SugarRelationship
         {
             $field = $def['name'];
             if (isset($row[$field]))
+            {
                 $values[$field] = "'{$row[$field]}'";
-            else
-                $values[$field] = "''";
+            }
         }
         $columns = implode(',', array_keys($values));
         $values = implode(',', $values);

@@ -309,7 +309,7 @@ $dictionary['Lead'] = array('table' => 'leads','audited'=>true, 'unified_search'
 			'source' => 'non-db',
 			'importable' => 'false',
             'duplicate_merge'=> 'disabled',
-			'studio' => array('listview' => false),
+			'studio' => false,
 		),
 	'm_accept_status_fields' =>
 		array (
@@ -324,7 +324,7 @@ $dictionary['Lead'] = array('table' => 'leads','audited'=>true, 'unified_search'
 			'importable' => 'false',
 			'hideacl'=>true,
             'duplicate_merge'=> 'disabled',
-			'studio' => array('listview' => false),
+			'studio' => false,
 		),
 	'accept_status_id' =>
 		array(

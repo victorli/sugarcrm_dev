@@ -120,5 +120,34 @@ class EmailTest extends Sugar_PHPUnit_Framework_TestCase
 		$resultString = $this->email->decodeDuringSend($testString);
 		$this->asserteQuals($resultString, $expectedResult);
 	}
+
+    public function configParamProvider()
+    {
+        $address_array =  array(
+            'id1' => 'test1@example.com',
+            'id2' => 'test2@example.com',
+            'id3' => 'test3@example.com'
+        );
+
+        return array(
+            array(',',$address_array,'test1@example.com,test2@example.com,test3@example.com'), // default and correct delimiter for email addresses
+            array(';',$address_array,'test1@example.com;test2@example.com;test3@example.com'), // outlook's delimiter for email addresses
+        );
+    }
+
+    /**
+     * @group bug51804
+     * @dataProvider configParamProvider
+     * @param string $config_param
+     * @param array $address_array
+     * @param string $expected
+     */
+    public function testArrayToDelimitedString($config_param, $address_array, $expected)
+    {
+            $GLOBALS['sugar_config']['email_address_separator'] = $config_param;
+
+            $this->assertEquals($expected,$this->email->_arrayToDelimitedString($address_array), 'Array should be delimited with correct delimiter');
+
+    }
 }
 ?>

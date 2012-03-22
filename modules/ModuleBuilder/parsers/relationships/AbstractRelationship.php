@@ -568,7 +568,7 @@ class AbstractRelationship
      * @param string $ensureUnique 
      * @return string Valid column name trimmed to right length and with invalid characters removed
      */
-    static function getValidDBName ($name, $ensureUnique = false)
+    static function getValidDBName ($name, $ensureUnique = true)
     {
 
         require_once 'modules/ModuleBuilder/parsers/constants.php' ;

@@ -57,8 +57,26 @@ class ModuleScanner{
 	);
 
 	private $blackListExempt = array();
+	private $classBlackListExempt = array();
 
 	private $validExt = array('png', 'gif', 'jpg', 'css', 'js', 'php', 'txt', 'html', 'htm', 'tpl', 'pdf', 'md5', 'xml');
+	private $classBlackList = array(
+        // Class names specified here must be in lowercase as the implementation
+        // of the tokenizer converts all tokens to lowercase.
+        'reflection',
+        'reflectionclass',
+        'reflectionzendextension',
+        'reflectionextension',
+        'reflectionfunction',
+        'reflectionfunctionabstract',
+        'reflectionmethod',
+        'reflectionobject',
+        'reflectionparameter',
+        'reflectionproperty',
+        'reflector',
+        'reflectionexception',
+        'lua',
+    );
 	private $blackList = array(
     'popen',
     'proc_open',
@@ -176,6 +194,186 @@ class ModuleScanner{
 	'sugar_chmod',
 	'sugar_touch',
 
+        // Functions that have callbacks can circumvent our security measures.
+        // List retrieved through PHP's XML documentation, and running the
+        // following script in the reference directory:
+
+        // grep -R callable . | grep -v \.svn | grep methodparam | cut -d: -f1 | sort -u | cut -d"." -f2 | sed 's/\-/\_/g' | cut -d"/" -f4
+
+        // AMQPQueue
+        'consume',
+
+        // PHP internal - arrays
+        'array_diff_uassoc',
+        'array_diff_ukey',
+        'array_filter',
+        'array_intersect_uassoc',
+        'array_intersect_ukey',
+        'array_map',
+        'array_reduce',
+        'array_udiff_assoc',
+        'array_udiff_uassoc',
+        'array_udiff',
+        'array_uintersect_assoc',
+        'array_uintersect_uassoc',
+        'array_uintersect',
+        'array_walk_recursive',
+        'array_walk',
+        'uasort',
+        'uksort',
+        'usort',
+
+        // EIO functions that accept callbacks.
+        'eio_busy',
+        'eio_chmod',
+        'eio_chown',
+        'eio_close',
+        'eio_custom',
+        'eio_dup2',
+        'eio_fallocate',
+        'eio_fchmod',
+        'eio_fchown',
+        'eio_fdatasync',
+        'eio_fstat',
+        'eio_fstatvfs',
+        'eio_fsync',
+        'eio_ftruncate',
+        'eio_futime',
+        'eio_grp',
+        'eio_link',
+        'eio_lstat',
+        'eio_mkdir',
+        'eio_mknod',
+        'eio_nop',
+        'eio_open',
+        'eio_read',
+        'eio_readahead',
+        'eio_readdir',
+        'eio_readlink',
+        'eio_realpath',
+        'eio_rename',
+        'eio_rmdir',
+        'eio_sendfile',
+        'eio_stat',
+        'eio_statvfs',
+        'eio_symlink',
+        'eio_sync_file_range',
+        'eio_sync',
+        'eio_syncfs',
+        'eio_truncate',
+        'eio_unlink',
+        'eio_utime',
+        'eio_write',
+
+        // PHP internal - error functions
+        'set_error_handler',
+        'set_exception_handler',
+
+        // Forms Data Format functions
+        'fdf_enum_values',
+
+        // PHP internal - function handling
+        'call_user_func_array',
+        'call_user_func',
+        'forward_static_call_array',
+        'forward_static_call',
+        'register_shutdown_function',
+        'register_tick_function',
+
+        // Gearman
+        'setclientcallback',
+        'setcompletecallback',
+        'setdatacallback',
+        'setexceptioncallback',
+        'setfailcallback',
+        'setstatuscallback',
+        'setwarningcallback',
+        'setworkloadcallback',
+        'addfunction',
+
+        // Firebird/InterBase
+        'ibase_set_event_handler',
+
+        // LDAP
+        'ldap_set_rebind_proc',
+
+        // LibXML
+        'libxml_set_external_entity_loader',
+
+        // Mailparse functions
+        'mailparse_msg_extract_part_file',
+        'mailparse_msg_extract_part',
+        'mailparse_msg_extract_whole_part_file',
+
+        // Memcache(d) functions
+        'addserver',
+        'setserverparams',
+        'get',
+        'getbykey',
+        'getdelayed',
+        'getdelayedbykey',
+
+        // MySQLi
+        'set_local_infile_handler',
+
+        // PHP internal - network functions
+        'header_register_callback',
+
+        // Newt
+        'newt_entry_set_filter',
+        'newt_set_suspend_callback',
+
+        // OAuth
+        'consumerhandler',
+        'timestampnoncehandler',
+        'tokenhandler',
+
+        // PHP internal - output control
+        'ob_start',
+
+        // PHP internal - PCNTL
+        'pcntl_signal',
+
+        // PHP internal - PCRE
+        'preg_replace_callback',
+
+        // SQLite
+        'sqlitecreateaggregate',
+        'sqlitecreatefunction',
+        'sqlite_create_aggregate',
+        'sqlite_create_function',
+
+        // RarArchive
+        'open',
+
+        // Readline
+        'readline_callback_handler_install',
+        'readline_completion_function',
+
+        // PHP internal - session handling
+        'session_set_save_handler',
+
+        // PHP internal - SPL
+        'construct',
+        'iterator_apply',
+        'spl_autoload_register',
+
+        // Sybase
+        'sybase_set_message_handler',
+
+        // PHP internal - variable handling
+        'is_callable',
+
+        // XML Parser
+        'xml_set_character_data_handler',
+        'xml_set_default_handler',
+        'xml_set_element_handler',
+        'xml_set_end_namespace_decl_handler',
+        'xml_set_external_entity_ref_handler',
+        'xml_set_notation_decl_handler',
+        'xml_set_processing_instruction_handler',
+        'xml_set_start_namespace_decl_handler',
+        'xml_set_unparsed_entity_decl_handler',
 );
 
 	public function printToWiki(){
@@ -199,6 +397,12 @@ class ModuleScanner{
 		if(!empty($GLOBALS['sugar_config']['moduleInstaller']['blackList'])){
 			$this->blackList = array_merge($this->blackList, $GLOBALS['sugar_config']['moduleInstaller']['blackList']);
 		}
+        if(!empty($GLOBALS['sugar_config']['moduleInstaller']['classBlackListExempt'])){
+            $this->classBlackListExempt = array_merge($this->classBlackListExempt, $GLOBALS['sugar_config']['moduleInstaller']['classBlackListExempt']);
+        }
+        if(!empty($GLOBALS['sugar_config']['moduleInstaller']['classBlackList'])){
+            $this->classBlackList = array_merge($this->classBlackList, $GLOBALS['sugar_config']['moduleInstaller']['classBlackList']);
+        }
 	  if(!empty($GLOBALS['sugar_config']['moduleInstaller']['validExt'])){
 			$this->validExt = array_merge($this->validExt, $GLOBALS['sugar_config']['moduleInstaller']['validExt']);
 		}
@@ -263,11 +467,11 @@ class ModuleScanner{
 	 * @param string $contents File contents
 	 * @return boolean
 	 */
-	protected function isPHPFile($contents)
+	public function isPHPFile($contents)
 	{
 	    if(stripos($contents, '<?php') !== false) return true;
 	    for($tag=0;($tag = stripos($contents, '<?', $tag)) !== false;$tag++) {
-            if(strncasecmp(substr($contents, $tag, 13), '<?xml version', 13)) {
+            if(strncasecmp(substr($contents, $tag, 13), '<?xml version', 13) == 0) {
                 // <?xml version is OK, skip it
                 $tag++;
                 continue;
@@ -318,13 +522,22 @@ class ModuleScanner{
 						break;
 					case T_STRING:
 						$token[1] = strtolower($token[1]);
-						if(!in_array($token[1], $this->blackList))break;
-						if(in_array($token[1], $this->blackListExempt))break;
-						if ($lastToken !== false &&
-						($lastToken[0] == T_NEW || $lastToken[0] == T_OBJECT_OPERATOR ||  $lastToken[0] == T_DOUBLE_COLON))
-						{
-							break;
-						}
+						if($lastToken !== false && $lastToken[0] == T_NEW) {
+                            if(!in_array($token[1], $this->classBlackList))break;
+                            if(in_array($token[1], $this->classBlackListExempt))break;
+                        } elseif ($token[0] == T_DOUBLE_COLON) {
+                            if(!in_array($lastToken[1], $this->classBlackList))break;
+                            if(in_array($lastToken[1], $this->classBlackListExempt))break;
+                        } else {
+                            if(!in_array($token[1], $this->blackList))break;
+                            if(in_array($token[1], $this->blackListExempt))break;
+
+                            if ($lastToken !== false &&
+                            ($lastToken[0] == T_OBJECT_OPERATOR ||  $lastToken[0] == T_DOUBLE_COLON))
+                            {
+                                break;
+                            }
+                        }
 					case T_VARIABLE:
 						$checkFunction = true;
 						$possibleIssue = translate('ML_INVALID_FUNCTION') . ' ' .  $token[1] . '()';

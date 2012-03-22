@@ -138,8 +138,8 @@ class DocumentRevision extends SugarBean {
 		return "$this->filename";
 	}
 
-	function retrieve($id, $encode=false){
-		$ret = parent::retrieve($id, $encode);	
+	function retrieve($id, $encode=false, $deleted=true){
+		$ret = parent::retrieve($id, $encode,$deleted);	
 		
 		return $ret;
 	}

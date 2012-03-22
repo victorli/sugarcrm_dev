@@ -61,10 +61,6 @@ class DeployedMetaDataImplementation extends AbstractMetaDataImplementation impl
 	{
 
 		// BEGIN ASSERTIONS
-		if (! isset ( $this->_fileVariables [ $view ] ))
-		{
-			sugar_die ( get_class ( $this ) . ": View $view is not supported" ) ;
-		}
 		if (! isset ( $GLOBALS [ 'beanList' ] [ $moduleName ] ))
 		{
 			sugar_die ( get_class ( $this ) . ": Modulename $moduleName is not a Deployed Module" ) ;
@@ -77,6 +73,18 @@ class DeployedMetaDataImplementation extends AbstractMetaDataImplementation impl
 		$module = StudioModuleFactory::getStudioModule( $moduleName ) ;
 		$this->module_dir = $module->seed->module_dir;
 		$fielddefs = $module->getFields();
+
+        //Load any custom views
+        $sm = StudioModuleFactory::getStudioModule($moduleName);
+        foreach($sm->sources as $file => $def)
+        {
+            if (!empty($def['view'])) {
+                $viewVar = "viewdefs";
+                if (!empty($def['type']) && !empty($this->_fileVariables[$def["type"]]))
+                    $viewVar = $this->_fileVariables[$def["type"]];
+                $this->_fileVariables[$def['view']] = $viewVar;
+            }
+        }
 
 		$loaded = null ;
 		foreach ( array ( MB_BASEMETADATALOCATION , MB_CUSTOMMETADATALOCATION , MB_WORKINGMETADATALOCATION , MB_HISTORYMETADATALOCATION ) as $type )
@@ -212,6 +220,11 @@ class DeployedMetaDataImplementation extends AbstractMetaDataImplementation impl
             $this->_originalViewdefs = $layout ;
           }
         }
+        //fixing bug #43787: check editview layout if default quickcreate.php doesn't have needed field
+        if ($view == MB_QUICKCREATE)
+        {
+            $this->_editViewDefs = $this->_loadFromFile($this->getFileName(MB_EDITVIEW, $moduleName, MB_BASEMETADATALOCATION));
+        }
         
 		$this->_fielddefs = $fielddefs ;
 		$this->_history = new History ( $this->getFileName ( $view, $moduleName, MB_HISTORYMETADATALOCATION ) ) ;
@@ -228,6 +241,10 @@ class DeployedMetaDataImplementation extends AbstractMetaDataImplementation impl
 		return $this->_originalViewdefs;
 	}
 
+    function getEditViewDefs()
+    {
+        return $this->_editViewDefs;
+    }
 
 	/*
 	 * Save a draft layout
@@ -292,7 +309,12 @@ class DeployedMetaDataImplementation extends AbstractMetaDataImplementation impl
 	public static function getFileName ($view , $moduleName , $type = MB_CUSTOMMETADATALOCATION)
 	{
 
-		$pathMap = array ( MB_BASEMETADATALOCATION => '' , MB_CUSTOMMETADATALOCATION => 'custom/' , MB_WORKINGMETADATALOCATION => 'custom/working/' , MB_HISTORYMETADATALOCATION => 'custom/history/' ) ;
+		$pathMap = array (
+            MB_BASEMETADATALOCATION => '' ,
+            MB_CUSTOMMETADATALOCATION => 'custom/' ,
+            MB_WORKINGMETADATALOCATION => 'custom/working/' ,
+            MB_HISTORYMETADATALOCATION => 'custom/history/'
+        ) ;
 		$type = strtolower ( $type ) ;
 
 		$filenames = array (
@@ -307,6 +329,16 @@ class DeployedMetaDataImplementation extends AbstractMetaDataImplementation impl
 			MB_DETAILVIEW => 'detailviewdefs' ,
 			MB_QUICKCREATE => 'quickcreatedefs',
 		) ;
+
+        //In a deployed module, we can check for a studio module with file name overrides.
+        $sm = StudioModuleFactory::getStudioModule($moduleName);
+        foreach($sm->sources as $file => $def)
+        {
+            if (!empty($def['view'])) {
+                $filenames[$def['view']] = substr($file, 0, strlen($file) - 4);
+            }
+
+        }
 
 		// BEGIN ASSERTIONS
 		if (! isset ( $pathMap [ $type ] ))
@@ -353,9 +385,12 @@ class DeployedMetaDataImplementation extends AbstractMetaDataImplementation impl
 	        } else {
                 $newkey = $key;
 			    $newval = $val;
-				foreach ($replacements as $var => $rep) {
-                    $newkey = str_replace($var, $rep, $newkey);
-					$newval = str_replace($var, $rep, $newval);
+                if(is_string($val))
+                {
+                    foreach ($replacements as $var => $rep) {
+                        $newkey = str_replace($var, $rep, $newkey);
+                        $newval = str_replace($var, $rep, $newval);
+                    }
                 }
                 $ret[$newkey] = $newval;
 			}

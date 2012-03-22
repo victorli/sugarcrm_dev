@@ -78,24 +78,27 @@ $GLOBALS['toHTML_keys_set'] = implode("", $GLOBALS['toHTML_keys']);
  *
  * @todo Make this utilize the external caching mechanism after re-testing (see
  *       log on r25320).
+ *
+ * Bug 49489 - removed caching of to_html strings as it was consuming memory and
+ * never releasing it
  */
 function to_html($string, $encode=true){
 	if (empty($string)) {
 		return $string;
 	}
+
 	global $toHTML;
 
-	if($encode && is_string($string))
-    {
+	if($encode && is_string($string)){
 		/*
 		 * cn: bug 13376 - handle ampersands separately
 		 * credit: ashimamura via bug portal
 		 */
+		//$string = str_replace("&", "&amp;", $string);
 
-		if(is_array($toHTML))
+        if(is_array($toHTML))
         { // cn: causing errors in i18n test suite ($toHTML is non-array)
-            if( strpbrk($string, $GLOBALS['toHTML_keys_set']) )
-			    $string = str_replace($GLOBALS['toHTML_keys'],$GLOBALS['toHTML_values'],$string);
+            $string = str_replace($GLOBALS['toHTML_keys'],$GLOBALS['toHTML_values'],$string);
 		}
 	}
 
@@ -118,7 +121,7 @@ function from_html($string, $encode=true) {
     static $toHTML_values = null;
     static $toHTML_keys = null;
     static $cache = array();
-    if (!isset($toHTML_values) || !empty($GLOBALS['from_html_cache_clear'])) {
+    if (!empty($toHTML) && is_array($toHTML) && (!isset($toHTML_values) || !empty($GLOBALS['from_html_cache_clear']))) {
         $toHTML_values = array_values($toHTML);
         $toHTML_keys = array_keys($toHTML);
     }

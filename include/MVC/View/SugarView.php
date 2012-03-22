@@ -1273,6 +1273,17 @@ EOHTML;
         if(!empty($paramString)){
                $theTitle .= "<h2> $paramString </h2>\n";
            }
+		$theTitle .= "<span class='utils'>";
+		$createImageURL = SugarThemeRegistry::current()->getImageURL('create-record.gif');
+        $url = ajaxLink("index.php?module=$module&action=EditView&return_module=$module&return_action=DetailView");
+		$theTitle .= <<<EOHTML
+&nbsp;
+<a id="create_image" href="{$url}" class="utilsLink">
+<img src='{$createImageURL}' alt='{$GLOBALS['app_strings']['LNK_CREATE']}'></a>
+<a id="create_link" href="{$url}" class="utilsLink">
+{$GLOBALS['app_strings']['LNK_CREATE']}
+</a>
+EOHTML;
 
         $theTitle .= "</div>\n";
         return $theTitle;
@@ -1436,6 +1447,11 @@ EOHTML;
         }
     }
 
+    /**
+     * Fetch config values to be put into an array for JavaScript
+     *
+     * @return array
+     */
     protected function getSugarConfigJS(){
         global $sugar_config;
 
@@ -1444,7 +1460,7 @@ EOHTML;
         // AjaxUI stock banned modules
         $config_js[] = "SUGAR.config.stockAjaxBannedModules = ".json_encode(ajaxBannedModules()).";";
         if ( isset($sugar_config['quicksearch_querydelay']) ) {
-            $config_js[] = "SUGAR.config.quicksearch_querydelay = {$GLOBALS['sugar_config']['quicksearch_querydelay']};";
+            $config_js[] = $this->prepareConfigVarForJs('quicksearch_querydelay', $sugar_config['quicksearch_querydelay']);
         }
         if ( empty($sugar_config['disableAjaxUI']) ) {
             $config_js[] = "SUGAR.config.disableAjaxUI = false;";
@@ -1453,15 +1469,41 @@ EOHTML;
             $config_js[] = "SUGAR.config.disableAjaxUI = true;";
         }
         if ( !empty($sugar_config['addAjaxBannedModules']) ){
-            $config_js[] = "SUGAR.config.addAjaxBannedModules = ".json_encode($sugar_config['addAjaxBannedModules']).";";
+            $config_js[] = $this->prepareConfigVarForJs('addAjaxBannedModules', $sugar_config['addAjaxBannedModules']);
         }
         if ( !empty($sugar_config['overrideAjaxBannedModules']) ){
-            $config_js[] = "SUGAR.config.overrideAjaxBannedModules = ".json_encode($sugar_config['overrideAjaxBannedModules']).";";
+            $config_js[] = $this->prepareConfigVarForJs('overrideAjaxBannedModules', $sugar_config['overrideAjaxBannedModules']);
+        }
+        if (!empty($sugar_config['js_available']) && is_array ($sugar_config['js_available']))
+        {
+            foreach ($sugar_config['js_available'] as $configKey)
+            {
+                if (isset($sugar_config[$configKey])) 
+                {
+                    $jsVariableStatement = $this->prepareConfigVarForJs($configKey, $sugar_config[$configKey]);
+                    if (!array_search($jsVariableStatement, $config_js))
+                    {
+                        $config_js[] = $jsVariableStatement;
+                    }
+                }
+            }
         }
 
         return $config_js;
     }
 
+    /**
+     * Utility method to convert sugar_config values into a JS acceptable format.
+     *
+     * @param string $key       Config Variable Name
+     * @param string $value     Config Variable Value
+     * @return string
+     */
+    protected function prepareConfigVarForJs($key, $value)
+    {
+        $value = json_encode($value);
+        return "SUGAR.config.{$key} = {$value};";
+    }
 
     /**
      * getHelpText

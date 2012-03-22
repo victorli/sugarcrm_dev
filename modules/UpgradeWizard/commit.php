@@ -673,6 +673,7 @@ if( file_exists($styleJSFilePath) )
 SugarThemeRegistry::buildRegistry();
 SugarThemeRegistry::clearAllCaches();
 
+
 //Clean out the language files
 logThis("Rebuilding language cache");
 sugar_cache_reset_full();
@@ -687,3 +688,11 @@ $trackerManager->unsetMonitors();
 $_REQUEST['root_directory'] = getcwd();
 $_REQUEST['js_rebuild_concat'] = 'rebuild';
 require_once('jssource/minify.php');
+
+//The buld registry call above will reload the default theme for what was written to the config file during flav conversions
+//which we don't want to happen until after this request as we have already started rendering with a specific theme.
+$themeName = (string) $themeObject;
+if($themeName != $GLOBALS['sugar_config']['default_theme'])
+    SugarThemeRegistry::set($themeName);
+
+

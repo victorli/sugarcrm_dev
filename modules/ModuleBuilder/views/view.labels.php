@@ -96,10 +96,7 @@ class ViewLabels extends ViewModulefields
         }
 
        require_once 'modules/ModuleBuilder/parsers/views/GridLayoutMetaDataParser.php' ;
-        $variableMap = array ( MB_EDITVIEW => 'EditView' , MB_DETAILVIEW => 'DetailView' , MB_QUICKCREATE => 'QuickCreate' ) ;
-        if($editModule == 'KBDocuments'){
-        	$variableMap  = array();
-        }
+        $variableMap = $this->getVariableMap($editModule);
         foreach($variableMap as $key => $value){
         	$gridLayoutMetaDataParserTemp = new GridLayoutMetaDataParser ( $value, $editModule) ;
         	foreach ( $gridLayoutMetaDataParserTemp->getLayout() as $panel)
@@ -177,4 +174,33 @@ class ViewLabels extends ViewModulefields
  		$ajax->addSection('center', $GLOBALS['mod_strings']['LBL_SECTION_EDLABELS'], $html);
  		echo $ajax->getJavascript();
  	}
+    
+    // fixing bug #39749: Quick Create in Studio
+    function getVariableMap($module)
+    {
+        $variableMap = array(MB_EDITVIEW => 'EditView', 
+                             MB_DETAILVIEW => 'DetailView', 
+                             MB_QUICKCREATE => 'QuickCreate');
+        
+        $hideQuickCreateForModules = array('KBDocuments',
+                                           'ProjectTask',
+                                           'Campaigns',
+                                           'Quotes',
+                                           'ProductTemplates');
+        
+        if(in_array($module, $hideQuickCreateForModules))
+        {
+            if(isset($variableMap['quickcreate']))
+            {
+                unset($variableMap['quickcreate']);
+            }
+        }
+        
+        if($module == 'KBDocuments')
+        {
+            $variableMap  = array();
+        }
+        
+        return $variableMap;
+    }
 }

@@ -169,7 +169,9 @@ class CalendarController extends SugarController
      */
     protected function action_reschedule()
     {
-        $this->view = 'json';                
+        $this->view = 'json';
+        
+        $commit = true;                
         
         if (!$this->retrieveCurrentBean('Save')) {
             return;
@@ -188,13 +190,25 @@ class CalendarController extends SugarController
             $_REQUEST['datetime'] = $date . " " . $time;            
         }
         $_POST[$dateField] = $_REQUEST['datetime'];
-            
-        require_once('include/formbase.php');
-        $this->currentBean = populateFromPost("", $this->currentBean);                
-        $this->currentBean->save();        
-        $this->currentBean->retrieve($_REQUEST['record']);        
-            
-        $this->view_object_map['jsonData'] = CalendarUtils::get_sendback_array($this->currentBean);    
+        
+        if ($this->currentBean->module_dir == "Tasks" && !empty($this->currentBean->date_start)) {
+            if ($GLOBALS['timedate']->fromUser($_POST['date_due'])->ts < $GLOBALS['timedate']->fromUser($this->currentBean->date_start)->ts) {
+                $this->view_object_map['jsonData'] = array(
+                    'access' => 'no',
+                    'errorMessage' => $GLOBALS['mod_strings']['LBL_DATE_END_ERROR'],
+                );
+                $commit = false; 
+            }   
+        }
+        
+        if ($commit) {            
+            require_once('include/formbase.php');
+            $this->currentBean = populateFromPost("", $this->currentBean);                
+            $this->currentBean->save();        
+            $this->currentBean->retrieve($_REQUEST['record']);        
+                
+            $this->view_object_map['jsonData'] = CalendarUtils::get_sendback_array($this->currentBean);
+        }    
     }
     
     /**
@@ -273,6 +287,32 @@ class CalendarController extends SugarController
         }
         
         return true;
+    }
+    
+    protected function action_getActivities()
+    {
+        $this->view = 'json';
+        
+        if(!ACLController::checkAccess('Calendar', 'list', true)){
+            ACLController::displayNoAccess(true);
+        }
+    
+        require_once('modules/Calendar/Calendar.php');
+        $cal = new Calendar($_REQUEST['view']);
+        
+        if (in_array($cal->view, array('day', 'week', 'month'))){
+            $cal->add_activities($GLOBALS['current_user']);    
+       
+        } else if ($cal->view == 'shared') {
+            $cal->init_shared();
+            $sharedUser = new User();    
+            foreach ($cal->shared_ids as $member) {
+                $sharedUser->retrieve($member);
+                $cal->add_activities($sharedUser);
+            }
+        }
+        $cal->load_activities();
+        $this->view_object_map['jsonData'] = $cal->items;   
     }
 
 }

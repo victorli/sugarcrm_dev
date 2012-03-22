@@ -296,10 +296,10 @@ function buildInstall($path){
     }
     
     function populateFromPost(){
-        $this->description = $_REQUEST['description'];
-        $this->author = $_REQUEST['author'];
-        $this->key = $_REQUEST['key'];
-        $this->readme = $_REQUEST['readme'];
+        $this->description = trim($_REQUEST['description']);
+        $this->author = trim($_REQUEST['author']);
+        $this->key = trim($_REQUEST['key']);
+        $this->readme = trim($_REQUEST['readme']);
     }
     
     function rename($new_name){

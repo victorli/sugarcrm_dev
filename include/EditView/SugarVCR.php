@@ -141,7 +141,7 @@
 	 		}else{
 	 			$count = $offset;
 	 		}
-	 		$html_text .= "<td nowrap align='right' >".$list_link."&nbsp;&nbsp;&nbsp;&nbsp;<span class='pagination'>".$previous_link."&nbsp;&nbsp;(".$count.")&nbsp;&nbsp;".$next_link."</span>&nbsp;&nbsp;</td>";
+	 		$html_text .= "<td nowrap class='paginationWrapper' >".$list_link."&nbsp;&nbsp;&nbsp;&nbsp;<span class='pagination'>".$previous_link."&nbsp;&nbsp;(".$count.")&nbsp;&nbsp;".$next_link."</span>&nbsp;&nbsp;</td>";
 
 
 

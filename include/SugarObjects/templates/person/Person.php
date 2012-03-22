@@ -35,37 +35,49 @@
  ********************************************************************************/
 
 
-
 require_once('include/SugarObjects/templates/basic/Basic.php');
-
 
 class Person extends Basic
 {
     var $picture;
-    //Variable to control whether or not to invoke the getLocalFormatttedName method with title and salutation
+    /**
+     * @var bool controls whether or not to invoke the getLocalFormatttedName method with title and salutation
+     */
     var $createLocaleFormattedName = true;
     
-	function Person(){
+	public function Person()
+	{
 		parent::Basic();
 		$this->emailAddress = new SugarEmailAddress();
 	}
 
-	// need to override to have a name field created for this class
-	function retrieve($id = -1, $encode=true) {
-		$ret_val = parent::retrieve($id, $encode);
+	/**
+	 * need to override to have a name field created for this class
+	 *
+ 	 * @see parent::retrieve()
+ 	 */
+    public function retrieve($id = -1, $encode=true, $deleted=true) {
+		$ret_val = parent::retrieve($id, $encode, $deleted);
 		$this->_create_proper_name_field();
-		$this->emailAddress->handleLegacyRetrieve($this);
 		return $ret_val;
 	}
 
+	/**
+ 	 * Populate email address fields here instead of retrieve() so that they are properly available for logic hooks
+ 	 *
+ 	 * @see parent::fill_in_relationship_fields()
+ 	 */
+	public function fill_in_relationship_fields()
+	{
+	    parent::fill_in_relationship_fields();
+	    $this->emailAddress->handleLegacyRetrieve($this);
+	}
 
 	/**
-     * _create_proper_name_field
-     *
-	 * This function helps generate the name and full_name member field variables from the salutation, title, first_name and last_name fields.
+     * This function helps generate the name and full_name member field variables from the salutation, title, first_name and last_name fields.
      * It takes into account the locale format settings as well as ACL settings if supported.
 	 */
-	function _create_proper_name_field()
+	public function _create_proper_name_field()
 	{
 		global $locale, $app_list_strings;
 
@@ -109,7 +121,11 @@ class Person extends Basic
 	}
 	
 
-	function save($check_notify=false) {
+	/**
+ 	 * @see parent::save()
+ 	 */
+	public function save($check_notify=false) 
+	{
 		//If we are saving due to relationship changes, don't bother trying to update the emails
         if(!empty($GLOBALS['resavingRelatedBeans']))
         {
@@ -137,13 +153,20 @@ class Person extends Basic
 		return $this->id;
 	}
 
-	function get_summary_text() {
+	/**
+ 	 * @see parent::get_summary_text()
+ 	 */
+	public function get_summary_text() 
+	{
 		$this->_create_proper_name_field();
         return $this->name;
 	}
 
-	function get_list_view_data() {
-
+	/**
+ 	 * @see parent::get_list_view_data()
+ 	 */
+	public function get_list_view_data() 
+	{
 		global $system_config;
 		global $current_user;
 		$this->_create_proper_name_field();
@@ -184,5 +207,3 @@ class Person extends Basic
         }
     }
 }
-
-?>

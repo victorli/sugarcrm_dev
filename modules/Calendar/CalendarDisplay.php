@@ -95,6 +95,10 @@ class CalendarDisplay {
 
 		$ss->assign('dashlet',$cal->dashlet);
 		$ss->assign('grid_start_ts',intval($cal->grid_start_ts));
+		
+		$ss->assign('year', $cal->date_time->format('Y'));
+		$ss->assign('month', $cal->date_time->format('m'));
+		$ss->assign('day', $cal->date_time->format('d'));
 
 		$ss->assign('CALENDAR_FORMAT',$GLOBALS['timedate']->get_cal_date_format());
 		$ss->assign('CALENDAR_FDOW',$GLOBALS['current_user']->get_first_day_of_week());
@@ -165,10 +169,10 @@ class CalendarDisplay {
 				$repeat_tpl = "modules/Calendar/tpls/repeat.tpl";
 			$ss->assign("repeat",$repeat_tpl);
 
-			$repeat_intevals = array();
+			$repeat_intervals = array();
 			for($i = 1; $i <= 30; $i++)
-				$repeat_intevals[$i] = $i;
-			$ss->assign("repeat_intevals",$repeat_intevals);
+				$repeat_intervals[$i] = $i;
+			$ss->assign("repeat_intervals",$repeat_intervals);
 
 
 			$fdow = $GLOBALS['current_user']->get_first_day_of_week();
@@ -275,10 +279,7 @@ class CalendarDisplay {
 			if(is_null($style))
 				$style = SugarConfig::getInstance()->get('calendar.default_style','advanced');
 
-		$ss->assign('day',$_REQUEST['day']);
 		$ss->assign('week',$_REQUEST['week']);
-		$ss->assign('month',$_REQUEST['month']);
-		$ss->assign('year',$_REQUEST['year']);
 		$ss->assign('settings_style',$style);
 		$ss->assign('show_calls',$this->cal->show_calls);
 		$ss->assign('show_tasks',$this->cal->show_tasks);
@@ -469,7 +470,8 @@ class CalendarDisplay {
 	 */
 	public function display_title(){
 		global $mod_strings;
-		echo get_module_title("Calendar","<span class='pointer'>&raquo;</span>".$mod_strings['LBL_MODULE_TITLE'], false);
+		//Hack to make this 6.5 compatible until this module is converted to MVC
+        echo "<div class='moduleTitle'><h2>". $mod_strings['LBL_MODULE_TITLE'] ."</h2></div>"; 
 	}
 
 	/**

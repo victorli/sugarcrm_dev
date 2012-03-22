@@ -702,6 +702,27 @@ class SugarController{
 		}
 	}
 
+    /**
+     * Global method to delete an attachment
+     *
+     * If the bean does not have a deleteAttachment method it will return 'false' as a string
+     *
+     * @return void
+     */
+    protected function action_deleteattachment()
+    {
+        $this->view = 'edit';
+        $GLOBALS['view'] = $this->view;
+        ob_clean();
+        if(method_exists($this->bean, 'deleteAttachment')) {
+            echo $this->bean->deleteAttachment($_REQUEST['isDuplicate']) ? 'true' : 'false';
+        } else {
+            echo 'false';
+        }
+
+        sugar_cleanup(true);
+    }
+
 	/**
 	 * getActionFilename
 	 */

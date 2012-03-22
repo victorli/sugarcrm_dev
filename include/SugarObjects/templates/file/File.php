@@ -97,12 +97,48 @@ class File extends Basic
 	/**
 	 * @see SugarBean::retrieve()
 	 */
-	public function retrieve($id = -1, $encode=true)
+	public function retrieve($id = -1, $encode=true, $deleted=true)
 	{
-		$ret_val = parent::retrieve($id, $encode);
+		$ret_val = parent::retrieve($id, $encode, $deleted);
 
 		$this->name = $this->document_name;
 
 		return $ret_val;
 	}
+
+    /**
+     * Method to delete an attachment
+     *
+     * @param string $isduplicate
+     * @return bool
+     */
+    public function deleteAttachment($isduplicate = "false")
+    {
+        if ($this->ACLAccess('edit')) {
+            if ($isduplicate == "true") {
+                return true;
+            }
+            $removeFile = "upload://{$this->id}";
+        }
+        if (file_exists($removeFile)) {
+            if (!unlink($removeFile)) {
+                $GLOBALS['log']->error("*** Could not unlink() file: [ {$removeFile} ]");
+            } else {
+                $this->uploadfile = '';$this->uploadfile = '';
+                $this->filename = '';
+                $this->file_mime_type = '';
+                $this->file_ext = '';
+                $this->save();
+                return true;
+            }
+        } else {
+            $this->uploadfile = '';
+            $this->filename = '';
+            $this->file_mime_type = '';
+            $this->file_ext = '';
+            $this->save();
+            return true;
+        }
+        return false;
+    }
 }

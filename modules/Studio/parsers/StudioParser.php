@@ -338,7 +338,7 @@ EOQ;
 				create_function(
 	                                                     '$matches',
 	                                                     '$name = str_replace(array("[", "]"), "", $matches[1]);
-														  if((strpos($name, "LBL_") == 0) && (strpos($name, "_basic") == 0)) {
+														  if((strpos($name, "LBL_") === 0) && (strpos($name, "_basic") === 0)) {
 	                                                          return str_replace($name, $name . "_basic", $matches[0]);
 	                                                      }
 	                                                      return  $matches[0];'

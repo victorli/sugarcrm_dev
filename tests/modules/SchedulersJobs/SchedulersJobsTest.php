@@ -95,10 +95,11 @@ class SchedulersJobsTest extends Sugar_PHPUnit_Framework_TestCase
 
         $job = $this->createJob(array("name" => "Test Success 2"));
         $job->succeedJob("very good!");
+        $job->db->commit();
         $job->retrieve($job->id);
         $this->assertEquals(SchedulersJob::JOB_SUCCESS, $job->resolution, "Wrong resolution");
         $this->assertEquals(SchedulersJob::JOB_STATUS_DONE, $job->status, "Wrong status");
-        $this->assertEquals("very good!\n", $job->message);
+        $this->assertContains("very good!", $job->message);
         $this->assertEmpty($job->failure_count, "Wrong failure count");
     }
 
@@ -115,10 +116,11 @@ class SchedulersJobsTest extends Sugar_PHPUnit_Framework_TestCase
 
         $job = $this->createJob(array("name" => "Test Fail 2"));
         $job->failJob("very bad!");
+        $job->db->commit();
         $job->retrieve($job->id);
         $this->assertEquals(SchedulersJob::JOB_FAILURE, $job->resolution, "Wrong resolution");
         $this->assertEquals(SchedulersJob::JOB_STATUS_DONE, $job->status, "Wrong status");
-        $this->assertEquals("very bad!\n", $job->message);
+        $this->assertContains("very bad!", $job->message);
     }
 
     public function testJobPartial()
@@ -136,10 +138,11 @@ class SchedulersJobsTest extends Sugar_PHPUnit_Framework_TestCase
 
         $job = $this->createJob(array("name" => "Test Later 2", "job_delay" => 42));
         $job->postponeJob("who knows?");
+        $job->db->commit();
         $job->retrieve($job->id);
         $this->assertEquals(SchedulersJob::JOB_PARTIAL, $job->resolution, "Wrong resolution");
         $this->assertEquals(SchedulersJob::JOB_STATUS_QUEUED, $job->status, "Wrong status");
-        $this->assertEquals("who knows?\n", $job->message);
+        $this->assertContains("who knows?", $job->message);
         // then succeed
         $job->succeedJob();
         $job->retrieve($job->id);

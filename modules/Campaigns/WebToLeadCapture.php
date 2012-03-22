@@ -63,8 +63,18 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
 		$camp_query  = "select name,id from campaigns where id='$campaign_id'";
 		$camp_query .= " and deleted=0";
         $camp_result=$campaign->db->query($camp_query);
-        $camp_data=$campaign->db->fetchByAssoc($camp_result);
-		
+        $camp_data = $campaign->db->fetchByAssoc($camp_result);
+        // Bug 41292 - have to select marketing_id for new lead
+        $db = DBManagerFactory::getInstance();
+        $marketing = new EmailMarketing();
+        $marketing_query = $marketing->create_new_list_query(
+                'date_start desc, date_modified desc',
+                'campaign_id = "' . $db->quote($campaign_id) . '" and status = "active" and date_start < ' . $db->convert('', 'today'),
+                array('id')
+        );
+        $marketing_result = $db->limitQuery($marketing_query, 0, 1, true);
+        $marketing_data = $db->fetchByAssoc($marketing_result);
+        // .Bug 41292
 		if (isset($_REQUEST['assigned_user_id']) && !empty($_REQUEST['assigned_user_id'])) {
 			$current_user = new User();
 			$current_user->retrieve($_REQUEST['assigned_user_id']);
@@ -84,6 +94,11 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
             }
             $GLOBALS['check_notify'] = true;
 
+            //bug: 47574 - make sure, that webtolead_email1 field has same required attribute as email1 field
+            if(isset($lead->required_fields['email1'])){
+                $lead->required_fields['webtolead_email1'] = $lead->required_fields['email1'];
+            }
+            
             //bug: 42398 - have to unset the id from the required_fields since it is not populated in the $_POST
             unset($lead->required_fields['id']);
             unset($lead->required_fields['team_name']);
@@ -102,16 +117,34 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
 	            $camplog->target_type = $lead->module_dir;
 	            $campaign_log->activity_date=$timedate->now();
 	            $camplog->target_id    = $lead->id;
+                if(isset($marketing_data['id']))
+                {
+                    $camplog->marketing_id = $marketing_data['id'];
+                }
 	            $camplog->save();
 
 		        //link campaignlog and lead
 
-		        if(isset($_POST['webtolead_email1']) && $_POST['webtolead_email1'] != null){
+		        if (isset($_POST['email1']) && $_POST['email1'] != null)
+                {
+                    $lead->email1 = $_POST['email1'];
+		        } 
+                //in case there are old forms used webtolead_email1
+                elseif (isset($_POST['webtolead_email1']) && $_POST['webtolead_email1'] != null)
+                {
                     $lead->email1 = $_POST['webtolead_email1'];
-		        }
-		        if(isset($_POST['webtolead_email2']) && $_POST['webtolead_email2'] != null){
+                }
+                
+		        if (isset($_POST['email2']) && $_POST['email2'] != null)
+                {
+                    $lead->email2 = $_POST['email2'];
+		        } 
+                //in case there are old forms used webtolead_email2
+                elseif (isset($_POST['webtolead_email2']) && $_POST['webtolead_email2'] != null)
+                {
                     $lead->email2 = $_POST['webtolead_email2'];
-		        }
+                }
+                
 		        $lead->load_relationship('campaigns');
 		        $lead->campaigns->add($camplog->id);
                 if(!empty($GLOBALS['check_notify'])) {

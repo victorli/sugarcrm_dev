@@ -47,6 +47,41 @@ require_once('include/utils/zip_utils.php');
 require_once('include/upload_file.php');
 
 
+////////////////
+////  GLOBAL utility
+/**
+ * Calls a custom function (if it exists) based on the first parameter,
+ *   and returns result of function call, or 'undefined' if the function doesn't exist
+ * @param string function name to call in custom install hooks
+ * @return mixed function call result, or 'undefined'
+ */
+function installerHook($function_name, $options = array()){
+    if(!isset($GLOBALS['customInstallHooksExist'])){
+        if(file_exists('custom/install/install_hooks.php')){
+            installLog("installerHook: Found custom/install/install_hooks.php");
+            require_once('custom/install/install_hooks.php');
+            $GLOBALS['customInstallHooksExist'] = true;
+        }   
+        else{
+            installLog("installerHook: Could not find custom/install/install_hooks.php");
+            $GLOBALS['customInstallHooksExist'] = false;
+        }   
+    }
+
+    if($GLOBALS['customInstallHooksExist'] === false){
+        return 'undefined';
+    }   
+    else{   
+        if(function_exists($function_name)){
+            installLog("installerHook: function {$function_name} found, calling and returning the return value");
+            return $function_name($options);
+        }   
+        else{
+            installLog("installerHook: function {$function_name} not found in custom install hooks file");
+            return 'undefined';
+        }
+    }   
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 ////    FROM welcome.php
@@ -422,7 +457,8 @@ function writeSugarConfig($sugar_config) {
         '$sugar_config = ' .
         var_export($sugar_config, true) .
         ";\n?>\n";
-    if(is_writable('config.php') && write_array_to_file( "sugar_config", $sugar_config, "config.php")) {
+    if(is_writable('config.php')) {
+        write_array_to_file( "sugar_config", $sugar_config, "config.php");
     }
 }
 
@@ -752,18 +788,18 @@ function handleSugarConfig() {
     if(!empty($_SESSION['fts_type']))
         $sugar_config['full_text_engine']               = array($_SESSION['fts_type'] => array('host'=> $_SESSION['fts_host'], 'port' => $_SESSION['fts_port']));
 
-	/*nsingh(bug 22402): Consolidate logger settings under $config['logger'] as liked by the new logger! If log4pphp exists,
-		these settings will be overwritten by those in log4php.properties when the user access admin->system settings.*/
-    $sugar_config['logger']	=
-    	array ('level'=>$setup_site_log_level,
-    	 'file' => array(
-			'ext' => '.log',
-			'name' => 'sugarcrm',
-			'dateFormat' => '%c',
-			'maxSize' => '10MB',
-			'maxLogs' => 10,
-			'suffix' => '%m_%Y'),
-  	);
+    /*nsingh(bug 22402): Consolidate logger settings under $config['logger'] as liked by the new logger! If log4pphp exists,
+        these settings will be overwritten by those in log4php.properties when the user access admin->system settings.*/
+    $sugar_config['logger'] =
+        array ('level'=>$setup_site_log_level,
+         'file' => array(
+            'ext' => '.log',
+            'name' => 'sugarcrm',
+            'dateFormat' => '%c',
+            'maxSize' => '10MB',
+            'maxLogs' => 10,
+            'suffix' => '%m_%Y'),
+    );
     $sugar_config['session_dir']                    = $setup_site_session_path;
     $sugar_config['site_url']                       = $setup_site_url;
     $sugar_config['sugar_version']                  = $setup_sugar_version;
@@ -794,12 +830,12 @@ function handleSugarConfig() {
         }
     }
     if(file_exists('install/lang.config.php')){
-    	include('install/lang.config.php');
-    	if(!empty($config['languages'])){
-    		foreach($config['languages'] as $lang=>$label){
-    			$sugar_config['languages'][$lang] = $label;
-    		}
-    	}
+        include('install/lang.config.php');
+        if(!empty($config['languages'])){
+            foreach($config['languages'] as $lang=>$label){
+                $sugar_config['languages'][$lang] = $label;
+            }
+        }
     }
 
     ksort($sugar_config);
@@ -873,17 +909,17 @@ $cache_headers = <<<EOQ
         ExpiresByType image/png "access plus 1 month"
 </IfModule>
 EOQ;
-	if(file_exists($htaccess_file)){
-	 	$fp = fopen($htaccess_file, 'r');
-	 	$skip = false;
-	 	while($line = fgets($fp)){
+    if(file_exists($htaccess_file)){
+        $fp = fopen($htaccess_file, 'r');
+        $skip = false;
+        while($line = fgets($fp)){
 
-	 		if(preg_match("/\s*#\s*BEGIN\s*SUGARCRM\s*RESTRICTIONS/i", $line))$skip = true;
-	 		if(!$skip)$contents .= $line;
-	 		if(preg_match("/\s*#\s*END\s*SUGARCRM\s*RESTRICTIONS/i", $line))$skip = false;
-	 	}
-	}
-	$status =  file_put_contents($htaccess_file, $contents . $restrict_str . $cache_headers);
+            if(preg_match("/\s*#\s*BEGIN\s*SUGARCRM\s*RESTRICTIONS/i", $line))$skip = true;
+            if(!$skip)$contents .= $line;
+            if(preg_match("/\s*#\s*END\s*SUGARCRM\s*RESTRICTIONS/i", $line))$skip = false;
+        }
+    }
+    $status =  file_put_contents($htaccess_file, $contents . $restrict_str . $cache_headers);
     if( !$status ) {
         echo "<p>{$mod_strings['ERR_PERFORM_HTACCESS_1']}<span class=stop>{$htaccess_file}</span> {$mod_strings['ERR_PERFORM_HTACCESS_2']}</p>\n";
         echo "<p>{$mod_strings['ERR_PERFORM_HTACCESS_3']}</p>\n";
@@ -901,7 +937,7 @@ function handleWebConfig()
         return;
     }
 
-	global $setup_site_log_dir;
+    global $setup_site_log_dir;
     global $setup_site_log_file;
     global $sugar_config;
 
@@ -950,52 +986,52 @@ function handleWebConfig()
     $xmldoc->setIndentString(' ');
     $xmldoc->startDocument('1.0','UTF-8');
     $xmldoc->startElement('configuration');
-	    $xmldoc->startElement('system.webServer');
-		    $xmldoc->startElement('rewrite');
-			    $xmldoc->startElement('rules');
-			    for ($i = 0; $i < count($config_array); $i++) {
-			        $xmldoc->startElement('rule');
-			        	$xmldoc->writeAttribute('name', "redirect$i");
-			        	$xmldoc->writeAttribute('stopProcessing', 'true');
-			        	$xmldoc->startElement('match');
-			        		$xmldoc->writeAttribute('url', $config_array[$i]['1']);
-			        	$xmldoc->endElement();
-			        	$xmldoc->startElement('action');
-			        		$xmldoc->writeAttribute('type', 'Redirect');
-			       			$xmldoc->writeAttribute('url', $config_array[$i]['2']);
-			        		$xmldoc->writeAttribute('redirectType', 'Found');
-			        	$xmldoc->endElement();
-			        $xmldoc->endElement();
-			    }
-			    $xmldoc->endElement();
-			    $xmldoc->startElement('outboundRules');
-			    	$xmldoc->startElement('rule');
-			    		$xmldoc->writeAttribute('name', 'Remove ETag');
-			    		$xmldoc->startElement('match');
-			    			$xmldoc->writeAttribute('serverVariable', 'RESPONSE_ETag');
-							$xmldoc->writeAttribute('pattern', '.+');
-						$xmldoc->endElement();
-						$xmldoc->startElement('action');
-							$xmldoc->writeAttribute('type', 'Rewrite');
-							$xmldoc->writeAttribute('value', '');
-						$xmldoc->endElement();
-			    	$xmldoc->endElement();
-			    $xmldoc->endElement();
-		    $xmldoc->endElement();
-		    $xmldoc->startElement('caching');
-		    	$xmldoc->startElement('profiles');
-		    		$xmldoc->startElement('remove');
-		    			$xmldoc->writeAttribute('extension', ".php");
-		    		$xmldoc->endElement();
-		    	$xmldoc->endElement();
-		    $xmldoc->endElement();
-		    $xmldoc->startElement('staticContent');
-		    	$xmldoc->startElement("clientCache");
-		    		$xmldoc->writeAttribute('cacheControlMode', 'UseMaxAge');
-		    		$xmldoc->writeAttribute('cacheControlMaxAge', '30.00:00:00');
-		    	$xmldoc->endElement();
-		    $xmldoc->endElement();
-	    $xmldoc->endElement();
+        $xmldoc->startElement('system.webServer');
+            $xmldoc->startElement('rewrite');
+                $xmldoc->startElement('rules');
+                for ($i = 0; $i < count($config_array); $i++) {
+                    $xmldoc->startElement('rule');
+                        $xmldoc->writeAttribute('name', "redirect$i");
+                        $xmldoc->writeAttribute('stopProcessing', 'true');
+                        $xmldoc->startElement('match');
+                            $xmldoc->writeAttribute('url', $config_array[$i]['1']);
+                        $xmldoc->endElement();
+                        $xmldoc->startElement('action');
+                            $xmldoc->writeAttribute('type', 'Redirect');
+                            $xmldoc->writeAttribute('url', $config_array[$i]['2']);
+                            $xmldoc->writeAttribute('redirectType', 'Found');
+                        $xmldoc->endElement();
+                    $xmldoc->endElement();
+                }
+                $xmldoc->endElement();
+                $xmldoc->startElement('outboundRules');
+                    $xmldoc->startElement('rule');
+                        $xmldoc->writeAttribute('name', 'Remove ETag');
+                        $xmldoc->startElement('match');
+                            $xmldoc->writeAttribute('serverVariable', 'RESPONSE_ETag');
+                            $xmldoc->writeAttribute('pattern', '.+');
+                        $xmldoc->endElement();
+                        $xmldoc->startElement('action');
+                            $xmldoc->writeAttribute('type', 'Rewrite');
+                            $xmldoc->writeAttribute('value', '');
+                        $xmldoc->endElement();
+                    $xmldoc->endElement();
+                $xmldoc->endElement();
+            $xmldoc->endElement();
+            $xmldoc->startElement('caching');
+                $xmldoc->startElement('profiles');
+                    $xmldoc->startElement('remove');
+                        $xmldoc->writeAttribute('extension', ".php");
+                    $xmldoc->endElement();
+                $xmldoc->endElement();
+            $xmldoc->endElement();
+            $xmldoc->startElement('staticContent');
+                $xmldoc->startElement("clientCache");
+                    $xmldoc->writeAttribute('cacheControlMode', 'UseMaxAge');
+                    $xmldoc->writeAttribute('cacheControlMaxAge', '30.00:00:00');
+                $xmldoc->endElement();
+            $xmldoc->endElement();
+        $xmldoc->endElement();
     $xmldoc->endElement();
     $xmldoc->endDocument();
     $xmldoc->flush();
@@ -1047,7 +1083,7 @@ function create_default_users(){
     global $create_default_user;
     global $sugar_config;
 
-	require_once('install/UserDemoData.php');
+    require_once('install/UserDemoData.php');
 
     //Create default admin user
     $user = new User();
@@ -1058,7 +1094,7 @@ function create_default_users(){
     $user->title = "Administrator";
     $user->status = 'Active';
     $user->is_admin = true;
-	$user->employee_status = 'Active';
+    $user->employee_status = 'Active';
     $user->user_hash = User::getPasswordHash($setup_site_admin_password);
     $user->email = '';
     $user->picture = UserDemoData::_copy_user_image($user->id);
@@ -1346,7 +1382,7 @@ function validate_siteConfig($type){
        }
 
        if($_SESSION['setup_site_admin_user_name'] == '') {
-       	  $errors[] = "<span class='error'>".$mod_strings['ERR_ADMIN_USER_NAME_BLANK']."</span>";
+          $errors[] = "<span class='error'>".$mod_strings['ERR_ADMIN_USER_NAME_BLANK']."</span>";
        }
 
        if($_SESSION['setup_site_admin_password'] == ''){
@@ -1412,12 +1448,12 @@ function pullSilentInstallVarsIntoSession() {
         'setup_site_url'                => isset($sugar_config['site_url']) ? $sugar_config['site_url'] : '',
         'setup_db_host_name'            => isset($sugar_config['dbconfig']['db_host_name']) ? $sugar_config['dbconfig']['db_host_name'] : '',
         'setup_db_host_instance'        => isset($sugar_config['dbconfig']['db_host_instance']) ? $sugar_config['dbconfig']['db_host_instance'] : '',
-    	'setup_db_sugarsales_user'      => isset($sugar_config['dbconfig']['db_user_name']) ? $sugar_config['dbconfig']['db_user_name'] : '',
+        'setup_db_sugarsales_user'      => isset($sugar_config['dbconfig']['db_user_name']) ? $sugar_config['dbconfig']['db_user_name'] : '',
         'setup_db_sugarsales_password'  => isset($sugar_config['dbconfig']['db_password']) ? $sugar_config['dbconfig']['db_password'] : '',
         'setup_db_database_name'        => isset($sugar_config['dbconfig']['db_name']) ? $sugar_config['dbconfig']['db_name'] : '',
         'setup_db_type'                 => isset($sugar_config['dbconfig']['db_type']) ? $sugar_config['dbconfig']['db_type'] : '',
         'setup_db_port_num'             => isset($sugar_config['dbconfig']['db_port']) ? $sugar_config['dbconfig']['db_port'] : '',
-        'setup_db_options'			    => !empty($sugar_config['dbconfigoptions']) ? $sugar_config['dbconfigoptions'] : array(),
+        'setup_db_options'              => !empty($sugar_config['dbconfigoptions']) ? $sugar_config['dbconfigoptions'] : array(),
     );
     // third array of values derived from above values
     $derived = array (
@@ -1426,7 +1462,7 @@ function pullSilentInstallVarsIntoSession() {
     );
 
     $needles = array('setup_db_create_database','setup_db_create_sugarsales_user','setup_license_key_users',
-    				 'setup_license_key_expire_date','setup_license_key', 'setup_num_lic_oc',
+                     'setup_license_key_expire_date','setup_license_key', 'setup_num_lic_oc',
                      'default_currency_iso4217', 'default_currency_name', 'default_currency_significant_digits',
                      'default_currency_symbol',  'default_date_format', 'default_time_format', 'default_decimal_seperator',
                      'default_export_charset', 'default_language', 'default_locale_name_format', 'default_number_grouping_seperator',
@@ -1436,7 +1472,7 @@ function pullSilentInstallVarsIntoSession() {
 
     // bug 16860 tyoung -  trim leading and trailing whitespace from license_key
     if (isset($all_config_vars['setup_license_key'])) {
-    	$all_config_vars['setup_license_key'] = trim($all_config_vars['setup_license_key']);
+        $all_config_vars['setup_license_key'] = trim($all_config_vars['setup_license_key']);
     }
 
     foreach( $all_config_vars as $key => $value ){
@@ -1549,7 +1585,7 @@ function getLangPacks($display_commit = true, $types = array('langpack'), $notic
     if(empty($notice_text)){
         $notice_text =  $mod_strings['LBL_LANG_PACK_READY'];
     }
-	$ret = "<tr><td colspan=7 align=left>{$notice_text}</td></tr>";
+    $ret = "<tr><td colspan=7 align=left>{$notice_text}</td></tr>";
     //$ret .="<table width='100%' cellpadding='0' cellspacing='0' border='0'>";
     $ret .= "<tr>
                 <td width='20%' ><b>{$mod_strings['LBL_ML_NAME']}</b></td>
@@ -1565,12 +1601,12 @@ function getLangPacks($display_commit = true, $types = array('langpack'), $notic
 
     // duh, new installs won't have the upgrade folders
    if(!is_dir($base_upgrade_dir)) {
-	    mkdir_recursive( $base_upgrade_dir);
-	}
-	$subdirs = array('full', 'langpack', 'module', 'patch', 'theme', 'temp');
-	foreach( $subdirs as $subdir ){
-		mkdir_recursive( "$base_upgrade_dir/$subdir" );
-	}
+        mkdir_recursive( $base_upgrade_dir);
+    }
+    $subdirs = array('full', 'langpack', 'module', 'patch', 'theme', 'temp');
+    foreach( $subdirs as $subdir ){
+        mkdir_recursive( "$base_upgrade_dir/$subdir" );
+    }
 
     $files = findAllFiles($base_upgrade_dir, $files);
     $hidden_input = '';
@@ -1836,9 +1872,9 @@ function getHostPortFromString($hostname=''){
 
 function getLicenseContents($filename)
 {
-	$license_file = '';
+    $license_file = '';
     if(file_exists($filename) && filesize($filename) >0){
-	    $license_file = trim(file_get_contents($filename));
+        $license_file = trim(file_get_contents($filename));
     }
     return $license_file;
 }
@@ -2005,11 +2041,11 @@ return $password;
 }
 
 function addDefaultRoles($defaultRoles = array()) {
-	global $db;
+    global $db;
 
 
-	foreach($defaultRoles as $roleName=>$role){
-	    $ACLField = new ACLField();
+    foreach($defaultRoles as $roleName=>$role){
+        $ACLField = new ACLField();
         $role1= new ACLRole();
         $role1->name = $roleName;
         $role1->description = $roleName." Role";
@@ -2030,7 +2066,7 @@ function addDefaultRoles($defaultRoles = array()) {
                 }
             }
         }
-	}
+    }
 }
 
 /**
@@ -2049,7 +2085,7 @@ function enableSugarFeeds()
 
 function create_writable_dir($dirname)
 {
-    if ((is_dir($dirname)) || @sugar_mkdir($dirname,0555)) {
+    if ((is_dir($dirname)) || @sugar_mkdir($dirname,0755)) {
         $ok = make_writable($dirname);
     }
     if(empty($ok)) {

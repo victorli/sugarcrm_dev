@@ -280,10 +280,12 @@ class Task extends SugarBean {
 			$dbtime = $timedate->to_db($task_fields['DATE_START']);
 		}
 
-        $task_fields['TIME_DUE'] = $timedate->to_display_time($dbtime);
-        $task_fields['DATE_DUE'] = $timedate->to_display_date($dbtime);
-
-        $this->formatStartAndDueDates($task_fields, $dbtime, $override_date_for_subpanel);
+        if(!empty($dbtime))
+        {
+            $task_fields['TIME_DUE'] = $timedate->to_display_time($dbtime);
+            $task_fields['DATE_DUE'] = $timedate->to_display_date($dbtime);
+            $this->formatStartAndDueDates($task_fields, $dbtime, $override_date_for_subpanel);
+        }
 
 		if (!empty($this->priority))
 			$task_fields['PRIORITY'] = $app_list_strings['task_priority_dom'][$this->priority];
@@ -294,30 +296,6 @@ class Task extends SugarBean {
 			$setCompleteUrl = "<a id='{$this->id}' onclick='SUGAR.util.closeActivityPanel.show(\"{$this->module_dir}\",\"{$this->id}\",\"Completed\",\"listview\",\"1\");'>";
 		    $task_fields['SET_COMPLETE'] = $setCompleteUrl . SugarThemeRegistry::current()->getImage("close_inline","title=".translate('LBL_LIST_CLOSE','Tasks')." border='0'",null,null,'.gif',translate('LBL_LIST_CLOSE','Tasks'))."</a>";
 		}
-
-
-        if(!empty($task_fields['DATE_DUE']))
-        {
-            $date_due = $task_fields['DATE_DUE'];
-            $dd = $timedate->to_db_date_time($this->date_due, $this->time_due);
-
-            if ($dd < $today){
-                $task_fields['DATE_DUE']= "<font class='overdueTask'>".$date_due."</font>";
-                if($override_date_for_subpanel){
-                    $task_fields['DATE_START']= "<font class='overdueTask'>".$date_due."</font>";
-                }
-            }else if( $dd == $today ){
-                $task_fields['DATE_DUE'] = "<font class='todaysTask'>".$date_due."</font>";
-                if($override_date_for_subpanel){
-                    $task_fields['DATE_START'] = "<font class='todaysTask'>".$date_due."</font>";
-                }
-            }else{
-                $task_fields['DATE_DUE'] = "<font class='futureTask'>".$date_due."</font>";
-                if($override_date_for_subpanel){
-                    $task_fields['DATE_START'] = "<font class='futureTask'>".$date_due."</font>";
-                }
-            }
-        }
 
 		//make sure we grab the localized version of the contact name, if a contact is provided
 		if (!empty($this->contact_id)) {

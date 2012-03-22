@@ -1137,19 +1137,22 @@ $mod_strings = array (
     'LBL_FTS_TYPE' => 'System Type',
     'LBL_FTS_HOST' => 'Host',
     'LBL_FTS_PORT' => 'Port',
-    'LBL_FTS_TYPE_HELP' => 'Type of engine for full text search',
-    'LBL_FTS_HOST_HELP' => 'The hostname where the full text search engine resides.',
-    'LBL_FTS_PORT_HELP' => 'The port number where the full text search engine resides. ',
+    'LBL_FTS_TYPE_HELP' => 'Select the engine to use for full text searching. The system detects the engines that are supported and displays them within this list. Sugar includes built-in support for the elasticsearch engine.',
+    'LBL_FTS_HOST_HELP' => 'Enter the name of the host where the full text search engine resides.',
+    'LBL_FTS_PORT_HELP' => 'Enter the number of the port where the full text search engine resides.',
 
+    'LBL_CONNECT_STATUS' => 'Connection Status',
     'LBL_FTS_SETTINGS_TITLE' => 'Full Text Search Settings',
-    'LBL_FTS_TEST' => 'Test',
+    'LBL_FTS_TEST' => 'Connect',
     'LBL_SAVE_SCHED_BUTTON' => 'Schedule Full System Index',
-    'LBL_SAVE_SCHED_WARNING' => 'Are you sure sure?',
-    'LBL_FTS_SCHED_ENABLED' => 'A Full System Index operation has been scheduled, to see additional details please visit the <a href="index.php?module=Schedulers&action=DetailView&record={0}">schedulers</a> page',
+    'LBL_SAVE_SCHED_WARNING' => 'Are you sure you would like to perform a full system index at this time?',
+    'LBL_FTS_SCHED_ENABLED' => 'See <a href="index.php?module=Schedulers&action=DetailView&record={0}">schedulers</a>.',
     'LBL_FTS_NO_MODULES' => 'Select at least one module to search.',
     'LBL_FTS_ADVANCED_LINK' => 'Enable Modules',
     'LBL_FTS_ADVANCED_LINK_HELP' => 'Select the module(s) that users will be able to search against using the Full Text Search.',
-    'LBL_FTS_CONN_SUCCESS' => 'The connection was successfully set up and we are recommend performing a full system index. Please click on the Schedule full system index button when you are ready.',
-	'LBL_FTS_CONN_SUCCESS_SHORT' => 'A Full System Index operation has been scheduled.'
+    'LBL_FTS_CONN_SUCCESS' => 'The connection was successfully made. We recommend scheduling a full system index next.',
+	'LBL_FTS_CONN_SUCCESS_SHORT' => 'A full system index operation has been scheduled to run within the next several minutes.',
+    'LBL_FTS_CONN_FAILURE_SHORT' => 'Unable to schedule an index operation.',
+    'LBL_FTS_PAGE_DESC' => 'Select the search engine that will be used for full text searching on the modules selected above. If not search engine is selected, full text searching will not be enabled. After selecting and connecting to the search engine, perform a full system index to begin using the feature on the data in the system. A scheduler will be created to perform the index on a regular basis.'
     );
 

@@ -551,7 +551,7 @@ class Email extends SugarBean {
 		$this->description = $this->decodeDuringSend($this->description);
 
 		/* from account */
-		$replyToAddress = $current_user->emailAddress->getReplyToAddress($current_user);
+		$replyToAddress = $current_user->emailAddress->getReplyToAddress($current_user, true);
 		$replyToName = "";
 		if(empty($request['fromAccount'])) {
 			$defaults = $current_user->getPreferredEmail();
@@ -583,7 +583,7 @@ class Email extends SugarBean {
 			{
 				if (empty($replyToAddress))
 				{
-					$replyToAddress = $current_user->emailAddress->getReplyToAddress($current_user);
+					$replyToAddress = $current_user->emailAddress->getReplyToAddress($current_user, true);
 				} // if
 				if (empty($replyToName))
 				{
@@ -926,12 +926,13 @@ class Email extends SugarBean {
 	} // end email2send
 
 	/**
-	 * Generates a comma sperated name and addresses to be used in compose email screen for contacts or leads
-	 * from listview
+	 * Generates a config-specified separated name and addresses to be used in compose email screen for
+	 * contacts or leads from listview
+     * By default, use comma, but allow for non-standard delimeters as specified in email_address_separator
 	 *
 	 * @param $module string module name
 	 * @param $idsArray array of record ids to get the email address for
-	 * @return string comma delimited list of email addresses
+	 * @return string (config-specified) delimited list of email addresses
 	 */
 	public function getNamePlusEmailAddressesForCompose($module, $idsArray)
 	{
@@ -980,7 +981,24 @@ class Email extends SugarBean {
 			}
 		}
 
-		return join(",", array_values($returndata));
+        // broken out of method to facilitate unit testing
+        return $this->_arrayToDelimitedString($returndata);
+    }
+
+    /**
+     * @param Array $arr - list of strings
+     * @return string the list of strings delimited by email_address_separator
+     */
+    function _arrayToDelimitedString($arr)
+    {
+        // bug 51804: outlook does not respect the correct email address separator (',') , so let
+        // clients override the default.
+        $separator = (isset($GLOBALS['sugar_config']['email_address_separator']) &&
+                        !empty($GLOBALS['sugar_config']['email_address_separator'])) ?
+                     $GLOBALS['sugar_config']['email_address_separator'] :
+                     ',';
+
+		return join($separator, array_values($arr));
     }
 
 	/**
@@ -1010,7 +1028,12 @@ class Email extends SugarBean {
 			$GLOBALS['log']->debug('-------------------------------> Email called save()');
 
 			// handle legacy concatenation of date and time fields
-			if(empty($this->date_sent)) $this->date_sent = $this->date_start." ".$this->time_start;
+			//Bug 39503 - SugarBean is not setting date_sent when seconds missing
+ 			if(empty($this->date_sent)) {
+				global $timedate;
+				$date_sent_obj = $timedate->fromString($this->date_start." ".$this->time_start);
+				$this->date_sent = $date_sent_obj->asDb();
+			}
 
 			parent::save($check_notify);
 

@@ -129,5 +129,27 @@ abstract class AbstractMetaDataParser
         return $newAry;
 	}
 
+    /**
+     * Used to determine if a field property is true or false given that it could be
+     * the boolean value or a string value such use 'false' or '0'
+     * @static
+     * @param $val
+     * @return bool
+     */
+    protected static function isTrue($val)
+    {
+        if (is_string($val))
+        {
+            $str = strtolower($val);
+            return ($str != '0' && $str != 'false' && $str != "");
+        }
+        //For non-string types, juse use PHP's normal boolean conversion
+        else{
+            return ($val == true);
+        }
+
+        return true;
+    }
+
 }
 ?>

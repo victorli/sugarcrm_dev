@@ -74,7 +74,7 @@ $GLOBALS['log']->info("Contact opportunity relationship");
 
 $json = getJSONobj();
 require_once('include/QuickSearchDefaults.php');
-$qsd = new QuickSearchDefaults();
+$qsd = QuickSearchDefaults::getQuickSearchDefaults();
 $sqs_objects = array('opportunity_name' => $qsd->getQSParent());
 $sqs_objects['opportunity_name']['populate_list'] = array('opportunity_name', 'opportunity_id');
 $quicksearch_js = '<script type="text/javascript" language="javascript">sqs_objects = ' . $json->encode($sqs_objects) . '</script>';

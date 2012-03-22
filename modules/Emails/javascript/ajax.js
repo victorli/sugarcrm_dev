@@ -398,6 +398,7 @@ var AjaxObject = {
 		document.getElementById('email_attachment').value = '';
 		
 		var ret = YAHOO.lang.JSON.parse(o.responseText);
+		ret.name = escape(ret.name);
 		var idx = SUGAR.email2.composeLayout.currentInstanceId;
 		var overall = document.getElementById('addedFiles' + idx);
 		var index = overall.childNodes.length;

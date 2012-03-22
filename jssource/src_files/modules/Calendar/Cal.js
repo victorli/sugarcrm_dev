@@ -282,7 +282,7 @@
 		var elContent = document.createElement("div");
 			elContent.setAttribute("class","content");
 			if(params.content_style != "") {
-				elContent.setAttribute(params.content_style,params.content_style_value);
+				elContent.style[params.content_style] = params.content_style_value;
 			}
 			elContent.innerHTML = params.item_text;
 			el.appendChild(elContent);
@@ -466,6 +466,13 @@
 						CAL.records_openable = true;
 						CAL.update_vcal();
 						ajaxStatus.hideStatus();
+					
+					} else {
+						if (res.errorMessage != 'undefined') {
+							alert(res.errorMessage);							
+						}
+						CAL.refresh();
+						ajaxStatus.hideStatus();	
 					}
 				}							 
 			};
@@ -1567,8 +1574,10 @@
 		CAL.get("btn-send-invites").setAttribute("disabled","disabled");
 		CAL.get("btn-delete").setAttribute("disabled","disabled");
 		CAL.get("btn-full-form").setAttribute("disabled","disabled");
-		CAL.get("btn-edit-all-recurrences").setAttribute("disabled","disabled");
-		CAL.get("btn-remove-all-recurrences").setAttribute("disabled","disabled");
+		if (CAL.enable_repeat) {
+			CAL.get("btn-edit-all-recurrences").setAttribute("disabled","disabled");
+			CAL.get("btn-remove-all-recurrences").setAttribute("disabled","disabled");
+		}
 	}
 	
 	CAL.enable_buttons = function() {
@@ -1577,8 +1586,10 @@
 		if (CAL.get("record").value != "")
 			CAL.get("btn-delete").removeAttribute("disabled");	
 		CAL.get("btn-full-form").removeAttribute("disabled");
-		CAL.get("btn-edit-all-recurrences").removeAttribute("disabled");
-		CAL.get("btn-remove-all-recurrences").removeAttribute("disabled");
+		if (CAL.enable_repeat) {
+			CAL.get("btn-edit-all-recurrences").removeAttribute("disabled");
+			CAL.get("btn-remove-all-recurrences").removeAttribute("disabled");
+		}
 	}
 		
 	
@@ -1685,6 +1696,17 @@
 									CAL.deleted_module = CAL.get("current_module").value;
 									
 									var remove_all_recurrences = CAL.get("edit_all_recurrences").value;
+									
+									var isRecurrence = false;
+									if (CAL.enable_repeat) {
+										if (CAL.get("repeat_parent_id").value != '') {
+											var isRecurrence = true;
+										} else {
+											if (document.CalendarRepeatForm.repeat_type.value != '') {
+												var isRecurrence = true;
+											}
+										}
+									}
 											
 									var callback = {
 											success: function(o){
@@ -1702,7 +1724,12 @@
 													cell_id = e.parentNode.id;
 													
 												if(CAL.view == 'shared'){	
-													CAL.remove_shared(CAL.deleted_id, remove_all_recurrences);
+													if (remove_all_recurrences && isRecurrence) {
+														CAL.refresh();
+													} else {
+														CAL.remove_shared(CAL.deleted_id, remove_all_recurrences);
+													}
+																										
 												}else{														
 													if(e = CAL.get(CAL.deleted_id)){
 														e.parentNode.removeChild(e);
@@ -1714,16 +1741,8 @@
 														user_id: CAL.current_user_id
 													});	
 												
-													if(CAL.enable_repeat && remove_all_recurrences){
-														var nodes = CAL.query("div.act_item[repeat_parent_id='" + CAL.deleted_id + "']");			
-														CAL.each(nodes,function (i,v){
-															CAL.basic.remove({
-																record: nodes[i].getAttribute("record"),
-																user_id: CAL.current_user_id
-															});
-															nodes[i].parentNode.removeChild(nodes[i]);
-															CAL.destroy_ui(nodes[i].id);			
-														});
+													if(CAL.enable_repeat && remove_all_recurrences && isRecurrence){														
+														CAL.refresh();
 													}
 												}
 												
@@ -1749,6 +1768,50 @@
 									YAHOO.util.Connect.asyncRequest('POST',url,callback,CAL.toURI(data));
 
 									CAL.editDialog.cancel();	
+	}
+	
+	CAL.refresh = function () {	
+	
+		var callback = {
+			success: function(o) {
+				
+				try {
+					var activities = eval("("+o.responseText+")");
+				} catch(err) {
+					alert(CAL.lbl_error_saving);					
+					ajaxStatus.hideStatus();
+					return;	
+				}
+				
+				CAL.each(activities, function(i, v) {
+					CAL.add_item_to_grid(activities[i]);
+				});				
+
+				CAL.arrange_advanced();
+				CAL.basic.populate_grid();		
+				CAL.fit_grid();
+				CAL.update_dd.fire();
+			}
+		}
+	
+		var data = {
+			"view": CAL.view,
+			"year": CAL.year,
+			"month": CAL.month,
+			"day": CAL.day
+		};
+		var url = "index.php?module=Calendar&action=getActivities&sugar_body_only=true";									
+		YAHOO.util.Connect.asyncRequest('POST', url, callback, CAL.toURI(data));
+		
+		CAL.clear();
+	}
+	
+	CAL.clear = function () {
+		CAL.basic.items = {};
+		var nodes = CAL.query("#cal-grid div.act_item");			
+		CAL.each(nodes, function(i,v) {
+			nodes[i].parentNode.removeChild(nodes[i]);
+		});	
 	}
 	
 	CAL.show_additional_details = function (id){

@@ -35,13 +35,30 @@
  ********************************************************************************/
 
 *}
-<script type="text/javascript" src="cache/include/javascript/sugar_grp_yui_widgets.js"></script>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+    <td colspan="100">
+        <h2> {$moduleTitle}</h2>
+    </td>
+</tr>
+<tr>
+    <td colspan="100">{$MOD.LBL_GLOBAL_SEARCH_SETTINGS_TITLE}</td>
+</tr>
+<tr>
+    <td>
+        <br>
+    </td>
+</tr>
+<tr>
+<td colspan="100">
+
+<script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_yui_widgets.js'}"></script>
 <link rel="stylesheet" type="text/css" href="{sugar_getjspath file='modules/Connectors/tpls/tabs.css'}"/>
 <form name="GlobalSearchSettings" method="POST">
 	<input type="hidden" name="module" value="Administration">
 	<input type="hidden" name="action" value="updateWirelessEnabledModules">
 	<input type="hidden" name="enabled_modules" value="">
-	
+
 	<table border="0" cellspacing="1" cellpadding="1">
 		<tr>
 			<td>
@@ -50,12 +67,12 @@
 			</td>
 		</tr>
 	</table>
-	
+
 	<div class='add_table' style='margin-bottom:5px'>
 		<table id="GlobalSearchSettings" class="GlobalSearchSettings edit view" style='margin-bottom:0px;' border="0" cellspacing="0" cellpadding="0">
 		    <tr>
 				<td width='1%'>
-					<div id="enabled_div"></div>	
+					<div id="enabled_div"></div>
 				</td>
 				<td>
 					<div id="disabled_div"></div>
@@ -63,7 +80,6 @@
 			</tr>
 		</table>
 	</div>
-	
 	<table border="0" cellspacing="1" cellpadding="1">
 		<tr>
 			<td>
@@ -93,7 +109,7 @@
 		 {key:"module", label: lblEnabled, hidden:true}],
 		new YAHOO.util.LocalDataSource(enabled_modules, {
 			responseSchema: {fields : [{key : "module"}, {key : "label"}]}
-		}),  
+		}),
 		{height: "300px"}
 	);
 	SUGAR.globalSearchDisabledTable = new YAHOO.SUGAR.DragDropTable(
@@ -105,14 +121,14 @@
 		}),
 		{height: "300px"}
 	);
-	
+
 	SUGAR.globalSearchEnabledTable.disableEmptyRows = true;
 	SUGAR.globalSearchDisabledTable.disableEmptyRows = true;
 	SUGAR.globalSearchEnabledTable.addRow({module: "", label: ""});
 	SUGAR.globalSearchDisabledTable.addRow({module: "", label: ""});
 	SUGAR.globalSearchEnabledTable.render();
 	SUGAR.globalSearchDisabledTable.render();
-	
+
 	SUGAR.saveGlobalSearchSettings = function()
 	{
 		var enabledTable = SUGAR.globalSearchEnabledTable;
@@ -123,11 +139,11 @@
 			    modules += "," + data.module;
 		}
 		modules = modules == "" ? modules : modules.substr(1);
-		
+
 		ajaxStatus.showStatus(SUGAR.language.get('Administration', 'LBL_SAVING'));
 		Connect.asyncRequest(
-            Connect.method, 
-            Connect.url, 
+            Connect.method,
+            Connect.url,
             {success: SUGAR.saveCallBack},
 			SUGAR.util.paramsToUrl({
 				module: "Administration",
@@ -135,10 +151,10 @@
 				enabled_modules: modules
 			}) + "to_pdf=1"
         );
-		
+
 		return true;
 	}
-	
+
 	SUGAR.saveCallBack = function(o)
 	{
 	   ajaxStatus.flashStatus(SUGAR.language.get('app_strings', 'LBL_DONE'));
@@ -148,7 +164,9 @@
 	   } else {
 	       YAHOO.SUGAR.MessageBox.show({msg:o.responseText});
 	   }
-	}	
+	}
 })();
 {/literal}
+</script>
+<script type="text/javascript">
 </script>

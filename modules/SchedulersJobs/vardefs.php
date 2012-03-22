@@ -81,7 +81,7 @@ $dictionary['SchedulersJob'] = array('table' => 'job_queue',
 			'name' => 'scheduler_id',
 			'vname' => 'LBL_SCHEDULER',
 			'type' => 'id',
-			'required' => true,
+			'required' => false,
 			'reportable' => false,
 		),
 		'execute_time' => array (

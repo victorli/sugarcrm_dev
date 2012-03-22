@@ -135,7 +135,7 @@ function ie_test_open_popup_with_submit(module_name, action, pageTarget, width, 
 		+ '&email_user=' + words[0]
 		+ '&protocol=' + protocol
 		+ '&port=' + port
-		+ '&email_password=' + words[1]
+		+ '&email_password=' + encodeURIComponent(words[1])
 		+ '&mailbox=' + words[2]
 		+ '&ssl=' + ssl
 		+ '&ie_id=' + ie_id
@@ -232,7 +232,7 @@ function getFoldersListForInboundAccount(module_name, action, pageTarget, width,
         + '&email_user=' + words[0]
         + '&protocol=' + protocol
         + '&port=' + port
-        + '&email_password=' + words[1]
+        + '&email_password=' + encodeURIComponent(words[1])
         + '&mailbox=' + words[2]
         + '&ssl=' + ssl
         + '&personal=' + isPersonal

@@ -36,6 +36,7 @@
 
 
 require_once 'modules/Leads/views/view.convertlead.php';
+require_once 'tests/SugarTestViewConvertLeadUtilities.php';
 
 
 class ConvertLeadTests extends Sugar_PHPUnit_Framework_TestCase

@@ -103,6 +103,9 @@ class TemplateField{
 		'unified_search'=>'unified_search',
         'full_text_search'=>'full_text_search',
 	);
+    // Bug #48826
+    // fields to decode from post request
+    var $decode_from_request_fields_map = array('formula', 'dependency');
 	/*
 		HTML FUNCTIONS
 		*/
@@ -428,8 +431,10 @@ class TemplateField{
 
 	function populateFromPost(){
 		foreach($this->vardef_map as $vardef=>$field){
-			if(isset($_REQUEST[$vardef])){
-				$this->$vardef = $_REQUEST[$vardef];
+
+			if(isset($_REQUEST[$vardef])){		    
+			  //  Bug #48826
+                $this->$vardef = is_string($_REQUEST[$vardef]) && in_array($vardef, $this->decode_from_request_fields_map) ? html_entity_decode($_REQUEST[$vardef]) : $_REQUEST[$vardef];
 
 				// Bug 49774, 49775: Strip html tags from 'formula' and 'dependency'.
 				// Add to the list below if we need to do the same for other fields.
@@ -443,6 +448,7 @@ class TemplateField{
                     $help = htmlspecialchars_decode($this->$vardef, ENT_QUOTES);
                     $this->$vardef = htmlentities(remove_xss($help));
                 }
+
 
 				if($vardef != $field){
 					$this->$field = $this->$vardef;

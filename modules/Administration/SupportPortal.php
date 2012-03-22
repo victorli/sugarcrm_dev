@@ -212,11 +212,9 @@ switch ($_REQUEST['view']) {
 				}
 				//$send_module = $sendModuleMap[strtolower($send_module)];
 			}
-			$sendUrl = "http://www.sugarcrm.com/crm/product_doc.php?edition={$send_edition}&version={$send_version}&lang={$send_lang}&module={$send_module}&help_action={$send_action}&status={$dev_status}&key={$send_key}&anchor={$send_anchor}";
-			if(!empty($send_anchor)){
-				$sendUrl .= "&anchor=".$send_anchor;
-			}
-			$iframe_url = $sendUrl;
+
+
+            $iframe_url = get_help_url($send_edition, $send_version, $send_lang, $send_module, $send_action, $dev_status, $send_key, $send_anchor);
 			
 			header("Location: {$iframe_url}");
 			

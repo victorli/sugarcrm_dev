@@ -34,60 +34,54 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
-require_once("modules/ModuleBuilder/parsers/views/AbstractMetaDataParser.php");
 
-class AbstractMetaDataParserTest extends Sugar_PHPUnit_Framework_TestCase
+
+/**
+ * CallsController.php
+ *
+ * This is the controller file to handle the Calls module specific actions
+ */
+
+require_once('include/MVC/Controller/SugarController.php');
+class CallsController extends SugarController
 {
-	
-	public function setUp() 
-    {                       
-	
-    }
-    
-    public function tearDown() 
+
+    /**
+     * action_DisplayInline
+     *
+     * This method handles the request to display an Ajax view of related many to many records.  It expects a bean_id
+     * $_REQUEST parameter and an option related_id $_REQUEST parameter from the request.
+     */
+	public function action_DisplayInline()
     {
-       
-    }
-    
-    public function testValidField()
-    {
-    	$validDef = array (
-		    'name' => 'status',
-		    'vname' => 'LBL_STATUS',
-		    'type' => 'enum',
-		    'len' => '25',
-		    'options' => 'meeting_status_dom',
-		    'comment' => 'Meeting status (ex: Planned, Held, Not held)'
-		);
-		
-		$invalidDef = array (
-		    'name' => 'direction',
-		    'vname' => 'LBL_DIRECTION',
-		    'type' => 'enum',
-		    'len' => '25',
-		    'options' => 'call_direction_dom',
-		    'comment' => 'Indicates whether call is inbound or outbound',
-		    'source' => 'non-db',
-		    'importable' => 'false',
-		    'massupdate'=>false,
-		    'reportable'=>false
-		);
-		
-		$this->assertTrue(AbstractMetaDataParser::validField($validDef));
-		$this->assertFalse(AbstractMetaDataParser::validField($invalidDef));
-		
-		//Test the studio override property
-		$invalidDef['studio'] = 'visible';
-		$validDef['studio'] = false;
-		
-		$this->assertFalse(AbstractMetaDataParser::validField($validDef));
-        $this->assertTrue(AbstractMetaDataParser::validField($invalidDef));
-		
-		$invalidDef['studio'] = array('editview' => 'visible');
-        
-        $this->assertTrue(AbstractMetaDataParser::validField($invalidDef, 'editview'));
-		$this->assertFalse(AbstractMetaDataParser::validField($invalidDef, 'detailview'));
-    }
-    
+		$this->view = 'ajax';
+		$body = '';
+		$bean_id = isset($_REQUEST['bean_id']) ? $_REQUEST['bean_id'] : '';
+		$caption = '';
+		if(!empty($bean_id))
+        {
+            global $locale;
+            $query = "SELECT c.first_name, c.last_name, c.salutation, c.title FROM contacts c LEFT JOIN calls_contacts mc ON c.id = mc.contact_id WHERE mc.call_id = '{$bean_id}'";
+            if(!empty($_REQUEST['related_id']))
+            {
+                $query .= " AND c.id != '{$_REQUEST['related_id']}' AND c.deleted=0";
+            }
+
+            $result = $GLOBALS['db']->query($query);
+            while(($row = $GLOBALS['db']->fetchByAssoc($result)) != null)
+            {
+				$body .=  $locale->getLocaleFormattedName($row['first_name'], $row['last_name'], $row['salutation'], $row['title']) . '<br/>';
+			}
+		}
+
+		global $theme;
+		$json = getJSONobj();
+		$retArray = array();
+		$retArray['body'] = $body;
+		$retArray['caption'] = $caption;
+	    $retArray['width'] = '100';
+	    $retArray['theme'] = $theme;
+	    echo 'result = ' . $json->encode($retArray);
+	}
 }
+?>

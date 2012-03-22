@@ -40,6 +40,7 @@ require_once('include/ListView/ListViewSmarty.php');
 
 require_once('include/TemplateHandler/TemplateHandler.php');
 require_once('include/EditView/EditView2.php');
+require_once('include/FileLocator/FileLocator.php');
 
 
  class SearchForm extends EditView{
@@ -74,7 +75,17 @@ require_once('include/EditView/EditView2.php');
 
     var $displayType = 'searchView';
 
- 	function SearchForm($seed, $module, $action = 'index'){
+    /**
+     * @var FileLocatorInterface
+     */
+    private $fileLocator;
+
+    /**
+     * @var array
+     */
+    private $options;
+
+ 	function SearchForm($seed, $module, $action = 'index', $options = array()){
  		$this->th = new TemplateHandler();
  		$this->th->loadSmarty();
 		$this->seed = $seed;
@@ -92,7 +103,35 @@ require_once('include/EditView/EditView2.php');
                             'displayDiv'   => 'display:none'),
                        );
         $this->searchColumns = array () ;
- 	}
+        $this->setOptions($options);
+    }
+
+    public function getFileLocator()
+    {
+        if (!$this->fileLocator) {
+            $ref = new ReflectionClass($this->options['locator_class']);
+            $this->fileLocator = $ref->newInstanceArgs($this->options['locator_class_params']);
+        }
+
+        return $this->fileLocator;
+    }
+
+    public function setOptions($options)
+    {
+        $defaults = array(
+            'locator_class' => 'FileLocator',
+            'locator_class_params' => array(
+                array(
+                    'custom/modules/' . $this->module . '/tpls/SearchForm',
+                    'modules/' . $this->module . '/tpls/SearchForm',
+                    'custom/include/SearchForm/tpls',
+                    'include/SearchForm/tpls'
+                )
+            )
+        );
+
+        $this->options = empty($options) ? $defaults : $options;
+    }
 
  	function setup($searchdefs, $searchFields = array(), $tpl, $displayView = 'basic_search', $listViewDefs = array()){
 		$this->searchdefs =  $searchdefs[$this->module];
@@ -184,7 +223,7 @@ require_once('include/EditView/EditView2.php');
                 $this->tabs[$tabkey]['displayDiv']='';
                 //if this is advanced tab, use form with saved search sub form built in
                 if($viewName=='advanced'){
-                    $this->tpl = 'include/SearchForm/tpls/SearchFormGenericAdvanced.tpl';
+                    $this->tpl = 'SearchFormGenericAdvanced.tpl';
                     if ($this->action =='ListView') {
                         $this->th->ss->assign('DISPLAY_SEARCH_HELP', true);
                     }
@@ -232,12 +271,12 @@ require_once('include/EditView/EditView2.php');
         if ($this->module == 'Documents'){
             $this->th->ss->assign('DOCUMENTS_MODULE', true);
         }
-        $return_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchForm_'.$this->parsedView, $this->tpl);
+        $return_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchForm_'.$this->parsedView, $this->getFileLocator()->locate($this->tpl));
         if($header){
 			$this->th->ss->assign('return_txt', $return_txt);
-			$header_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchFormHeader', 'include/SearchForm/tpls/header.tpl');
+			$header_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchFormHeader', $this->getFileLocator()->locate('header.tpl'));
             //pass in info to render the select dropdown below the form
-            $footer_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchFormFooter', 'include/SearchForm/tpls/footer.tpl');
+            $footer_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchFormFooter', $this->getFileLocator()->locate('footer.tpl'));
 			$return_txt = $header_txt.$footer_txt;
 		}
 		return $return_txt;
@@ -437,7 +476,6 @@ require_once('include/EditView/EditView2.php');
                         }
                     }
                 }
-
             }else{
 
             	$fromMergeRecords = isset($array['merge_module']);
@@ -445,13 +483,15 @@ require_once('include/EditView/EditView2.php');
                 foreach($this->searchFields as $name => $params) {
 					$long_name = $name.'_'.$SearchName;
 					/*nsingh 21648: Add additional check for bool values=0. empty() considers 0 to be empty Only repopulates if value is 0 or 1:( */
-                	if(isset($array[$long_name]) && !$this->isEmptyDropdownField($long_name, $array[$long_name]) && ( $array[$long_name] !== '' || (isset($this->fieldDefs[$long_name]['type']) && $this->fieldDefs[$long_name]['type'] == 'bool'&& ($array[$long_name]=='0' || $array[$long_name]=='1'))))
+                    if (isset($array[$long_name]) && ( $array[$long_name] !== '' || (isset($this->fieldDefs[$long_name]['type']) && $this->fieldDefs[$long_name]['type'] == 'bool'&& ($array[$long_name]=='0' || $array[$long_name]=='1'))))
 					{
                         $this->searchFields[$name]['value'] = $array[$long_name];
                         if(empty($this->fieldDefs[$long_name]['value'])) {
                         	$this->fieldDefs[$long_name]['value'] = $array[$long_name];
                         }
-                    }else if(!empty($array[$name]) && !$fromMergeRecords && !$this->isEmptyDropdownField($name, $array[$name])) { //basic
+                    }
+                    else if(!empty($array[$name]) && !$fromMergeRecords) // basic
+                    {
                     	$this->searchFields[$name]['value'] = $array[$name];
                         if(empty($this->fieldDefs[$long_name]['value'])) {
                         	$this->fieldDefs[$long_name]['value'] = $array[$name];
@@ -480,10 +520,9 @@ require_once('include/EditView/EditView2.php');
                     	if($key != 'assigned_user_name' && $key != 'modified_by_name')
                     	{
                     		$long_name = $key.'_'.$SearchName;
-
-	                    	if(in_array($key.'_'.$SearchName, $arrayKeys) && !in_array($key, $searchFieldsKeys) && !$this->isEmptyDropdownField($long_name, $array[$long_name]))
+                    		
+	                        if(in_array($key.'_'.$SearchName, $arrayKeys) && !in_array($key, $searchFieldsKeys))
 	                    	{
-
 	                        	$this->searchFields[$key] = array('query_type' => 'default', 'value' => $array[$long_name]);
 
                                 if (!empty($params['type']) && $params['type'] == 'parent'
@@ -504,7 +543,6 @@ require_once('include/EditView/EditView2.php');
                         }
                     }
                 }
-
             }
         }
 
@@ -939,7 +977,9 @@ require_once('include/EditView/EditView2.php');
                                      $stringFormatParams = array(0 => $field_value, 1 => $GLOBALS['current_user']->id);
                                      $where .= "{$db_field} $in (".string_format($parms['subquery'], $stringFormatParams).")";
                                  }else{
-                                     $where .= "{$db_field} $in ({$parms['subquery']} ".$this->seed->db->quoted($field_value.'%').")";
+                                     //Bug#37087: Re-write our sub-query to it is executed first and contents stored in a derived table to avoid mysql executing the query
+                                     //outside in. Additional details: http://bugs.mysql.com/bug.php?id=9021
+                                    $where .= "{$db_field} $in (select * from ({$parms['subquery']} ".$this->seed->db->quoted($field_value.'%').") as {$field}_derived)";
                                  }
 
                                  break;
@@ -985,7 +1025,7 @@ require_once('include/EditView/EditView2.php');
                                                    {
                                                       foreach($GLOBALS['app_list_strings']['salutation_dom'] as $salutation)
                                                       {
-                                                         if(!empty($salutation) && strpos($field_value, $salutation) == 0)
+                                                         if(!empty($salutation) && strpos($field_value, $salutation) === 0)
                                                          {
                                                             $field_value = trim(substr($field_value, strlen($salutation)));
                                                             break;

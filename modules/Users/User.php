@@ -412,6 +412,46 @@ class User extends Person {
 
         return $user->_userPreferenceFocus->getPreference($name, $category);
 	}
+	
+	/**
+     * incrementETag
+     * 
+     * This function increments any ETag seed needed for a particular user's 
+     * UI. For example, if the user changes their theme, the ETag seed for the 
+     * main menu needs to be updated, so you call this function with the seed name
+     * to do so:
+     * 
+     * UserPreference::incrementETag("mainMenuETag");
+     * 
+     * @param string $tag ETag seed name.
+     * @return nothing
+     */
+    public function incrementETag($tag){
+    	$val = $this->getETagSeed($tag);
+    	if($val == 2147483648){
+    		$val = 0;
+    	}
+    	$val++;
+    	$this->setPreference($tag, $val, 0, "ETag");
+    }
+    
+    /**
+     * getETagSeed
+     * 
+     * This function is a wrapper to encapsulate getting the ETag seed and 
+     * making sure it's sanitized for use in the app.
+     * 
+     * @param string $tag ETag seed name.
+     * @return integer numeric value of the seed
+     */
+    public function getETagSeed($tag){
+    	$val = $this->getPreference($tag, "ETag");
+    	if($val == null){
+    		$val = 0;
+    	}
+    	return $val;
+    }
+	
 
    /**
     * Get WHERE clause that fetches all users counted for licensing purposes
@@ -509,15 +549,14 @@ class User extends Person {
 	}
 
 	/**
-	* @return string encrypted password for storage in DB and comparison against DB password.
+	 * @deprecated
 	* @param string $user_name - Must be non null and at least 2 characters
 	* @param string $user_password - Must be non null and at least 1 character.
 	* @desc Take an unencrypted username and password and return the encrypted password
-	 * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc..
-	 * All Rights Reserved..
-	 * Contributor(s): ______________________________________..
+	* @return string encrypted password for storage in DB and comparison against DB password.
 	*/
-	function encrypt_password($user_password) {
+	function encrypt_password($user_password)
+	{
 		// encrypt the password.
 		$salt = substr($this->user_name, 0, 2);
 		$encrypted_password = crypt($user_password, $salt);
@@ -552,8 +591,8 @@ class User extends Person {
      * @return object User bean
      * @return null null if no User found
      */
-	function retrieve($id, $encode = true) {
-		$ret = parent::retrieve($id, $encode);
+	function retrieve($id, $encode = true, $deleted = true) {
+		$ret = parent::retrieve($id, $encode, $deleted);
 		if ($ret) {
 			if (isset ($_SESSION)) {
 				$this->loadPreferences();
@@ -661,6 +700,16 @@ EOQ;
 	 */
 	public static function getPasswordHash($password)
 	{
+	    if(!defined('CRYPT_MD5') || !constant('CRYPT_MD5')) {
+	        // does not support MD5 crypt - leave as is
+	        if(defined('CRYPT_EXT_DES') && constant('CRYPT_EXT_DES')) {
+	            return crypt(strtolower(md5($password)),
+	            	"_.012".substr(str_shuffle('./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'), -4));
+	        }
+	        // plain crypt cuts password to 8 chars, which is not enough
+	        // fall back to old md5
+	        return strtolower(md5($password));
+	    }
 	    return crypt(strtolower(md5($password)));
 	}
 
@@ -683,7 +732,7 @@ EOQ;
 	public static function checkPasswordMD5($password_md5, $user_hash)
 	{
 	    if(empty($user_hash)) return false;
-	    if($user_hash[0] != '$') {
+	    if($user_hash[0] != '$' && strlen($user_hash) == 32) {
 	        // Old way - just md5 password
 	        return strtolower($password_md5) == $user_hash;
 	    }
@@ -761,7 +810,7 @@ EOQ;
         $_SESSION['hasExpiredPassword'] = '0';
 		return true;
 	}
-	
+
 	/**
 	 * Check new password against rules set by admin
 	 * @param string $password
@@ -769,45 +818,45 @@ EOQ;
 	 */
 	function check_password_rules($password) {
 	    $length = mb_strlen($password);
-	
+
 	    // Min length
 	    if(!empty($GLOBALS["sugar_config"]["passwordsetting"]["minpwdlength"]) && $GLOBALS["sugar_config"]["passwordsetting"]["minpwdlength"] > 0 && $length < $GLOBALS["sugar_config"]["passwordsetting"]["minpwdlength"]) {
 	        return false;
 	    }
-	
+
 	    // Max length
 	    if(!empty($GLOBALS['sugar_config']['passwordsetting']['maxpwdlength']) && $GLOBALS['sugar_config']['passwordsetting']['maxpwdlength'] > 0 && $length > $GLOBALS['sugar_config']['passwordsetting']['maxpwdlength']) {
 	        return false;
 	    }
-	
+
 	    // One lower case
 	    if(!empty($GLOBALS["sugar_config"]["passwordsetting"]["onelower"]) && !preg_match('/[a-z]+/', $password)){
 	        return false;
 	    }
-	
+
 	    // One upper case
 	    if(!empty($GLOBALS["sugar_config"]["passwordsetting"]["oneupper"]) && !preg_match('/[A-Z]+/', $password)){
 	        return false;
 	    }
-	
+
 	    // One number
 	    if(!empty($GLOBALS["sugar_config"]["passwordsetting"]["onenumber"]) && !preg_match('/[0-9]+/', $password)){
 	        return false;
 	    }
-	
+
 	    // One special character
 	    if(!empty($GLOBALS["sugar_config"]["passwordsetting"]["onespecial"]) && !preg_match('/[|}{~!@#$%^&*()_+=-]+/', $password)){
 	        return false;
 	    }
-	
+
 	    // Custom regex
 	    if(!empty($GLOBALS["sugar_config"]["passwordsetting"]["customregex"]) && !preg_match($GLOBALS["sugar_config"]["passwordsetting"]["customregex"], $password)){
 	        return false;
 	    }
-	
+
 	    return true;
 	}
-	
+
 	function is_authenticated() {
 		return $this->authenticated;
 	}
@@ -955,7 +1004,7 @@ EOQ;
 
 
 
-	
+
     /**
      * getAllUsers
      *

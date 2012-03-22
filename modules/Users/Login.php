@@ -46,16 +46,8 @@ if (isset($_SESSION['authenticated_user_id']))
 {
     ob_clean();
     // fixing bug #46837: Previosly links/URLs to records in Sugar from MSO Excel/Word were referred to the home screen and not the record
-    // It used to appear when default browser was not MS IE 
-    $nav = '';
-    $nav .= (isset($_GET['login_module'])) ? '&module='.$_GET['login_module'] : '';
-    $nav .= (isset($_GET['login_action'])) ? '&action='.$_GET['login_action'] : '';
-    $nav .= (isset($_GET['login_record'])) ? '&record='.$_GET['login_record'] : '';
-    
-    ($nav == '') 
-        ? header("Location: index.php?module=Home&action=index") 
-        : header("Location: index.php?".substr($nav, 1));
-    
+    // It used to appear when default browser was not MS IE
+    header("Location: ".$GLOBALS['app']->getLoginRedirect());
     sugar_cleanup(true);
     return;
 }
@@ -99,13 +91,11 @@ if(isset($_REQUEST['loginErrorMessage'])) {
     }
 }
 
-
-if (isset($_GET['login_module']))
-	$sugar_smarty->assign('LOGIN_MODULE', $_GET['login_module']);
-if (isset($_GET['login_action']))
-	$sugar_smarty->assign('LOGIN_ACTION', $_GET['login_action']);
-if (isset($_GET['login_record']))
-	$sugar_smarty->assign('LOGIN_RECORD', $_GET['login_record']);
+$lvars = $GLOBALS['app']->getLoginVars();
+$sugar_smarty->assign("LOGIN_VARS", $lvars);
+foreach($lvars as $k => $v) {
+    $sugar_smarty->assign(strtoupper($k), $v);
+}
 
 // Retrieve username from the session if possible.
 if(isset($_SESSION["login_user_name"])) {

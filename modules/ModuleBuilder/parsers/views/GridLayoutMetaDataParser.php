@@ -64,11 +64,6 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
 
         $view = strtolower ( $view ) ;
 
-        // BEGIN ASSERTIONS
-        if (! isset ( self::$variableMap [ $view ] ) )
-            sugar_die ( get_class ( $this ) . ": View $view is not supported" ) ;
-        // END ASSERTIONS
-
 		$this->FILLER = array ( 'name' => MBConstants::$FILLER['name'] , 'label' => translate ( MBConstants::$FILLER['label'] ) ) ;
 
         $this->_moduleName = $moduleName ;
@@ -85,9 +80,12 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
         }
 
         $viewdefs = $this->implementation->getViewdefs () ;
+        if (!isset(self::$variableMap [ $view ]))
+            self::$variableMap [ $view ] = $view;
 
-        if (! isset ( $viewdefs [ self::$variableMap [ $view ] ] ))
-            sugar_die ( get_class ( $this ) . ": missing variable " . self::$variableMap [ $view ] . " in layout definition" ) ;
+        if (!isset($viewdefs [ self::$variableMap [ $view ]])){
+            sugar_die ( get_class ( $this ) . ": incorrect view variable for $view" ) ;
+        }
 
         $viewdefs = $viewdefs [ self::$variableMap [ $view ] ] ;
         if (! isset ( $viewdefs [ 'templateMeta' ] ))
@@ -104,6 +102,16 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
         $this->_standardizeFieldLabels( $this->_fielddefs );
         $this->_viewdefs [ 'panels' ] = $this->_convertFromCanonicalForm ( $this->_viewdefs [ 'panels' ] , $this->_fielddefs ) ; // put into our internal format
         $this->_originalViewDef = $this->getFieldsFromLayout($this->implementation->getOriginalViewdefs ());
+        //fixing bug #43787: 
+        //when adding a field to quick create layout 
+        //check its properties in edit view definitions in case 
+        //that field is absent in the default quickcreatedefs.php
+        if ($view == MB_QUICKCREATE)
+        {
+            $this->_view = MB_EDITVIEW;
+            $this->_editViewDefs = $this->getFieldsFromLayout($this->implementation->getEditViewDefs());
+            $this->_view = $view ;
+        }
     }
 
     /*
@@ -556,18 +564,20 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
                     //Use the previous viewdef if this field was on it.
 					else if (isset($previousViewDef[$fieldname]))
                 	{
-                		 $newRow [ $colID - $offset ] = $previousViewDef[$fieldname];
-                        //We should copy over the tabindex if it is set.
-                        if (isset ($fielddefs [ $fieldname ]) && !empty($fielddefs [ $fieldname ]['tabindex']))
-                            $newRow [ $colID - $offset ]['tabindex'] = $fielddefs [ $fieldname ]['tabindex'];
+                        $newRow[$colID - $offset] = $this->getNewRowItem($previousViewDef[$fieldname], $fielddefs[$fieldname]);
                 	}
                     //next see if the field was on the original layout.
                     else if (isset ($this->_originalViewDef [ $fieldname ]))
                     {
-                        $newRow [ $colID - $offset ] = $this->_originalViewDef [ $fieldname ] ;  
-                        //We should copy over the tabindex if it is set.
-                        if (isset ($fielddefs [ $fieldname ]) && !empty($fielddefs [ $fieldname ]['tabindex']))
-                            $newRow [ $colID - $offset ]['tabindex'] = $fielddefs [ $fieldname ]['tabindex']; 
+                        $newRow[$colID - $offset] = $this->getNewRowItem($this->_originalViewDef[$fieldname], $fielddefs[$fieldname]);  
+                    }
+                    //if no matches found for quickcreate view on the previos steps see in editview vardefs
+                    else if ($this->_view == MB_QUICKCREATE)
+                    { 
+                        if (isset($this->_editViewDefs[$fieldname]))
+                        {
+                            $newRow[$colID - $offset] = $this->getNewRowItem($this->_editViewDefs[$fieldname], $fielddefs[$fieldname]);
+                        }
                     }
                 	//Otherwise make up a viewdef for it from field_defs
                 	else if (isset ($fielddefs [ $fieldname ]))
@@ -586,6 +596,36 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
         }
         
         return $panels ;
+    }
+
+    /*
+     * fixing bug #44428: Studio | Tab Order causes layout errors
+     * @param string|array $source it can be a string which contain just a name of field 
+     *                                  or an array with field attributes including name
+     * @param array $fielddef stores field defs from request
+     * @return string|array definition of new row item
+     */
+    function getNewRowItem($source, $fielddef)
+    {
+        //We should copy over the tabindex if it is set.
+        $newRow = array();
+        if (isset ($fielddef) && !empty($fielddef['tabindex']))
+        {
+            if (is_array($source))
+            {
+                $newRow = $source;
+            }
+            else
+            {
+                $newRow['name'] = $source;
+            }
+            $newRow['tabindex'] = $fielddef['tabindex'];
+        }
+        else
+        {
+            $newRow = $source;
+        }
+        return $newRow;
     }
 
     /*
@@ -677,7 +717,7 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
     	{
     		$panels = $viewdef['panels']; 
     	} else {
-    	$panels = $viewdef[self::$variableMap [ $this->_view ] ]['panels']; 
+    	    $panels = $viewdef[self::$variableMap [ $this->_view ] ]['panels'];
     	}
     	
         $ret = array();

@@ -64,11 +64,13 @@ function getDurationMinutesOptions($focus, $field, $value, $view) {
    
     if($view == 'EditView' || $view == 'MassUpdate' || $view == "QuickCreate"
     ) {
-       $html = '<select id="duration_minutes"';
+       $html = '<select id="duration_minutes" ';
        if($view != 'MassUpdate' 
-       	)
-       		$html .= 'onchange="SugarWidgetScheduler.update_time();"';
-       $html .=  'tabindex="1" name="duration_minutes">';
+       	 ) {
+            $html .= 'onchange="SugarWidgetScheduler.update_time();" ';
+       }
+
+       $html .=  'name="duration_minutes">';
        $html .= get_select_options_with_id($focus->minutes_values, $focus->duration_minutes);
        $html .= '</select>';
        return $html;	

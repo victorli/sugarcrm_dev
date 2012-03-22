@@ -288,7 +288,8 @@ function get_sugar_config_defaults() {
     'display_email_template_variable_chooser' => false,
 	'display_inbound_email_buttons' => false,
 	'dump_slow_queries' => false,
-	'email_default_editor' => 'html',
+	'email_address_separator' => ',', // use RFC2368 spec unless we have a noncompliant email client
+    'email_default_editor' => 'html',
 	'email_default_client' => 'sugar',
 	'email_default_delete_attachments' => true,
 	'history_max_viewed' => 50,
@@ -2107,7 +2108,7 @@ function convert_id($string)
 /**
  * @deprecated use SugarTheme::getImage()
  */
-function get_image($image,$other_attributes,$width="",$height="",$ext='.gif',$alt)
+function get_image($image,$other_attributes,$width="",$height="",$ext='.gif',$alt="")
 {
     return SugarThemeRegistry::current()->getImage(basename($image), $other_attributes, empty($width) ? null : $width, empty($height) ? null : $height, $ext, $alt );
 }
@@ -3769,7 +3770,7 @@ function getTrackerSubstring($name) {
 	}
 
 	if($strlen > $max_tracker_item_length) {
-		$chopped = function_exists('mb_substr') ? mb_substr($name, 0, $max_tracker_item_length, "UTF-8") : substr($name, 0, $max_tracker_item_length, "UTF-8");
+		$chopped = function_exists('mb_substr') ? mb_substr($name, 0, $max_tracker_item_length, "UTF-8") : substr($name, 0, $max_tracker_item_length);
 	} else {
 		$chopped = $name;
 	}
@@ -4707,4 +4708,41 @@ function get_language_header()
 function get_custom_file_if_exists($file)
 {
     return file_exists("custom/{$file}") ? "custom/{$file}" : $file;
+}
+
+
+/**
+ * get_help_url
+ *
+ * This will return the URL used to redirect the user to the help documentation.
+ * It can be overriden completely by setting the custom_help_url or partially by setting the custom_help_base_url
+ * in config.php or config_override.php.
+ *
+ * @param string $send_edition
+ * @param string $send_version
+ * @param string $send_lang
+ * @param string $send_module
+ * @param string $send_action
+ * @param string $dev_status
+ * @param string $send_key
+ * @param string $send_anchor
+ * @return string the completed help URL
+ */
+function get_help_url($send_edition = '', $send_version = '', $send_lang = '', $send_module = '', $send_action = '', $dev_status = '', $send_key = '', $send_anchor = '') {
+    global $sugar_config;
+
+    if (!empty($sugar_config['custom_help_url'])) {
+        $sendUrl = $sugar_config['custom_help_url'];
+    } else {
+        if (!empty($sugar_config['custom_help_base_url'])) {
+            $baseUrl= $sugar_config['custom_help_base_url'];
+        } else {
+            $baseUrl = "http://www.sugarcrm.com/crm/product_doc.php";
+        }
+        $sendUrl = $baseUrl . "?edition={$send_edition}&version={$send_version}&lang={$send_lang}&module={$send_module}&help_action={$send_action}&status={$dev_status}&key={$send_key}";
+        if(!empty($send_anchor)) {
+            $sendUrl .= "&anchor=".$send_anchor;
+        }
+    }
+    return $sendUrl;
 }

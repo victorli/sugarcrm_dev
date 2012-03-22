@@ -203,7 +203,7 @@ class ProjectTaskViewList extends ViewList{
 
 
 			$searchForm = new SearchForm($this->seed, $this->module, $this->action);
-			$searchForm->setup($searchdefs, $searchFields, 'include/SearchForm/tpls/SearchFormGeneric.tpl', $view, $listViewDefs);
+			$searchForm->setup($searchdefs, $searchFields, 'SearchFormGeneric.tpl', $view, $listViewDefs);
 			$searchForm->lv = $lv;
 		}
 

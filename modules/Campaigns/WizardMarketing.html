@@ -374,6 +374,8 @@ function determine_back(){
 {$JAVASCRIPT}
 <script language="javascript">
 //	link_navs();
+addToValidate('wizform', 'name', 'alphanumeric', true,  document.getElementById('name').title);
+addToValidate('wizform', 'date_start', 'alphanumeric', true,  document.getElementById('date_start').title);
 addToValidate('wizform', 'inbound_email_id', 'alphanumeric', true,  document.getElementById('inbound_email_id').title);
 </script>
 

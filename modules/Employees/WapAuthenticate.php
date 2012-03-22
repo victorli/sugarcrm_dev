@@ -57,13 +57,7 @@ $focus->load_user($user_password);
 if ($focus->is_authenticated()) {
     // save the user information into the session
     // go to the home screen
-    if (!empty($_POST['login_record'])) {
-        $login_direction = "module={$_POST['login_module']}&action={$_POST['login_action']}&record={$_POST['login_record']}";
-    } else {
-        $login_direction = "action=index&module=Home";
-    }
-
-    header("Location: index.php?{$login_direction}");
+    header("Location: ".$GLOBALS['app']->getLoginRedirect());
     unset($_SESSION['login_password']);
     unset($_SESSION['login_error']);
     unset($_SESSION['login_user_name']);

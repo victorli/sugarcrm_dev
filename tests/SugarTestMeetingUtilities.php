@@ -76,6 +76,12 @@ class SugarTestMeetingUtilities
         return $id;
     }
 
+    public static function addMeetingUserRelation($meeting_id, $user_id) {
+        $id = create_guid();
+        $GLOBALS['db']->query("INSERT INTO meetings_users (id, meeting_id, user_id) values ('{$id}', '{$meeting_id}', '{$user_id}')");
+        return $id;
+    }
+
     public static function deleteMeetingLeadRelation($id) {
         $GLOBALS['db']->query("delete from meetings_leads where id='{$id}'");
     }

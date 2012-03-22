@@ -85,6 +85,7 @@ class ProjectTask extends SugarBean {
 		'email_id' => 'emails',
 	);
 
+	
 	//////////////////////////////////////////////////////////////////
 	// METHODS
 	//////////////////////////////////////////////////////////////////
@@ -116,8 +117,16 @@ class ProjectTask extends SugarBean {
 		}
 	}
 
-	function save($check_notify = FALSE){
-		$id = parent::save($check_notify);
+	function save($check_notify = FALSE)
+	{
+		//Bug 46012.  When saving new Project Tasks instance in a workflow, make sure we set a project_task_id value
+		//associated with the Project if there is no project_task_id specified.
+        if ($this->in_workflow && empty($this->id) && empty($this->project_task_id) && !empty($this->project_id))
+        {
+            $this->project_task_id = $this->getNumberOfTasksInProject($this->project_id) + 1;
+        }
+        
+        $id = parent::save($check_notify);
         $this->updateParentProjectTaskPercentage();
         return $id;
 	}
@@ -512,6 +521,35 @@ class ProjectTask extends SugarBean {
 
 		return $projectTasksBeans;
 	}
+	
+	
+	/**
+	 * getNumberOfTasksInProject
+	 * 
+	 * Returns the count of project_tasks for the given project_id
+	 * 
+	 * This is a private helper function to get the number of project tasks for a given project_id.
+	 * 
+	 * @param $project_id integer value of the project_id associated with this ProjectTask instance
+	 * @return total integer value of the count of project tasks, 0 if none found
+	 */
+    private function getNumberOfTasksInProject($project_id='')
+    {
+    	if(!empty($project_id))
+    	{
+	        $query = "SELECT count(project_task_id) AS total FROM project_task WHERE project_id = '{$project_id}'";
+	        $result = $this->db->query($query, true);
+	        if($result)
+	        {
+		        $row = $this->db->fetchByAssoc($result);
+		        if(!empty($row['total']))
+		        {
+		           return $row['total'];
+		        }
+	        }
+    	}
+        return 0;
+    }	
 }
 
 function getUtilizationDropdown($focus, $field, $value, $view) {

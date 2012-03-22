@@ -137,11 +137,16 @@ $xtpl->assign("CANCEL_BUTTON", $cancel_buttons_html );
 
 $field_defs_js = "var field_defs = {'Contacts':[";
 
+//bug: 47574 - make sure, that webtolead_email1 field has same required attribute as email1 field
+if(isset($lead->field_defs['webtolead_email1']) && isset($lead->field_defs['email1'])){
+    $lead->field_defs['webtolead_email1']['required'] = $lead->field_defs['email1']['required'];
+}
+
 $count= 0;
 foreach($lead->field_defs as $field_def)
 {
 	$email_fields = false;
-    if($field_def['name']== 'webtolead_email1' || $field_def['name']== 'webtolead_email2')
+    if($field_def['name']== 'email1' || $field_def['name']== 'email2')
     {
     	$email_fields = true;
     }
@@ -190,7 +195,7 @@ $xtpl->assign("WEB_POST_URL",$web_post_url);
 //$xtpl->assign("LEAD_SELECT_FIELDS",'MOD.LBL_SELECT_LEAD_FIELDS');
 
 require_once('include/QuickSearchDefaults.php');
-$qsd = new QuickSearchDefaults();
+$qsd = QuickSearchDefaults::getQuickSearchDefaults();
 $sqs_objects = array('account_name' => $qsd->getQSParent(),
 					'assigned_user_name' => $qsd->getQSUser(),
 					'campaign_name' => $qsd->getQSCampaigns(),

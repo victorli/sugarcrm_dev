@@ -77,6 +77,7 @@ class SugarTinyMCE {
 
 	var $defaultConfig = array(
 	    'convert_urls' => false,
+        'valid_children' => '+body[style]',
 	    'height' => 300,
 		'width'	=> '100%',
 		'theme'	=> 'advanced',
@@ -90,7 +91,7 @@ class SugarTinyMCE {
 		'language' => 'en',
 	    'plugins' => 'advhr,insertdatetime,table,preview,paste,searchreplace,directionality',
 		'elements'	=> '',
-        'extended_valid_elements' => 'style,hr[class|width|size|noshade],@[class|style]',
+        'extended_valid_elements' => 'style[dir|lang|media|title|type],hr[class|width|size|noshade],@[class|style]',
         'content_css' => 'include/javascript/tiny_mce/themes/advanced/skins/default/content.css',
 
 	);

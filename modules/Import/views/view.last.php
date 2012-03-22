@@ -107,9 +107,9 @@ class ImportViewLast extends ImportView
         $this->ss->assign("dupeCount",$dupeCount);
         $this->ss->assign("createdCount",$createdCount);
         $this->ss->assign("updatedCount",$updatedCount);
-        $this->ss->assign("errorFile",ImportCacheFiles::getErrorFileName());
-        $this->ss->assign("errorrecordsFile",ImportCacheFiles::getErrorRecordsWithoutErrorFileName());
-        $this->ss->assign("dupeFile",ImportCacheFiles::getDuplicateFileName());
+        $this->ss->assign("errorFile",ImportCacheFiles::convertFileNameToUrl(ImportCacheFiles::getErrorFileName()));
+        $this->ss->assign("errorrecordsFile",ImportCacheFiles::convertFileNameToUrl(ImportCacheFiles::getErrorRecordsWithoutErrorFileName()));
+        $this->ss->assign("dupeFile",ImportCacheFiles::convertFileNameToUrl(ImportCacheFiles::getDuplicateFileName()));
 
         if ( $this->bean->object_name == "Prospect" )
         {

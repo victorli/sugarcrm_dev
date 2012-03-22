@@ -1006,7 +1006,7 @@ EOHTML;
 
         // minify the js
         if ( !inDeveloperMode()&& !sugar_is_file(str_replace('.js','-min.js',$jsFilePath)) ) {
-            $jsFileContents = JSMin::minify($jsFileContents);
+            $jsFileContents = SugarMin::minify($jsFileContents);
             $jsFilePath = str_replace('.js','-min.js',$jsFilePath);
             $fullFileName = str_replace('.js','-min.js',$fullFileName);
         }

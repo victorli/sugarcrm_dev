@@ -317,7 +317,7 @@ class Calendar {
 			$sign = "+";
 			
 		if($this->view == 'month'){
-			$day = $this->date_time->get($sign."1 month")->get_day_begin(1);
+            $day = $this->date_time->get_day_by_index_this_month(0)->get($sign."1 month")->get_day_begin(1);
 		}else if($this->view == 'week' || $this->view == 'shared'){
 			$day = CalendarUtils::get_first_day_of_week($this->date_time);
 			$day = $day->get($sign."7 days");

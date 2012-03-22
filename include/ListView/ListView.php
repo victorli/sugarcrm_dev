@@ -450,6 +450,7 @@ function process_dynamic_listview($source_module, $sugarbean,$subpanel_def)
 		                $this->xTemplate->assign('CELL', $widget_contents);
 		                $this->xTemplate->parse($xtemplateSection.".row.cell");
                 	} elseif (preg_match("/button/i", $list_field['name'])) {
+                		if($layout_manager->widgetDisplay($list_field) != "")
                 		$button_contents[] = $layout_manager->widgetDisplay($list_field);
                 	} else {
                			$count++;
@@ -483,7 +484,7 @@ function process_dynamic_listview($source_module, $sugarbean,$subpanel_def)
             else if ($first && count($button_contents) == 1)
             {
                 $firstaction = $action;
-                $widget_contents .= "<li>&nbsp;</li>";
+                //$widget_contents .= "<li>&nbsp;</li>";
             }
             else
             {
@@ -496,6 +497,7 @@ function process_dynamic_listview($source_module, $sugarbean,$subpanel_def)
 				$count++;
                 $this->xTemplate->assign('CELL_COUNT', $count);
                 $pre = '<ul class="clickMenu subpanel records fancymenu button">'. "\n";
+                $post = "";
                 $this->xTemplate->assign('CLASS', "inlineButtons");
                 if(sizeof($button_contents) == 1)
                 {
@@ -509,16 +511,12 @@ function process_dynamic_listview($source_module, $sugarbean,$subpanel_def)
                 $pre .= '<script type="text/javascript">
                         var zz = $("#'.$tempid.'").children().first().find("span").remove();
                     </script>';
-                $pre .= "<div style='display: inline' id='$tempid'>".$firstaction."</div>";
-
-        		$pre .= '<ul class="subnav';
-        		if(sizeof($button_contents) > 1)
-                {
-        			$pre .= " multi";
-        		}
-
-        		$pre .='" id="'.$tempid.'">' . "\n";
-        		$post = ' </ul>' . "\n";
+                $pre .= "<div style='display: inline; float: left;' id='$tempid'>".str_replace("&nbsp;","",$firstaction)."</div>";
+				if(sizeof($button_contents) > 1) {
+	        		$pre .= '<ul class="subnav';
+	        		$pre .='" id="'.$tempid.'">' . "\n";
+	        		$post .= ' </ul>' . "\n";
+          		 }
 		        $post .= '</li>' . "\n";
 		        $post .= '</ul>' . "\n";
 
@@ -617,6 +615,11 @@ function setDisplayHeaderAndFooter($bool) {
 function getOrderBy($varName, $defaultOrderBy='', $force_sortorder='') {
     $sortBy = $this->getSessionVariable($varName, "ORDER_BY") ;
 
+    $orderByDirection = $this->getSessionVariableName($varName, "order_by_direction");
+    $orderByColumn = $this->getSessionVariableName($varName, "ORDER_BY");
+    $lastEqualsSortBy = false;
+    $defaultOrder = false; //ascending
+    
     if(empty($sortBy)) {
         $this->setUserVariable($varName, "ORDER_BY", $defaultOrderBy);
         $sortBy = $defaultOrderBy;
@@ -632,29 +635,67 @@ function getOrderBy($varName, $defaultOrderBy='', $force_sortorder='') {
 
     $desc = $this->getSessionVariable($varName, $sortBy."S");
 
-    if(empty($desc))
-        $desc = false;
-    if(isset($_REQUEST[$this->getSessionVariableName($varName,  "ORDER_BY")]))
-        $last = $this->getSessionVariable($varName, "OBL");
-        if(!empty($last) && $last == $sortBy) {
-            $desc = !$desc;
-        }else {
+    if (empty($desc))
+        {
+            $desc = $defaultOrder;
+        }
+        $defaultOrder = $desc ? 'desc' : 'asc';
+        $orderByValue = $defaultOrder;
+        if (isset($_REQUEST[$orderByDirection]))
+        {
+            $possibleRequestOrderBy = $_REQUEST[$orderByDirection];
+            if ($possibleRequestOrderBy == 'asc' || $possibleRequestOrderBy == 'desc')
+            {
+                $orderByValue = $possibleRequestOrderBy;
+            }
+        }
+
+        if (isset($_REQUEST[$orderByColumn]))
+        {
+            $last = $this->getSessionVariable($varName, "OBL");
+        }
+        if (!empty($last) && $last == $sortBy)
+        {
+            $lastEqualsSortBy = true;
+        } else
+        {
+            $orderByValue = $defaultOrder;
             $this->setSessionVariable($varName, "OBL", $sortBy);
         }
-    $this->setSessionVariable($varName, $sortBy."S", $desc);
-    if(!empty($sortBy)) {
-        if(empty($force_sortorder)) {
-            if(substr_count(strtolower($sortBy), ' desc') == 0 && substr_count(strtolower($sortBy), ' asc') == 0) {
-                if($desc) {
-                    $this->query_orderby = $sortBy.' desc';
-                } else {
-                    $this->query_orderby = $sortBy.' asc';
+        $desc = $orderByValue == 'desc';
+        $orderByDirectionValue = false;
+        $this->setSessionVariable($varName, $sortBy . "S", $desc);
+        if (!empty($sortBy))
+        {
+            if (empty($force_sortorder))
+            {
+                if (substr_count(strtolower($sortBy), ' desc') == 0 && substr_count(strtolower($sortBy), ' asc') == 0)
+                {
+                    if ($sortBy)
+                    {
+                        $orderByDirectionValue = $desc ? 'asc' : 'desc';
+                    }
+                    $this->query_orderby = $sortBy . ' ' . $orderByValue;
                 }
+            } else
+            {
+                $this->query_orderby = $sortBy . ' ' . $force_sortorder;
             }
-
-        } else {
-            $this->query_orderby = $sortBy . ' ' . $force_sortorder;
-        }
+            if (!isset($this->appendToBaseUrl))
+            {
+                $this->appendToBaseUrl = array();
+            }
+            if ($orderByDirectionValue)
+            {
+                $this->appendToBaseUrl[$orderByDirection] = $orderByDirectionValue;
+            }
+            $offsetVar = $this->getSessionVariableName($varName, "offset");
+            if (isset($_REQUEST[$offsetVar]))
+            {
+                $this->appendToBaseUrl[$offsetVar] = $_REQUEST[$offsetVar];
+            }
+            //Just clear from url...
+            $this->appendToBaseUrl[$orderByColumn] = false;
     }else {
         $this->query_orderby = "";
     }
@@ -870,7 +911,34 @@ function getUserVariable($localVarName, $varName) {
 }
 
 
+    /**
+     * helper method to determine sort order by priority of source
+     * 1. explicit in request object
+     * 2. in session variable
+     * 3. subpaneldefs metadata
+     * 4. default 'asc'
+     * @param array $sortOrderList - contains options
+     * @return string 'asc' | 'desc'
+     */
+    function calculateSortOrder($sortOrderList)
+    {
+        $priority_map = array(
+          'request',
+          'session',
+          'subpaneldefs',
+          'default',
+        );
 
+        foreach($priority_map as $p) {
+            if (key_exists($p, $sortOrderList)) {
+                $order = strtolower($sortOrderList[$p]);
+                if (in_array($order, array('asc', 'desc'))) {
+                    return $order;
+                }
+            }
+        }
+        return 'asc';
+    }
 
 
     /**
@@ -945,6 +1013,8 @@ function getUserVariable($localVarName, $varName) {
         return $list;
     }
 
+
+
     function processUnionBeans($sugarbean, $subpanel_def, $html_var = 'CELL') {
 
 		$last_detailview_record = $this->getSessionVariable("detailview", "record");
@@ -957,29 +1027,37 @@ function getUserVariable($localVarName, $varName) {
 		$module = isset($_REQUEST['module']) ? $_REQUEST['module'] : '';
 		$response = array();
 
-        $this->sort_order = 'asc';
-        if(isset($_REQUEST['sort_order'])) {
-            $this->sort_order = $_REQUEST['sort_order'];
-        } else {
-            if(isset($subpanel_def->_instance_properties['sort_order'])) {
-                $sort_order = $subpanel_def->_instance_properties['sort_order'];
-            }
+        // choose sort order
+        $sort_order = array();
+        $sort_order['default'] = 'asc';
 
-            if(isset($_SESSION['last_sub' .$this->subpanel_module. '_order'])) {
-                // We swap the order when the request contains an offset (indicating a column sort issued);
-                // otherwise we do not sort.  If we don't make this check, then the subpanel listview will
-                // swap ordering each time a new record is entered via quick create forms
+        // explicit request parameter gets priority over all
+        $sort_order['request'] = isset($_REQUEST['sort_order']) ? $_REQUEST['sort_order'] : null;
 
-                if(isset($_REQUEST[$module. '_' . $html_var . '_offset'])) {
-                    $this->sort_order = $_SESSION['last_sub' .$this->subpanel_module. '_order'] == 'asc' ? 'desc' : 'asc';
-                } else {
-                $this->sort_order = $_SESSION['last_sub' .$this->subpanel_module. '_order'];
-                }
-            }
-            elseif(isset($sort_order)) {
-                $this->sort_order = $sort_order;
+        // see if the session data has a sort order
+        if (isset($_SESSION['last_sub' . $this->subpanel_module . '_order']))
+        {
+            $sort_order['session'] = $_SESSION['last_sub' . $this->subpanel_module . '_order'];
+
+            // We swap the order when the request contains an offset (indicating a column sort issued);
+            // otherwise we do not sort.  If we don't make this check, then the subpanel listview will
+            // swap ordering each time a new record is entered via quick create forms
+            if (isset($_REQUEST[$module . '_' . $html_var . '_offset']))
+            {
+                $sort_order['session'] = $sort_order['session'] == 'asc' ? 'desc' : 'asc';
             }
         }
+        else
+        {
+            $sort_order['session'] = null;
+        }
+
+        // does the metadata have a default sort order?
+        $sort_order['subpaneldefs'] = isset($subpanel_def->_instance_properties['sort_order']) ?
+            $subpanel_def->_instance_properties['sort_order'] : null;
+
+        $this->sort_order = $this->calculateSortOrder($sort_order);
+
 
         if (isset($subpanel_def->_instance_properties['sort_by'])) {
             $this->query_orderby = $subpanel_def->_instance_properties['sort_by'];
@@ -1377,6 +1455,35 @@ $close_inline_img = SugarThemeRegistry::current()->getImage('close_inline', 'bor
             $this->base_URL.='&to_pdf=true&action=SubPanelViewer&subpanel=' . $this->source_module;
         }
 
+        //bug43465 start
+        if (isset($this->appendToBaseUrl) && is_array($this->appendToBaseUrl))
+        {
+            foreach ($this->appendToBaseUrl as $key => $value)
+            {
+                $fullRequestString = $key . '=' . $value;
+
+                if ($this->base_URL == "/index.php")
+                {
+                    $this->base_URL .= "?";
+                } else
+                {
+                    if ($fullRequestString == substr($this->baseURL, '-' . strlen($fullRequestString)))
+                    {
+                        $this->base_URL = preg_replace("/&" . $key . "\=.*/", "", $this->base_URL);
+                    } else
+                    {
+                        $this->base_URL = preg_replace("/&" . $key . "\=.*?&/", "&", $this->base_URL);
+                    }
+                    $this->base_URL .= "&";
+                }
+                if (!empty($value))
+                {
+                    $this->base_URL .= "{$key}={$value}";
+                }
+            }
+        }
+        //bug43465 end
+        
         $sort_URL_base = $this->base_URL. "&".$this->getSessionVariableName($html_varName,"ORDER_BY")."=";
 
         if($sort_URL_base !== "")
@@ -1509,12 +1616,6 @@ $close_inline_img = SugarThemeRegistry::current()->getImage('close_inline', 'bor
                     if(trim($results['string']) == '') $results['string'] = $app_strings['LBL_NONE'];
                     $fields[$results['fieldToAddTo']] = $fields[$results['fieldToAddTo']].'</a>';
                 }
-                //fixes bug for IE where empty list view rows causes IE to not display bottom border
-                if(isset($fields['DESCRIPTION']) && empty($fields['DESCRIPTION']))
-                $fields['DESCRIPTION'] = "&nbsp;";
-                if(isset($fields['LIST_ORDER']) && empty($fields['LIST_ORDER']))
-                $fields['LIST_ORDER'] = "&nbsp;";
-
                 $this->xTemplate->assign($html_varName, $fields);
                 $aItem->setupCustomFields($aItem->module_dir);
                 $aItem->custom_fields->populateAllXTPL($this->xTemplate, 'detail', $html_varName, $fields);

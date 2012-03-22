@@ -118,6 +118,9 @@ class SugarCronJobs
      */
     public function throttle()
     {
+        if($this->min_interval == 0) {
+            return true;
+        }
         create_cache_directory($this->lockfile);
         if(!file_exists($this->lockfile)) {
             $this->markLastRun();

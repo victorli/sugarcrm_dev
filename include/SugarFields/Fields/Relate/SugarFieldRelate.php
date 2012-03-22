@@ -326,6 +326,12 @@ class SugarFieldRelate extends SugarFieldBase {
                     $focus->$idField = '';
             }
 
+            // fixing bug #47722: Imports to Custom Relate Fields Do Not Work
+            if (!isset($vardef['table']))
+            {
+                // Set target module table as the default table name
+                $vardef['table'] = $newbean->table_name;
+            }
             // be sure that the id isn't already set for this row
             if ( empty($focus->$idField)
                     && $idField != $vardef['name']

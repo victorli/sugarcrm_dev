@@ -72,20 +72,22 @@ testing_module = "{$smarty.request.module}";
         {{$field}}
     {{/foreach}}
 {{/if}}
+{assign var="openli" value="<li>"}
+{assign var="closeli" value="</li>"}
 <ul class="clickMenu fancymenu" id="detailViewActions">
     <li style="cursor: pointer">
         {{sugar_actions_link module="$module" id="EDIT2" view="$view"}}
             <ul class="subnav multi">
                 {{if !isset($form.buttons)}}
-                    <li>{{sugar_actions_link module="$module" id="DUPLICATE" view="EditView"}}</li>
-                    <li>{{sugar_actions_link module="$module" id="DELETE" view="$view"}}</li>
+                    {{$openli}}{{sugar_actions_link module="$module" id="DUPLICATE" view="EditView"}}{{$closeli}}
+                    {{$openli}}{{sugar_actions_link module="$module" id="DELETE" view="$view"}}{{$closeli}}
                 {{else}}
                     {{counter assign="num_buttons" start=0 print=false}}
                     {{foreach from=$form.buttons key=val item=button}}
                       {{if !is_array($button) && in_array($button, $built_in_buttons)}}
                          {{counter print=false}}
                             {{if $button != "EDIT"}}
-                                {{sugar_actions_link module="$module" id="$button" view="EditView"}}
+                                <li>{{sugar_actions_link module="$module" id="$button" view="EditView"}}</li>
                             {{/if}}
                       {{/if}}
                     {{/foreach}}
@@ -97,14 +99,14 @@ testing_module = "{$smarty.request.module}";
                     {{if count($form.buttons) > $num_buttons}}
                         {{foreach from=$form.buttons key=val item=button}}
                             {{if is_array($button) && $button.customCode}}
-                                <li>{{sugar_actions_link module="$module" id="$button" view="EditView"}}</li>
+                                {{$openli}}{{sugar_actions_link module="$module" id="$button" view="EditView"}}{{$closeli}}
                             {{/if}}
                         {{/foreach}}
                     {{/if}}
                 {{/if}}
 
                 {{if empty($form.hideAudit) || !$form.hideAudit}}
-                    <li>{{sugar_actions_link module="$module" id="Audit" view="EditView"}}</li>
+                    {{$openli}}{{sugar_actions_link module="$module" id="Audit" view="EditView"}}{{$closeli}}
                 {{/if}}
             </ul>
     </li>

@@ -36,7 +36,15 @@
 
 *}
 
-
+<script>
+    {literal}
+    $(document).ready(function(){
+        $("ul.clickMenu").each(function(index, node){
+            $(node).sugarActionMenu();
+        });
+    });
+    {/literal}
+</script>
 {$ROLLOVER}
 <script type="text/javascript" src="{sugar_getjspath file='modules/Emails/javascript/vars.js'}"></script>
 <script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_emails.js'}"></script>
@@ -125,9 +133,9 @@ EditView_tabs.on('contentReady', function(e){
                     <a	id="Save" title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}"
                     onclick="var _form = $('#EditView')[0]; if (!set_password(_form,newrules('{$PWDSETTINGS.minpwdlength}','{$PWDSETTINGS.maxpwdlength}','{$REGEX}'))) return false; if (!Admin_check()) return false; _form.action.value='Save'; {$CHOOSER_SCRIPT} {$REASSIGN_JS} if(verify_data(EditView)) _form.submit();"
                     name="button">{$APP.LBL_SAVE_BUTTON_LABEL}</a>
-                    <ul class="subnav multi">
+                    <ul class="subnav iefixed multi">
                     <li><input	title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}"
-                    class="button" onclick="this.form.action.value='{$RETURN_ACTION}'; this.form.module.value='{$RETURN_MODULE}'; this.form.record.value='{$RETURN_ID}'; this.form.submit()"
+                    class="button" onclick="var _form = $('#EditView')[0]; _form.action.value='{$RETURN_ACTION}'; _form.module.value='{$RETURN_MODULE}'; _form.record.value='{$RETURN_ID}'; _form.submit()"
                     type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}"></li>
             {$BUTTONS}
                     </ul>

@@ -167,12 +167,20 @@ class SugarFileUtilsTest extends Sugar_PHPUnit_Framework_TestCase
     
     public function testSugarChown()
     {
+        if ($GLOBALS['sugar_config']['default_permissions']['user'] == '')
+        {
+            $this->markTestSkipped('Can not get UID. Posix extension is required.');
+        }
         $this->assertTrue(sugar_chown($this->_filename));
         $this->assertEquals(fileowner($this->_filename),$this->_getCurrentUser());
     }
     
     public function testSugarChownWithUser()
     {
+        if ($this->_getCurrentUser() == '')
+        {
+            $this->markTestSkipped('Can not get UID. Posix extension is required.');
+        }
         $this->assertTrue(sugar_chown($this->_filename,$this->_getCurrentUser()));
         $this->assertEquals(fileowner($this->_filename),$this->_getCurrentUser());
     }
@@ -186,6 +194,11 @@ class SugarFileUtilsTest extends Sugar_PHPUnit_Framework_TestCase
     
     public function testSugarChownWithUserNoDefaultUser()
     {
+        if ($this->_getCurrentUser() == '')
+        {
+            $this->markTestSkipped('Can not get UID. Posix extension is required.');
+        }
+
         $GLOBALS['sugar_config']['default_permissions']['user'] = '';
         
         $this->assertTrue(sugar_chown($this->_filename,$this->_getCurrentUser()));

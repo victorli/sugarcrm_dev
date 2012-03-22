@@ -363,7 +363,7 @@ FRA;
     function createQuickSearchCode($returnAsJavascript = true){
         $sqs_objects = array();
         require_once('include/QuickSearchDefaults.php');
-        $qsd = new QuickSearchDefaults();
+        $qsd = QuickSearchDefaults::getQuickSearchDefaults();
         $qsd->setFormName($this->form_name);
         for($i=0; $i<$this->numFields; $i++){
             $name1 = "{$this->form_name}_{$this->name}_collection_{$i}";

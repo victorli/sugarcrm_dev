@@ -58,11 +58,11 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 ///////  Retrieve user
 
     $usr= new user();
-    if(isset( $_POST['username']) && isset($_POST['user_email'] )){
-    	if ($_POST['username'] != '' && $_POST['user_email'] != ''){
-	        $usr_id=$usr->retrieve_user_id($_POST['username']);
+    if(isset( $_POST['user_name']) && isset($_POST['Users0emailAddress0'] )){
+    	if ($_POST['user_name'] != '' && $_POST['Users0emailAddress0'] != ''){
+	        $usr_id=$usr->retrieve_user_id($_POST['user_name']);
 	        $usr->retrieve($usr_id);
-	        if ($usr->email1 !=  $_POST['user_email']){
+	        if ($usr->email1 !=  $_POST['Users0emailAddress0']){
 	            echo $mod_strings['ERR_PASSWORD_USERNAME_MISSMATCH'];
 	            return;
     	    }

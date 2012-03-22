@@ -44,7 +44,8 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 // Call is used to store customer information.
-class Call extends SugarBean
+require_once('modules/Activities/Activity.php');
+class Call extends Activity
 {
 	var $field_name_map;
 	// Stored fields
@@ -465,7 +466,13 @@ class Call extends SugarBean
 		}
 
         $call_fields['CONTACT_ID'] = $this->contact_id;
-        $call_fields['CONTACT_NAME'] = $this->contact_name;
+        //If we have a contact id and there are more than one contacts found for this meeting then let's create a hover link
+        if($this->alter_many_to_many_query && !empty($this->contact_id) && isset($this->secondary_select_count) && $this->secondary_select_count > 1)
+        {
+           $call_fields['CONTACT_NAME'] = $this->createManyToManyDetailHoverLink($this->contact_name, $this->contact_id);
+        } else {
+           $call_fields['CONTACT_NAME'] = $this->contact_name;
+        }
 
 		$call_fields['PARENT_NAME'] = $this->parent_name;
 

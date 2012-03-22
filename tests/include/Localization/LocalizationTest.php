@@ -139,6 +139,22 @@ class LocalizationTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEquals($string,$convertedString);
     }
     
+    public function testConvertKS_C_56011987AsCP949()
+    {
+        if ( !function_exists('iconv') ) {
+            $this->markTestSkipped('Requires iconv');
+        }
+        
+        $string = file_get_contents(dirname(__FILE__)."/Bug49619.txt");
+        
+        $convertedString = $this->_locale->translateCharset($string,'KS_C_5601-1987','UTF-8', true);
+        $this->assertNotEquals($string,$convertedString);
+        
+        // test for this working by being able to convert back and the string match
+        $convertedString = $this->_locale->translateCharset($convertedString,'UTF-8','KS_C_5601-1987',true);
+        $this->assertEquals($string,$convertedString);
+    }
+    
     public function testCanDetectAsciiEncoding()
     {
         $string = 'string';

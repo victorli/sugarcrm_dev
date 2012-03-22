@@ -75,38 +75,57 @@ class DocumentsViewExtdoc extends SugarView
             $isPopup = false;
         }
 
-        // Need to manually attempt to fetch the EAPM record, we don't want to give them the signup screen when they just have a deactivated account.
-        
-        if ( !$eapmBean = EAPM::getLoginInfo($apiName,true) ) {
-            $smarty = new Sugar_Smarty();
-            echo $smarty->fetch('include/externalAPI/'.$apiName.'/'.$apiName.'Signup.'.$GLOBALS['current_language'].'.tpl');
-            return;
-        }
+         // bug50952 - must actually make sure we can log in, not just that we've got a EAPM record
+         // getLoginInfo only checks to see if user has logged in correctly ONCE to ExternalAPI
+         // Need to manually attempt to fetch the EAPM record, we don't want to give them the signup screen when they just have a deactivated account.
+         $eapmBean = EAPM::getLoginInfo($apiName,true);
+         $api = ExternalAPIFactory::loadAPI($apiName,true);
+         $api->loadEAPM($eapmBean);
 
+         // $api->checkLogin() does the same thing as quickCheckLogin plus actually makes sure
+         // the user CAN log in to the API currently
+         $checkLogin = $api->checkLogin();
 
-        $api = ExternalAPIFactory::loadAPI($apiName,true);
-        $api->loadEAPM($eapmBean);
+         if ( !$eapmBean || !$checkLogin['success'] )
+         {
+             $useTemplate = false;
+             $output = '';
 
-        $quickCheck = $api->quickCheckLogin();
-        if ( ! $quickCheck['success'] ) {
-            $errorMessage = string_format(translate('LBL_ERR_FAILED_QUICKCHECK','EAPM'), array($apiName));
-            $errorMessage .= '<form method="POST" target="_EAPM_CHECK" action="index.php">';
-            $errorMessage .= '<input type="hidden" name="module" value="EAPM">';
-            $errorMessage .= '<input type="hidden" name="action" value="Save">';
-            $errorMessage .= '<input type="hidden" name="record" value="'.$eapmBean->id.'">';
-            $errorMessage .= '<input type="hidden" name="active" value="1">';
-            $errorMessage .= '<input type="hidden" name="closeWhenDone" value="1">';
-            $errorMessage .= '<input type="hidden" name="refreshParentWindow" value="1">';
+             // Bug #49987 : Documents view.extdoc.php doesn't allow custom override
+             $tpl_file = 'include/externalAPI/'.$apiName.'/'.$apiName.'Signup.'.$GLOBALS['current_language'].'.tpl';
+             if ( file_exists('custom/'.$tpl_file) && is_readable('custom/'.$tpl_file) )
+             {
+                 $tpl_file = 'custom/'.$tpl_file;
+                 $useTemplate = true;
+             }
+             elseif( file_exists( $tpl_file ) && is_readable( $tpl_file ) )
+             {
+                 $useTemplate = true;
+             }
 
-            $errorMessage .= '<br><input type="submit" value="'.$GLOBALS['app_strings']['LBL_EMAIL_OK'].'">&nbsp;';
-            $errorMessage .= '<input type="button" onclick="lastLoadedMenu=undefined;DCMenu.closeOverlay();return false;" value="'.$GLOBALS['app_strings']['LBL_CANCEL_BUTTON_LABEL'].'">';
-            $errorMessage .= '</form>';
-            echo $errorMessage;
-            return;
-        }
+             if( $useTemplate )  {
+                 $smarty = new Sugar_Smarty();
+                 $output = $smarty->fetch( $tpl_file );
+             } else  {
+                 $output = string_format(translate('LBL_ERR_FAILED_QUICKCHECK','EAPM'), array($apiName));
+                 $output .= '<form method="POST" target="_EAPM_CHECK" action="index.php">';
+                 $output .= '<input type="hidden" name="module" value="EAPM">';
+                 $output .= '<input type="hidden" name="action" value="Save">';
+                 $output .= '<input type="hidden" name="record" value="'.$eapmBean->id.'">';
+                 $output .= '<input type="hidden" name="active" value="1">';
+                 $output .= '<input type="hidden" name="closeWhenDone" value="1">';
+                 $output .= '<input type="hidden" name="refreshParentWindow" value="1">';
+
+                 $output .= '<br><input type="submit" value="'.$GLOBALS['app_strings']['LBL_EMAIL_OK'].'">&nbsp;';
+                 $output .= '<input type="button" onclick="lastLoadedMenu=undefined;DCMenu.closeOverlay();return false;" value="'.$GLOBALS['app_strings']['LBL_CANCEL_BUTTON_LABEL'].'">';
+                 $output .= '</form>';
+             }
+
+             echo $output;
+             return;
+         }
 
         $searchDataLower = $api->searchDoc($file_search,true);
-
 
         // In order to emulate the list views for the SugarFields, I need to uppercase all of the key names.
         $searchData = array();

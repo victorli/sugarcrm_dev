@@ -120,6 +120,9 @@ class Link2 {
         //Instantiate the relationship for this link.
         $this->relationship = SugarRelationshipFactory::getInstance()->getRelationship($this->def['relationship']);
 
+        // Fix to restore functionality from Link.php that needs to be rewritten but for now this will do.
+        $this->relationship_fields = (!empty($this->def['rel_fields']))?$this->def['rel_fields']: array();
+
         if (!$this->loadedSuccesfully())
         {
             $GLOBALS['log']->fatal("{$this->name} for {$this->def['relationship']} failed to load\n");
@@ -395,7 +398,7 @@ class Link2 {
     function getBeans($params = array()) {
         //Some depricated code attempts to pass in the old format to getBeans with a large number of useless paramters.
         //reset the parameters if they are not in the new array format.
-        if (!is_array($params))
+    	if (!is_array($params))
             $params = array();
 
         if (!$this->loaded && empty($params)) {

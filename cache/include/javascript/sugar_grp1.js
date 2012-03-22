@@ -1,42 +1,7 @@
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- *
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- *
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- *
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
+
 if(typeof(SUGAR)=="undefined"){SUGAR={namespace:function(ns){SUGAR[ns]=SUGAR[ns]||{};return((typeof SUGAR[ns]==="object")&&(SUGAR[ns]!==null))?SUGAR[ns]:false;},append:function(target,obj){for(var prop in obj){if(obj[prop]!==void 0)target[prop]=obj[prop];}
 return target;}};}
-SUGAR.namespace("themes");SUGAR.namespace("sugarHome");SUGAR.namespace("subpanelUtils");SUGAR.namespace("ajaxStatusClass");SUGAR.namespace("tabChooser");SUGAR.namespace("utils");SUGAR.namespace("savedViews");SUGAR.namespace("dashlets");SUGAR.namespace("unifiedSearchAdvanced");SUGAR.namespace("searchForm");SUGAR.namespace("language");SUGAR.namespace("Studio");SUGAR.namespace("contextMenu");SUGAR.namespace("config");var nameIndex=0;var typeIndex=1;var requiredIndex=2;var msgIndex=3;var jstypeIndex=5;var minIndex=10;var maxIndex=11;var altMsgIndex=15;var compareToIndex=7;var arrIndex=12;var operatorIndex=13;var callbackIndex=16;var allowblank=8;var validate=new Array();var maxHours=24;var requiredTxt='Missing Required Field:'
-var invalidTxt='Invalid Value:'
-var secondsSinceLoad=0;var inputsWithErrors=new Array();var tabsWithErrors=new Array();var lastSubmitTime=0;var alertList=new Array();var oldStartsWith='';function isSupportedIE(){var userAgent=navigator.userAgent.toLowerCase();if(userAgent.indexOf("msie")!=-1&&userAgent.indexOf("mac")==-1&&userAgent.indexOf("opera")==-1){var version=navigator.appVersion.match(/MSIE (.\..)/)[1];if(version>=5.5&&version<10){return true;}else{return false;}}}
+SUGAR.namespace("themes");SUGAR.namespace("sugarHome");SUGAR.namespace("subpanelUtils");SUGAR.namespace("ajaxStatusClass");SUGAR.namespace("tabChooser");SUGAR.namespace("utils");SUGAR.namespace("savedViews");SUGAR.namespace("dashlets");SUGAR.namespace("unifiedSearchAdvanced");SUGAR.namespace("searchForm");SUGAR.namespace("language");SUGAR.namespace("Studio");SUGAR.namespace("contextMenu");SUGAR.namespace("config");var nameIndex=0;var typeIndex=1;var requiredIndex=2;var msgIndex=3;var jstypeIndex=5;var minIndex=10;var maxIndex=11;var altMsgIndex=15;var compareToIndex=7;var arrIndex=12;var operatorIndex=13;var callbackIndex=16;var allowblank=8;var validate=new Array();var maxHours=24;var requiredTxt='Missing Required Field:';var invalidTxt='Invalid Value:';var secondsSinceLoad=0;var inputsWithErrors=new Array();var tabsWithErrors=new Array();var lastSubmitTime=0;var alertList=new Array();var oldStartsWith='';function isSupportedIE(){var userAgent=navigator.userAgent.toLowerCase();if(userAgent.indexOf("msie")!=-1&&userAgent.indexOf("mac")==-1&&userAgent.indexOf("opera")==-1){var version=navigator.appVersion.match(/MSIE (.\..)/)[1];if(version>=5.5&&version<10){return true;}else{return false;}}}
 SUGAR.isIE=isSupportedIE();var isSafari=(navigator.userAgent.toLowerCase().indexOf('safari')!=-1);RegExp.escape=function(text){if(!arguments.callee.sRE){var specials=['/','.','*','+','?','|','(',')','[',']','{','}','\\'];arguments.callee.sRE=new RegExp('(\\'+specials.join('|\\')+')','g');}
 return text.replace(arguments.callee.sRE,'\\$1');}
 function addAlert(type,name,subtitle,description,time,redirect){var addIndex=alertList.length;alertList[addIndex]=new Array();alertList[addIndex]['name']=name;alertList[addIndex]['type']=type;alertList[addIndex]['subtitle']=subtitle;alertList[addIndex]['description']=replaceHTMLChars(description.replace(/<br>/gi,"\n"));alertList[addIndex]['time']=time;alertList[addIndex]['done']=0;alertList[addIndex]['redirect']=redirect;}
@@ -46,8 +11,7 @@ setTimeout("checkAlerts()",1000);}
 function toggleDisplay(id){if(this.document.getElementById(id).style.display=='none'){this.document.getElementById(id).style.display='';if(this.document.getElementById(id+"link")!=undefined){this.document.getElementById(id+"link").style.display='none';}
 if(this.document.getElementById(id+"_anchor")!=undefined)
 this.document.getElementById(id+"_anchor").innerHTML='[ - ]';}
-else{this.document.getElementById(id).style.display='none'
-if(this.document.getElementById(id+"link")!=undefined){this.document.getElementById(id+"link").style.display='';}
+else{this.document.getElementById(id).style.display='none';if(this.document.getElementById(id+"link")!=undefined){this.document.getElementById(id+"link").style.display='';}
 if(this.document.getElementById(id+"_anchor")!=undefined)
 this.document.getElementById(id+"_anchor").innerHTML='[+]';}}
 function checkAll(form,field,value){for(i=0;i<form.elements.length;i++){if(form.elements[i].name==field)
@@ -59,14 +23,11 @@ function addToValidate(formname,name,type,required,msg){if(typeof validate[formn
 validate[formname][validate[formname].length]=new Array(name,type,required,msg);}
 function addToValidateCallback(formname,name,type,required,msg,callback)
 {addToValidate(formname,name,type,required,msg);var iIndex=validate[formname].length-1;validate[formname][iIndex][jstypeIndex]='callback';validate[formname][iIndex][callbackIndex]=callback;}
-function addToValidateRange(formname,name,type,required,msg,min,max){addToValidate(formname,name,type,required,msg);validate[formname][validate[formname].length-1][jstypeIndex]='range'
-validate[formname][validate[formname].length-1][minIndex]=min;validate[formname][validate[formname].length-1][maxIndex]=max;}
-function addToValidateIsValidDate(formname,name,type,required,msg){addToValidate(formname,name,type,required,msg);validate[formname][validate[formname].length-1][jstypeIndex]='date'}
-function addToValidateIsValidTime(formname,name,type,required,msg){addToValidate(formname,name,type,required,msg);validate[formname][validate[formname].length-1][jstypeIndex]='time'}
-function addToValidateDateBefore(formname,name,type,required,msg,compareTo){addToValidate(formname,name,type,required,msg);validate[formname][validate[formname].length-1][jstypeIndex]='isbefore'
-validate[formname][validate[formname].length-1][compareToIndex]=compareTo;}
-function addToValidateDateBeforeAllowBlank(formname,name,type,required,msg,compareTo,allowBlank){addToValidate(formname,name,type,required,msg);validate[formname][validate[formname].length-1][jstypeIndex]='isbefore'
-validate[formname][validate[formname].length-1][compareToIndex]=compareTo;validate[formname][validate[formname].length-1][allowblank]=allowBlank;}
+function addToValidateRange(formname,name,type,required,msg,min,max){addToValidate(formname,name,type,required,msg);validate[formname][validate[formname].length-1][jstypeIndex]='range';validate[formname][validate[formname].length-1][minIndex]=min;validate[formname][validate[formname].length-1][maxIndex]=max;}
+function addToValidateIsValidDate(formname,name,type,required,msg){addToValidate(formname,name,type,required,msg);validate[formname][validate[formname].length-1][jstypeIndex]='date';}
+function addToValidateIsValidTime(formname,name,type,required,msg){addToValidate(formname,name,type,required,msg);validate[formname][validate[formname].length-1][jstypeIndex]='time';}
+function addToValidateDateBefore(formname,name,type,required,msg,compareTo){addToValidate(formname,name,type,required,msg);validate[formname][validate[formname].length-1][jstypeIndex]='isbefore';validate[formname][validate[formname].length-1][compareToIndex]=compareTo;}
+function addToValidateDateBeforeAllowBlank(formname,name,type,required,msg,compareTo,allowBlank){addToValidate(formname,name,type,required,msg);validate[formname][validate[formname].length-1][jstypeIndex]='isbefore';validate[formname][validate[formname].length-1][compareToIndex]=compareTo;validate[formname][validate[formname].length-1][allowblank]=allowBlank;}
 function addToValidateBinaryDependency(formname,name,type,required,msg,compareTo){addToValidate(formname,name,type,required,msg);validate[formname][validate[formname].length-1][jstypeIndex]='binarydep';validate[formname][validate[formname].length-1][compareToIndex]=compareTo;}
 function addToValidateComparison(formname,name,type,required,msg,compareTo){addToValidate(formname,name,type,required,msg);validate[formname][validate[formname].length-1][jstypeIndex]='comparison';validate[formname][validate[formname].length-1][compareToIndex]=compareTo;}
 function addToValidateIsInArray(formname,name,type,required,msg,arr,operator){addToValidate(formname,name,type,required,msg);validate[formname][validate[formname].length-1][jstypeIndex]='in_array';validate[formname][validate[formname].length-1][arrIndex]=arr;validate[formname][validate[formname].length-1][operatorIndex]=operator;}
@@ -79,12 +40,14 @@ function removeFromValidate(formname,name){for(i=0;i<validate[formname].length;i
 function checkValidate(formname,name){if(validate[formname]){for(i=0;i<validate[formname].length;i++){if(validate[formname][i][nameIndex]==name){return true;}}}
 return false;}
 var formsWithFieldLogic=null;var formWithPrecision=null;function addToValidateFieldLogic(formId,minFieldId,maxFieldId,defaultFieldId,lenFieldId,type,msg){this.formId=document.getElementById(formId);this.min=document.getElementById(minFieldId);this.max=document.getElementById(maxFieldId);this._default=document.getElementById(defaultFieldId);this.len=document.getElementById(lenFieldId);this.msg=msg;this.type=type;}
+
+//@params: formid- Dom id of the form containing the precision and float fields
 function addToValidatePrecision(formId,valueId,precisionId){this.form=document.getElementById(formId);this.float=document.getElementById(valueId);this.precision=document.getElementById(precisionId);}
 function isValidPrecision(value,precision){value=trim(value.toString());if(precision=='')
 return true;if(value=='')
 return true;if((precision=="0")){if(value.indexOf(dec_sep)==-1){return true;}else{return false;}}
 if(value.charAt(value.length-precision-1)==num_grp_sep){if(value.substr(value.indexOf(dec_sep),1)==dec_sep){return false;}
-returntrue;}
+return true;}
 var actualPrecision=value.substr(value.indexOf(dec_sep)+1,value.length).length;return actualPrecision==precision;}
 function toDecimal(original,precision){precision=(precision==null)?2:precision;num=Math.pow(10,precision);temp=Math.round(original*num)/num;if((temp*100)%100==0)
 return temp+'.00';if((temp*10)%10==0)
@@ -95,7 +58,7 @@ return /^[+-]?[0-9]*$/.test(s);}
 function isDecimal(s){if(typeof s=="string"&&s=="")
 return true;if(typeof num_grp_sep!='undefined'&&typeof dec_sep!='undefined')
 {s=unformatNumberNoParse(s,num_grp_sep,dec_sep).toString();}
-return/^[+-]?[0-9]*\.?[0-9]*$/.test(s);}
+return /^[+-]?[0-9]*\.?[0-9]*$/.test(s);}
 function isNumeric(s){return isDecimal(s);}
 if(typeof date_reg_positions!="object")var date_reg_positions={'Y':1,'m':2,'d':3};if(typeof date_reg_format!="string")var date_reg_format='([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})';function isDate(dtStr){if(dtStr.length==0){return true;}
 myregexp=new RegExp(date_reg_format)
@@ -155,7 +118,7 @@ else{inputHandle.parentNode.appendChild(errorTextNode);}
 if(flash)
 inputHandle.style.backgroundColor="#FF0000";inputsWithErrors.push(inputHandle);}
 if(flash)
-{if(inputsWithErrors.length==1){for(wp=1;wp<=10;wp++){window.setTimeout('fade_error_style(style, '+wp*10+')',1000+(wp*50));}}
+{if(inputsWithErrors.length==1){for(var wp=1;wp<=10;wp++){window.setTimeout('fade_error_style(style, '+wp*10+')',1000+(wp*50));}}
 if(typeof(window[formname+"_tabs"])!="undefined"){var tabView=window[formname+"_tabs"];var parentDiv=YAHOO.util.Dom.getAncestorByTagName(inputHandle,"div");if(tabView.get){var tabs=tabView.get("tabs");for(var i in tabs){if(tabs[i].get("contentEl")==parentDiv||YAHOO.util.Dom.isAncestor(tabs[i].get("contentEl"),inputHandle))
 {tabs[i].get("labelEl").style.color="red";if(inputsWithErrors.length==1)
 tabView.selectTab(i);}}}}
@@ -187,6 +150,7 @@ lastSubmitTime=_date.getTime();oldStartsWith=startsWith;clear_all_errors();input
 if(validate[formname][i][requiredIndex]&&!isFieldTypeExceptFromEmptyCheck(validate[formname][i][typeIndex])){if(typeof form[validate[formname][i][nameIndex]]=='undefined'||trim(form[validate[formname][i][nameIndex]].value)==""){add_error_style(formname,validate[formname][i][nameIndex],requiredTxt+' '+validate[formname][i][msgIndex]);isError=true;}}
 if(!bail){switch(validate[formname][i][typeIndex]){case'email':if(!isValidEmail(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
 break;case'time':if(!isTime(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}break;case'date':if(!isDate(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}break;case'alpha':break;case'DBName':if(!isDBName(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
+break;case'DBNameRaw':if(!isDBName(form[validate[formname][i][nameIndex]].value)){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
 break;case'alphanumeric':break;case'file':var file_input=form[validate[formname][i][nameIndex]+'_file'];if(file_input&&validate[formname][i][requiredIndex]&&trim(file_input.value)==""&&!file_input.disabled){isError=true;add_error_style(formname,validate[formname][i][nameIndex],requiredTxt+" "+validate[formname][i][msgIndex]);}
 break;case'int':if(!isInteger(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
 break;case'decimal':if(!isDecimal(trim(form[validate[formname][i][nameIndex]].value))){isError=true;add_error_style(formname,validate[formname][i][nameIndex],invalidTxt+" "+validate[formname][i][msgIndex]);}
@@ -293,10 +257,12 @@ function freezeEvent(e){if(e){if(e.preventDefault)e.preventDefault();e.returnVal
 function coordinate(_x,_y){var x=_x;var y=_y;this.add=add;this.sub=sub;this.x=x;this.y=y;function add(rh){return new position(this.x+rh.x,this.y+rh.y);}
 function sub(rh){return new position(this.x+rh.x,this.y+rh.y);}}
 function sendAndRetrieve(theForm,theDiv,loadingStr){function success(data){document.getElementById(theDiv).innerHTML=data.responseText;ajaxStatus.hideStatus();}
-if(typeof loadingStr=='undefined')SUGAR.language.get('app_strings','LBL_LOADING');ajaxStatus.showStatus(loadingStr);YAHOO.util.Connect.setForm(theForm);var cObj=YAHOO.util.Connect.asyncRequest('POST','index.php',{success:success,failure:success});return false;}
+if(typeof loadingStr=='undefined')SUGAR.language.get('app_strings','LBL_LOADING');ajaxStatus.showStatus(loadingStr);oForm=new YAHOO.util.Element(theForm);if(oForm.get('enctype')&&oForm.get('enctype')=='multipart/form-data'){YAHOO.util.Connect.setForm(theForm,true);var cObj=YAHOO.util.Connect.asyncRequest('POST','index.php',{upload:success,failure:success});}else{YAHOO.util.Connect.setForm(theForm);var cObj=YAHOO.util.Connect.asyncRequest('POST','index.php',{success:success,failure:success});}
+return false;}
 function sendAndRedirect(theForm,loadingStr,redirect_location){function success(data){if(redirect_location){location.href=redirect_location;}
 ajaxStatus.hideStatus();}
-if(typeof loadingStr=='undefined')SUGAR.language.get('app_strings','LBL_LOADING');ajaxStatus.showStatus(loadingStr);YAHOO.util.Connect.setForm(theForm);var cObj=YAHOO.util.Connect.asyncRequest('POST','index.php',{success:success,failure:success});return false;}
+if(typeof loadingStr=='undefined')SUGAR.language.get('app_strings','LBL_LOADING');ajaxStatus.showStatus(loadingStr);oForm=new YAHOO.util.Element(theForm);if(oForm.get('enctype')&&oForm.get('enctype')=='multipart/form-data'){YAHOO.util.Connect.setForm(theForm,true);var cObj=YAHOO.util.Connect.asyncRequest('POST','index.php',{upload:success,failure:success});}else{YAHOO.util.Connect.setForm(theForm);var cObj=YAHOO.util.Connect.asyncRequest('POST','index.php',{success:success,failure:success});}
+return false;}
 function saveForm(theForm,theDiv,loadingStr){if(check_form(theForm)){for(i=0;i<ajaxFormArray.length;i++){if(ajaxFormArray[i]==theForm){ajaxFormArray.splice(i,1);}}
 return sendAndRetrieve(theForm,loadingStr,theDiv);}
 else
@@ -328,9 +294,9 @@ return false;}
 function sugarListView(){}
 sugarListView.prototype.confirm_action=function(del){if(del==1){return confirm(SUGAR.language.get('app_strings','NTC_DELETE_CONFIRMATION_NUM')+sugarListView.get_num_selected()+SUGAR.language.get('app_strings','NTC_DELETE_SELECTED_RECORDS'));}
 else{return confirm(SUGAR.language.get('app_strings','NTC_UPDATE_CONFIRMATION_NUM')+sugarListView.get_num_selected()+SUGAR.language.get('app_strings','NTC_DELETE_SELECTED_RECORDS'));}}
-sugarListView.get_num_selected=function(){if(typeof document.MassUpdate!='undefined'){the_form=document.MassUpdate;for(wp=0;wp<the_form.elements.length;wp++){if(typeof the_form.elements[wp].name!='undefined'&&the_form.elements[wp].name=='selectCount[]'){return the_form.elements[wp].value;}}}
+sugarListView.get_num_selected=function(){if(typeof document.MassUpdate!='undefined'){the_form=document.MassUpdate;for(var wp=0;wp<the_form.elements.length;wp++){if(typeof the_form.elements[wp].name!='undefined'&&the_form.elements[wp].name=='selectCount[]'){return the_form.elements[wp].value;}}}
 return 0;}
-sugarListView.update_count=function(count,add){if(typeof document.MassUpdate!='undefined'){the_form=document.MassUpdate;for(wp=0;wp<the_form.elements.length;wp++){if(typeof the_form.elements[wp].name!='undefined'&&the_form.elements[wp].name=='selectCount[]'){if(add){the_form.elements[wp].value=parseInt(the_form.elements[wp].value,10)+count;if(the_form.select_entire_list.value==1&&the_form.show_plus.value){the_form.elements[wp].value+='+';}}else{if(the_form.select_entire_list.value==1&&the_form.show_plus.value){the_form.elements[wp].value=count+'+';}else{the_form.elements[wp].value=count;}}}}}}
+sugarListView.update_count=function(count,add){if(typeof document.MassUpdate!='undefined'){the_form=document.MassUpdate;for(var wp=0;wp<the_form.elements.length;wp++){if(typeof the_form.elements[wp].name!='undefined'&&the_form.elements[wp].name=='selectCount[]'){if(add){the_form.elements[wp].value=parseInt(the_form.elements[wp].value,10)+count;if(the_form.select_entire_list.value==1&&the_form.show_plus.value){the_form.elements[wp].value+='+';}}else{if(the_form.select_entire_list.value==1&&the_form.show_plus.value){the_form.elements[wp].value=count+'+';}else{the_form.elements[wp].value=count;}}}}}}
 sugarListView.prototype.use_external_mail_client=function(no_record_txt,module){selected_records=sugarListView.get_checks_count();if(selected_records<1){alert(no_record_txt);return false;}
 if(document.MassUpdate.select_entire_list.value==1){if(totalCount>10){alert(totalCountError);return;}
 select=false;}
@@ -398,12 +364,9 @@ sugarListView.update_count(pageTotal);else if(value)
 sugarListView.update_count(count,true);else
 sugarListView.update_count(-1*count,true);sugarListView.prototype.toggleSelected();}
 sugarListView.check_all=sugarListView.prototype.check_all;sugarListView.confirm_action=sugarListView.prototype.confirm_action;sugarListView.prototype.check_boxes=function(){var inputsCount=0;var checkedCount=0;var existing_onload=window.onload;var theForm=document.MassUpdate;inputs_array=theForm.elements;if(typeof theForm.uid.value!='undefined'&&theForm.uid.value!=""){checked_items=theForm.uid.value.split(",");if(theForm.select_entire_list.value==1)
-document.MassUpdate.massall.disabled=true;for(wp=0;wp<inputs_array.length;wp++){if(inputs_array[wp].name=="mass[]"){inputsCount++;if(theForm.select_entire_list.value==1){inputs_array[wp].checked=true;inputs_array[wp].disabled=true;checkedCount++;}
-else{for(i in checked_items){if(inputs_array[wp].value==checked_items[i]){checkedCount++;inputs_array[wp].checked=true;}}}}}
-if(theForm.select_entire_list.value==0)
-sugarListView.update_count(checked_items.length);else
-sugarListView.update_count(0,true);}
-else{for(wp=0;wp<inputs_array.length;wp++){if(inputs_array[wp].name=="mass[]"){inputs_array[wp].checked=false;inputs_array[wp].disabled=false;}}
+document.MassUpdate.massall.disabled=true;for(var wp=0;wp<inputs_array.length;wp++){if(inputs_array[wp].name=="mass[]"){inputsCount++;if(theForm.select_entire_list.value==1){inputs_array[wp].checked=true;inputs_array[wp].disabled=true;checkedCount++;}
+else{for(i in checked_items){if(inputs_array[wp].value==checked_items[i]){checkedCount++;inputs_array[wp].checked=true;sugarListView.prototype.check_item(inputs_array[wp],document.MassUpdate);}}}}}}
+else{for(var wp=0;wp<inputs_array.length;wp++){if(inputs_array[wp].name=="mass[]"){inputs_array[wp].checked=false;inputs_array[wp].disabled=false;}}
 if(document.MassUpdate.massall){document.MassUpdate.massall.checked=false;document.MassUpdate.massall.disabled=false;}
 sugarListView.update_count(0)}
 if(checkedCount>0&&checkedCount==inputsCount)
@@ -412,7 +375,7 @@ function check_used_email_templates(){var ids=document.MassUpdate.uid.value;var 
 document.MassUpdate.submit();return false;}};url="index.php?module=EmailTemplates&action=CheckDeletable&from=ListView&to_pdf=1&records="+ids;YAHOO.util.Connect.asyncRequest('POST',url,call_back,null);}
 sugarListView.prototype.send_mass_update=function(mode,no_record_txt,del){formValid=check_form('MassUpdate');if(!formValid&&!del)return false;if(document.MassUpdate.select_entire_list&&document.MassUpdate.select_entire_list.value==1)
 mode='entire';else
-mode='selected';var ar=new Array();switch(mode){case'selected':for(wp=0;wp<document.MassUpdate.elements.length;wp++){var reg_for_existing_uid=new RegExp('^'+RegExp.escape(document.MassUpdate.elements[wp].value)+'[\s]*,|,[\s]*'+RegExp.escape(document.MassUpdate.elements[wp].value)+'[\s]*,|,[\s]*'+RegExp.escape(document.MassUpdate.elements[wp].value)+'$|^'+RegExp.escape(document.MassUpdate.elements[wp].value)+'$');if(typeof document.MassUpdate.elements[wp].name!='undefined'&&document.MassUpdate.elements[wp].name=='mass[]'&&document.MassUpdate.elements[wp].checked&&!reg_for_existing_uid.test(document.MassUpdate.uid.value)){ar.push(document.MassUpdate.elements[wp].value);}}
+mode='selected';var ar=new Array();switch(mode){case'selected':for(var wp=0;wp<document.MassUpdate.elements.length;wp++){var reg_for_existing_uid=new RegExp('^'+RegExp.escape(document.MassUpdate.elements[wp].value)+'[\s]*,|,[\s]*'+RegExp.escape(document.MassUpdate.elements[wp].value)+'[\s]*,|,[\s]*'+RegExp.escape(document.MassUpdate.elements[wp].value)+'$|^'+RegExp.escape(document.MassUpdate.elements[wp].value)+'$');if(typeof document.MassUpdate.elements[wp].name!='undefined'&&document.MassUpdate.elements[wp].name=='mass[]'&&document.MassUpdate.elements[wp].checked&&!reg_for_existing_uid.test(document.MassUpdate.uid.value)){ar.push(document.MassUpdate.elements[wp].value);}}
 if(document.MassUpdate.uid.value!='')document.MassUpdate.uid.value+=',';document.MassUpdate.uid.value+=ar.join(',');if(document.MassUpdate.uid.value==''){alert(no_record_txt);return false;}
 if(typeof(current_admin_id)!='undefined'&&document.MassUpdate.module!='undefined'&&document.MassUpdate.module.value=='Users'&&(document.MassUpdate.is_admin.value!=''||document.MassUpdate.status.value!='')){var reg_for_current_admin_id=new RegExp('^'+current_admin_id+'[\s]*,|,[\s]*'+current_admin_id+'[\s]*,|,[\s]*'+current_admin_id+'$|^'+current_admin_id+'$');if(reg_for_current_admin_id.test(document.MassUpdate.uid.value)){alert(SUGAR.language.get('Users','LBL_LAST_ADMIN_NOTICE'));return false;}}
 break;case'entire':var entireInput=document.createElement('input');entireInput.name='entire';entireInput.type='hidden';entireInput.value='index';document.MassUpdate.appendChild(entireInput);if(document.MassUpdate.module!='undefined'&&document.MassUpdate.module.value=='Users'&&(document.MassUpdate.is_admin.value!=''||document.MassUpdate.status.value!='')){alert(SUGAR.language.get('Users','LBL_LAST_ADMIN_NOTICE'));return false;}
@@ -454,7 +417,7 @@ var headElem=document.getElementsByTagName('head')[0];var tmpElem=null;SUGAR.eva
 tmpElem.addEventListener('load',waitUntilLoaded);SUGAR.evalScript_waitCount++;headElem.appendChild(tmpElem);}
 SUGAR.evalScript_waitCount++;waitUntilLoaded();return;}
 var objRegex=/<\s*script([^>]*)>((.|\s|\v|\0)*?)<\s*\/script\s*>/igm;var lastIndex=-1;var result=objRegex.exec(text);while(result&&result.index>lastIndex){lastIndex=result.index
-try{var script=document.createElement('script');script.type='text/javascript';if(result[1].indexOf("src=")>-1){var srcRegex=/.*src=['"]([a-zA-Z0-9_\&\/\.\?=:-]*)['"].*/igm;var srcResult=result[1].replace(srcRegex,'$1');script.src=srcResult;}else{script.text=result[2];}
+try{var script=document.createElement('script');script.type='text/javascript';if(result[1].indexOf("src=")>-1){var srcRegex=/.*src=['"]([a-zA-Z0-9_\-\&\/\.\?=:-]*)['"].*/igm;var srcResult=result[1].replace(srcRegex,'$1');script.src=srcResult;}else{script.text=result[2];}
 document.body.appendChild(script);}
 catch(e){if(typeof(console)!="undefined"&&typeof(console.log)=="function")
 {console.log("error adding script");console.log(e);console.log(result);}}
@@ -472,13 +435,13 @@ if(typeof postForm=='undefined'||postForm==null){var cObj=YAHOO.util.Connect.asy
 else{YAHOO.util.Connect.setForm(postForm);var cObj=YAHOO.util.Connect.asyncRequest('POST',url,{success:success,failure:success});}},checkMaxLength:function(){var maxLength=this.getAttribute('maxlength');var currentLength=this.value.length;if(currentLength>maxLength){this.value=this.value.substring(0,maxLength);}},setMaxLength:function(){var x=document.getElementsByTagName('textarea');for(var i=0;i<x.length;i++){if(x[i].getAttribute('maxlength')){x[i].onkeyup=x[i].onchange=SUGAR.util.checkMaxLength;x[i].onkeyup();}}},showHelpTips:function(el,helpText,myPos,atPos){if(myPos==undefined||myPos==""){myPos="left top";}
 if(atPos==undefined||atPos==""){atPos="right top";}
 var $dialog=$('<div></div>').html(helpText).dialog({autoOpen:false,title:SUGAR.language.get('app_strings','LBL_HELP'),position:{my:myPos,at:atPos,of:$(el)}});var width=$dialog.dialog("option","width");var pos=$(el).offset();var ofWidth=$(el).width();if((pos.left+ofWidth)-40<width){$dialog.dialog("option","position",{my:'left top',at:'right top',of:$(el)});}
-$dialog.dialog('open');},getStaticAdditionalDetails:function(el,body,caption,show_buttons){if(typeof show_buttons=="undefined"){show_buttons=false;}
+$dialog.dialog('open');$(".ui-dialog").appendTo("#content");},getStaticAdditionalDetails:function(el,body,caption,show_buttons){if(typeof show_buttons=="undefined"){show_buttons=false;}
 $(".ui-dialog").find(".open").dialog("close");var $dialog=$('<div class="open"></div>').html(body).dialog({autoOpen:false,title:caption,width:300,position:{my:'right top',at:'left top',of:$(el)}});if(show_buttons){$(".ui-dialog").find('.ui-dialog-titlebar-close').css("display","none");$(".ui-dialog").find('.ui-dialog-title').css("width","100%");}
 var width=$dialog.dialog("option","width");var pos=$(el).offset();var ofWidth=$(el).width();if((pos.left+ofWidth)-40<width){$dialog.dialog("option","position",{my:'left top',at:'right top',of:$(el)});}
-$dialog.dialog('open');},closeStaticAdditionalDetails:function(){$(".ui-dialog").find(".open").dialog("close");},getAdditionalDetails:function(bean,id,spanId,show_buttons){if(typeof show_buttons=="undefined")
+$dialog.dialog('open');$(".ui-dialog").appendTo("#content");},closeStaticAdditionalDetails:function(){$(".ui-dialog").find(".open").dialog("close");},getAdditionalDetails:function(bean,id,spanId,show_buttons){if(typeof show_buttons=="undefined")
 show_buttons=false;var el='#'+spanId;go=function(){oReturn=function(body,caption,width,theme){$(".ui-dialog").find(".open").dialog("close");var $dialog=$('<div class="open"></div>').html(body).dialog({autoOpen:false,title:caption,width:300,position:{my:'right top',at:'left top',of:$(el)}});if(show_buttons){$(".ui-dialog").find('.ui-dialog-titlebar-close').css("display","none");$(".ui-dialog").find('.ui-dialog-title').css("width","100%");}
 var width=$dialog.dialog("option","width");var pos=$(el).offset();var ofWidth=$(el).width();if((pos.left+ofWidth)-40<width){$dialog.dialog("option","position",{my:'left top',at:'right top',of:$(el)});}
-$dialog.dialog('open');}
+$dialog.dialog('open');$(".ui-dialog").appendTo("#content");}
 success=function(data){eval(data.responseText);SUGAR.util.additionalDetailsCache[id]=new Array();SUGAR.util.additionalDetailsCache[id]['body']=result['body'];SUGAR.util.additionalDetailsCache[id]['caption']=result['caption'];SUGAR.util.additionalDetailsCache[id]['width']=result['width'];SUGAR.util.additionalDetailsCache[id]['theme']=result['theme'];ajaxStatus.hideStatus();return oReturn(SUGAR.util.additionalDetailsCache[id]['body'],SUGAR.util.additionalDetailsCache[id]['caption'],SUGAR.util.additionalDetailsCache[id]['width'],SUGAR.util.additionalDetailsCache[id]['theme']);}
 if(typeof SUGAR.util.additionalDetailsCache[id]!='undefined')
 return oReturn(SUGAR.util.additionalDetailsCache[id]['body'],SUGAR.util.additionalDetailsCache[id]['caption'],SUGAR.util.additionalDetailsCache[id]['width'],SUGAR.util.additionalDetailsCache[id]['theme']);if(typeof SUGAR.util.additionalDetailsCalls[id]!='undefined')
@@ -601,6 +564,9 @@ windowFeatures='width='+width
 +',resizable=1,scrollbars=1';if(popup_mode==''&&popup_mode=='undefined'){popup_mode='single';}
 URL+='&mode='+popup_mode;if(create==''&&create=='undefined'){create='false';}
 URL+='&create='+create;if(metadata!=''&&metadata!='undefined'){URL+='&metadata='+metadata;}
+if(popup_request_data.jsonObject){var request_data=popup_request_data.jsonObject;}else{var request_data=popup_request_data;}
+var field_to_name_array_url='';if(request_data&&request_data.field_to_name_array!='undefined'){for(var key in request_data.field_to_name_array){if(key.toLowerCase()!='id'){field_to_name_array_url+='&field_to_name[]='+encodeURIComponent(key.toLowerCase());}}}
+if(field_to_name_array_url){URL+=field_to_name_array_url;}
 win=SUGAR.util.openWindow(URL,windowName,windowFeatures);if(window.focus)
 {win.focus();}
 win.popupCount=popupCount;return win;}
@@ -619,7 +585,7 @@ function set_return(popup_reply_data)
 else
 {var displayValue=replaceHTMLChars(name_to_value_array[the_key]);if(window.document.forms[form_name]&&document.getElementById(the_key+'_label')&&!the_key.match(/account/)){var data_label=document.getElementById(the_key+'_label').innerHTML.replace(/\n/gi,'').replace(/<\/?[^>]+(>|$)/g,"");label_str+=data_label+' \n';label_data_str+=data_label+' '+displayValue+'\n';if(window.document.forms[form_name].elements[the_key]){current_label_data_str+=data_label+' '+window.document.forms[form_name].elements[the_key].value+'\n';}}}}
 if(label_data_str!=label_str&&current_label_data_str!=label_str){if(typeof popupConfirm!='undefined')
-{if(popupConfirm>-1){set_return_basic(popup_reply_data,/\S/);}}
+{if(popupConfirm>-1){set_return_basic(popup_reply_data,/\S/);}else{set_return_basic(popup_reply_data,/account/);}}
 else if(confirm(SUGAR.language.get('app_strings','NTC_OVERWRITE_ADDRESS_PHONE_CONFIRM')+'\n\n'+label_data_str))
 {set_return_basic(popup_reply_data,/\S/);}
 else
@@ -669,43 +635,9 @@ return final_arr;}
 SUGAR.MultiEnumAutoComplete.getMultiSelectValuesFromKeys=function(options_index,val_string){var opts=SUGAR.language.get('app_list_strings',options_index);val_string=val_string.replace(/^\^/,'').replace(/\^$/,'')
 var selected_values=val_string.split("^,^");if(selected_values.length>0&&selected_values.indexOf('')==selected_values.length-1){selected_values.pop();}
 var final_arr=new Array();for(idx in selected_values){for(o_idx in opts){if(selected_values[idx]==o_idx){final_arr.push(opts[o_idx]);}}}
-return final_arr;}
-// End of File include/javascript/sugar_3.js
+return final_arr;}/* End of File include/javascript/sugar_3.js */
 
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- *
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- *
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- *
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
+
 SUGAR.ajaxUI={loadingWindow:false,callback:function(o)
 {var cont;if(typeof window.onbeforeunload=="function")
 window.onbeforeunload=null;scroll(0,0);SUGAR.ajaxUI.hideLoadingPanel();try{var r=YAHOO.lang.JSON.parse(o.responseText);cont=r.content;if(r.title)
@@ -763,43 +695,9 @@ document.getElementById('ajaxloading_c').style.display='';SUGAR.ajaxUI.loadingPa
 document.getElementById('ajaxloading_c').style.display='none';},setFavicon:function(data)
 {var head=document.getElementsByTagName("head")[0];var links=head.getElementsByTagName("link");var re=/\bicon\b/i;for(var i=0;i<links.length;i++){if(re.test(links[i].rel))
 {head.removeChild(links[i]);}}
-var link=document.createElement("link");link.href=data.url;link.type=data.type;link.rel="icon";head.appendChild(link);}};
-// End of File include/javascript/ajaxUI.js
+var link=document.createElement("link");link.href=data.url;link.type=data.type;link.rel="icon";head.appendChild(link);}};/* End of File include/javascript/ajaxUI.js */
 
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- *
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- *
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- *
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
+
 function Get_Cookie(name){var start=document.cookie.indexOf(name+'=');var len=start+name.length+1;if((!start)&&(name!=document.cookie.substring(0,name.length)))
 return null;if(start==-1)
 return null;var end=document.cookie.indexOf(';',len);if(end==-1)end=document.cookie.length;if(end==start){return'';}
@@ -821,43 +719,9 @@ while(end>-1){var cur=cookie.substring(0,end);cookie=cookie.substring(end+1,cook
 return cookies;}
 function subs_to_cookie(cookies){var cookie='';for(var i in cookies)
 {if(typeof(cookies[i])!="function"){cookie+=i+'='+cookies[i]+'#';}}
-return cookie;}
-// End of File include/javascript/cookie.js
+return cookie;}/* End of File include/javascript/cookie.js */
 
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- *
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- *
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- *
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
+
 var menuStack=new Array();var hiddenElmStack=new Array();var currentMenu=null;var closeMenusDelay=null;var openMenusDelay=null;var delayTime=75;function eraseTimeout(tId){window.clearTimeout(tId);return null;}
 function tbButtonMouseOverOrig(id){closeMenusDelay=eraseTimeout(closeMenusDelay);var menuName=id.replace(/Handle/i,'Menu');var menu=getLayer(menuName);if(currentMenu){closeAllMenus();}
 popupMenu(id,menu);}
@@ -908,50 +772,17 @@ objTop=objTop-y;if(x>(objLeft+obj.offsetWidth)||objLeft>(x+w));else if(objTop>h)
 function Is(){var agt=navigator.userAgent.toLowerCase();this.major=parseInt(navigator.appVersion);this.minor=parseFloat(navigator.appVersion);this.nav=((agt.indexOf('mozilla')!=-1)&&(agt.indexOf('spoofer')==-1)&&(agt.indexOf('compatible')==-1)&&(agt.indexOf('opera')==-1)&&(agt.indexOf('webtv')==-1)&&(agt.indexOf('hotjava')==-1));this.nav2=(this.nav&&(this.major==2));this.nav3=(this.nav&&(this.major==3));this.nav4=(this.nav&&(this.major==4));this.nav4up=(this.nav&&(this.major>=4));this.navonly=(this.nav&&((agt.indexOf(";nav")!=-1)||(agt.indexOf("; nav")!=-1)));this.nav6=(this.nav&&(this.major==5));this.nav6up=(this.nav&&(this.major>=5));this.gecko=(agt.indexOf('gecko')!=-1);this.nav7=(this.gecko&&(this.major>=5)&&(agt.indexOf('netscape/7')!=-1));this.moz1=false;this.moz1up=false;this.moz1_1=false;this.moz1_1up=false;if(this.nav6up){myRegEx=new RegExp("rv:\\d*.\\d*.\\d*");myFind=myRegEx.exec(agt);if(myFind!=null){var strVersion=myFind.toString();strVersion=strVersion.replace(/rv:/,'');var arrVersion=strVersion.split('.');var major=parseInt(arrVersion[0]);var minor=parseInt(arrVersion[1]);if(arrVersion[2])var revision=parseInt(arrVersion[2]);this.moz1=((major==1)&&(minor==0));this.moz1up=((major==1)&&(minor>=0));this.moz1_1=((major==1)&&(minor==1));this.moz1_1up=((major==1)&&(minor>=1));}}
 this.ie=((agt.indexOf("msie")!=-1)&&(agt.indexOf("opera")==-1));this.ie3=(this.ie&&(this.major<4));this.ie4=(this.ie&&(this.major==4)&&(agt.indexOf("msie 4")!=-1));this.ie4up=(this.ie&&(this.major>=4));this.ie5=(this.ie&&(this.major==4)&&(agt.indexOf("msie 5.0")!=-1));this.ie5_5=(this.ie&&(this.major==4)&&(agt.indexOf("msie 5.5")!=-1));this.ie5up=(this.ie&&!this.ie3&&!this.ie4);this.ie5_5up=(this.ie&&!this.ie3&&!this.ie4&&!this.ie5);this.ie6=(this.ie&&(this.major==4)&&(agt.indexOf("msie 6.")!=-1));this.ie6up=(this.ie&&!this.ie3&&!this.ie4&&!this.ie5&&!this.ie5_5);this.mac=(agt.indexOf("mac")!=-1);}
 function runPageLoadItems(){var myVar;checkBrowserWidth();}
-var is=new Is();if(is.ie){document.write('<style type="text/css">');document.write('body {font-size: x-small;}');document.write('</style>');}
-// End of File include/javascript/menu.js
+var is=new Is();if(is.ie){document.write('<style type="text/css">');document.write('body {font-size: x-small;}');document.write('</style>');}/* End of File include/javascript/menu.js */
 
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- *
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- *
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- *
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
+
 Calendar=function(){};Calendar.getHighestZIndex=function(containerEl)
 {var highestIndex=0;var currentIndex=0;var els=Array();els=containerEl?containerEl.getElementsByTagName('*'):document.getElementsByTagName('*');for(var i=0;i<els.length;i++)
 {currentIndex=YAHOO.util.Dom.getStyle(els[i],"zIndex");if(!isNaN(currentIndex)&&currentIndex>highestIndex)
 {highestIndex=parseInt(currentIndex);}}
-return(highestIndex==Number.MAX_VALUE)?Number.MAX_VALUE:highestIndex+1;};Calendar.setup=function(params){YAHOO.util.Event.onDOMReady(function(){var Event=YAHOO.util.Event;var Dom=YAHOO.util.Dom;var dialog;var calendar;var showButton=params.button?params.button:params.buttonObj;var userDateFormat=params.ifFormat?params.ifFormat:(params.daFormat?params.daFormat:"m/d/Y");var inputField=params.inputField?params.inputField:params.inputFieldObj;var startWeekday=params.startWeekday?params.startWeekday:0;var dateFormat=userDateFormat.substr(0,10);var date_field_delimiter=/([-.\\/])/.exec(dateFormat)[0];dateFormat=dateFormat.replace(/[^a-zA-Z]/g,'');var monthPos=dateFormat.search(/m/);var dayPos=dateFormat.search(/d/);var yearPos=dateFormat.search(/Y/);var dateParams=new Object();dateParams.delim=date_field_delimiter;dateParams.monthPos=monthPos;dateParams.dayPos=dayPos;dateParams.yearPos=yearPos;var showButtonElement=Dom.get(showButton);Event.on(showButtonElement,"click",function(){if(!dialog){dialog=new YAHOO.widget.SimpleDialog("container_"+showButtonElement.id,{visible:false,context:[showButton,"tl","bl",null,[-175,5]],buttons:[],draggable:false,close:true,zIndex:Calendar.getHighestZIndex(document.body),constraintoviewport:true});dialog.setHeader(SUGAR.language.get('app_strings','LBL_MASSUPDATE_DATE'));var dialogBody='<p class="callnav_today"><a href="javascript:void(0)"  id="callnav_today">'+SUGAR.language.get('app_strings','LBL_EMAIL_DATE_TODAY')+'</a></p><div id="'+showButtonElement.id+'_div"></div>';dialog.setBody(dialogBody);dialog.render(document.body);Dom.addClass("container_"+showButtonElement.id,"cal_panel");Event.addListener("callnav_today","click",function(){calendar.clear();var now=new Date();Dom.get(inputField).value=formatSelectedDate(now);var cellIndex=calendar.getCellIndex(now);if(cellIndex>-1)
+return(highestIndex==Number.MAX_VALUE)?Number.MAX_VALUE:highestIndex+1;};Calendar.setup=function(params){YAHOO.util.Event.onDOMReady(function(){var Event=YAHOO.util.Event;var Dom=YAHOO.util.Dom;var dialog;var calendar;var showButton=params.button?params.button:params.buttonObj;var userDateFormat=params.ifFormat?params.ifFormat:(params.daFormat?params.daFormat:"m/d/Y");var inputField=params.inputField?params.inputField:params.inputFieldObj;var startWeekday=params.startWeekday?params.startWeekday:0;var dateFormat=userDateFormat.substr(0,10);var date_field_delimiter=/([-.\\/])/.exec(dateFormat)[0];dateFormat=dateFormat.replace(/[^a-zA-Z]/g,'');var monthPos=dateFormat.search(/m/);var dayPos=dateFormat.search(/d/);var yearPos=dateFormat.search(/Y/);var dateParams=new Object();dateParams.delim=date_field_delimiter;dateParams.monthPos=monthPos;dateParams.dayPos=dayPos;dateParams.yearPos=yearPos;var showButtonElement=Dom.get(showButton);Event.on(showButtonElement,"click",function(){if(!dialog){dialog=new YAHOO.widget.SimpleDialog("container_"+showButtonElement.id,{visible:false,context:[showButton,"tl","bl",null,[-175,5]],buttons:[],draggable:false,close:true,zIndex:Calendar.getHighestZIndex(document.body),constraintoviewport:true});dialog.setHeader(SUGAR.language.get('app_strings','LBL_MASSUPDATE_DATE'));var dialogBody='<p class="callnav_today"><a href="javascript:void(0)"  id="callnav_today">'+SUGAR.language.get('app_strings','LBL_EMAIL_DATE_TODAY')+'</a></p><div id="'+showButtonElement.id+'_div"></div>';dialog.setBody(dialogBody);dialog.render(document.body);Dom.addClass("container_"+showButtonElement.id,"cal_panel");Event.addListener("callnav_today","click",function(){calendar.clear();var now=new Date();var input=Dom.get(inputField);input.value=formatSelectedDate(now);var cellIndex=calendar.getCellIndex(now);if(cellIndex>-1)
 {var cell=calendar.cells[cellIndex];Dom.addClass(cell,calendar.Style.CSS_CELL_SELECTED);}
-return false;});dialog.showEvent.subscribe(function(){if(YAHOO.env.ua.ie){dialog.fireEvent("changeContent");}});Event.on(document,"click",function(e){if(!dialog)
+if(input.onchange)
+input.onchange();SUGAR.util.callOnChangeListers(input);return false;});dialog.showEvent.subscribe(function(){if(YAHOO.env.ua.ie){dialog.fireEvent("changeContent");}});Event.on(document,"click",function(e){if(!dialog)
 {return;}
 var el=Event.getTarget(e);var dialogEl=dialog.element;if(el!=dialogEl&&!Dom.isAncestor(dialogEl,el)&&el!=showButtonElement&&!Dom.isAncestor(showButtonElement,el)){dialog.hide();}});}
 if(!calendar){var navConfig={strings:{month:SUGAR.language.get('app_strings','LBL_CHOOSE_MONTH'),year:SUGAR.language.get('app_strings','LBL_ENTER_YEAR'),submit:SUGAR.language.get('app_strings','LBL_EMAIL_OK'),cancel:SUGAR.language.get('app_strings','LBL_CANCEL_BUTTON_LABEL'),invalidYear:SUGAR.language.get('app_strings','LBL_ENTER_VALID_YEAR')},monthFormat:YAHOO.widget.Calendar.SHORT,initialFocus:"year"};calendar=new YAHOO.widget.Calendar(showButtonElement.id+'_div',{iframe:false,hide_blank_weeks:true,navigator:navConfig});calendar.cfg.setProperty('DATE_FIELD_DELIMITER',date_field_delimiter);calendar.cfg.setProperty('MDY_DAY_POSITION',dayPos+1);calendar.cfg.setProperty('MDY_MONTH_POSITION',monthPos+1);calendar.cfg.setProperty('MDY_YEAR_POSITION',yearPos+1);calendar.cfg.setProperty('START_WEEKDAY',startWeekday);if(typeof SUGAR.language.languages['app_list_strings']!='undefined'&&SUGAR.language.languages['app_list_strings']['dom_cal_month_long']!='undefined')
@@ -1000,9 +831,7 @@ else if((dateParams.dayPos>dateParams.monthPos)&&(returnArray[dateParams.monthPo
 else if(dateArray[i]>12&&dateArray[i]<32){if(returnArray[dateParams.dayPos]!=''){returnArray[dateParams.monthPos]=returnArray[dateParams.dayPos];dateCheck-=10;dateCheck+=100;}
 returnArray[dateParams.dayPos]=dateArray[i];dateCheck+=10;}}
 if(dateCheck!=111){return sanitizeDate("",dateParams);}
-return returnArray.join(dateParams.delim);};var sanitizedDate=sanitizeDate(Dom.get(inputField).value,dateParams);var sanitizedDateArray=sanitizedDate.split(dateParams.delim);calendar.cfg.setProperty("selected",sanitizedDate);calendar.cfg.setProperty("pageDate",sanitizedDateArray[monthPos]+dateParams.delim+sanitizedDateArray[yearPos]);calendar.render();dialog.show();});});};
-// End of File include/javascript/calendar.js
-
+return returnArray.join(dateParams.delim);};var sanitizedDate=sanitizeDate(Dom.get(inputField).value,dateParams);var sanitizedDateArray=sanitizedDate.split(dateParams.delim);calendar.cfg.setProperty("selected",sanitizedDate);calendar.cfg.setProperty("pageDate",sanitizedDateArray[monthPos]+dateParams.delim+sanitizedDateArray[yearPos]);calendar.render();dialog.show();});});};/* End of File include/javascript/calendar.js */
 
 (function(){var JSON=YAHOO.lang.JSON;SUGAR.quickCompose={};SUGAR.quickCompose=function(){return{parentPanel:null,dceMenuPanel:null,options:null,loadingMessgPanl:null,frameLoaded:false,resourcesLoaded:false,tinyLoaded:false,initComposePackage:function(c)
 {SUGAR.email2.addressBook.initFixForDatatableSort();SUGAR.quickCompose.resourcesLoaded=true;var callback={success:function(o)
@@ -1024,529 +853,30 @@ if(!dce_mode){SQ.parentPanel.center();}},init:function(o){if(typeof o.menu_id!='
 loadingMessgPanl=new YAHOO.widget.SimpleDialog('loading',{width:'200px',close:true,modal:true,visible:true,fixedcenter:true,constraintoviewport:true,draggable:false});loadingMessgPanl.setHeader(SUGAR.language.get('app_strings','LBL_EMAIL_PERFORMING_TASK'));loadingMessgPanl.setBody(SUGAR.language.get('app_strings','LBL_EMAIL_ONE_MOMENT'));loadingMessgPanl.render(document.body);loadingMessgPanl.show();if(!SUGAR.quickCompose.resourcesLoaded)
 this.loadResources(o);else
 this.initUI(o);},loadResources:function(o)
-{window.skipTinyMCEInitPhase=true;var require=["layout","element","tabview","menu","cookie","tinymce","sugarwidgets","sugarquickcompose","sugarquickcomposecss"];var loader=new YAHOO.util.YUILoader({require:require,loadOptional:true,skin:{base:'blank',defaultSkin:''},data:o,onSuccess:this.initComposePackage,allowRollup:true,base:"include/javascript/yui/build/"});loader.addModule({name:"tinymce",type:"js",varName:"TinyMCE",fullpath:"include/javascript/tiny_mce/tiny_mce.js"});loader.addModule({name:"sugarwidgets",type:"js",fullpath:"include/javascript/sugarwidgets/SugarYUIWidgets.js",varName:"YAHOO.SUGAR",requires:["datatable","dragdrop","treeview","tabview"]});loader.addModule({name:"sugarquickcompose",type:"js",varName:"SUGAR.email2.complexLayout",requires:["layout","sugarwidgets","tinymce"],fullpath:"cache/include/javascript/sugar_grp_quickcomp.js"});loader.addModule({name:"sugarquickcomposecss",type:"css",fullpath:"modules/Emails/EmailUI.css"});loader.insert();}};}();})();
-// End of File include/javascript/quickCompose.js
+{window.skipTinyMCEInitPhase=true;var require=["layout","element","tabview","menu","cookie","tinymce","sugarwidgets","sugarquickcompose","sugarquickcomposecss"];var loader=new YAHOO.util.YUILoader({require:require,loadOptional:true,skin:{base:'blank',defaultSkin:''},data:o,onSuccess:this.initComposePackage,allowRollup:true,base:"include/javascript/yui/build/"});loader.addModule({name:"tinymce",type:"js",varName:"TinyMCE",fullpath:"include/javascript/tiny_mce/tiny_mce.js"});loader.addModule({name:"sugarwidgets",type:"js",fullpath:"include/javascript/sugarwidgets/SugarYUIWidgets.js",varName:"YAHOO.SUGAR",requires:["datatable","dragdrop","treeview","tabview"]});loader.addModule({name:"sugarquickcompose",type:"js",varName:"SUGAR.email2.complexLayout",requires:["layout","sugarwidgets","tinymce"],fullpath:"cache/include/javascript/sugar_grp_quickcomp.js"});loader.addModule({name:"sugarquickcomposecss",type:"css",fullpath:"modules/Emails/EmailUI.css"});loader.insert();}};}();})();/* End of File include/javascript/quickCompose.js */
 
-/*
-Copyright (c) 2011, Yahoo! Inc. All rights reserved.
-Code licensed under the BSD License:
-http://developer.yahoo.com/yui/license.html
-version: 2.9.0
-*/
-if(typeof YAHOO=="undefined"||!YAHOO){var YAHOO={};}YAHOO.namespace=function(){var b=arguments,g=null,e,c,f;for(e=0;e<b.length;e=e+1){f=(""+b[e]).split(".");g=YAHOO;for(c=(f[0]=="YAHOO")?1:0;c<f.length;c=c+1){g[f[c]]=g[f[c]]||{};g=g[f[c]];}}return g;};YAHOO.log=function(d,a,c){var b=YAHOO.widget.Logger;if(b&&b.log){return b.log(d,a,c);}else{return false;}};YAHOO.register=function(a,f,e){var k=YAHOO.env.modules,c,j,h,g,d;if(!k[a]){k[a]={versions:[],builds:[]};}c=k[a];j=e.version;h=e.build;g=YAHOO.env.listeners;c.name=a;c.version=j;c.build=h;c.versions.push(j);c.builds.push(h);c.mainClass=f;for(d=0;d<g.length;d=d+1){g[d](c);}if(f){f.VERSION=j;f.BUILD=h;}else{YAHOO.log("mainClass is undefined for module "+a,"warn");}};YAHOO.env=YAHOO.env||{modules:[],listeners:[]};YAHOO.env.getVersion=function(a){return YAHOO.env.modules[a]||null;};YAHOO.env.parseUA=function(d){var e=function(i){var j=0;return parseFloat(i.replace(/\./g,function(){return(j++==1)?"":".";}));},h=navigator,g={ie:0,opera:0,gecko:0,webkit:0,chrome:0,mobile:null,air:0,ipad:0,iphone:0,ipod:0,ios:null,android:0,webos:0,caja:h&&h.cajaVersion,secure:false,os:null},c=d||(navigator&&navigator.userAgent),f=window&&window.location,b=f&&f.href,a;g.secure=b&&(b.toLowerCase().indexOf("https")===0);if(c){if((/windows|win32/i).test(c)){g.os="windows";}else{if((/macintosh/i).test(c)){g.os="macintosh";}else{if((/rhino/i).test(c)){g.os="rhino";}}}if((/KHTML/).test(c)){g.webkit=1;}a=c.match(/AppleWebKit\/([^\s]*)/);if(a&&a[1]){g.webkit=e(a[1]);if(/ Mobile\//.test(c)){g.mobile="Apple";a=c.match(/OS ([^\s]*)/);if(a&&a[1]){a=e(a[1].replace("_","."));}g.ios=a;g.ipad=g.ipod=g.iphone=0;a=c.match(/iPad|iPod|iPhone/);if(a&&a[0]){g[a[0].toLowerCase()]=g.ios;}}else{a=c.match(/NokiaN[^\/]*|Android \d\.\d|webOS\/\d\.\d/);if(a){g.mobile=a[0];}if(/webOS/.test(c)){g.mobile="WebOS";a=c.match(/webOS\/([^\s]*);/);if(a&&a[1]){g.webos=e(a[1]);}}if(/ Android/.test(c)){g.mobile="Android";a=c.match(/Android ([^\s]*);/);if(a&&a[1]){g.android=e(a[1]);}}}a=c.match(/Chrome\/([^\s]*)/);if(a&&a[1]){g.chrome=e(a[1]);}else{a=c.match(/AdobeAIR\/([^\s]*)/);if(a){g.air=a[0];}}}if(!g.webkit){a=c.match(/Opera[\s\/]([^\s]*)/);if(a&&a[1]){g.opera=e(a[1]);a=c.match(/Version\/([^\s]*)/);if(a&&a[1]){g.opera=e(a[1]);}a=c.match(/Opera Mini[^;]*/);if(a){g.mobile=a[0];}}else{a=c.match(/MSIE\s([^;]*)/);if(a&&a[1]){g.ie=e(a[1]);}else{a=c.match(/Gecko\/([^\s]*)/);if(a){g.gecko=1;a=c.match(/rv:([^\s\)]*)/);if(a&&a[1]){g.gecko=e(a[1]);}}}}}}return g;};YAHOO.env.ua=YAHOO.env.parseUA();(function(){YAHOO.namespace("util","widget","example");if("undefined"!==typeof YAHOO_config){var b=YAHOO_config.listener,a=YAHOO.env.listeners,d=true,c;if(b){for(c=0;c<a.length;c++){if(a[c]==b){d=false;break;}}if(d){a.push(b);}}}})();YAHOO.lang=YAHOO.lang||{};(function(){var f=YAHOO.lang,a=Object.prototype,c="[object Array]",h="[object Function]",i="[object Object]",b=[],g={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#x27;","/":"&#x2F;","`":"&#x60;"},d=["toString","valueOf"],e={isArray:function(j){return a.toString.apply(j)===c;},isBoolean:function(j){return typeof j==="boolean";},isFunction:function(j){return(typeof j==="function")||a.toString.apply(j)===h;},isNull:function(j){return j===null;},isNumber:function(j){return typeof j==="number"&&isFinite(j);},isObject:function(j){return(j&&(typeof j==="object"||f.isFunction(j)))||false;},isString:function(j){return typeof j==="string";},isUndefined:function(j){return typeof j==="undefined";},_IEEnumFix:(YAHOO.env.ua.ie)?function(l,k){var j,n,m;for(j=0;j<d.length;j=j+1){n=d[j];m=k[n];if(f.isFunction(m)&&m!=a[n]){l[n]=m;}}}:function(){},escapeHTML:function(j){return j.replace(/[&<>"'\/`]/g,function(k){return g[k];});},extend:function(m,n,l){if(!n||!m){throw new Error("extend failed, please check that "+"all dependencies are included.");}var k=function(){},j;k.prototype=n.prototype;m.prototype=new k();m.prototype.constructor=m;m.superclass=n.prototype;if(n.prototype.constructor==a.constructor){n.prototype.constructor=n;}if(l){for(j in l){if(f.hasOwnProperty(l,j)){m.prototype[j]=l[j];}}f._IEEnumFix(m.prototype,l);}},augmentObject:function(n,m){if(!m||!n){throw new Error("Absorb failed, verify dependencies.");}var j=arguments,l,o,k=j[2];if(k&&k!==true){for(l=2;l<j.length;l=l+1){n[j[l]]=m[j[l]];}}else{for(o in m){if(k||!(o in n)){n[o]=m[o];}}f._IEEnumFix(n,m);}return n;},augmentProto:function(m,l){if(!l||!m){throw new Error("Augment failed, verify dependencies.");}var j=[m.prototype,l.prototype],k;for(k=2;k<arguments.length;k=k+1){j.push(arguments[k]);}f.augmentObject.apply(this,j);return m;},dump:function(j,p){var l,n,r=[],t="{...}",k="f(){...}",q=", ",m=" => ";if(!f.isObject(j)){return j+"";}else{if(j instanceof Date||("nodeType" in j&&"tagName" in j)){return j;}else{if(f.isFunction(j)){return k;}}}p=(f.isNumber(p))?p:3;if(f.isArray(j)){r.push("[");for(l=0,n=j.length;l<n;l=l+1){if(f.isObject(j[l])){r.push((p>0)?f.dump(j[l],p-1):t);}else{r.push(j[l]);}r.push(q);}if(r.length>1){r.pop();}r.push("]");}else{r.push("{");for(l in j){if(f.hasOwnProperty(j,l)){r.push(l+m);if(f.isObject(j[l])){r.push((p>0)?f.dump(j[l],p-1):t);}else{r.push(j[l]);}r.push(q);}}if(r.length>1){r.pop();}r.push("}");}return r.join("");},substitute:function(x,y,E,l){var D,C,B,G,t,u,F=[],p,z=x.length,A="dump",r=" ",q="{",m="}",n,w;for(;;){D=x.lastIndexOf(q,z);if(D<0){break;}C=x.indexOf(m,D);if(D+1>C){break;}p=x.substring(D+1,C);G=p;u=null;B=G.indexOf(r);if(B>-1){u=G.substring(B+1);G=G.substring(0,B);}t=y[G];if(E){t=E(G,t,u);}if(f.isObject(t)){if(f.isArray(t)){t=f.dump(t,parseInt(u,10));}else{u=u||"";n=u.indexOf(A);if(n>-1){u=u.substring(4);}w=t.toString();if(w===i||n>-1){t=f.dump(t,parseInt(u,10));}else{t=w;}}}else{if(!f.isString(t)&&!f.isNumber(t)){t="~-"+F.length+"-~";F[F.length]=p;}}x=x.substring(0,D)+t+x.substring(C+1);if(l===false){z=D-1;}}for(D=F.length-1;D>=0;D=D-1){x=x.replace(new RegExp("~-"+D+"-~"),"{"+F[D]+"}","g");}return x;},trim:function(j){try{return j.replace(/^\s+|\s+$/g,"");}catch(k){return j;
-}},merge:function(){var n={},k=arguments,j=k.length,m;for(m=0;m<j;m=m+1){f.augmentObject(n,k[m],true);}return n;},later:function(t,k,u,n,p){t=t||0;k=k||{};var l=u,s=n,q,j;if(f.isString(u)){l=k[u];}if(!l){throw new TypeError("method undefined");}if(!f.isUndefined(n)&&!f.isArray(s)){s=[n];}q=function(){l.apply(k,s||b);};j=(p)?setInterval(q,t):setTimeout(q,t);return{interval:p,cancel:function(){if(this.interval){clearInterval(j);}else{clearTimeout(j);}}};},isValue:function(j){return(f.isObject(j)||f.isString(j)||f.isNumber(j)||f.isBoolean(j));}};f.hasOwnProperty=(a.hasOwnProperty)?function(j,k){return j&&j.hasOwnProperty&&j.hasOwnProperty(k);}:function(j,k){return !f.isUndefined(j[k])&&j.constructor.prototype[k]!==j[k];};e.augmentObject(f,e,true);YAHOO.util.Lang=f;f.augment=f.augmentProto;YAHOO.augment=f.augmentProto;YAHOO.extend=f.extend;})();YAHOO.register("yahoo",YAHOO,{version:"2.9.0",build:"2800"});YAHOO.util.Get=function(){var m={},k=0,r=0,l=false,n=YAHOO.env.ua,s=YAHOO.lang,q,d,e,i=function(x,t,y){var u=y||window,z=u.document,A=z.createElement(x),v;for(v in t){if(t.hasOwnProperty(v)){A.setAttribute(v,t[v]);}}return A;},h=function(u,v,t){var w={id:"yui__dyn_"+(r++),type:"text/css",rel:"stylesheet",href:u};if(t){s.augmentObject(w,t);}return i("link",w,v);},p=function(u,v,t){var w={id:"yui__dyn_"+(r++),type:"text/javascript",src:u};if(t){s.augmentObject(w,t);}return i("script",w,v);},a=function(t,u){return{tId:t.tId,win:t.win,data:t.data,nodes:t.nodes,msg:u,purge:function(){d(this.tId);}};},b=function(t,w){var u=m[w],v=(s.isString(t))?u.win.document.getElementById(t):t;if(!v){q(w,"target node not found: "+t);}return v;},c=function(w){YAHOO.log("Finishing transaction "+w);var u=m[w],v,t;u.finished=true;if(u.aborted){v="transaction "+w+" was aborted";q(w,v);return;}if(u.onSuccess){t=u.scope||u.win;u.onSuccess.call(t,a(u));}},o=function(v){YAHOO.log("Timeout "+v,"info","get");var u=m[v],t;if(u.onTimeout){t=u.scope||u;u.onTimeout.call(t,a(u));}},f=function(v,A){YAHOO.log("_next: "+v+", loaded: "+A,"info","Get");var u=m[v],D=u.win,C=D.document,B=C.getElementsByTagName("head")[0],x,y,t,E,z;if(u.timer){u.timer.cancel();}if(u.aborted){y="transaction "+v+" was aborted";q(v,y);return;}if(A){u.url.shift();if(u.varName){u.varName.shift();}}else{u.url=(s.isString(u.url))?[u.url]:u.url;if(u.varName){u.varName=(s.isString(u.varName))?[u.varName]:u.varName;}}if(u.url.length===0){if(u.type==="script"&&n.webkit&&n.webkit<420&&!u.finalpass&&!u.varName){z=p(null,u.win,u.attributes);z.innerHTML='YAHOO.util.Get._finalize("'+v+'");';u.nodes.push(z);B.appendChild(z);}else{c(v);}return;}t=u.url[0];if(!t){u.url.shift();YAHOO.log("skipping empty url");return f(v);}YAHOO.log("attempting to load "+t,"info","Get");if(u.timeout){u.timer=s.later(u.timeout,u,o,v);}if(u.type==="script"){x=p(t,D,u.attributes);}else{x=h(t,D,u.attributes);}e(u.type,x,v,t,D,u.url.length);u.nodes.push(x);if(u.insertBefore){E=b(u.insertBefore,v);if(E){E.parentNode.insertBefore(x,E);}}else{B.appendChild(x);}YAHOO.log("Appending node: "+t,"info","Get");if((n.webkit||n.gecko)&&u.type==="css"){f(v,t);}},j=function(){if(l){return;}l=true;var t,u;for(t in m){if(m.hasOwnProperty(t)){u=m[t];if(u.autopurge&&u.finished){d(u.tId);delete m[t];}}}l=false;},g=function(u,t,v){var x="q"+(k++),w;v=v||{};if(k%YAHOO.util.Get.PURGE_THRESH===0){j();}m[x]=s.merge(v,{tId:x,type:u,url:t,finished:false,aborted:false,nodes:[]});w=m[x];w.win=w.win||window;w.scope=w.scope||w.win;w.autopurge=("autopurge" in w)?w.autopurge:(u==="script")?true:false;w.attributes=w.attributes||{};w.attributes.charset=v.charset||w.attributes.charset||"utf-8";s.later(0,w,f,x);return{tId:x};};e=function(H,z,x,u,D,E,G){var F=G||f,B,t,I,v,J,A,C,y;if(n.ie){z.onreadystatechange=function(){B=this.readyState;if("loaded"===B||"complete"===B){YAHOO.log(x+" onload "+u,"info","Get");z.onreadystatechange=null;F(x,u);}};}else{if(n.webkit){if(H==="script"){if(n.webkit>=420){z.addEventListener("load",function(){YAHOO.log(x+" DOM2 onload "+u,"info","Get");F(x,u);});}else{t=m[x];if(t.varName){v=YAHOO.util.Get.POLL_FREQ;YAHOO.log("Polling for "+t.varName[0]);t.maxattempts=YAHOO.util.Get.TIMEOUT/v;t.attempts=0;t._cache=t.varName[0].split(".");t.timer=s.later(v,t,function(w){I=this._cache;A=I.length;J=this.win;for(C=0;C<A;C=C+1){J=J[I[C]];if(!J){this.attempts++;if(this.attempts++>this.maxattempts){y="Over retry limit, giving up";t.timer.cancel();q(x,y);}else{YAHOO.log(I[C]+" failed, retrying");}return;}}YAHOO.log("Safari poll complete");t.timer.cancel();F(x,u);},null,true);}else{s.later(YAHOO.util.Get.POLL_FREQ,null,F,[x,u]);}}}}else{z.onload=function(){YAHOO.log(x+" onload "+u,"info","Get");F(x,u);};}}};q=function(w,v){YAHOO.log("get failure: "+v,"warn","Get");var u=m[w],t;if(u.onFailure){t=u.scope||u.win;u.onFailure.call(t,a(u,v));}};d=function(z){if(m[z]){var t=m[z],u=t.nodes,x=u.length,C=t.win.document,A=C.getElementsByTagName("head")[0],v,y,w,B;if(t.insertBefore){v=b(t.insertBefore,z);if(v){A=v.parentNode;}}for(y=0;y<x;y=y+1){w=u[y];if(w.clearAttributes){w.clearAttributes();}else{for(B in w){if(w.hasOwnProperty(B)){delete w[B];}}}A.removeChild(w);}t.nodes=[];}};return{POLL_FREQ:10,PURGE_THRESH:20,TIMEOUT:2000,_finalize:function(t){YAHOO.log(t+" finalized ","info","Get");s.later(0,null,c,t);},abort:function(u){var v=(s.isString(u))?u:u.tId,t=m[v];if(t){YAHOO.log("Aborting "+v,"info","Get");t.aborted=true;}},script:function(t,u){return g("script",t,u);},css:function(t,u){return g("css",t,u);}};}();YAHOO.register("get",YAHOO.util.Get,{version:"2.9.0",build:"2800"});(function(){var Y=YAHOO,util=Y.util,lang=Y.lang,env=Y.env,PROV="_provides",SUPER="_supersedes",REQ="expanded",AFTER="_after",VERSION="2.9.0";var YUI={dupsAllowed:{"yahoo":true,"get":true},info:{"root":VERSION+"/build/","base":"http://yui.yahooapis.com/"+VERSION+"/build/","comboBase":"http://yui.yahooapis.com/combo?","skin":{"defaultSkin":"sam","base":"assets/skins/","path":"skin.css","after":["reset","fonts","grids","base"],"rollup":3},dupsAllowed:["yahoo","get"],"moduleInfo":{"animation":{"type":"js","path":"animation/animation-min.js","requires":["dom","event"]},"autocomplete":{"type":"js","path":"autocomplete/autocomplete-min.js","requires":["dom","event","datasource"],"optional":["connection","animation"],"skinnable":true},"base":{"type":"css","path":"base/base-min.css","after":["reset","fonts","grids"]},"button":{"type":"js","path":"button/button-min.js","requires":["element"],"optional":["menu"],"skinnable":true},"calendar":{"type":"js","path":"calendar/calendar-min.js","requires":["event","dom"],supersedes:["datemath"],"skinnable":true},"carousel":{"type":"js","path":"carousel/carousel-min.js","requires":["element"],"optional":["animation"],"skinnable":true},"charts":{"type":"js","path":"charts/charts-min.js","requires":["element","json","datasource","swf"]},"colorpicker":{"type":"js","path":"colorpicker/colorpicker-min.js","requires":["slider","element"],"optional":["animation"],"skinnable":true},"connection":{"type":"js","path":"connection/connection-min.js","requires":["event"],"supersedes":["connectioncore"]},"connectioncore":{"type":"js","path":"connection/connection_core-min.js","requires":["event"],"pkg":"connection"},"container":{"type":"js","path":"container/container-min.js","requires":["dom","event"],"optional":["dragdrop","animation","connection"],"supersedes":["containercore"],"skinnable":true},"containercore":{"type":"js","path":"container/container_core-min.js","requires":["dom","event"],"pkg":"container"},"cookie":{"type":"js","path":"cookie/cookie-min.js","requires":["yahoo"]},"datasource":{"type":"js","path":"datasource/datasource-min.js","requires":["event"],"optional":["connection"]},"datatable":{"type":"js","path":"datatable/datatable-min.js","requires":["element","datasource"],"optional":["calendar","dragdrop","paginator"],"skinnable":true},datemath:{"type":"js","path":"datemath/datemath-min.js","requires":["yahoo"]},"dom":{"type":"js","path":"dom/dom-min.js","requires":["yahoo"]},"dragdrop":{"type":"js","path":"dragdrop/dragdrop-min.js","requires":["dom","event"]},"editor":{"type":"js","path":"editor/editor-min.js","requires":["menu","element","button"],"optional":["animation","dragdrop"],"supersedes":["simpleeditor"],"skinnable":true},"element":{"type":"js","path":"element/element-min.js","requires":["dom","event"],"optional":["event-mouseenter","event-delegate"]},"element-delegate":{"type":"js","path":"element-delegate/element-delegate-min.js","requires":["element"]},"event":{"type":"js","path":"event/event-min.js","requires":["yahoo"]},"event-simulate":{"type":"js","path":"event-simulate/event-simulate-min.js","requires":["event"]},"event-delegate":{"type":"js","path":"event-delegate/event-delegate-min.js","requires":["event"],"optional":["selector"]},"event-mouseenter":{"type":"js","path":"event-mouseenter/event-mouseenter-min.js","requires":["dom","event"]},"fonts":{"type":"css","path":"fonts/fonts-min.css"},"get":{"type":"js","path":"get/get-min.js","requires":["yahoo"]},"grids":{"type":"css","path":"grids/grids-min.css","requires":["fonts"],"optional":["reset"]},"history":{"type":"js","path":"history/history-min.js","requires":["event"]},"imagecropper":{"type":"js","path":"imagecropper/imagecropper-min.js","requires":["dragdrop","element","resize"],"skinnable":true},"imageloader":{"type":"js","path":"imageloader/imageloader-min.js","requires":["event","dom"]},"json":{"type":"js","path":"json/json-min.js","requires":["yahoo"]},"layout":{"type":"js","path":"layout/layout-min.js","requires":["element"],"optional":["animation","dragdrop","resize","selector"],"skinnable":true},"logger":{"type":"js","path":"logger/logger-min.js","requires":["event","dom"],"optional":["dragdrop"],"skinnable":true},"menu":{"type":"js","path":"menu/menu-min.js","requires":["containercore"],"skinnable":true},"paginator":{"type":"js","path":"paginator/paginator-min.js","requires":["element"],"skinnable":true},"profiler":{"type":"js","path":"profiler/profiler-min.js","requires":["yahoo"]},"profilerviewer":{"type":"js","path":"profilerviewer/profilerviewer-min.js","requires":["profiler","yuiloader","element"],"skinnable":true},"progressbar":{"type":"js","path":"progressbar/progressbar-min.js","requires":["element"],"optional":["animation"],"skinnable":true},"reset":{"type":"css","path":"reset/reset-min.css"},"reset-fonts-grids":{"type":"css","path":"reset-fonts-grids/reset-fonts-grids.css","supersedes":["reset","fonts","grids","reset-fonts"],"rollup":4},"reset-fonts":{"type":"css","path":"reset-fonts/reset-fonts.css","supersedes":["reset","fonts"],"rollup":2},"resize":{"type":"js","path":"resize/resize-min.js","requires":["dragdrop","element"],"optional":["animation"],"skinnable":true},"selector":{"type":"js","path":"selector/selector-min.js","requires":["yahoo","dom"]},"simpleeditor":{"type":"js","path":"editor/simpleeditor-min.js","requires":["element"],"optional":["containercore","menu","button","animation","dragdrop"],"skinnable":true,"pkg":"editor"},"slider":{"type":"js","path":"slider/slider-min.js","requires":["dragdrop"],"optional":["animation"],"skinnable":true},"storage":{"type":"js","path":"storage/storage-min.js","requires":["yahoo","event","cookie"],"optional":["swfstore"]},"stylesheet":{"type":"js","path":"stylesheet/stylesheet-min.js","requires":["yahoo"]},"swf":{"type":"js","path":"swf/swf-min.js","requires":["element"],"supersedes":["swfdetect"]},"swfdetect":{"type":"js","path":"swfdetect/swfdetect-min.js","requires":["yahoo"]},"swfstore":{"type":"js","path":"swfstore/swfstore-min.js","requires":["element","cookie","swf"]},"tabview":{"type":"js","path":"tabview/tabview-min.js","requires":["element"],"optional":["connection"],"skinnable":true},"treeview":{"type":"js","path":"treeview/treeview-min.js","requires":["event","dom"],"optional":["json","animation","calendar"],"skinnable":true},"uploader":{"type":"js","path":"uploader/uploader-min.js","requires":["element"]},"utilities":{"type":"js","path":"utilities/utilities.js","supersedes":["yahoo","event","dragdrop","animation","dom","connection","element","yahoo-dom-event","get","yuiloader","yuiloader-dom-event"],"rollup":8},"yahoo":{"type":"js","path":"yahoo/yahoo-min.js"},"yahoo-dom-event":{"type":"js","path":"yahoo-dom-event/yahoo-dom-event.js","supersedes":["yahoo","event","dom"],"rollup":3},"yuiloader":{"type":"js","path":"yuiloader/yuiloader-min.js","supersedes":["yahoo","get"]},"yuiloader-dom-event":{"type":"js","path":"yuiloader-dom-event/yuiloader-dom-event.js","supersedes":["yahoo","dom","event","get","yuiloader","yahoo-dom-event"],"rollup":5},"yuitest":{"type":"js","path":"yuitest/yuitest-min.js","requires":["logger"],"optional":["event-simulate"],"skinnable":true}}},ObjectUtil:{appendArray:function(o,a){if(a){for(var i=0;
-i<a.length;i=i+1){o[a[i]]=true;}}},keys:function(o,ordered){var a=[],i;for(i in o){if(lang.hasOwnProperty(o,i)){a.push(i);}}return a;}},ArrayUtil:{appendArray:function(a1,a2){Array.prototype.push.apply(a1,a2);},indexOf:function(a,val){for(var i=0;i<a.length;i=i+1){if(a[i]===val){return i;}}return -1;},toObject:function(a){var o={};for(var i=0;i<a.length;i=i+1){o[a[i]]=true;}return o;},uniq:function(a){return YUI.ObjectUtil.keys(YUI.ArrayUtil.toObject(a));}}};YAHOO.util.YUILoader=function(o){this._internalCallback=null;this._useYahooListener=false;this.onSuccess=null;this.onFailure=Y.log;this.onProgress=null;this.onTimeout=null;this.scope=this;this.data=null;this.insertBefore=null;this.charset=null;this.varName=null;this.base=YUI.info.base;this.comboBase=YUI.info.comboBase;this.combine=false;this.root=YUI.info.root;this.timeout=0;this.ignore=null;this.force=null;this.allowRollup=true;this.filter=null;this.required={};this.moduleInfo=lang.merge(YUI.info.moduleInfo);this.rollups=null;this.loadOptional=false;this.sorted=[];this.loaded={};this.dirty=true;this.inserted={};var self=this;env.listeners.push(function(m){if(self._useYahooListener){self.loadNext(m.name);}});this.skin=lang.merge(YUI.info.skin);this._config(o);};Y.util.YUILoader.prototype={FILTERS:{RAW:{"searchExp":"-min\\.js","replaceStr":".js"},DEBUG:{"searchExp":"-min\\.js","replaceStr":"-debug.js"}},SKIN_PREFIX:"skin-",_config:function(o){if(o){for(var i in o){if(lang.hasOwnProperty(o,i)){if(i=="require"){this.require(o[i]);}else{this[i]=o[i];}}}}var f=this.filter;if(lang.isString(f)){f=f.toUpperCase();if(f==="DEBUG"){this.require("logger");}if(!Y.widget.LogWriter){Y.widget.LogWriter=function(){return Y;};}this.filter=this.FILTERS[f];}},addModule:function(o){if(!o||!o.name||!o.type||(!o.path&&!o.fullpath)){return false;}o.ext=("ext" in o)?o.ext:true;o.requires=o.requires||[];this.moduleInfo[o.name]=o;this.dirty=true;return true;},require:function(what){var a=(typeof what==="string")?arguments:what;this.dirty=true;YUI.ObjectUtil.appendArray(this.required,a);},_addSkin:function(skin,mod){var name=this.formatSkin(skin),info=this.moduleInfo,sinf=this.skin,ext=info[mod]&&info[mod].ext;if(!info[name]){this.addModule({"name":name,"type":"css","path":sinf.base+skin+"/"+sinf.path,"after":sinf.after,"rollup":sinf.rollup,"ext":ext});}if(mod){name=this.formatSkin(skin,mod);if(!info[name]){var mdef=info[mod],pkg=mdef.pkg||mod;this.addModule({"name":name,"type":"css","after":sinf.after,"path":pkg+"/"+sinf.base+skin+"/"+mod+".css","ext":ext});}}return name;},getRequires:function(mod){if(!mod){return[];}if(!this.dirty&&mod.expanded){return mod.expanded;}mod.requires=mod.requires||[];var i,d=[],r=mod.requires,o=mod.optional,info=this.moduleInfo,m;for(i=0;i<r.length;i=i+1){d.push(r[i]);m=info[r[i]];YUI.ArrayUtil.appendArray(d,this.getRequires(m));}if(o&&this.loadOptional){for(i=0;i<o.length;i=i+1){d.push(o[i]);YUI.ArrayUtil.appendArray(d,this.getRequires(info[o[i]]));}}mod.expanded=YUI.ArrayUtil.uniq(d);return mod.expanded;},getProvides:function(name,notMe){var addMe=!(notMe),ckey=(addMe)?PROV:SUPER,m=this.moduleInfo[name],o={};if(!m){return o;}if(m[ckey]){return m[ckey];}var s=m.supersedes,done={},me=this;var add=function(mm){if(!done[mm]){done[mm]=true;lang.augmentObject(o,me.getProvides(mm));}};if(s){for(var i=0;i<s.length;i=i+1){add(s[i]);}}m[SUPER]=o;m[PROV]=lang.merge(o);m[PROV][name]=true;return m[ckey];},calculate:function(o){if(o||this.dirty){this._config(o);this._setup();this._explode();if(this.allowRollup){this._rollup();}this._reduce();this._sort();this.dirty=false;}},_setup:function(){var info=this.moduleInfo,name,i,j;for(name in info){if(lang.hasOwnProperty(info,name)){var m=info[name];if(m&&m.skinnable){var o=this.skin.overrides,smod;if(o&&o[name]){for(i=0;i<o[name].length;i=i+1){smod=this._addSkin(o[name][i],name);}}else{smod=this._addSkin(this.skin.defaultSkin,name);}if(YUI.ArrayUtil.indexOf(m.requires,smod)==-1){m.requires.push(smod);}}}}var l=lang.merge(this.inserted);if(!this._sandbox){l=lang.merge(l,env.modules);}if(this.ignore){YUI.ObjectUtil.appendArray(l,this.ignore);}if(this.force){for(i=0;i<this.force.length;i=i+1){if(this.force[i] in l){delete l[this.force[i]];}}}for(j in l){if(lang.hasOwnProperty(l,j)){lang.augmentObject(l,this.getProvides(j));}}this.loaded=l;},_explode:function(){var r=this.required,i,mod;for(i in r){if(lang.hasOwnProperty(r,i)){mod=this.moduleInfo[i];if(mod){var req=this.getRequires(mod);if(req){YUI.ObjectUtil.appendArray(r,req);}}}}},_skin:function(){},formatSkin:function(skin,mod){var s=this.SKIN_PREFIX+skin;if(mod){s=s+"-"+mod;}return s;},parseSkin:function(mod){if(mod.indexOf(this.SKIN_PREFIX)===0){var a=mod.split("-");return{skin:a[1],module:a[2]};}return null;},_rollup:function(){var i,j,m,s,rollups={},r=this.required,roll,info=this.moduleInfo;if(this.dirty||!this.rollups){for(i in info){if(lang.hasOwnProperty(info,i)){m=info[i];if(m&&m.rollup){rollups[i]=m;}}}this.rollups=rollups;}for(;;){var rolled=false;for(i in rollups){if(!r[i]&&!this.loaded[i]){m=info[i];s=m.supersedes;roll=false;if(!m.rollup){continue;}var skin=(m.ext)?false:this.parseSkin(i),c=0;if(skin){for(j in r){if(lang.hasOwnProperty(r,j)){if(i!==j&&this.parseSkin(j)){c++;roll=(c>=m.rollup);if(roll){break;}}}}}else{for(j=0;j<s.length;j=j+1){if(this.loaded[s[j]]&&(!YUI.dupsAllowed[s[j]])){roll=false;break;}else{if(r[s[j]]){c++;roll=(c>=m.rollup);if(roll){break;}}}}}if(roll){r[i]=true;rolled=true;this.getRequires(m);}}}if(!rolled){break;}}},_reduce:function(){var i,j,s,m,r=this.required;for(i in r){if(i in this.loaded){delete r[i];}else{var skinDef=this.parseSkin(i);if(skinDef){if(!skinDef.module){var skin_pre=this.SKIN_PREFIX+skinDef.skin;for(j in r){if(lang.hasOwnProperty(r,j)){m=this.moduleInfo[j];var ext=m&&m.ext;if(!ext&&j!==i&&j.indexOf(skin_pre)>-1){delete r[j];}}}}}else{m=this.moduleInfo[i];s=m&&m.supersedes;if(s){for(j=0;j<s.length;j=j+1){if(s[j] in r){delete r[s[j]];}}}}}}},_onFailure:function(msg){YAHOO.log("Failure","info","loader");
-var f=this.onFailure;if(f){f.call(this.scope,{msg:"failure: "+msg,data:this.data,success:false});}},_onTimeout:function(){YAHOO.log("Timeout","info","loader");var f=this.onTimeout;if(f){f.call(this.scope,{msg:"timeout",data:this.data,success:false});}},_sort:function(){var s=[],info=this.moduleInfo,loaded=this.loaded,checkOptional=!this.loadOptional,me=this;var requires=function(aa,bb){var mm=info[aa];if(loaded[bb]||!mm){return false;}var ii,rr=mm.expanded,after=mm.after,other=info[bb],optional=mm.optional;if(rr&&YUI.ArrayUtil.indexOf(rr,bb)>-1){return true;}if(after&&YUI.ArrayUtil.indexOf(after,bb)>-1){return true;}if(checkOptional&&optional&&YUI.ArrayUtil.indexOf(optional,bb)>-1){return true;}var ss=info[bb]&&info[bb].supersedes;if(ss){for(ii=0;ii<ss.length;ii=ii+1){if(requires(aa,ss[ii])){return true;}}}if(mm.ext&&mm.type=="css"&&!other.ext&&other.type=="css"){return true;}return false;};for(var i in this.required){if(lang.hasOwnProperty(this.required,i)){s.push(i);}}var p=0;for(;;){var l=s.length,a,b,j,k,moved=false;for(j=p;j<l;j=j+1){a=s[j];for(k=j+1;k<l;k=k+1){if(requires(a,s[k])){b=s.splice(k,1);s.splice(j,0,b[0]);moved=true;break;}}if(moved){break;}else{p=p+1;}}if(!moved){break;}}this.sorted=s;},toString:function(){var o={type:"YUILoader",base:this.base,filter:this.filter,required:this.required,loaded:this.loaded,inserted:this.inserted};lang.dump(o,1);},_combine:function(){this._combining=[];var self=this,s=this.sorted,len=s.length,js=this.comboBase,css=this.comboBase,target,startLen=js.length,i,m,type=this.loadType;YAHOO.log("type "+type);for(i=0;i<len;i=i+1){m=this.moduleInfo[s[i]];if(m&&!m.ext&&(!type||type===m.type)){target=this.root+m.path;target+="&";if(m.type=="js"){js+=target;}else{css+=target;}this._combining.push(s[i]);}}if(this._combining.length){YAHOO.log("Attempting to combine: "+this._combining,"info","loader");var callback=function(o){var c=this._combining,len=c.length,i,m;for(i=0;i<len;i=i+1){this.inserted[c[i]]=true;}this.loadNext(o.data);},loadScript=function(){if(js.length>startLen){YAHOO.util.Get.script(self._filter(js),{data:self._loading,onSuccess:callback,onFailure:self._onFailure,onTimeout:self._onTimeout,insertBefore:self.insertBefore,charset:self.charset,timeout:self.timeout,scope:self});}else{this.loadNext();}};if(css.length>startLen){YAHOO.util.Get.css(this._filter(css),{data:this._loading,onSuccess:loadScript,onFailure:this._onFailure,onTimeout:this._onTimeout,insertBefore:this.insertBefore,charset:this.charset,timeout:this.timeout,scope:self});}else{loadScript();}return;}else{this.loadNext(this._loading);}},insert:function(o,type){this.calculate(o);this._loading=true;this.loadType=type;if(this.combine){return this._combine();}if(!type){var self=this;this._internalCallback=function(){self._internalCallback=null;self.insert(null,"js");};this.insert(null,"css");return;}this.loadNext();},sandbox:function(o,type){var self=this,success=function(o){var idx=o.argument[0],name=o.argument[2];self._scriptText[idx]=o.responseText;if(self.onProgress){self.onProgress.call(self.scope,{name:name,scriptText:o.responseText,xhrResponse:o,data:self.data});}self._loadCount++;if(self._loadCount>=self._stopCount){var v=self.varName||"YAHOO";var t="(function() {\n";var b="\nreturn "+v+";\n})();";var ref=eval(t+self._scriptText.join("\n")+b);self._pushEvents(ref);if(ref){self.onSuccess.call(self.scope,{reference:ref,data:self.data});}else{self._onFailure.call(self.varName+" reference failure");}}},failure=function(o){self.onFailure.call(self.scope,{msg:"XHR failure",xhrResponse:o,data:self.data});};self._config(o);if(!self.onSuccess){throw new Error("You must supply an onSuccess handler for your sandbox");}self._sandbox=true;if(!type||type!=="js"){self._internalCallback=function(){self._internalCallback=null;self.sandbox(null,"js");};self.insert(null,"css");return;}if(!util.Connect){var ld=new YAHOO.util.YUILoader();ld.insert({base:self.base,filter:self.filter,require:"connection",insertBefore:self.insertBefore,charset:self.charset,onSuccess:function(){self.sandbox(null,"js");},scope:self},"js");return;}self._scriptText=[];self._loadCount=0;self._stopCount=self.sorted.length;self._xhr=[];self.calculate();var s=self.sorted,l=s.length,i,m,url;for(i=0;i<l;i=i+1){m=self.moduleInfo[s[i]];if(!m){self._onFailure("undefined module "+m);for(var j=0;j<self._xhr.length;j=j+1){self._xhr[j].abort();}return;}if(m.type!=="js"){self._loadCount++;continue;}url=m.fullpath;url=(url)?self._filter(url):self._url(m.path);var xhrData={success:success,failure:failure,scope:self,argument:[i,url,s[i]]};self._xhr.push(util.Connect.asyncRequest("GET",url,xhrData));}},loadNext:function(mname){if(!this._loading){return;}var self=this,donext=function(o){self.loadNext(o.data);},successfn,s=this.sorted,len=s.length,i,fn,m,url;if(mname){if(mname!==this._loading){return;}this.inserted[mname]=true;if(this.onProgress){this.onProgress.call(this.scope,{name:mname,data:this.data});}}for(i=0;i<len;i=i+1){if(s[i] in this.inserted){continue;}if(s[i]===this._loading){return;}m=this.moduleInfo[s[i]];if(!m){this.onFailure.call(this.scope,{msg:"undefined module "+m,data:this.data});return;}if(!this.loadType||this.loadType===m.type){successfn=donext;this._loading=s[i];fn=(m.type==="css")?util.Get.css:util.Get.script;url=m.fullpath;url=(url)?this._filter(url):this._url(m.path);if(env.ua.webkit&&env.ua.webkit<420&&m.type==="js"&&!m.varName){successfn=null;this._useYahooListener=true;}fn(url,{data:s[i],onSuccess:successfn,onFailure:this._onFailure,onTimeout:this._onTimeout,insertBefore:this.insertBefore,charset:this.charset,timeout:this.timeout,varName:m.varName,scope:self});return;}}this._loading=null;if(this._internalCallback){var f=this._internalCallback;this._internalCallback=null;f.call(this);}else{if(this.onSuccess){this._pushEvents();this.onSuccess.call(this.scope,{data:this.data});}}},_pushEvents:function(ref){var r=ref||YAHOO;if(r.util&&r.util.Event){r.util.Event._load();}},_filter:function(str){var f=this.filter;return(f)?str.replace(new RegExp(f.searchExp,"g"),f.replaceStr):str;
-},_url:function(path){return this._filter((this.base||"")+path);}};})();YAHOO.register("yuiloader",YAHOO.util.YUILoader,{version:"2.9.0",build:"2800"});// End of File include/javascript/yui/build/yuiloader/yuiloader-min.js
 
-/*
- * More info at: http://phpjs.org
- *
- * This is version: 3.25
- * php.js is copyright 2011 Kevin van Zonneveld.
- *
- * Portions copyright Brett Zamir (http://brett-zamir.me), Kevin van Zonneveld
- * (http://kevin.vanzonneveld.net), Onno Marsman, Theriault, Michael White
- * (http://getsprink.com), Waldo Malqui Silva, Paulo Freitas, Jonas Raoni
- * Soares Silva (http://www.jsfromhell.com), Jack, Philip Peterson, Legaev
- * Andrey, Ates Goral (http://magnetiq.com), Ratheous, Alex, Rafa? Kukawski
- * (http://blog.kukawski.pl), Martijn Wieringa, lmeyrick
- * (https://sourceforge.net/projects/bcmath-js/), Nate, Enrique Gonzalez,
- * Philippe Baumann, Webtoolkit.info (http://www.webtoolkit.info/), Jani
- * Hartikainen, Ole Vrijenhoek, Ash Searle (http://hexmen.com/blog/), Carlos
- * R. L. Rodrigues (http://www.jsfromhell.com), travc, Michael Grier,
- * Erkekjetter, Johnny Mast (http://www.phpvrouwen.nl), Rafa? Kukawski
- * (http://blog.kukawski.pl/), GeekFG (http://geekfg.blogspot.com), Andrea
- * Giammarchi (http://webreflection.blogspot.com), WebDevHobo
- * (http://webdevhobo.blogspot.com/), d3x, marrtins,
- * http://stackoverflow.com/questions/57803/how-to-convert-decimal-to-hex-in-javascript,
- * pilus, stag019, T.Wild, Martin (http://www.erlenwiese.de/), majak, Marc
- * Palau, Mirek Slugen, Chris, Diplom@t (http://difane.com/), Breaking Par
- * Consulting Inc
- * (http://www.breakingpar.com/bkp/home.nsf/0/87256B280015193F87256CFB006C45F7),
- * gettimeofday, Arpad Ray (mailto:arpad@php.net), Oleg Eremeev, Josh Fraser
- * (http://onlineaspect.com/2007/06/08/auto-detect-a-time-zone-with-javascript/),
- * Steve Hilder, mdsjack (http://www.mdsjack.bo.it), Kevin van Zonneveld
- * (http://kevin.vanzonneveld.net/), gorthaur, Aman Gupta, Sakimori, Joris,
- * Robin, Kankrelune (http://www.webfaktory.info/), Alfonso Jimenez
- * (http://www.alfonsojimenez.com), David, Felix Geisendoerfer
- * (http://www.debuggable.com/felix), Lars Fischer, Karol Kowalski, Imgen Tata
- * (http://www.myipdf.com/), Steven Levithan (http://blog.stevenlevithan.com),
- * Tim de Koning (http://www.kingsquare.nl), Dreamer, AJ, Paul Smith, KELAN,
- * Pellentesque Malesuada, felix, Michael White, Mailfaker
- * (http://www.weedem.fr/), Thunder.m, Tyler Akins (http://rumkin.com),
- * saulius, Public Domain (http://www.json.org/json2.js), Caio Ariede
- * (http://caioariede.com), Steve Clay, David James, madipta, Marco, Ole
- * Vrijenhoek (http://www.nervous.nl/), class_exists, T. Wild, noname, Arno,
- * Frank Forte, Francois, Scott Cariss, Slawomir Kaniecki, date, Itsacon
- * (http://www.itsacon.net/), Billy, vlado houba, Jalal Berrami,
- * ReverseSyntax, Mateusz "loonquawl" Zalega, john (http://www.jd-tech.net),
- * mktime, Douglas Crockford (http://javascript.crockford.com), ger, Nick
- * Kolosov (http://sammy.ru), Nathan, nobbler, Fox, marc andreu, Alex Wilson,
- * Raphael (Ao RUDLER), Bayron Guevara, Adam Wallner
- * (http://web2.bitbaro.hu/), paulo kuong, jmweb, Lincoln Ramsay, djmix,
- * Pyerre, Jon Hohle, Thiago Mata (http://thiagomata.blog.com), lmeyrick
- * (https://sourceforge.net/projects/bcmath-js/this.), Linuxworld, duncan,
- * Gilbert, Sanjoy Roy, Shingo, sankai, Oskar Larsson Hšgfeldt
- * (http://oskar-lh.name/), Denny Wardhana, 0m3r, Everlasto, Subhasis Deb,
- * josh, jd, Pier Paolo Ramon (http://www.mastersoup.com/), P, merabi, Soren
- * Hansen, EdorFaus, Eugene Bulkin (http://doubleaw.com/), Der Simon
- * (http://innerdom.sourceforge.net/), echo is bad, JB, LH, kenneth, J A R,
- * Marc Jansen, Stoyan Kyosev (http://www.svest.org/), Francesco, XoraX
- * (http://www.xorax.info), Ozh, Brad Touesnard, MeEtc
- * (http://yass.meetcweb.com), Peter-Paul Koch
- * (http://www.quirksmode.org/js/beat.html), Olivier Louvignes
- * (http://mg-crea.com/), T0bsn, Tim Wiel, Bryan Elliott, nord_ua, Martin, JT,
- * David Randall, Thomas Beaucourt (http://www.webapp.fr), Tim de Koning,
- * stensi, Pierre-Luc Paour, Kristof Coomans (SCK-CEN Belgian Nucleair
- * Research Centre), Martin Pool, Kirk Strobeck, Rick Waldron, Brant Messenger
- * (http://www.brantmessenger.com/), Devan Penner-Woelk, Saulo Vallory, Wagner
- * B. Soares, Artur Tchernychev, Valentina De Rosa, Jason Wong
- * (http://carrot.org/), Christoph, Daniel Esteban, strftime, Mick@el, rezna,
- * Simon Willison (http://simonwillison.net), Anton Ongson, Gabriel Paderni,
- * Marco van Oort, penutbutterjelly, Philipp Lenssen, Bjorn Roesbeke
- * (http://www.bjornroesbeke.be/), Bug?, Eric Nagel, Tomasz Wesolowski,
- * Evertjan Garretsen, Bobby Drake, Blues (http://tech.bluesmoon.info/), Luke
- * Godfrey, Pul, uestla, Alan C, Ulrich, Rafal Kukawski, Yves Sucaet,
- * sowberry, Norman "zEh" Fuchs, hitwork, Zahlii, johnrembo, Nick Callen,
- * Steven Levithan (stevenlevithan.com), ejsanders, Scott Baker, Brian Tafoya
- * (http://www.premasolutions.com/), Philippe Jausions
- * (http://pear.php.net/user/jausions), Aidan Lister
- * (http://aidanlister.com/), Rob, e-mike, HKM, ChaosNo1, metjay, strcasecmp,
- * strcmp, Taras Bogach, jpfle, Alexander Ermolaev
- * (http://snippets.dzone.com/user/AlexanderErmolaev), DxGx, kilops, Orlando,
- * dptr1988, Le Torbi, James (http://www.james-bell.co.uk/), Pedro Tainha
- * (http://www.pedrotainha.com), James, Arnout Kazemier
- * (http://www.3rd-Eden.com), Chris McMacken, Yannoo, jakes, gabriel paderni,
- * FGFEmperor, Greg Frazier, baris ozdil, 3D-GRAF, daniel airton wermann
- * (http://wermann.com.br), Howard Yeend, Diogo Resende, Allan Jensen
- * (http://www.winternet.no), Benjamin Lupton, Atli ?—r, Maximusya, davook,
- * Tod Gentille, Ryan W Tenney (http://ryan.10e.us), Nathan Sepulveda, Cord,
- * fearphage (http://http/my.opera.com/fearphage/), Victor, Rafa? Kukawski
- * (http://kukawski.pl), Matteo, Manish, Matt Bradley, Riddler
- * (http://www.frontierwebdev.com/), Alexander M Beedie, T.J. Leahy, Rafa?
- * Kukawski, taith, Luis Salazar (http://www.freaky-media.com/), FremyCompany,
- * Rival, Luke Smith (http://lucassmith.name), Andrej Pavlovic, Garagoth, Le
- * Torbi (http://www.letorbi.de/), Dino, Josep Sanz (http://www.ws3.es/), rem,
- * Russell Walker (http://www.nbill.co.uk/), Jamie Beck
- * (http://www.terabit.ca/), setcookie, Michael, YUI Library:
- * http://developer.yahoo.com/yui/docs/YAHOO.util.DateLocale.html, Blues at
- * http://hacks.bluesmoon.info/strftime/strftime.js, Ben
- * (http://benblume.co.uk/), DtTvB
- * (http://dt.in.th/2008-09-16.string-length-in-bytes.html), Andreas, William,
- * meo, incidence, Cagri Ekin, Amirouche, Amir Habibi
- * (http://www.residence-mixte.com/), Kheang Hok Chin
- * (http://www.distantia.ca/), Jay Klehr, Lorenzo Pisani, Tony, Yen-Wei Liu,
- * Greenseed, mk.keck, Leslie Hoare, dude, booeyOH, Ben Bryan
- *
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL KEVIN VAN ZONNEVELD BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+if(typeof YAHOO=="undefined"||!YAHOO){var YAHOO={};}YAHOO.namespace=function(){var b=arguments,g=null,e,c,f;for(e=0;e<b.length;e=e+1){f=(""+b[e]).split(".");g=YAHOO;for(c=(f[0]=="YAHOO")?1:0;c<f.length;c=c+1){g[f[c]]=g[f[c]]||{};g=g[f[c]];}}return g;};YAHOO.log=function(d,a,c){var b=YAHOO.widget.Logger;if(b&&b.log){return b.log(d,a,c);}else{return false;}};YAHOO.register=function(a,f,e){var k=YAHOO.env.modules,c,j,h,g,d;if(!k[a]){k[a]={versions:[],builds:[]};}c=k[a];j=e.version;h=e.build;g=YAHOO.env.listeners;c.name=a;c.version=j;c.build=h;c.versions.push(j);c.builds.push(h);c.mainClass=f;for(d=0;d<g.length;d=d+1){g[d](c);}if(f){f.VERSION=j;f.BUILD=h;}else{YAHOO.log("mainClass is undefined for module "+a,"warn");}};YAHOO.env=YAHOO.env||{modules:[],listeners:[]};YAHOO.env.getVersion=function(a){return YAHOO.env.modules[a]||null;};YAHOO.env.parseUA=function(d){var e=function(i){var j=0;return parseFloat(i.replace(/\./g,function(){return(j++==1)?"":".";}));},h=navigator,g={ie:0,opera:0,gecko:0,webkit:0,chrome:0,mobile:null,air:0,ipad:0,iphone:0,ipod:0,ios:null,android:0,webos:0,caja:h&&h.cajaVersion,secure:false,os:null},c=d||(navigator&&navigator.userAgent),f=window&&window.location,b=f&&f.href,a;g.secure=b&&(b.toLowerCase().indexOf("https")===0);if(c){if((/windows|win32/i).test(c)){g.os="windows";}else{if((/macintosh/i).test(c)){g.os="macintosh";}else{if((/rhino/i).test(c)){g.os="rhino";}}}if((/KHTML/).test(c)){g.webkit=1;}a=c.match(/AppleWebKit\/([^\s]*)/);if(a&&a[1]){g.webkit=e(a[1]);if(/ Mobile\//.test(c)){g.mobile="Apple";a=c.match(/OS ([^\s]*)/);if(a&&a[1]){a=e(a[1].replace("_","."));}g.ios=a;g.ipad=g.ipod=g.iphone=0;a=c.match(/iPad|iPod|iPhone/);if(a&&a[0]){g[a[0].toLowerCase()]=g.ios;}}else{a=c.match(/NokiaN[^\/]*|Android \d\.\d|webOS\/\d\.\d/);if(a){g.mobile=a[0];}if(/webOS/.test(c)){g.mobile="WebOS";a=c.match(/webOS\/([^\s]*);/);if(a&&a[1]){g.webos=e(a[1]);}}if(/ Android/.test(c)){g.mobile="Android";a=c.match(/Android ([^\s]*);/);if(a&&a[1]){g.android=e(a[1]);}}}a=c.match(/Chrome\/([^\s]*)/);if(a&&a[1]){g.chrome=e(a[1]);}else{a=c.match(/AdobeAIR\/([^\s]*)/);if(a){g.air=a[0];}}}if(!g.webkit){a=c.match(/Opera[\s\/]([^\s]*)/);if(a&&a[1]){g.opera=e(a[1]);a=c.match(/Version\/([^\s]*)/);if(a&&a[1]){g.opera=e(a[1]);}a=c.match(/Opera Mini[^;]*/);if(a){g.mobile=a[0];}}else{a=c.match(/MSIE\s([^;]*)/);if(a&&a[1]){g.ie=e(a[1]);}else{a=c.match(/Gecko\/([^\s]*)/);if(a){g.gecko=1;a=c.match(/rv:([^\s\)]*)/);if(a&&a[1]){g.gecko=e(a[1]);}}}}}}return g;};YAHOO.env.ua=YAHOO.env.parseUA();(function(){YAHOO.namespace("util","widget","example");if("undefined"!==typeof YAHOO_config){var b=YAHOO_config.listener,a=YAHOO.env.listeners,d=true,c;if(b){for(c=0;c<a.length;c++){if(a[c]==b){d=false;break;}}if(d){a.push(b);}}}})();YAHOO.lang=YAHOO.lang||{};(function(){var f=YAHOO.lang,a=Object.prototype,c="[object Array]",h="[object Function]",i="[object Object]",b=[],g={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#x27;","/":"&#x2F;","`":"&#x60;"},d=["toString","valueOf"],e={isArray:function(j){return a.toString.apply(j)===c;},isBoolean:function(j){return typeof j==="boolean";},isFunction:function(j){return(typeof j==="function")||a.toString.apply(j)===h;},isNull:function(j){return j===null;},isNumber:function(j){return typeof j==="number"&&isFinite(j);},isObject:function(j){return(j&&(typeof j==="object"||f.isFunction(j)))||false;},isString:function(j){return typeof j==="string";},isUndefined:function(j){return typeof j==="undefined";},_IEEnumFix:(YAHOO.env.ua.ie)?function(l,k){var j,n,m;for(j=0;j<d.length;j=j+1){n=d[j];m=k[n];if(f.isFunction(m)&&m!=a[n]){l[n]=m;}}}:function(){},escapeHTML:function(j){return j.replace(/[&<>"'\/`]/g,function(k){return g[k];});},extend:function(m,n,l){if(!n||!m){throw new Error("extend failed, please check that "+"all dependencies are included.");}var k=function(){},j;k.prototype=n.prototype;m.prototype=new k();m.prototype.constructor=m;m.superclass=n.prototype;if(n.prototype.constructor==a.constructor){n.prototype.constructor=n;}if(l){for(j in l){if(f.hasOwnProperty(l,j)){m.prototype[j]=l[j];}}f._IEEnumFix(m.prototype,l);}},augmentObject:function(n,m){if(!m||!n){throw new Error("Absorb failed, verify dependencies.");}var j=arguments,l,o,k=j[2];if(k&&k!==true){for(l=2;l<j.length;l=l+1){n[j[l]]=m[j[l]];}}else{for(o in m){if(k||!(o in n)){n[o]=m[o];}}f._IEEnumFix(n,m);}return n;},augmentProto:function(m,l){if(!l||!m){throw new Error("Augment failed, verify dependencies.");}var j=[m.prototype,l.prototype],k;for(k=2;k<arguments.length;k=k+1){j.push(arguments[k]);}f.augmentObject.apply(this,j);return m;},dump:function(j,p){var l,n,r=[],t="{...}",k="f(){...}",q=", ",m=" => ";if(!f.isObject(j)){return j+"";}else{if(j instanceof Date||("nodeType"in j&&"tagName"in j)){return j;}else{if(f.isFunction(j)){return k;}}}p=(f.isNumber(p))?p:3;if(f.isArray(j)){r.push("[");for(l=0,n=j.length;l<n;l=l+1){if(f.isObject(j[l])){r.push((p>0)?f.dump(j[l],p-1):t);}else{r.push(j[l]);}r.push(q);}if(r.length>1){r.pop();}r.push("]");}else{r.push("{");for(l in j){if(f.hasOwnProperty(j,l)){r.push(l+m);if(f.isObject(j[l])){r.push((p>0)?f.dump(j[l],p-1):t);}else{r.push(j[l]);}r.push(q);}}if(r.length>1){r.pop();}r.push("}");}return r.join("");},substitute:function(x,y,E,l){var D,C,B,G,t,u,F=[],p,z=x.length,A="dump",r=" ",q="{",m="}",n,w;for(;;){D=x.lastIndexOf(q,z);if(D<0){break;}C=x.indexOf(m,D);if(D+1>C){break;}p=x.substring(D+1,C);G=p;u=null;B=G.indexOf(r);if(B>-1){u=G.substring(B+1);G=G.substring(0,B);}t=y[G];if(E){t=E(G,t,u);}if(f.isObject(t)){if(f.isArray(t)){t=f.dump(t,parseInt(u,10));}else{u=u||"";n=u.indexOf(A);if(n>-1){u=u.substring(4);}w=t.toString();if(w===i||n>-1){t=f.dump(t,parseInt(u,10));}else{t=w;}}}else{if(!f.isString(t)&&!f.isNumber(t)){t="~-"+F.length+"-~";F[F.length]=p;}}x=x.substring(0,D)+t+x.substring(C+1);if(l===false){z=D-1;}}for(D=F.length-1;D>=0;D=D-1){x=x.replace(new RegExp("~-"+D+"-~"),"{"+F[D]+"}","g");}return x;},trim:function(j){try{return j.replace(/^\s+|\s+$/g,"");}catch(k){return j;}},merge:function(){var n={},k=arguments,j=k.length,m;for(m=0;m<j;m=m+1){f.augmentObject(n,k[m],true);}return n;},later:function(t,k,u,n,p){t=t||0;k=k||{};var l=u,s=n,q,j;if(f.isString(u)){l=k[u];}if(!l){throw new TypeError("method undefined");}if(!f.isUndefined(n)&&!f.isArray(s)){s=[n];}q=function(){l.apply(k,s||b);};j=(p)?setInterval(q,t):setTimeout(q,t);return{interval:p,cancel:function(){if(this.interval){clearInterval(j);}else{clearTimeout(j);}}};},isValue:function(j){return(f.isObject(j)||f.isString(j)||f.isNumber(j)||f.isBoolean(j));}};f.hasOwnProperty=(a.hasOwnProperty)?function(j,k){return j&&j.hasOwnProperty&&j.hasOwnProperty(k);}:function(j,k){return!f.isUndefined(j[k])&&j.constructor.prototype[k]!==j[k];};e.augmentObject(f,e,true);YAHOO.util.Lang=f;f.augment=f.augmentProto;YAHOO.augment=f.augmentProto;YAHOO.extend=f.extend;})();YAHOO.register("yahoo",YAHOO,{version:"2.9.0",build:"2800"});YAHOO.util.Get=function(){var m={},k=0,r=0,l=false,n=YAHOO.env.ua,s=YAHOO.lang,q,d,e,i=function(x,t,y){var u=y||window,z=u.document,A=z.createElement(x),v;for(v in t){if(t.hasOwnProperty(v)){A.setAttribute(v,t[v]);}}return A;},h=function(u,v,t){var w={id:"yui__dyn_"+(r++),type:"text/css",rel:"stylesheet",href:u};if(t){s.augmentObject(w,t);}return i("link",w,v);},p=function(u,v,t){var w={id:"yui__dyn_"+(r++),type:"text/javascript",src:u};if(t){s.augmentObject(w,t);}return i("script",w,v);},a=function(t,u){return{tId:t.tId,win:t.win,data:t.data,nodes:t.nodes,msg:u,purge:function(){d(this.tId);}};},b=function(t,w){var u=m[w],v=(s.isString(t))?u.win.document.getElementById(t):t;if(!v){q(w,"target node not found: "+t);}return v;},c=function(w){YAHOO.log("Finishing transaction "+w);var u=m[w],v,t;u.finished=true;if(u.aborted){v="transaction "+w+" was aborted";q(w,v);return;}if(u.onSuccess){t=u.scope||u.win;u.onSuccess.call(t,a(u));}},o=function(v){YAHOO.log("Timeout "+v,"info","get");var u=m[v],t;if(u.onTimeout){t=u.scope||u;u.onTimeout.call(t,a(u));}},f=function(v,A){YAHOO.log("_next: "+v+", loaded: "+A,"info","Get");var u=m[v],D=u.win,C=D.document,B=C.getElementsByTagName("head")[0],x,y,t,E,z;if(u.timer){u.timer.cancel();}if(u.aborted){y="transaction "+v+" was aborted";q(v,y);return;}if(A){u.url.shift();if(u.varName){u.varName.shift();}}else{u.url=(s.isString(u.url))?[u.url]:u.url;if(u.varName){u.varName=(s.isString(u.varName))?[u.varName]:u.varName;}}if(u.url.length===0){if(u.type==="script"&&n.webkit&&n.webkit<420&&!u.finalpass&&!u.varName){z=p(null,u.win,u.attributes);z.innerHTML='YAHOO.util.Get._finalize("'+v+'");';u.nodes.push(z);B.appendChild(z);}else{c(v);}return;}t=u.url[0];if(!t){u.url.shift();YAHOO.log("skipping empty url");return f(v);}YAHOO.log("attempting to load "+t,"info","Get");if(u.timeout){u.timer=s.later(u.timeout,u,o,v);}if(u.type==="script"){x=p(t,D,u.attributes);}else{x=h(t,D,u.attributes);}e(u.type,x,v,t,D,u.url.length);u.nodes.push(x);if(u.insertBefore){E=b(u.insertBefore,v);if(E){E.parentNode.insertBefore(x,E);}}else{B.appendChild(x);}YAHOO.log("Appending node: "+t,"info","Get");if((n.webkit||n.gecko)&&u.type==="css"){f(v,t);}},j=function(){if(l){return;}l=true;var t,u;for(t in m){if(m.hasOwnProperty(t)){u=m[t];if(u.autopurge&&u.finished){d(u.tId);delete m[t];}}}l=false;},g=function(u,t,v){var x="q"+(k++),w;v=v||{};if(k%YAHOO.util.Get.PURGE_THRESH===0){j();}m[x]=s.merge(v,{tId:x,type:u,url:t,finished:false,aborted:false,nodes:[]});w=m[x];w.win=w.win||window;w.scope=w.scope||w.win;w.autopurge=("autopurge"in w)?w.autopurge:(u==="script")?true:false;w.attributes=w.attributes||{};w.attributes.charset=v.charset||w.attributes.charset||"utf-8";s.later(0,w,f,x);return{tId:x};};e=function(H,z,x,u,D,E,G){var F=G||f,B,t,I,v,J,A,C,y;if(n.ie){z.onreadystatechange=function(){B=this.readyState;if("loaded"===B||"complete"===B){YAHOO.log(x+" onload "+u,"info","Get");z.onreadystatechange=null;F(x,u);}};}else{if(n.webkit){if(H==="script"){if(n.webkit>=420){z.addEventListener("load",function(){YAHOO.log(x+" DOM2 onload "+u,"info","Get");F(x,u);});}else{t=m[x];if(t.varName){v=YAHOO.util.Get.POLL_FREQ;YAHOO.log("Polling for "+t.varName[0]);t.maxattempts=YAHOO.util.Get.TIMEOUT/v;t.attempts=0;t._cache=t.varName[0].split(".");t.timer=s.later(v,t,function(w){I=this._cache;A=I.length;J=this.win;for(C=0;C<A;C=C+1){J=J[I[C]];if(!J){this.attempts++;if(this.attempts++>this.maxattempts){y="Over retry limit, giving up";t.timer.cancel();q(x,y);}else{YAHOO.log(I[C]+" failed, retrying");}return;}}YAHOO.log("Safari poll complete");t.timer.cancel();F(x,u);},null,true);}else{s.later(YAHOO.util.Get.POLL_FREQ,null,F,[x,u]);}}}}else{z.onload=function(){YAHOO.log(x+" onload "+u,"info","Get");F(x,u);};}}};q=function(w,v){YAHOO.log("get failure: "+v,"warn","Get");var u=m[w],t;if(u.onFailure){t=u.scope||u.win;u.onFailure.call(t,a(u,v));}};d=function(z){if(m[z]){var t=m[z],u=t.nodes,x=u.length,C=t.win.document,A=C.getElementsByTagName("head")[0],v,y,w,B;if(t.insertBefore){v=b(t.insertBefore,z);if(v){A=v.parentNode;}}for(y=0;y<x;y=y+1){w=u[y];if(w.clearAttributes){w.clearAttributes();}else{for(B in w){if(w.hasOwnProperty(B)){delete w[B];}}}A.removeChild(w);}t.nodes=[];}};return{POLL_FREQ:10,PURGE_THRESH:20,TIMEOUT:2000,_finalize:function(t){YAHOO.log(t+" finalized ","info","Get");s.later(0,null,c,t);},abort:function(u){var v=(s.isString(u))?u:u.tId,t=m[v];if(t){YAHOO.log("Aborting "+v,"info","Get");t.aborted=true;}},script:function(t,u){return g("script",t,u);},css:function(t,u){return g("css",t,u);}};}();YAHOO.register("get",YAHOO.util.Get,{version:"2.9.0",build:"2800"});(function(){var Y=YAHOO,util=Y.util,lang=Y.lang,env=Y.env,PROV="_provides",SUPER="_supersedes",REQ="expanded",AFTER="_after",VERSION="2.9.0";var YUI={dupsAllowed:{"yahoo":true,"get":true},info:{"root":VERSION+"/build/","base":"http://yui.yahooapis.com/"+VERSION+"/build/","comboBase":"http://yui.yahooapis.com/combo?","skin":{"defaultSkin":"sam","base":"assets/skins/","path":"skin.css","after":["reset","fonts","grids","base"],"rollup":3},dupsAllowed:["yahoo","get"],"moduleInfo":{"animation":{"type":"js","path":"animation/animation-min.js","requires":["dom","event"]},"autocomplete":{"type":"js","path":"autocomplete/autocomplete-min.js","requires":["dom","event","datasource"],"optional":["connection","animation"],"skinnable":true},"base":{"type":"css","path":"base/base-min.css","after":["reset","fonts","grids"]},"button":{"type":"js","path":"button/button-min.js","requires":["element"],"optional":["menu"],"skinnable":true},"calendar":{"type":"js","path":"calendar/calendar-min.js","requires":["event","dom"],supersedes:["datemath"],"skinnable":true},"carousel":{"type":"js","path":"carousel/carousel-min.js","requires":["element"],"optional":["animation"],"skinnable":true},"charts":{"type":"js","path":"charts/charts-min.js","requires":["element","json","datasource","swf"]},"colorpicker":{"type":"js","path":"colorpicker/colorpicker-min.js","requires":["slider","element"],"optional":["animation"],"skinnable":true},"connection":{"type":"js","path":"connection/connection-min.js","requires":["event"],"supersedes":["connectioncore"]},"connectioncore":{"type":"js","path":"connection/connection_core-min.js","requires":["event"],"pkg":"connection"},"container":{"type":"js","path":"container/container-min.js","requires":["dom","event"],"optional":["dragdrop","animation","connection"],"supersedes":["containercore"],"skinnable":true},"containercore":{"type":"js","path":"container/container_core-min.js","requires":["dom","event"],"pkg":"container"},"cookie":{"type":"js","path":"cookie/cookie-min.js","requires":["yahoo"]},"datasource":{"type":"js","path":"datasource/datasource-min.js","requires":["event"],"optional":["connection"]},"datatable":{"type":"js","path":"datatable/datatable-min.js","requires":["element","datasource"],"optional":["calendar","dragdrop","paginator"],"skinnable":true},datemath:{"type":"js","path":"datemath/datemath-min.js","requires":["yahoo"]},"dom":{"type":"js","path":"dom/dom-min.js","requires":["yahoo"]},"dragdrop":{"type":"js","path":"dragdrop/dragdrop-min.js","requires":["dom","event"]},"editor":{"type":"js","path":"editor/editor-min.js","requires":["menu","element","button"],"optional":["animation","dragdrop"],"supersedes":["simpleeditor"],"skinnable":true},"element":{"type":"js","path":"element/element-min.js","requires":["dom","event"],"optional":["event-mouseenter","event-delegate"]},"element-delegate":{"type":"js","path":"element-delegate/element-delegate-min.js","requires":["element"]},"event":{"type":"js","path":"event/event-min.js","requires":["yahoo"]},"event-simulate":{"type":"js","path":"event-simulate/event-simulate-min.js","requires":["event"]},"event-delegate":{"type":"js","path":"event-delegate/event-delegate-min.js","requires":["event"],"optional":["selector"]},"event-mouseenter":{"type":"js","path":"event-mouseenter/event-mouseenter-min.js","requires":["dom","event"]},"fonts":{"type":"css","path":"fonts/fonts-min.css"},"get":{"type":"js","path":"get/get-min.js","requires":["yahoo"]},"grids":{"type":"css","path":"grids/grids-min.css","requires":["fonts"],"optional":["reset"]},"history":{"type":"js","path":"history/history-min.js","requires":["event"]},"imagecropper":{"type":"js","path":"imagecropper/imagecropper-min.js","requires":["dragdrop","element","resize"],"skinnable":true},"imageloader":{"type":"js","path":"imageloader/imageloader-min.js","requires":["event","dom"]},"json":{"type":"js","path":"json/json-min.js","requires":["yahoo"]},"layout":{"type":"js","path":"layout/layout-min.js","requires":["element"],"optional":["animation","dragdrop","resize","selector"],"skinnable":true},"logger":{"type":"js","path":"logger/logger-min.js","requires":["event","dom"],"optional":["dragdrop"],"skinnable":true},"menu":{"type":"js","path":"menu/menu-min.js","requires":["containercore"],"skinnable":true},"paginator":{"type":"js","path":"paginator/paginator-min.js","requires":["element"],"skinnable":true},"profiler":{"type":"js","path":"profiler/profiler-min.js","requires":["yahoo"]},"profilerviewer":{"type":"js","path":"profilerviewer/profilerviewer-min.js","requires":["profiler","yuiloader","element"],"skinnable":true},"progressbar":{"type":"js","path":"progressbar/progressbar-min.js","requires":["element"],"optional":["animation"],"skinnable":true},"reset":{"type":"css","path":"reset/reset-min.css"},"reset-fonts-grids":{"type":"css","path":"reset-fonts-grids/reset-fonts-grids.css","supersedes":["reset","fonts","grids","reset-fonts"],"rollup":4},"reset-fonts":{"type":"css","path":"reset-fonts/reset-fonts.css","supersedes":["reset","fonts"],"rollup":2},"resize":{"type":"js","path":"resize/resize-min.js","requires":["dragdrop","element"],"optional":["animation"],"skinnable":true},"selector":{"type":"js","path":"selector/selector-min.js","requires":["yahoo","dom"]},"simpleeditor":{"type":"js","path":"editor/simpleeditor-min.js","requires":["element"],"optional":["containercore","menu","button","animation","dragdrop"],"skinnable":true,"pkg":"editor"},"slider":{"type":"js","path":"slider/slider-min.js","requires":["dragdrop"],"optional":["animation"],"skinnable":true},"storage":{"type":"js","path":"storage/storage-min.js","requires":["yahoo","event","cookie"],"optional":["swfstore"]},"stylesheet":{"type":"js","path":"stylesheet/stylesheet-min.js","requires":["yahoo"]},"swf":{"type":"js","path":"swf/swf-min.js","requires":["element"],"supersedes":["swfdetect"]},"swfdetect":{"type":"js","path":"swfdetect/swfdetect-min.js","requires":["yahoo"]},"swfstore":{"type":"js","path":"swfstore/swfstore-min.js","requires":["element","cookie","swf"]},"tabview":{"type":"js","path":"tabview/tabview-min.js","requires":["element"],"optional":["connection"],"skinnable":true},"treeview":{"type":"js","path":"treeview/treeview-min.js","requires":["event","dom"],"optional":["json","animation","calendar"],"skinnable":true},"uploader":{"type":"js","path":"uploader/uploader-min.js","requires":["element"]},"utilities":{"type":"js","path":"utilities/utilities.js","supersedes":["yahoo","event","dragdrop","animation","dom","connection","element","yahoo-dom-event","get","yuiloader","yuiloader-dom-event"],"rollup":8},"yahoo":{"type":"js","path":"yahoo/yahoo-min.js"},"yahoo-dom-event":{"type":"js","path":"yahoo-dom-event/yahoo-dom-event.js","supersedes":["yahoo","event","dom"],"rollup":3},"yuiloader":{"type":"js","path":"yuiloader/yuiloader-min.js","supersedes":["yahoo","get"]},"yuiloader-dom-event":{"type":"js","path":"yuiloader-dom-event/yuiloader-dom-event.js","supersedes":["yahoo","dom","event","get","yuiloader","yahoo-dom-event"],"rollup":5},"yuitest":{"type":"js","path":"yuitest/yuitest-min.js","requires":["logger"],"optional":["event-simulate"],"skinnable":true}}},ObjectUtil:{appendArray:function(o,a){if(a){for(var i=0;i<a.length;i=i+1){o[a[i]]=true;}}},keys:function(o,ordered){var a=[],i;for(i in o){if(lang.hasOwnProperty(o,i)){a.push(i);}}return a;}},ArrayUtil:{appendArray:function(a1,a2){Array.prototype.push.apply(a1,a2);},indexOf:function(a,val){for(var i=0;i<a.length;i=i+1){if(a[i]===val){return i;}}return-1;},toObject:function(a){var o={};for(var i=0;i<a.length;i=i+1){o[a[i]]=true;}return o;},uniq:function(a){return YUI.ObjectUtil.keys(YUI.ArrayUtil.toObject(a));}}};YAHOO.util.YUILoader=function(o){this._internalCallback=null;this._useYahooListener=false;this.onSuccess=null;this.onFailure=Y.log;this.onProgress=null;this.onTimeout=null;this.scope=this;this.data=null;this.insertBefore=null;this.charset=null;this.varName=null;this.base=YUI.info.base;this.comboBase=YUI.info.comboBase;this.combine=false;this.root=YUI.info.root;this.timeout=0;this.ignore=null;this.force=null;this.allowRollup=true;this.filter=null;this.required={};this.moduleInfo=lang.merge(YUI.info.moduleInfo);this.rollups=null;this.loadOptional=false;this.sorted=[];this.loaded={};this.dirty=true;this.inserted={};var self=this;env.listeners.push(function(m){if(self._useYahooListener){self.loadNext(m.name);}});this.skin=lang.merge(YUI.info.skin);this._config(o);};Y.util.YUILoader.prototype={FILTERS:{RAW:{"searchExp":"-min\\.js","replaceStr":".js"},DEBUG:{"searchExp":"-min\\.js","replaceStr":"-debug.js"}},SKIN_PREFIX:"skin-",_config:function(o){if(o){for(var i in o){if(lang.hasOwnProperty(o,i)){if(i=="require"){this.require(o[i]);}else{this[i]=o[i];}}}}var f=this.filter;if(lang.isString(f)){f=f.toUpperCase();if(f==="DEBUG"){this.require("logger");}if(!Y.widget.LogWriter){Y.widget.LogWriter=function(){return Y;};}this.filter=this.FILTERS[f];}},addModule:function(o){if(!o||!o.name||!o.type||(!o.path&&!o.fullpath)){return false;}o.ext=("ext"in o)?o.ext:true;o.requires=o.requires||[];this.moduleInfo[o.name]=o;this.dirty=true;return true;},require:function(what){var a=(typeof what==="string")?arguments:what;this.dirty=true;YUI.ObjectUtil.appendArray(this.required,a);},_addSkin:function(skin,mod){var name=this.formatSkin(skin),info=this.moduleInfo,sinf=this.skin,ext=info[mod]&&info[mod].ext;if(!info[name]){this.addModule({"name":name,"type":"css","path":sinf.base+skin+"/"+sinf.path,"after":sinf.after,"rollup":sinf.rollup,"ext":ext});}if(mod){name=this.formatSkin(skin,mod);if(!info[name]){var mdef=info[mod],pkg=mdef.pkg||mod;this.addModule({"name":name,"type":"css","after":sinf.after,"path":pkg+"/"+sinf.base+skin+"/"+mod+".css","ext":ext});}}return name;},getRequires:function(mod){if(!mod){return[];}if(!this.dirty&&mod.expanded){return mod.expanded;}mod.requires=mod.requires||[];var i,d=[],r=mod.requires,o=mod.optional,info=this.moduleInfo,m;for(i=0;i<r.length;i=i+1){d.push(r[i]);m=info[r[i]];YUI.ArrayUtil.appendArray(d,this.getRequires(m));}if(o&&this.loadOptional){for(i=0;i<o.length;i=i+1){d.push(o[i]);YUI.ArrayUtil.appendArray(d,this.getRequires(info[o[i]]));}}mod.expanded=YUI.ArrayUtil.uniq(d);return mod.expanded;},getProvides:function(name,notMe){var addMe=!(notMe),ckey=(addMe)?PROV:SUPER,m=this.moduleInfo[name],o={};if(!m){return o;}if(m[ckey]){return m[ckey];}var s=m.supersedes,done={},me=this;var add=function(mm){if(!done[mm]){done[mm]=true;lang.augmentObject(o,me.getProvides(mm));}};if(s){for(var i=0;i<s.length;i=i+1){add(s[i]);}}m[SUPER]=o;m[PROV]=lang.merge(o);m[PROV][name]=true;return m[ckey];},calculate:function(o){if(o||this.dirty){this._config(o);this._setup();this._explode();if(this.allowRollup){this._rollup();}this._reduce();this._sort();this.dirty=false;}},_setup:function(){var info=this.moduleInfo,name,i,j;for(name in info){if(lang.hasOwnProperty(info,name)){var m=info[name];if(m&&m.skinnable){var o=this.skin.overrides,smod;if(o&&o[name]){for(i=0;i<o[name].length;i=i+1){smod=this._addSkin(o[name][i],name);}}else{smod=this._addSkin(this.skin.defaultSkin,name);}if(YUI.ArrayUtil.indexOf(m.requires,smod)==-1){m.requires.push(smod);}}}}var l=lang.merge(this.inserted);if(!this._sandbox){l=lang.merge(l,env.modules);}if(this.ignore){YUI.ObjectUtil.appendArray(l,this.ignore);}if(this.force){for(i=0;i<this.force.length;i=i+1){if(this.force[i]in l){delete l[this.force[i]];}}}for(j in l){if(lang.hasOwnProperty(l,j)){lang.augmentObject(l,this.getProvides(j));}}this.loaded=l;},_explode:function(){var r=this.required,i,mod;for(i in r){if(lang.hasOwnProperty(r,i)){mod=this.moduleInfo[i];if(mod){var req=this.getRequires(mod);if(req){YUI.ObjectUtil.appendArray(r,req);}}}}},_skin:function(){},formatSkin:function(skin,mod){var s=this.SKIN_PREFIX+skin;if(mod){s=s+"-"+mod;}return s;},parseSkin:function(mod){if(mod.indexOf(this.SKIN_PREFIX)===0){var a=mod.split("-");return{skin:a[1],module:a[2]};}return null;},_rollup:function(){var i,j,m,s,rollups={},r=this.required,roll,info=this.moduleInfo;if(this.dirty||!this.rollups){for(i in info){if(lang.hasOwnProperty(info,i)){m=info[i];if(m&&m.rollup){rollups[i]=m;}}}this.rollups=rollups;}for(;;){var rolled=false;for(i in rollups){if(!r[i]&&!this.loaded[i]){m=info[i];s=m.supersedes;roll=false;if(!m.rollup){continue;}var skin=(m.ext)?false:this.parseSkin(i),c=0;if(skin){for(j in r){if(lang.hasOwnProperty(r,j)){if(i!==j&&this.parseSkin(j)){c++;roll=(c>=m.rollup);if(roll){break;}}}}}else{for(j=0;j<s.length;j=j+1){if(this.loaded[s[j]]&&(!YUI.dupsAllowed[s[j]])){roll=false;break;}else{if(r[s[j]]){c++;roll=(c>=m.rollup);if(roll){break;}}}}}if(roll){r[i]=true;rolled=true;this.getRequires(m);}}}if(!rolled){break;}}},_reduce:function(){var i,j,s,m,r=this.required;for(i in r){if(i in this.loaded){delete r[i];}else{var skinDef=this.parseSkin(i);if(skinDef){if(!skinDef.module){var skin_pre=this.SKIN_PREFIX+skinDef.skin;for(j in r){if(lang.hasOwnProperty(r,j)){m=this.moduleInfo[j];var ext=m&&m.ext;if(!ext&&j!==i&&j.indexOf(skin_pre)>-1){delete r[j];}}}}}else{m=this.moduleInfo[i];s=m&&m.supersedes;if(s){for(j=0;j<s.length;j=j+1){if(s[j]in r){delete r[s[j]];}}}}}}},_onFailure:function(msg){YAHOO.log("Failure","info","loader");var f=this.onFailure;if(f){f.call(this.scope,{msg:"failure: "+msg,data:this.data,success:false});}},_onTimeout:function(){YAHOO.log("Timeout","info","loader");var f=this.onTimeout;if(f){f.call(this.scope,{msg:"timeout",data:this.data,success:false});}},_sort:function(){var s=[],info=this.moduleInfo,loaded=this.loaded,checkOptional=!this.loadOptional,me=this;var requires=function(aa,bb){var mm=info[aa];if(loaded[bb]||!mm){return false;}var ii,rr=mm.expanded,after=mm.after,other=info[bb],optional=mm.optional;if(rr&&YUI.ArrayUtil.indexOf(rr,bb)>-1){return true;}if(after&&YUI.ArrayUtil.indexOf(after,bb)>-1){return true;}if(checkOptional&&optional&&YUI.ArrayUtil.indexOf(optional,bb)>-1){return true;}var ss=info[bb]&&info[bb].supersedes;if(ss){for(ii=0;ii<ss.length;ii=ii+1){if(requires(aa,ss[ii])){return true;}}}if(mm.ext&&mm.type=="css"&&!other.ext&&other.type=="css"){return true;}return false;};for(var i in this.required){if(lang.hasOwnProperty(this.required,i)){s.push(i);}}var p=0;for(;;){var l=s.length,a,b,j,k,moved=false;for(j=p;j<l;j=j+1){a=s[j];for(k=j+1;k<l;k=k+1){if(requires(a,s[k])){b=s.splice(k,1);s.splice(j,0,b[0]);moved=true;break;}}if(moved){break;}else{p=p+1;}}if(!moved){break;}}this.sorted=s;},toString:function(){var o={type:"YUILoader",base:this.base,filter:this.filter,required:this.required,loaded:this.loaded,inserted:this.inserted};lang.dump(o,1);},_combine:function(){this._combining=[];var self=this,s=this.sorted,len=s.length,js=this.comboBase,css=this.comboBase,target,startLen=js.length,i,m,type=this.loadType;YAHOO.log("type "+type);for(i=0;i<len;i=i+1){m=this.moduleInfo[s[i]];if(m&&!m.ext&&(!type||type===m.type)){target=this.root+m.path;target+="&";if(m.type=="js"){js+=target;}else{css+=target;}this._combining.push(s[i]);}}if(this._combining.length){YAHOO.log("Attempting to combine: "+this._combining,"info","loader");var callback=function(o){var c=this._combining,len=c.length,i,m;for(i=0;i<len;i=i+1){this.inserted[c[i]]=true;}this.loadNext(o.data);},loadScript=function(){if(js.length>startLen){YAHOO.util.Get.script(self._filter(js),{data:self._loading,onSuccess:callback,onFailure:self._onFailure,onTimeout:self._onTimeout,insertBefore:self.insertBefore,charset:self.charset,timeout:self.timeout,scope:self});}else{this.loadNext();}};if(css.length>startLen){YAHOO.util.Get.css(this._filter(css),{data:this._loading,onSuccess:loadScript,onFailure:this._onFailure,onTimeout:this._onTimeout,insertBefore:this.insertBefore,charset:this.charset,timeout:this.timeout,scope:self});}else{loadScript();}return;}else{this.loadNext(this._loading);}},insert:function(o,type){this.calculate(o);this._loading=true;this.loadType=type;if(this.combine){return this._combine();}if(!type){var self=this;this._internalCallback=function(){self._internalCallback=null;self.insert(null,"js");};this.insert(null,"css");return;}this.loadNext();},sandbox:function(o,type){var self=this,success=function(o){var idx=o.argument[0],name=o.argument[2];self._scriptText[idx]=o.responseText;if(self.onProgress){self.onProgress.call(self.scope,{name:name,scriptText:o.responseText,xhrResponse:o,data:self.data});}self._loadCount++;if(self._loadCount>=self._stopCount){var v=self.varName||"YAHOO";var t="(function() {\n";var b="\nreturn "+v+";\n})();";var ref=eval(t+self._scriptText.join("\n")+b);self._pushEvents(ref);if(ref){self.onSuccess.call(self.scope,{reference:ref,data:self.data});}else{self._onFailure.call(self.varName+" reference failure");}}},failure=function(o){self.onFailure.call(self.scope,{msg:"XHR failure",xhrResponse:o,data:self.data});};self._config(o);if(!self.onSuccess){throw new Error("You must supply an onSuccess handler for your sandbox");}self._sandbox=true;if(!type||type!=="js"){self._internalCallback=function(){self._internalCallback=null;self.sandbox(null,"js");};self.insert(null,"css");return;}if(!util.Connect){var ld=new YAHOO.util.YUILoader();ld.insert({base:self.base,filter:self.filter,require:"connection",insertBefore:self.insertBefore,charset:self.charset,onSuccess:function(){self.sandbox(null,"js");},scope:self},"js");return;}self._scriptText=[];self._loadCount=0;self._stopCount=self.sorted.length;self._xhr=[];self.calculate();var s=self.sorted,l=s.length,i,m,url;for(i=0;i<l;i=i+1){m=self.moduleInfo[s[i]];if(!m){self._onFailure("undefined module "+m);for(var j=0;j<self._xhr.length;j=j+1){self._xhr[j].abort();}return;}if(m.type!=="js"){self._loadCount++;continue;}url=m.fullpath;url=(url)?self._filter(url):self._url(m.path);var xhrData={success:success,failure:failure,scope:self,argument:[i,url,s[i]]};self._xhr.push(util.Connect.asyncRequest("GET",url,xhrData));}},loadNext:function(mname){if(!this._loading){return;}var self=this,donext=function(o){self.loadNext(o.data);},successfn,s=this.sorted,len=s.length,i,fn,m,url;if(mname){if(mname!==this._loading){return;}this.inserted[mname]=true;if(this.onProgress){this.onProgress.call(this.scope,{name:mname,data:this.data});}}for(i=0;i<len;i=i+1){if(s[i]in this.inserted){continue;}if(s[i]===this._loading){return;}m=this.moduleInfo[s[i]];if(!m){this.onFailure.call(this.scope,{msg:"undefined module "+m,data:this.data});return;}if(!this.loadType||this.loadType===m.type){successfn=donext;this._loading=s[i];fn=(m.type==="css")?util.Get.css:util.Get.script;url=m.fullpath;url=(url)?this._filter(url):this._url(m.path);if(env.ua.webkit&&env.ua.webkit<420&&m.type==="js"&&!m.varName){successfn=null;this._useYahooListener=true;}fn(url,{data:s[i],onSuccess:successfn,onFailure:this._onFailure,onTimeout:this._onTimeout,insertBefore:this.insertBefore,charset:this.charset,timeout:this.timeout,varName:m.varName,scope:self});return;}}this._loading=null;if(this._internalCallback){var f=this._internalCallback;this._internalCallback=null;f.call(this);}else{if(this.onSuccess){this._pushEvents();this.onSuccess.call(this.scope,{data:this.data});}}},_pushEvents:function(ref){var r=ref||YAHOO;if(r.util&&r.util.Event){r.util.Event._load();}},_filter:function(str){var f=this.filter;return(f)?str.replace(new RegExp(f.searchExp,"g"),f.replaceStr):str;},_url:function(path){return this._filter((this.base||"")+path);}};})();YAHOO.register("yuiloader",YAHOO.util.YUILoader,{version:"2.9.0",build:"2800"});/* End of File include/javascript/yui/build/yuiloader/yuiloader-min.js */
 
-// End of File include/javascript/phpjs/license.js
+/* End of File include/javascript/phpjs/license.js */
 
-/*
- * More info at: http://phpjs.org
- *
- * This is version: 3.25
- * php.js is copyright 2011 Kevin van Zonneveld.
- *
- * Portions copyright Brett Zamir (http://brett-zamir.me), Kevin van Zonneveld
- * (http://kevin.vanzonneveld.net), Onno Marsman, Theriault, Michael White
- * (http://getsprink.com), Waldo Malqui Silva, Paulo Freitas, Jonas Raoni
- * Soares Silva (http://www.jsfromhell.com), Jack, Philip Peterson, Legaev
- * Andrey, Ates Goral (http://magnetiq.com), Ratheous, Alex, Rafa? Kukawski
- * (http://blog.kukawski.pl), Martijn Wieringa, lmeyrick
- * (https://sourceforge.net/projects/bcmath-js/), Nate, Enrique Gonzalez,
- * Philippe Baumann, Webtoolkit.info (http://www.webtoolkit.info/), Jani
- * Hartikainen, Ole Vrijenhoek, Ash Searle (http://hexmen.com/blog/), Carlos
- * R. L. Rodrigues (http://www.jsfromhell.com), travc, Michael Grier,
- * Erkekjetter, Johnny Mast (http://www.phpvrouwen.nl), Rafa? Kukawski
- * (http://blog.kukawski.pl/), GeekFG (http://geekfg.blogspot.com), Andrea
- * Giammarchi (http://webreflection.blogspot.com), WebDevHobo
- * (http://webdevhobo.blogspot.com/), d3x, marrtins,
- * http://stackoverflow.com/questions/57803/how-to-convert-decimal-to-hex-in-javascript,
- * pilus, stag019, T.Wild, Martin (http://www.erlenwiese.de/), majak, Marc
- * Palau, Mirek Slugen, Chris, Diplom@t (http://difane.com/), Breaking Par
- * Consulting Inc
- * (http://www.breakingpar.com/bkp/home.nsf/0/87256B280015193F87256CFB006C45F7),
- * gettimeofday, Arpad Ray (mailto:arpad@php.net), Oleg Eremeev, Josh Fraser
- * (http://onlineaspect.com/2007/06/08/auto-detect-a-time-zone-with-javascript/),
- * Steve Hilder, mdsjack (http://www.mdsjack.bo.it), Kevin van Zonneveld
- * (http://kevin.vanzonneveld.net/), gorthaur, Aman Gupta, Sakimori, Joris,
- * Robin, Kankrelune (http://www.webfaktory.info/), Alfonso Jimenez
- * (http://www.alfonsojimenez.com), David, Felix Geisendoerfer
- * (http://www.debuggable.com/felix), Lars Fischer, Karol Kowalski, Imgen Tata
- * (http://www.myipdf.com/), Steven Levithan (http://blog.stevenlevithan.com),
- * Tim de Koning (http://www.kingsquare.nl), Dreamer, AJ, Paul Smith, KELAN,
- * Pellentesque Malesuada, felix, Michael White, Mailfaker
- * (http://www.weedem.fr/), Thunder.m, Tyler Akins (http://rumkin.com),
- * saulius, Public Domain (http://www.json.org/json2.js), Caio Ariede
- * (http://caioariede.com), Steve Clay, David James, madipta, Marco, Ole
- * Vrijenhoek (http://www.nervous.nl/), class_exists, T. Wild, noname, Arno,
- * Frank Forte, Francois, Scott Cariss, Slawomir Kaniecki, date, Itsacon
- * (http://www.itsacon.net/), Billy, vlado houba, Jalal Berrami,
- * ReverseSyntax, Mateusz "loonquawl" Zalega, john (http://www.jd-tech.net),
- * mktime, Douglas Crockford (http://javascript.crockford.com), ger, Nick
- * Kolosov (http://sammy.ru), Nathan, nobbler, Fox, marc andreu, Alex Wilson,
- * Raphael (Ao RUDLER), Bayron Guevara, Adam Wallner
- * (http://web2.bitbaro.hu/), paulo kuong, jmweb, Lincoln Ramsay, djmix,
- * Pyerre, Jon Hohle, Thiago Mata (http://thiagomata.blog.com), lmeyrick
- * (https://sourceforge.net/projects/bcmath-js/this.), Linuxworld, duncan,
- * Gilbert, Sanjoy Roy, Shingo, sankai, Oskar Larsson Hï¿½gfeldt
- * (http://oskar-lh.name/), Denny Wardhana, 0m3r, Everlasto, Subhasis Deb,
- * josh, jd, Pier Paolo Ramon (http://www.mastersoup.com/), P, merabi, Soren
- * Hansen, EdorFaus, Eugene Bulkin (http://doubleaw.com/), Der Simon
- * (http://innerdom.sourceforge.net/), echo is bad, JB, LH, kenneth, J A R,
- * Marc Jansen, Stoyan Kyosev (http://www.svest.org/), Francesco, XoraX
- * (http://www.xorax.info), Ozh, Brad Touesnard, MeEtc
- * (http://yass.meetcweb.com), Peter-Paul Koch
- * (http://www.quirksmode.org/js/beat.html), Olivier Louvignes
- * (http://mg-crea.com/), T0bsn, Tim Wiel, Bryan Elliott, nord_ua, Martin, JT,
- * David Randall, Thomas Beaucourt (http://www.webapp.fr), Tim de Koning,
- * stensi, Pierre-Luc Paour, Kristof Coomans (SCK-CEN Belgian Nucleair
- * Research Centre), Martin Pool, Kirk Strobeck, Rick Waldron, Brant Messenger
- * (http://www.brantmessenger.com/), Devan Penner-Woelk, Saulo Vallory, Wagner
- * B. Soares, Artur Tchernychev, Valentina De Rosa, Jason Wong
- * (http://carrot.org/), Christoph, Daniel Esteban, strftime, Mick@el, rezna,
- * Simon Willison (http://simonwillison.net), Anton Ongson, Gabriel Paderni,
- * Marco van Oort, penutbutterjelly, Philipp Lenssen, Bjorn Roesbeke
- * (http://www.bjornroesbeke.be/), Bug?, Eric Nagel, Tomasz Wesolowski,
- * Evertjan Garretsen, Bobby Drake, Blues (http://tech.bluesmoon.info/), Luke
- * Godfrey, Pul, uestla, Alan C, Ulrich, Rafal Kukawski, Yves Sucaet,
- * sowberry, Norman "zEh" Fuchs, hitwork, Zahlii, johnrembo, Nick Callen,
- * Steven Levithan (stevenlevithan.com), ejsanders, Scott Baker, Brian Tafoya
- * (http://www.premasolutions.com/), Philippe Jausions
- * (http://pear.php.net/user/jausions), Aidan Lister
- * (http://aidanlister.com/), Rob, e-mike, HKM, ChaosNo1, metjay, strcasecmp,
- * strcmp, Taras Bogach, jpfle, Alexander Ermolaev
- * (http://snippets.dzone.com/user/AlexanderErmolaev), DxGx, kilops, Orlando,
- * dptr1988, Le Torbi, James (http://www.james-bell.co.uk/), Pedro Tainha
- * (http://www.pedrotainha.com), James, Arnout Kazemier
- * (http://www.3rd-Eden.com), Chris McMacken, Yannoo, jakes, gabriel paderni,
- * FGFEmperor, Greg Frazier, baris ozdil, 3D-GRAF, daniel airton wermann
- * (http://wermann.com.br), Howard Yeend, Diogo Resende, Allan Jensen
- * (http://www.winternet.no), Benjamin Lupton, Atli ?ï¿½r, Maximusya, davook,
- * Tod Gentille, Ryan W Tenney (http://ryan.10e.us), Nathan Sepulveda, Cord,
- * fearphage (http://http/my.opera.com/fearphage/), Victor, Rafa? Kukawski
- * (http://kukawski.pl), Matteo, Manish, Matt Bradley, Riddler
- * (http://www.frontierwebdev.com/), Alexander M Beedie, T.J. Leahy, Rafa?
- * Kukawski, taith, Luis Salazar (http://www.freaky-media.com/), FremyCompany,
- * Rival, Luke Smith (http://lucassmith.name), Andrej Pavlovic, Garagoth, Le
- * Torbi (http://www.letorbi.de/), Dino, Josep Sanz (http://www.ws3.es/), rem,
- * Russell Walker (http://www.nbill.co.uk/), Jamie Beck
- * (http://www.terabit.ca/), setcookie, Michael, YUI Library:
- * http://developer.yahoo.com/yui/docs/YAHOO.util.DateLocale.html, Blues at
- * http://hacks.bluesmoon.info/strftime/strftime.js, Ben
- * (http://benblume.co.uk/), DtTvB
- * (http://dt.in.th/2008-09-16.string-length-in-bytes.html), Andreas, William,
- * meo, incidence, Cagri Ekin, Amirouche, Amir Habibi
- * (http://www.residence-mixte.com/), Kheang Hok Chin
- * (http://www.distantia.ca/), Jay Klehr, Lorenzo Pisani, Tony, Yen-Wei Liu,
- * Greenseed, mk.keck, Leslie Hoare, dude, booeyOH, Ben Bryan
- *
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL KEVIN VAN ZONNEVELD BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+
 function get_html_translation_table(table,quote_style){var entities={},hash_map={},decimal=0,symbol='';var constMappingTable={},constMappingQuoteStyle={};var useTable={},useQuoteStyle={};constMappingTable[0]='HTML_SPECIALCHARS';constMappingTable[1]='HTML_ENTITIES';constMappingQuoteStyle[0]='ENT_NOQUOTES';constMappingQuoteStyle[2]='ENT_COMPAT';constMappingQuoteStyle[3]='ENT_QUOTES';useTable=!isNaN(table)?constMappingTable[table]:table?table.toUpperCase():'HTML_SPECIALCHARS';useQuoteStyle=!isNaN(quote_style)?constMappingQuoteStyle[quote_style]:quote_style?quote_style.toUpperCase():'ENT_COMPAT';if(useTable!=='HTML_SPECIALCHARS'&&useTable!=='HTML_ENTITIES'){throw new Error("Table: "+useTable+' not supported');}
 entities['38']='&amp;';if(useTable==='HTML_ENTITIES'){entities['160']='&nbsp;';entities['161']='&iexcl;';entities['162']='&cent;';entities['163']='&pound;';entities['164']='&curren;';entities['165']='&yen;';entities['166']='&brvbar;';entities['167']='&sect;';entities['168']='&uml;';entities['169']='&copy;';entities['170']='&ordf;';entities['171']='&laquo;';entities['172']='&not;';entities['173']='&shy;';entities['174']='&reg;';entities['175']='&macr;';entities['176']='&deg;';entities['177']='&plusmn;';entities['178']='&sup2;';entities['179']='&sup3;';entities['180']='&acute;';entities['181']='&micro;';entities['182']='&para;';entities['183']='&middot;';entities['184']='&cedil;';entities['185']='&sup1;';entities['186']='&ordm;';entities['187']='&raquo;';entities['188']='&frac14;';entities['189']='&frac12;';entities['190']='&frac34;';entities['191']='&iquest;';entities['192']='&Agrave;';entities['193']='&Aacute;';entities['194']='&Acirc;';entities['195']='&Atilde;';entities['196']='&Auml;';entities['197']='&Aring;';entities['198']='&AElig;';entities['199']='&Ccedil;';entities['200']='&Egrave;';entities['201']='&Eacute;';entities['202']='&Ecirc;';entities['203']='&Euml;';entities['204']='&Igrave;';entities['205']='&Iacute;';entities['206']='&Icirc;';entities['207']='&Iuml;';entities['208']='&ETH;';entities['209']='&Ntilde;';entities['210']='&Ograve;';entities['211']='&Oacute;';entities['212']='&Ocirc;';entities['213']='&Otilde;';entities['214']='&Ouml;';entities['215']='&times;';entities['216']='&Oslash;';entities['217']='&Ugrave;';entities['218']='&Uacute;';entities['219']='&Ucirc;';entities['220']='&Uuml;';entities['221']='&Yacute;';entities['222']='&THORN;';entities['223']='&szlig;';entities['224']='&agrave;';entities['225']='&aacute;';entities['226']='&acirc;';entities['227']='&atilde;';entities['228']='&auml;';entities['229']='&aring;';entities['230']='&aelig;';entities['231']='&ccedil;';entities['232']='&egrave;';entities['233']='&eacute;';entities['234']='&ecirc;';entities['235']='&euml;';entities['236']='&igrave;';entities['237']='&iacute;';entities['238']='&icirc;';entities['239']='&iuml;';entities['240']='&eth;';entities['241']='&ntilde;';entities['242']='&ograve;';entities['243']='&oacute;';entities['244']='&ocirc;';entities['245']='&otilde;';entities['246']='&ouml;';entities['247']='&divide;';entities['248']='&oslash;';entities['249']='&ugrave;';entities['250']='&uacute;';entities['251']='&ucirc;';entities['252']='&uuml;';entities['253']='&yacute;';entities['254']='&thorn;';entities['255']='&yuml;';}
 if(useQuoteStyle!=='ENT_NOQUOTES'){entities['34']='&quot;';}
 if(useQuoteStyle==='ENT_QUOTES'){entities['39']='&#39;';}
 entities['60']='&lt;';entities['62']='&gt;';for(decimal in entities){symbol=String.fromCharCode(decimal);hash_map[symbol]=entities[decimal];}
-return hash_map;}
-// End of File include/javascript/phpjs/get_html_translation_table.js
+return hash_map;}/* End of File include/javascript/phpjs/get_html_translation_table.js */
 
-/*
- * More info at: http://phpjs.org
- *
- * This is version: 3.25
- * php.js is copyright 2011 Kevin van Zonneveld.
- *
- * Portions copyright Brett Zamir (http://brett-zamir.me), Kevin van Zonneveld
- * (http://kevin.vanzonneveld.net), Onno Marsman, Theriault, Michael White
- * (http://getsprink.com), Waldo Malqui Silva, Paulo Freitas, Jonas Raoni
- * Soares Silva (http://www.jsfromhell.com), Jack, Philip Peterson, Legaev
- * Andrey, Ates Goral (http://magnetiq.com), Ratheous, Alex, Rafa? Kukawski
- * (http://blog.kukawski.pl), Martijn Wieringa, lmeyrick
- * (https://sourceforge.net/projects/bcmath-js/), Nate, Enrique Gonzalez,
- * Philippe Baumann, Webtoolkit.info (http://www.webtoolkit.info/), Jani
- * Hartikainen, Ole Vrijenhoek, Ash Searle (http://hexmen.com/blog/), Carlos
- * R. L. Rodrigues (http://www.jsfromhell.com), travc, Michael Grier,
- * Erkekjetter, Johnny Mast (http://www.phpvrouwen.nl), Rafa? Kukawski
- * (http://blog.kukawski.pl/), GeekFG (http://geekfg.blogspot.com), Andrea
- * Giammarchi (http://webreflection.blogspot.com), WebDevHobo
- * (http://webdevhobo.blogspot.com/), d3x, marrtins,
- * http://stackoverflow.com/questions/57803/how-to-convert-decimal-to-hex-in-javascript,
- * pilus, stag019, T.Wild, Martin (http://www.erlenwiese.de/), majak, Marc
- * Palau, Mirek Slugen, Chris, Diplom@t (http://difane.com/), Breaking Par
- * Consulting Inc
- * (http://www.breakingpar.com/bkp/home.nsf/0/87256B280015193F87256CFB006C45F7),
- * gettimeofday, Arpad Ray (mailto:arpad@php.net), Oleg Eremeev, Josh Fraser
- * (http://onlineaspect.com/2007/06/08/auto-detect-a-time-zone-with-javascript/),
- * Steve Hilder, mdsjack (http://www.mdsjack.bo.it), Kevin van Zonneveld
- * (http://kevin.vanzonneveld.net/), gorthaur, Aman Gupta, Sakimori, Joris,
- * Robin, Kankrelune (http://www.webfaktory.info/), Alfonso Jimenez
- * (http://www.alfonsojimenez.com), David, Felix Geisendoerfer
- * (http://www.debuggable.com/felix), Lars Fischer, Karol Kowalski, Imgen Tata
- * (http://www.myipdf.com/), Steven Levithan (http://blog.stevenlevithan.com),
- * Tim de Koning (http://www.kingsquare.nl), Dreamer, AJ, Paul Smith, KELAN,
- * Pellentesque Malesuada, felix, Michael White, Mailfaker
- * (http://www.weedem.fr/), Thunder.m, Tyler Akins (http://rumkin.com),
- * saulius, Public Domain (http://www.json.org/json2.js), Caio Ariede
- * (http://caioariede.com), Steve Clay, David James, madipta, Marco, Ole
- * Vrijenhoek (http://www.nervous.nl/), class_exists, T. Wild, noname, Arno,
- * Frank Forte, Francois, Scott Cariss, Slawomir Kaniecki, date, Itsacon
- * (http://www.itsacon.net/), Billy, vlado houba, Jalal Berrami,
- * ReverseSyntax, Mateusz "loonquawl" Zalega, john (http://www.jd-tech.net),
- * mktime, Douglas Crockford (http://javascript.crockford.com), ger, Nick
- * Kolosov (http://sammy.ru), Nathan, nobbler, Fox, marc andreu, Alex Wilson,
- * Raphael (Ao RUDLER), Bayron Guevara, Adam Wallner
- * (http://web2.bitbaro.hu/), paulo kuong, jmweb, Lincoln Ramsay, djmix,
- * Pyerre, Jon Hohle, Thiago Mata (http://thiagomata.blog.com), lmeyrick
- * (https://sourceforge.net/projects/bcmath-js/this.), Linuxworld, duncan,
- * Gilbert, Sanjoy Roy, Shingo, sankai, Oskar Larsson Hï¿½gfeldt
- * (http://oskar-lh.name/), Denny Wardhana, 0m3r, Everlasto, Subhasis Deb,
- * josh, jd, Pier Paolo Ramon (http://www.mastersoup.com/), P, merabi, Soren
- * Hansen, EdorFaus, Eugene Bulkin (http://doubleaw.com/), Der Simon
- * (http://innerdom.sourceforge.net/), echo is bad, JB, LH, kenneth, J A R,
- * Marc Jansen, Stoyan Kyosev (http://www.svest.org/), Francesco, XoraX
- * (http://www.xorax.info), Ozh, Brad Touesnard, MeEtc
- * (http://yass.meetcweb.com), Peter-Paul Koch
- * (http://www.quirksmode.org/js/beat.html), Olivier Louvignes
- * (http://mg-crea.com/), T0bsn, Tim Wiel, Bryan Elliott, nord_ua, Martin, JT,
- * David Randall, Thomas Beaucourt (http://www.webapp.fr), Tim de Koning,
- * stensi, Pierre-Luc Paour, Kristof Coomans (SCK-CEN Belgian Nucleair
- * Research Centre), Martin Pool, Kirk Strobeck, Rick Waldron, Brant Messenger
- * (http://www.brantmessenger.com/), Devan Penner-Woelk, Saulo Vallory, Wagner
- * B. Soares, Artur Tchernychev, Valentina De Rosa, Jason Wong
- * (http://carrot.org/), Christoph, Daniel Esteban, strftime, Mick@el, rezna,
- * Simon Willison (http://simonwillison.net), Anton Ongson, Gabriel Paderni,
- * Marco van Oort, penutbutterjelly, Philipp Lenssen, Bjorn Roesbeke
- * (http://www.bjornroesbeke.be/), Bug?, Eric Nagel, Tomasz Wesolowski,
- * Evertjan Garretsen, Bobby Drake, Blues (http://tech.bluesmoon.info/), Luke
- * Godfrey, Pul, uestla, Alan C, Ulrich, Rafal Kukawski, Yves Sucaet,
- * sowberry, Norman "zEh" Fuchs, hitwork, Zahlii, johnrembo, Nick Callen,
- * Steven Levithan (stevenlevithan.com), ejsanders, Scott Baker, Brian Tafoya
- * (http://www.premasolutions.com/), Philippe Jausions
- * (http://pear.php.net/user/jausions), Aidan Lister
- * (http://aidanlister.com/), Rob, e-mike, HKM, ChaosNo1, metjay, strcasecmp,
- * strcmp, Taras Bogach, jpfle, Alexander Ermolaev
- * (http://snippets.dzone.com/user/AlexanderErmolaev), DxGx, kilops, Orlando,
- * dptr1988, Le Torbi, James (http://www.james-bell.co.uk/), Pedro Tainha
- * (http://www.pedrotainha.com), James, Arnout Kazemier
- * (http://www.3rd-Eden.com), Chris McMacken, Yannoo, jakes, gabriel paderni,
- * FGFEmperor, Greg Frazier, baris ozdil, 3D-GRAF, daniel airton wermann
- * (http://wermann.com.br), Howard Yeend, Diogo Resende, Allan Jensen
- * (http://www.winternet.no), Benjamin Lupton, Atli ?ï¿½r, Maximusya, davook,
- * Tod Gentille, Ryan W Tenney (http://ryan.10e.us), Nathan Sepulveda, Cord,
- * fearphage (http://http/my.opera.com/fearphage/), Victor, Rafa? Kukawski
- * (http://kukawski.pl), Matteo, Manish, Matt Bradley, Riddler
- * (http://www.frontierwebdev.com/), Alexander M Beedie, T.J. Leahy, Rafa?
- * Kukawski, taith, Luis Salazar (http://www.freaky-media.com/), FremyCompany,
- * Rival, Luke Smith (http://lucassmith.name), Andrej Pavlovic, Garagoth, Le
- * Torbi (http://www.letorbi.de/), Dino, Josep Sanz (http://www.ws3.es/), rem,
- * Russell Walker (http://www.nbill.co.uk/), Jamie Beck
- * (http://www.terabit.ca/), setcookie, Michael, YUI Library:
- * http://developer.yahoo.com/yui/docs/YAHOO.util.DateLocale.html, Blues at
- * http://hacks.bluesmoon.info/strftime/strftime.js, Ben
- * (http://benblume.co.uk/), DtTvB
- * (http://dt.in.th/2008-09-16.string-length-in-bytes.html), Andreas, William,
- * meo, incidence, Cagri Ekin, Amirouche, Amir Habibi
- * (http://www.residence-mixte.com/), Kheang Hok Chin
- * (http://www.distantia.ca/), Jay Klehr, Lorenzo Pisani, Tony, Yen-Wei Liu,
- * Greenseed, mk.keck, Leslie Hoare, dude, booeyOH, Ben Bryan
- *
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL KEVIN VAN ZONNEVELD BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+
 function html_entity_decode(string,quote_style){var hash_map={},symbol='',tmp_str='',entity='';tmp_str=string.toString();if(false===(hash_map=this.get_html_translation_table('HTML_ENTITIES',quote_style))){return false;}
 delete(hash_map['&']);hash_map['&']='&amp;';for(symbol in hash_map){entity=hash_map[symbol];tmp_str=tmp_str.split(entity).join(symbol);}
-tmp_str=tmp_str.split('&#039;').join("'");return tmp_str;}
-// End of File include/javascript/phpjs/html_entity_decode.js
+tmp_str=tmp_str.split('&#039;').join("'");return tmp_str;}/* End of File include/javascript/phpjs/html_entity_decode.js */
 
-/*
- * More info at: http://phpjs.org
- *
- * This is version: 3.25
- * php.js is copyright 2011 Kevin van Zonneveld.
- *
- * Portions copyright Brett Zamir (http://brett-zamir.me), Kevin van Zonneveld
- * (http://kevin.vanzonneveld.net), Onno Marsman, Theriault, Michael White
- * (http://getsprink.com), Waldo Malqui Silva, Paulo Freitas, Jonas Raoni
- * Soares Silva (http://www.jsfromhell.com), Jack, Philip Peterson, Legaev
- * Andrey, Ates Goral (http://magnetiq.com), Ratheous, Alex, Rafa? Kukawski
- * (http://blog.kukawski.pl), Martijn Wieringa, lmeyrick
- * (https://sourceforge.net/projects/bcmath-js/), Nate, Enrique Gonzalez,
- * Philippe Baumann, Webtoolkit.info (http://www.webtoolkit.info/), Jani
- * Hartikainen, Ole Vrijenhoek, Ash Searle (http://hexmen.com/blog/), Carlos
- * R. L. Rodrigues (http://www.jsfromhell.com), travc, Michael Grier,
- * Erkekjetter, Johnny Mast (http://www.phpvrouwen.nl), Rafa? Kukawski
- * (http://blog.kukawski.pl/), GeekFG (http://geekfg.blogspot.com), Andrea
- * Giammarchi (http://webreflection.blogspot.com), WebDevHobo
- * (http://webdevhobo.blogspot.com/), d3x, marrtins,
- * http://stackoverflow.com/questions/57803/how-to-convert-decimal-to-hex-in-javascript,
- * pilus, stag019, T.Wild, Martin (http://www.erlenwiese.de/), majak, Marc
- * Palau, Mirek Slugen, Chris, Diplom@t (http://difane.com/), Breaking Par
- * Consulting Inc
- * (http://www.breakingpar.com/bkp/home.nsf/0/87256B280015193F87256CFB006C45F7),
- * gettimeofday, Arpad Ray (mailto:arpad@php.net), Oleg Eremeev, Josh Fraser
- * (http://onlineaspect.com/2007/06/08/auto-detect-a-time-zone-with-javascript/),
- * Steve Hilder, mdsjack (http://www.mdsjack.bo.it), Kevin van Zonneveld
- * (http://kevin.vanzonneveld.net/), gorthaur, Aman Gupta, Sakimori, Joris,
- * Robin, Kankrelune (http://www.webfaktory.info/), Alfonso Jimenez
- * (http://www.alfonsojimenez.com), David, Felix Geisendoerfer
- * (http://www.debuggable.com/felix), Lars Fischer, Karol Kowalski, Imgen Tata
- * (http://www.myipdf.com/), Steven Levithan (http://blog.stevenlevithan.com),
- * Tim de Koning (http://www.kingsquare.nl), Dreamer, AJ, Paul Smith, KELAN,
- * Pellentesque Malesuada, felix, Michael White, Mailfaker
- * (http://www.weedem.fr/), Thunder.m, Tyler Akins (http://rumkin.com),
- * saulius, Public Domain (http://www.json.org/json2.js), Caio Ariede
- * (http://caioariede.com), Steve Clay, David James, madipta, Marco, Ole
- * Vrijenhoek (http://www.nervous.nl/), class_exists, T. Wild, noname, Arno,
- * Frank Forte, Francois, Scott Cariss, Slawomir Kaniecki, date, Itsacon
- * (http://www.itsacon.net/), Billy, vlado houba, Jalal Berrami,
- * ReverseSyntax, Mateusz "loonquawl" Zalega, john (http://www.jd-tech.net),
- * mktime, Douglas Crockford (http://javascript.crockford.com), ger, Nick
- * Kolosov (http://sammy.ru), Nathan, nobbler, Fox, marc andreu, Alex Wilson,
- * Raphael (Ao RUDLER), Bayron Guevara, Adam Wallner
- * (http://web2.bitbaro.hu/), paulo kuong, jmweb, Lincoln Ramsay, djmix,
- * Pyerre, Jon Hohle, Thiago Mata (http://thiagomata.blog.com), lmeyrick
- * (https://sourceforge.net/projects/bcmath-js/this.), Linuxworld, duncan,
- * Gilbert, Sanjoy Roy, Shingo, sankai, Oskar Larsson Hï¿½gfeldt
- * (http://oskar-lh.name/), Denny Wardhana, 0m3r, Everlasto, Subhasis Deb,
- * josh, jd, Pier Paolo Ramon (http://www.mastersoup.com/), P, merabi, Soren
- * Hansen, EdorFaus, Eugene Bulkin (http://doubleaw.com/), Der Simon
- * (http://innerdom.sourceforge.net/), echo is bad, JB, LH, kenneth, J A R,
- * Marc Jansen, Stoyan Kyosev (http://www.svest.org/), Francesco, XoraX
- * (http://www.xorax.info), Ozh, Brad Touesnard, MeEtc
- * (http://yass.meetcweb.com), Peter-Paul Koch
- * (http://www.quirksmode.org/js/beat.html), Olivier Louvignes
- * (http://mg-crea.com/), T0bsn, Tim Wiel, Bryan Elliott, nord_ua, Martin, JT,
- * David Randall, Thomas Beaucourt (http://www.webapp.fr), Tim de Koning,
- * stensi, Pierre-Luc Paour, Kristof Coomans (SCK-CEN Belgian Nucleair
- * Research Centre), Martin Pool, Kirk Strobeck, Rick Waldron, Brant Messenger
- * (http://www.brantmessenger.com/), Devan Penner-Woelk, Saulo Vallory, Wagner
- * B. Soares, Artur Tchernychev, Valentina De Rosa, Jason Wong
- * (http://carrot.org/), Christoph, Daniel Esteban, strftime, Mick@el, rezna,
- * Simon Willison (http://simonwillison.net), Anton Ongson, Gabriel Paderni,
- * Marco van Oort, penutbutterjelly, Philipp Lenssen, Bjorn Roesbeke
- * (http://www.bjornroesbeke.be/), Bug?, Eric Nagel, Tomasz Wesolowski,
- * Evertjan Garretsen, Bobby Drake, Blues (http://tech.bluesmoon.info/), Luke
- * Godfrey, Pul, uestla, Alan C, Ulrich, Rafal Kukawski, Yves Sucaet,
- * sowberry, Norman "zEh" Fuchs, hitwork, Zahlii, johnrembo, Nick Callen,
- * Steven Levithan (stevenlevithan.com), ejsanders, Scott Baker, Brian Tafoya
- * (http://www.premasolutions.com/), Philippe Jausions
- * (http://pear.php.net/user/jausions), Aidan Lister
- * (http://aidanlister.com/), Rob, e-mike, HKM, ChaosNo1, metjay, strcasecmp,
- * strcmp, Taras Bogach, jpfle, Alexander Ermolaev
- * (http://snippets.dzone.com/user/AlexanderErmolaev), DxGx, kilops, Orlando,
- * dptr1988, Le Torbi, James (http://www.james-bell.co.uk/), Pedro Tainha
- * (http://www.pedrotainha.com), James, Arnout Kazemier
- * (http://www.3rd-Eden.com), Chris McMacken, Yannoo, jakes, gabriel paderni,
- * FGFEmperor, Greg Frazier, baris ozdil, 3D-GRAF, daniel airton wermann
- * (http://wermann.com.br), Howard Yeend, Diogo Resende, Allan Jensen
- * (http://www.winternet.no), Benjamin Lupton, Atli ?ï¿½r, Maximusya, davook,
- * Tod Gentille, Ryan W Tenney (http://ryan.10e.us), Nathan Sepulveda, Cord,
- * fearphage (http://http/my.opera.com/fearphage/), Victor, Rafa? Kukawski
- * (http://kukawski.pl), Matteo, Manish, Matt Bradley, Riddler
- * (http://www.frontierwebdev.com/), Alexander M Beedie, T.J. Leahy, Rafa?
- * Kukawski, taith, Luis Salazar (http://www.freaky-media.com/), FremyCompany,
- * Rival, Luke Smith (http://lucassmith.name), Andrej Pavlovic, Garagoth, Le
- * Torbi (http://www.letorbi.de/), Dino, Josep Sanz (http://www.ws3.es/), rem,
- * Russell Walker (http://www.nbill.co.uk/), Jamie Beck
- * (http://www.terabit.ca/), setcookie, Michael, YUI Library:
- * http://developer.yahoo.com/yui/docs/YAHOO.util.DateLocale.html, Blues at
- * http://hacks.bluesmoon.info/strftime/strftime.js, Ben
- * (http://benblume.co.uk/), DtTvB
- * (http://dt.in.th/2008-09-16.string-length-in-bytes.html), Andreas, William,
- * meo, incidence, Cagri Ekin, Amirouche, Amir Habibi
- * (http://www.residence-mixte.com/), Kheang Hok Chin
- * (http://www.distantia.ca/), Jay Klehr, Lorenzo Pisani, Tony, Yen-Wei Liu,
- * Greenseed, mk.keck, Leslie Hoare, dude, booeyOH, Ben Bryan
- *
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL KEVIN VAN ZONNEVELD BE LIABLE FOR ANY CLAIM, DAMAGES
- * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+
 function htmlentities(string,quote_style,charset,double_encode){var hash_map=this.get_html_translation_table('HTML_ENTITIES',quote_style),symbol='';string=string==null?'':string+'';if(!hash_map){return false;}
 if(quote_style&&quote_style==='ENT_QUOTES'){hash_map["'"]='&#039;';}
 if(!!double_encode||double_encode==null){for(symbol in hash_map){if(hash_map.hasOwnProperty(symbol)){string=string.split(symbol).join(hash_map[symbol]);}}}else{string=string.replace(/([\s\S]*?)(&(?:#\d+|#x[\da-f]+|[a-zA-Z][\da-z]*);|$)/g,function(ignore,text,entity){for(symbol in hash_map){if(hash_map.hasOwnProperty(symbol)){text=text.split(symbol).join(hash_map[symbol]);}}
 return text+entity;});}
-return string;}
-// End of File include/javascript/phpjs/htmlentities.js
+return string;}/* End of File include/javascript/phpjs/htmlentities.js */
 
