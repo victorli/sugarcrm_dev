@@ -1,4 +1,5 @@
-{*
+<?php
+if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
@@ -34,47 +35,24 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-*}
-<form action="index.php" method="POST" name="{$form_name}" id="{$form_id}" {$enctype}>
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td>
-<input type="hidden" name="module" value="{$module}">
-{if isset($smarty.request.isDuplicate) && $smarty.request.isDuplicate eq "true"}
-<input type="hidden" name="record" value="">
-{else}
-<input type="hidden" name="record" value="{$fields.id.value}">
-{/if}
-<input type="hidden" name="isDuplicate" value="{$smarty.request.isDuplicate}">
-<input type="hidden" name="action">
-<input type="hidden" name="return_module" value="{$smarty.request.return_module}">
-<input type="hidden" name="return_action" value="{$smarty.request.return_action}">
-<input type="hidden" name="return_id" value="{$smarty.request.return_id}">
-<input type="hidden" name="contact_role">
-{if !empty($smarty.request.return_module)}
-<input type="hidden" name="relate_to" value="{$smarty.request.return_module}">
-<input type="hidden" name="relate_id" value="{$smarty.request.return_id}">
-{/if}
-<input type="hidden" name="offset" value="{$offset}">
-{{if isset($form.hidden)}}
-{{foreach from=$form.hidden item=field}}
-{{$field}}   
-{{/foreach}}
-{{/if}}
-{{if empty($form.button_location) || $form.button_location == 'top'}}
-{{if !empty($form) && !empty($form.buttons)}}
-   {{foreach from=$form.buttons key=val item=button}}
-      {{sugar_button module="$module" id="$button" view="$view"}}
-   {{/foreach}}
-{{else}}
-{{sugar_button module="$module" id="SAVE" view="$view"}}
-{{sugar_button module="$module" id="CANCEL" view="$view"}}
-{{/if}}
-{{if empty($form.hideAudit) || !$form.hideAudit}}
-{{sugar_button module="$module" id="Audit" view="$view"}}
-{{/if}}
-{{/if}}
-</td>
-<td align='right'>{{$ADMIN_EDIT}}</td>
-</tr>
-</table>
+/**
+ * Smarty plugin
+ * @package Smarty
+ * @subpackage plugins
+ */
+function smarty_compiler_append($tag_attrs, &$compiler)
+{
+    $_params = $compiler->_parse_attrs($tag_attrs);
+
+    if (!isset($_params['var'])) {
+        $compiler->_syntax_error("assign: missing 'var' parameter", E_USER_WARNING);
+        return;
+    }
+
+    if (!isset($_params['value'])) {
+        $compiler->_syntax_error("assign: missing 'value' parameter", E_USER_WARNING);
+        return;
+    }
+
+    return "\$this->append({$_params['var']}, {$_params['value']});";
+}

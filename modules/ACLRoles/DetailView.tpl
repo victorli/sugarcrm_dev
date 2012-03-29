@@ -52,15 +52,25 @@
 			<input type='hidden' name='return_module' value='{$RETURN.module}'>
 			<input type="hidden" name="action">
 
-            <ul class="clickMenu" id="userEditActions">
-                <li>
-                    <a title="{$APP.LBL_EDIT_BUTTON_TITLE}" accessKey="{$APP.LBL_EDIT_BUTTON_KEY}" onclick="var _form = $('#form')[0]; _form.action.value='EditView'; _form.submit();">{$APP.LBL_EDIT_BUTTON}</a>
-                    <ul class="subnav iefixed multi">
-                        <li><input title="{$APP.LBL_DUPLICATE_BUTTON_TITLE}" accessKey="{$APP.LBL_DUPLICATE_BUTTON_KEY}" class="button" onclick="this.form.isDuplicate.value='1'; this.form.action.value='EditView'" type="submit" name="button" value=" {$APP.LBL_DUPLICATE_BUTTON} "></li>
-                        <li><input title="{$APP.LBL_DELETE_BUTTON_TITLE}" accessKey="{$APP.LBL_DELETE_BUTTON_KEY}" class="button" onclick="this.form.return_module.value='ACLRoles'; this.form.return_action.value='index'; this.form.action.value='Delete'; return confirm('{$APP.NTC_DELETE_CONFIRMATION}')" type="submit" name="button" value=" {$APP.LBL_DELETE_BUTTON} "></li>
-                    </ul>
-                </li>
-            </ul>
+{php}
+    $APP = $this->get_template_vars('APP');
+    $this->append('buttons',
+    <<<EOD
+    <a title="{$APP['LBL_EDIT_BUTTON_TITLE']}" accessKey="{$APP['LBL_EDIT_BUTTON_KEY']}" onclick="var _form = $('#form')[0]; _form.action.value='EditView'; _form.submit();">{$APP['LBL_EDIT_BUTTON']}</a>
+EOD
+    );
+    $this->append('buttons',
+    <<<EOD
+    <input title="{$APP['LBL_DUPLICATE_BUTTON_TITLE']}" accessKey="{$APP['LBL_DUPLICATE_BUTTON_KEY']}" class="button" onclick="this.form.isDuplicate.value='1'; this.form.action.value='EditView'" type="submit" name="button" value=" {$APP['LBL_DUPLICATE_BUTTON']} ">
+EOD
+    );
+    $this->append('buttons',
+    <<<EOD
+    <input title="{$APP['LBL_DELETE_BUTTON_TITLE']}" accessKey="{$APP['LBL_DELETE_BUTTON_KEY']}" class="button" onclick="this.form.return_module.value='ACLRoles'; this.form.return_action.value='index'; this.form.action.value='Delete'; return confirm('{$APP['NTC_DELETE_CONFIRMATION']}')" type="submit" name="button" value=" {$APP['LBL_DELETE_BUTTON']} ">
+EOD
+    );
+{/php}
+            {sugar_action_menu id="userEditActions" class="clickMenu fancymenu" buttons="$buttons"}
 		</form>
 		</p>
 		<p>

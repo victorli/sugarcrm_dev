@@ -175,7 +175,7 @@ do {
         //the criteria in the original query, and we care most about the in_queue_date and process_date_time,
         //if they are null or in past(older than 24 horus) then we are okay.
 
-		$lock_query="UPDATE emailman SET in_queue=1, in_queue_date=". $db->now()." WHERE id = '{$row['id']}'";
+		$lock_query="UPDATE emailman SET in_queue=1, in_queue_date=". $db->now()." WHERE id = ".intval($row['id']);
 		$lock_query.=" AND (in_queue ='0' OR in_queue IS NULL OR ( in_queue ='1' AND in_queue_date <= " .$db->convert($db->quoted($timedate->fromString("-1 day")->asDb()),"datetime")."))";
 
  		//if the query fails to execute.. terminate campaign email process.

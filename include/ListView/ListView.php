@@ -466,69 +466,28 @@ function process_dynamic_listview($source_module, $sugarbean,$subpanel_def)
             }
         }
 
-		$button_count = 1;
-		$widget_contents = "";
-        $first = true;
-        // this is for inline buttons on listviews
-		foreach ($button_contents as $actions => $action)
-        {
 
-            if ($first && count($button_contents) > 1)
-            {
-                $hide = " style:'display: none'";
-                $firstaction = $action;
-                $button_count++;
-                $first = false;
-                continue;
-            }
-            else if ($first && count($button_contents) == 1)
-            {
-                $firstaction = $action;
-                //$widget_contents .= "<li>&nbsp;</li>";
-            }
-            else
-            {
-                $widget_contents .= "<li>".$action."</li>";
-            }
+        // Make sure we have at least one button before rendering a column for
+        // the action buttons in a list view. Relevant bugs: #51647 and #51640.
+        if(isset($button_contents[0])) {
+            // this is for inline buttons on listviews
+            // bug#51275: smarty widget to help provide the action menu functionality as it is currently sprinkled throughout the app with html
+            require_once('include/Smarty/plugins/function.sugar_action_menu.php');
+            $tempid = create_guid();
+            $button_contents[0] = "<div style='display: inline' id='$tempid'>".$button_contents[0]."</div>";
+            $action_button = smarty_function_sugar_action_menu(array(
+                'id' => $tempid,
+                'buttons' => $button_contents,
+                'class' => 'clickMenu subpanel records fancymenu button',
+                'theme' => 'Sugar' //assign theme value to display dropdown menu on class theme
+            ), $this->xTemplate);
+            $this->xTemplate->assign('CLASS', "inlineButtons");
+            $this->xTemplate->assign('CELL_COUNT', ++$count);
+            //Bug#51275 for beta3 pre_script is not required any more
+            $this->xTemplate->assign('CELL', $action_button);
+            $this->xTemplate->parse($xtemplateSection.".row.cell");
+        }
 
-
-			if(sizeof($button_contents) == $button_count)
-            {
-				$count++;
-                $this->xTemplate->assign('CELL_COUNT', $count);
-                $pre = '<ul class="clickMenu subpanel records fancymenu button">'. "\n";
-                $post = "";
-                $this->xTemplate->assign('CLASS', "inlineButtons");
-                if(sizeof($button_contents) == 1)
-                {
-        			$pre .= '<li class="single">'. "\n";
-                }
-                else {
-                	$pre .= '<li>'. "\n";
-                }
-
-                $tempid = create_guid();
-                $pre .= '<script type="text/javascript">
-                        var zz = $("#'.$tempid.'").children().first().find("span").remove();
-                    </script>';
-                $pre .= "<div style='display: inline; float: left;' id='$tempid'>".str_replace("&nbsp;","",$firstaction)."</div>";
-				if(sizeof($button_contents) > 1) {
-	        		$pre .= '<ul class="subnav';
-	        		$pre .='" id="'.$tempid.'">' . "\n";
-	        		$post .= ' </ul>' . "\n";
-          		 }
-		        $post .= '</li>' . "\n";
-		        $post .= '</ul>' . "\n";
-
-                if ( empty($widget_contents) )
-                    $widget_contents = '&nbsp;';
-
-                $this->xTemplate->assign('CELL', $pre.$widget_contents.$post);
-                $this->xTemplate->parse($xtemplateSection.".row.cell");
-			}
-			$button_count++;
-            $first = false;
-		}
 
         $aItem->setupCustomFields($aItem->module_dir);
         $aItem->custom_fields->populateAllXTPL($this->xTemplate, 'detail', $html_varName, $fields);
@@ -619,7 +578,7 @@ function getOrderBy($varName, $defaultOrderBy='', $force_sortorder='') {
     $orderByColumn = $this->getSessionVariableName($varName, "ORDER_BY");
     $lastEqualsSortBy = false;
     $defaultOrder = false; //ascending
-    
+
     if(empty($sortBy)) {
         $this->setUserVariable($varName, "ORDER_BY", $defaultOrderBy);
         $sortBy = $defaultOrderBy;
@@ -1483,7 +1442,7 @@ $close_inline_img = SugarThemeRegistry::current()->getImage('close_inline', 'bor
             }
         }
         //bug43465 end
-        
+
         $sort_URL_base = $this->base_URL. "&".$this->getSessionVariableName($html_varName,"ORDER_BY")."=";
 
         if($sort_URL_base !== "")

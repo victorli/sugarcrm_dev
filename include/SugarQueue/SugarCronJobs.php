@@ -105,6 +105,9 @@ class SugarCronJobs
         }
     }
 
+    /**
+     * Remember last time it was run
+     */
     protected function markLastRun()
     {
         if(!file_put_contents($this->lockfile, time())) {
@@ -165,6 +168,27 @@ class SugarCronJobs
     }
 
     /**
+     * Return ID for this client
+     * @return string
+     */
+    public function getMyId()
+    {
+        return 'CRON'.$GLOBALS['sugar_config']['unique_key'].':'.getmypid();
+    }
+
+    /**
+     * Execute given job
+     * @param SchedulersJob $job
+     */
+    public function executeJob($job)
+    {
+        if(!$this->job->runJob()) {
+            // if some job fails, change run status
+            $this->jobFailed($this->job);
+        }
+    }
+
+    /**
      * Run CRON cycle:
      * - cleanup
      * - schedule new jobs
@@ -188,16 +212,13 @@ class SugarCronJobs
         // run jobs
         $cutoff = time()+$this->max_runtime;
         register_shutdown_function(array($this, "unexpectedExit"));
-        $myid = 'CRON'.$GLOBALS['sugar_config']['unique_key'].':'.getmypid();
+        $myid = $this->getMyId();
         for($count=0;$count<$this->max_jobs;$count++) {
             $this->job = $this->queue->nextJob($myid);
             if(empty($this->job)) {
                 return;
             }
-            if(!$this->job->runJob()) {
-                // if some job fails, change run status
-                $this->jobFailed($this->job);
-            }
+            $this->executeJob($this->job);
             if(time() >= $cutoff) {
                 break;
             }

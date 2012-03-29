@@ -136,13 +136,13 @@ celpos=celpos+1;if(real_celcount-celpos-duration_coef<0)
 duration_coef=real_celcount-celpos+1;el.style.height=parseInt((CAL.slot_height+1)*duration_coef-1)+"px";}
 CAL.init_edit_dialog=function(params){CAL.editDialog=false;var rd=CAL.get("cal-edit");var content=CAL.get("edit-dialog-content");if(CAL.dashlet&&rd){document.getElementById("content").appendChild(rd);}
 rd.style.width=params.width+"px";content.style.height=params.height+"px";content.style.overflow="auto";content.style.padding="0";CAL.editDialog=new YAHOO.widget.Dialog("cal-edit",{draggable:true,visible:false,modal:true,close:true,zIndex:10});var listeners=new YAHOO.util.KeyListener(document,{keys:27},{fn:function(){CAL.editDialog.cancel();}});CAL.editDialog.cfg.queueProperty("keylisteners",listeners);CAL.editDialog.cancelEvent.subscribe(function(e,a,o){CAL.close_edit_dialog();});rd.style.display="block";CAL.editDialog.render();rd.style.overflow="auto";rd.style.overflowX="hidden";rd.style.outline="0 none";rd.style.height="auto";}
-CAL.open_edit_dialog=function(params){CAL.editDialog.center();CAL.editDialog.show();var nodes=CAL.query("#cal-tabs li a");CAL.each(nodes,function(i,v){YAHOO.util.Event.on(nodes[i],'click',function(){CAL.select_tab(this.getAttribute("tabname"));});});stay_on_tab=false
+CAL.open_edit_dialog=function(params){document.getElementById("form_content").innerHTML="";CAL.editDialog.center();CAL.editDialog.show();var nodes=CAL.query("#cal-tabs li a");CAL.each(nodes,function(i,v){YAHOO.util.Event.on(nodes[i],'click',function(){CAL.select_tab(this.getAttribute("tabname"));});});stay_on_tab=false
 if(typeof params!="undefined"&&typeof params.stay_on_tab!="undefined"&&params.stay_on_tab)
 stay_on_tab=true;if(!stay_on_tab){var nodes_li=CAL.query("#cal-tabs li");CAL.each(nodes_li,function(j,v){CAL.dom.removeClass(nodes_li[j],"selected");if(j==0)
 CAL.dom.addClass(nodes_li[j],"selected");});var nodes=CAL.query(".yui-nav");CAL.each(nodes,function(i,v){nodes[i].style.overflowX="visible";});}}
 CAL.close_edit_dialog=function(){CAL.reset_edit_dialog();}
 CAL.remove_edit_dialog=function(){var rd_c=CAL.get("cal-edit_c");if(rd_c){rd_c.parentNode.removeChild(rd_c);}}
-CAL.reset_edit_dialog=function(){var e;document.getElementById("form_content").innerHTML="";document.forms["CalendarEditView"].elements["current_module"].value="Meetings";CAL.get("radio_call").removeAttribute("disabled");CAL.get("radio_meeting").removeAttribute("disabled");CAL.get("radio_call").checked=false;CAL.get("radio_meeting").checked=true;CAL.get("send_invites").value="";if(e=CAL.get("record"))
+CAL.reset_edit_dialog=function(){var e;document.forms["CalendarEditView"].elements["current_module"].value="Meetings";CAL.get("radio_call").removeAttribute("disabled");CAL.get("radio_meeting").removeAttribute("disabled");CAL.get("radio_call").checked=false;CAL.get("radio_meeting").checked=true;CAL.get("send_invites").value="";if(e=CAL.get("record"))
 e.value="";if(e=CAL.get("list_div_win"))
 e.style.display="none";if(typeof SugarWidgetSchedulerSearch.hideCreateForm!='undefined')
 SugarWidgetSchedulerSearch.hideCreateForm();if(CAL.enable_repeat){CAL.reset_repeat_form();}

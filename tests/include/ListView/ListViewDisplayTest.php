@@ -39,15 +39,27 @@ require_once 'include/ListView/ListViewDisplay.php';
 
 class ListViewDisplayTest extends Sugar_PHPUnit_Framework_TestCase
 {
+    private $save_query;
+
     public function setUp()
     {
         $this->_lvd = new ListViewDisplayMock();
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
         $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
+        global $sugar_config;
+        if(isset($sugar_config['save_query']))
+        {
+            $this->save_query = $sugar_config['save_query'];
+        }
     }
 
     public function tearDown()
     {
+        global $sugar_config;
+        if(!empty($this->save_query))
+        {
+            $sugar_config['save_query'] = $this->save_query;
+        }
     	SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
     	unset($GLOBALS['current_user']);
     	unset($GLOBALS['app_strings']);
@@ -297,7 +309,7 @@ class ListViewDisplayTest extends Sugar_PHPUnit_Framework_TestCase
     public function testBuildSelectLink()
     {
         $output = $this->_lvd->buildSelectLink();
-
+        $output = implode($output['buttons'],"");
         $this->assertContains("<a id='select_link'",$output);
         $this->assertContains("sListView.check_all(document.MassUpdate, \"mass[]\", true, 0)",$output);
         $this->assertContains("sListView.check_entire_list(document.MassUpdate, \"mass[]\",true,0);",$output);
@@ -306,7 +318,7 @@ class ListViewDisplayTest extends Sugar_PHPUnit_Framework_TestCase
     public function testBuildSelectLinkWithParameters()
     {
         $output = $this->_lvd->buildSelectLink('testtest',1,2);
-
+        $output = implode($output['buttons'],"");
         $this->assertContains("<a id='testtest'",$output);
         $this->assertContains("sListView.check_all(document.MassUpdate, \"mass[]\", true, 2)",$output);
         $this->assertContains("sListView.check_entire_list(document.MassUpdate, \"mass[]\",true,1);",$output);
@@ -315,7 +327,7 @@ class ListViewDisplayTest extends Sugar_PHPUnit_Framework_TestCase
     public function testBuildSelectLinkWithPageTotalLessThanZero()
     {
         $output = $this->_lvd->buildSelectLink('testtest',1,-1);
-
+        $output = implode($output['buttons'],"");
         $this->assertContains("<a id='testtest'",$output);
         $this->assertContains("sListView.check_all(document.MassUpdate, \"mass[]\", true, 1)",$output);
         $this->assertContains("sListView.check_entire_list(document.MassUpdate, \"mass[]\",true,1);",$output);

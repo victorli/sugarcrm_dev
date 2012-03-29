@@ -175,7 +175,7 @@ class SugarCleaner
      */
     static public function cleanHtml($html, $encoded = false)
     {
-        if(empty($html)) return '';
+        if(empty($html)) return $html;
 
         if($encoded) {
             $html = from_html($html);

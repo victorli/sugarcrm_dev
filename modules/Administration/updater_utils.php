@@ -276,32 +276,7 @@ function check_now($send_usage_info=true, $get_request_data=false, $response_dat
  */
 function compareVersions($ver1, $ver2)
 {
-    if(!preg_match_all("/[0-9]/", $ver1, $matches1))
-    {
-        return false;
-    }
-
-    if(!preg_match_all("/[0-9]/", $ver2, $matches2))
-    {
-        return true;
-    }
-
-    //Now recreate string with only numbers
-    $ver1 = implode('', $matches1[0]);
-    $ver2 = implode('', $matches2[0]);
-
-    $len1 = strlen($ver1);
-    $len2 = strlen($ver2);
-
-    //Now apply padding
-    if($len1 > $len2) {
-        $ver2 = str_pad($ver2, $len1, '0');
-    } else if($len2 > $len1) {
-        $ver1 = str_pad($ver1, $len2, '0');
-    }
-
-    //Return result
-    return (int)$ver1 > (int)$ver2;
+    return (version_compare($ver1, $ver2) === 1);
 }
 function set_CheckUpdates_config_setting($value) {
 

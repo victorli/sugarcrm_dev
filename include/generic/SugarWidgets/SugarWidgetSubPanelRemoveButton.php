@@ -110,6 +110,7 @@ class SugarWidgetSubPanelRemoveButton extends SugarWidgetField
             $retStr = "<a href=\"javascript:sub_p_rem('$subpanel', '$linked_field'" 
                     .", '$record', $refresh_page);\"" 
 			. ' class="listViewTdToolsS1"'
+            . 'id="remove_subpanel_item" '
 			. " onclick=\"return sp_rem_conf();\""
 			. ">$icon_remove_text</a>";
         return $retStr;

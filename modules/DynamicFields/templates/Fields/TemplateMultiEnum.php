@@ -132,7 +132,7 @@ class TemplateMultiEnum extends TemplateEnum{
 			else
 			{
 				// we have a packed representation containing one or both of default and dependency
-                                if ( isset ( $unpacked [ 'default' ] ) && !isset($this->no_default))
+                if ( isset ( $unpacked [ 'default' ] ) && !isset($this->no_default))
 					$def [ 'default' ] = $unpacked [ 'default' ] ;
 				if ( isset ( $unpacked [ 'dependency' ] ) )
 					$def [ 'dependency' ] = $unpacked [ 'dependency' ] ;
@@ -152,11 +152,11 @@ class TemplateMultiEnum extends TemplateEnum{
 		{
 			if ( is_array ( $this->default ) )
 				$this->default = encodeMultienumValue($this->default);
-			$this->ext4 = ( isset ( $this->dependency ) ) ? serialize ( array ( 'default' => $this->default , 'dependency' => $this->dependency ) )  : $this->default ;
+			$this->ext4 = ( isset ( $this->dependency ) ) ? serialize ( array ( 'default' => $this->default , 'dependency' => html_entity_decode($this->dependency) ) )  : $this->default ;
 		} else
 		{
 			if ( isset ( $this->dependency ) )
-				$this->ext4 = serialize ( array ( 'dependency' => $this->dependency ) ) ;
+				$this->ext4 = serialize ( array ( 'dependency' => html_entity_decode($this->dependency) ) ) ;
 		}
 		parent::save($df);
 	}

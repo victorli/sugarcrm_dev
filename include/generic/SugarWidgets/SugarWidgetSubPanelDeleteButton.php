@@ -69,7 +69,7 @@ class SugarWidgetSubPanelDeleteButton extends SugarWidgetField
 			$refresh_page = 1;
 		}
 
-		$html = "<a onclick='return sp_del_conf();' href=\"javascript:sub_p_del('$subpanel', '$module_name', '$record_id', $refresh_page);\">".$app_strings['LNK_DELETE']."</a>";
+		$html = "<a id='delete_subpanel_item' onclick='return sp_del_conf();' href=\"javascript:sub_p_del('$subpanel', '$module_name', '$record_id', $refresh_page);\">".$app_strings['LNK_DELETE']."</a>";
 		return $html;
 
 	}

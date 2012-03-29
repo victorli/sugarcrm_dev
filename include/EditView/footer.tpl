@@ -39,15 +39,16 @@
 <div class="buttons">
 {{if !empty($form) && !empty($form.buttons)}}
    {{foreach from=$form.buttons key=val item=button}}
-      {{sugar_button module="$module" id="$button" view="$view"}}
+      {{sugar_button module="$module" id="$button" form_id="$form_id" view="$view" appendTo="footer_buttons"}}
    {{/foreach}}
 {{else}}
-{{sugar_button module="$module" id="SAVE" view="$view" location="FOOTER"}}
-{{sugar_button module="$module" id="CANCEL" view="$view" location="FOOTER"}}
+{{sugar_button module="$module" id="SAVE" view="$view" form_id="$form_id" location="FOOTER" appendTo="footer_buttons"}}
+{{sugar_button module="$module" id="CANCEL" view="$view" form_id="$form_id" location="FOOTER" appendTo="footer_buttons"}}
 {{/if}}
 {{if empty($form.hideAudit) || !$form.hideAudit}}
-{{sugar_button module="$module" id="Audit" view="$view"}}
+{{sugar_button module="$module" id="Audit" view="$view" form_id="$form_id" appendTo="footer_buttons"}}
 {{/if}}
+{{sugar_action_menu buttons=$footer_buttons class="fancymenu"}}
 </div>
 {{/if}}
 </form>

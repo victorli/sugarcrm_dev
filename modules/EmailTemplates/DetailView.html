@@ -51,18 +51,7 @@
 			{PORTAL_ON}
 		<tr>
 		<td>
-            <ul class="clickMenu">
-                <li>
-                    <!-- BEGIN: edit -->
-                    <a title="{APP.LBL_EDIT_BUTTON_TITLE}" accessKey="{APP.LBL_EDIT_BUTTON_KEY}" onclick="$('#editEmailTemplatesButton').click();">{APP.LBL_EDIT_BUTTON_LABEL}</a>
-                    <button style="display: none;" id="editEmailTemplatesButton" onclick="this.form.return_module.value='EmailTemplates'; this.form.return_action.value='DetailView'; this.form.return_id.value='{ID}'; this.form.action.value='EditView'" type="submit"></button>
-                    <ul class="subnav multi">
-                    <li><input title="{APP.LBL_DUPLICATE_BUTTON_TITLE}" accessKey="{APP.LBL_DUPLICATE_BUTTON_KEY}" class="button" onclick="this.form.return_module.value='EmailTemplates'; this.form.return_action.value='index'; this.form.isDuplicate.value=true; this.form.action.value='EditView'" type="submit" name="button" value=" {APP.LBL_DUPLICATE_BUTTON_LABEL} "></li>
-                    <!-- END: edit -->
-                    <li><input title="{APP.LBL_DELETE_BUTTON_TITLE}" accessKey="{APP.LBL_DELETE_BUTTON_KEY}" class="button" onclick="check_deletable_EmailTemplate();" type="button" name="button" value=" {APP.LBL_DELETE_BUTTON_LABEL} "></li>
-                    </ul>
-                </li>
-            </ul>
+            {ACTION_BUTTON}
         </td>
 		<td align='right'>{ADMIN_EDIT}</td>
 		</tr></table>

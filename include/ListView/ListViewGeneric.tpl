@@ -101,6 +101,8 @@
 
 {if $hideTable == false}
 	<table cellpadding='0' cellspacing='0' width='100%' border='0' class='list view'>
+    {assign var="link_select_id" value="selectLinkTop"}
+    {assign var="link_action_id" value="actionLinkTop"}
 	{include file='include/ListView/ListViewPagination.tpl'}
 	<tr height='20'>
 			{if $prerow}
@@ -226,7 +228,9 @@
 		    </td>
 		</tr> 
 		{/foreach}
-	{include file='include/ListView/ListViewPagination.tpl'}
+    {assign var="link_select_id" value="selectLinkBottom"}
+    {assign var="link_action_id" value="actionLinkBottom"}
+    {include file='include/ListView/ListViewPagination.tpl'}
 	</table>
 {/if}
 {if $contextMenus}

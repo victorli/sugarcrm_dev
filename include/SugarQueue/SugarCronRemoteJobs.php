@@ -1,4 +1,5 @@
 <?php
+if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
@@ -34,95 +35,82 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-
-require_once 'include/FileLocator/FileLocatorInterface.php';
+require_once 'include/SugarQueue/SugarCronJobs.php';
+require_once 'include/SugarHttpClient.php';
 
 /**
- * A simple File Locator class. When created you pass in an array of paths for it to search.
- *
+ * CRON driver for job queue that ships jobs outside
+ * @api
  */
-class FileLocator implements FileLocatorInterface
+class SugarCronRemoteJobs extends SugarCronJobs
 {
     /**
-     * Paths to check when we try and locate a file
-     *
-     * @var array
+     * URL for remote job server
+     * @var string
      */
-    private $paths;
+    protected $jobserver;
 
     /**
-     * Constructor
-     *
-     * @param array $paths      Where we want to look for files at
+     * Just in case we'd ever need to override...
+     * @var string
      */
-    public function __construct(array $paths)
+    protected $submitURL = "submitJob";
+
+    /**
+     * REST client
+     * @var string
+     */
+    protected $client;
+
+    public function __construct()
     {
-        $this->paths = (array)$paths;
+        parent::__construct();
+        if(!empty($GLOBALS['sugar_config']['job_server'])) {
+            $this->jobserver = $GLOBALS['sugar_config']['job_server'];
+        }
+        $this->setClient(new SugarHttpClient());
     }
 
+    /**
+    * Set client to talk to SNIP
+    * @param SugarHttpClient $client
+    */
+    public function setClient(SugarHttpClient $client)
+    {
+        $this->client = $client;
+        return $this;
+    }
 
     /**
-     * Try and find a file in the paths that were passed in when the object was created
-     *
-     * @param string $name          Name of the file we are looking for
-     * @return bool|string          Returns the path of the file if one is found.  If not boolean FALSE is returned
+     * Return ID for this client
+     * @return string
      */
-    public function locate($name)
+    public function getMyId()
     {
-        if($this->isAbsolutePath($name) && file_exists($name))
-        {
-          return $name;
-        }
+        return 'CRON'.$GLOBALS['sugar_config']['unique_key'].':'.md5($this->jobserver);
+    }
 
-        foreach($this->paths as $path)
-        {
-            $file = $path . DIRECTORY_SEPARATOR . $name;
-            if(file_exists($file) && is_file($file))
-            {
-                return $file;
+    /**
+     * Execute given job
+     * @param SchedulersJob $job
+     */
+    public function executeJob($job)
+    {
+        $data = json_encode(array("job" => $job->id, "client" => $this->getMyId(), "instance" => $GLOBALS['sugar_config']['site_url']));
+        $response = $this->client->callRest($this->jobserver.$this->submitURL, $data);
+        if(!empty($response)) {
+            $result = json_decode($response, true);
+            if(empty($result) || empty($result['ok']) || $result['ok'] != $job->id) {
+                $GLOBALS['log']->debug("CRON Remote: Job {$job->id} not accepted by server: $response");
+                $this->jobFailed($job);
+                $job->failJob("Job not accepted by server: $response");
             }
+        } else {
+            $GLOBALS['log']->debug("CRON Remote: REST request failed for job {$job->id}");
+            $this->jobFailed($job);
+            $job->failJob("Could not connect to job server");
         }
-        return false;
-    }
-
-    /**
-     * Set new Paths to check
-     *
-     * @param array $paths
-     */
-    public function setPaths($paths)
-    {
-        $this->paths = (array)$paths;
-    }
-
-    /**
-     * Return the current set paths
-     *
-     * @return array
-     */
-    public function getPaths()
-    {
-        return $this->paths;
-    }
-
-    /**
-     * Check to see if the file contains an absolute path to the file.
-     *
-     * @param string $file      The file to check if the path is an absolute path or not
-     * @return bool             True if file is an Absolute Path; False if not.
-     */
-    private function isAbsolutePath($file)
-    {
-        if ($file[0] == '/' || $file[0] == '\\'
-            || (strlen($file) > 3 && ctype_alpha($file[0])
-                && $file[1] == ':'
-                && ($file[2] == '\\' || $file[2] == '/')
-            )
-        ) {
-            return true;
-        }
-
-        return false;
     }
 
 }
+

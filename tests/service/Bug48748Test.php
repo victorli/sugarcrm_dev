@@ -60,24 +60,18 @@ class Bug48748Test extends RestTestCase
 
         //Make the custom package directory and simulate copying the file in
         mkdir_recursive('custom/modules/' . $this->package . '/Ext/WirelessLayoutdefs');
-        if( $fh = @fopen('custom/modules/' . $this->package . '/Ext/WirelessLayoutdefs/wireless.subpaneldefs.ext.php', 'w+'))
-        {
-$string = <<<EOQ
-<?php
-\$layout_defs["{$this->package}"]["subpanel_setup"]['{$this->package}_accounts'] = array (
-  'order' => 100,
-  'module' => 'Contacts',
-  'subpanel_name' => 'default',
-  'title_key' => 'LBL_BUG48784TEST',
-  'get_subpanel_data' => 'Bug48748Test',
-);
 
-?>
-EOQ;
-            fputs( $fh, $string);
-            fclose( $fh );
-        }
+        $theArray = array ($this->package => array('subpanel_setup' => array ( $this->package.'_accounts' => array(
+          'order' => 100,
+          'module' => 'Contacts',
+          'subpanel_name' => 'default',
+          'title_key' => 'LBL_BUG48784TEST',
+          'get_subpanel_data' => 'Bug48748Test',
+        ))));
+        $theFile = 'custom/modules/' . $this->package . '/Ext/WirelessLayoutdefs/wireless.subpaneldefs.ext.php';
+        write_array_to_file('layout_defs', $theArray, $theFile);
 
+        sugar_chmod('custom/modules/' . $this->package . '/Ext/WirelessLayoutdefs/wireless.subpaneldefs.ext.php', 0655);
 
         global $beanList, $beanFiles, $current_user;
         //$beanList['Contacts'] = 'Contact';
@@ -91,7 +85,6 @@ EOQ;
         $GLOBALS['db']->commit(); // Making sure we commit any changes before continuing
 
         $_SESSION['avail_modules'][$this->package] = 'write';
-        $this->useOutputBuffering = false;
     }
 
     public function tearDown()

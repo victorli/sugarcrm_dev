@@ -82,17 +82,9 @@ $(document).ready(function(){
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 
     <tr><td colspan='2' width="100%" nowrap>
-        <ul class="clickMenu">
-            <li>
-                {php}
-                    $ACTION_BUTTONS = $this->get_template_vars('EDITBUTTONS').$this->get_template_vars('BUTTONS');
-                    if(substr($ACTION_BUTTONS, -4) != "</li>")
-                        $ACTION_BUTTONS .= "</li>";
-                    $this->assign('ACTION_BUTTONS', $ACTION_BUTTONS);
-                {/php}
-                {$ACTION_BUTTONS}
-            </li>
-        </ul>
+
+            {sugar_action_menu class="clickMenu fancymenu" buttons=$EDITBUTTONS}
+
     </td></tr>
 </table>
 </form>

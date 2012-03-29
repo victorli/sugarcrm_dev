@@ -57,7 +57,7 @@ $viewdefs['Project']['DetailView'] = array(
 						'onclick="this.form.return_module.value=\'Project\'; this.form.return_action.value=\'ProjectTemplatesDetailView\'; this.form.return_id.value=\'{$id}\'; this.form.action.value=\'ProjectTemplatesEditView\';"'.
 					'{else}'.
 						'onclick="this.form.return_module.value=\'Project\'; this.form.return_action.value=\'DetailView\'; this.form.return_id.value=\'{$id}\'; this.form.action.value=\'EditView\';" {/if}'.
-					'"/>', 
+					'/>',
 				),
 				array( 'customCode' =>
 					'<input title="{$APP.LBL_DELETE_BUTTON_TITLE}" ' .
@@ -67,9 +67,9 @@ $viewdefs['Project']['DetailView'] = array(
 						'onclick="this.form.return_module.value=\'Project\'; this.form.return_action.value=\'ProjectTemplatesListView\'; this.form.action.value=\'Delete\'; return confirm(\'{$APP.NTC_DELETE_CONFIRMATION}\');"'.
 					'{else}'.
 						'onclick="this.form.return_module.value=\'Project\'; this.form.return_action.value=\'ListView\'; this.form.action.value=\'Delete\'; return confirm(\'{$APP.NTC_DELETE_CONFIRMATION}\');" {/if}'.
-					'"/>', 
+					'/>',
 				),
-								
+
 				 array( 'customCode' =>
 				 	'<input title="{$APP.LBL_DUPLICATE_BUTTON_TITLE}" ' .
 					'accessKey="{$APP.LBL_DUPLICATE_BUTTON_KEY}" class="button" type="submit" ' .
@@ -78,7 +78,7 @@ $viewdefs['Project']['DetailView'] = array(
 						'onclick="this.form.return_module.value=\'Project\'; this.form.return_action.value=\'ProjectTemplatesDetailView\'; this.form.isDuplicate.value=true; this.form.action.value=\'projecttemplateseditview\'; this.form.return_id.value=\'{$id}\';"'.
 					'{else}'.
 						'onclick="this.form.return_module.value=\'Project\'; this.form.return_action.value=\'DetailView\'; this.form.isDuplicate.value=true; this.form.action.value=\'EditView\'; this.form.return_id.value=\'{$id}\';" {/if}'.
-					'"/>', 
+					'"/>',
 				),
 
  			),

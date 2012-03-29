@@ -143,7 +143,7 @@ SE.accounts = {
 	        YAHOO.widget.DataTable.Formatter.showBoolean = this.showBoolean;
 
 	        var typeHoverHelp = '&nbsp;<div id="rollover"><a href="#" class="rollover">'+
-	                            '<img border="0" src="themes/default/images/helpInline.png">' +
+	                            '<img border="0" src="index.php?entryPoint=getImage&amp;imageName=helpInline.png">' +
 	                            '<div style="text-align:left"><span>' + mod_strings.LBL_EMAIL_INBOUND_TYPE_HELP + '</span></div></a></div>';
 
 

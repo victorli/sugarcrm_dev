@@ -48,7 +48,10 @@ class Bug36329Test extends Sugar_PHPUnit_Framework_OutputTestCase
 	public function setUp()
 	{
 		global $sugar_config;
-		$this->save_query = isset($sugar_config['save_query']) ? true : false;
+		if(isset($sugar_config['save_query']))
+        {
+            $this->save_query = $sugar_config['save_query'];
+        }
 		$this->current_language = $GLOBALS['current_language'];
 
 		global $current_user;
@@ -72,8 +75,8 @@ class Bug36329Test extends Sugar_PHPUnit_Framework_OutputTestCase
 	public function tearDown()
 	{
 	    global $sugar_config;
-		if(!$this->save_query) {
-		   unset($sugar_config['save_query']);
+		if(!empty($this->save_query)) {
+		   $sugar_config['save_query'] = $this->save_query;
 		}
 
 		$GLOBALS['current_language'] = $this->current_language;

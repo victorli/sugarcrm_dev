@@ -138,7 +138,7 @@ $xtpl->assign("CANCEL_BUTTON", $cancel_buttons_html );
 $field_defs_js = "var field_defs = {'Contacts':[";
 
 //bug: 47574 - make sure, that webtolead_email1 field has same required attribute as email1 field
-if(isset($lead->field_defs['webtolead_email1']) && isset($lead->field_defs['email1'])){
+if(isset($lead->field_defs['webtolead_email1']) && isset($lead->field_defs['email1']) && isset($lead->field_defs['email1']['required'])){
     $lead->field_defs['webtolead_email1']['required'] = $lead->field_defs['email1']['required'];
 }
 

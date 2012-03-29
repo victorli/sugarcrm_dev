@@ -50,10 +50,6 @@ global $sugar_config, $sugar_version, $sugar_flavor, $server_unique_key, $curren
 if(isset( $sugar_config['disc_client']) && $sugar_config['disc_client']){
 	require_once('modules/Sync/headermenu.php');
 }
-$global_control_links['profile'] = array(
-'linkinfo' => array($app_strings['LBL_PROFILE'] => 'index.php?module=Users&action=EditView&record='.$GLOBALS['current_user']->id),
-'submenu' => ''
-);
 
 
 $global_control_links['employees'] = array(

@@ -220,11 +220,6 @@ class DeployedMetaDataImplementation extends AbstractMetaDataImplementation impl
             $this->_originalViewdefs = $layout ;
           }
         }
-        //fixing bug #43787: check editview layout if default quickcreate.php doesn't have needed field
-        if ($view == MB_QUICKCREATE)
-        {
-            $this->_editViewDefs = $this->_loadFromFile($this->getFileName(MB_EDITVIEW, $moduleName, MB_BASEMETADATALOCATION));
-        }
         
 		$this->_fielddefs = $fielddefs ;
 		$this->_history = new History ( $this->getFileName ( $view, $moduleName, MB_HISTORYMETADATALOCATION ) ) ;
@@ -241,10 +236,6 @@ class DeployedMetaDataImplementation extends AbstractMetaDataImplementation impl
 		return $this->_originalViewdefs;
 	}
 
-    function getEditViewDefs()
-    {
-        return $this->_editViewDefs;
-    }
 
 	/*
 	 * Save a draft layout

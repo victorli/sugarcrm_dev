@@ -264,6 +264,7 @@ class EmailMan extends SugarBean{
 		global $timedate;
 
 		$this->send_attempts++;
+		$this->id = (int)$this->id;
 		if($delete || $this->send_attempts > 5){
 
 			//create new campaign log record.
@@ -289,7 +290,7 @@ class EmailMan extends SugarBean{
 			$this->db->query($query);
 		}else{
 			//try to send the email again a day later.
-			$query = 'UPDATE ' . $this->table_name . " SET in_queue='1', send_attempts='$this->send_attempts', in_queue_date=". $this->db->now() ." WHERE id = '$this->id'";
+			$query = 'UPDATE ' . $this->table_name . " SET in_queue='1', send_attempts='$this->send_attempts', in_queue_date=". $this->db->now() ." WHERE id = $this->id";
 			$this->db->query($query);
 		}
 	}
@@ -957,5 +958,13 @@ class EmailMan extends SugarBean{
 
         return $query;
     }
+
+    /**
+     * Actuall deletes the emailman record
+     * @param int $id
+     */
+    public function mark_deleted($id)
+	{
+	    $this->db->query("DELETE FROM {$this->table_name} WHERE id=".intval($id));
+	}
 }
-?>

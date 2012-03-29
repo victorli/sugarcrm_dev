@@ -1102,7 +1102,7 @@ $mod_strings = array (
    'LBL_SAML_LOGIN_URL' => 'Login URL',
    'LBL_SAML_LOGIN_URL_DESC' => 'Enter Login URL',
 
-   'LBL_GLOBAL_SEARCH_SETTINGS_TITLE' => 'Select the module(s) that users will be able to search against using the Global Search.',
+   'LBL_GLOBAL_SEARCH_SETTINGS_TITLE' => 'Select the module(s) that users will be able to search against using the Global Search. If full-text searching is enabled, perform a full system index after enabling modules for the Global Search. To enable module fields for full text searching, use <a href="index.php?module=ModuleBuilder&action=index&type=studio">Studio</a>',
    'LBL_SELECT_MODULES' => 'Advanced',
    'LBL_SELECT_MODULES_TITLE' => 'Drag and drop to select modules and to change the display order. Perform a search to apply the changes.',
    'LBL_EAPM_SETTINGS' => 'External Accounts',
@@ -1145,14 +1145,14 @@ $mod_strings = array (
     'LBL_FTS_SETTINGS_TITLE' => 'Full Text Search Settings',
     'LBL_FTS_TEST' => 'Connect',
     'LBL_SAVE_SCHED_BUTTON' => 'Schedule Full System Index',
-    'LBL_SAVE_SCHED_WARNING' => 'Are you sure you would like to perform a full system index at this time?',
+    'LBL_SAVE_SCHED_WARNING' => 'Are you sure you would like to perform a full system index at this time? The system performance could be impacted while the index is being performed.',
     'LBL_FTS_SCHED_ENABLED' => 'See <a href="index.php?module=Schedulers&action=DetailView&record={0}">schedulers</a>.',
     'LBL_FTS_NO_MODULES' => 'Select at least one module to search.',
     'LBL_FTS_ADVANCED_LINK' => 'Enable Modules',
     'LBL_FTS_ADVANCED_LINK_HELP' => 'Select the module(s) that users will be able to search against using the Full Text Search.',
-    'LBL_FTS_CONN_SUCCESS' => 'The connection was successfully made. We recommend scheduling a full system index next.',
+    'LBL_FTS_CONN_SUCCESS' => 'The connection was successfully made. You will need to perform a full system index for full-text searching to work for the enabled modules and module fields.',
 	'LBL_FTS_CONN_SUCCESS_SHORT' => 'A full system index operation has been scheduled to run within the next several minutes.',
     'LBL_FTS_CONN_FAILURE_SHORT' => 'Unable to schedule an index operation.',
-    'LBL_FTS_PAGE_DESC' => 'Select the search engine that will be used for full text searching on the modules selected above. If not search engine is selected, full text searching will not be enabled. After selecting and connecting to the search engine, perform a full system index to begin using the feature on the data in the system. A scheduler will be created to perform the index on a regular basis.'
+    'LBL_FTS_PAGE_DESC' => 'To enable full text searching, select the search engine that will be used and enter the host and port of the search engine. To complete the setup, connect to the engine and perform a full system index.'
     );
 

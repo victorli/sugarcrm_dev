@@ -102,16 +102,6 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
         $this->_standardizeFieldLabels( $this->_fielddefs );
         $this->_viewdefs [ 'panels' ] = $this->_convertFromCanonicalForm ( $this->_viewdefs [ 'panels' ] , $this->_fielddefs ) ; // put into our internal format
         $this->_originalViewDef = $this->getFieldsFromLayout($this->implementation->getOriginalViewdefs ());
-        //fixing bug #43787: 
-        //when adding a field to quick create layout 
-        //check its properties in edit view definitions in case 
-        //that field is absent in the default quickcreatedefs.php
-        if ($view == MB_QUICKCREATE)
-        {
-            $this->_view = MB_EDITVIEW;
-            $this->_editViewDefs = $this->getFieldsFromLayout($this->implementation->getEditViewDefs());
-            $this->_view = $view ;
-        }
     }
 
     /*
@@ -570,14 +560,6 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
                     else if (isset ($this->_originalViewDef [ $fieldname ]))
                     {
                         $newRow[$colID - $offset] = $this->getNewRowItem($this->_originalViewDef[$fieldname], $fielddefs[$fieldname]);  
-                    }
-                    //if no matches found for quickcreate view on the previos steps see in editview vardefs
-                    else if ($this->_view == MB_QUICKCREATE)
-                    { 
-                        if (isset($this->_editViewDefs[$fieldname]))
-                        {
-                            $newRow[$colID - $offset] = $this->getNewRowItem($this->_editViewDefs[$fieldname], $fielddefs[$fieldname]);
-                        }
                     }
                 	//Otherwise make up a viewdef for it from field_defs
                 	else if (isset ($fielddefs [ $fieldname ]))

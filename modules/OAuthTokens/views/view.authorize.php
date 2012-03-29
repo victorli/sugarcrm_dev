@@ -79,7 +79,14 @@ class OauthTokensViewAuthorize extends SugarView
             }
             $verify = $token->authorize(array("user" => $current_user->id));
             if(!empty($token->callback_url)){
-                SugarApplication::redirect($token->callback_url."?oauth_verifier=".$verify.'&oauth_token='.$_REQUEST['token']);
+                $redirect_url=$token->callback_url;
+                if(strchr($redirect_url, "?") !== false) {
+                    $redirect_url .= '&';
+                } else {
+                    $redirect_url .= '?';
+                }
+                $redirect_url .= "oauth_verifier=".$verify.'&oauth_token='.$_REQUEST['token'];
+                SugarApplication::redirect($redirect_url);
             }
             $sugar_smarty->assign('VERIFY', $verify);
             $sugar_smarty->assign('token', '');

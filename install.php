@@ -386,7 +386,9 @@ if($next_clicked) {
             break;
 
         case 'systemOptions.php':
-            $_SESSION['setup_db_type'] = $_REQUEST['setup_db_type'];
+            if(isset($_REQUEST['setup_db_type'])) {
+              $_SESSION['setup_db_type'] = $_REQUEST['setup_db_type'];
+            }
             $validation_errors = validate_systemOptions();
             if(count($validation_errors) > 0) {
                 $next_step--;

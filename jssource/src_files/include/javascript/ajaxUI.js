@@ -66,7 +66,7 @@ SUGAR.ajaxUI = {
             c.innerHTML = cont;
             SUGAR.util.evalScript(cont);
 
-            if (r.moduleList)
+            if ( r.moduleList)
             {
                 SUGAR.themes.setModuleTabs(r.moduleList);
             }

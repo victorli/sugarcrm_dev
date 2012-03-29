@@ -45,7 +45,7 @@
 	var methods = {
 		init: function(options){
 
-			menuNode = this;
+			var menuNode = this;
 			if(!this.hasClass("SugarActionMenu")){
 				//tag this element as a sugarmenu
 				this.addClass("SugarActionMenu");
@@ -257,6 +257,28 @@
 						});
 					});
 				});
+
+                //Bug#51579: delete li tags which contains empty due to access role
+                this.find(".subnav > li").each(function(index, subnode) {
+                    if($(subnode).html().replace(/ /g, '') == '') {
+                        $(subnode).remove();
+                    }
+                });
+                //Bug#51579: If the first item is empty due to the access role,
+                //           replace the first button from the first of the sub-list items.
+                this.find("li.sugar_action_button:first").each(function(index, node) {
+                    var _this = $(node);
+                    var _first_item = $(node).find("a:first").not($(node).find(".subnav > li a"));
+                    if(_first_item.length == 0) {
+                        var sub_items = $(node).find(".subnav > li:first").children();
+                        if(sub_items.length == 0)
+                            menuNode.hide();
+                        else
+                            _this.prepend(sub_items);
+                    }
+                });
+
+
 			}
 			return this;
 		},

@@ -2295,17 +2295,17 @@ sugarListView.prototype.toggleSelected = function() {
 	var selectActions = document.getElementById("selectActions");
 	var selectActionsDisabled = document.getElementById("selectActionsDisabled");
 	if(numSelected > 0) {
-		selectedRecords.style.display = "inline-block";
-        $(".selectActionsDisabled").css("display", "none");
+        $(selectedRecords).removeAttr("style").addClass("show");
+        $(".selectActionsDisabled").hide();
         jQuery('ul[name=selectActions]').each(function () {
-            jQuery(this).css("display", "inline-block");
+            jQuery(this).removeAttr("style").addClass("show");
         });
 
 	} else {
-		selectedRecords.style.display = "none";
-        $(".selectActionsDisabled").css("display", "inline-block");
+        $(selectedRecords).hide();
+        $(".selectActionsDisabled").removeAttr("style").addClass("show");
         jQuery('ul[name=selectActions]').each(function () {
-                    jQuery(this).css("display", "none");
+            jQuery(this).hide();
         });
 	}
 
@@ -2347,9 +2347,10 @@ sugarListView.prototype.check_all = function(form, field, value, pageTotal) {
 	count = 0;
 	document.MassUpdate.massall.checked = value;
 	if (document.MassUpdate.select_entire_list &&
-		document.MassUpdate.select_entire_list.value == 1)
+		document.MassUpdate.select_entire_list.value == 1) {
+        sugarListView.prototype.toggleSelected();
 		document.MassUpdate.massall.disabled = true;
-	else
+	} else
 		document.MassUpdate.massall.disabled = false;
 
 	for (i = 0; i < form.elements.length; i++) {
@@ -2385,8 +2386,10 @@ sugarListView.prototype.check_boxes = function() {
 
 	if(typeof theForm.uid.value != 'undefined' && theForm.uid.value != "") {
 		checked_items = theForm.uid.value.split(",");
-		if (theForm.select_entire_list.value == 1)
+		if (theForm.select_entire_list.value == 1) {
 			document.MassUpdate.massall.disabled = true;
+            sugarListView.prototype.toggleSelected();
+        }
 
 		for(var wp = 0 ; wp < inputs_array.length; wp++) {
 			if(inputs_array[wp].name == "mass[]") {

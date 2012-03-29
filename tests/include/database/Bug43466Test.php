@@ -232,7 +232,7 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
                 ),
             'email_reminder_sent' => array(
                     'name' => 'email_reminder_sent',
-                    'vname' => 'LBL_EMAIL_EMAIL_SENT',
+                    'vname' => 'LBL_EMAIL_REMINDER_SENT',
                     'default' => 0,
                     'type' => 'bool',
                     'comment' => 'Whether email reminder is already sent',

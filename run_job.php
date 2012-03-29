@@ -63,6 +63,13 @@ $GLOBALS['log']->debug('Starting job {$argv[1]} execution as ${argv[2]}');
 require_once 'modules/SchedulersJobs/SchedulersJob.php';
 $result = SchedulersJob::runJobId($argv[1], $argv[2]);
 
+if(is_string($result)) {
+    // something wrong happened
+    echo $result;
+    echo "\n";
+    $result = false;
+}
+
 sugar_cleanup(false);
 // some jobs have annoying habit of calling sugar_cleanup(), and it can be called only once
 // but job results can be written to DB after job is finished, so we have to disconnect here again

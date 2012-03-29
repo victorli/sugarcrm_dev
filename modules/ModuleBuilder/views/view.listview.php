@@ -129,8 +129,13 @@ class ViewListView extends ViewEdit
                 $ajax->addCrumb ( translate ( 'LBL_AVAILABLE_SUBPANELS', 'ModuleBuilder' ), '' ) ;
                 if ($this->subpanelLabel)
                 {
-                    $ajax->addCrumb ( $this->subpanelLabel, '' ) ;
-                    $this->translatedViewType = $this->subpanelLabel . "&nbsp;" . translate("LBL_SUBPANEL", "ModuleBuilder");
+                    $subpanelLabel = $this->subpanelLabel;
+                    // If the subpanel title has changed, use that for the label instead
+                    if( !empty($_REQUEST['subpanel_title'] ) && $_REQUEST['subpanelLabel'] != $_REQUEST['subpanel_title'] )
+                        $subpanelLabel = $_REQUEST['subpanel_title'];
+
+                    $ajax->addCrumb( $subpanelLabel, '' );
+                    $this->translatedViewType = $subpanelLabel . "&nbsp;" . translate("LBL_SUBPANEL", "ModuleBuilder");
                 } else
                 {
                     $ajax->addCrumb ( $this->subpanel, '' ) ;
@@ -151,8 +156,13 @@ class ViewListView extends ViewEdit
                 $ajax->addCrumb ( translate ( 'LBL_SUBPANELS', 'ModuleBuilder' ), 'ModuleBuilder.getContent("module=ModuleBuilder&action=wizard&view=subpanels&view_module=' . $this->editModule . '")' ) ;
                 if ($this->subpanelLabel)
                 {
-                    $ajax->addCrumb ( $this->subpanelLabel, '' ) ;
-                    $this->translatedViewType = $this->subpanelLabel . "&nbsp;" . translate("LBL_SUBPANEL", "ModuleBuilder");
+                    $subpanelLabel = $this->subpanelLabel;
+                    // If the subpanel title has changed, use that for the label instead
+                    if( !empty($_REQUEST['subpanel_title'] ) && $_REQUEST['subpanelLabel'] != $_REQUEST['subpanel_title'] )
+                        $subpanelLabel = $_REQUEST['subpanel_title'];
+
+                    $ajax->addCrumb( $subpanelLabel, '' );
+                    $this->translatedViewType = $subpanelLabel . "&nbsp;" . translate("LBL_SUBPANEL", "ModuleBuilder");
                 } else
                 {
                     $ajax->addCrumb ( $this->subpanel, '' ) ;

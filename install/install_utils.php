@@ -61,26 +61,26 @@ function installerHook($function_name, $options = array()){
             installLog("installerHook: Found custom/install/install_hooks.php");
             require_once('custom/install/install_hooks.php');
             $GLOBALS['customInstallHooksExist'] = true;
-        }   
+        }
         else{
             installLog("installerHook: Could not find custom/install/install_hooks.php");
             $GLOBALS['customInstallHooksExist'] = false;
-        }   
+        }
     }
 
     if($GLOBALS['customInstallHooksExist'] === false){
         return 'undefined';
-    }   
-    else{   
+    }
+    else{
         if(function_exists($function_name)){
             installLog("installerHook: function {$function_name} found, calling and returning the return value");
             return $function_name($options);
-        }   
+        }
         else{
             installLog("installerHook: function {$function_name} not found in custom install hooks file");
             return 'undefined';
         }
-    }   
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1352,12 +1352,14 @@ function print_debug_comment(){
 function validate_systemOptions() {
     global $mod_strings;
     $errors = array();
-    $db = DBManagerFactory::getTypeInstance($_SESSION['setup_db_type']);
-    if(empty($db)) {
-       $errors[] = "<span class='error'>".$mod_strings['ERR_DB_INVALID']."</span>";
-    } else {
-        $_SESSION['setup_db_manager'] = get_class($db);
+    if(!empty($_SESSION['setup_db_type']) && trim($_SESSION['setup_db_type']) != '') {
+        $db = DBManagerFactory::getTypeInstance($_SESSION['setup_db_type']);
+        if(!empty($db)) {
+            $_SESSION['setup_db_manager'] = get_class($db);
+            return $errors;
+        }
     }
+    $errors[] = "<span class='error'>".$mod_strings['ERR_DB_INVALID']."</span>";
     return $errors;
 }
 

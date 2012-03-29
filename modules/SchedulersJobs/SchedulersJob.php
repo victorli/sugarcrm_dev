@@ -326,7 +326,7 @@ class SchedulersJob extends Basic
      * Run the job by ID
      * @param string $id
      * @param string $client Client that is trying to run the job
-     * @return bool|string true on success, error message on failure
+     * @return bool|string true on success, false on job failure, error message on failure to run
      */
     public static function runJobId($id, $client)
     {

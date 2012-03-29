@@ -120,7 +120,7 @@
 
 
 <!-- for detailView quickCreate() calls -->
-<div id="quickCreate"></div>
+<div id="quickCreateForEmail"></div>
 <div id="quickCreateContent"></div>
 
 

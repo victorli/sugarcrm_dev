@@ -92,7 +92,7 @@ $mod_strings = array (
 	'LBL_CREATE_NEW_RECORD' => 'Create Activity',
 	'LBL_LOADING' => 'Loading ......',
 	'LBL_SAVING' => 'Saving ......',
-	'LBL_SENDING_INVITES' => 'Sending Invites .....',
+	'LBL_SENDING_INVITES' => 'Saving & Sending Invites .....',
 	'LBL_CONFIRM_REMOVE' => 'Are you sure you want to remove the record?',
 	'LBL_CONFIRM_REMOVE_ALL_RECURRING' => 'Are you sure you want to remove all recurring records?',
 	'LBL_EDIT_RECORD' => 'Edit Activity',
@@ -128,7 +128,7 @@ $mod_strings = array (
 	'LBL_SAVE_BUTTON' => 'Save',
 	'LBL_DELETE_BUTTON' => 'Delete',
 	'LBL_APPLY_BUTTON' => 'Apply',
-	'LBL_SEND_INVITES' => 'Send Invites',
+	'LBL_SEND_INVITES' => 'Save & Send Invites',
 	'LBL_CANCEL_BUTTON' => 'Cancel',
 	'LBL_CLOSE_BUTTON' => 'Close',
 

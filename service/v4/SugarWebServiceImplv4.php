@@ -642,7 +642,7 @@ class SugarWebServiceImplv4 extends SugarWebServiceImplv3_1 {
         return $result;
     }
 
-    public function oauth_access($session)
+    public function oauth_access($session='')
     {
         $GLOBALS['log']->info('Begin: SugarWebServiceImpl->oauth_access');
         $error = new SoapError();

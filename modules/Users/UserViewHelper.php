@@ -166,7 +166,7 @@ class UserViewHelper {
         if(isset($_REQUEST['record'])) {
             $the_query_string .= '&record='.$_REQUEST['record'];
         }
-        $buttons = "";
+        $buttons = array();
         if (!$this->bean->is_group){
             if ($this->bean->id == $current_user->id) {
                 $reset_pref_warning = translate('LBL_RESET_PREFERENCES_WARNING','Users');
@@ -182,8 +182,8 @@ class UserViewHelper {
             if(isset($_REQUEST['record'])){
                 $user_preference_url .= "&record=".$_REQUEST['record'];
             }
-            $buttons .="<li><input type='button' class='button' onclick='if(confirm(\"{$reset_pref_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$user_preference_url."&reset_preferences=true\";' value='".translate('LBL_RESET_PREFERENCES','Users')."' /></li>";
-            $buttons .="\n<li><input type='button' class='button' onclick='if(confirm(\"{$reset_home_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$the_query_string."&reset_homepage=true\";' value='".translate('LBL_RESET_HOMEPAGE','Users')."' /></li>";
+            $buttons[]="<input type='button' class='button' onclick='if(confirm(\"{$reset_pref_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$user_preference_url."&reset_preferences=true\";' value='".translate('LBL_RESET_PREFERENCES','Users')."' />";
+            $buttons[]="<input type='button' class='button' onclick='if(confirm(\"{$reset_home_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$the_query_string."&reset_homepage=true\";' value='".translate('LBL_RESET_HOMEPAGE','Users')."' />";
         }
         if (isset($buttons)) $this->ss->assign("BUTTONS", $buttons);
         

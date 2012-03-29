@@ -677,7 +677,7 @@ AjaxObject.detailView = {
 		var ret = YAHOO.lang.JSON.parse(o.responseText);
 
 		if(!SED.quickCreateDialog) {
-			SED.quickCreateDialog = new YAHOO.widget.Dialog("quickCreate", {
+			SED.quickCreateDialog = new YAHOO.widget.Dialog("quickCreateForEmail", {
 				modal:true,
 				visible:true,
             	fixedcenter:true,
@@ -727,18 +727,27 @@ AjaxObject.detailView = {
 		if (editForm) {
 		  editForm.module.value = 'Emails';
 		  var count = SUGAR.EmailAddressWidget.count[ret.module] ? SUGAR.EmailAddressWidget.count[ret.module] : 0;
-		  var tableId = YAHOO.util.Dom.getElementsByClassName('emailaddresses', 'table', editForm)[0].id;
+          var tableId = YAHOO.util.Dom.getElementsByClassName('emailaddresses', 'table', editForm)[0];
+          tableId = tableId ? tableId.id : tableId;
 		  var instId = ret.module + count;
 		  SED.quickCreateEmailsToAdd = ret.emailAddress;
 		  SED.quickCreateEmailCallback = function(instId, tableId) {
-			  var eaw = SUGAR.EmailAddressWidget.instances[instId];
-			  if (typeof(eaw) == "undefined")
-				  window.setTimeout("SUGAR.email2.detailView.quickCreateEmailCallback('"
-					  	+ instId + "','" + tableId + "');", 100);
-			  eaw.prefillEmailAddresses(tableId, SUGAR.email2.detailView.quickCreateEmailsToAdd);
+              //try to fill up the email address if and only if emailwidget is existed in the form
+              if(tableId) {
+                  var eaw = SUGAR.EmailAddressWidget.instances[instId];
+                  if (eaw) {
+                      eaw.prefillEmailAddresses(tableId, SUGAR.email2.detailView.quickCreateEmailsToAdd);
+                  } else {
+                      window.setTimeout(function() {
+                          SUGAR.email2.detailView.quickCreateEmailCallback(instId, tableId);
+                      }, 100);
+
+                  }
+              }
 		  }
-		  window.setTimeout("SUGAR.email2.detailView.quickCreateEmailCallback('"
-				  	+ instId + "','" + tableId + "');", 100);
+		  window.setTimeout(function() {
+              SUGAR.email2.detailView.quickCreateEmailCallback(instId, tableId);
+            }, 100);
 		}
 	},
 

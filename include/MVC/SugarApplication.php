@@ -501,7 +501,7 @@ class SugarApplication
      * The list of the actions excepted from referer checks by default
      * @var array
      */
-	protected $whiteListActions = array('index', 'ListView', 'DetailView', 'EditView', 'oauth', 'Authenticate', 'Login', 'SupportPortal');
+	protected $whiteListActions = array('index', 'ListView', 'DetailView', 'EditView', 'oauth', 'authorize', 'Authenticate', 'Login', 'SupportPortal');
 
 	/**
 	 *
@@ -591,7 +591,7 @@ class SugarApplication
             }
         }
 
-        
+
         LogicHook::initialize()->call_custom_logic('', 'after_session_start');
 	}
 
@@ -691,7 +691,7 @@ class SugarApplication
 	    $_COOKIE[$name] = $value;
 	}
 
-	protected $redirectVars = array('module', 'action', 'record', 'token');
+	protected $redirectVars = array('module', 'action', 'record', 'token', 'oauth_token');
 
 	/**
 	 * Create string to attach to login URL with vars to preserve post-login

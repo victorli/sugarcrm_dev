@@ -1639,7 +1639,7 @@ function save_relationship_changes($is_update, $exclude=array())
             //Try to find the link in this bean based on the relationship
             foreach ($this->field_defs as $key => $def)
             {
-                if (isset($def['type']) && $def['type'] == 'link' && isset($def['relationship']) && $def['relationship'] == $new_rel_link)
+                if (isset($def['type']) && $def['type'] == 'link' && isset($def['relationship']) && $def['relationship'] == $rel_link)
                 {
                     $new_rel_link = $key;
                 }

@@ -62,12 +62,15 @@ onclick='open_popup(document.{$form_name}.parent_type.value, 600, 400, "", true,
 <script type="text/javascript">
 if (typeof(changeParentQS) == 'undefined'){
 function changeParentQS(field) {
+    if(typeof sqs_objects == 'undefined') {
+       return;
+    }
 	field = YAHOO.util.Dom.get(field);
     var form = field.form;
     var sqsId = form.id + "_" + field.id;
     var typeField =  form.elements.parent_type;
     var new_module = typeField.value;
-    if(typeof(disabledModules[new_module]) != 'undefined') {
+    if(typeof(disabledModules) != 'undefined' && typeof(disabledModules[new_module]) != 'undefined') {
 		sqs_objects[sqsId]["disable"] = true;
 		field.readOnly = true;
 	} else {

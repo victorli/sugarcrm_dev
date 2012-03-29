@@ -3665,6 +3665,7 @@ div#chartDashlets
 td.teamset-row, .edit tr td.teamset-row, .edit tr td table tr td.teamset-row {
     padding: 5px !important;
 }
+
 /* competible for SugarActionMenu */
 
 ul.clickMenu {
@@ -3942,9 +3943,13 @@ ul#selectLink.clickMenu {
 	background-image: none;
 }
 
+td.paginationActionButtons ul.clickMenu #massall,
 ul#selectLink.clickMenu #massall{
 	float: left;
 	margin: 1px 4px;
+}
+.selectActions.clickMenu {
+    display: none;
 }
 
 ul#selectLink.clickMenu > li > a{
@@ -4071,3 +4076,4 @@ ul.clickMenu li ul.subnav li a:hover .showLessArrow, ul.clickMenu li ul.subnav l
 	opacity: .6;
 }
 
+div.action_buttons form {float:left;}

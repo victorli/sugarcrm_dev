@@ -61,7 +61,8 @@ class Bug46317Test extends Sugar_PHPUnit_Framework_TestCase
             array('6.5.5.5.5', '7.5.5.5.5', FALSE),
             array('6.3', '6.2.3.4.5.2.5.2.4superalpha', TRUE),
             array('000000000000.1', '000000000000.1', FALSE),
-            array('000000000000.1', '000000000000.05', TRUE),
+            array('000000000000.1', '000000000000.05', FALSE),
+            array('000000000000.05', '000000000000.1', TRUE),
         );
     }
 

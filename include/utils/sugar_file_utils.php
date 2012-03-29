@@ -159,40 +159,17 @@ function sugar_file_put_contents($filename, $data, $flags=null, $context=null){
  * @param string $mode String value of the parameter to specify the type of access you require to the file stream
  * @param boolean $use_include_path set to '1' or TRUE if you want to search for the file in the include_path too
  * @param context $context Context to pass into fopen operation
- * @return int - Returns the number of bytes written to the file, false otherwise.
+ * @return boolean - Returns true if $filename was created, false otherwise.
  */
 function sugar_file_put_contents_atomic($filename, $data, $mode='wb', $use_include_path=false, $context=null){
-	//check to see if the file exists, if not then use touch to create it.
-	if(!file_exists($filename))
-    {
-	   sugar_touch($filename);
-	}
 
-	if(!is_writable($filename) ) {
-	   $GLOBALS['log']->error("File $filename cannot be written to");
-	   return false;
-	}
+    $dir = dirname($filename);
+    $temp = tempnam($dir, 'temp');
 
-    $filedir = dirname($filename);
-    $temp = tempnam($filedir, 'temp');
-
-    if(!file_exists($temp))
-    {
-   	   sugar_touch($temp);
-   	}
-
-    if (!($f = @fopen($temp, $mode)))
-    {
-        $temp = $filedir . DIRECTORY_SEPARATOR . uniqid('temp');
-
-        if(!file_exists($temp))
-        {
-       	   sugar_touch($temp);
-       	}
-
-        if (!($f = @fopen($temp, $mode)))
-        {
-            $GLOBALS['log']->error("sugar_file_put_contents_atomic() : error writing temporary file '{$temp}'");
+    if (!($f = @fopen($temp, $mode))) {
+        $temp =  $dir . DIRECTORY_SEPARATOR . uniqid('temp');
+        if (!($f = @fopen($temp, $mode))) {
+            trigger_error("sugar_file_put_contents_atomic() : error writing temporary file '$temp'", E_USER_WARNING);
             return false;
         }
     }
@@ -200,12 +177,17 @@ function sugar_file_put_contents_atomic($filename, $data, $mode='wb', $use_inclu
     fwrite($f, $data);
     fclose($f);
 
-    if (!@rename($temp, $filename))
-    {
+    if (!@rename($temp, $filename)) {
         @unlink($filename);
         @rename($temp, $filename);
     }
-    return true;
+
+    if(file_exists($filename))
+    {
+       return sugar_chmod($filename, 0655);
+    }
+
+    return false;
 }
 
 

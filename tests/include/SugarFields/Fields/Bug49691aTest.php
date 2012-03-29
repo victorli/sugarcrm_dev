@@ -63,7 +63,7 @@ class Bug49691aTest extends Sugar_PHPUnit_Framework_TestCase {
      */
     public function testDBDateConversion($dateValue, $expected) {
         global $current_user;
-        
+
         $this->bean->test_c = $dateValue;
 
         $inputData = array('test_c'=>$dateValue);
@@ -89,6 +89,3 @@ class Bug49691aTest extends Sugar_PHPUnit_Framework_TestCase {
 class Bug49691aMockBean {
     var $test_c;
 }
- 
-?>
- 
