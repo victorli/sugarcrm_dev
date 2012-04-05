@@ -40,7 +40,7 @@ $dictionary['EmailTemplate'] = array(
 	'fields' => array(
 		'id' => array(
 			'name' => 'id',
-			'vname' => 'LBL_NAME',
+			'vname' => 'LBL_ID',
 			'type' => 'id',
 			'required' => true,
 			'reportable'=>false,
@@ -211,4 +211,3 @@ $dictionary['EmailTemplate'] = array(
 
 VardefManager::createVardef('EmailTemplates','EmailTemplate', array(
 ));
-?>

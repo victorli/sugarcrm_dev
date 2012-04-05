@@ -41,6 +41,7 @@ class SugarAutoLoader{
 		'ListView'=>'include/ListView/ListView.php',
 		'Sugar_Smarty'=>'include/Sugar_Smarty.php',
 		'Javascript'=>'include/javascript/javascript.php',
+        'SugarSearchEngineFullIndexer'=>'include/SugarSearchEngine/SugarSearchEngineFullIndexer.php',
 
 	);
 

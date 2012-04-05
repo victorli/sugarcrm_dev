@@ -50,7 +50,7 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 
     public function getWidgetId()
     {
-        return parent::getWidgetId() . '_select_button';
+        return parent::getWidgetId(false) . 'select_button';
     }
 
     public function getDisplayName()

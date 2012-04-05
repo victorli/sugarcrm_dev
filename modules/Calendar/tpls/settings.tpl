@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 *}
-<div id="settings_dialog" style="width: 340px; display: none;">
+<div id="settings_dialog" style="width: 360px; display: none;">
 	<div class="hd">{$MOD.LBL_SETTINGS_TITLE}</div>
 	<div class="bd">
 	<form name="settings" id="form_settings" method="POST" action="index.php?module=Calendar&action=SaveSettings">
@@ -46,14 +46,12 @@
 		
 		<table class='edit view tabForm'>
 				<tr>
-					<td scope="row" valign="top">
-						{$MOD.LBL_SETTINGS_CALENDAR_STYLE}
+					<td scope="row" valign="top" width="60%">
+						{$MOD.LBL_SETTINGS_DISPLAY_TIMESLOTS}
 					</td>
-					<td>	
-						<select size="1" name="calendar_style" tabindex="102">
-							<option value='basic' {if $settings_style == 'basic'}selected{/if}>{$MOD.LBL_STYLE_BASIC}</option>
-							<option value='advanced' {if $settings_style == 'advanced'}selected{/if}>{$MOD.LBL_STYLE_ADVANCED}</option>								
-						</select>
+					<td width="40%">	
+						<input type="hidden" name="display_timeslots" value="">
+						<input type="checkbox" id="display_timeslots" name="display_timeslots" {if $display_timeslots}checked{/if} value="1" tabindex="102">
 					</td>
 				</tr>
 				<tr>

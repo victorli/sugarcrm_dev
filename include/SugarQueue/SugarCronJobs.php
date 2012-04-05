@@ -100,7 +100,7 @@ class SugarCronJobs
         if(!empty($GLOBALS['sugar_config']['cron']['max_cron_runtime'])) {
             $this->max_jobs = $GLOBALS['sugar_config']['cron']['max_cron_runtime'];
         }
-        if(!empty($GLOBALS['sugar_config']['cron']['min_cron_interval'])) {
+        if(isset($GLOBALS['sugar_config']['cron']['min_cron_interval'])) {
             $this->min_interval = $GLOBALS['sugar_config']['cron']['min_cron_interval'];
         }
     }

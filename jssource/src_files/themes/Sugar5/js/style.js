@@ -247,7 +247,12 @@ SUGAR.append(SUGAR.themes, {
             this.loadModuleList();
         }
     },
-    
+    actionMenu: function() {
+        //set up any action style menus
+        $("ul.clickMenu").each(function(index, node){
+            $(node).sugarActionMenu();
+        });
+    },
     loadModuleList: function() {
         var nodes = YAHOO.util.Selector.query('#moduleList>div'),
             currMenuBar;

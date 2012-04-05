@@ -85,13 +85,20 @@
 		<tr>
 			<td>
 				<input title="{$APP.LBL_SAVE_BUTTON_LABEL}" class="button primary" onclick="SUGAR.saveGlobalSearchSettings();" type="button" name="button" value="{$APP.LBL_SAVE_BUTTON_LABEL}">
-                <input title="{$MOD.LBL_SAVE_SCHED_BUTTON}" class="button primary schedFullSystemIndex" onclick="SUGAR.FTS.schedFullSystemIndex();" style="display: none;text-decoration: none;" id='schedFullSystemIndex' type="button" name="button" value="{$MOD.LBL_SAVE_SCHED_BUTTON}">
+                <input title="{$MOD.LBL_SAVE_SCHED_BUTTON}" class="button primary schedFullSystemIndex" onclick="SUGAR.FTS.schedFullSystemIndex();" style="display:none;text-decoration: none;" id='schedFullSystemIndex' type="button" name="button" value="{$MOD.LBL_SAVE_SCHED_BUTTON}">
                 <input title="{$APP.LBL_CANCEL_BUTTON_LABEL}" class="button" onclick="document.GlobalSearchSettings.action.value='';" type="submit" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}">
 			</td>
 		</tr>
 	</table>
 </form>
 
+<div id='selectFTSModules' class="yui-hidden">
+    <div style="background-color: white; padding: 20px;">
+        <div id='selectFTSModulesTable' ></div>
+        <br>
+        <span>{$MOD.LBL_SAVE_SCHED_WARNING}</span>
+    </div>
+</div>
 <script type="text/javascript">
 (function(){ldelim}
     var Connect = YAHOO.util.Connect;
@@ -131,15 +138,51 @@
 	SUGAR.globalSearchEnabledTable.render();
 	SUGAR.globalSearchDisabledTable.render();
 
+    SUGAR.getEnabledModules = function()
+    {
+        var enabledTable = SUGAR.globalSearchEnabledTable;
+        var modules = "";
+        for(var i=0; i < enabledTable.getRecordSet().getLength(); i++)
+        {
+            var data = enabledTable.getRecord(i).getData();
+            if (data.module && data.module != '')
+                modules += "," + data.module;
+        }
+        return modules;
+    }
+    SUGAR.getEnabledModulesForFTSSched = function()
+    {
+        var enabledTable = SUGAR.FTS.selectedDataTable;
+        var modules = [];
+        var selectedIDs = enabledTable.getSelectedRows();
+        for(var i=0; i < selectedIDs.length; i++)
+        {
+            var data = enabledTable.getRecord(selectedIDs[i]).getData();
+            modules.push(data.module);
+        }
+
+        return modules;
+    }
+    SUGAR.getTranslatedEnabledModules = function()
+    {
+        var enabledTable = SUGAR.globalSearchEnabledTable;
+        var modules = [{module:'', label: SUGAR.language.get('Administration', 'LBL_ALL')}];
+        for(var i=0; i < enabledTable.getRecordSet().getLength(); i++)
+        {
+            var data = enabledTable.getRecord(i).getData();
+            if (data.module && data.module != '')
+            {
+                var tmp = {'module' : data.module, 'label' : data.label};
+                modules.push(tmp);
+            }
+        }
+
+        return modules;
+    }
 	SUGAR.saveGlobalSearchSettings = function()
 	{
 		var enabledTable = SUGAR.globalSearchEnabledTable;
-		var modules = "";
-		for(var i=0; i < enabledTable.getRecordSet().getLength(); i++){
-			var data = enabledTable.getRecord(i).getData();
-			if (data.module && data.module != '')
-			    modules += "," + data.module;
-		}
+		var modules = SUGAR.getEnabledModules();
 		modules = modules == "" ? modules : modules.substr(1);
 
 		ajaxStatus.showStatus(SUGAR.language.get('Administration', 'LBL_SAVING'));

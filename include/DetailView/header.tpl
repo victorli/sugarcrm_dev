@@ -40,13 +40,11 @@
 	{{$preForm}}
 {{/if}}
 
-<script>
+<script language="javascript">
 {literal}
-	$(document).ready(function(){
-		$("ul.clickMenu").each(function(index, node){
-	  		$(node).sugarActionMenu();
-	  	});
-	});
+SUGAR.util.doWhen(function(){
+    return $("#contentTable").length == 0;
+}, SUGAR.themes.actionMenu);
 {/literal}
 </script>
 

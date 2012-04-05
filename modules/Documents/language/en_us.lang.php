@@ -176,6 +176,8 @@ $mod_strings = array (
     'LBL_SEARCH_EXTERNAL_DOCUMENT' => 'File Name',
     'LBL_EXTERNAL_DOCUMENT_NOTE' => 'The first 20 most recently modified files are displayed in descending order in the list below. Use the Search to find other files.',
     'LBL_LIST_EXT_DOCUMENT_NAME' => 'File Name',
+    'ERR_INVALID_EXTERNAL_API_ACCESS' => 'The user attempted to access an invalid external API ({0})',
+    'ERR_INVALID_EXTERNAL_API_LOGIN' => 'The login check failed for external API ({0})',
 
     // Links around the world
     'LBL_ACCOUNTS_SUBPANEL_TITLE' => 'Accounts',

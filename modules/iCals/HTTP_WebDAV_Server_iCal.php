@@ -92,61 +92,28 @@ require_once 'modules/vCals/HTTP_WebDAV_Server_vCal.php';
                 $this->http_spec = $_REQUEST['http_spec'];
             }
 
-            if ($_REQUEST['type'] != 'ics')
-            {
-                $this->http_status("404 Not Found");
-                ob_end_clean();
+            // check the HTTP auth headers for a user
+            if (empty($_REQUEST['user_name']) && !empty($_SERVER['PHP_AUTH_USER'])) {
+              $_REQUEST['user_name'] = $_SERVER['PHP_AUTH_USER'];
+              $_REQUEST['key'] = $_SERVER['PHP_AUTH_PW'];
+            }
+
+            // if username is still empty, then return 401
+            if (empty($_REQUEST['user_name']) && empty($_REQUEST['email'])) {
+                if ($_REQUEST['type'] == 'ics') {
+                    $this->http_status("401 not authorized");
+                    header('WWW-Authenticate: Basic realm="SugarCRM iCal"');
+                    ob_end_clean();
+                    echo 'Authorization required';
+                } else {
+                    $this->http_status("404 Not Found");
+                    ob_end_clean();
+                }
                 return;
             }
-
-            //Determine invalid login
-            if(empty($_SERVER['PHP_AUTH_USER']) || empty($_SERVER['PHP_AUTH_PW']) )
-            {
-                $this->initHttpAuth();
-            }
-            else
-            {
-                $user = $_SERVER['PHP_AUTH_USER'];
-                $pass = $_SERVER['PHP_AUTH_PW'];
-
-                if( $this->authenticate($user, $pass))
-                {
-                    $_REQUEST['user_name'] = $_SERVER['PHP_AUTH_USER'];
-                    $_REQUEST['key'] = $_SERVER['PHP_AUTH_PW'];
-                    parent::ServeRequest();
-                }
-                else
-                {
-                    $this->initHttpAuth();
-                }
-
-            }
+            parent::ServeRequest();
         }
 
-        /**
-         * Send the http auth header to initiate authentication
-         */
-        private function initHttpAuth()
-        {
-            $this->http_status("401 not authorized");
-            header('WWW-Authenticate: Basic realm="SugarCRM iCal"');
-            ob_end_clean();
-            die('Authorization required');
-        }
-
-        /**
-         * Authenticate the user credentials passed in
-         *
-         * @param $user
-         * @param $pass
-         * @return bool
-         */
-        private function authenticate($user, $pass)
-        {
-            global $sugar_config;
-            $authController = new AuthenticationController((!empty($sugar_config['authenticationClass'])? $sugar_config['authenticationClass'] : 'SugarAuthenticate'));
-            return $authController->login($user, $pass);
-        }
 
         /**
         * GET method handler
@@ -156,33 +123,29 @@ require_once 'modules/vCals/HTTP_WebDAV_Server_vCal.php';
         */
         public function http_GET()
         {
-            if ($this->vcal_type == 'vfb') {
-                $this->http_status("200 OK");
-                ob_end_clean();
-                echo $this->vcal_focus->get_vcal_freebusy($this->user_focus);
-            }
-            else if ($this->vcal_type == 'ics') {
-                // DO HTTP AUTHORIZATION for iCal:
-                if ($this->user_focus->getPreference('calendar_publish_key') &&
-                    $this->publish_key != $this->user_focus->getPreference('calendar_publish_key')
-                ) {
+           if ($this->vcal_type == 'vfb') {
+             $this->http_status("200 OK");
+             ob_end_clean();
+             echo $this->vcal_focus->get_vcal_freebusy($this->user_focus);
+           } else if ($this->vcal_type == 'ics') {
+             // DO HTTP AUTHORIZATION for iCal:
+             if ( $this->user_focus->getPreference('calendar_publish_key') &&
+                $this->publish_key != $this->user_focus->getPreference('calendar_publish_key' )) {
                     $this->http_status("401 not authorized");
                     header('WWW-Authenticate: Basic realm="SugarCRM iCal"');
                     echo 'Authorization required';
                     return;
-                }
+             }
 
-                $this->http_status("200 OK");
-                header('Content-Type: text/calendar; charset="' . $this->cal_charset . '"');
-                $result = mb_convert_encoding(html_entity_decode($this->vcal_focus->getVcalIcal($this->user_focus, $_REQUEST['num_months']), ENT_QUOTES, $this->cal_charset), $this->cal_encoding);
+             $this->http_status("200 OK");
+             header('Content-Type: text/calendar; charset="' . $this->cal_charset . '"');
+             $result = mb_convert_encoding(html_entity_decode($this->vcal_focus->getVcalIcal($this->user_focus, $_REQUEST['num_months']), ENT_QUOTES, $this->cal_charset), $this->cal_encoding);
                 ob_end_clean();
-                echo $result;
-            }
-            else
-            {
-                $this->http_status("404 Not Found");
-                ob_end_clean();
-            }
+             echo $result;
+           } else {
+             $this->http_status("404 Not Found");
+             ob_end_clean();
+           }
 
         }
 

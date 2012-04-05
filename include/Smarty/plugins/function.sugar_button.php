@@ -317,7 +317,7 @@ function smarty_function_sugar_button($params, &$smarty)
 			break;
 
 			case "DELETE":
-                $output = '{if $bean->aclAccess("delete")}<input title="{$APP.LBL_DELETE_BUTTON_TITLE}" accessKey="{$APP.LBL_DELETE_BUTTON_KEY}" class="button" onclick="'.$js_form.' _form.return_module.value=\'' . $module . '\'; _form.return_action.value=\'ListView\'; _form.action.value=\'Delete\'; return confirm(\'{$APP.NTC_DELETE_CONFIRMATION}\');" type="submit" name="Delete" value="{$APP.LBL_DELETE_BUTTON_LABEL}" id="delete_button">{/if} ';
+                $output = '{if $bean->aclAccess("delete")}<input title="{$APP.LBL_DELETE_BUTTON_TITLE}" accessKey="{$APP.LBL_DELETE_BUTTON_KEY}" class="button" onclick="'.$js_form.' _form.return_module.value=\'' . $module . '\'; _form.return_action.value=\'ListView\'; _form.action.value=\'Delete\'; if(confirm(\'{$APP.NTC_DELETE_CONFIRMATION}\')) SUGAR.ajaxUI.submitForm(_form);" type="submit" name="Delete" value="{$APP.LBL_DELETE_BUTTON_LABEL}" id="delete_button">{/if} ';
             break;
 
 			case "DUPLICATE":
@@ -369,14 +369,14 @@ function smarty_function_sugar_button($params, &$smarty)
 				$view = ($view == 'QuickCreate') ? "form_QuickCreate_{$module}" : $view;
 				$output = '{if $bean->aclAccess("save")}<input title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}" '
 					 . 'class="button primary" onclick="'.$js_form.' _form.action.value=\'Popup\';'
-					 . 'return check_form(\''.$view.'\')" type="submit" name="' . $params['module'] 
-					 . '_popupcreate_save_button" id="' . $params['module'] 
+					 . 'return check_form(\''.$view.'\')" type="submit" name="' . $params['module']
+					 . '_popupcreate_save_button" id="' . $params['module']
 					 . '_popupcreate_save_button" value="{$APP.LBL_SAVE_BUTTON_LABEL}">{/if} ';
             break;
 			case "POPUPCANCEL":
                 $output = '<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" '
-					 . 'class="button" onclick="toggleDisplay(\'addform\');return false;" ' 
-					 . 'name="' . $params['module'] . '_popup_cancel_button" type="submit"' 
+					 . 'class="button" onclick="toggleDisplay(\'addform\');return false;" '
+					 . 'name="' . $params['module'] . '_popup_cancel_button" type="submit"'
 					 . 'id="' . $params['module'] . '_popup_cancel_button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}"> ';
             break;
 			case "AUDIT":
@@ -400,15 +400,61 @@ function smarty_function_sugar_button($params, &$smarty)
           return;
       }
       return $output;
+   } else if(is_array($type) && isset($type['sugar_html'])) {
+       require_once('function.sugar_menu.php');
+       $sugar_html = $type['sugar_html'];
+       if(isset($sugar_html['html'])) {
+           $output = parse_html_tag($sugar_html['html']);
+           if(is_array($output)) {
+               $sugar_html = array(
+                   'type' => $output['type'],
+                   'tag' => $output['tag'],
+                   'value' => $output['value'],
+                   'self_closing' => $output['self_closing'],
+               );
+               unset($output['type']);
+               unset($output['tag']);
+               unset($output['value']);
+               unset($output['self_closing']);
+               $sugar_html['htmlOptions'] = $output;
+           }
+       }
+
+       $input_types = array(
+           'submit', 'button', 'hidden', 'checkbox', 'input'
+       );
+
+       if(in_array($sugar_html['type'], $input_types)) {
+           $sugar_html['htmlOptions']['type'] = (empty($sugar_html['htmlOptions']['type'])) ? $sugar_html['type'] : $sugar_html['htmlOptions']['type'];
+           $sugar_html['htmlOptions']['value'] = $sugar_html['value'];
+           $sugar_html['htmlOptions']['onclick'] = $js_form.str_replace("this.form", "_form", $sugar_html['htmlOptions']['onclick']);
+           if($sugar_html['type'] == "submit") {
+               $sugar_html['htmlOptions']['type'] = "button";
+               if(substr($sugar_html['htmlOptions']['onclick'], -1) != ';')
+                   $sugar_html['htmlOptions']['onclick'] .= ";";
+               $sugar_html['htmlOptions']['onclick'] .= "_form.submit();";
+           }
+           $output = open_tag('input', $sugar_html['htmlOptions'], true);
+       }
+       if(isset($sugar_html['template'])) {
+           $output = strtr($sugar_html['template'], array(
+                   '[CONTENT]' => $output)
+           );
+       }
+       if($params['appendTo']) {
+           $smarty->append($params['appendTo'], $output);
+           return;
+       }
+       return $output;
    } else if(is_array($type) && isset($type['customCode'])) {
-   	  $output = $type['customCode'];
-      if($params['appendTo']) {
-          $smarty->append($params['appendTo'], $output);
-          return;
-      }
-      return $output;
+
+       $output = $type['customCode']; ;
+       if($params['appendTo']) {
+           $smarty->append($params['appendTo'], $output);
+           return;
+       }
+       return $output;
    }
 
 }
 
-?>

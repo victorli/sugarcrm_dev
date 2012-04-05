@@ -461,7 +461,9 @@ class SchedulersJob extends Basic
 			} else {
 			    return $this->resolution != self::JOB_FAILURE;
 			}
-		} elseif($exJob[0] == 'url') {
+		}
+        elseif($exJob[0] == 'url')
+        {
 			if(function_exists('curl_init')) {
 				$GLOBALS['log']->debug('----->SchedulersJob firing URL job: '.$exJob[1]);
                 set_error_handler(array($this, "errorHandler"), E_ALL & ~E_NOTICE & ~E_STRICT);
@@ -477,10 +479,42 @@ class SchedulersJob extends Basic
 			} else {
 			    $this->resolveJob(self::JOB_FAILURE, translate('ERR_CURL', 'SchedulersJobs'));
 			}
-		} else {
+		}
+        else if ($exJob[0] == 'class')
+        {
+            $tmpJob = new $exJob[1]();
+            if($tmpJob instanceof RunnableSchedulerJob)
+            {
+                $tmpJob->setJob($this);
+                $tmpJob->run($this->data);
+            }
+            else {
+                $this->resolveJob(self::JOB_FAILURE, sprintf(translate('ERR_JOBTYPE', 'SchedulersJobs'), strip_tags($this->target)));
+            }
+        }
+        else {
 		    $this->resolveJob(self::JOB_FAILURE, sprintf(translate('ERR_JOBTYPE', 'SchedulersJobs'), strip_tags($this->target)));
 		}
 		return false;
     }
 
 }  // end class Job
+
+/**
+ * Runnable job queue job
+ *
+ */
+interface RunnableSchedulerJob
+{
+    /**
+     * @abstract
+     * @param SchedulersJob $job
+     */
+    public function setJob(SchedulersJob $job);
+
+    /**
+     * @abstract
+     *
+     */
+    public function run($data);
+}

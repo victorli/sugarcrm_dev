@@ -51,6 +51,8 @@ class DocumentsViewExtdoc extends SugarView
 
  	public function display(){
 
+        global $mod_strings;
+
         if ( isset($_REQUEST['name_basic']) ) {
             $file_search = trim($_REQUEST['name_basic']);
         } else {
@@ -61,8 +63,9 @@ class DocumentsViewExtdoc extends SugarView
             $apiName = 'LotusLive';
         } else {
             $tmpApi = ExternalAPIFactory::loadAPI($_REQUEST['apiName'],true);
-            if ( $tmpApi === false ) {
-                $GLOBALS['log']->error('The user attempted to access an invalid external API ('.$_REQUEST['apiName'].')');
+            if ( $tmpApi === false )
+            {
+                $GLOBALS['log']->error(string_format($mod_strings['ERR_INVALID_EXTERNAL_API_ACCESS'], array($_REQUEST['apiName'])));
                 return;
             }
             $apiName = $_REQUEST['apiName'];
@@ -81,31 +84,32 @@ class DocumentsViewExtdoc extends SugarView
          $eapmBean = EAPM::getLoginInfo($apiName,true);
          $api = ExternalAPIFactory::loadAPI($apiName,true);
          $api->loadEAPM($eapmBean);
+         $validSession = true;
 
-         // $api->checkLogin() does the same thing as quickCheckLogin plus actually makes sure
-         // the user CAN log in to the API currently
-         $checkLogin = $api->checkLogin();
-
-         if ( !$eapmBean || !$checkLogin['success'] )
+         if(!empty($eapmBean))
          {
-             $useTemplate = false;
-             $output = '';
+             try {
+               // $api->checkLogin() does the same thing as quickCheckLogin plus actually makes sure the user CAN log in to the API currently
+               $loginCheck = $api->checkLogin($eapmBean);
+               if(isset($loginCheck['success']) && !$loginCheck['success'])
+               {
+                   $validSession = false;
+               }
+             } catch(Exception $ex) {
+               $validSession = false;
+               $GLOBALS['log']->error(string_format($mod_strings['ERR_INVALID_EXTERNAL_API_LOGIN'], array($apiName)));
+             }
+         }
 
+         if (!$validSession)
+         {
              // Bug #49987 : Documents view.extdoc.php doesn't allow custom override
-             $tpl_file = 'include/externalAPI/'.$apiName.'/'.$apiName.'Signup.'.$GLOBALS['current_language'].'.tpl';
-             if ( file_exists('custom/'.$tpl_file) && is_readable('custom/'.$tpl_file) )
-             {
-                 $tpl_file = 'custom/'.$tpl_file;
-                 $useTemplate = true;
-             }
-             elseif( file_exists( $tpl_file ) && is_readable( $tpl_file ) )
-             {
-                 $useTemplate = true;
-             }
+             $tpl_file = get_custom_file_if_exists('include/externalAPI/'.$apiName.'/'.$apiName.'Signup.'.$GLOBALS['current_language'].'.tpl');
 
-             if( $useTemplate )  {
+             if (file_exists($tpl_file))
+             {
                  $smarty = new Sugar_Smarty();
-                 $output = $smarty->fetch( $tpl_file );
+                 echo $smarty->fetch($tpl_file);
              } else  {
                  $output = string_format(translate('LBL_ERR_FAILED_QUICKCHECK','EAPM'), array($apiName));
                  $output .= '<form method="POST" target="_EAPM_CHECK" action="index.php">';
@@ -119,9 +123,9 @@ class DocumentsViewExtdoc extends SugarView
                  $output .= '<br><input type="submit" value="'.$GLOBALS['app_strings']['LBL_EMAIL_OK'].'">&nbsp;';
                  $output .= '<input type="button" onclick="lastLoadedMenu=undefined;DCMenu.closeOverlay();return false;" value="'.$GLOBALS['app_strings']['LBL_CANCEL_BUTTON_LABEL'].'">';
                  $output .= '</form>';
+                 echo $output;
              }
 
-             echo $output;
              return;
          }
 

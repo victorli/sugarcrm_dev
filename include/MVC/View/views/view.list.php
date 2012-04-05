@@ -71,18 +71,7 @@ class ViewList extends SugarView{
             sugar_die($GLOBALS['app_strings']['LBL_NO_ACTION'] );
 
         require($metadataFile);
-        // Make non-db elements non-sortable by default
-        foreach($listViewDefs[$module] as $key => $viewDef ) {
-            if(isset($viewDef['module']) ) {
-                // Related entries are sometimes set as 'non-db', but they can be sorted, we have the technology
-                continue;
-            }
-            if(isset($this->bean->field_defs[strtolower($key)]['source']) &&
-               $this->bean->field_defs[strtolower($key)]['source'] == 'non-db' ) {
-                // If it doesn't exist in the database, we can't ORDER BY it.
-                $listViewDefs[$module][$key]['sortable'] = false;
-            }
-        }
+
         $this->listViewDefs = $listViewDefs;
 
         if(!empty($this->bean->object_name) && isset($_REQUEST[$module.'2_'.strtoupper($this->bean->object_name).'_offset'])) {//if you click the pagination button, it will populate the search criteria here

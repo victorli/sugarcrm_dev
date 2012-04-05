@@ -1,27 +1,8 @@
 /*
- Copyright (c) 2010, Yahoo! Inc. All rights reserved.
- Code licensed under the BSD License:
- http://developer.yahoo.com/yui/license.html
- version: 3.3.0
- build: 3167
- */
-YUI.add('event-delegate',function(Y){var toArray=Y.Array,YLang=Y.Lang,isString=YLang.isString,isObject=YLang.isObject,isArray=YLang.isArray,selectorTest=Y.Selector.test,detachCategories=Y.Env.evt.handles;function delegate(type,fn,el,filter){var args=toArray(arguments,0,true),query=isString(el)?el:null,typeBits,synth,container,categories,cat,i,len,handles,handle;if(isObject(type)){handles=[];if(isArray(type)){for(i=0,len=type.length;i<len;++i){args[0]=type[i];handles.push(Y.delegate.apply(Y,args));}}else{args.unshift(null);for(i in type){if(type.hasOwnProperty(i)){args[0]=i;args[1]=type[i];handles.push(Y.delegate.apply(Y,args));}}}
-return new Y.EventHandle(handles);}
-typeBits=type.split(/\|/);if(typeBits.length>1){cat=typeBits.shift();type=typeBits.shift();}
-synth=Y.Node.DOM_EVENTS[type];if(isObject(synth)&&synth.delegate){handle=synth.delegate.apply(synth,arguments);}
-if(!handle){if(!type||!fn||!el||!filter){return;}
-container=(query)?Y.Selector.query(query,null,true):el;if(!container&&isString(el)){handle=Y.on('available',function(){Y.mix(handle,Y.delegate.apply(Y,args),true);},el);}
-if(!handle&&container){args.splice(2,2,container);handle=Y.Event._attach(args,{facade:false});handle.sub.filter=filter;handle.sub._notify=delegate.notifySub;}}
-if(handle&&cat){categories=detachCategories[cat]||(detachCategories[cat]={});categories=categories[type]||(categories[type]=[]);categories.push(handle);}
-return handle;}
-delegate.notifySub=function(thisObj,args,ce){args=args.slice();if(this.args){args.push.apply(args,this.args);}
-var currentTarget=delegate._applyFilter(this.filter,args,ce),e,i,len,ret;if(currentTarget){currentTarget=toArray(currentTarget);e=args[0]=new Y.DOMEventFacade(args[0],ce.el,ce);e.container=Y.one(ce.el);for(i=0,len=currentTarget.length;i<len&&!e.stopped;++i){e.currentTarget=Y.one(currentTarget[i]);ret=this.fn.apply(this.context||e.currentTarget,args);if(ret===false){break;}}
-return ret;}};delegate.compileFilter=Y.cached(function(selector){return function(target,e){return selectorTest(target._node,selector,e.currentTarget._node);};});delegate._applyFilter=function(filter,args,ce){var e=args[0],container=ce.el,target=e.target||e.srcElement,match=[],isContainer=false;if(target.nodeType===3){target=target.parentNode;}
-args.unshift(target);if(isString(filter)){while(target){isContainer=(target===container);if(selectorTest(target,filter,(isContainer?null:container))){match.push(target);}
-if(isContainer){break;}
-target=target.parentNode;}}else{args[0]=Y.one(target);args[1]=new Y.DOMEventFacade(e,container,ce);while(target){if(filter.apply(args[0],args)){match.push(target);}
-if(target===container){break;}
-target=target.parentNode;args[0]=Y.one(target);}
-args[1]=e;}
-if(match.length<=1){match=match[0];}
-args.shift();return match;};Y.delegate=Y.Event.delegate=delegate;},'3.3.0',{requires:['node-base']});
+Copyright (c) 2010, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.com/yui/license.html
+version: 3.3.0
+build: 3167
+*/
+YUI.add("event-delegate",function(a){var c=a.Array,h=a.Lang,b=h.isString,i=h.isObject,e=h.isArray,g=a.Selector.test,d=a.Env.evt.handles;function f(u,w,l,k){var s=c(arguments,0,true),t=b(l)?l:null,r,o,j,n,v,m,q,x,p;if(i(u)){x=[];if(e(u)){for(m=0,q=u.length;m<q;++m){s[0]=u[m];x.push(a.delegate.apply(a,s));}}else{s.unshift(null);for(m in u){if(u.hasOwnProperty(m)){s[0]=m;s[1]=u[m];x.push(a.delegate.apply(a,s));}}}return new a.EventHandle(x);}r=u.split(/\|/);if(r.length>1){v=r.shift();u=r.shift();}o=a.Node.DOM_EVENTS[u];if(i(o)&&o.delegate){p=o.delegate.apply(o,arguments);}if(!p){if(!u||!w||!l||!k){return;}j=(t)?a.Selector.query(t,null,true):l;if(!j&&b(l)){p=a.on("available",function(){a.mix(p,a.delegate.apply(a,s),true);},l);}if(!p&&j){s.splice(2,2,j);p=a.Event._attach(s,{facade:false});p.sub.filter=k;p.sub._notify=f.notifySub;}}if(p&&v){n=d[v]||(d[v]={});n=n[u]||(n[u]=[]);n.push(p);}return p;}f.notifySub=function(q,l,p){l=l.slice();if(this.args){l.push.apply(l,this.args);}var o=f._applyFilter(this.filter,l,p),n,m,j,k;if(o){o=c(o);n=l[0]=new a.DOMEventFacade(l[0],p.el,p);n.container=a.one(p.el);for(m=0,j=o.length;m<j&&!n.stopped;++m){n.currentTarget=a.one(o[m]);k=this.fn.apply(this.context||n.currentTarget,l);if(k===false){break;}}return k;}};f.compileFilter=a.cached(function(j){return function(l,k){return g(l._node,j,k.currentTarget._node);};});f._applyFilter=function(n,l,q){var p=l[0],j=q.el,o=p.target||p.srcElement,k=[],m=false;if(o.nodeType===3){o=o.parentNode;}l.unshift(o);if(b(n)){while(o){m=(o===j);if(g(o,n,(m?null:j))){k.push(o);}if(m){break;}o=o.parentNode;}}else{l[0]=a.one(o);l[1]=new a.DOMEventFacade(p,j,q);while(o){if(n.apply(l[0],l)){k.push(o);}if(o===j){break;}o=o.parentNode;l[0]=a.one(o);}l[1]=p;}if(k.length<=1){k=k[0];}l.shift();return k;};a.delegate=a.Event.delegate=f;},"3.3.0",{requires:["node-base"]});

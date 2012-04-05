@@ -91,9 +91,13 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
 		}
 	}
 
-    public function getWidgetId()
+    public function getWidgetId($buttonSuffix = true)
     {
-        return parent::getWidgetId() . '_'.preg_replace('[ ]', '', strtolower($this->form_value)).'_button';
+    	$widgetID = parent::getWidgetId() . '_'.preg_replace('[ ]', '', strtolower($this->form_value));
+    	if($buttonSuffix){
+    		$widgetID .= '_button';
+    	}
+        return $widgetID;
     }
 
     function &_get_form($defines, $additionalFormFields = null, $asUrl = false)

@@ -51,7 +51,9 @@ class SugarWidgetSubPanelRemoveButton extends SugarWidgetField
 	{
 		
 		global $app_strings;
-		
+        global $subpanel_item_count;
+
+		$unique_id = $layout_def['subpanel_id']."_remove_".$subpanel_item_count; //bug 51512
 		
 		$parent_record_id = $_REQUEST['record'];
 		$parent_module = $_REQUEST['module'];
@@ -110,7 +112,7 @@ class SugarWidgetSubPanelRemoveButton extends SugarWidgetField
             $retStr = "<a href=\"javascript:sub_p_rem('$subpanel', '$linked_field'" 
                     .", '$record', $refresh_page);\"" 
 			. ' class="listViewTdToolsS1"'
-            . 'id="remove_subpanel_item" '
+            . "id=$unique_id"
 			. " onclick=\"return sp_rem_conf();\""
 			. ">$icon_remove_text</a>";
         return $retStr;

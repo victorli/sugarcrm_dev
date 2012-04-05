@@ -87,7 +87,7 @@ var grid = new YAHOO.widget.ScrollingDataTable('relGrid',
 		   fields : [{key : "name"}, {key: "lhs_module"}, {key: "relationship_type"}, {key: "rhs_module"}]
 	    }
 	}),
-    {MSG_EMPTY: SUGAR.language.get('ModuleBuilder','LBL_NO_RELS')}
+    {MSG_EMPTY: SUGAR.language.get('ModuleBuilder','LBL_NO_RELS'), height:"auto"}
 );
 grid.subscribe("rowMouseoverEvent", grid.onEventHighlightRow); 
 grid.subscribe("rowMouseoutEvent", grid.onEventUnhighlightRow); 
@@ -99,6 +99,7 @@ grid.subscribe("rowClickEvent", function(args){
     ModuleBuilder.moduleLoadRelationship2(name);
 });
 grid.render();
+
 {/literal}
 ModuleBuilder.module = '{$view_module}';
 ModuleBuilder.MBpackage = '{$view_package}';

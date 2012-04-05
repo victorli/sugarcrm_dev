@@ -103,6 +103,9 @@
 	<table cellpadding='0' cellspacing='0' width='100%' border='0' class='list view'>
     {assign var="link_select_id" value="selectLinkTop"}
     {assign var="link_action_id" value="actionLinkTop"}
+    {assign var="actionsLink" value=$actionsLinkTop}
+    {assign var="selectLink" value=$selectLinkTop}
+    {assign var="action_menu_location" value="top"}
 	{include file='include/ListView/ListViewPagination.tpl'}
 	<tr height='20'>
 			{if $prerow}
@@ -230,6 +233,9 @@
 		{/foreach}
     {assign var="link_select_id" value="selectLinkBottom"}
     {assign var="link_action_id" value="actionLinkBottom"}
+    {assign var="selectLink" value=$selectLinkBottom}
+    {assign var="actionsLink" value=$actionsLinkBottom}
+    {assign var="action_menu_location" value="bottom"}
     {include file='include/ListView/ListViewPagination.tpl'}
 	</table>
 {/if}

@@ -1,17 +1,8 @@
 /*
- Copyright (c) 2010, Yahoo! Inc. All rights reserved.
- Code licensed under the BSD License:
- http://developer.yahoo.com/yui/license.html
- version: 3.3.0
- build: 3167
- */
-YUI.add('io-queue',function(Y){var _q=new Y.Queue(),_activeId,_qState=1;function _shift(){var o=_q.next();_activeId=o.id;_qState=0;Y.io(o.uri,o.cfg,o.id);}
-function _unshift(o){_q.promote(o);}
-function _queue(uri,c){var o={uri:uri,id:Y.io._id(),cfg:c};_q.add(o);if(_qState===1){_shift();}
-return o;}
-function _next(id){_qState=1;if(_activeId===id&&_q.size()>0){_shift();}}
-function _remove(o){_q.remove(o);}
-function _start(){_qState=1;if(_q.size()>0){_shift();}}
-function _stop(){_qState=0;}
-function _size(){return _q.size();}
-_queue.size=_size;_queue.start=_start;_queue.stop=_stop;_queue.promote=_unshift;_queue.remove=_remove;Y.on('io:complete',function(id){_next(id);},Y.io);Y.mix(Y.io,{queue:_queue},true);},'3.3.0',{requires:['io-base','queue-promote']});
+Copyright (c) 2010, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.com/yui/license.html
+version: 3.3.0
+build: 3167
+*/
+YUI.add("io-queue",function(B){var A=new B.Queue(),G,L=1;function F(){var M=A.next();G=M.id;L=0;B.io(M.uri,M.cfg,M.id);}function D(M){A.promote(M);}function I(M,O){var N={uri:M,id:B.io._id(),cfg:O};A.add(N);if(L===1){F();}return N;}function C(M){L=1;if(G===M&&A.size()>0){F();}}function K(M){A.remove(M);}function E(){L=1;if(A.size()>0){F();}}function H(){L=0;}function J(){return A.size();}I.size=J;I.start=E;I.stop=H;I.promote=D;I.remove=K;B.on("io:complete",function(M){C(M);},B.io);B.mix(B.io,{queue:I},true);},"3.3.0",{requires:["io-base","queue-promote"]});

@@ -275,12 +275,13 @@ class CalendarDisplay {
 		$TIME_END_HOUR_OPTIONS = get_select_options_with_id($hours_arr, $d_end_hour);
 		$TIME_END_MINUTES_OPTIONS = get_select_options_with_id(array('0'=>'00','15'=>'15','30'=>'30','45'=>'45'), $d_end_min);
 
-		$style = $GLOBALS['current_user']->getPreference('calendar_style');
-			if(is_null($style))
-				$style = SugarConfig::getInstance()->get('calendar.default_style','advanced');
+		$displayTimeslots = $GLOBALS['current_user']->getPreference('calendar_display_timeslots');
+		if(is_null($displayTimeslots)) {
+			$displayTimeslots = SugarConfig::getInstance()->get('calendar.display_timeslots', true);
+		}
 
 		$ss->assign('week',$_REQUEST['week']);
-		$ss->assign('settings_style',$style);
+		$ss->assign('display_timeslots', $displayTimeslots);
 		$ss->assign('show_calls',$this->cal->show_calls);
 		$ss->assign('show_tasks',$this->cal->show_tasks);
 		$ss->assign('TIME_START_HOUR_OPTIONS',$TIME_START_HOUR_OPTIONS);

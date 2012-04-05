@@ -1,17 +1,8 @@
 /*
- Copyright (c) 2010, Yahoo! Inc. All rights reserved.
- Code licensed under the BSD License:
- http://developer.yahoo.com/yui/license.html
- version: 3.3.0
- build: 3167
- */
-YUI.add('substitute',function(Y){var L=Y.Lang,DUMP='dump',SPACE=' ',LBRACE='{',RBRACE='}',substitute=function(s,o,f,recurse){var i,j,k,key,v,meta,saved=[],token,dump,lidx=s.length;for(;;){i=s.lastIndexOf(LBRACE,lidx);if(i<0){break;}
-j=s.indexOf(RBRACE,i);if(i+1>=j){break;}
-token=s.substring(i+1,j);key=token;meta=null;k=key.indexOf(SPACE);if(k>-1){meta=key.substring(k+1);key=key.substring(0,k);}
-v=o[key];if(f){v=f(key,v,meta);}
-if(L.isObject(v)){if(!Y.dump){v=v.toString();}else{if(L.isArray(v)){v=Y.dump(v,parseInt(meta,10));}else{meta=meta||'';dump=meta.indexOf(DUMP);if(dump>-1){meta=meta.substring(4);}
-if(v.toString===Object.prototype.toString||dump>-1){v=Y.dump(v,parseInt(meta,10));}else{v=v.toString();}}}}else if(!L.isString(v)&&!L.isNumber(v)){v='~-'+saved.length+'-~';saved[saved.length]=token;}
-s=s.substring(0,i)+v+s.substring(j+1);if(!recurse){lidx=i-1;}}
-for(i=saved.length-1;i>=0;i=i-1){s=s.replace(new RegExp('~-'+i+'-~'),LBRACE+
-saved[i]+RBRACE,'g');}
-return s;};Y.substitute=substitute;L.substitute=substitute;},'3.3.0',{optional:['dump']});
+Copyright (c) 2010, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.com/yui/license.html
+version: 3.3.0
+build: 3167
+*/
+YUI.add("substitute",function(g){var b=g.Lang,d="dump",f=" ",c="{",e="}",a=function(A,l,t,h){var q,p,n,y,x,z,w=[],m,r,u=A.length;for(;;){q=A.lastIndexOf(c,u);if(q<0){break;}p=A.indexOf(e,q);if(q+1>=p){break;}m=A.substring(q+1,p);y=m;z=null;n=y.indexOf(f);if(n>-1){z=y.substring(n+1);y=y.substring(0,n);}x=l[y];if(t){x=t(y,x,z);}if(b.isObject(x)){if(!g.dump){x=x.toString();}else{if(b.isArray(x)){x=g.dump(x,parseInt(z,10));}else{z=z||"";r=z.indexOf(d);if(r>-1){z=z.substring(4);}if(x.toString===Object.prototype.toString||r>-1){x=g.dump(x,parseInt(z,10));}else{x=x.toString();}}}}else{if(!b.isString(x)&&!b.isNumber(x)){x="~-"+w.length+"-~";w[w.length]=m;}}A=A.substring(0,q)+x+A.substring(p+1);if(!h){u=q-1;}}for(q=w.length-1;q>=0;q=q-1){A=A.replace(new RegExp("~-"+q+"-~"),c+w[q]+e,"g");}return A;};g.substitute=a;b.substitute=a;},"3.3.0",{optional:["dump"]});

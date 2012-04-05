@@ -1630,7 +1630,6 @@ class InboundEmail extends SugarBean {
 		} else {
 			$this->connectMailserver();
 			$mailboxes = $this->getMailboxes(true);
-			$mailboxes[] = 'INBOX';
 			sort($mailboxes);
 
 			$GLOBALS['log']->info("INBOUNDEMAIL: checking account [ {$this->name} ]");
@@ -3139,6 +3138,9 @@ class InboundEmail extends SugarBean {
 		if($type == 'PLAIN') {
 		    return SugarCleaner::cleanHtml(to_html($msgPart), false);
 		}
+        // Bug 50241: can't process <?xml:namespace .../> properly. Strip <?xml ...> tag first.
+		$msgPart = preg_replace("/<\?xml[^>]*>/","",$msgPart);
+
         return SugarCleaner::cleanHtml($msgPart, false);
 	}
 
@@ -3682,7 +3684,6 @@ class InboundEmail extends SugarBean {
 		}
 		return $ret;
 	}
-
 
 	/**
 	 * Calculates the appropriate display date/time sent for an email.

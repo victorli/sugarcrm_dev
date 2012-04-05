@@ -55,7 +55,7 @@ class CalendarViewSaveSettings extends SugarView {
 		$current_user->setPreference('day_start_time', $db_start, 0, 'global', $current_user);
 		$current_user->setPreference('day_end_time', $db_end, 0, 'global', $current_user);
 
-		$current_user->setPreference('calendar_style', $_REQUEST['calendar_style'], 0, 'global', $current_user);
+		$current_user->setPreference('calendar_display_timeslots', $_REQUEST['display_timeslots'], 0, 'global', $current_user);
 		$current_user->setPreference('show_tasks', $_REQUEST['show_tasks'], 0, 'global', $current_user);
 		$current_user->setPreference('show_calls', $_REQUEST['show_calls'], 0, 'global', $current_user);
 

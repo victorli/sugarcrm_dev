@@ -53,14 +53,15 @@ class SugarWidgetSubPanelEditButton extends SugarWidgetField
 	function displayList($layout_def)
 	{
 		global $app_strings;
-		
+        global $subpanel_item_count;
+		$unique_id = $layout_def['subpanel_id']."_edit_".$subpanel_item_count; //bug 51512
         $onclick ='';
         if($layout_def['EditView']) {
 			return "<a href='#' onMouseOver=\"javascript:subp_nav('".$layout_def['module']."', '".$layout_def['fields']['ID']."', 'e', this"
 			. (empty($layout_def['linked_field']) ? "" : ", '{$layout_def['linked_field']}'") . ");\""
 			. " onFocus=\"javascript:subp_nav('".$layout_def['module']."', '".$layout_def['fields']['ID']."', 'e', this"
 			. (empty($layout_def['linked_field']) ? "" : ", '{$layout_def['linked_field']}'") . ");\""
-			. ' class="listViewTdToolsS1" id="edit_subpanel_item">'. $app_strings['LNK_EDIT'] .'</a>';
+			. " class='listViewTdToolsS1' id=\"$unique_id\">". $app_strings['LNK_EDIT'] .'</a>';
 		}
 
         return '';

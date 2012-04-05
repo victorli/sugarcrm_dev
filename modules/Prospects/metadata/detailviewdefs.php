@@ -36,8 +36,34 @@
 
 $viewdefs['Prospects']['DetailView'] = array(
 'templateMeta' => array('form' => array('buttons' => array('EDIT', 'DUPLICATE', 'DELETE',
-                                                     array('customCode' => '<input title="{$MOD.LBL_CONVERT_BUTTON_TITLE}" class="button" onclick="this.form.return_module.value=\'Prospects\'; this.form.return_action.value=\'DetailView\'; this.form.return_id.value=\'{$fields.id.value}\';this.form.module.value=\'Leads\';this.form.action.value=\'EditView\';" type="submit" name="CONVERT_LEAD_BTN" value="{$MOD.LBL_CONVERT_BUTTON_LABEL}"/>'),
-                                                     array('customCode' => '<input title="{$APP.LBL_MANAGE_SUBSCRIPTIONS}" class="button" onclick="this.form.return_module.value=\'Prospects\'; this.form.return_action.value=\'DetailView\'; this.form.return_id.value=\'{$fields.id.value}\'; this.form.action.value=\'Subscriptions\'; this.form.module.value=\'Campaigns\';" type="submit" name="Manage Subscriptions" value="{$APP.LBL_MANAGE_SUBSCRIPTIONS}"/>'),
+                                                     array('customCode' => '<input title="{$MOD.LBL_CONVERT_BUTTON_TITLE}" class="button" onclick="this.form.return_module.value=\'Prospects\'; this.form.return_action.value=\'DetailView\'; this.form.return_id.value=\'{$fields.id.value}\';this.form.module.value=\'Leads\';this.form.action.value=\'EditView\';" type="submit" name="CONVERT_LEAD_BTN" value="{$MOD.LBL_CONVERT_BUTTON_LABEL}"/>',
+                                                         //Bug#51778: The custom code will be replaced with sugar_html. customCode will be deplicated.
+                                                         'sugar_html' => array(
+                                                             'type' => 'submit',
+                                                             'value' => '{$MOD.LBL_CONVERT_BUTTON_LABEL}',
+                                                             'htmlOptions' => array(
+                                                                 'class' => 'button',
+                                                                 'name' => 'CONVERT_LEAD_BTN',
+                                                                 'id' => 'convert_target_button',
+                                                                 'title' => '{$MOD.LBL_CONVERT_BUTTON_TITLE}',
+                                                                 'onclick' => 'this.form.return_module.value=\'Prospects\'; this.form.return_action.value=\'DetailView\'; this.form.return_id.value=\'{$fields.id.value}\';this.form.module.value=\'Leads\';this.form.action.value=\'EditView\';',
+                                                             ),
+                                                         )
+                                                     ),
+                                                     array('customCode' => '<input title="{$APP.LBL_MANAGE_SUBSCRIPTIONS}" class="button" onclick="this.form.return_module.value=\'Prospects\'; this.form.return_action.value=\'DetailView\'; this.form.return_id.value=\'{$fields.id.value}\'; this.form.action.value=\'Subscriptions\'; this.form.module.value=\'Campaigns\';" type="submit" name="Manage Subscriptions" value="{$APP.LBL_MANAGE_SUBSCRIPTIONS}"/>',
+                                                         //Bug#51778: The custom code will be replaced with sugar_html. customCode will be deplicated.
+                                                         'sugar_html' => array(
+                                                             'type' => 'submit',
+                                                             'value' => '{$APP.LBL_MANAGE_SUBSCRIPTIONS}',
+                                                             'htmlOptions' => array(
+                                                                 'class' => 'button',
+                                                                 'id' => 'manage_subscriptions_button',
+                                                                 'name' => 'Manage Subscriptions',
+                                                                 'title' => '{$APP.LBL_MANAGE_SUBSCRIPTIONS}',
+                                                                 'onclick' => 'this.form.return_module.value=\'Prospects\'; this.form.return_action.value=\'DetailView\'; this.form.return_id.value=\'{$fields.id.value}\'; this.form.action.value=\'Subscriptions\'; this.form.module.value=\'Campaigns\';',
+                                                             ),
+                                                         )
+                                                     ),
                                        ),
                                         'hidden'=>array('<input type="hidden" name="prospect_id" value="{$fields.id.value}">'),
                         				'headerTpl'=>'modules/Prospects/tpls/DetailViewHeader.tpl',

@@ -257,10 +257,10 @@ if(function_exists('rebuildSprites') && function_exists('imagecreatetruecolor'))
     rebuildSprites(true);
 }
 
-//Run RepairSearchFields.php file
-if($_SESSION['current_db_version'] < '620' && function_exists('repairSearchFields'))
+//Run repairUpgradeHistoryTable
+if($origVersion < '650' && function_exists('repairUpgradeHistoryTable'))
 {
-    repairSearchFields($path);
+    repairUpgradeHistoryTable();
 }
 
 require_once('modules/Administration/upgrade_custom_relationships.php');

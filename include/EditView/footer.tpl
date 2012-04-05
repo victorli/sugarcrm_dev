@@ -35,6 +35,15 @@
  ********************************************************************************/
 
 *}
+<script language="javascript">
+    var _form_id = '{$form_id}';
+    {literal}
+    SUGAR.util.doWhen(function(){
+        _form_id = (_form_id == '') ? 'EditView' : _form_id;
+        return document.getElementById(_form_id) != null;
+    }, SUGAR.themes.actionMenu);
+    {/literal}
+</script>
 {{if empty($form.button_location) || $form.button_location == 'bottom'}}
 <div class="buttons">
 {{if !empty($form) && !empty($form.buttons)}}

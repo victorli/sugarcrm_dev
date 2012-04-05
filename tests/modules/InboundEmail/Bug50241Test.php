@@ -68,7 +68,7 @@ font-family:Tahoma
 }
 --></style></head>
 <body class='hmmessage'><div dir='ltr'>
-<SPAN style="FONT-FAMILY: 'Tahoma','sans-serif'; FONT-SIZE: 10pt">hello, <?xml:namespace prefix = o ns = "urn:schemas-microsoft-com:office:office" /><o:p></o:p></SPAN><BR>
+<SPAN style="FONT-FAMILY: 'Tahoma','sans-serif'; FONT-SIZE: 10pt">hello, <o:p></o:p></SPAN><BR>
 <SPAN style="FONT-FAMILY: 'Tahoma','sans-serif'; FONT-SIZE: 10pt">i recently got Batman Arkham City and tried to get catwoman as an add-on character but when i put the code in it said that my code had already been used. <o:p></o:p></SPAN><BR>
 <SPAN style="FONT-FAMILY: 'Tahoma','sans-serif'; FONT-SIZE: 10pt">what can i do, so that i can play catwoman?<o:p></o:p></SPAN><BR>
  <BR> </div></body>
@@ -77,7 +77,7 @@ EOS;
 
 $outStr=<<<EOS
 <div dir="ltr">
-<span style="font-family:Tahoma, 'sans-serif';font-size:10pt;">hello, &lt;?xml:namespace prefix = o ns = "urn:schemas-microsoft-com:office:office" /&gt;</span><p></p><br /><span style="font-family:Tahoma, 'sans-serif';font-size:10pt;">i recently got Batman Arkham City and tried to get catwoman as an add-on character but when i put the code in it said that my code had already been used. </span><p></p><br /><span style="font-family:Tahoma, 'sans-serif';font-size:10pt;">what can i do, so that i can play catwoman?</span><p></p><br /><br /></div>
+<span style="font-family:Tahoma, 'sans-serif';font-size:10pt;">hello, </span><p></p><br /><span style="font-family:Tahoma, 'sans-serif';font-size:10pt;">i recently got Batman Arkham City and tried to get catwoman as an add-on character but when i put the code in it said that my code had already been used. </span><p></p><br /><span style="font-family:Tahoma, 'sans-serif';font-size:10pt;">what can i do, so that i can play catwoman?</span><p></p><br /><br /></div>
 EOS;
 
 	    $actual = SugarCleaner::cleanHtml($inStr);

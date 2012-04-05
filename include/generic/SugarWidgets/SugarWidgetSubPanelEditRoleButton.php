@@ -50,6 +50,8 @@ class SugarWidgetSubPanelEditRoleButton extends SugarWidgetField
 	function displayList(&$layout_def)
 	{
 		global $app_strings;
+        global $subpanel_item_count;
+        $unique_id = $layout_def['subpanel_id']."_edit_".$subpanel_item_count; //bug 51512
 	
 		$href = 'index.php?module=' . $layout_def['module']
 			. '&action=' . 'ContactOpportunityRelationshipEdit'
@@ -61,6 +63,7 @@ class SugarWidgetSubPanelEditRoleButton extends SugarWidgetField
 	//based on listview since that lets you select records
 	if($layout_def['ListView']){
 		return '<a href="' . $href . '"'
+            . "id=\"$unique_id\""
 			. 'class="listViewTdToolsS1">' . $app_strings['LNK_EDIT'] .'</a>&nbsp;';
 	}else{
 		return '';

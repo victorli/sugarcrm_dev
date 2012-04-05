@@ -152,6 +152,7 @@ class ParserFactory
 
     protected static function checkForStudioParserOverride($view, $moduleName, $packageName)
     {
+        require_once('modules/ModuleBuilder/Module/StudioModuleFactory.php');
         $sm = StudioModuleFactory::getStudioModule($moduleName);
         foreach($sm->sources as $file => $def)
         {

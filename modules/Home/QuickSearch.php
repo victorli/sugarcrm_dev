@@ -122,13 +122,16 @@ class quicksearchQuery
     public function externalApi($args)
     {
         require_once('include/externalAPI/ExternalAPIFactory.php');
+        $data = array();
+        try {
+            $api = ExternalAPIFactory::loadAPI($args['api']);
+            $data['fields']     = $api->searchDoc($_REQUEST['query']);
+            $data['totalCount'] = count($data['fields']);
+        } catch(Exception $ex) {
+            $GLOBALS['log']->error($ex->getMessage());
+        }
 
-        $api = ExternalAPIFactory::loadAPI($args['api']);
-
-        $data['fields']     = $api->searchDoc($_REQUEST['query']);
-        $data['totalCount'] = count($data['fields']);
-
-        return $this->getJsonEncodedData($listArray);
+        return $this->getJsonEncodedData($data);
     }
 
 

@@ -114,16 +114,100 @@ function smarty_function_sugar_menu($params, &$smarty)
     return $output;
 }
 
-function open_tag($tagName, $params = array()) {
+function open_tag($tagName, $params = array(), $self_closing = false) {
 
     $options = "";
-
+    $self_closing_tag = ($self_closing) ? "/" : "";
     if(empty($params))
-        return "<{$tagName}>";
+        return "<{$tagName}{$self_closing_tag}>";
 
     foreach($params as $attr => $value) {
         if($value)
             $options .= $attr.'="'.$value.'" ';
     }
-    return "<{$tagName} {$options}>";
+    return "<{$tagName} {$options}{$self_closing_tag}>";
+}
+
+function parse_html_tag($code) {
+    $SINGLE_QUOTE = "'";
+    $DOUBLE_QUOTE = '"';
+    $ASSIGN_SIGN = "=";
+    $TAG_BEGIN = "<";
+    $TAG_END = ">";
+    $quote_encoded = false;
+    $cache = array();
+    $var_name = '';
+    $var_assign = false;
+    $start_pos = strpos($code, ' ') ? strpos($code, ' ') : strpos($code, $TAG_END);
+    if(substr($code, 0, 1) != $TAG_BEGIN || $start_pos === false) {
+        return $code;
+    }
+    $tag = substr($code, 1, $start_pos - 1);
+    $closing_tag = '</'.$tag;
+    $end_pos = strpos($code, $closing_tag, $start_pos + 1);
+    $output = array(
+        'tag' => $tag
+    );
+    if($end_pos === false) {
+        $output['self_closing'] = true;
+        $end_pos = (substr($code, -2) == '/>') ? -2 : -1;
+        $code = substr($code, $start_pos + 1, $end_pos);
+    } else {
+        $output['self_closing'] = false;
+        $code = substr($code, $start_pos + 1, $end_pos - $start_pos - 1);
+    }
+    for($i = 0; $i < strlen($code) ; $i ++) {
+        $char = $code[$i];
+        if($char == $SINGLE_QUOTE || $char == $DOUBLE_QUOTE) {
+            if(empty($quote_type)) {
+                $quote_encoded = true;
+                $quote_type = $char;
+            } else if ($quote_type == $char) {
+                if(!empty($cache)) {
+                    $string = implode('', $cache);
+                    if(empty($var_name)) {
+                        $var_name = $string;
+                    } else if($var_assign) {
+                        $output[$var_name] = $string;
+                        unset($var_name);
+                    }
+                }
+                $quote_type = '';
+                $var_assign = false;
+                $cache = array();
+                $quote_encoded = false;
+            } else {
+                array_push($cache, $char);
+            }
+        } else if ( !$quote_encoded && $char == ' ' ) {
+            if(!empty($cache)) {
+                $string = implode('', $cache);
+                if(empty($var_name)) {
+                    $var_name = $string;
+                } else if($var_assign) {
+                    $output[$var_name] = $string;
+                    unset($var_name);
+                }
+                $quote_encoded = false;
+                $var_assign = false;
+                $cache = array();
+            }
+        } else if ( !$quote_encoded && $char == $ASSIGN_SIGN ) {
+            if(!empty($var_name)) {
+                $output[$var_name] = '';
+            }
+            $string = implode('', $cache);
+            $var_name = $string;
+            $var_assign = true;
+            $cache = array();
+        } else if ( !$quote_encoded && $char == $TAG_END ) {
+            break;
+        } else {
+            array_push($cache, $char);
+        }
+    }
+    if($output['self_closing'] === false) {
+        $output['container'] = substr($code, $i + 1);
+    }
+    return $output;
 }

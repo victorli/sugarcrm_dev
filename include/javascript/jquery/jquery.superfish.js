@@ -39,6 +39,9 @@
             {
                 clearTimeout(menu.sfTimer);
                 $$.showSuperfishUl().siblings().hideSuperfishUl();
+                if($$.parent().hasClass('megamenuSiblings')) {
+                	$$.parent().siblings().children('li').hideSuperfishUl();
+                }
             }
         },
         out = function() {
@@ -154,6 +157,20 @@
         o.animation.opacity != undefined)
         this.toggleClass(sf.c.shadowClass + '-off');
     };
+    
+     sf.positionMenu = function($ul) {
+    	
+    	if(this.offset() && this.parent().parent().hasClass('sf-menu') != true) {
+    	var viewPortHeight = $(window).height(),
+    		submenuHeight = this.outerHeight(),
+    		submenuTop = this.offset().top - $(document).scrollTop();
+    		
+    		if(submenuTop + submenuHeight > viewPortHeight) {
+    			this.css('top','auto');
+    			this.css('bottom','0px');
+    		} 
+    	}
+    }
     /**
      * Return css property variale which contains numerical data.
      * i.e. width, border, padding-left, etc.
@@ -204,11 +221,11 @@
                     var $$ = $(this),
                         o = sf.op,
                         _id = $$.attr("ul-child-id") ? $$.attr("ul-child-id") : ($ul.attr('id')) ? $ul.attr('id') : o.megamenuID ? o.megamenuID + ++sf.counter : 'megamenu' + ++sf.counter,
-                        _top = $$.position().top + $$.outerHeight() + 1,
+                        _top = $$.position().top + $$.parent().position().top,
                         _left = $$.offset().left - sf.cssValue.call($ul, "border-left-width"),
                         $menu = $('ul.' + sf.c.menuClass + ':visible');
                     //handling sub-sliding menu
-                    if($$.css('position') == 'static') {
+                    if($$.css('position') == 'static' || $$.parent().hasClass('megamenuSiblings')) {
                         _left += $$.outerWidth() + sf.cssValue.call($ul, "border-right-width");
                         $ul.addClass('sf-sub-modulelist').on('mouseover', function(){
                                 $$.addClass(sf.defaults['retainClass']);
@@ -219,6 +236,8 @@
                                     $('ul.' + sf.c.menuClass + ':visible > li').hideSuperfishUl();
                                 }, o.delay);
                             });
+                    } else {
+                        _top += $$.outerHeight();
                     }
 
                     //append the item into the body element, and then save the id to restore back later
@@ -301,8 +320,9 @@
         showSuperfishUl: function() {
             var o = sf.op,
             sh = sf.c.shadowClass + '-off',
-            $ul = this.addClass(o.hoverClass).find('>ul:hidden').css('visibility', 'visible');
+            $ul = this.addClass(o.hoverClass).find('>ul:hidden').show().css('visibility', 'visible');
             sf.IE7fix.call($ul);
+            sf.positionMenu.call($ul);
             o.onBeforeShow.call($ul);
             sf.IEfix.call(this, $ul);
             $ul.animate(o.animation, o.speed,

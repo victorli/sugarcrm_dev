@@ -4396,3 +4396,36 @@ function repairSearchFields($globString='modules/*/metadata/SearchFields.php', $
 		logThis('End repairSearchFields', $path);
 	}
 }
+
+/**
+ * repairUpgradeHistoryTable
+ *
+ * This is a helper function used in the upgrade process to fix upgrade_history entries so that the filename column points
+ * to the new upload directory location introduced in 6.4 versions
+ */
+function repairUpgradeHistoryTable()
+{
+    require_once('modules/Configurator/Configurator.php');
+    new Configurator();
+    global $sugar_config;
+
+    //Now upgrade the upgrade_history table entries
+    $results = $GLOBALS['db']->query('SELECT id, filename FROM upgrade_history');
+    $upload_dir = $sugar_config['cache_dir'].'upload/';
+
+    //Create regular expression string to
+    $match = '/^' . str_replace('/', '\/', $upload_dir) . '(.*?)$/';
+
+    while(($row = $GLOBALS['db']->fetchByAssoc($results)))
+    {
+        $file = str_replace('//', '/', $row['filename']); //Strip out double-paths that may exist
+
+        if(!empty($file) && preg_match($match, $file, $matches))
+        {
+            //Update new file location to use the new $sugar_config['upload_dir'] value
+            $new_file_location = $sugar_config['upload_dir'] . $matches[1];
+            $GLOBALS['db']->query("UPDATE upgrade_history SET filename = '{$new_file_location}' WHERE id = '{$row['id']}'");
+        }
+    }
+
+}

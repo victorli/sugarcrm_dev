@@ -119,7 +119,7 @@ $mod_strings = array (
 
 
 	'LBL_SETTINGS_TITLE' => 'Settings',
-	'LBL_SETTINGS_CALENDAR_STYLE' => 'Calendar Style:',
+	'LBL_SETTINGS_DISPLAY_TIMESLOTS' => 'Display time slots in Day and Week views:',
 	'LBL_SETTINGS_TIME_STARTS'=>'Start time:', 
 	'LBL_SETTINGS_TIME_ENDS'=>'End time:', 
 	'LBL_SETTINGS_CALLS_SHOW' => 'Show Calls:',

@@ -139,9 +139,15 @@ class Calendar {
 		if(in_array($this->view,array('month','shared','year'))){
 			$this->style = "basic";	
 		}else{
-			$this->style = $current_user->getPreference('calendar_style');
-			if(is_null($this->style))
-				$this->style = SugarConfig::getInstance()->get('calendar.default_style','advanced');
+			$displayTimeslots = $GLOBALS['current_user']->getPreference('calendar_display_timeslots');
+			if (is_null($displayTimeslots)) {
+				$displayTimeslots = SugarConfig::getInstance()->get('calendar.display_timeslots', true);
+			}
+			if ($displayTimeslots) {
+				$this->style = "advanced";
+			} else {
+				$this->style = "basic";
+			}
 		}
 		
 		$this->day_start_time = $current_user->getPreference('day_start_time');

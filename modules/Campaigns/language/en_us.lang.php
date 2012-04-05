@@ -187,7 +187,7 @@ $mod_strings = array (
   'LBL_DIAGNOSTIC_WIZARD'=>   'View Diagnostics',
   'LBL_ALREADY_SUBSCRIBED_HEADER'=>'Newsletters Subscribed To',
   'LBL_UNSUBSCRIBED_HEADER'=>'Available/Newsletters Unsubscribed To',
-  'LBL_UNSUBSCRIBED_HEADER_EXPL'=>'Moving the newsletter to the Available Newsletters/Newsletters Unsubscribed To list will add the contact to the Unsubscription List for this newsletter.  It will not remove the contact from the original Subscription List or Target List.', 
+  'LBL_UNSUBSCRIBED_HEADER_EXPL'=>'Moving the newsletter to the Available Newsletters/Newsletters Unsubscribed To list will add the contact to the Unsubscription List for this newsletter.  It will not remove the contact from the original Subscription List or Target List.',
   'LBL_FILTER_CHART_BY'=>'Filter Chart By:',
   'LBL_MANAGE_SUBSCRIPTIONS_TITLE'=>'Manage Subscriptions',
   'LBL_MARK_AS_SENT' =>'Mark As Sent',
@@ -364,6 +364,7 @@ $mod_strings = array (
     'LBL_LEAD_FOOTER' => 'Form Footer:',
     'LBL_CAMPAIGN_NOT_SELECTED' => 'Select and associate a campaign:',
     'NTC_NO_LEGENDS' => 'None',
+    'NTC_DELETE_CONFIRMATION' => 'Are you sure you want to delete this record?',
     'LBL_SELECT_LEAD_FIELDS' => 'Please select from available fields',
     'LBL_DESCRIPTION_LEAD_FORM' => 'Form Description:',
     'LBL_DESCRIPTION_TEXT_LEAD_FORM' => 'Submitting this form will create a lead and link with campaign',
@@ -416,7 +417,7 @@ $mod_strings = array (
     'LBL_ACCOUNTS_SUBPANEL_TITLE' => 'Accounts',
     'LBL_LEADS_SUBPANEL_TITLE' => 'Leads',
     'LBL_OPPORTUNITIES_SUBPANEL_TITLE' => 'Opportunities',
-    
+
     'LBL_IMPORT_PROSPECTS'=>'Import Targets',
     'LBL_LEAD_FORM_WIZARD' => 'Lead Form Wizard',
     'LBL_CAMPAIGN_INFORMATION' => 'Overview',

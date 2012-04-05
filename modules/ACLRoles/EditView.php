@@ -65,12 +65,12 @@ if(!empty($_REQUEST['record'])){
 		//role id is stripped here in duplicate so anything using role id after this will not have it
 		$role->id = '';
 		$sugar_smarty->assign('ISDUPLICATE', $_REQUEST['record']);
-		$duplicateString=translate('LBL_DUPLICATE_OF', 'ACLRoles');		
+		$duplicateString=translate('LBL_DUPLICATE_OF', 'ACLRoles');
 	}else{
 		$return['record']= $role->id;
 		$return['action']='DetailView';
 	}
-	
+
 }else{
 	$categories = ACLRole::getRoleActions('');
 }
@@ -103,6 +103,25 @@ if(empty($role->id)){
 	$params[] = $GLOBALS['app_strings']['LBL_EDIT_BUTTON_LABEL'];
 }
 echo getClassicModuleTitle("ACLRoles", $params, true);
+
+$buttons = array(
+	"<input title=".$app_strings['LBL_SAVE_BUTTON_TITLE']." id='save_button'
+		accessKey=".$app_strings['LBL_SAVE_BUTTON_KEY']." class='button primary'
+		onclick=\"this.form.action.value='Save';return check_form('EditView');\"
+		type='submit' name='button' value=".$app_strings['LBL_SAVE_BUTTON_LABEL']." >",
+	"<input title=".$app_strings['LBL_CANCEL_BUTTON_TITLE']."
+		class='button cancel_button' accessKey=".$app_strings['LBL_CANCEL_BUTTON_KEY']."
+		type='submit' name='save' value=".$app_strings['LBL_CANCEL_BUTTON_LABEL']."
+		onclick=\"document.EditView.action.value='".$return['action']."';document.EditView.module.value='".$return['module']."';document.EditView.record.value='".$return['module']."';document.EditView.submit();\">",
+);
+
+require_once('include/Smarty/plugins/function.sugar_action_menu.php');
+$action_buttons = smarty_function_sugar_action_menu(array(
+    'id' => 'ACLRoles_EditView_action_menu',
+    'buttons' => $buttons,
+), $sugar_smarty);
+
+$sugar_smarty->assign('ACTION_MENU', $action_buttons);
 echo $sugar_smarty->fetch('modules/ACLRoles/EditView.tpl');
 
 ?>

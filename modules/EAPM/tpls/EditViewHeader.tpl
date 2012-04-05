@@ -35,7 +35,13 @@
  ********************************************************************************/
 
 *}
-
+<script language="javascript">
+    {literal}
+    SUGAR.util.doWhen(function(){
+        return $("#contentTable").length == 0;
+    }, SUGAR.themes.actionMenu);
+    {/literal}
+</script>
 <form action="index.php" method="POST" name="EditView" id="EditView" >
 <table width="100%" cellpadding="0" cellspacing="0" border="0" class="actionsContainer">
 <tr>
@@ -57,17 +63,17 @@
 {{if empty($form.button_location) || $form.button_location == 'top'}}
 {{if !empty($form) && !empty($form.buttons)}}
    {{foreach from=$form.buttons key=val item=button}}
-      {{sugar_button module="$module" id="$button" view="$view"}}
+      {{sugar_button module="$module" id="$button" view="$view" appendTo="action_button"}}
    {{/foreach}}
 {{else}}
-{{sugar_button module="$module" id="SAVE" view="$view"}}
-{{sugar_button module="$module" id="CANCEL" view="$view"}}
+{{sugar_button module="$module" id="SAVE" view="$view" appendTo="action_button"}}
+{{sugar_button module="$module" id="CANCEL" view="$view" appendTo="action_button"}}
 {{/if}}
 {{if empty($form.hideAudit) || !$form.hideAudit}}
-{{sugar_button module="$module" id="Audit" view="$view"}}
+{{sugar_button module="$module" id="Audit" view="$view" appendTo="action_button"}}
 {{/if}}
 {{/if}}
-
+{{sugar_action_menu buttons=$action_button class="fancymenu" }}
     <td align='right'>
 </td>
 

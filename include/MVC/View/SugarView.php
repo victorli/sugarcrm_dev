@@ -644,8 +644,12 @@ class SugarView
             }
             $ss->assign("shortcutExtraMenu",$shortcutExtraMenu);
         }
-        
-        
+       
+       if(!empty($current_user)){
+       	$ss->assign("max_tabs", $current_user->getPreference("max_tabs"));
+       } 
+      
+       
         $imageURL = SugarThemeRegistry::current()->getImageURL("dashboard.png");
         $homeImage = "<img src='$imageURL'>";
 		$ss->assign("homeImage",$homeImage);

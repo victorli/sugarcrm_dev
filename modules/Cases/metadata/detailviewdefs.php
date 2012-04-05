@@ -37,7 +37,20 @@
 $buttons = array('EDIT', 'DUPLICATE', 'DELETE', 'FIND_DUPLICATES');
 if(ACLController::checkAccess('KBDocuments', 'edit', true))
 {
-    array_push($buttons, array('customCode'=>'<input title="{$MOD.LBL_CREATE_KB_DOCUMENT}" accessKey="M" class="button" onclick="this.form.return_module.value=\'Cases\'; this.form.return_action.value=\'DetailView\';this.form.action.value=\'EditView\';this.form.module.value=\'KBDocuments\'" type="submit" name="button" value="{$MOD.LBL_CREATE_KB_DOCUMENT}">'));
+    array_push($buttons, array('customCode'=>'<input title="{$MOD.LBL_CREATE_KB_DOCUMENT}" accessKey="M" class="button" onclick="this.form.return_module.value=\'Cases\'; this.form.return_action.value=\'DetailView\';this.form.action.value=\'EditView\';this.form.module.value=\'KBDocuments\';" type="submit" name="button" value="{$MOD.LBL_CREATE_KB_DOCUMENT}">',
+        //Bug#51778: The custom code will be replaced with sugar_html. customCode will be deplicated.
+        'sugar_html' => array(
+            'type' => 'submit',
+            'value' => '{$MOD.LBL_CREATE_KB_DOCUMENT}',
+            'htmlOptions' => array(
+                'title' => '{$MOD.LBL_CREATE_KB_DOCUMENT}',
+                'accessKey' => 'M',
+                'class' => 'button',
+                'onclick' => 'this.form.return_module.value=\'Cases\'; this.form.return_action.value=\'DetailView\';this.form.action.value=\'EditView\';this.form.module.value=\'KBDocuments\';',
+                'name' => 'button',
+            ),
+        ),
+    ));
 }
 $viewdefs['Cases']['DetailView'] = array(
 

@@ -351,7 +351,9 @@ function login_user($portal_auth){
 
      if(!empty($user)) {
             global $current_user;
-            $current_user = $user;
+            $bean = new User();
+            $bean->retrieve($user['id']);
+            $current_user = $bean;
             return 'success';
     } else {
             $GLOBALS['log']->fatal('SECURITY: User authentication for '. $portal_auth['user_name']. ' failed');

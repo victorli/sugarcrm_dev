@@ -246,8 +246,8 @@ class SugarURIFilter extends HTMLPurifier_URIFilter
 	        return true;
 	    }
 
-    	// don't allow relative URLs
-		if(empty($uri->host)) return false;
+    	// relative URLs permitted since email templates use it
+		// if(empty($uri->host)) return false;
 	    // allow URLs with no query
 		if(empty($uri->query)) return true;
 
