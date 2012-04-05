@@ -148,6 +148,50 @@ function sugar_file_put_contents($filename, $data, $flags=null, $context=null){
 	}
 }
 
+
+/**
+ * sugar_file_put_contents_atomic
+ * This is an atomic version of sugar_file_put_contents.  It attempts to circumvent the shortcomings of file_put_contents
+ * by creating a temporary unique file and then doing an atomic rename operation.
+ *
+ * @param $filename - String value of the file to create
+ * @param $data - The data to be written to the file
+ * @param string $mode String value of the parameter to specify the type of access you require to the file stream
+ * @param boolean $use_include_path set to '1' or TRUE if you want to search for the file in the include_path too
+ * @param context $context Context to pass into fopen operation
+ * @return boolean - Returns true if $filename was created, false otherwise.
+ */
+function sugar_file_put_contents_atomic($filename, $data, $mode='wb', $use_include_path=false, $context=null){
+
+    $dir = dirname($filename);
+    $temp = tempnam($dir, 'temp');
+
+    if (!($f = @fopen($temp, $mode))) {
+        $temp =  $dir . DIRECTORY_SEPARATOR . uniqid('temp');
+        if (!($f = @fopen($temp, $mode))) {
+            trigger_error("sugar_file_put_contents_atomic() : error writing temporary file '$temp'", E_USER_WARNING);
+            return false;
+        }
+    }
+
+    fwrite($f, $data);
+    fclose($f);
+
+    if (!@rename($temp, $filename)) {
+        @unlink($filename);
+        @rename($temp, $filename);
+    }
+
+    if(file_exists($filename))
+    {
+       return sugar_chmod($filename, 0655);
+    }
+
+    return false;
+}
+
+
+
 /**
  * sugar_file_get_contents
  *

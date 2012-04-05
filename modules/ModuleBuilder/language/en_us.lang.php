@@ -110,8 +110,8 @@ $mod_strings = array(
 		'modify'	=> 'All of the fields that can be displayed in the <b>ListView</b> appear here.<br><br>The <b>Default</b> column contains the fields that are displayed in the ListView by default.<br/><br/>The <b>Available</b> column contains fields that a user can select in the Search to create a custom ListView. <br/><br/>The <b>Hidden</b> column contains fields that can be added to the Default or Available column.'
     ,
 		'savebtn'	=> 'Click <b>Save & Deploy</b> to save changes you made and to make them active within the module.',
-		'historyBtn'=> 'Click <b>View History</b> to view and restore a previously saved layout from the history.',
-		'historyDefault'=> 'Click <b>Restore Default</b> to restore a view to its original layout.',
+		'historyBtn'=> 'Click <b>View History</b> to view and restore a previously saved layout from the history.<br><br><b>Restore</b> within <b>View History</b> restores the field placement within previously saved layouts. To change field labels, click the Edit icon next to each field.',
+		'historyDefault'=> 'Click <b>Restore Default</b> to restore a view to its original layout.<br><br><b>Restore Default</b> only restores the field placement within the original layout. To change field labels, click the Edit icon next to each field.',
 		'Hidden' 	=> '<b>Hidden</b> fields not currently available for users to see in ListViews.',
 		'Available' => '<b>Available</b> fields are not shown by default, but can be added to ListViews by users.',
 		'Default'	=> '<b>Default</b> fields appear in ListViews that are not customized by users.'
@@ -120,8 +120,8 @@ $mod_strings = array(
 		'modify'	=> 'All of the fields that can be displayed in the <b>ListView</b> appear here.<br><br>The <b>Default</b> column contains the fields that are displayed in the ListView by default.<br/><br/>The <b>Hidden</b> column contains fields that can be added to the Default or Available column.'
     ,
 		'savebtn'	=> 'Click <b>Save & Deploy</b> to save changes you made and to make them active within the module.',
-		'historyBtn'=> 'Click <b>View History</b> to view and restore a previously saved layout from the history.',
-		'historyDefault'=> 'Click <b>Restore Default</b> to restore a view to its original layout.',
+		'historyBtn'=> 'Click <b>View History</b> to view and restore a previously saved layout from the history.<br><br><b>Restore</b> within <b>View History</b> restores the field placement within previously saved layouts. To change field labels, click the Edit icon next to each field.',
+		'historyDefault'=> 'Click <b>Restore Default</b> to restore a view to its original layout.<br><br><b>Restore Default</b> only restores the field placement within the original layout. To change field labels, click the Edit icon next to each field.',
 		'Hidden' 	=> '<b>Hidden</b> fields not currently available for users to see in ListViews.',
 		'Default'	=> '<b>Default</b> fields appear in ListViews that are not customized by users.'
 	),
@@ -130,8 +130,8 @@ $mod_strings = array(
     ,
 		'savebtn'	=> 'Clicking <b>Save & Deploy</b> will save all changes and make them active',
 		'Hidden' 	=> '<b>Hidden</b> fields do not appear in the Search.',
-		'historyBtn'=> 'Click <b>View History</b> to view and restore a previously saved layout from the history.',
-		'historyDefault'=> 'Click <b>Restore Default</b> to restore a view to its original layout.',
+		'historyBtn'=> 'Click <b>View History</b> to view and restore a previously saved layout from the history.<br><br><b>Restore</b> within <b>View History</b> restores the field placement within previously saved layouts. To change field labels, click the Edit icon next to each field.',
+		'historyDefault'=> 'Click <b>Restore Default</b> to restore a view to its original layout.<br><br><b>Restore Default</b> only restores the field placement within the original layout. To change field labels, click the Edit icon next to each field.',
 		'Default'	=> '<b>Default</b> fields appear in the Search.'
 	),
 	'layoutEditor'=>array(
@@ -143,8 +143,8 @@ $mod_strings = array(
 		'default'	=> 'The <b>Layout</b> area contains the fields that are currently displayed within the <b>EditView</b>.<br/><br/>The <b>Toolbox</b> contains the <b>Recycle Bin</b> and the fields and layout elements that can be added to the layout.<br><br>Make changes to the layout by dragging and dropping elements and fields between the <b>Toolbox</b> and the <b>Layout</b> and within the layout itself.<br><br>To remove a field from the layout, drag the field to the <b>Recycle Bin</b>. The field will then be available in the Toolbox to add to the layout.'
     ,
 		'saveBtn'	=> 'Click <b>Save</b> to preserve the changes you made to the layout since the last time you saved it.<br><br>The changes will not be displayed in the module until you Deploy the saved changes.',
-		'historyBtn'=> 'Click <b>View History</b> to view and restore a previously saved layout from the history.',
-		'historyDefault'=> 'Click <b>Restore Default</b> to restore a view to its original layout.',
+		'historyBtn'=> 'Click <b>View History</b> to view and restore a previously saved layout from the history.<br><br><b>Restore</b> within <b>View History</b> restores the field placement within previously saved layouts. To change field labels, click the Edit icon next to each field.',
+		'historyDefault'=> 'Click <b>Restore Default</b> to restore a view to its original layout.<br><br><b>Restore Default</b> only restores the field placement within the original layout. To change field labels, click the Edit icon next to each field.',
 		'publishBtn'=> 'Click <b>Save & Deploy</b> to save all changes you made to the layout since the last time you saved it, and to make the changes active in the module.<br><br>The layout will immediately be displayed in the module.',
 		'toolbox'	=> 'The <b>Toolbox</b> contains the <b>Recycle Bin</b>, additional layout elements and the set of available fields to add to the layout.<br/><br/>The layout elements and fields in the Toolbox can be dragged and dropped into the layout, and the layout elements and fields can be dragged and dropped from the layout into the Toolbox.<br><br>The layout elements are <b>Panels</b> and <b>Rows</b>. Adding a new row or a new panel to the layout provides additional locations in the layout for fields.<br/><br/>Drag and drop any of the fields in the Toolbox or layout onto a occupied field position to swap the locations of the two fields.<br/><br/>The <b>Filler</b> field creates blank space in the layout where it is placed.',
 		'panels'	=> 'The <b>Layout</b> area provides a view of how the layout will appear within the module when the changes made to the layout are deployed.<br/><br/>You can reposition fields, rows and panels by dragging and dropping them in the desired location.<br/><br/>Remove elements by dragging and dropping them in the <b>Recycle Bin</b> in the Toolbox, or add new elements and fields by dragging them from the <b>Toolbox</b>s and dropping them in the desired location in the layout.',

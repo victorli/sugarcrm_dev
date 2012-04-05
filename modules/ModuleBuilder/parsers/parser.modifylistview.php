@@ -286,7 +286,7 @@ class ParserModifyListView extends ModuleBuilderParser
 				if (isset ( $_REQUEST [ strtolower ( $fieldname ) . 'width' ] ))
 				{
 					$width = substr ( $_REQUEST [ strtolower ( $fieldname ) . 'width' ], 6, 3 ) ;
-					if (strpos ( $width, "%" ) != false)
+					if (strpos ( $width, "%" ) !== false)
 					{
 						$width = substr ( $width, 0, 2 ) ;
 					}

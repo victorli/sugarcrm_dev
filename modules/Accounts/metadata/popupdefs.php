@@ -52,7 +52,7 @@ $popupMeta = array(
 		'formBase' => 'AccountFormBase.php',
 		'formBaseClass' => 'AccountFormBase',
 		'getFormBodyParams' => array('','','AccountSave'),
-		'createButton' => $mod_strings['LNK_NEW_ACCOUNT']
+		'createButton' => 'LNK_NEW_ACCOUNT'
 	),
 	'listviewdefs' => array(
 		'NAME' => array(

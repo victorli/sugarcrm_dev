@@ -156,11 +156,11 @@ EOQ;
 				foreach($this->_popupMeta['customInput'] as $key => $value)
 					$formSave .= '<input type="hidden" name="' . $key . '" value="'. $value .'">\n';				
 			}
-
+            $createButtonTranslation = translate($this->_popupMeta['create']['createButton']);
 			$createButton = <<<EOQ
-			<input type="button" id="showAdd" name="showAdd" class="button" value="{$this->_popupMeta['create']['createButton']}" onclick="toggleDisplay('addform');" />
+			<input type="button" id="showAdd" name="showAdd" class="button" value="{$createButtonTranslation}" onclick="toggleDisplay('addform');" />
 EOQ;
-			$addformheader = get_form_header($this->_popupMeta['create']['createButton'], $formSave, false);
+			$addformheader = get_form_header($createButtonTranslation, $formSave, false);
 		}
 		// END CREATE STUFF
 		

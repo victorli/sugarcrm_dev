@@ -104,26 +104,23 @@ class SugarApplication
 		   (!isset($_SESSION['login_error'])))
 		   {
 			session_destroy();
-			$post_login_nav = '';
 
-			if(!empty($this->controller->module)){
-				$post_login_nav .= '&login_module='.$this->controller->module;
-			}
 			if(!empty($this->controller->action)){
-			    if(in_array(strtolower($this->controller->action), array('delete')))
-			        $post_login_nav .= '&login_action=DetailView';
-			    elseif(in_array(strtolower($this->controller->action), array('save')))
-			        $post_login_nav .= '&login_action=EditView';
+			    if(strtolower($this->controller->action) == 'delete')
+			        $this->controller->action = 'DetailView';
+			    elseif(strtolower($this->controller->action) == 'save')
+			        $this->controller->action = 'EditView';
+                elseif(strtolower($this->controller->action) == 'quickcreate') {
+                    $this->controller->action = 'index';
+                    $this->controller->module = 'home';
+                }
 			    elseif(isset($_REQUEST['massupdate'])|| isset($_GET['massupdate']) || isset($_POST['massupdate']))
-			        $post_login_nav .= '&login_action=index';
-			    else
-				    $post_login_nav .= '&login_action='.$this->controller->action;
-			}
-			if(!empty($this->controller->record)){
-				$post_login_nav .= '&login_record='.$this->controller->record;
+			        $this->controller->action = 'index';
+			    elseif($this->isModifyAction())
+			        $this->controller->action = 'index';
 			}
 
-			header('Location: index.php?action=Login&module=Users'.$post_login_nav);
+			header('Location: index.php?action=Login&module=Users'.$this->createLoginVars());
 			exit ();
 		}
 
@@ -594,6 +591,8 @@ class SugarApplication
             }
         }
 
+        
+        LogicHook::initialize()->call_custom_logic('', 'after_session_start');
 	}
 
 
@@ -690,5 +689,61 @@ class SugarApplication
 	        setcookie($name,$value,$expire,$path,$domain,$secure,$httponly);
 
 	    $_COOKIE[$name] = $value;
+	}
+
+	protected $redirectVars = array('module', 'action', 'record', 'token');
+
+	/**
+	 * Create string to attach to login URL with vars to preserve post-login
+	 * @return string URL part with login vars
+	 */
+	public function createLoginVars()
+	{
+	    $ret = array();
+        foreach($this->redirectVars as $var) {
+            if(!empty($this->controller->$var)) {
+                $ret["login_".$var] = $this->controller->$var;
+                continue;
+            }
+            if(!empty($_REQUEST[$var])) {
+                $ret["login_".$var] = $_REQUEST[$var];
+            }
+        }
+        if(empty($ret)) return '';
+        return "&".http_build_query($ret);
+	}
+
+	/**
+	 * Get the list of vars passed with login form
+	 * @param bool $add_empty Add empty vars to the result?
+	 * @return array List of vars passed with login
+	 */
+	public function getLoginVars($add_empty = true)
+	{
+	    $ret = array();
+        foreach($this->redirectVars as $var) {
+            if(!empty($_REQUEST['login_'.$var]) || $add_empty) {
+                $ret["login_".$var] = isset($_REQUEST['login_'.$var])?$_REQUEST['login_'.$var]:'';
+            }
+        }
+	    return $ret;
+	}
+
+	/**
+	 * Get URL to redirect after the login
+	 * @return string the URL to redirect to
+	 */
+	public function getLoginRedirect()
+	{
+        $vars = array();
+        foreach($this->redirectVars as $var) {
+            if(!empty($_REQUEST['login_'.$var])) $vars[$var] = $_REQUEST['login_'.$var];
+        }
+
+        if(empty($vars)) {
+            return "index.php?module=Home&action=index";
+        } else {
+            return "index.php?".http_build_query($vars);
+        }
 	}
 }

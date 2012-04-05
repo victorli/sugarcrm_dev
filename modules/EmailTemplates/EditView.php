@@ -170,7 +170,7 @@ $xtpl->assign("assign_user_select", SugarThemeRegistry::current()->getImage('id-
 $xtpl->assign("assign_user_clear", SugarThemeRegistry::current()->getImage('id-ff-clear','',null,null,'.gif',$mod_strings['LBL_ID_FF_CLEAR']));
 //Assign qsd script
 require_once('include/QuickSearchDefaults.php');
-$qsd = new QuickSearchDefaults();
+$qsd = QuickSearchDefaults::getQuickSearchDefaults();
 $sqs_objects = array( 'EditView_assigned_user_name' => $qsd->getQSUser());
 $quicksearch_js = '<script type="text/javascript" language="javascript">sqs_objects = ' . $json->encode($sqs_objects) . '; enableQS();</script>';
 
@@ -274,24 +274,32 @@ if(true) {
 	    }
 	}
 
+    // create option of "Contact/Lead/Task" from corresponding module
+    // translations
+    $lblContactAndOthers = implode('/', array(
+        isset($app_list_strings['moduleListSingular']['Contacts']) ? $app_list_strings['moduleListSingular']['Contacts'] : 'Contact',
+        isset($app_list_strings['moduleListSingular']['Leads']) ? $app_list_strings['moduleListSingular']['Leads'] : 'Lead',
+        isset($app_list_strings['moduleListSingular']['Prospects']) ? $app_list_strings['moduleListSingular']['Prospects'] : 'Target',
+    ));
+
 	// The insert variable drodown should be conditionally displayed.
 	// If it's campaign then hide the Account.
 	if($has_campaign) {
 	    $dropdown="<option value='Contacts'>
-						".$mod_strings['LBL_CONTACT_AND_OTHERS']."
+						".$lblContactAndOthers."
 			       </option>";
 	     $xtpl->assign("DROPDOWN",$dropdown);
 	     $xtpl->assign("DEFAULT_MODULE",'Contacts');
          //$xtpl->assign("CAMPAIGN_POPUP_JS", '<script type="text/javascript" src="include/javascript/sugar_3.js"></script>');
 	} else {
 	     $dropdown="<option value='Accounts'>
-						".$mod_strings['LBL_ACCOUNT']."
+						".$app_list_strings['moduleListSingular']['Accounts']."
 		  	       </option>
 			       <option value='Contacts'>
-						".$mod_strings['LBL_CONTACT_AND_OTHERS']."
+						".$lblContactAndOthers."
 			       </option>
 			       <option value='Users'>
-						".$mod_strings['LBL_USERS']."
+						".$app_list_strings['moduleListSingular']['Users']."
 			       </option>";
 		$xtpl->assign("DROPDOWN",$dropdown);
 		$xtpl->assign("DEFAULT_MODULE",'Accounts');

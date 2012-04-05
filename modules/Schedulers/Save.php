@@ -90,13 +90,13 @@ $focus->name = $_REQUEST['name'];
 ////	USE_ADV override
 if($_REQUEST['use_adv'] == 'false') {
 	// days of week
-	$xtDays = array(0 => 'mon',
-					1 => 'tue',
-					2 => 'wed',
-					3 => 'thu',
-					4 => 'fri',
-					5 => 'sat',
-					6 => 'sun');
+	$xtDays = array(1 => 'mon',
+					2 => 'tue',
+					3 => 'wed',
+					4 => 'thu',
+					5 => 'fri',
+					6 => 'sat',
+					0 => 'sun');
 					
 	if(	(isset($_REQUEST['mon']) && $_REQUEST['mon'] == 'true') && 
 		(isset($_REQUEST['tue']) && $_REQUEST['tue'] == 'true') &&

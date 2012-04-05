@@ -42,6 +42,9 @@ class Bug45187Test extends Sugar_PHPUnit_Framework_OutputTestCase
 {
     public function setUp()
     {
+        global $mod_strings;
+        $mod_strings = return_module_language($GLOBALS['current_language'], 'Leads');
+
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser(true, 1);
         $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
     }
@@ -50,6 +53,7 @@ class Bug45187Test extends Sugar_PHPUnit_Framework_OutputTestCase
     {
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset($GLOBALS['current_user']);
+        unset($GLOBALS['mod_strings']);
     }
     
     /**

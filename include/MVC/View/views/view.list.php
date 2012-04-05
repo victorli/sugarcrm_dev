@@ -71,6 +71,7 @@ class ViewList extends SugarView{
             sugar_die($GLOBALS['app_strings']['LBL_NO_ACTION'] );
 
         require($metadataFile);
+
         $this->listViewDefs = $listViewDefs;
 
         if(!empty($this->bean->object_name) && isset($_REQUEST[$module.'2_'.strtoupper($this->bean->object_name).'_offset'])) {//if you click the pagination button, it will poplate the search criteria here
@@ -240,7 +241,7 @@ class ViewList extends SugarView{
 
 
             $this->searchForm = new SearchForm($this->seed, $this->module, $this->action);
-            $this->searchForm->setup($searchdefs, $searchFields, 'include/SearchForm/tpls/SearchFormGeneric.tpl', $view, $this->listViewDefs);
+            $this->searchForm->setup($searchdefs, $searchFields, 'SearchFormGeneric.tpl', $view, $this->listViewDefs);
             $this->searchForm->lv = $this->lv;
         }
     }

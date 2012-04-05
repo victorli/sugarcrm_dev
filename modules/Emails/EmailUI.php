@@ -127,7 +127,7 @@ class EmailUI {
 
         //Get the quickSearch js needed for assigned user id on Search Tab
         require_once('include/QuickSearchDefaults.php');
-        $qsd = new QuickSearchDefaults();
+        $qsd = QuickSearchDefaults::getQuickSearchDefaults();
         $qsd->setFormName('advancedSearchForm');
         $quicksearchAssignedUser = "if(typeof sqs_objects == 'undefined'){var sqs_objects = new Array;}";
         $quicksearchAssignedUser .= "sqs_objects['advancedSearchForm_assigned_user_name']=" . json_encode($qsd->getQSUser()) . ";";
@@ -1339,7 +1339,7 @@ eoq;
 		require_once("include/EditView/EditView2.php");
         require_once("include/TemplateHandler/TemplateHandler.php");
 		require_once('include/QuickSearchDefaults.php');
-		$qsd = new QuickSearchDefaults();
+		$qsd = QuickSearchDefaults::getQuickSearchDefaults();
 		$qsd->setFormName($formName);
 
         global $app_strings;

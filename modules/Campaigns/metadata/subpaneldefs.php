@@ -129,7 +129,7 @@ $layout_defs['Campaigns'] = array(
 			'sort_order' => 'desc',
 			'sort_by' => 'campaign_log.id'
 		),
-        'invalid email' => array(
+        'invalid_email' => array(
 			'order' => 160,
 			'module' => 'CampaignLog',
 			'get_subpanel_data'=>"function:track_log_entries",
@@ -139,7 +139,7 @@ $layout_defs['Campaigns'] = array(
 			'sort_order' => 'desc',
 			'sort_by' => 'campaign_log.id'
 		),				
-        'send error' => array(
+        'send_error' => array(
 			'order' => 170,
 			'module' => 'CampaignLog',
 			'get_subpanel_data'=>"function:track_log_entries",

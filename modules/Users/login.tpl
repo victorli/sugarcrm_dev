@@ -83,12 +83,12 @@ var LBL_HIDEOPTIONS = '{sugar_translate module="Users" label="LBL_HIDEOPTIONS"}'
 										<input type="hidden" name="return_module" value="Users">
 										<input type="hidden" name="return_action" value="Login">
 										<input type="hidden" id="cant_login" name="cant_login" value="">
-										<input type="hidden" name="login_module" value="{$LOGIN_MODULE}">
-										<input type="hidden" name="login_action" value="{$LOGIN_ACTION}">
-										<input type="hidden" name="login_record" value="{$LOGIN_RECORD}">
+										{foreach from=$LOGIN_VARS key=key item=var}
+											<input type="hidden" name="{$key}" value="{$var}">
+										{/foreach}
 										</td>
 									</tr>
-									
+
                                     <tr><td>&nbsp;</td></tr>
 									<tr>
 										<td scope="row" width="30%"><label for="user_name">{sugar_translate module="Users" label="LBL_USER_NAME"}:</label></td>
@@ -99,8 +99,8 @@ var LBL_HIDEOPTIONS = '{sugar_translate module="Users" label="LBL_HIDEOPTIONS"}'
 										<td width="30%"><input type="password" size='26' tabindex="2" id="user_password" name="user_password" value='{$LOGIN_PASSWORD}' /></td>
 									</tr>
 									{if !empty($SELECT_LANGUAGE)}
-									
-									
+
+
 									<tr>
 									    <td scope="row">{sugar_translate module="Users" label="LBL_LANGUAGE"}:</td>
                                         <td><select style='width: 152px' name='login_language' onchange="switchLanguage(this.value)">{$SELECT_LANGUAGE}</select></td>
@@ -109,7 +109,7 @@ var LBL_HIDEOPTIONS = '{sugar_translate module="Users" label="LBL_HIDEOPTIONS"}'
 									{/if}
 									<tr>
 										<td>&nbsp;</td>
-										<td><input title="{sugar_translate module="Users" label="LBL_LOGIN_BUTTON_TITLE"}"  class="button primary" type="submit" tabindex="3" id="login_button" name="Login" value="{sugar_translate module="Users" label="LBL_LOGIN_BUTTON_LABEL"}"><br>&nbsp;</td>
+										<td><input title="{sugar_translate module="Users" label="LBL_LOGIN_BUTTON_TITLE"}"  class="button primary" class="button primary" type="submit" tabindex="3" id="login_button" name="Login" value="{sugar_translate module="Users" label="LBL_LOGIN_BUTTON_LABEL"}"><br>&nbsp;</td>
 									</tr>
 								</table>
 							</form>

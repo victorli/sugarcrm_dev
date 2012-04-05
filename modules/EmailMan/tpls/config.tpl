@@ -134,7 +134,7 @@ function change_state(radiobutton) {
                     <span id="other" class="yui-button yui-radio-button{if $mail_smtptype == 'other' || empty($mail_smtptype)} yui-button-checked{/if}">
                         <span class="first-child">
                             <button type="button" name="mail_smtptype" value="other">
-                                &nbsp;&nbsp;&nbsp;&nbsp;{$APP.LBL_TABGROUP_OTHER}&nbsp;&nbsp;&nbsp;&nbsp;
+                                &nbsp;&nbsp;&nbsp;&nbsp;{$APP.LBL_SMTPTYPE_OTHER}&nbsp;&nbsp;&nbsp;&nbsp;
                             </button>
                         </span>
                     </span>
@@ -183,8 +183,8 @@ function change_state(radiobutton) {
 									<img border="0" onmouseout="return nd();" onmouseover="return overlib('{$MOD.LBL_ALLOW_DEFAULT_SELECTION_HELP}', FGCLASS, 'olFgClass', CGCLASS, 'olCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olCapFontClass', CLOSEFONTCLASS, 'olCloseFontClass', WIDTH, -1, NOFOLLOW, 'ol_nofollow')" src="index.php?entryPoint=getImage&themeName={$THEME}&imageName=helpInline.gif">
 							</td>
 				 		    <td width="30%">
-							     <input type='hidden' name='notify_allow_default_outbound' value='0'>
-							     <input name='notify_allow_default_outbound' value="2" tabindex='1' class="checkbox" type="checkbox" {$notify_allow_default_outbound_on}>
+							     <input type='hidden' id="notify_allow_default_outbound" name='notify_allow_default_outbound' value='0'>
+							     <input id="notify_allow_default_outbound" name='notify_allow_default_outbound' value="2" tabindex='1' class="checkbox" type="checkbox" {$notify_allow_default_outbound_on}>
 							</td>
 							<td width="20%">&nbsp;</td>
 							<td width="30%">&nbsp;</td>

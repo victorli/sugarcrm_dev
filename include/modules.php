@@ -311,6 +311,7 @@ $objectList = array();
 $objectList['Cases'] =  'Case';
 $objectList['Groups'] =  'User';
 $objectList['Schedulers'] =  'schedulers';
+$objectList['Users'] =  'User';
 
 if (file_exists('include/modules_override.php'))
 {

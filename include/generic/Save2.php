@@ -228,7 +228,7 @@ else {
         }
         if(!empty($searchdefs) && !empty($searchFields)) {
         	$searchForm = new SearchForm($seed, $module);
-	        $searchForm->setup($searchdefs, $searchFields, 'include/SearchForm/tpls/SearchFormGeneric.tpl');
+	        $searchForm->setup($searchdefs, $searchFields, 'SearchFormGeneric.tpl');
 	        $searchForm->populateFromArray($current_query_by_page_array, 'advanced');
 	        $where_clauses_arr = $searchForm->generateSearchWhere(true, $module);
 	        if (count($where_clauses_arr) > 0 ) {

@@ -110,7 +110,8 @@ Calendar.setup = function (params) {
                     calendar.clear();
                     var now = new Date();
                     //Reset the input field value
-                    Dom.get(inputField).value = formatSelectedDate(now);
+                    var input = Dom.get(inputField);
+                    input.value = formatSelectedDate(now);
                     //Highlight the cell
                     var cellIndex = calendar.getCellIndex(now);
                     if(cellIndex > -1 )
@@ -118,6 +119,14 @@ Calendar.setup = function (params) {
                         var cell = calendar.cells[cellIndex];
                         Dom.addClass(cell, calendar.Style.CSS_CELL_SELECTED);
                     }
+
+                    //bug 50740 - explicitly fire onchange event for this input
+                    if(input.onchange)
+                        input.onchange();
+
+                    //Fire any on-change events for this input field
+                    SUGAR.util.callOnChangeListers(input);
+
                     //Must return false to prevent onbeforeunload from firing in IE8
                     return false;
                 });

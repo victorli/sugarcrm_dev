@@ -58,8 +58,8 @@ class SOAPAPI3Test extends SOAPTestCase
     	$this->_login();
         $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
         $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
-
         self::$helperObject = new APIv3Helper();
+        $GLOBALS['db']->commit();
     }
 
     public function tearDown()

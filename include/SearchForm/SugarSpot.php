@@ -210,6 +210,10 @@ class SugarSpot
 		$where = '';
         $searchEmail = preg_match('/^([^%]|%)*@([^%]|%)*$/', $query);
 
+        // bug49650 - strip out asterisks from query in case
+        // user thinks asterisk is a wildcard value
+        $query = str_replace( '*' , '' , $query );
+        
         $limit = !empty($GLOBALS['sugar_config']['max_spotresults_initial']) ? $GLOBALS['sugar_config']['max_spotresults_initial'] : 5;
 		if($offset !== -1){
 			$limit = !empty($GLOBALS['sugar_config']['max_spotresults_more']) ? $GLOBALS['sugar_config']['max_spotresults_more'] : 20;
@@ -277,7 +281,9 @@ class SugarSpot
 								}
 							} //foreach
 						}
-						if(!$keep){
+                        # Bug 42961 Spot search for custom fields
+                        if (!$keep && (isset($v['force_unifiedsearch']) == false || $v['force_unifiedsearch'] != true))
+                        {
 							if(strpos($k,'email') === false || !$searchEmail) {
 								unset($searchFields[$moduleName][$k]);
 							}

@@ -146,8 +146,6 @@ if($current_language != 'en_us') {
 //get the url for the helper link
 $help_url = get_help_button_url();
 
-
-
 //if this license print, then redirect and exit,
 if(isset($_REQUEST['page']) && $_REQUEST['page'] == 'licensePrint')
 {
@@ -155,6 +153,7 @@ if(isset($_REQUEST['page']) && $_REQUEST['page'] == 'licensePrint')
     exit ();
 }
 
+if(isset($_REQUEST['sugar_body_only']) && $_REQUEST['sugar_body_only'] == "1") {
 //if this is a system check, then just run the check and return,
 //this is an ajax call and there is no need for further processing
 if(isset($_REQUEST['checkInstallSystem']) && ($_REQUEST['checkInstallSystem'])){
@@ -169,6 +168,7 @@ if(isset($_REQUEST['checkDBSettings']) && ($_REQUEST['checkDBSettings'])){
     require_once('install/checkDBSettings.php');
     echo checkDBSettings();
     return;
+}
 }
 
 //maintaining the install_type if earlier set to custom
@@ -330,7 +330,7 @@ EOHTML;
 
 
 
-$exclude_files = array('register.php','download_modules.php');
+    $exclude_files = array('register.php','download_modules.php');
 
 if(isset($next_step) && isset($workflow[$next_step]) && !in_array($workflow[$next_step],$exclude_files) && isset($sugar_config['installer_locked']) && $sugar_config['installer_locked'] == true) {
     $the_file = 'installDisabled.php';
@@ -587,7 +587,12 @@ EOQ;
 
 
 $the_file = clean_string($the_file, 'FILE');
+
+installerHook('pre_installFileRequire', array('the_file' => $the_file));
+
 // change to require to get a good file load error message if the file is not available.
 require('install/' . $the_file);
+
+installerHook('post_installFileRequire', array('the_file' => $the_file));
 
 ?>

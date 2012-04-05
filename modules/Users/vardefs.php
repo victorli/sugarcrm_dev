@@ -524,7 +524,7 @@ $dictionary['User'] = array(
             'link_type' => 'relationship_info',
             'source' => 'non-db',
             'importable' => 'false',
-            'studio' => array('listview' => false, 'searchview'=>false),
+            'studio' => false,
         ) ,
         'm_accept_status_fields' => array(
             'name' => 'm_accept_status_fields',
@@ -539,7 +539,7 @@ $dictionary['User'] = array(
             'link_type' => 'relationship_info',
             'source' => 'non-db',
             'importable' => 'false',
-            'studio' => array('listview' => false, 'searchview'=>false),
+            'studio' => false,
         ) ,
         'accept_status_id' => array(
             'name' => 'accept_status_id',

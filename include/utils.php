@@ -212,6 +212,8 @@ function make_sugar_config(&$sugar_config)
 	    'systexpirationlogin' => '',
 		) : $passwordsetting,
 		'use_sprites' => function_exists('imagecreatetruecolor'),
+                'search_wildcard_infront' => false,
+                'search_wildcard_char' => '%',
 	);
 }
 
@@ -276,7 +278,8 @@ function get_sugar_config_defaults() {
     'display_email_template_variable_chooser' => false,
 	'display_inbound_email_buttons' => false,
 	'dump_slow_queries' => false,
-	'email_default_editor' => 'html',
+	'email_address_separator' => ',', // use RFC2368 spec unless we have a noncompliant email client
+    'email_default_editor' => 'html',
 	'email_default_client' => 'sugar',
 	'email_default_delete_attachments' => true,
 	'history_max_viewed' => 50,
@@ -361,6 +364,8 @@ function get_sugar_config_defaults() {
 	    'systexpirationlogin' => '',
 		) : $passwordsetting,
 	'use_real_names' => true,
+        'search_wildcard_infront' => false,
+        'search_wildcard_char' => '%',
 	);
 
 	if(!is_object($locale)) {
@@ -2086,7 +2091,7 @@ function convert_id($string)
 /**
  * @deprecated use SugarTheme::getImage()
  */
-function get_image($image,$other_attributes,$width="",$height="",$ext='.gif',$alt)
+function get_image($image,$other_attributes,$width="",$height="",$ext='.gif',$alt="")
 {
     return SugarThemeRegistry::current()->getImage(basename($image), $other_attributes, empty($width) ? null : $width, empty($height) ? null : $height, $ext, $alt );
 }
@@ -3648,7 +3653,7 @@ function getTrackerSubstring($name) {
 	}
 
 	if($strlen > $max_tracker_item_length) {
-		$chopped = function_exists('mb_substr') ? mb_substr($name, 0, $max_tracker_item_length, "UTF-8") : substr($name, 0, $max_tracker_item_length, "UTF-8");
+		$chopped = function_exists('mb_substr') ? mb_substr($name, 0, $max_tracker_item_length, "UTF-8") : substr($name, 0, $max_tracker_item_length);
 	} else {
 		$chopped = $name;
 	}
@@ -4456,6 +4461,39 @@ function order_beans($beans, $field_name)
     return $beans;
 }
 
+/**
+ * Return search like string
+ * This function takes a user input string and returns a string that contains wild card(s) that can be used in db query.
+ * @param string $str  string to be searched
+ * @param string $like_char  Database like character, usually '%'
+ * @return string Returns a string to be searched in db query
+ */
+function sql_like_string($str, $like_char) {
+
+    // default behaviour
+    $wildcard = '%';
+
+    // override default wildcard character
+    if (isset($GLOBALS['sugar_config']['search_wildcard_char']) &&
+        strlen($GLOBALS['sugar_config']['search_wildcard_char']) == 1) {
+        $wildcard = $GLOBALS['sugar_config']['search_wildcard_char'];
+    }
+
+    // add wildcard at the beginning of the search string
+    if (isset($GLOBALS['sugar_config']['search_wildcard_infront']) &&
+        $GLOBALS['sugar_config']['search_wildcard_infront'] == true) {
+        if (substr($str,0,1) <> $wildcard)
+          $str = $wildcard.$str;
+    }
+
+    // add wildcard at the end of search string (default)
+    if(substr($str,-1) <> $wildcard) {
+        $str .= $wildcard;
+    }
+
+    return str_replace($wildcard, $like_char, $str);
+}
+
 //check to see if custom utils exists
 if(file_exists('custom/include/custom_utils.php')){
 	include_once('custom/include/custom_utils.php');
@@ -4528,4 +4566,41 @@ function get_language_header()
 function get_custom_file_if_exists($file)
 {
     return file_exists("custom/{$file}") ? "custom/{$file}" : $file;
+}
+
+
+/**
+ * get_help_url
+ *
+ * This will return the URL used to redirect the user to the help documentation.
+ * It can be overriden completely by setting the custom_help_url or partially by setting the custom_help_base_url
+ * in config.php or config_override.php.
+ *
+ * @param string $send_edition
+ * @param string $send_version
+ * @param string $send_lang
+ * @param string $send_module
+ * @param string $send_action
+ * @param string $dev_status
+ * @param string $send_key
+ * @param string $send_anchor
+ * @return string the completed help URL
+ */
+function get_help_url($send_edition = '', $send_version = '', $send_lang = '', $send_module = '', $send_action = '', $dev_status = '', $send_key = '', $send_anchor = '') {
+    global $sugar_config;
+
+    if (!empty($sugar_config['custom_help_url'])) {
+        $sendUrl = $sugar_config['custom_help_url'];
+    } else {
+        if (!empty($sugar_config['custom_help_base_url'])) {
+            $baseUrl= $sugar_config['custom_help_base_url'];
+        } else {
+            $baseUrl = "http://www.sugarcrm.com/crm/product_doc.php";
+        }
+        $sendUrl = $baseUrl . "?edition={$send_edition}&version={$send_version}&lang={$send_lang}&module={$send_module}&help_action={$send_action}&status={$dev_status}&key={$send_key}";
+        if(!empty($send_anchor)) {
+            $sendUrl .= "&anchor=".$send_anchor;
+        }
+    }
+    return $sendUrl;
 }

@@ -76,7 +76,11 @@ class Localization {
 	var $default_email_charset = 'UTF-8';
 	var $currencies = array(); // array loaded with current currencies
     var $invalidNameFormatUpgradeFilename = 'upgradeInvalidLocaleNameFormat.php';
-
+    /* Charset mappings for iconv */
+    var $iconvCharsetMap = array(
+        'KS_C_5601-1987' => 'CP949',
+        'ISO-8859-8-I' => 'ISO-8859-8'            
+        );
 
 	/**
 	 * sole constructor
@@ -330,14 +334,15 @@ class Localization {
 	 * @param string string the string to be translated
 	 * @param string fromCharset the charset the string is currently in
 	 * @param string toCharset the charset to translate into (defaults to UTF-8)
+	 * @param bool   forceIconv force using the iconv library instead of mb_string
 	 * @return string the translated string
 	 */
-    function translateCharset($string, $fromCharset, $toCharset='UTF-8')
+    function translateCharset($string, $fromCharset, $toCharset='UTF-8', $forceIconv = false)
     {
-        $GLOBALS['log']->debug("Localization: translating [ {$string} ] into {$toCharset}");
+        $GLOBALS['log']->debug("Localization: translating [{$string}] from {$fromCharset} into {$toCharset}");
 
         // Bug #35413 Function has to use iconv if $fromCharset is not in mb_list_encodings
-        $isMb = function_exists('mb_convert_encoding');
+        $isMb = function_exists('mb_convert_encoding') && !$forceIconv;
         $isIconv = function_exists('iconv');
         if ($isMb == true)
         {
@@ -361,7 +366,17 @@ class Localization {
         }
         elseif($isIconv)
         {
-            return iconv($fromCharset, $toCharset, $string);
+            $newFromCharset = $fromCharset;
+            if (isset($this->iconvCharsetMap[$fromCharset])) {
+                $newFromCharset = $this->iconvCharsetMap[$fromCharset];
+                $GLOBALS['log']->debug("Localization: iconv using charset {$newFromCharset} instead of {$fromCharset}");
+            }
+            $newToCharset = $toCharset;
+            if (isset($this->iconvCharsetMap[$toCharset])) {
+                $newToCharset = $this->iconvCharsetMap[$toCharset];
+                $GLOBALS['log']->debug("Localization: iconv using charset {$newToCharset} instead of {$toCharset}");
+            }
+            return iconv($newFromCharset, $newToCharset, $string);
         }
         else
         {
@@ -426,7 +441,8 @@ class Localization {
 	///////////////////////////////////////////////////////////////////////////
 	////	NUMBER DISPLAY FORMATTING CODE
 	function getDecimalSeparator($user=null) {
-		$dec = $this->getPrecedentPreference('default_decimal_separator', $user);
+        // Bug50887 this is purposefully misspelled as ..._seperator to match the way it's defined throughout the app.
+		$dec = $this->getPrecedentPreference('default_decimal_seperator', $user);
 		return $dec;
 	}
 
@@ -783,14 +799,13 @@ eoq;
      * Attempts to detect the charset used in the string
      *
      * @param  $str string
+     * @param $strict bool default false (use strict encoding?)
      * @return string
      */
-    public function detectCharset(
-        $str
-        )
+    public function detectCharset($str, $strict=false)
     {
         if ( function_exists('mb_convert_encoding') )
-            return mb_detect_encoding($str,'ASCII,JIS,UTF-8,EUC-JP,SJIS,ISO-8859-1');
+            return mb_detect_encoding($str,'ASCII,JIS,UTF-8,EUC-JP,SJIS,ISO-8859-1',$strict);
 
         return false;
     }

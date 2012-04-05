@@ -1514,15 +1514,17 @@ function search_by_module($user_name, $password, $search_string, $modules, $offs
 								$count++;
 							}
 						}else{
-							$where .= 'ea.email_address IN (';
-							foreach($search_terms as $term){
-								$where .= "'".$GLOBALS['db']->quote($term)."'";
-								if($count < $termCount){
-									$where .= ",";
-								}
-								$count++;
-							}
-							$where .= ')';
+                            $where .= '(';
+                            foreach ($search_terms as $term)
+                            {
+                                $where .= "ea.email_address LIKE '".$GLOBALS['db']->quote($term)."'";
+                                if ($count < $termCount)
+                                {
+                                    $where .= " OR ";
+                                }
+                                $count++;
+                            }
+                            $where .= ')';
 						}
 						$tmpQuery .= $where;
 						$tmpQuery .= ") AND $seed->table_name.deleted = 0";

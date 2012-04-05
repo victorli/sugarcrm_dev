@@ -54,7 +54,7 @@ $popupMeta = array('moduleMain' => 'ProspectList',
 							array('formBase' => 'ProspectListFormBase.php',
 									'formBaseClass' => 'ProspectListFormBase',
 									'getFormBodyParams' => array('','','ProspectListSave'),
-									'createButton' => $mod_strings['LNK_NEW_PROSPECT_LIST']
+									'createButton' => 'LNK_NEW_PROSPECT_LIST'
 								  ),
 						'listviewdefs' => array(
 							'NAME' => array(

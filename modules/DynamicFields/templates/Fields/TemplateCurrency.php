@@ -43,6 +43,7 @@ class TemplateCurrency extends TemplateRange
 {
     var $max_size = 25;
     var $len = 26 ;
+    var $precision = 6;
     var $type='currency';
 
     function delete($df){
@@ -66,6 +67,12 @@ class TemplateCurrency extends TemplateRange
     	$currency_id->label = $currency_id->vname;
     	$currency_id->save($df);
     	//$df->addLabel($currency_id->vname);
+    }
+
+    function get_field_def(){
+    	$def = parent::get_field_def();
+		$def['precision'] = (!empty($this->precision)) ? $this->precision : 6;
+    	return $def;
     }
 
 	function get_db_type()

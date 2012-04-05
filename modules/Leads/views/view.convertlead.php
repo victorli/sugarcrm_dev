@@ -110,7 +110,7 @@ class ViewConvertLead extends SugarView
         echo $this->getModuleTitle();
 
         require_once("include/QuickSearchDefaults.php");
-        $qsd = new QuickSearchDefaults();
+        $qsd = QuickSearchDefaults::getQuickSearchDefaults();
         $qsd->setFormName("ConvertLead");
 
         $this->contact = new Contact();
@@ -148,8 +148,17 @@ class ViewConvertLead extends SugarView
             {
                 continue;
             }
+
+
             $bean = $beanList[$module];
             $focus = new $bean();
+
+            // skip if we aren't allowed to save this bean
+            if (!$focus->ACLAccess('save'))
+            {
+                continue;
+            }
+
             $focus->fill_in_additional_detail_fields();
             foreach($focus->field_defs as $field => $def)
             {
@@ -211,6 +220,8 @@ class ViewConvertLead extends SugarView
         }
         echo "</div>";
         echo ($qsd->getQSScriptsJSONAlreadyDefined());
+        // need to re-assign bean as it gets overridden by $ev->display
+        $smarty->assign("bean", $this->focus);
         $smarty->display("modules/Leads/tpls/ConvertLeadFooter.tpl");
     }
 

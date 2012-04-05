@@ -51,7 +51,10 @@ class VarDefHandler {
 	var $module_object;
 	var $start_none_lbl = null;
 
-	function VarDefHandler(& $module, $meta_array_name=null){
+
+    function VarDefHandler($module, $meta_array_name=null)
+    {
+        $this->meta_array_name = $meta_array_name;
 		$this->module_object = $module;
 		if($meta_array_name!=null){
 			global $vardef_meta_array;

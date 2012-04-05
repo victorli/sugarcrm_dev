@@ -159,7 +159,8 @@ class TemplateDatetimecombo extends TemplateRange
     	
 		foreach($this->vardef_map as $vardef=>$field){
 			if(isset($_REQUEST[$vardef])){
-				$this->$vardef = $_REQUEST[$vardef];
+                //  Bug #48826
+                $this->$vardef = is_string($_REQUEST[$vardef]) && in_array($vardef, $this->decode_from_request_fields_map) ? html_entity_decode($_REQUEST[$vardef]) : $_REQUEST[$vardef];
 				if($vardef != $field){
 					$this->$field = $this->$vardef;
 				}

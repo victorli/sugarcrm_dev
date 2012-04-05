@@ -435,6 +435,7 @@ var SugarWizard = new function()
                 {if $REQUIRED_EMAIL_ADDRESS}
                 {literal}
                 if ( document.getElementById('email1').value == '' ) {
+                    document.getElementById('email1').focus();
                     add_error_style('UserWizard',form.email1.name,
                         '{/literal}{$APP.ERR_MISSING_REQUIRED_FIELDS} {$MOD.LBL_EMAIL}{literal}' );
                     isError = true;

@@ -38,18 +38,31 @@ require_once 'modules/ModuleBuilder/Module/StudioModule.php' ;
 
 class StudioModuleFactory
 {
-	function getStudioModule($module)
+	protected static $loadedMods = array();
+
+    public static function getStudioModule($module)
 	{
-		$studioModClass = "{$module}StudioModule";
-		if (file_exists("modules/{$module}/{$studioModClass}.php"))
+		if (!empty(self::$loadedMods[$module]))
+            return self::$loadedMods[$module];
+
+        $studioModClass = "{$module}StudioModule";
+		if (file_exists("custom/modules/{$module}/{$studioModClass}.php"))
+		{
+			require_once "custom/modules/{$module}/{$studioModClass}.php";
+			$sm = new $studioModClass($module);
+
+		} else if (file_exists("modules/{$module}/{$studioModClass}.php"))
 		{
 			require_once "modules/{$module}/{$studioModClass}.php";
-			return new $studioModClass($module);
-		} 
+			$sm = new $studioModClass($module);
+
+		}
 		else 
 		{
-			return new StudioModule($module);
+			$sm = new StudioModule($module);
 		}
+        self::$loadedMods[$module] = $sm;
+        return $sm;
 	}
 }
 ?>

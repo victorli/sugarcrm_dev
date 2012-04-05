@@ -48,11 +48,11 @@
 <p>
 </p>
 <TABLE width='100%' class='detail view' border='0' cellpadding=0 cellspacing = 1  >
-<TR>
-<td></td>
+<TR id="ACLEditView_Access_Header">
+<td id="ACLEditView_Access_Header_category"></td>
 
-{foreach from=$ACTION_NAMES item="ACTION_NAME" }
-	<td align='center'><div align='center'><b>{$ACTION_NAME}</b></div></td>
+{foreach from=$ACTION_NAMES item="ACTION_LABEL" key="ACTION_NAME"}
+	<td align='center' id="ACLEditView_Access_Header_{$ACTION_NAME}"><div align='center'><b>{$ACTION_LABEL}</b></div></td>
 {foreachelse}
 
           <td colspan="2">&nbsp;</td>
@@ -67,8 +67,8 @@
 
 	{if $APP_LIST.moduleList[$CATEGORY_NAME]!='Users'}
 
-	<TR>
-	<td nowrap width='1%'><b>
+	<TR id="ACLEditView_Access_{$CATEGORY_NAME}">
+	<td nowrap width='1%' id="ACLEditView_Access_{$CATEGORY_NAME}_category"><b>
 	{if $APP_LIST.moduleList[$CATEGORY_NAME]=='Users'}
 	   {$MOD.LBL_USER_NAME_FOR_ROLE}
 	{elseif !empty($APP_LIST.moduleList[$CATEGORY_NAME])}
@@ -82,7 +82,7 @@
 		{foreach from=$TYPES item="ACTIONS"}
 			{foreach from=$ACTIONS item="ACTION" key="ACTION_NAME_ACTIVE"}
 				{if $ACTION_NAME==$ACTION_NAME_ACTIVE}
-					<td nowrap width='{$TDWIDTH}%' style="text-align: center;">
+					<td nowrap width='{$TDWIDTH}%' style="text-align: center;" id="ACLEditView_Access_{$CATEGORY_NAME}_{$ACTION_NAME}">
 					<div  style="display: none" id="{$ACTION.id}">
 					{if $APP_LIST.moduleList[$CATEGORY_NAME]==$APP_LIST.moduleList.Users && $ACTION_LABEL != $MOD.LBL_ACTION_ADMIN}
 					<select DISABLED name='act_guid{$ACTION.id}' id = 'act_guid{$ACTION.id}' onblur="document.getElementById('{$ACTION.id}link').innerHTML=this.options[this.selectedIndex].text; aclviewer.toggleDisplay('{$ACTION.id}');" >
@@ -105,7 +105,7 @@
 			{/foreach}
 		{/foreach}
 		{if $ACTION_FIND=='false'}
-			<td nowrap width='{$TDWIDTH}%' style="text-align: center;">
+			<td nowrap width='{$TDWIDTH}%' style="text-align: center;" id="ACLEditView_Access_{$CATEGORY_NAME}_{$ACTION_NAME}">
 			<div><font color='red'>N/A</font></div>
 			</td>
 		{/if}

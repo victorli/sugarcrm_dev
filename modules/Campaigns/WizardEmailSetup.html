@@ -170,7 +170,7 @@
 				<td width="50%" ><input name='wiz_step1_massemailer_campaign_emails_per_run' id='massemailer_campaign_emails_per_run' title="{$MOD.LBL_EMAILS_PER_RUN}"tabindex='1' maxlength='128' type="text" value="{$EMAILS_PER_RUN}"></td>
 				</tr><tr>
 				<td scope="row">{$MOD.LBL_LOCATION_TRACK}&nbsp;<span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></td>
-				<td ><input type='radio' onclick="change_state(this);" name='wiz_massemailer_tracking_entities_location_type' id='massemailer_tracking_entities_location_type' title="{$MOD.LBL_DEFAULT_LOCATION}" value="1" {$DEFAULT_CHECKED}>{$MOD.LBL_DEFAULT_LOCATION}&nbsp;<input type='radio' {$USERDEFINED_CHECKED} onclick="change_state(this);" name='wiz_massemailer_tracking_entities_location_type' id='massemailer_tracking_entities_location_type' title="{$MOD.LBL_CUSTOM_LOCATION}" value="2">{$MOD.LBL_CUSTOM_LOCATION}
+				<td ><input type='radio' onclick="change_state(this);" name='wiz_step1_massemailer_tracking_entities_location_type' id='massemailer_tracking_entities_location_type' title="{$MOD.LBL_DEFAULT_LOCATION}" value="1" {$DEFAULT_CHECKED}>{$MOD.LBL_DEFAULT_LOCATION}&nbsp;<input type='radio' {$USERDEFINED_CHECKED} onclick="change_state(this);" name='wiz_step1_massemailer_tracking_entities_location_type' id='massemailer_tracking_entities_location_type' title="{$MOD.LBL_CUSTOM_LOCATION}" value="2">{$MOD.LBL_CUSTOM_LOCATION}
 				</tr><tr>
 				<td scope="row"></td>
 				<td ><input name='wiz_step1_massemailer_tracking_entities_location'  id='massemailer_tracking_entities_location' title="{$MOD.LBL_LOCATION_TRACK}" {$TRACKING_ENTRIES_LOCATION_STATE} maxlength='128' type="text" value="{$TRACKING_ENTRIES_LOCATION}"></td>

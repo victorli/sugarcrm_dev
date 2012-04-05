@@ -159,6 +159,7 @@ if( isset($_REQUEST['is_auto_import']) && $_REQUEST['is_auto_import'] == 'on' )
         $groupFolderId = $focus->createAutoImportSugarFolder();
         $focus->groupfolder_id = $groupFolderId;
     }
+    $stored_options['isAutoImport'] = true;
 }
 else
 {
@@ -173,6 +174,7 @@ else
         $f->retrieve($focus->fetched_row['groupfolder_id']);
         $f->delete();
     }
+    $stored_options['isAutoImport'] = false;
 }
 
 if (!empty($focus->groupfolder_id))

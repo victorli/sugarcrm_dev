@@ -562,8 +562,8 @@ class User extends Person {
      * @return object User bean
      * @return null null if no User found
      */
-	function retrieve($id, $encode = true) {
-		$ret = parent::retrieve($id, $encode);
+	function retrieve($id, $encode = true, $deleted = true) {
+		$ret = parent::retrieve($id, $encode, $deleted);
 		if ($ret) {
 			if (isset ($_SESSION)) {
 				$this->loadPreferences();

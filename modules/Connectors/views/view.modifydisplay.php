@@ -70,8 +70,16 @@ class ViewModifyDisplay extends SugarView
 	public function display() 
 	{	
         require_once('include/connectors/utils/ConnectorUtils.php');
-        $sources = ConnectorUtils::getConnectors();
-    	$this->ss->assign('SOURCES', $sources);
+        $connectors = ConnectorUtils::getConnectors(true);
+        foreach($connectors as $id=>$source)
+        {
+            $s = SourceFactory::getSource($id);
+            if(!$s->isEnabledInAdminDisplay())
+            {
+                unset($connectors[$id]);
+            }
+        }
+    	$this->ss->assign('SOURCES', $connectors);
     	$this->ss->assign('mod', $GLOBALS['mod_strings']);
     	$this->ss->assign('APP', $GLOBALS['app_strings']);
     	$this->ss->assign('theme', $GLOBALS['theme']);

@@ -175,11 +175,11 @@ class SchedulersTest extends Sugar_PHPUnit_Framework_TestCase
              array("0::2::1::*::*", "1/31/2011 2:00am", null, false),
              array("0::2::1::*::*", "2/2/2011 2:00am", null, false),
              // Every 15 mins on Mon, Tue
-             array("*/15::*::*::*::0,1", "5/16/2011 2:00pm", null, true),
-             array("*/15::*::*::*::0,1", "5/17/2011 2:00pm", null, true),
-             array("*/15::*::*::*::0,1", "5/18/2011 2:00pm", null, false),
-             array("*/15::*::*::*::0,1", "5/17/2011 2:10pm", "5/17/2011 2:00pm", false),
-             array("*/15::*::*::*::0,1", "5/17/2011 2:15pm", "5/17/2011 2:00pm", true),
+             array("*/15::*::*::*::1,2", "5/16/2011 2:00pm", null, true),
+             array("*/15::*::*::*::1,2", "5/17/2011 2:00pm", null, true),
+             array("*/15::*::*::*::1,2", "5/18/2011 2:00pm", null, false),
+             array("*/15::*::*::*::1,2", "5/17/2011 2:10pm", "5/17/2011 2:00pm", false),
+             array("*/15::*::*::*::1,2", "5/17/2011 2:15pm", "5/17/2011 2:00pm", true),
              );
     }
 

@@ -85,7 +85,7 @@ class ViewModifyProperties extends SugarView
 			$connector_strings = ConnectorUtils::getConnectorStrings($id);
 			$fields = $s->getRequiredConfigFields();
             
-            if(empty($fields)){
+            if(!$s->isEnabledInAdminProperties() || empty($fields)){
                 unset($connectorsToShow[$id]);
             }else{
                 if(empty($required_fields)){

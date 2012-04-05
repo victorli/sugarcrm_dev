@@ -43,7 +43,8 @@ require_once('include/EditView/EditView2.php');
 class SubpanelQuickCreate{
 	var $defaultProcess = true;
 
-	function SubpanelQuickCreate($module, $view='QuickCreate', $proccessOverride = false){
+    public function SubpanelQuickCreate($module, $view='QuickCreate', $proccessOverride = false)
+    {
         //treat quickedit and quickcreate views as the same
         if($view == 'QuickEdit') {$view = 'QuickCreate';}
 
@@ -65,7 +66,7 @@ class SubpanelQuickCreate{
 			}
 		}
 
-		$this->ev = new EditView();
+        $this->ev = $this->getEditView();
 		$this->ev->view = $view;
 		$this->ev->ss = new Sugar_Smarty();
 		//$_REQUEST['return_action'] = 'SubPanelViewer';
@@ -77,6 +78,7 @@ class SubpanelQuickCreate{
         }
 		$this->ev->setup($module, $bean, $source);
 		unset($bean);
+
 
 		// Bug 49219 - Check empty before set defaults, or the settings from viewdefs above will be overridden.
 		if (!isset($this->ev->defs['templateMeta']['form']['headerTpl']))
@@ -91,8 +93,8 @@ class SubpanelQuickCreate{
 		// Comment below, breaks many out of the box viewdefs
 		/*if (empty($this->ev->defs['templateMeta']['form']['buttons'])) $this->ev->defs['templateMeta']['form']['buttons'] = array('SUBPANELSAVE', 'SUBPANELCANCEL', 'SUBPANELFULLFORM');*/
 		$this->ev->defs['templateMeta']['form']['buttons'] = array('SUBPANELSAVE', 'SUBPANELCANCEL', 'SUBPANELFULLFORM');
-		
-	    //Load the parent view class if it exists.  Check for custom file first
+
+        //Load the parent view class if it exists.  Check for custom file first
         loadParentView('edit');
 
 		$viewEditSource = 'modules/'.$module.'/views/view.edit.php';
@@ -145,5 +147,13 @@ class SubpanelQuickCreate{
         $this->ev->process(true, $form_name);
 		echo $this->ev->display(false, true);
 	}
+
+    /**
+     * Get EditView object
+     * @return EditView
+     */
+    protected function getEditView()
+    {
+        return new EditView();
+    }
 }
-?>

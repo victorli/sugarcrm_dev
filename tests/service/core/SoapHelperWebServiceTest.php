@@ -48,60 +48,57 @@ require_once('soap/SoapError.php');
 
 class SoapHelperWebServiceTest extends Sugar_PHPUnit_Framework_TestCase {
 
-static $original_service_object;
+    private $_original_service_object;
 
-public static function setUpBeforeClass()
-{
-    global $service_object;
-    if(!empty($service_object))
+    public function setUp()
     {
-        self::$original_service_object = $service_object;
+        if(isset($GLOBALS['service_object']))
+        {
+            $this->_original_service_object = $GLOBALS['service_object'];
+        }
+        $GLOBALS['service_object'] = new ServiceMockObject();
     }
-}
 
-public static function tearDownAfterClass()
-{
-    if(!empty(self::$original_service_object))
+    public function tearDown()
     {
-        global $service_object;
-        $service_object = self::$original_service_object;
+        unset($GLOBALS['service_object']);
+        if(isset($this->_original_service_object))
+        {
+            $GLOBALS['service_object'] = $this->_original_service_object;
+        }
     }
-}
 
-/**
- * retrieveCheckQueryProvider
- *
- */
-public function retrieveCheckQueryProvider()
-{
-    global $service_object;
-    $service_object = new ServiceMockObject();
-    $error = new SoapError();
-    return array(
-        array($error, "id = 'abc'", true),
-        array($error, "user.id = prospects.id", true),
-        array($error, "id $% 'abc'", false),
-    );
-}
+    /**
+     * retrieveCheckQueryProvider
+     *
+     */
+    public function retrieveCheckQueryProvider()
+    {
+        $error = new SoapError();
+        return array(
+            array($error, "id = 'abc'", true),
+            array($error, "user.id = prospects.id", true),
+            array($error, "id $% 'abc'", false),
+        );
+    }
 
-/**
- * testCheckQuery
- * This function tests the checkQuery function in the SoapHelperWebService class
- *
- * @dataProvider retrieveCheckQueryProvider();
- */
-public function testCheckQuery($errorObject, $query, $expected)
-{
-     $helper = new SoapHelperWebServices();
-     if(!method_exists($helper, 'checkQuery'))
-     {
-         $this->markTestSkipped('Method checkQuery does not exist');
-     }
+    /**
+     * testCheckQuery
+     * This function tests the checkQuery function in the SoapHelperWebService class
+     *
+     * @dataProvider retrieveCheckQueryProvider();
+     */
+    public function testCheckQuery($errorObject, $query, $expected)
+    {
+         $helper = new SoapHelperWebServices();
+         if(!method_exists($helper, 'checkQuery'))
+         {
+             $this->markTestSkipped('Method checkQuery does not exist');
+         }
 
-     $result = $helper->checkQuery($errorObject, $query);
-     $this->assertEquals($expected, $result, 'SoapHelperWebService->checkQuery functions as expected');
-}
-
+         $result = $helper->checkQuery($errorObject, $query);
+         $this->assertEquals($expected, $result, 'SoapHelperWebService->checkQuery functions as expected');
+    }
 }
 
 /**

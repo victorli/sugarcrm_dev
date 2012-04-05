@@ -48,9 +48,42 @@ abstract class source{
 	protected $_config;
 	protected $_mapping;
 	protected $_field_defs;
-	protected $_enable_in_wizard = true;
+
+    /**
+     * @var bool enable_in_wizard Boolean value marking whether or not the connector may appear in the wizard (Get Data) views
+     */
+    protected $_enable_in_wizard = true;
+
+    /**
+     * @var bool enable_in_hover Boolean value marking whether or not a hover link could be applied to the connector
+     */
 	protected $_enable_in_hover = false;
+
+    /**
+     * @var bool enable_in_admin_mapping Boolean value marking whether or not this connector should be shown in the Modify Mapping view
+     */
+    protected $_enable_in_admin_mapping = true;
+
+    /**
+     * @var bool enable_in_admin_properties Boolean value marking whether or not this connector should appear in the Set Connector Properties view
+     */
+    protected $_enable_in_admin_properties = true;
+
+    /**
+     * @var bool enable_in_admin_display Boolean value marking whether or not this connector should appear in the Enable Connectors view
+     */
+    protected $_enable_in_admin_display = true;
+
+    /**
+     * @var bool enable_in_admin_search Boolean value marking whether or not this connector should appear in the Manage Connector Search view
+     */
+    protected $_enable_in_admin_search = true;
+
+    /**
+     * @var bool has_testing_enabled Boolean value marking whether or not the connector should display the test button in administration view
+     */
 	protected $_has_testing_enabled = false;
+
 	protected $_required_config_fields = array();
 	protected $_required_config_fields_for_button = array();
 	protected $config_decrypted = false;
@@ -345,6 +378,61 @@ abstract class source{
     	return $this->_enable_in_hover;
     }
 
+    /**
+     * isEnabledInAdminProperties
+     * This method indicates whether or not the connector should be shown in the Set Connector Properties view.
+     * The Admin views call each source's isEnabledInAdminProperties method to verify whether or not the connector should be
+     * displayed.  Connectors that do not have any administrative properties should set the protected class variable
+     * _enable_in_admin_properties to false.
+     *
+     * @return boolean value indicating whether or not the connector is enabled for admin views
+     */
+    public function isEnabledInAdminProperties()
+    {
+        return $this->_enable_in_admin_properties;
+    }
+
+    /**
+     * isEnabledInAdminMapping
+     * This method indicates whether or not the connector should be shown in the Map Connector Fields view.
+     * The Admin views call each source's isEnabledInAdminMapping method to verify whether or not the connector should be
+     * displayed.  Connectors that do not have any administrative mapping properties should set the protected class variable
+     * _enable_in_admin_mapping to false.
+     *
+     * @return boolean value indicating whether or not the connector is enabled for admin views
+     */
+    public function isEnabledInAdminMapping()
+    {
+        return $this->_enable_in_admin_mapping;
+    }
+
+    /**
+     * isEnabledInAdminDisplay
+     * This method indicates whether or not the connector should be shown in the Enable Connectors view.
+     * The Admin views call each source's isEnabledInAdminDisplay method to verify whether or not the connector should be
+     * displayed.  Connectors that do not have any administrative display settings should set the protected class variable
+     * _enable_in_admin_display to false.
+     *
+     * @return boolean value indicating whether or not the connector is enabled for admin views
+     */
+    public function isEnabledInAdminDisplay()
+    {
+        return $this->_enable_in_admin_display;
+    }
+
+    /**
+     * isEnabledInAdminSearch
+     * This method indicates whether or not the connector should be shown in the Manage Connectors Search view.
+     * The Admin views call each source's isEnabledInAdminSearch method to verify whether or not the connector should be
+     * displayed.  Connectors that do not have any administrative search settings should set the protected class variable
+     * _enable_in_admin_search to false.
+     *
+     * @return boolean value indicating whether or not the connector is enabled for admin views
+     */
+    public function isEnabledInAdminSearch()
+    {
+        return $this->_enable_in_admin_search;
+    }
 
     /**
      * getRequiredConfigFields

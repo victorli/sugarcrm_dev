@@ -393,7 +393,7 @@ $xtpl->assign('PRINT_URL', 'index.php?'.$GLOBALS['request_string']);
 	///////////////////////////////////////////////////////////////////////////////
 	////	QUICKSEARCH CODE
 	require_once('include/QuickSearchDefaults.php');
-	$qsd = new QuickSearchDefaults();
+	$qsd = QuickSearchDefaults::getQuickSearchDefaults();
 	$sqs_objects = array('EditView_parent_name' => $qsd->getQSParent(),
 						'EditView_assigned_user_name' => $qsd->getQSUser(),
 						);

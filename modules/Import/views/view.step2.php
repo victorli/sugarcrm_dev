@@ -55,8 +55,7 @@ class ImportViewStep2 extends ImportView
      */
  	public function display()
     {
-        global $mod_strings, $app_list_strings, $app_strings, $current_user, $import_bean_map;
-        global $import_mod_strings;
+        global $mod_strings, $app_list_strings, $app_strings, $current_user, $import_bean_map, $import_mod_strings;
 
         $this->instruction = 'LBL_SELECT_UPLOAD_INSTRUCTION';
         $this->ss->assign('INSTRUCTION', $this->getInstruction());
@@ -80,22 +79,6 @@ class ImportViewStep2 extends ImportView
         $displayBackBttn = isset($_REQUEST['action']) && $_REQUEST['action'] != 'index'? TRUE : FALSE;
         $this->ss->assign("displayBackBttn", $displayBackBttn);
 
-        $importSource = isset($_REQUEST['source']) ? $_REQUEST['source'] : 'csv' ;
-        //Start custom mapping
-        // show any custom mappings
-        if (sugar_is_dir('custom/modules/Import') && $dir = opendir('custom/modules/Import'))
-        {
-            while (($file = readdir($dir)) !== false)
-            {
-                if (sugar_is_file("custom/modules/Import/{$file}") && strpos($file,".php") !== false)
-                {
-	                require_once("custom/modules/Import/{$file}");
-	                $classname = str_replace('.php','',$file);
-	                $mappingClass = new $classname;
-	                $custom_mappings[] = $mappingClass->name;
-                }
-            }
-        }
         // get user defined import maps
         $is_admin = is_admin($current_user);
         if($is_admin)

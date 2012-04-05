@@ -43,6 +43,10 @@ class ZipTest extends Sugar_PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
+        if(!class_exists('ZipArchive'))
+        {
+            $this->markTestSkipped('ZipArchive class not loaded');
+        }
         $this->testdir = sugar_cached("tests/include/utils/ziptest");
         sugar_mkdir($this->testdir.'/testarchive',null,true);
         sugar_touch($this->testdir.'/testarchive/testfile1.txt');

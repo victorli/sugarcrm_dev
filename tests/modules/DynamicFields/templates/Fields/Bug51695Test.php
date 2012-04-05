@@ -34,60 +34,29 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
-require_once("modules/ModuleBuilder/parsers/views/AbstractMetaDataParser.php");
 
-class AbstractMetaDataParserTest extends Sugar_PHPUnit_Framework_TestCase
+require_once("modules/DynamicFields/templates/Fields/TemplateCurrency.php");
+
+class Bug51695Test extends Sugar_PHPUnit_Framework_TestCase
 {
-	
-	public function setUp() 
-    {                       
-	
-    }
-    
-    public function tearDown() 
+
+    public function setUp()
     {
-       
+        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+        $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
     }
-    
-    public function testValidField()
+
+    public function tearDown()
     {
-    	$validDef = array (
-		    'name' => 'status',
-		    'vname' => 'LBL_STATUS',
-		    'type' => 'enum',
-		    'len' => '25',
-		    'options' => 'meeting_status_dom',
-		    'comment' => 'Meeting status (ex: Planned, Held, Not held)'
-		);
-		
-		$invalidDef = array (
-		    'name' => 'direction',
-		    'vname' => 'LBL_DIRECTION',
-		    'type' => 'enum',
-		    'len' => '25',
-		    'options' => 'call_direction_dom',
-		    'comment' => 'Indicates whether call is inbound or outbound',
-		    'source' => 'non-db',
-		    'importable' => 'false',
-		    'massupdate'=>false,
-		    'reportable'=>false
-		);
-		
-		$this->assertTrue(AbstractMetaDataParser::validField($validDef));
-		$this->assertFalse(AbstractMetaDataParser::validField($invalidDef));
-		
-		//Test the studio override property
-		$invalidDef['studio'] = 'visible';
-		$validDef['studio'] = false;
-		
-		$this->assertFalse(AbstractMetaDataParser::validField($validDef));
-        $this->assertTrue(AbstractMetaDataParser::validField($invalidDef));
-		
-		$invalidDef['studio'] = array('editview' => 'visible');
-        
-        $this->assertTrue(AbstractMetaDataParser::validField($invalidDef, 'editview'));
-		$this->assertFalse(AbstractMetaDataParser::validField($invalidDef, 'detailview'));
+        unset($GLOBALS['app_strings']);
+        unset($GLOBALS['current_user']);
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
     }
-    
+
+    public function testGetFieldDefsForCurrencyTemplateHasPrecision() {
+        $template = new TemplateCurrency();
+
+        $this->assertArrayHasKey('precision', $template->get_field_def());
+    }
+
 }

@@ -69,9 +69,13 @@ class SugarTab
         }
 
         $subpanelTitles = array();
-        foreach($otherTabs[$key_all]['tabs'] as $subtab)
+
+        if(isset($otherTabs[$key_all]) && isset($otherTabs[$key_all]['tabs']))
         {
-            $subpanelTitles[$subtab['key']] = $subtab['label'];
+            foreach($otherTabs[$key_all]['tabs'] as $subtab)
+            {
+                $subpanelTitles[$subtab['key']] = $subtab['label'];
+            }
         }
 
         $this->ss->assign('showLinks', 'false');

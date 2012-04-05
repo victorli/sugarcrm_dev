@@ -48,6 +48,12 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 class UnifiedSearchAdvanced {
 
     var $query_string = '';
+    
+    /* path to search form */
+    var $searchFormPath = 'include/SearchForm/SearchForm2.php';
+
+    /*search form class name*/
+    var $searchFormClass = 'SearchForm';
 
     function __construct(){
         if(!empty($_REQUEST['query_string'])){
@@ -288,8 +294,9 @@ class UnifiedSearchAdvanced {
                  */
                 require_once $beanFiles[$beanName] ;
                 $seed = new $beanName();
-				require_once 'include/SearchForm/SearchForm2.php' ;
-                $searchForm = new SearchForm ( $seed, $moduleName ) ;
+                
+				require_once $this->searchFormPath;
+                $searchForm = new $this->searchFormClass ( $seed, $moduleName ) ;
 
                 $searchForm->setup (array ( $moduleName => array() ) , $unifiedSearchFields , '' , 'saved_views' /* hack to avoid setup doing further unwanted processing */ ) ;
                 $where_clauses = $searchForm->generateSearchWhere() ;
@@ -309,7 +316,12 @@ class UnifiedSearchAdvanced {
                 {
                     $where = '(('. implode(' ) OR ( ', $where_clauses) . '))';
                 }
-
+                else
+                {
+                    /* Clear $where from prev. module
+                       if in current module $where_clauses */
+                    $where = '';
+                }
                 $displayColumns = array();
                 foreach($listViewDefs[$seed->module_dir] as $colName => $param)
                 {

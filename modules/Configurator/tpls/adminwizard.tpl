@@ -277,7 +277,7 @@ function disableReturnSubmission(e) {
                         <span id="other" class="yui-button yui-radio-button{if $mail_smtptype == 'other' || empty($mail_smtptype)} yui-button-checked{/if}">
                             <span class="first-child">
                                 <button type="button" name="mail_smtptype" value="other">
-                                    &nbsp;&nbsp;&nbsp;&nbsp;{$APP.LBL_TABGROUP_OTHER}&nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;{$APP.LBL_SMTPTYPE_OTHER}&nbsp;&nbsp;&nbsp;&nbsp;
                                 </button>
                             </span>
                         </span>
@@ -326,7 +326,7 @@ function disableReturnSubmission(e) {
                                 </td>
                                 <td width="30%">
                                      <slot>
-                                     <input type='hidden' name='notify_allow_default_outbound' value='0'>
+                                     <input type="hidden" name="notify_allow_default_outbound" id="notify_allow_default_outbound_hidden_input" value="0">
                                      <input id='notify_allow_default_outbound' name='notify_allow_default_outbound' value="2" tabindex='1' class="checkbox" type="checkbox" {$notify_allow_default_outbound_on}>
                                      </slot>
                                 </td>                

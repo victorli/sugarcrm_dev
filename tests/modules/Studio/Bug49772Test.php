@@ -63,7 +63,8 @@ class Bug49772Test extends Sugar_PHPUnit_Framework_TestCase
         $mod_strings = return_module_language($this->_lang, $this->_test_module);
         $this->_old_label = $mod_strings[$this->_test_label];
         $pref = '<img alt="<script>" src="www.test.com/img.png" ="alert(7001)" width="1" height="1"/>';
-        $prepared_pref = to_html(remove_xss(from_html($pref)));
+        $prepared_pref = to_html(strip_tags(from_html($pref)));
+        //$prepared_pref = to_html(remove_xss(from_html($pref)));
         $new_label = $prepared_pref . ' ' . $this->_old_label;
 
         // save the new label to the language file

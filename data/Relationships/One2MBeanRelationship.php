@@ -175,7 +175,8 @@ class One2MBeanRelationship extends One2MRelationship
             $query = $this->getQuery($link);
             if (empty($query))
             {
-                echo ("query for {$this->name} was empty when loading from {$this->lhsLink}\n");
+                $GLOBALS['log']->fatal("query for {$this->name} was empty when loading from   {$this->lhsLink}\n");
+                return array("rows" => array());
             }
             $result = $db->query($query);
             while ($row = $db->fetchByAssoc($result))

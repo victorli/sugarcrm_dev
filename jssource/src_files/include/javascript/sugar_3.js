@@ -884,6 +884,13 @@ function validate_form(formname, startsWith){
 								add_error_style(formname, validate[formname][i][nameIndex], invalidTxt + " " +	validate[formname][i][msgIndex]);
 							}
 							break;
+                        // Bug #49614 : Check value without trimming before
+						case 'DBNameRaw':
+							if(!isDBName(form[validate[formname][i][nameIndex]].value)){
+								isError = true;
+								add_error_style(formname, validate[formname][i][nameIndex], invalidTxt + " " +	validate[formname][i][msgIndex]);
+							}
+							break;
 						case 'alphanumeric':
 							break;
 						case 'file':
@@ -1600,8 +1607,15 @@ function sendAndRetrieve(theForm, theDiv, loadingStr) {
 	}
 	if(typeof loadingStr == 'undefined') SUGAR.language.get('app_strings', 'LBL_LOADING');
 	ajaxStatus.showStatus(loadingStr);
-	YAHOO.util.Connect.setForm(theForm);
-	var cObj = YAHOO.util.Connect.asyncRequest('POST', 'index.php', {success: success, failure: success});
+    oForm = new YAHOO.util.Element(theForm);
+    if ( oForm.get('enctype') && oForm.get('enctype') == 'multipart/form-data' ) {
+        // the second argument is true to indicate file upload.
+        YAHOO.util.Connect.setForm(theForm, true);
+        var cObj = YAHOO.util.Connect.asyncRequest('POST', 'index.php', {upload: success, failure: success});
+    } else {
+        YAHOO.util.Connect.setForm(theForm);
+        var cObj = YAHOO.util.Connect.asyncRequest('POST', 'index.php', {success: success, failure: success});
+    }
 	return false;
 }
 
@@ -1615,8 +1629,15 @@ function sendAndRedirect(theForm, loadingStr, redirect_location) {
 	}
 	if(typeof loadingStr == 'undefined') SUGAR.language.get('app_strings', 'LBL_LOADING');
 	ajaxStatus.showStatus(loadingStr);
-	YAHOO.util.Connect.setForm(theForm);
-	var cObj = YAHOO.util.Connect.asyncRequest('POST', 'index.php', {success: success, failure: success});
+    oForm = new YAHOO.util.Element(theForm);
+    if ( oForm.get('enctype') && oForm.get('enctype') == 'multipart/form-data' ) {
+        // the second argument is true to indicate file upload.
+        YAHOO.util.Connect.setForm(theForm, true);
+        var cObj = YAHOO.util.Connect.asyncRequest('POST', 'index.php', {upload: success, failure: success});
+    } else {
+        YAHOO.util.Connect.setForm(theForm);
+        var cObj = YAHOO.util.Connect.asyncRequest('POST', 'index.php', {success: success, failure: success});
+    }
 	return false;
 }
 
@@ -2812,7 +2833,7 @@ SUGAR.util = function () {
 					var script = document.createElement('script');
                   	script.type= 'text/javascript';
                   	if(result[1].indexOf("src=") > -1){
-						var srcRegex = /.*src=['"]([a-zA-Z0-9_\&\/\.\?=:-]*)['"].*/igm;
+						var srcRegex = /.*src=['"]([a-zA-Z0-9_\-\&\/\.\?=:-]*)['"].*/igm;
 						var srcResult =  result[1].replace(srcRegex, '$1');
 						script.src = srcResult;
                   	}else{
@@ -4071,6 +4092,25 @@ function open_popup(module_name, width, height, initial_filter, close_popup, hid
 		URL+='&metadata='+metadata;
 	}
 
+    // Bug #46842 : The relate field field_to_name_array fails to copy over custom fields 
+    // post fields that should be populated from popup form
+	if(popup_request_data.jsonObject) {
+		var request_data = popup_request_data.jsonObject;
+	} else {
+		var request_data = popup_request_data;
+	}
+    var field_to_name_array_url = '';
+    if (request_data && request_data.field_to_name_array != 'undefined') {        
+        for(var key in request_data.field_to_name_array) {
+            if ( key.toLowerCase() != 'id' ) {
+                field_to_name_array_url += '&field_to_name[]='+encodeURIComponent(key.toLowerCase());
+            }
+        }
+    }
+    if ( field_to_name_array_url ) {
+        URL+=field_to_name_array_url;
+    }
+    
 	win = SUGAR.util.openWindow(URL, windowName, windowFeatures);
 
 	if(window.focus)
@@ -4167,7 +4207,9 @@ function set_return(popup_reply_data)
         	{
         		if (popupConfirm > -1) {
         			set_return_basic(popup_reply_data,/\S/);
-        		} 
+        		} else {
+        			set_return_basic(popup_reply_data,/account/);
+        		}
         	}
         	// Bug 48726 End
         	else if(confirm(SUGAR.language.get('app_strings', 'NTC_OVERWRITE_ADDRESS_PHONE_CONFIRM') + '\n\n' + label_data_str))

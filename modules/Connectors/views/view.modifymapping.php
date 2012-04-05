@@ -78,8 +78,10 @@ class ViewModifyMapping extends SugarView
         foreach($connectors as $id=>$source) {
             $s = SourceFactory::getSource($id);
             $mapping = $s->getMapping();
-			if(empty($mapping)) {
-			    unset($connectors[$id]);
+
+            if(!$s->isEnabledInAdminMapping() || empty($mapping))
+            {
+			   unset($connectors[$id]);
 			}
 		}
 

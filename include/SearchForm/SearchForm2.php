@@ -37,7 +37,6 @@
 
 require_once('include/tabs.php');
 require_once('include/ListView/ListViewSmarty.php');
-
 require_once('include/TemplateHandler/TemplateHandler.php');
 require_once('include/EditView/EditView2.php');
 
@@ -74,7 +73,13 @@ require_once('include/EditView/EditView2.php');
 
     var $displayType = 'searchView';
 
- 	function SearchForm($seed, $module, $action = 'index'){
+	/**
+     * @var array
+     */
+    protected $options;
+
+    public function SearchForm($seed, $module, $action = 'index', $options = array())
+    {
  		$this->th = new TemplateHandler();
  		$this->th->loadSmarty();
 		$this->seed = $seed;
@@ -92,7 +97,8 @@ require_once('include/EditView/EditView2.php');
                             'displayDiv'   => 'display:none'),
                        );
         $this->searchColumns = array () ;
- 	}
+        $this->setOptions($options);
+    }
 
  	function setup($searchdefs, $searchFields = array(), $tpl, $displayView = 'basic_search', $listViewDefs = array()){
 		$this->searchdefs =  $searchdefs[$this->module];
@@ -184,7 +190,7 @@ require_once('include/EditView/EditView2.php');
                 $this->tabs[$tabkey]['displayDiv']='';
                 //if this is advanced tab, use form with saved search sub form built in
                 if($viewName=='advanced'){
-                    $this->tpl = 'include/SearchForm/tpls/SearchFormGenericAdvanced.tpl';
+                    $this->tpl = 'SearchFormGenericAdvanced.tpl';
                     if ($this->action =='ListView') {
                         $this->th->ss->assign('DISPLAY_SEARCH_HELP', true);
                     }
@@ -232,21 +238,73 @@ require_once('include/EditView/EditView2.php');
         if ($this->module == 'Documents'){
             $this->th->ss->assign('DOCUMENTS_MODULE', true);
         }
-        $return_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchForm_'.$this->parsedView, $this->tpl);
+        $return_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchForm_'.$this->parsedView, $this->locateFile($this->tpl));
         if($header){
 			$this->th->ss->assign('return_txt', $return_txt);
-			$header_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchFormHeader', 'include/SearchForm/tpls/header.tpl');
+			$header_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchFormHeader', $this->locateFile('header.tpl'));
             //pass in info to render the select dropdown below the form
-            $footer_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchFormFooter', 'include/SearchForm/tpls/footer.tpl');
+            $footer_txt = $this->th->displayTemplate($this->seed->module_dir, 'SearchFormFooter', $this->locateFile('footer.tpl'));
 			$return_txt = $header_txt.$footer_txt;
 		}
 		return $return_txt;
  	}
 
-  function displaySavedSearch(){
+ 	/**
+ 	 * Set options
+ 	 * @param array $options
+ 	 * @return SearchForm2
+ 	 */
+    public function setOptions($options = null)
+    {
+        $defaults = array(
+            'locator_class' => 'FileLocator',
+            'locator_class_params' => array(
+                array(
+                    'custom/modules/' . $this->module . '/tpls/SearchForm',
+                    'modules/' . $this->module . '/tpls/SearchForm',
+                    'custom/include/SearchForm/tpls',
+                    'include/SearchForm/tpls'
+                )
+            )
+        );
+
+        $this->options = empty($options) ? $defaults : $options;
+        return $this;
+    }
+
+    /**
+     * Get Options
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+
+ 	/**
+      * Locate a file in the custom or stock folders.  Look in the custom folders first.
+      *
+      * @param string $file         The file we are looking for
+      * @return bool|string         If the file is found return the path, False if not
+      */
+     protected function locateFile($file)
+     {
+        $paths = isset($this->options['locator_class_params'])?$this->options['locator_class_params'][0]:array();
+        foreach ($paths as $path) {
+             if (is_file($path . '/' . $file)) {
+                 return $path . '/' . $file;
+             }
+         }
+
+         return false;
+     }
+
+     function displaySavedSearch()
+     {
         $savedSearch = new SavedSearch($this->listViewDefs[$this->module], $this->lv->data['pageData']['ordering']['orderBy'], $this->lv->data['pageData']['ordering']['sortOrder']);
         return $savedSearch->getForm($this->module, false);
-    }
+     }
 
 
   function displaySavedSearchSelect(){
@@ -437,27 +495,28 @@ require_once('include/EditView/EditView2.php');
                         }
                     }
                 }
-
             }else{
 
             	$fromMergeRecords = isset($array['merge_module']);
 
                 foreach($this->searchFields as $name => $params) {
-					$long_name = $name.'_'.$SearchName;           
+					$long_name = $name.'_'.$SearchName;
 					/*nsingh 21648: Add additional check for bool values=0. empty() considers 0 to be empty Only repopulates if value is 0 or 1:( */
-                	if(isset($array[$long_name]) && !$this->isEmptyDropdownField($long_name, $array[$long_name]) && ( $array[$long_name] !== '' || (isset($this->fieldDefs[$long_name]['type']) && $this->fieldDefs[$long_name]['type'] == 'bool'&& ($array[$long_name]=='0' || $array[$long_name]=='1'))))
-					{ 				
+                    if (isset($array[$long_name]) && ( $array[$long_name] !== '' || (isset($this->fieldDefs[$long_name]['type']) && $this->fieldDefs[$long_name]['type'] == 'bool'&& ($array[$long_name]=='0' || $array[$long_name]=='1'))))
+					{
                         $this->searchFields[$name]['value'] = $array[$long_name];
                         if(empty($this->fieldDefs[$long_name]['value'])) {
                         	$this->fieldDefs[$long_name]['value'] = $array[$long_name];
                         }
-                    }else if(!empty($array[$name]) && !$fromMergeRecords && !$this->isEmptyDropdownField($name, $array[$name])) { //basic        	
+                    }
+                    else if(!empty($array[$name]) && !$fromMergeRecords) // basic
+                    {
                     	$this->searchFields[$name]['value'] = $array[$name];
                         if(empty($this->fieldDefs[$long_name]['value'])) {
                         	$this->fieldDefs[$long_name]['value'] = $array[$name];
                         }
                     }
-                    
+
                     if(!empty($params['enable_range_search']) && isset($this->searchFields[$name]['value']))
 					{
 						if(preg_match('/^range_(.*?)$/', $long_name, $match) && isset($array[$match[1].'_range_choice']))
@@ -472,7 +531,7 @@ require_once('include/EditView/EditView2.php');
                         // FG - bug 45287 - to db conversion is ok, but don't adjust timezone (not now), otherwise you'll jump to the day before (if at GMT-xx)
 						$date_value = $timedate->to_db_date($this->searchFields[$name]['value'], false);
 						$this->searchFields[$name]['value'] = $date_value == '' ? $this->searchFields[$name]['value'] : $date_value;
-					}                    
+					}
                 }
 
                 if((empty($array['massupdate']) || $array['massupdate'] == 'false') && $addAllBeanFields) {
@@ -480,23 +539,23 @@ require_once('include/EditView/EditView2.php');
                     	if($key != 'assigned_user_name' && $key != 'modified_by_name')
                     	{
                     		$long_name = $key.'_'.$SearchName;
-                    		
-	                    	if(in_array($key.'_'.$SearchName, $arrayKeys) && !in_array($key, $searchFieldsKeys) && !$this->isEmptyDropdownField($long_name, $array[$long_name])) 
-	                    	{  	                    		
-	                    		
+
+	                        if(in_array($key.'_'.$SearchName, $arrayKeys) && !in_array($key, $searchFieldsKeys))
+	                    	{
+
 	                        	$this->searchFields[$key] = array('query_type' => 'default', 'value' => $array[$long_name]);
-	                        	
+
                                 if (!empty($params['type']) && $params['type'] == 'parent'
                                     && !empty($params['type_name']) && !empty($this->searchFields[$key]['value']))
                                 {
                                 	    require_once('include/SugarFields/SugarFieldHandler.php');
 										$sfh = new SugarFieldHandler();
                    						$sf = $sfh->getSugarField('Parent');
-                                	
+
                                         $this->searchFields[$params['type_name']] = array('query_type' => 'default',
                                                                                           'value'      => $sf->getSearchInput($params['type_name'], $array));
                                 }
-                                
+
                                 if(empty($this->fieldDefs[$long_name]['value'])) {
                                     $this->fieldDefs[$long_name]['value'] =  $array[$long_name];
                                 }
@@ -504,7 +563,6 @@ require_once('include/EditView/EditView2.php');
                         }
                     }
                 }
-
             }
         }
 
@@ -515,7 +573,7 @@ require_once('include/EditView/EditView2.php');
                    $this->searchFields[$fieldName]['value'] = trim($field['value']);
                }
            }
-       } 
+       }
 
     }
 
@@ -571,6 +629,7 @@ require_once('include/EditView/EditView2.php');
          $values = $this->searchFields;
 
          $where_clauses = array();
+         $like_char = '%';
          $table_name = $this->seed->object_name;
          $this->seed->fill_in_additional_detail_fields();
 
@@ -969,7 +1028,7 @@ require_once('include/EditView/EditView2.php');
                                              $where .= ' OR ' . $this->seed->db->concat($column_name[0],array('last_name','first_name')) . " LIKE ".$this->seed->db->quoted($field_value.'%');
                                          }else{
                                              //no space was found, add normal where clause
-                                             $where .=  $db_field . " like ".$this->seed->db->quoted($field_value.'%');
+                                             $where .=  $db_field . " like ".$this->seed->db->quoted(sql_like_string($field_value, $like_char));
                                          }
 
                                      }else {
@@ -984,7 +1043,7 @@ require_once('include/EditView/EditView2.php');
                                                    {
                                                       foreach($GLOBALS['app_list_strings']['salutation_dom'] as $salutation)
                                                       {
-                                                         if(!empty($salutation) && strpos($field_value, $salutation) == 0)
+                                                         if(!empty($salutation) && strpos($field_value, $salutation) === 0)
                                                          {
                                                             $field_value = trim(substr($field_value, strlen($salutation)));
                                                             break;
@@ -995,7 +1054,7 @@ require_once('include/EditView/EditView2.php');
                                          }
 
                                          //field is not last name or this is not from global unified search, so do normal where clause
-                                         $where .=  $db_field . " like ".$this->seed->db->quoted($field_value.'%');
+                                         $where .=  $db_field . " like ".$this->seed->db->quoted(sql_like_string($field_value, $like_char));
                                      }
                                  }
                                  break;
@@ -1095,14 +1154,14 @@ require_once('include/EditView/EditView2.php');
          return $where_clauses;
      }
 
-    
-    
+
+
     /**
      * isEmptyDropdownField
-     * 
+     *
      * This function checks to see if a blank dropdown field was supplied.  This scenario will occur where
      * a dropdown select is in single selection mode
-     * 
+     *
      * @param $value Mixed dropdown value
      */
     private function isEmptyDropdownField($name='', $value=array())
@@ -1110,6 +1169,6 @@ require_once('include/EditView/EditView2.php');
     	$result = is_array($value) && isset($value[0]) && $value[0] == '';
     	$GLOBALS['log']->debug("Found empty value for {$name} dropdown search key");
     	return $result;
-    }    
+    }
  }
 

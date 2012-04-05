@@ -47,6 +47,41 @@ require_once('include/utils/zip_utils.php');
 require_once('include/upload_file.php');
 
 
+////////////////
+////  GLOBAL utility
+/**
+ * Calls a custom function (if it exists) based on the first parameter,
+ *   and returns result of function call, or 'undefined' if the function doesn't exist
+ * @param string function name to call in custom install hooks
+ * @return mixed function call result, or 'undefined'
+ */
+function installerHook($function_name, $options = array()){
+    if(!isset($GLOBALS['customInstallHooksExist'])){
+        if(file_exists('custom/install/install_hooks.php')){
+            installLog("installerHook: Found custom/install/install_hooks.php");
+            require_once('custom/install/install_hooks.php');
+            $GLOBALS['customInstallHooksExist'] = true;
+        }   
+        else{
+            installLog("installerHook: Could not find custom/install/install_hooks.php");
+            $GLOBALS['customInstallHooksExist'] = false;
+        }   
+    }
+
+    if($GLOBALS['customInstallHooksExist'] === false){
+        return 'undefined';
+    }   
+    else{   
+        if(function_exists($function_name)){
+            installLog("installerHook: function {$function_name} found, calling and returning the return value");
+            return $function_name($options);
+        }   
+        else{
+            installLog("installerHook: function {$function_name} not found in custom install hooks file");
+            return 'undefined';
+        }
+    }   
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 ////    FROM welcome.php
@@ -422,7 +457,8 @@ function writeSugarConfig($sugar_config) {
         '$sugar_config = ' .
         var_export($sugar_config, true) .
         ";\n?>\n";
-    if(is_writable('config.php') && write_array_to_file( "sugar_config", $sugar_config, "config.php")) {
+    if(is_writable('config.php')) {
+        write_array_to_file( "sugar_config", $sugar_config, "config.php");
     }
 }
 

@@ -65,7 +65,6 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
         self::$helperObject = new APIv3Helper();
 
-
         if(file_exists(sugar_cached('modules/unified_search_modules.php')))
         {
             $this->unified_search_modules_content = file_get_contents(sugar_cached('modules/unified_search_modules.php'));
@@ -83,6 +82,7 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $GLOBALS['db']->query("DELETE FROM calls WHERE name like 'UNIT TEST%' ");
         $GLOBALS['db']->query("DELETE FROM tasks WHERE name like 'UNIT TEST%' ");
         $GLOBALS['db']->query("DELETE FROM meetings WHERE name like 'UNIT TEST%' ");
+        $GLOBALS['db']->commit();
         //$this->useOutputBuffering = false;
     }
 

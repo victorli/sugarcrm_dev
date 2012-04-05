@@ -43,7 +43,22 @@
 <script>SUGAR.savedViews.handleForm();</script>
 {/literal}
 {{/if}}
-<form name='search_form' id='search_form' class='search_form' method='post' action='index.php?module={$module}&action={$action}' onsubmit='return !SUGAR.ajaxUI.submitForm(this.name);'>
+{literal}
+<script>
+function submitOnEnter(e)
+{
+    var characterCode = (e && e.which) ? e.which : event.keyCode;
+
+    if (characterCode == 13) {
+        document.getElementById('search_form').submit();
+        return false;
+    } else {
+        return true;
+    }
+}
+</script>
+{/literal}
+<form name='search_form' id='search_form' class='search_form' method='post' action='index.php?module={$module}&action={$action}' onkeydown='submitOnEnter(event);'>
 <input type='hidden' name='searchFormTab' value='{$displayView}'/>
 <input type='hidden' name='module' value='{$module}'/>
 <input type='hidden' name='action' value='{$action}'/> 

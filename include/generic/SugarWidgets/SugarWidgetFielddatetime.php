@@ -481,7 +481,17 @@ class SugarWidgetFieldDateTime extends SugarWidgetReportField
 		return parent :: querySelect($layout_def)." \n";
 	}
 	function & displayListday(& $layout_def) {
-		return parent:: displayListPlain($layout_def);
+        global $timedate;
+        $field_name = strtoupper($this->_get_column_alias($layout_def));
+        $tmp_field_name = str_replace('_DAY_', '_DAYREAL_', $field_name);
+        if($tmp_field_name != $field_name && isset($layout_def['fields'][$tmp_field_name]))
+        {
+            return $timedate->to_display_date($layout_def['fields'][$tmp_field_name], true);
+        }
+        else
+        {
+		    return parent:: displayListPlain($layout_def);
+        }
 	}
 
 	function & displayListyear(& $layout_def) {
@@ -511,6 +521,17 @@ class SugarWidgetFieldDateTime extends SugarWidgetReportField
 	{
         return $this->reporter->db->convert($this->_get_column_select($layout_def), "date_format", array('%Y-%m'))."\n";
 	}
+
+    /**
+     * Select addon datetime field for "day" field in reports
+     *
+     * @param $layout_def array definition of new field
+     * @return string piece for creation "select" query
+     */
+    function querySelectdayreal($layout_def)
+    {
+        return $this->reporter->db->convert($this->_get_column_select($layout_def), "date_format", array('%Y-%m-%d %H:%i:%s'))." ".$this->_get_column_alias($layout_def)."\n";
+    }
 
 	function querySelectday($layout_def)
 	{

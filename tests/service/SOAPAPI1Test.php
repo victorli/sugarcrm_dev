@@ -56,8 +56,11 @@ class SOAPAPI1Test extends SOAPTestCase
     	$this->_soapURL = $GLOBALS['sugar_config']['site_url'].'/soap.php';
 		parent::setUp();
         $this->_login(); // Logging in just before the SOAP call as this will also commit any pending DB changes
-		$this->_setupTestContact();
+        $this->_contact = SugarTestContactUtilities::createContact();
+        $this->_contact->contacts_users_id = $GLOBALS['current_user']->id;
+        $this->_contact->save();
         $this->_meeting = SugarTestMeetingUtilities::createMeeting();
+        $GLOBALS['db']->commit(); // Making sure these changes are committed to the database
     }
 
     /**
@@ -66,18 +69,20 @@ class SOAPAPI1Test extends SOAPTestCase
      */
     public function tearDown()
     {
+        SugarTestContactUtilities::removeAllCreatedContacts();
         SugarTestContactUtilities::removeCreatedContactsUsersRelationships();
-        $this->_contact = null;
         SugarTestMeetingUtilities::removeAllCreatedMeetings();
         SugarTestMeetingUtilities::removeMeetingContacts();
         $this->_meeting = null;
-    	parent::tearDown();
+        $this->_contact = null;
+        parent::tearDown();
     }
 
 	/**
 	 * Ensure we can create a session on the server.
 	 *
 	 */
+
     public function testCanLogin()
     {
 		$result = $this->_login();
@@ -116,6 +121,23 @@ class SOAPAPI1Test extends SOAPTestCase
     	$decoded = base64_decode($result['result']);
     }
 
+
+    public function testGetEntryList()
+    {
+        $result = $this->_soapClient->call('get_entry_list', array('session'=>$this->_sessionId,'module_name'=>'Contacts','query'=>" contacts.id = '{$this->_contact->id}' AND contacts.last_name = '{$this->_contact->last_name}' ", 'last_name', '0', 'select_field'=>array('last_name'),10000,0));
+        $last_name = '';
+        foreach($result['entry_list'][0]['name_value_list'] as $entry)
+        {
+            if($entry['name'] == 'last_name')
+            {
+                $last_name = $entry['value'];
+                break;
+            }
+        }
+        $this->assertEquals($this->_contact->last_name, $last_name);
+    }
+
+
 	public function testGetAttendeeList()
     {
     	$this->_meeting->load_relationship('contacts');
@@ -141,16 +163,6 @@ class SOAPAPI1Test extends SOAPTestCase
             $this->assertEquals(urlencode($decoded->item->name_value_list->name_value[1]->name), 'contact_id', "testSyncGetModifiedRelationships - could not retrieve contact_id column name");
             $this->assertEquals(urlencode($decoded->item->name_value_list->name_value[1]->value), $this->_contact->id, "vlue of contact id is not same as returned via SOAP");
         }
-    }
-
-    /**********************************
-     * HELPER PUBLIC FUNCTIONS
-     **********************************/
-	private function _setupTestContact() {
-        $this->_contact = SugarTestContactUtilities::createContact();
-        $this->_contact->contacts_users_id = $GLOBALS['current_user']->id;
-        $this->_contact->save();
-        $GLOBALS['db']->commit(); // Making sure these changes are committed to the database
     }
 
 }

@@ -522,10 +522,10 @@ if(function_exists('rebuildSprites') && function_exists('imagecreatetruecolor'))
     rebuildSprites(true);
 }
 
-//Run RepairSearchFields.php file
-if($origVersion < '620' && function_exists('repairSearchFields'))
+//Run repairUpgradeHistoryTable
+if($origVersion < '650' && function_exists('repairUpgradeHistoryTable'))
 {
-    repairSearchFields($path);
+    repairUpgradeHistoryTable();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -127,8 +127,10 @@ class CampaignsViewDetail extends ViewDetail {
             }
             //only show email marketing subpanel for email/newsletter campaigns
             if ($this->bean->campaign_type != 'Email' && $this->bean->campaign_type != 'NewsLetter' ) {
-                //exclude subpanels that are not prospectlists, emailmarketing, or tracked urls
+                //exclude emailmarketing subpanel if not on an email or newsletter campaign
                 $subpanel->subpanel_definitions->exclude_tab('emailmarketing');
+                // Bug #49893  - 20120120 - Captivea (ybi) - Remove trackers subpanels if not on an email/newsletter campaign (useless subpannl)
+                $subpanel->subpanel_definitions->exclude_tab('tracked_urls');
             }                       
         }
         //show filtered subpanel list

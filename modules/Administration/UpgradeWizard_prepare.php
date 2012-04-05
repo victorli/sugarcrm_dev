@@ -106,7 +106,7 @@ if(!empty($GLOBALS['sugar_config']['moduleInstaller']['packageScan']) && $instal
 }
 
 // assumption -- already validated manifest.php at time of upload
-require_once( "$unzip_dir/manifest.php" );
+require( "$unzip_dir/manifest.php" );
 
 
 

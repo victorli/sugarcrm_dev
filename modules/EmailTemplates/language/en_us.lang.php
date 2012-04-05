@@ -51,7 +51,6 @@ $mod_strings = array (
 	'LBL_BODY'					=> 'Body:',
 	'LBL_CLOSE'					=> 'Close:',
 	'LBL_COLON'					=> ':',
-	'LBL_CONTACT_AND_OTHERS'	=> 'Contact/Lead/Target',
 	'LBL_DESCRIPTION'			=> 'Description:',
 	'LBL_EDIT_ALT_TEXT'			=> 'Edit Plain Text',
 	'LBL_EMAIL_ATTACHMENT'		=> 'Email Attachment',

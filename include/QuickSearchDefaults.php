@@ -44,7 +44,8 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * @since      Class available since Release 4.0
  */
 
-class QuickSearchDefaults {
+class QuickSearchDefaults
+{
 
 	var $form_name = 'EditView';
 

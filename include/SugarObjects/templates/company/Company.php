@@ -35,13 +35,23 @@
  ********************************************************************************/
 
 require_once('include/SugarObjects/templates/basic/Basic.php');
- class Company extends Basic{
- 	
- 	function Company(){
+
+class Company extends Basic
+{ 	
+ 	/**
+ 	 * Constructor
+ 	 */
+    public function Company()
+ 	{
  		parent::Basic();	
  		$this->emailAddress = new SugarEmailAddress();
  	}
- 	function save($check_notify=false) {
+ 	
+ 	/**
+ 	 * @see parent::save()
+ 	 */
+	public function save($check_notify=false) 
+ 	{
 		$this->add_address_streets('billing_address_street');
 		$this->add_address_streets('shipping_address_street');
         $ori_in_workflow = empty($this->in_workflow) ? false : true;
@@ -63,14 +73,22 @@ require_once('include/SugarObjects/templates/basic/Basic.php');
 		return $this;
 	}
 	
- 	function retrieve($id = -1, $encode=true) {
-		$ret_val = parent::retrieve($id, $encode);
-		$this->emailAddress->handleLegacyRetrieve($this);
-		return $ret_val;
+ 	/**
+ 	 * Populate email address fields here instead of retrieve() so that they are properly available for logic hooks
+ 	 *
+ 	 * @see parent::fill_in_relationship_fields()
+ 	 */
+	public function fill_in_relationship_fields()
+	{
+	    parent::fill_in_relationship_fields();
+	    $this->emailAddress->handleLegacyRetrieve($this);
 	}
 	
-	function get_list_view_data() {
-		
+	/**
+ 	 * @see parent::get_list_view_data()
+ 	 */
+	public function get_list_view_data() 
+	{	
 		global $system_config;
 		global $current_user;
 		$temp_array = $this->get_list_view_array();
@@ -78,6 +96,4 @@ require_once('include/SugarObjects/templates/basic/Basic.php');
 		$temp_array['EMAIL1_LINK'] = $current_user->getEmailLink('email1', $this, '', '', 'ListView');
 		return $temp_array;
 	}
- 	
- }
-?>
+}

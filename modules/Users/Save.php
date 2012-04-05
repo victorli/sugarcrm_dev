@@ -75,7 +75,7 @@ $focus->retrieve($_POST['record']);
 if(empty($focus->user_name))
 {
     $newUser = true;
-    clear_register_value('user_array');
+    clear_register_value('user_array',$focus->object_name);
 } else {
     $newUser = false;
 }

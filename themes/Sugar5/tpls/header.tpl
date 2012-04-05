@@ -37,6 +37,7 @@
 *}
 {include file="_head.tpl" theme_template=true}
 <body onMouseOut="closeMenus();">
+<a name="top"></a>
 {$SUGAR_DCJS}
 <div id="header">
     {include file="_companyLogo.tpl" theme_template=true}

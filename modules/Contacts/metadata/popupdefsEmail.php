@@ -52,7 +52,7 @@ $popupMeta = array('moduleMain' => 'Contact',
 							array('formBase' => 'ContactFormBase.php',
 									'formBaseClass' => 'ContactFormBase',
 									'getFormBodyParams' => array('','','ContactSave'),
-									'createButton' => $mod_strings['LNK_NEW_CONTACT']			
+									'createButton' => 'LNK_NEW_CONTACT'
 								  ),
 						'templateForm' => 'modules/Contacts/Email_picker.html',
 						);

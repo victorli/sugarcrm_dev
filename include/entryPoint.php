@@ -221,6 +221,8 @@ $current_user = new User();
 $current_entity = null;
 $system_config = new Administration();
 $system_config->retrieveSettings();
+
+LogicHook::initialize()->call_custom_logic('', 'after_entry_point');
 }
 ////	END SETTING DEFAULT VAR VALUES
 ///////////////////////////////////////////////////////////////////////////////

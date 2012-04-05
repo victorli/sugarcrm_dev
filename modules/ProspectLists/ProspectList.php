@@ -177,7 +177,8 @@ class ProspectList extends SugarBean {
 				LEFT JOIN email_addr_bean_rel ear ON  ear.bean_id=l.id AND ear.deleted=0
 				LEFT JOIN email_addresses ea ON ear.email_address_id=ea.id
 				WHERE plp.prospect_list_id = $record_id AND plp.deleted=0 
-				AND l.deleted=0";
+				AND l.deleted=0
+				AND (ear.deleted=0 OR ear.deleted IS NULL)";
 
 		$users_query = "SELECT u.id AS id, 'Users' AS related_type, '' AS \"name\", u.first_name AS first_name, u.last_name AS last_name,u.title AS title, '' AS salutation, 
 				u.address_street AS primary_address_street,u.address_city AS primary_address_city, u.address_state AS primary_address_state,  u.address_postalcode AS primary_address_postalcode, u.address_country AS primary_address_country,
@@ -189,7 +190,8 @@ class ProspectList extends SugarBean {
 				LEFT JOIN email_addr_bean_rel ear ON  ear.bean_id=u.id AND ear.deleted=0
 				LEFT JOIN email_addresses ea ON ear.email_address_id=ea.id
 				WHERE plp.prospect_list_id = $record_id AND plp.deleted=0 
-				AND u.deleted=0";
+				AND u.deleted=0
+				AND (ear.deleted=0 OR ear.deleted IS NULL)";
 
 		$contacts_query = "SELECT c.id AS id, 'Contacts' AS related_type, '' AS \"name\", c.first_name AS first_name, c.last_name AS last_name,c.title AS title, c.salutation AS salutation, 
 				c.primary_address_street AS primary_address_street,c.primary_address_city AS primary_address_city, c.primary_address_state AS primary_address_state,  c.primary_address_postalcode AS primary_address_postalcode, c.primary_address_country AS primary_address_country,
@@ -201,7 +203,8 @@ FROM prospect_lists_prospects plp
 				LEFT JOIN email_addr_bean_rel ear ON ear.bean_id=c.id AND ear.deleted=0
 				LEFT JOIN email_addresses ea ON ear.email_address_id=ea.id
 				WHERE plp.prospect_list_id = $record_id AND plp.deleted=0 
-				AND c.deleted=0";
+				AND c.deleted=0
+                AND (ear.deleted=0 OR ear.deleted IS NULL)";
 
 		$prospects_query = "SELECT p.id AS id, 'Prospects' AS related_type, '' AS \"name\", p.first_name AS first_name, p.last_name AS last_name,p.title AS title, p.salutation AS salutation, 
 				p.primary_address_street AS primary_address_street,p.primary_address_city AS primary_address_city, p.primary_address_state AS primary_address_state,  p.primary_address_postalcode AS primary_address_postalcode, p.primary_address_country AS primary_address_country,
@@ -213,7 +216,8 @@ FROM prospect_lists_prospects plp
 				LEFT JOIN email_addr_bean_rel ear ON  ear.bean_id=p.id AND ear.deleted=0
 				LEFT JOIN email_addresses ea ON ear.email_address_id=ea.id
 				WHERE plp.prospect_list_id = $record_id  AND plp.deleted=0 
-				AND p.deleted=0";
+				AND p.deleted=0
+				AND (ear.deleted=0 OR ear.deleted IS NULL)";
 
 		$accounts_query = "SELECT a.id AS id, 'Accounts' AS related_type, a.name AS \"name\", '' AS first_name, '' AS last_name,'' AS title, '' AS salutation, 
 				a.billing_address_street AS primary_address_street,a.billing_address_city AS primary_address_city, a.billing_address_state AS primary_address_state, a.billing_address_postalcode AS primary_address_postalcode, a.billing_address_country AS primary_address_country,
@@ -225,7 +229,8 @@ FROM prospect_lists_prospects plp
 				LEFT JOIN email_addr_bean_rel ear ON  ear.bean_id=a.id AND ear.deleted=0
 				LEFT JOIN email_addresses ea ON ear.email_address_id=ea.id
 				WHERE plp.prospect_list_id = $record_id  AND plp.deleted=0 
-				AND a.deleted=0";
+				AND a.deleted=0
+				AND (ear.deleted=0 OR ear.deleted IS NULL)";
 		$order_by = "ORDER BY related_type, id, primary_address DESC";
 		$query = "$leads_query UNION ALL $users_query UNION ALL $contacts_query UNION ALL $prospects_query UNION ALL $accounts_query $order_by";
 		return $query;

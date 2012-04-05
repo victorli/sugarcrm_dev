@@ -256,8 +256,8 @@ class Dashlet
         if ( empty($this->autoRefresh) ) {
             $this->autoRefresh = 0;
         }
-        elseif ( !empty($sugar_config['dashlet_auto_refresh_min']) ) {
-            $this->autoRefresh = min($sugar_config['dashlet_auto_refresh_min'],$this->autoRefresh);
+        elseif ( !empty($sugar_config['dashlet_auto_refresh_min']) && $sugar_config['dashlet_auto_refresh_min'] > $this->autoRefresh ) {
+            $this->autoRefresh = $sugar_config['dashlet_auto_refresh_min'];
         }
         $autoRefreshSS->assign('dashletRefreshInterval', $this->autoRefresh * 1000);
         $tpl = 'include/Dashlets/DashletGenericAutoRefresh.tpl';

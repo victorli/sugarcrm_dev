@@ -975,19 +975,18 @@ function add_create_account($seed)
 
 	    $arr = array();
 
-
-
-	    $query = "select id, deleted from {$focus->table_name} WHERE name='".$seed->db->quote($account_name)."'";
+	    $query = "select id, deleted from {$focus->table_name} ";
+	    $query .= " WHERE name='".$seed->db->quote($account_name)."'";
 	    $query .=" ORDER BY deleted ASC";
 	    $result = $seed->db->query($query, true);
 
 	    $row = $seed->db->fetchByAssoc($result, false);
 
 		// we found a row with that id
-	    if (isset($row['id']) && $row['id'] != -1)
+	    if (!empty($row['id']))
 	    {
 	    	// if it exists but was deleted, just remove it entirely
-	        if ( isset($row['deleted']) && $row['deleted'] == 1)
+	        if ( !empty($row['deleted']))
 	        {
 	            $query2 = "delete from {$focus->table_name} WHERE id='". $seed->db->quote($row['id'])."'";
 	            $result2 = $seed->db->query($query2, true);
@@ -1000,7 +999,7 @@ function add_create_account($seed)
 	    }
 
 		// if we didnt find the account, so create it
-	    if (! isset($focus->id) || $focus->id == '')
+	    if (empty($focus->id))
 	    {
 	    	$focus->name = $account_name;
 

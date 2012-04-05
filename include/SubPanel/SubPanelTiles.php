@@ -137,7 +137,12 @@ class SubPanelTiles
 
         if(!empty($selectedGroup))
         {
-	        return SubPanelTilesTabs::getTabs($tabs, $showTabs, $selectedGroup);
+            // Bug #44344 : Custom relationships under same module only show once in subpanel tabs
+            // use object property instead new object to have ability run unit test (can override subpanel_definitions)
+            $objSubPanelTilesTabs = new SubPanelTilesTabs($this->focus);
+            $tabs = $objSubPanelTilesTabs->getTabs($tabs, $showTabs, $selectedGroup);
+            unset($objSubPanelTilesTabs);
+            return $tabs;
 	    }
         else
         {

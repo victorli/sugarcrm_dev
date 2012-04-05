@@ -241,6 +241,10 @@ class PopupSmarty extends ListViewSmarty{
 		$this->th->ss->assign('formData', $this->formData);
 		$this->th->ss->assign('APP', $GLOBALS['app_strings']);
 		$this->th->ss->assign('MOD', $GLOBALS['mod_strings']);
+        if (isset($this->_popupMeta['create']['createButton'])) 
+		{
+           $this->_popupMeta['create']['createButton'] = translate($this->_popupMeta['create']['createButton']);
+        }
 		$this->th->ss->assign('popupMeta', $this->_popupMeta);
         $this->th->ss->assign('current_query', base64_encode(serialize($_REQUEST)));
 		$this->th->ss->assign('customFields', $this->customFieldDefs);
@@ -302,7 +306,7 @@ class PopupSmarty extends ListViewSmarty{
         $this->searchdefs[$this->module]['templateMeta']['widths']['field'] = 30;
 
         $this->searchForm->view = 'PopupSearchForm';
-		$this->searchForm->setup($this->searchdefs, $searchFields, 'include/SearchForm/tpls/SearchFormGenericAdvanced.tpl', 'advanced_search', $this->listviewdefs);
+		$this->searchForm->setup($this->searchdefs, $searchFields, 'SearchFormGenericAdvanced.tpl', 'advanced_search', $this->listviewdefs);
 
 		$lv = new ListViewSmarty();
 		$displayColumns = array();
@@ -380,6 +384,25 @@ class PopupSmarty extends ListViewSmarty{
             }
         }
 
+        /**
+         * Bug #46842 : The relate field field_to_name_array fails to copy over custom fields 
+         * By default bean's create_new_list_query function loads fields displayed on the page or used in the search
+         * add fields used to populate forms from _viewdefs :: field_to_name_array to retrive from db
+         */
+        if ( isset($_REQUEST['field_to_name']) && $_REQUEST['field_to_name'] )
+        {
+            $_REQUEST['field_to_name'] = is_array($_REQUEST['field_to_name']) ? $_REQUEST['field_to_name'] : array($_REQUEST['field_to_name']);
+            foreach ( $_REQUEST['field_to_name'] as $add_field )
+            {
+                $add_field = strtolower($add_field);
+                if ( $add_field != 'id' && !isset($this->filter_fields[$add_field]) && isset($this->seed->field_defs[$add_field]) )
+                {
+                    $this->filter_fields[$add_field] = true;
+                }
+            }
+            
+        }
+        
 
 		if (!empty($_REQUEST['query']) || (!empty($GLOBALS['sugar_config']['save_query']) && $GLOBALS['sugar_config']['save_query'] != 'populate_only')) {
 			$data = $this->lvd->getListViewData($this->seed, $searchWhere, 0, -1, $this->filter_fields, $params, 'id');
@@ -542,7 +565,7 @@ EOQ;
 		}
 
 
-		$addformheader = get_form_header($this->_popupMeta['create']['createButton'], $formSave, false);
+		$addformheader = get_form_header(translate($this->_popupMeta['create']['createButton']), $formSave, false);
 		return $addformheader;
 	}
 

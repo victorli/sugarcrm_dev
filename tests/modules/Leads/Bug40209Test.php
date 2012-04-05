@@ -46,6 +46,9 @@ class Bug40209Test extends Sugar_PHPUnit_Framework_OutputTestCase
     {
         global $_POST;
         $_POST = array();
+        $reloadVardefs = isset($GLOBALS['reload_vardefs']) ? $GLOBALS['reload_vardefs'] : false;
+        $GLOBALS['reload_vardefs'] = true;
+
         //create user
         $this->user = $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
 
@@ -58,6 +61,7 @@ class Bug40209Test extends Sugar_PHPUnit_Framework_OutputTestCase
         $this->contact = new Contact();
         $this->lead = SugarTestLeadUtilities::createLead();
 
+        $GLOBALS['reload_vardefs'] = $reloadVardefs;
     }
 
     public function tearDown()

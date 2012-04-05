@@ -67,12 +67,10 @@ class SAMLAuthenticateUser extends SugarAuthenticateUser{
 		if(empty($_POST['SAMLResponse']))return parent::authenticateUser($name, $password);
 		
 		$GLOBALS['log']->debug('have saml data.'); // JMH
-		// Look for custom versions of config files
-		if (file_exists('custom/modules/Users/authentication/SAMLAuthenticate/settings.php'))
-				require 'custom/modules/Users/authentication/SAMLAuthenticate/settings.php';
-		else
-				require 'modules/Users/authentication/SAMLAuthenticate/settings.php';
-		require 'modules/Users/authentication/SAMLAuthenticate/lib/onelogin/saml.php';
+		// Look for custom versions of settings.php if it exists
+        require(get_custom_file_if_exists('modules/Users/authentication/SAMLAuthenticate/settings.php'));
+
+		require('modules/Users/authentication/SAMLAuthenticate/lib/onelogin/saml.php');
 
 		$samlresponse = new SamlResponse(get_saml_settings(), $_POST['SAMLResponse']);
 
@@ -111,16 +109,12 @@ class SAMLAuthenticateUser extends SugarAuthenticateUser{
 			}
 			else
 			{
-				if (IsSet($settings->customCreateFunction))
-				{
-						// we don't have anything for this yet, so just call whatever function may be
-						// defined in the custom settings file
-	//                    call_user_func($settings->customCreateFunction);
-				}
-				else
-				{
-					return $this->createUser($samlresponse->get_nameid(), $xpath, $settings);
-				}
+                if (isset($settings->customCreateFunction))
+                {
+                    call_user_func($settings->customCreateFunction, $this, $samlresponse->get_nameid(), $xpath, $settings);
+                } else {
+                    return $this->createUser($samlresponse->get_nameid(), $xpath, $settings);
+                }
 			}
 //      comment out the following two lines for testing - John H. (task 9069)
 		}
@@ -226,18 +220,11 @@ class SAMLAuthenticateUser extends SugarAuthenticateUser{
 	**/
 	function getAdditionalFieldsToSelect($samlresponse, $settings)
 	{
-		$additionalFields = "";
-		if (IsSet($settings->saml_settings))
-		{
-			if (IsSet($settings->saml_settings['update']))
-			{
-				if (count($settings->saml_settings['update']) > 0)
-				{
-					$additionalFields = ", " . implode(",", $this->getCustomFields($settings, 'update'));
-				}
-			}
+		if (isset($settings->saml_settings) && isset($settings->saml_settings['update']) && count($settings->saml_settings['update']) > 0)
+        {
+			return ',' . implode(',', $this->getCustomFields($settings, 'update'));
 		}
-		return $additionalFields;
+		return '';
 	}
 	
 	

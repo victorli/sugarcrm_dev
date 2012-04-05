@@ -53,7 +53,7 @@ $popupMeta = array(
 		array('formBase' => 'ContactFormBase.php',
 				'formBaseClass' => 'ContactFormBase',
 				'getFormBodyParams' => array('','','ContactSave'),
-				'createButton' => $mod_strings['LNK_NEW_CONTACT']			
+				'createButton' => 'LNK_NEW_CONTACT'
 			  ),
 	'listviewdefs' => array(
 		'NAME' => array(

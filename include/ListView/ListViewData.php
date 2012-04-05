@@ -365,7 +365,12 @@ class ListViewData {
 			//NOW HANDLE SECONDARY QUERIES
 			if(!empty($ret_array['secondary_select'])) {
 				$secondary_query = $ret_array['secondary_select'] . $ret_array['secondary_from'] . ' WHERE '.$this->seed->table_name.'.id IN ' .$id_list;
-				$secondary_result = $this->db->query($secondary_query);
+                if(isset($ret_array['order_by']))
+                {
+                    $secondary_query .= ' ' . $ret_array['order_by'];
+                }
+
+                $secondary_result = $this->db->query($secondary_query);
 
                 $ref_id_count = array();
 				while($row = $this->db->fetchByAssoc($secondary_result)) {

@@ -140,10 +140,11 @@ class Bug37841Test extends Sugar_PHPUnit_Framework_TestCase
             return;
         while (($filename = readdir($dir_handle)) !== false) 
         {
-            if ($filename == '.' || $filename == '..')
+            if ($filename == '.' || $filename == '..' || is_file("{$path}/{$filename}") == false)
+            {
                 continue;
-            else 
-                unlink("{$path}/{$filename}");
+            }
+            unlink("{$path}/{$filename}");
         }
     }
     

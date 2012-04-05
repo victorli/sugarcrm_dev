@@ -1743,7 +1743,7 @@ SE.composeLayout = {
 
         // make async call to delete cached file
         AjaxObject.target = '';
-        AjaxObject.startRequest('', urlStandard + "&emailUIAction=removeUploadedAttachment&file="+file);
+        AjaxObject.startRequest('', urlStandard + "&emailUIAction=removeUploadedAttachment&file="+unescape(file));
     },
 
     /**
@@ -1899,7 +1899,7 @@ SE.composeLayout = {
                         if(form.attachments.value != '') {
                             form.attachments.value += "::";
                         }
-                        form.attachments.value += node.value;
+                        form.attachments.value += unescape(node.value);
                     }
                 }
             }

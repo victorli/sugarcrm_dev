@@ -39,15 +39,27 @@ require_once 'include/ListView/ListViewDisplay.php';
 
 class ListViewDisplayTest extends Sugar_PHPUnit_Framework_TestCase
 {
+    private $save_query;
+
     public function setUp()
     {
         $this->_lvd = new ListViewDisplayMock();
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
         $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
+        global $sugar_config;
+        if(isset($sugar_config['save_query']))
+        {
+            $this->save_query = $sugar_config['save_query'];
+        }
     }
 
     public function tearDown()
     {
+        global $sugar_config;
+        if(!empty($this->save_query))
+        {
+            $sugar_config['save_query'] = $this->save_query;
+        }
     	SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
     	unset($GLOBALS['current_user']);
     	unset($GLOBALS['app_strings']);

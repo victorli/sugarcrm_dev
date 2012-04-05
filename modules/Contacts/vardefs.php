@@ -108,7 +108,7 @@ array (
 			'source' => 'non-db',
 			'importable' => 'false',
             'duplicate_merge'=> 'disabled',
-			'studio' => array('listview' => false),
+			'studio' => false,
 		),
 	'opportunity_role_id' =>
 		array(
@@ -441,7 +441,7 @@ array (
 			'source' => 'non-db',
 			'importable' => 'false',
             'duplicate_merge'=> 'disabled',
-			'studio' => array('listview' => false),
+			'studio' => false,
 		),
 	'm_accept_status_fields' =>
 		array (
@@ -456,7 +456,7 @@ array (
 			'importable' => 'false',
 			'hideacl'=>true,
             'duplicate_merge'=> 'disabled',
-			'studio' => array('listview' => false),
+			'studio' => false,
 		),
 	'accept_status_id' =>
 		array(

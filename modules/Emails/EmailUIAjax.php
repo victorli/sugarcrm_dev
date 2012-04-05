@@ -687,11 +687,11 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
     case "getSingleMessage":
         $GLOBALS['log']->debug("********** EMAIL 2.0 - Asynchronous - at: getSingleMessage");
         if(isset($_REQUEST['uid']) && !empty($_REQUEST['uid']) && isset($_REQUEST['ieId']) && !empty($_REQUEST['ieId'])) {
+            // this method needs to guarantee UTF-8 charset - encoding detection
+            // and conversion is unreliable, and can break valid UTF-8 text
             $out = $email->et->getSingleMessage($ie);
-            //Bug: 
-            //echo $json->encode($out);
-            //header("Content-Type: application/json; charset=UTF-8");
-            echo $json->encode(utf8_recursive_encode($out));
+
+            echo $json->encode($out);
         } else {
             echo "error: no UID";
         }

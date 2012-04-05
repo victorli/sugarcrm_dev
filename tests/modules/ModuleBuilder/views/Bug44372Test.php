@@ -39,7 +39,28 @@ require_once("modules/ModuleBuilder/views/view.module.php");
 
 class Bug44372Test extends Sugar_PHPUnit_Framework_TestCase
 {
+    /**
+     * Sets up the fixture, for example, open a network connection.
+     * This method is called before a test is executed.
+     */
+    public function setUp()
+    {
+        global $mod_strings;
+        $mod_strings = return_module_language($GLOBALS['current_language'], 'Administration');
+    }
 
+    /**
+     * Tears down the fixture, for example, close a network connection.
+     * This method is called after a test is executed.
+     */
+    public function tearDown()
+    {
+        unset($GLOBALS['mod_strings']);
+    }
+
+    /**
+     * @outputBuffering enabled
+     */
     public function testViewModule()
     {
     	$_REQUEST = array(
@@ -47,12 +68,7 @@ class Bug44372Test extends Sugar_PHPUnit_Framework_TestCase
     	    "module"=>""
         );
         $view = new ViewModule();
-        ob_start();
         $view->display();
-        ob_end_clean();
         $this->assertTrue(is_string($view->module), "Assert that view class variable module is not an object");
     }
-    
 }
-
-?>

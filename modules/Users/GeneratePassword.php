@@ -122,11 +122,8 @@ if(isset( $_POST['Users0emailAddress0'])){
 ///////
 ///////////////////////////////////////////////////
 
-
-	// if i need to generate a password (not a link)
-    if (!isset($_POST['link'])){
-        $password = User::generatePassword();
-    }
+    // if i need to generate a password (not a link)
+    $password = !isset($_POST['link']) ? User::generatePassword() : '';
 
 ///////////////////////////////////////////////////
 ///////  Create URL
@@ -139,7 +136,7 @@ if (isset($_POST['link']) && $_POST['link'] == '1'){
 	$time_now=TimeDate::getInstance()->nowDb();
 	//$q2="UPDATE `users_password_link` SET `deleted` = '1' WHERE `username` = '".$username."'";
 	//$usr->db->query($q2);
-	$q = "INSERT INTO users_password_link (id, username, date_generated) VALUES('".$guid."','".$username."',' ".$time_now."' ) ";
+	$q = "INSERT INTO users_password_link (id, username, date_generated) VALUES('".$guid."','".$username."','".$time_now."') ";
 	$usr->db->query($q);
 }
 ///////

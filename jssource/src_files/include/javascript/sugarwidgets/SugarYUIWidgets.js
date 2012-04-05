@@ -110,7 +110,7 @@ sw.MessageBox = {
 			width: myConf.width + 'px',
 			close: myConf.close,
 			modal: myConf.modal,
-			visible: true,
+			visible: false,
 			fixedcenter: true,
 	        constraintoviewport: true,
 	        draggable: true,

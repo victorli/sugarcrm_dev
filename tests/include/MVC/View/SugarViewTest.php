@@ -39,17 +39,26 @@ require_once 'include/MVC/View/SugarView.php';
 
 class SugarViewTest extends Sugar_PHPUnit_Framework_TestCase
 {
+    private $_backup = array();
+
+    /**
+     * @var SugarViewTestMock
+     */
+    private $_view;
+
     public function setUp()
     {
         $this->_view = new SugarViewTestMock();
         $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
         $GLOBALS['mod_strings'] = return_module_language($GLOBALS['current_language'], 'Users');
+        $this->_backup['currentTheme'] = SugarThemeRegistry::current();
     }
     
     public function tearDown()
     {
     	unset($GLOBALS['mod_strings']);
     	unset($GLOBALS['app_strings']);
+        SugarThemeRegistry::set($this->_backup['currentTheme']->dirName);
     }
     
     public function testGetModuleTab()
@@ -198,6 +207,20 @@ class SugarViewTest extends Sugar_PHPUnit_Framework_TestCase
             $this->_view->getBreadCrumbSymbol()
             );
     }
+
+    public function testGetSugarConfigJS()
+    {
+        global $sugar_config;
+
+        $sugar_config['js_available'] = array('default_action');
+
+        $js_array = $this->_view->getSugarConfigJS();
+
+        // this should return 3 objects
+        $this->assertEquals(3, count($js_array));
+
+        $this->assertEquals('SUGAR.config.default_action = "index";', $js_array[2]);
+    }
 }
 
 class SugarViewTestMock extends SugarView
@@ -210,5 +233,10 @@ class SugarViewTestMock extends SugarView
     public function initSmarty()
     {
         return parent::_initSmarty();
+    }
+
+    public function getSugarConfigJS()
+    {
+        return parent::getSugarConfigJS();
     }
 }

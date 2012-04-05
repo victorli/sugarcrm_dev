@@ -730,9 +730,8 @@ class MysqlManager extends DBManager
 
 		// bug 22338 - don't set a default value on text or blob fields
 		if ( isset($ref['default']) &&
-			($ref['colType'] == 'text' || $ref['colType'] == 'blob'
-				|| $ref['colType'] == 'longtext' || $ref['colType'] == 'longblob' ))
-			$ref['default'] = '';
+            in_array($ref['colBaseType'], array('text', 'blob', 'longtext', 'longblob')))
+			    $ref['default'] = '';
 
 		if ( $return_as_array )
 			return $ref;

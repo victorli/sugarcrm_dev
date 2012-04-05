@@ -108,7 +108,10 @@ class PipelineBySalesStageDashlet extends DashletGenericChart
             'query' => 'true',
             'searchFormTab' => 'advanced_search',
             );
-        $sugarChart->url_params = array(  );
+        //fixing bug #27097: The opportunity list is not correct after drill-down
+        //should send to url additional params: start range value and end range value
+        $sugarChart->url_params = array('start_range_date_closed' => $this->pbss_date_start,
+                                        'end_range_date_closed' => $this->pbss_date_end);
         $sugarChart->group_by = $this->constructGroupBy();
         $sugarChart->setData($this->getChartData($this->constructQuery()));
         $sugarChart->is_currency = true;

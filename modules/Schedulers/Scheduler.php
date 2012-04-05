@@ -202,8 +202,8 @@ class Scheduler extends SugarBean {
 				$r2 = $this->db->query($q2);
 				if($r2 != null) {
 					$a2 = $this->db->fetchByAssoc($r2); // we only care about the newest
-                    $a2['execute_time'] = $this->db->fromConvert($a2['execute_time'],'datetime');
 					if($a2 != null) {
+                        $a2['execute_time'] = $this->db->fromConvert($a2['execute_time'],'datetime');
 						$GLOBALS['log']->debug("-----> Scheduler found [ {$a['name']} ] 'In Progress' with most recent Execute Time at [ {$a2['execute_time']} GMT-0 ]");
 
 						$execTime = TimeDate::getInstance()->fromDB($a2['execute_time'])->ts;
@@ -334,7 +334,7 @@ class Scheduler extends SugarBean {
 			}
 
 			// check the day to be in scope:
-			if(!in_array(($today['wday']+6)%7, $dayName)) {//$dayName starts from Monday, while $today['wday'] starts from Sunday
+			if(!in_array($today['wday'], $dayName)) {
 				return false;
 			}
 		} else {
@@ -628,13 +628,13 @@ class Scheduler extends SugarBean {
 	function handleIntervalType($type, $value, $mins, $hours) {
 		global $mod_strings;
 		/* [0]:min [1]:hour [2]:day of month [3]:month [4]:day of week */
-		$days = array (	0 => $mod_strings['LBL_MON'],
-						1 => $mod_strings['LBL_TUE'],
-						2 => $mod_strings['LBL_WED'],
-						3 => $mod_strings['LBL_THU'],
-						4 => $mod_strings['LBL_FRI'],
-						5 => $mod_strings['LBL_SAT'],
-						6 => $mod_strings['LBL_SUN'],
+		$days = array (	1 => $mod_strings['LBL_MON'],
+						2 => $mod_strings['LBL_TUE'],
+						3 => $mod_strings['LBL_WED'],
+						4 => $mod_strings['LBL_THU'],
+						5 => $mod_strings['LBL_FRI'],
+						6 => $mod_strings['LBL_SAT'],
+						0 => $mod_strings['LBL_SUN'],
 						'*' => $mod_strings['LBL_ALL']);
 		switch($type) {
 			case 0: // minutes
@@ -767,7 +767,7 @@ class Scheduler extends SugarBean {
 			$this->datesArray[$i] = $i;
 		}
 
-		$this->dayInt = array('*',1,2,3,4,5,6,7);
+		$this->dayInt = array('*',1,2,3,4,5,6,0);
 		$this->dayLabel = array('*',$mod_strings['LBL_MON'],$mod_strings['LBL_TUE'],$mod_strings['LBL_WED'],$mod_strings['LBL_THU'],$mod_strings['LBL_FRI'],$mod_strings['LBL_SAT'],$mod_strings['LBL_SUN']);
 		$this->monthsInt = array(0,1,2,3,4,5,6,7,8,9,10,11,12);
 		$this->monthsLabel = $app_list_strings['dom_cal_month_long'];

@@ -50,6 +50,7 @@ function email2init() {
  	 tinyMCE.init({
  		 convert_urls : false,
          theme_advanced_toolbar_align : tinyConfig.theme_advanced_toolbar_align,
+         valid_children : tinyConfig.valid_children,
          width: tinyConfig.width,
          theme: tinyConfig.theme,
          theme_advanced_toolbar_location : tinyConfig.theme_advanced_toolbar_location,

@@ -47,7 +47,7 @@ class ImporterTest extends Sugar_PHPUnit_Framework_TestCase
     // date_entered and last_name
     private static $CsvContent = array (
         0 => "\"3/26/2011 10:02am\",\"Doe\"",
-        1 => "\"2011-3-26 10:2 am\",\"Doe\"",
+        1 => "\"2011-3-26 10:02 am\",\"Doe\"",
         2 => "\"3.26.2011 10.02\",\"Doe\"",
     );
 

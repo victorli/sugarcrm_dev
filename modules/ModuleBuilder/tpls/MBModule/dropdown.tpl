@@ -99,7 +99,7 @@
 			                   {if (!isset($val) || $val =='')}[{$MOD.LBL_BLANK}]{else}[{$val}]{/if}
 			               </span>
 			               <span class='fieldValue' id='span_edit_{$name}' style='display:none'>
-			                   <input type='text' id='input_{$name}' value="{$val|escape}" onBlur='SimpleList.setDropDownValue("{$name}", this.value, true)' >
+			                   <input type='text' id='input_{$name}' value="{$val}" onBlur='SimpleList.setDropDownValue("{$name}", this.value, true)' >
 			               </span>
 			           </td>
 			           <td align='right'>

@@ -780,7 +780,17 @@ class RenameModules
             $replace = call_user_func($modifier, $replace);
         }
         
-        return str_replace($search, $replace, $oldStringValue);
+        // Bug 47957
+        // If nothing was replaced - try to replace original string
+        $result = '';
+        $replaceCount = 0;
+        $result = str_replace($search, $replace, $oldStringValue, $replaceCount);
+        if(!$replaceCount){
+            $replaceKey = 'key_' . $replacementMetaData['type'];
+            $search = html_entity_decode_utf8($replacementLabels[$replaceKey], ENT_QUOTES);
+            $result = str_replace($search, $replace, $oldStringValue, $replaceCount);
+        }
+        return $result;
     }
 
 
