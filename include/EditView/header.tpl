@@ -39,9 +39,9 @@
 <script>
     {literal}
     $(document).ready(function(){
-        $("ul.clickMenu").each(function(index, node){
-            $(node).sugarActionMenu();
-        });
+	    $("ul.clickMenu").each(function(index, node){
+	        $(node).sugarActionMenu();
+	    });
     });
     {/literal}
 </script>
@@ -88,7 +88,7 @@
 {{sugar_button module="$module" id="Audit" view="$view" form_id="$form_id" appendTo="header_buttons"}}
 {{/if}}
 {{/if}}
-{{sugar_action_menu buttons=$header_buttons class="fancymenu"}}
+{{sugar_action_menu buttons=$header_buttons class="fancymenu" theme="Classic"}}
 </td>
 <td align='right'>{{$ADMIN_EDIT}}
 {{if $panelCount == 0}}

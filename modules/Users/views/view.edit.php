@@ -182,9 +182,11 @@ var $useForSubpanel = true;
         $RETURN_MODULE = $this->ss->get_template_vars('RETURN_MODULE');
         $RETURN_ID = $this->ss->get_template_vars('RETURN_ID');
 
+        $minpwdlength = !empty($PWDSETTINGS['minpwdlength']) ? $PWDSETTINGS['minpwdlength'] : '';
+        $maxpwdlength =  !empty($PWDSETTINGS['maxpwdlength']) ? $PWDSETTINGS['maxpwdlength'] : '';
         $action_button[] = <<<EOD
                     <input type="button" id="Save" title="{$APP['LBL_SAVE_BUTTON_TITLE']}" accessKey="{$APP['LBL_SAVE_BUTTON_KEY']}"
-                          class="button primary" onclick="var _form = $('#EditView')[0]; if (!set_password(_form,newrules('{$PWDSETTINGS['minpwdlength']}','{$PWDSETTINGS['maxpwdlength']}','{$REGEX}'))) return false; if (!Admin_check()) return false; _form.action.value='Save'; {$CHOOSER_SCRIPT} {$REASSIGN_JS} if(verify_data(EditView)) _form.submit();"
+                          class="button primary" onclick="var _form = $('#EditView')[0]; if (!set_password(_form,newrules('{$minpwdlength}','{$maxpwdlength}','{$REGEX}'))) return false; if (!Admin_check()) return false; _form.action.value='Save'; {$CHOOSER_SCRIPT} {$REASSIGN_JS} if(verify_data(EditView)) _form.submit();"
                           name="button" value="{$APP['LBL_SAVE_BUTTON_LABEL']}">
 EOD
         ;

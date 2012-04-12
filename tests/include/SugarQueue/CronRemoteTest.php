@@ -86,7 +86,8 @@ class CronRemoteTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertTrue($this->jq->runOk());
 
         $this->assertEquals("http://test.job.server/submitJob", $this->client->call_url);
-        $data = json_decode($this->client->call_data, true);
+        parse_str($this->client->call_data, $qdata);
+        $data = json_decode($qdata['data'], true);
         $this->assertEquals($jobid, $data['job']);
         $this->assertEquals($this->jq->getMyId(), $data['client']);
         $this->assertEquals($GLOBALS['sugar_config']['site_url'], $data['instance']);

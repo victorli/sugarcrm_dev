@@ -83,12 +83,12 @@ class DocumentsViewExtdoc extends SugarView
          // Need to manually attempt to fetch the EAPM record, we don't want to give them the signup screen when they just have a deactivated account.
          $eapmBean = EAPM::getLoginInfo($apiName,true);
          $api = ExternalAPIFactory::loadAPI($apiName,true);
-         $api->loadEAPM($eapmBean);
          $validSession = true;
 
          if(!empty($eapmBean))
          {
              try {
+               $api->loadEAPM($eapmBean);
                // $api->checkLogin() does the same thing as quickCheckLogin plus actually makes sure the user CAN log in to the API currently
                $loginCheck = $api->checkLogin($eapmBean);
                if(isset($loginCheck['success']) && !$loginCheck['success'])
@@ -101,7 +101,7 @@ class DocumentsViewExtdoc extends SugarView
              }
          }
 
-         if (!$validSession)
+         if (!$validSession || empty($eapmBean))
          {
              // Bug #49987 : Documents view.extdoc.php doesn't allow custom override
              $tpl_file = get_custom_file_if_exists('include/externalAPI/'.$apiName.'/'.$apiName.'Signup.'.$GLOBALS['current_language'].'.tpl');

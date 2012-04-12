@@ -389,6 +389,35 @@ if(empty($_REQUEST['return_id']) && !isset($_REQUEST['type'])) {
 
 $xtpl->assign('PRINT_URL', 'index.php?'.$GLOBALS['request_string']);
 
+//aaplying action menu (new UI) instead of buttons
+$buttons = array(
+    <<<EOD
+            <input type="submit" name="button" id="SAVE" class="button primary"
+				title="{$app_strings['LBL_SAVE_BUTTON_TITLE']}"
+				accesskey="{$app_strings['LBL_SAVE_BUTTON_KEY']}"
+				value="{$app_strings['LBL_SAVE_BUTTON_LABEL']}"
+				onclick="this.form.action.value='Save'; return check_form('EditView');" />
+EOD
+,
+    <<<EOD
+            <input type="submit" name="button" id="CANCEL" class="button"
+				title="{$app_strings['LBL_CANCEL_BUTTON_TITLE']}"
+				accesskey="{$app_strings['LBL_CANCEL_BUTTON_KEY']}"
+				value="{$app_strings['LBL_CANCEL_BUTTON_LABEL']}"
+				onclick="this.form.action.value='{$_REQUEST['return_action']}'; this.form.module.value='{$_REQUEST['return_module']}'; this.form.record.value='{$_REQUEST['return_id']}' " />
+EOD
+
+);
+require_once('include/Smarty/plugins/function.sugar_action_menu.php');
+$action_button = smarty_function_sugar_action_menu(array(
+    'id' => 'archived_emails_edit_action_buttons',
+    'buttons' => $buttons,
+    'class' => 'clickMenu fancymenu',
+), $xtpl);
+
+$xtpl->assign("ACTION_BUTTON", $action_button);
+
+
 
 	///////////////////////////////////////////////////////////////////////////////
 	////	QUICKSEARCH CODE

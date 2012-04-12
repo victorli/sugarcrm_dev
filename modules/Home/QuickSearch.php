@@ -55,6 +55,8 @@ class quicksearchQuery
     const CONDITION_LIKE_CUSTOM = 'like_custom';
     const CONDITION_EQUAL       = 'equal';
 
+    protected $extra_where;
+
     /**
      * Query a module for a list of items
      *
@@ -148,7 +150,9 @@ class quicksearchQuery
 
         $table = $focus->getTableName();
         if (!empty($table)) {
-            $table .= ".";
+            $table_prefix = $db->getValidDBName($table).".";
+        } else {
+            $table_prefix = '';
         }
         $conditionArray = array();
 
@@ -165,7 +169,7 @@ class quicksearchQuery
                         $conditionArray,
                         sprintf(
                             "%s like '%%%s%%'",
-                            $db->quote($table . $condition['name']),
+                            $table_prefix . $db->getValidDBName($condition['name']),
                             $db->quote($condition['value']
                     )));
                     break;
@@ -187,52 +191,47 @@ class quicksearchQuery
                         if (strpos($nameFormat,'l') > strpos($nameFormat,'f')) {
                             array_push(
                                 $conditionArray,
-                                db_concat(rtrim($table, '.'), array('first_name','last_name')) . sprintf(" like '%s'", $like)
+                                $db->concat($table, array('first_name','last_name')) . " like '$like'"
                             );
                         } else {
                             array_push(
                                 $conditionArray,
-                                db_concat(rtrim($table, '.'), array('last_name','first_name')) . sprintf(" like '%s'", $like)
+                                $db->concat($table, array('last_name','first_name')) . " like '$like'"
                             );
                         }
                     }
                     else {
                         array_push(
                             $conditionArray,
-                            $db->quote($table . $condition['name']) . sprintf(" like '%s'", $like)
+                            $table_prefix . $db->getValidDBName($condition['name']) . sprintf(" like '%s'", $like)
                         );
                     }
                     break;
 
                 case self::CONDITION_EQUAL:
                     if ($condition['value']) {
-                        if (empty($args['whereExtra'])) {
-                            $args['whereExtra'] = '';
-                        }
-                        $args['whereExtra'] .= sprintf("(%s = '%s')", $db->quote($condition['name']), $db->quote($condition['value']));
+                        array_push(
+                            $conditionArray,
+                            sprintf("(%s = '%s')", $db->getValidDBName($condition['name']), $db->quote($condition['value']))
+                            );
                     }
                     break;
 
                 default:
                     array_push(
                         $conditionArray,
-                        $db->quote($table.$condition['name']) . sprintf(" like '%s%%", $db->quote($condition['value']))
+                        $table_prefix.$db->getValidDBName($condition['name']) . sprintf(" like '%s%%", $db->quote($condition['value']))
                     );
             }
         }
 
         $whereClause = sprintf('(%s)', implode(" {$args['group']} ", $conditionArray));
-
-        if ($table == 'users.') {
-            $whereClause .= sprintf(" AND %sstatus='Active'", $table);
+        if(!empty($this->extra_where)) {
+            $whereClause .= " AND ({$this->extra_where})";
         }
 
-        // Need to include the default whereStatement
-        if (!empty($args['whereExtra'])) {
-            if (!empty($whereClause)) {
-                $whereClause .= ' AND ';
-            }
-            $whereClause .= html_entity_decode($args['whereExtra'], ENT_QUOTES);
+        if ($table == 'users') {
+            $whereClause .= sprintf(" AND users.status='Active'");
         }
 
         return $whereClause;
@@ -351,16 +350,16 @@ class quicksearchQuery
     protected function getRawResults($args, $singleSelect = false)
     {
         $orderBy = !empty($args['order']) ? $args['order'] : '';
-        $limit   = !empty($args['limit']) ? $args['limit'] : '';
+        $limit   = !empty($args['limit']) ? intval($args['limit']) : '';
         $data    = array();
 
         foreach ($args['modules'] as $module) {
             $focus = SugarModule::get($module)->loadBean();
 
-            $orderBy = ($args['order_by_name'] && $focus instanceof Person && $args['order'] == 'name') ? 'last_name' : $orderBy;
+            $orderBy = $focus->db->getValidDBName(($args['order_by_name'] && $focus instanceof Person && $args['order'] == 'name') ? 'last_name' : $orderBy);
 
             if ($focus->ACLAccess('ListView', true)) {
-                $where = ($args['use_default_where']) ? $this->constructWhere($focus, $args) : $args['whereExtra'];
+                $where = $this->constructWhere($focus, $args);
                 $data  = $this->updateData($data, $focus, $orderBy, $where, $limit, $singleSelect);
             }
         }
@@ -494,10 +493,16 @@ class quicksearchQuery
         }
 
         $defaults = array(
-            'whereExtra' => '',
             'order_by_name' => false,
-            'use_default_where' => true,
         );
+        $this->extra_where = '';
+
+        // Sanitize group
+        if(!empty($args['group'])  && strcasecmp($args['group'], 'and')) {
+            $args['group'] = 'AND';
+        } else {
+            $args['group'] = 'OR';
+        }
 
         return array_merge($defaults, $args);
     }
@@ -547,7 +552,7 @@ class quicksearchQuery
         $where .= (!empty($args['conditions'][1]) && $args['conditions'][1]['name'] == 'user_id')
             ? sprintf(
                 " AND teams.id in (select team_id from team_memberships where user_id = '%s')",
-                $args['conditions'][1]['value']
+                $db->quote($args['conditions'][1]['value'])
             )
             : ' AND teams.private = 0';
 
@@ -626,9 +631,8 @@ class quicksearchQuery
      */
     protected function updateTeamArrayArguments($args)
     {
-        $args['whereExtra'] = $this->getNonPrivateTeamsWhere($args);
+        $this->extra_where = $this->getNonPrivateTeamsWhere($args);
         $args['modules'] = array('Teams');
-        $args['use_default_where'] = false;
 
         return $args;
     }

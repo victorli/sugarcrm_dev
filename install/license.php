@@ -85,7 +85,7 @@ $out =<<<EOQ
 		</p>
       {$mod_strings['LBL_LICENSE_ACCEPTANCE']}</th>
       <th width="200" height="30" style="text-align: right;"><a href="http://www.sugarcrm.com" target="_blank">
-      	<IMG src="include/images/sugarcrm_login.png" width="145" height="30" alt="SugarCRM" border="0"></a>
+      	<IMG src="include/images/sugarcrm_login.png" alt="SugarCRM" border="0"></a>
       </th>
     </tr>
     <tr>
@@ -163,7 +163,7 @@ function callSysCheck(){
                 success = function(o) {
                     if (o.responseText.indexOf('passed')>=0){
                         if ( YAHOO.util.Selector.query('button', 'p_msg', true) != null )
-                            YAHOO.util.Selector.query('button', 'p_msg', true).style.display = 'none'; 
+                            YAHOO.util.Selector.query('button', 'p_msg', true).style.display = 'none';
                         scsbody =  "<table cellspacing='0' cellpadding='0' border='0' align='center'><tr><td>";
                         scsbody += "<p>{$mod_strings['LBL_LICENSE_CHECK_PASSED']}</p>";
                         scsbody += "<div id='cntDown'>{$mod_strings['LBL_THREE']}</div>";

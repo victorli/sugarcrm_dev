@@ -415,7 +415,7 @@ break;}
 if(!sugarListView.confirm_action(del))
 return false;if(del==1){var deleteInput=document.createElement('input');deleteInput.name='Delete';deleteInput.type='hidden';deleteInput.value=true;document.MassUpdate.appendChild(deleteInput);if(document.MassUpdate.module!='undefined'&&document.MassUpdate.module.value=='EmailTemplates'){check_used_email_templates();return false;}}
 document.MassUpdate.submit();return false;}
-sugarListView.prototype.clear_all=function(){document.MassUpdate.uid.value='';document.MassUpdate.select_entire_list.value=0;sugarListView.check_all(document.MassUpdate,'mass[]',false);document.MassUpdate.massall.checked=false;document.MassUpdate.massall.disabled=false;sugarListView.update_count(0);sugarListView.prototype.toggleSelected();}
+sugarListView.prototype.clear_all=function(){document.MassUpdate.uid.value='';document.MassUpdate.select_entire_list.value=0;sugarListView.check_all(document.MassUpdate,'mass[]',false);$(document.MassUpdate.massall).each(function(){$(this).attr('checked',false).attr('disabled',false);});sugarListView.update_count(0);sugarListView.prototype.toggleSelected();}
 sListView=new sugarListView();function unformatNumber(n,num_grp_sep,dec_sep){var x=unformatNumberNoParse(n,num_grp_sep,dec_sep);x=x.toString();if(x.length>0){return parseFloat(x);}
 return'';}
 function unformatNumberNoParse(n,num_grp_sep,dec_sep){if(typeof num_grp_sep=='undefined'||typeof dec_sep=='undefined')return n;n=n?n.toString():'';if(n.length>0){if(num_grp_sep!='')

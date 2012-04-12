@@ -47,6 +47,7 @@ $subpanel_layout = array(
 				
 	'list_fields' => array(
 		'object_image'=>array(
+			'vname' => 'LBL_OBJECT_IMAGE',
 			'widget_class' => 'SubPanelIcon',
  		 	'width' => '2%',
 			'image2'=>'__VARIABLE',

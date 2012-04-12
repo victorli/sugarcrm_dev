@@ -1,4 +1,4 @@
-{*
+<?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
@@ -34,61 +34,29 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-*}
 
-{if $controls}
+require_once("modules/DynamicFields/templates/Fields/TemplateCurrency.php");
 
-<div style='width: 100%; margin-top: 12px;'></div>
+class Bug51695Test extends Sugar_PHPUnit_Framework_TestCase
+{
 
-<div style='float:left; width: 50%;'>
-{foreach name=tabs from=$tabs key=k item=tab}
-	<input type="button" class="button" {if $view == $tab} selected {/if} id="{$tabs_params[$tab].id}" title="{$tabs_params[$tab].title}" value="{$tabs_params[$tab].title}" onclick="{$tabs_params[$tab].link}">
-{/foreach}
-</div>
+    public function setUp()
+    {
+        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+        $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
+    }
 
-<div style="float:left; text-align: right; width: 50%; font-size: 12px;">
-	{if $view == "shared"}
-		<button id="userListButtonId" type="button" class="button" onclick="javascript: CAL.toggle_shared_edit('shared_cal_edit');">{$MOD.LBL_EDIT_USERLIST}</button>
-	{/if}
-	{if $view != 'year'}
-	<span class="dateTime">
-					<img border="0" src="{$cal_img}" alt="{$APP.LBL_ENTER_DATE}" id="goto_date_trigger" align="absmiddle">					
-					<input type="hidden" id="goto_date" name="goto_date" value="{$current_date}">		
-					<script type="text/javascript">
-					Calendar.setup ({literal}{{/literal}
-						inputField : "goto_date",
-						ifFormat : "%m/%d/%Y",
-						daFormat : "%m/%d/%Y",
-						button : "goto_date_trigger",
-						singleClick : true,
-						dateStr : "{$current_date}",
-						step : 1,
-						onUpdate: goto_date_call,
-						startWeekday: {$start_weekday},
-						weekNumbers:false
-					{literal}}{/literal});	
-					{literal}	
-					YAHOO.util.Event.onDOMReady(function(){
-						YAHOO.util.Event.addListener("goto_date","change",goto_date_call);
-					});
-					function goto_date_call(){
-						CAL.goto_date_call();
-					}
-					{/literal}
-					</script>
-	</span>
-	{/if}
-	<input type="button" class="button" onclick="CAL.toggle_settings()" value="{$MOD.LBL_SETTINGS}">
-</div>
+    public function tearDown()
+    {
+        unset($GLOBALS['app_strings']);
+        unset($GLOBALS['current_user']);
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+    }
 
-<div style='clear: both;'></div>
+    public function testGetFieldDefsForCurrencyTemplateHasPrecision() {
+        $template = new TemplateCurrency();
 
-{/if}
+        $this->assertArrayHasKey('precision', $template->get_field_def());
+    }
 
-
-<div class="{if $controls}monthHeader{/if}">
-	<div style='float: left; width: 20%;'>{$previous}</div>
-	<div style='float: left; width: 60%; text-align: center;'><h3>{$date_info}</h3></div>
-	<div style='float: right;'>{$next}</div>
-	<br style='clear:both;'>
-</div>
+}

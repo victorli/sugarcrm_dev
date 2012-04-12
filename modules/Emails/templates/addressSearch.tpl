@@ -44,7 +44,7 @@
 			         <a href="#" class="rollover"><img border="0" alt=$mod_strings.LBL_HELP src="index.php?entryPoint=getImage&amp;imageName=helpInline.png">
 	                        <div><span class="rollover">{$mod_strings.LBL_ADDRESS_BOOK_SEARCH_HELP}</span></div>
 	                 </a>
-	                          
+
 		      	<input id="input_searchField" name="input_searchField" type="text" value="">
 		      	</div>
 			    &nbsp;&nbsp; {$mod_strings.LBL_LIST_RELATED_TO}: &nbsp;
@@ -53,11 +53,11 @@
 			    </select>
 			    &nbsp;
 			    <a href="javascript:void(0);">
-		           	{sugar_getimage name="select" ext=".gif" alt=$mod_strings.LBL_EMAIL_SELECTOR other_attributes='align="absmiddle" border="0" onclick="SUGAR.email2.addressBook.searchContacts();" '}
+                    {sugar_getimage name="select" ext=".gif" alt=$mod_strings.LBL_EMAIL_SELECTOR_SELECT other_attributes='align="absmiddle" border="0" onclick="SUGAR.email2.addressBook.searchContacts();" '}
                 </a>
                 <a href="javascript:void(0);">
-		           	{sugar_getimage name="clear" ext=".gif" alt=$mod_strings.LBL_EMAIL_SELECTOR other_attributes='align="absmiddle" border="0" onclick="SUGAR.email2.addressBook.clearAddressBookSearch();" '}
-                </a>  
+                    {sugar_getimage name="clear" ext=".gif" alt=$mod_strings.LBL_EMAIL_SELECTOR_CLEAR other_attributes='align="absmiddle" border="0" onclick="SUGAR.email2.addressBook.clearAddressBookSearch();" '}
+                </a>
 			</td>
         </tr>
         <tr id="peopleTableSearchRow">
@@ -65,7 +65,7 @@
 		      {$mod_strings.LBL_FILTER_BY_RELATED_BEAN}<span id="relatedBeanInfo"></span>
 		   	  <input name="hasRelatedBean" id="hasRelatedBean" type="checkbox"/>
             </td>
-            
+
         </tr>
         <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
         <tr id="peopleTableSearchRow">
@@ -81,6 +81,6 @@
                 </button>
             </td>
         </tr>
-        
+
     </table>
 </form>

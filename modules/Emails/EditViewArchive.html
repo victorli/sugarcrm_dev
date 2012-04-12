@@ -66,17 +66,7 @@
 
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 	<tr>
-		<td>
-			<input type="submit" name="button" id="SAVE_HEADER" class="button primary"
-				title="{APP.LBL_SAVE_BUTTON_TITLE}"
-				accesskey="{APP.LBL_SAVE_BUTTON_KEY}"
-				value="  {APP.LBL_SAVE_BUTTON_LABEL}  "
-				onclick="this.form.action.value='Save'; return check_form('EditView');" />
-			<input type="submit" name="button" id="CANCEL_HEADER" class="button"
-				title="{APP.LBL_CANCEL_BUTTON_TITLE}"
-				accesskey="{APP.LBL_CANCEL_BUTTON_KEY}"
-				value="  {APP.LBL_CANCEL_BUTTON_LABEL}  "
-				onclick="this.form.action.value='{RETURN_ACTION}'; this.form.module.value='{RETURN_MODULE}'; this.form.record.value='{RETURN_ID}'" />		</td>
+		<td>{ACTION_BUTTON}</td>
 		<td align="right" nowrap></td>
 		<td align='right'>{ADMIN_EDIT}</td>
 	</tr>

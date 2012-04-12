@@ -2233,9 +2233,9 @@ Note:
 /* This is a simple plugin to render action dropdown menus from html.
  * John Barlow - SugarCRM
  * add secondary popup implementation by Justin Park - SugarCRM
- * 
+ *
  * The html structure it expects is as follows:
- * 
+ *
  * <ul>                                     - Menu root
  *      <li>                                - First element in menu (visible)
  *      <ul class="subnav">		            - Popout menu (should start hidden)
@@ -2253,21 +2253,21 @@ Note:
  *      </ul>
  *      </li>
  * </ul>
- * 
+ *
  * By adding a class of "fancymenu" to the menu root, the plugin adds an additional "ab" class to the
  * dropdown handle, allowing you to make the menu "fancy" with additional css if you would like :)
- * 
+ *
  * Functions:
- * 
+ *
  * 		init: initializes things (called by default)... currently no options are passed
- * 		
+ *
  * 		Adds item to the menu at position index
  * 		addItem: (item, index)
  * 			item - created dom element or string that represents one
  * 			index(optional) - the position you want your new menuitem. If you leave this off,
  * 				the item is appended to the end of the list.
  *      	returns: nothing
- *      
+ *
  *      Finds an item in the menu (including the root node "outside" the ul structure).
  * 		findItem: (item)
  * 			item - string of the menu item you are looking for.
@@ -2291,20 +2291,37 @@ Note:
                     var disabled = $(this).prop('disabled');
 					var newItem = $(document.createElement("li"));
 					var newItemA = $(document.createElement("a"));
+                    var accesskey = jNode.attr("accesskey");
+                    var accesskey_el = $("<a></a>");
 
 					newItemA.html(jNode.val());
                     if(!disabled )
                     {
-                        newItemA.click(function(event){ if($(this).hasClass("void") === false )jNode.click(); });
+                        newItemA.click(function(event){
+                        	if($(this).hasClass("void") === false ){
+                        		jNode.click();
+                        	}
+                        });
                     }
                     else
                     {
                         newItemA.addClass("disabled");
                     }
 					newItemA.attr("id", jNode.attr("id"));
+                    accesskey_el.attr("id", jNode.attr("id") + "_accesskey");
 					jNode.attr("id", jNode.attr("id") + "_old");
 
-					//make sure the node we found isn't the main item of the list -- we don't want 
+
+                    if(accesskey !== undefined) {
+                        if($('#'+accesskey_el.attr('id')).length === 0) {
+                            accesskey_el.attr("accesskey", accesskey).click(function() {
+                                jNode.click();
+                            }).appendTo("#content");
+                        }
+                        jNode.attr("accesskey", '');
+                    }
+
+					//make sure the node we found isn't the main item of the list -- we don't want
 					//to show it then.
 					if(menuNode.sugarActionMenu("findItem", newItemA.html()) == -1){
                         parent.prepend(newItemA);
@@ -2360,8 +2377,8 @@ Note:
                     });
                     jNode.css("display", "none");
 				});
-				
-				
+
+
 				//look for all subnavs and set them up
 				this.find("ul.subnav").each(function(index, node){
 					var jNode = $(node);
@@ -2369,29 +2386,30 @@ Note:
 					var fancymenu = "";
 					var slideUpSpeed = "fast";
 					var slideDownSpeed = "fast";
+                    var dropDownHandle;
 
-					//if the dropdown handle doesn't exist, lets create it and 
+					//if the dropdown handle doesn't exist, lets create it and
 					//add it to the dom
 					if(parent.find("span").length == 0){
-					
+
 						//create dropdown handle
-						var dropDownHandle = $(document.createElement("span"));
+						dropDownHandle = $(document.createElement("span"));
 						parent.append(dropDownHandle);
-						
+
 					} else {
-						var dropDownHandle = $(parent.find("span"));
+						dropDownHandle = $(parent.find("span"));
 					}
 						if(menuNode.hasClass("fancymenu")){
 							dropDownHandle.addClass("ab");
-							dropDownHandle.tipTip({maxWidth: "auto", 
-							   edgeOffset: 10, 
-		                       content: "More Actions", 
+							dropDownHandle.tipTip({maxWidth: "auto",
+							   edgeOffset: 10,
+		                       content: "More Actions",
 		                       defaultPosition: "top"});
-							
-						}
-					
 
-						
+						}
+
+
+
 						//add click handler to handle
 						dropDownHandle.click(function(event){
 
@@ -2404,7 +2422,7 @@ Note:
 							$("ul.SugarActionMenu ul.subnav").each(function(subIndex, node){
 								var subjNode = $(node);
 								if(!(subjNode[0] === jNode[0])){
-									subjNode.slideUp(slideUpSpeed);	
+									subjNode.slideUp(slideUpSpeed);
 									subjNode.removeClass("ddopen");
 								}
 							});
@@ -2424,7 +2442,7 @@ Note:
 							}
 							event.stopPropagation();
 						});
-						
+
 						//add submenu click off to body
 						var jBody = $("body");
                         var _hide_subnav_delay = 30;
@@ -2460,17 +2478,17 @@ Note:
 
 							});
 						}
-					
+
 						//add hover handler to handle
 						dropDownHandle.hover(function(){
 							dropDownHandle.addClass("subhover");
 						}, function(){
 							dropDownHandle.removeClass("subhover");
 						});
-					
-						
-					
-					
+
+
+
+
 					//bind click event to submenu items to hide the menu on click
 					jNode.find("li").each(function(index, subnode){
                         //prevent hiding the submenu when user click the submenu which contains one more depth submenu
@@ -2481,7 +2499,7 @@ Note:
                             setTimeout(_hide, _hide_subnav_delay);
 						});
 					});
-					
+
 					//fix up text of <a> tags so they span correctly
 					jNode.find("a").each(function(index, subnode){
 						$(subnode).html(function(index, oldhtml){
@@ -2604,9 +2622,9 @@ Note:
             }
         }
 	}
-		
+
 	$.fn.sugarActionMenu = function(method) {
-		
+
 		if (methods[method]) {
 			return methods[method].apply(this, Array.prototype.slice.call(
 					arguments, 1));

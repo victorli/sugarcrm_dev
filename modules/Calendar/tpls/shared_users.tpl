@@ -36,11 +36,6 @@
 
 *}
 
-<div width="100%">
-
-<div align="right"><button id="userListButtonId" type="button" class="button" onclick="javascript: CAL.toggle_shared_edit('shared_cal_edit');">{$MOD.LBL_EDIT_USERLIST}</button></div>
-</div>
-
 <script language="javascript">
 {if $edit_shared}
 	{literal}

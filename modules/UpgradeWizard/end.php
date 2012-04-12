@@ -258,7 +258,7 @@ if(function_exists('rebuildSprites') && function_exists('imagecreatetruecolor'))
 }
 
 //Run repairUpgradeHistoryTable
-if($origVersion < '650' && function_exists('repairUpgradeHistoryTable'))
+if($_SESSION['current_db_version'] < '650' && function_exists('repairUpgradeHistoryTable'))
 {
     repairUpgradeHistoryTable();
 }

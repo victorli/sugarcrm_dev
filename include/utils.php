@@ -636,6 +636,7 @@ function get_user_array($add_blank=true, $status="Active", $user_id='', $use_rea
 		}
 
 		if (!empty($user_name_filter)) {
+		    $user_name_filter = $db->quote($user_name_filter);
 			$query .= " AND user_name LIKE '$user_name_filter%' ";
 		}
 		if (!empty($user_id)) {
@@ -677,6 +678,7 @@ function get_user_array($add_blank=true, $status="Active", $user_id='', $use_rea
 
 /**
  * uses a different query to return a list of users than get_user_array()
+ * Used from QuickSearch.php
  * @param args string where clause entry
  * @return array Array of Users' details that match passed criteria
  */
@@ -698,7 +700,7 @@ function getUserArrayFromFullName($args, $hide_portal_users = false) {
 		}
 		if(empty($arg))
 		continue;
-
+        $arg = $db->quote($arg);
 		$inClause .= "(first_name LIKE '{$arg}%' OR last_name LIKE '{$arg}%')";
 	}
 
@@ -4749,10 +4751,10 @@ function get_help_url($send_edition = '', $send_version = '', $send_lang = '', $
 
 /**
  * generateETagHeader
- * 
+ *
  * This function generates the necessary cache headers for using ETags with dynamic content. You
  * simply have to generate the ETag, pass it in, and the function handles the rest.
- * 
+ *
  * @param string $etag ETag to use for this content.
  */
 function generateETagHeader($etag){

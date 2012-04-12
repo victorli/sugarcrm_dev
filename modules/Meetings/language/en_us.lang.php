@@ -60,6 +60,7 @@ $mod_strings = array (
 	'LBL_DEL'=> 'Del',
 	'LBL_DESCRIPTION_INFORMATION' => 'Description Information',
 	'LBL_DESCRIPTION' => 'Description:',
+    'LBL_DIRECTION' => 'Direction:',
 	'LBL_DURATION_HOURS' => 'Duration Hours:',
 	'LBL_DURATION_MINUTES' => 'Duration Minutes:',
 	'LBL_DURATION' => 'Duration:',

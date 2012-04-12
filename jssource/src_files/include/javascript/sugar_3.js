@@ -1724,7 +1724,6 @@ function initEditView(theForm) {
 function onUnloadEditView(theForm) {
 
 	var dataHasChanged = false;
-
     if ( typeof editViewSnapshots == 'undefined' ) {
         // No snapshots, move along
         return;
@@ -2531,8 +2530,9 @@ sugarListView.prototype.clear_all = function() {
 	document.MassUpdate.uid.value = '';
 	document.MassUpdate.select_entire_list.value = 0;
 	sugarListView.check_all(document.MassUpdate, 'mass[]', false);
-	document.MassUpdate.massall.checked = false;
-	document.MassUpdate.massall.disabled = false;
+    $(document.MassUpdate.massall).each(function(){
+        $(this).attr('checked', false).attr('disabled', false);
+    });
 	sugarListView.update_count(0);
 	sugarListView.prototype.toggleSelected();
 }
@@ -4228,7 +4228,7 @@ function open_popup(module_name, width, height, initial_filter, close_popup, hid
 		URL+='&metadata='+metadata;
 	}
 
-    // Bug #46842 : The relate field field_to_name_array fails to copy over custom fields 
+    // Bug #46842 : The relate field field_to_name_array fails to copy over custom fields
     // post fields that should be populated from popup form
 	if(popup_request_data.jsonObject) {
 		var request_data = popup_request_data.jsonObject;
@@ -4236,7 +4236,7 @@ function open_popup(module_name, width, height, initial_filter, close_popup, hid
 		var request_data = popup_request_data;
 	}
     var field_to_name_array_url = '';
-    if (request_data && request_data.field_to_name_array != 'undefined') {        
+    if (request_data && request_data.field_to_name_array != 'undefined') {
         for(var key in request_data.field_to_name_array) {
             if ( key.toLowerCase() != 'id' ) {
                 field_to_name_array_url += '&field_to_name[]='+encodeURIComponent(key.toLowerCase());
@@ -4246,7 +4246,7 @@ function open_popup(module_name, width, height, initial_filter, close_popup, hid
     if ( field_to_name_array_url ) {
         URL+=field_to_name_array_url;
     }
-    
+
 	win = SUGAR.util.openWindow(URL, windowName, windowFeatures);
 
 	if(window.focus)

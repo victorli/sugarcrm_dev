@@ -240,6 +240,9 @@ class EmailTemplate extends SugarBean {
 		foreach ($template_text_array as $key=>$template_text) {
 			if (!empty($template_text)) {
             	if(!isset($this->parsed_urls[$key]) || $this->parsed_urls[$key]['text'] != $template_text) {
+                    // Fix for bug52014.
+                    $template_text = urldecode($template_text);
+
 					$matches=array();
 					$count=preg_match_all($pattern,$template_text,$matches,PREG_OFFSET_CAPTURE);
 					$this->parsed_urls[$key]=array('matches' => $matches, 'text' => $template_text);

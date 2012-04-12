@@ -148,7 +148,7 @@ $mod_strings = array (
 	'LBL_REPEAT_LIMIT_ERROR' => 'Your request was going to create more than $limit meetings.',
 	
 	'LBL_EDIT_ALL_RECURRENCES' => 'Edit All Occurrences',
-	'LBL_REMOVE_ALL_RECURRENCES' => 'Remove All Occurrences',
+	'LBL_REMOVE_ALL_RECURRENCES' => 'Delete All Occurrences',
 	
 	'LBL_DATE_END_ERROR' => 'End date is before start date',
 

@@ -36,7 +36,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-$dictionary['SchedulersJobs'] = array('table' => 'schedulers_times',
+$dictionary['SchedulersTimes'] = array('table' => 'schedulers_times',
 	'fields' => array (
 		'id' => array (
 			'name' => 'id',

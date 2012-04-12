@@ -69,18 +69,18 @@ $out = <<<EOQ
 				</p>
 				</th>
 				<th width="200" height="30" style="text-align: right;"><a href="http://www.sugarcrm.com" target=
-				"_blank"><IMG src="include/images/sugarcrm_login.png" width="145" height="30" alt="SugarCRM" border="0"></a>
+				"_blank"><IMG src="include/images/sugarcrm_login.png" alt="SugarCRM" border="0"></a>
 				</th>
 			</tr>
 			<tr>
 			    <td colspan="2" id="ready">{$mod_strings['LBL_TITLE_ARE_YOU_READY']} </td>
-			</tr>			
+			</tr>
 			<tr>
 				<td colspan="2">
 				    <p><strong>{$mod_strings['LBL_WELCOME_PLEASE_READ_BELOW']}</strong></p>
-						
+
 					<table width="100%" cellpadding="0" cellpadding="0" border="0" class="Welcome">
-						<tr>						
+						<tr>
 						   <th>
 						      <span onclick="showtime('sys_comp');" style="cursor:pointer;cursor:hand">
 						          <span id='basic_sys_comp'><img alt="{$mod_strings['LBL_BASIC_SEARCH']}" src="themes/default/images/basic_search.gif" border="0"></span>
@@ -92,8 +92,8 @@ $out = <<<EOQ
 						<td>
 							<div id='sys_comp' >{$mod_strings['REQUIRED_SYS_COMP_MSG']}</div>
 						</td>
-					</table>			
-				
+					</table>
+
 					<table width="100%" cellpadding="0" cellpadding="0" border="0" class="Welcome">
 						<tr>
 						    <th>
@@ -107,8 +107,8 @@ $out = <<<EOQ
 						<td>
 						    <div id='sys_check' >{$mod_strings['REQUIRED_SYS_CHK_MSG']}</div>
 						</td>
-					</table>			
-				
+					</table>
+
 					<table width="100%" cellpadding="0" cellpadding="0" border="0" class="Welcome">
 						<tr>
 						    <th>
@@ -125,7 +125,7 @@ $out = <<<EOQ
 					</table>
 			    </td>
 			</tr>
-			
+
 			<tr>
 				<td align="right" colspan="2" height="20">
 					<hr>

@@ -1006,7 +1006,7 @@ if (typeof(ModuleBuilder) == 'undefined') {
 		paramsToUrl : function (params) {
 			url = "";
 			for (i in params) {
-				url += escape(i) + "=" + escape(params[i]) + "&";
+                url += i + "=" + params[i] + "&";
 			}
 			return url;
 		},

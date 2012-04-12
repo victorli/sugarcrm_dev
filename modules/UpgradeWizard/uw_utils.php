@@ -1080,6 +1080,16 @@ function checkSystemCompliance() {
 			$ret['memory_msg'] = "<b><span class=\"go\">{$installer_mod_strings['LBL_CHECKSYS_OK']} ({$memory_limit})</span></b>";
 	    }
 	}
+        // zip support
+    if (!class_exists("ZipArchive"))
+    {
+        $ret['ZipStatus'] = "<b><span class=stop>{$installer_mod_strings['ERR_CHECKSYS_ZIP']}</span></b>";
+        $ret['error_found'] = true;
+    } else {
+        $ret['ZipStatus'] = "<b><span class=go>{$installer_mod_strings['LBL_CHECKSYS_OK']}</span></b>";
+    }
+
+
 
 	/* mbstring.func_overload
 	$ret['mbstring.func_overload'] = '';

@@ -76,19 +76,18 @@ class HistoryTest extends PHPUnit_Framework_TestCase
 
     public function testPositioning()
     {
-        $other_file = tempnam(sys_get_temp_dir(), 'history');
+        $other_file = tempnam(sys_get_temp_dir() . 'tmp', 'history');
         
         $el1 = $this->_history->append($other_file);
         $el2 = $this->_history->append($other_file);
         $el3 = $this->_history->append($other_file);
 
-        $this->assertEquals($this->_history->getCount(), 3);
-        $this->assertEquals($this->_history->getFirst(), $el3);
-        $this->assertEquals($this->_history->getLast(), $el1);
-        $this->assertEquals($this->_history->getNth(1), $el2);
-        $this->assertEquals($this->_history->getNext(), $el1);
+        $this->assertEquals(3, $this->_history->getCount());
+        $this->assertEquals($el3, $this->_history->getFirst());
+        $this->assertEquals($el1, $this->_history->getLast());
+        $this->assertEquals($el2, $this->_history->getNth(1));
+        $this->assertEquals($el1, $this->_history->getNext());
         $this->assertFalse($this->_history->getNext());
-
         unlink($other_file);
     }
 

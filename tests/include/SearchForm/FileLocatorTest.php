@@ -44,12 +44,17 @@ class FileLocatorTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+        $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
         $acc = new Account();
         $this->form = new SearchFormMock($acc, "Accounts");
     }
 
     public function tearDown()
     {
+        unset($GLOBALS['app_strings']);
+        unset($GLOBALS['current_user']);
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         if(!empty($this->tempfiles)) {
             foreach($this->tempfiles as $file) {
                 @unlink($file);

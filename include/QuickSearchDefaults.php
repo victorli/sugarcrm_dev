@@ -74,7 +74,7 @@ class QuickSearchDefaults
 	function setFormName($name = 'EditView') {
 		$this->form_name = $name;
 	}
-	
+
     function getQSParent($parent = 'Accounts') {
         global $app_strings;
 
@@ -167,8 +167,8 @@ class QuickSearchDefaults
                            'limit'=>'30',
                            'no_match_text'=> $app_strings['ERR_SQS_NO_MATCH']);
         return $qsContact;
-    }    
-    
+    }
+
     function getQSUser($p_name = 'assigned_user_name', $p_id ='assigned_user_id') {
         global $app_strings;
 
@@ -198,7 +198,7 @@ class QuickSearchDefaults
         return $qsCampaign;
     }
 
-    
+
     /**
      * Loads Quick Search Object for any object (if suitable method is defined)
      *

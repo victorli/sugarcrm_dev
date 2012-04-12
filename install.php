@@ -146,8 +146,6 @@ if($current_language != 'en_us') {
 //get the url for the helper link
 $help_url = get_help_button_url();
 
-
-
 //if this license print, then redirect and exit,
 if(isset($_REQUEST['page']) && $_REQUEST['page'] == 'licensePrint')
 {
@@ -155,6 +153,7 @@ if(isset($_REQUEST['page']) && $_REQUEST['page'] == 'licensePrint')
     exit ();
 }
 
+if(isset($_REQUEST['sugar_body_only']) && $_REQUEST['sugar_body_only'] == "1") {
 //if this is a system check, then just run the check and return,
 //this is an ajax call and there is no need for further processing
 if(isset($_REQUEST['checkInstallSystem']) && ($_REQUEST['checkInstallSystem'])){
@@ -169,6 +168,7 @@ if(isset($_REQUEST['checkDBSettings']) && ($_REQUEST['checkDBSettings'])){
     require_once('install/checkDBSettings.php');
     echo checkDBSettings();
     return;
+}
 }
 
 //maintaining the install_type if earlier set to custom
@@ -311,7 +311,7 @@ $langHeader = get_language_header();
 		</p>
 		{$mod_strings['LBL_TITLE_WELCOME']} {$setup_sugar_version} {$mod_strings['LBL_WELCOME_SETUP_WIZARD']}</th>
 
-      <th width="200" height="30" style="text-align: right;"><a href="http://www.sugarcrm.com" target="_blank"><IMG src="{$loginImage}" width="145" height="30" alt="SugarCRM" border="0"></a>
+      <th width="200" height="30" style="text-align: right;"><a href="http://www.sugarcrm.com" target="_blank"><IMG src="{$loginImage}" alt="SugarCRM" border="0"></a>
       </th>
     </tr>
     <tr>
@@ -330,7 +330,7 @@ EOHTML;
 
 
 
-$exclude_files = array('register.php','download_modules.php');
+    $exclude_files = array('register.php','download_modules.php');
 
 if(isset($next_step) && isset($workflow[$next_step]) && !in_array($workflow[$next_step],$exclude_files) && isset($sugar_config['installer_locked']) && $sugar_config['installer_locked'] == true) {
     $the_file = 'installDisabled.php';

@@ -123,6 +123,7 @@ $mod_strings = array(
 	'LBL_UW_COMPLIANCE_TITLE'					=> 'Server Settings Check',
 	'LBL_UW_COMPLIANCE_TITLE2'					=> 'Detected Settings',
 	'LBL_UW_COMPLIANCE_XML'						=> 'XML Parsing',
+    'LBL_UW_COMPLIANCE_ZIPARCHIVE'				=> 'Zip Support',
 
 	'LBL_UW_COPIED_FILES_TITLE'					=> 'Files Copied Successfully',
 	'LBL_UW_CUSTOM_TABLE_SCHEMA_CHANGE'			=> 'Custom Table Schema Changes',

@@ -277,9 +277,9 @@ if(true) {
     // create option of "Contact/Lead/Task" from corresponding module
     // translations
     $lblContactAndOthers = implode('/', array(
-        $app_list_strings['moduleListSingular']['Contacts'],
-        $app_list_strings['moduleListSingular']['Leads'],
-        $app_list_strings['moduleListSingular']['Tasks'],
+        isset($app_list_strings['moduleListSingular']['Contacts']) ? $app_list_strings['moduleListSingular']['Contacts'] : 'Contact',
+        isset($app_list_strings['moduleListSingular']['Leads']) ? $app_list_strings['moduleListSingular']['Leads'] : 'Lead',
+        isset($app_list_strings['moduleListSingular']['Prospects']) ? $app_list_strings['moduleListSingular']['Prospects'] : 'Target',
     ));
 
 	// The insert variable drodown should be conditionally displayed.

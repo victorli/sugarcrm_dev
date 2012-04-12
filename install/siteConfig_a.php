@@ -131,7 +131,7 @@ $out =<<<EOQ
 		</p>
    {$mod_strings['LBL_SITECFG_TITLE']}</th>
    <th width="200" style="text-align: right;"><a href="http://www.sugarcrm.com" target="_blank">
-		<IMG src="include/images/sugarcrm_login.png" width="145" height="30" alt="SugarCRM" border="0"></a>
+		<IMG src="include/images/sugarcrm_login.png" alt="SugarCRM" border="0"></a>
         </th>
    </tr>
 <tr>

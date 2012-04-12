@@ -68,6 +68,9 @@ function changeParentQS(field) {
 	field = YAHOO.util.Dom.get(field);
     var form = field.form;
     var sqsId = form.id + "_" + field.id;
+    if(sqs_objects[sqsId] == undefined){
+    	return;
+    }
     var typeField =  form.elements.parent_type;
     var new_module = typeField.value;
     if(typeof(disabledModules) != 'undefined' && typeof(disabledModules[new_module]) != 'undefined') {

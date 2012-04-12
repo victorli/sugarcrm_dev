@@ -131,6 +131,7 @@ $app_list_strings = array (
     'TimePeriods'=>'Time Period',
     'Project'=>'Project',
     'ProjectTask'=>'Project Task',
+    'Prospects' => 'Target',
     'Campaigns'=>'Campaign',
     'Documents'=>'Document',
     'SugarFollowing'=>'SugarFollowing',

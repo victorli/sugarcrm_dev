@@ -504,6 +504,8 @@ SUGAR.subpanelUtils = function() {
 				// Grab the buttons from the subpanel and hide them
 				var button_elements = YAHOO.util.Selector.query('td.buttons', theDiv, false);
 				YAHOO.util.Dom.setStyle(button_elements, 'display', 'none');
+				button_elements = YAHOO.util.Selector.query('ul.SugarActionMenu', theDiv, false);
+				YAHOO.util.Dom.setStyle(button_elements, 'display', 'none');
 
                 // Add the form object to the DOM
 				theDivObj.parentNode.insertBefore(subpanelContents[theDiv]['newDiv'], theDivObj);
@@ -570,6 +572,8 @@ SUGAR.subpanelUtils = function() {
             SUGAR.subpanelUtils.removeSubPanel();
             var button_elements = YAHOO.util.Selector.query('td.buttons', theDiv, false);
             YAHOO.util.Dom.setStyle(button_elements, 'display', '');
+            button_elements = YAHOO.util.Selector.query('ul.SugarActionMenu', theDiv, false);
+            YAHOO.util.Dom.setStyle(button_elements, 'display', '');
             
 			return false;
 		},
@@ -631,7 +635,7 @@ SUGAR.subpanelUtils = function() {
 			}else{
 
 				SUGAR.subpanelUtils.loadedGroups.push(group);
-				var needed = Array();
+				var needed = [];
 				for(group_sp in SUGAR.subpanelUtils.subpanelGroups[group]){
 					if(typeof(SUGAR.subpanelUtils.subpanelGroups[group][group_sp]) == 'string' && !document.getElementById('whole_subpanel_'+SUGAR.subpanelUtils.subpanelGroups[group][group_sp])){
 						needed.push(SUGAR.subpanelUtils.subpanelGroups[group][group_sp]);
@@ -669,6 +673,7 @@ SUGAR.subpanelUtils = function() {
 					sp_list.childNodes[sp].style.display = 'none';
 				}
 			}
+
 			for(group_sp in SUGAR.subpanelUtils.subpanelGroups[group]){
                 if ( typeof(SUGAR.subpanelUtils.subpanelGroups[group][group_sp]) != 'string' )
                 {
@@ -682,13 +687,9 @@ SUGAR.subpanelUtils = function() {
                 }
 
                 cur.style.display = 'block';
-				/* use YDD swapNodes this and first, second, etc. */
-				try{
-					YAHOO.util.DDM.swapNode(cur, sp_list.getElementsByTagName('LI')[group_sp]);
-				}catch(e){
 
-				}
 			}
+
 			SUGAR.subpanelUtils.updateSubpanelTabs(group);
 		},
 

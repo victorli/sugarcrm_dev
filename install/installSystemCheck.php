@@ -329,6 +329,25 @@ if (!make_writable('./upload'))
     installLog("/upload directory check passed");
 }
 
+// check zip file support
+if (!class_exists("ZipArchive"))
+{
+        $zipStatus = "<span class='stop'><b>{$mod_strings['ERR_CHECKSYS_ZIP']}</b></span>";
+
+    installLog("ERROR: Zip support not found.");
+    $error_found = true;
+    $error_txt .= '
+          <tr>
+            <td><strong>'.$mod_strings['LBL_CHECKSYS_ZIP'].'</strong></td>
+            <td  align="right" class="error">'.$zipStatus.'</td>
+          </tr>';
+} else {
+    installLog("/zip check passed");
+
+}
+
+
+
 $customSystemChecks = installerHook('additionalCustomSystemChecks');
 if($customSystemChecks != 'undefined'){
 	if($customSystemChecks['error_found'] == true){
@@ -358,7 +377,7 @@ if($error_found){
     <tr>
       <th width="400">{$mod_strings['LBL_CHECKSYS_TITLE']}</th>
       <th width="200" height="30" style="text-align: right;"><a href="http://www.sugarcrm.com" target=
-      "_blank"><IMG src="include/images/sugarcrm_login.png" width="145" height="30" alt="SugarCRM" border="0"></a>
+      "_blank"><IMG src="include/images/sugarcrm_login.png" alt="SugarCRM" border="0"></a>
        <br><a href="{$help_url}" target='_blank'>{$mod_strings['LBL_HELP']} </a>
        </th>
     </tr>

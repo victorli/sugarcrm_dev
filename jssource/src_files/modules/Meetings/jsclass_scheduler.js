@@ -763,17 +763,13 @@ SugarWidgetScheduleRow.prototype.add_freebusy_nodes = function(tr,attendee) {
 			if(	typeof(GLOBAL_REGISTRY['freebusy_adjusted'][this.focus_bean.fields.id][this.timeslots[i].hash]) != 'undefined') {
 				td.style.backgroundColor="#4D5EAA";
 
-				if(td.className == 'schedulerSlotCellStartTime') {
-					fb_limit = 1;
-					if(typeof(GLOBAL_REGISTRY.focus.orig_users_arr_hash) != 'undefined' && typeof(GLOBAL_REGISTRY.focus.orig_users_arr_hash[this.focus_bean.fields.id]) != 'undefined') {
-						fb_limit = 2;
-					}
+				fb_limit = 1;
+				if(typeof(GLOBAL_REGISTRY.focus.orig_users_arr_hash) != 'undefined' && typeof(GLOBAL_REGISTRY.focus.orig_users_arr_hash[this.focus_bean.fields.id]) != 'undefined') {
+					fb_limit = 2;
+				}
 
-					if(	GLOBAL_REGISTRY['freebusy_adjusted'][this.focus_bean.fields.id][this.timeslots[i].hash] >= fb_limit) {
-						td.style.backgroundColor="#AA4D4D";
-					} else {
-						td.style.backgroundColor="#4D5EAA";
-					}
+				if(	GLOBAL_REGISTRY['freebusy_adjusted'][this.focus_bean.fields.id][this.timeslots[i].hash] >= fb_limit) {
+					td.style.backgroundColor="#AA4D4D";
 				}
 			}
 		}

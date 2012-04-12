@@ -43,8 +43,8 @@ if( !isset( $install_script ) || !$install_script ){
 }
 
 if( is_file("config.php") ){
-	
-    
+
+
 
 	if(!empty($sugar_config['default_theme']))
       $_SESSION['site_default_theme'] = $sugar_config['default_theme'];
@@ -133,7 +133,7 @@ $out =<<<EOQ
 		<img src="{$sugar_md}" alt="SugarCRM" border="0">
 		</p>
    {$mod_strings['LBL_SITECFG_SECURITY_TITLE']}</th>
-   <th width="200" style="text-align: right;"><a href="http://www.sugarcrm.com" target="_blank"><IMG src="include/images/sugarcrm_login.png" width="145" height="30" alt="SugarCRM" border="0"></a></th>
+   <th width="200" style="text-align: right;"><a href="http://www.sugarcrm.com" target="_blank"><IMG src="include/images/sugarcrm_login.png" alt="SugarCRM" border="0"></a></th>
    </tr>
 <tr>
     <td colspan="2">
@@ -144,21 +144,21 @@ $out =<<<EOQ
 
 EOQ;
 $checked = '';
-if(!empty($_SESSION['setup_site_sugarbeet_anonymous_stats'])) $checked = 'checked="checked"'; 
+if(!empty($_SESSION['setup_site_sugarbeet_anonymous_stats'])) $checked = 'checked="checked"';
 $out .= "
-   <tr><td></td>       
+   <tr><td></td>
        <td><input type='checkbox' class='checkbox' name='setup_site_sugarbeet_anonymous_stats' value='yes' $checked /></td>
        <td><b>{$mod_strings['LBL_SITECFG_ANONSTATS']}</b><br><i>{$mod_strings['LBL_SITECFG_ANONSTATS_DIRECTIONS']}</i></td></tr>
-       
+
 ";
 $checked = '';
-if(!empty($_SESSION['setup_site_sugarbeet_automatic_checks'])) $checked = 'checked="checked"'; 
+if(!empty($_SESSION['setup_site_sugarbeet_automatic_checks'])) $checked = 'checked="checked"';
 $out .= <<<EOQ
-   <tr><td></td>       
+   <tr><td></td>
        <td><input type="checkbox" class="checkbox" name="setup_site_sugarbeet_automatic_checks" value="yes" checked="checked" /></td>
        <td><b>{$mod_strings['LBL_SITECFG_SUGAR_UP']}</b><br><i>{$mod_strings['LBL_SITECFG_SUGAR_UP_DIRECTIONS']}</i><br>&nbsp;</td></tr>
    <tbody id="setup_site_session_section_pre">
-   <tr><td></td>       
+   <tr><td></td>
        <td><input type="checkbox" class="checkbox" name="setup_site_custom_session_path" value="yes" onclick="javascript:toggleSession();" {$customSession} /></td>
        <td><b>{$mod_strings['LBL_SITECFG_CUSTOM_SESSION']}</b><br>
             <em>{$mod_strings['LBL_SITECFG_CUSTOM_SESSION_DIRECTIONS']}</em><br>&nbsp;</td>
@@ -170,19 +170,19 @@ $out .= <<<EOQ
        <td align="left">
 	       <div><div style="width:200px;float:left"><b>{$mod_strings['LBL_SITECFG_SESSION_PATH']}</b></div>
 	               <input type="text" name="setup_site_session_path" size='40' value="{$_SESSION['setup_site_session_path']}" /></td>
-	       </div>       
+	       </div>
        </td>
    </tr>
    </tbody>
    <tbody id="setup_site_log_dir_pre">
-   <tr><td></td>       
+   <tr><td></td>
        <td><input type="checkbox" class="checkbox" name="setup_site_custom_log_dir" value="yes" onclick="javascript:toggleLogDir();" {$customLog} /></td>
        <td><b>{$mod_strings['LBL_SITECFG_CUSTOM_LOG']}</b><br>
             <em>{$mod_strings['LBL_SITECFG_CUSTOM_LOG_DIRECTIONS']}</em><br>&nbsp;</td>
    </tr>
    </tbody>
    <tbody id="setup_site_log_dir">
-   <tr><td></td>       
+   <tr><td></td>
        <td style="text-align : right;" ><span class="required">*</span></td>
        <td align="left">
        <div><div style="width:200px;float:left"><b>{$mod_strings['LBL_SITECFG_LOG_DIR']}</b></div>
@@ -191,10 +191,10 @@ $out .= <<<EOQ
    </tr>
    </tbody>
    <tbody id="setup_site_guid_section_pre">
-   <tr><td></td>       
+   <tr><td></td>
        <td><input type="checkbox" class="checkbox" name="setup_site_specify_guid" value="yes" onclick="javascript:toggleGUID();" {$customId} /></td>
        <td><b>{$mod_strings['LBL_SITECFG_CUSTOM_ID']}</b><br>
-            <em>{$mod_strings['LBL_SITECFG_CUSTOM_ID_DIRECTIONS']}</em><br>&nbsp;</td>  
+            <em>{$mod_strings['LBL_SITECFG_CUSTOM_ID_DIRECTIONS']}</em><br>&nbsp;</td>
    </tr>
    </tbody>
    <tbody id="setup_site_guid_section">
@@ -203,8 +203,8 @@ $out .= <<<EOQ
        <td align="left">
 	       <div><div style="width:200px;float:left"><b>{$mod_strings['LBL_SITECFG_APP_ID']}</b></div>
 	               <input type="text" name="setup_site_guid" size='30' value="{$_SESSION['setup_site_guid']}" />
-	       </div>      
-       </td>       
+	       </div>
+       </td>
    </tr>
    </tbody>
 </table>

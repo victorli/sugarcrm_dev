@@ -122,7 +122,7 @@ $out =<<<EOQ
 		</p>
 		{$mod_strings['LBL_PERFORM_TITLE']}</th>
     <th width="200" style="text-align: right;"><a href="http://www.sugarcrm.com" target="_blank">
-    <IMG src="$loginImage" width="145" height="30" alt="SugarCRM" border="0"></a></th>
+    <IMG src="$loginImage" alt="SugarCRM" border="0"></a></th>
 </tr>
 <tr>
    <td colspan="2">
@@ -474,13 +474,13 @@ FP;
     $enabled_tabs[] = 'Prospects';
     $enabled_tabs[] = 'ProspectLists';
 
-    
+
     installerHook('pre_setSystemTabs');
     require_once('modules/MySettings/TabController.php');
     $tabs = new TabController();
     $tabs->set_system_tabs($enabled_tabs);
     installerHook('post_setSystemTabs');
-    
+
 post_install_modules();
 
 //Call rebuildSprites

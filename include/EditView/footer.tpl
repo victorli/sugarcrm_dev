@@ -57,7 +57,7 @@
 {{if empty($form.hideAudit) || !$form.hideAudit}}
 {{sugar_button module="$module" id="Audit" view="$view" form_id="$form_id" appendTo="footer_buttons"}}
 {{/if}}
-{{sugar_action_menu buttons=$footer_buttons class="fancymenu"}}
+{{sugar_action_menu buttons=$footer_buttons class="fancymenu" theme="Classic"}}
 </div>
 {{/if}}
 </form>

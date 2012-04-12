@@ -65,14 +65,14 @@ $out = <<<EOQ
   <table cellspacing="0" cellpadding="0" border="0" align="center" class="shell">
   <tr><td colspan="2" id="help"><a href="{$help_url}" target='_blank'>{$mod_strings['LBL_HELP']} </a></td></tr>
     <tr>
-			<th width="500">      
+			<th width="500">
 		<p>
 		<img src="{$sugar_md}" alt="SugarCRM" border="0">
 		</p>
 		{$mod_strings['LBL_TITLE_WELCOME']} {$setup_sugar_version} {$mod_strings['LBL_WELCOME_SETUP_WIZARD']}</th>
 
       <th width="200" height="30" style="text-align: right;"><a href="http://www.sugarcrm.com" target=
-          "_blank"><IMG src="include/images/sugarcrm_login.png" width="145" height="30" alt="SugarCRM" border="0"></a>
+          "_blank"><IMG src="include/images/sugarcrm_login.png" alt="SugarCRM" border="0"></a>
       </th>
     </tr>
    <tr>
