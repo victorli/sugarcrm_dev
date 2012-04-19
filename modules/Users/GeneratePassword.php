@@ -138,7 +138,7 @@ if (isset($_POST['link']) && $_POST['link'] == '1'){
 	$time_now=TimeDate::getInstance()->nowDb();
 	//$q2="UPDATE `users_password_link` SET `deleted` = '1' WHERE `username` = '".$_POST['username']."'";
 	//$usr->db->query($q2);
-	$q = "INSERT INTO users_password_link (id, username, date_generated) VALUES('".$guid."','".$_POST['username']."',' ".$time_now."' ) ";
+	$q = "INSERT INTO users_password_link (id, username, date_generated) VALUES('".$guid."','".$_POST['user_name']."',' ".$time_now."' ) ";
 	$usr->db->query($q);
 }
 ///////

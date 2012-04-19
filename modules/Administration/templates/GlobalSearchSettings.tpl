@@ -95,6 +95,7 @@
 <div id='selectFTSModules' class="yui-hidden">
     <div style="background-color: white; padding: 20px;">
         <div id='selectFTSModulesTable' ></div>
+        <div style="padding-top: 10px"><input type="checkbox" name="clearDataOnIndex" id="clearDataOnIndex" >&nbsp;{$MOD.LBL_DELETE_FTS_DATA}</div>
     </div>
 </div>
 <script type="text/javascript">

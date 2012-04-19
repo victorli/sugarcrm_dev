@@ -1032,7 +1032,9 @@ class Email extends SugarBean {
  			if(empty($this->date_sent)) {
 				global $timedate;
 				$date_sent_obj = $timedate->fromString($this->date_start." ".$this->time_start);
-				$this->date_sent = $date_sent_obj->asDb();
+                 if (!empty($date_sent_obj) && ($date_sent_obj instanceof SugarDateTime)) {
+ 				    $this->date_sent = $date_sent_obj->asDb();
+                 }
 			}
 
 			parent::save($check_notify);

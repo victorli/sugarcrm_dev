@@ -213,10 +213,15 @@ class ModuleBuilderController extends SugarController
 
     function action_DeployPackage ()
     {
+    	global $current_user;
+    	
     	if(defined('TEMPLATE_URL')){
     		sugar_cache_reset();
     		SugarTemplateUtilities::disableCache();
     	}
+    	
+    	//increment etag for menu so the new module shows up when the AJAX UI reloads
+    	$current_user->incrementETag("mainMenuETag");
 
         $mb = new ModuleBuilder ( ) ;
         $load = $_REQUEST [ 'package' ] ;
@@ -248,7 +253,7 @@ class ModuleBuilderController extends SugarController
             UnifiedSearchAdvanced::unlinkUnifiedSearchModulesFile();
 
             //bug 44269 - start
-            global $current_user;
+            
             //clear workflow admin modules cache
             if (isset($_SESSION['get_workflow_admin_modules_for_user'])) unset($_SESSION['get_workflow_admin_modules_for_user']);
 

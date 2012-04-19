@@ -188,7 +188,7 @@ $dictionary['Task'] = array('table' => 'tasks',
         'type'=>'varchar',
 		'vname' => 'LBL_EMAIL_ADDRESS',
 		'source' => 'non-db',
-        'studio' => 'hidden'
+        'studio' => false
     ),
 
   'priority' =>

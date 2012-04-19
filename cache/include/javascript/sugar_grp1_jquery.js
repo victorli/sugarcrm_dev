@@ -1363,7 +1363,7 @@ $.fn.hoverscroll = function(params) {
 		// Bind stopMoving to the mouseleave
 		// jQuery 1.2.x backward compatibility, thanks to Andy Mull!
 		// replaced .mouseleave(...) with .bind('mouseleave', ...)
-		.bind('mouseleave', function() {stopMoving();});
+		.bind('mouseleave, mouseout', function() {stopMoving();});
 
         // Bind the startMoving and stopMoving functions
         // to the HTML object for external access
@@ -1732,6 +1732,12 @@ Note:
             var $$ = $(this),
             menu = getMenu($$),
             o = sf.op;
+
+            if($$.parent().hasClass("hs-active")) {
+                //Bug#51993: deactive submenu while hoverscroll is activated
+                return;
+            }
+
             if (!o.firstOnClick || menuActive || $$.parent()[0] != menu)
             {
                 clearTimeout(menu.sfTimer);
@@ -2384,8 +2390,8 @@ Note:
 					var jNode = $(node);
 					var parent = jNode.parent();
 					var fancymenu = "";
-					var slideUpSpeed = "fast";
-					var slideDownSpeed = "fast";
+					var slideUpSpeed = 0;
+					var slideDownSpeed = 0;
                     var dropDownHandle;
 
 					//if the dropdown handle doesn't exist, lets create it and

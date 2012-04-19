@@ -410,7 +410,7 @@ $.fn.hoverscroll = function(params) {
 		// Bind stopMoving to the mouseleave
 		// jQuery 1.2.x backward compatibility, thanks to Andy Mull!
 		// replaced .mouseleave(...) with .bind('mouseleave', ...)
-		.bind('mouseleave', function() {stopMoving();});
+		.bind('mouseleave, mouseout', function() {stopMoving();});
 
         // Bind the startMoving and stopMoving functions
         // to the HTML object for external access

@@ -1004,7 +1004,7 @@ function checkSystemCompliance() {
 	        	$ret['mysqlVersion'] = "<b><span class=stop>".$mod_strings['ERR_UW_MYSQL_VERSION'].$v."</span></b>";
 	    }
 	} elseif($db->dbType == 'oci8') {
-	    if(!preg_match("/Oracle9i|Oracle Database 10g|11/i", $v)) {
+	    if(!preg_match("/Oracle9i|Oracle Database 10g|11|^10\./i", $v)) {
 	        	$ret['error_found'] = true;
 	        	$ret['ociVersion'] = "<b><span class=stop>".$mod_strings['ERR_UW_OCI8_VERSION'].$v."</span></b>";
 	    }

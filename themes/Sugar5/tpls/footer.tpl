@@ -46,7 +46,9 @@
 {/if}
 </div>
 <div id="footer">
-    {$STATISTICS}
+	<div id="responseTime">
+    	{$STATISTICS}
+    </div>
     <div id="copyright">
         {$COPYRIGHT}
     </div>

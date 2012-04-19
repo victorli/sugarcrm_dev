@@ -2400,7 +2400,7 @@ function get_emails_by_assign_or_link($params)
     	//$return_array['join'] = '';
         $return_array['join_tables'][0] = '';
 
-        if(0 && $bean->object_name == "Case" && !empty($bean->case_number)) {
+        if($bean->object_name == "Case" && !empty($bean->case_number)) {
             $where = str_replace("%1", $bean->case_number, 	$bean->getEmailSubjectMacro());
     	    $return_array["where"] .= "\n AND emails.name LIKE '%$where%'";
         }

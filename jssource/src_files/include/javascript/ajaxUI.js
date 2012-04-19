@@ -74,9 +74,12 @@ SUGAR.ajaxUI = {
 
             // set response time from ajax response
             if(typeof(r.responseTime) != 'undefined'){
-                var rt = document.getElementById('responseTime');
-                if(rt != null){
-                    rt.innerHTML = r.responseTime;
+                var rt = $("#responseTime");
+                if(rt.length > 0){
+                    rt.html(rt.html().replace(/[\d]+\.[\d]+/, r.responseTime));
+                }
+                else if(typeof(logoStats) != "undefined"){
+                	$("#logo").attr("title", logoStats.replace(/[\d]+\.[\d]+/, r.responseTime)).tipTip({maxWidth: "auto", edgeOffset: 10});
                 }
             }
         } catch (e){

@@ -252,7 +252,6 @@ function getClassicModuleTitle($module, $params, $show_create=false, $index_url_
     global $app_strings;
 
 	$module_title = '';
-	$count = count($params);
 	$index = 0;
 
     $module = preg_replace("/ /","",$module);
@@ -271,20 +270,8 @@ function getClassicModuleTitle($module, $params, $show_create=false, $index_url_
     	array_unshift ($params,"<a href='{$url}'><img src='{$iconPath}' ". "alt='".$module."' title='".$module."' align='absmiddle'></a>");
 	}
 
-	$new_params = array();
-	$i = 0;
-	foreach ($params as $value) {
-	  if ((!is_null($value)) && ($value !== "")) {
-	    $new_params[$i] = $value;
-	    $i++;
-	  }
-	}
-
-	if(SugarThemeRegistry::current()->directionality == "rtl") {
-		$new_params = array_reverse($new_params);
-	}
-
-	$module_title = join(SugarView::getBreadCrumbSymbol(),$new_params);
+	$new_params = array_pop($params);
+    if(!is_null($new_params) && ($new_params !== "")) $module_title = $new_params;
     if(!empty($module_title)){
         $the_title .= "<h2>".$module_title."</h2>\n";//removing empty H2 tag for 508 compliance
     }

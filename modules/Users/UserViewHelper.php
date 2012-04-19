@@ -166,7 +166,8 @@ class UserViewHelper {
         if(isset($_REQUEST['record'])) {
             $the_query_string .= '&record='.$_REQUEST['record'];
         }
-        $buttons = array();
+        $buttons_header = array();
+        $buttons_footer = array();
         if (!$this->bean->is_group){
             if ($this->bean->id == $current_user->id) {
                 $reset_pref_warning = translate('LBL_RESET_PREFERENCES_WARNING','Users');
@@ -182,10 +183,15 @@ class UserViewHelper {
             if(isset($_REQUEST['record'])){
                 $user_preference_url .= "&record=".$_REQUEST['record'];
             }
-            $buttons[]="<input type='button' class='button' onclick='if(confirm(\"{$reset_pref_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$user_preference_url."&reset_preferences=true\";' value='".translate('LBL_RESET_PREFERENCES','Users')."' />";
-            $buttons[]="<input type='button' class='button' onclick='if(confirm(\"{$reset_home_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$the_query_string."&reset_homepage=true\";' value='".translate('LBL_RESET_HOMEPAGE','Users')."' />";
+            $buttons_header[]="<input type='button' class='button' id='reset_user_preferences_header' onclick='if(confirm(\"{$reset_pref_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$user_preference_url."&reset_preferences=true\";' value='".translate('LBL_RESET_PREFERENCES','Users')."' />";
+            $buttons_header[]="<input type='button' class='button' id='reset_homepage_header' onclick='if(confirm(\"{$reset_home_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$the_query_string."&reset_homepage=true\";' value='".translate('LBL_RESET_HOMEPAGE','Users')."' />";
+
+            $buttons_footer[]="<input type='button' class='button' id='reset_user_preferences_footer' onclick='if(confirm(\"{$reset_pref_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$user_preference_url."&reset_preferences=true\";' value='".translate('LBL_RESET_PREFERENCES','Users')."' />";
+            $buttons_footer[]="<input type='button' class='button' id='reset_homepage_footer' onclick='if(confirm(\"{$reset_home_warning}\"))window.location=\"".$_SERVER['PHP_SELF'] .'?'.$the_query_string."&reset_homepage=true\";' value='".translate('LBL_RESET_HOMEPAGE','Users')."' />";
+
         }
-        if (isset($buttons)) $this->ss->assign("BUTTONS", $buttons);
+        if (isset($buttons_header)) $this->ss->assign("BUTTONS_HEADER", $buttons_header);
+        if (isset($buttons_footer)) $this->ss->assign("BUTTONS_FOOTER", $buttons_footer);
         
 
 
@@ -518,27 +524,27 @@ class UserViewHelper {
         foreach($chooser->args['values_array'][0] as $key=>$value) {
             $chooser->args['values_array'][0][$key] = $app_list_strings['moduleList'][$key];
         }
-        
+
         foreach($chooser->args['values_array'][1] as $key=>$value) {
             $chooser->args['values_array'][1][$key] = $app_list_strings['moduleList'][$key];
         }
-        
+
         foreach($chooser->args['values_array'][2] as $key=>$value) {
             $chooser->args['values_array'][2][$key] = $app_list_strings['moduleList'][$key];
         }
-        
+
         $chooser->args['left_name'] = 'display_tabs';
         $chooser->args['right_name'] = 'hide_tabs';
-        
+
         $chooser->args['left_label'] =  translate('LBL_DISPLAY_TABS','Users');
         $chooser->args['right_label'] =  translate('LBL_HIDE_TABS','Users');
         require_once('include/Smarty/plugins/function.sugar_help.php');
-        $chooser->args['title'] =  translate('LBL_EDIT_TABS','Users').smarty_function_sugar_help(array("text"=>"Choose which tabs are displayed."),$ss);
-        
+        $chooser->args['title'] =  translate('LBL_EDIT_TABS','Users').smarty_function_sugar_help(array("text"=>'Select which modules are accessible within the top navigation bar. Designate the order in which you would like the modules to appear. To select the number of modules that appear in the navigation bar, with the remainder appearing in the overflow menu, use the "Number of Modules in Navigation Bar" field.'),$ss);
+
         $this->ss->assign('TAB_CHOOSER', $chooser->display());
         $this->ss->assign('CHOOSER_SCRIPT','set_chooser();');
         $this->ss->assign('CHOOSE_WHICH', translate('LBL_CHOOSE_WHICH','Users'));
-        
+
     }
 
     protected function setupAdvancedTabLocaleSettings() {

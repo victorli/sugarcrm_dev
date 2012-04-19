@@ -35,6 +35,12 @@
             var $$ = $(this),
             menu = getMenu($$),
             o = sf.op;
+
+            if($$.parent().hasClass("hs-active")) {
+                //Bug#51993: deactive submenu while hoverscroll is activated
+                return;
+            }
+
             if (!o.firstOnClick || menuActive || $$.parent()[0] != menu)
             {
                 clearTimeout(menu.sfTimer);

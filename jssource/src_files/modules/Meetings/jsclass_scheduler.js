@@ -763,12 +763,7 @@ SugarWidgetScheduleRow.prototype.add_freebusy_nodes = function(tr,attendee) {
 			if(	typeof(GLOBAL_REGISTRY['freebusy_adjusted'][this.focus_bean.fields.id][this.timeslots[i].hash]) != 'undefined') {
 				td.style.backgroundColor="#4D5EAA";
 
-				fb_limit = 1;
-				if(typeof(GLOBAL_REGISTRY.focus.orig_users_arr_hash) != 'undefined' && typeof(GLOBAL_REGISTRY.focus.orig_users_arr_hash[this.focus_bean.fields.id]) != 'undefined') {
-					fb_limit = 2;
-				}
-
-				if(	GLOBAL_REGISTRY['freebusy_adjusted'][this.focus_bean.fields.id][this.timeslots[i].hash] >= fb_limit) {
+				if(	GLOBAL_REGISTRY['freebusy_adjusted'][this.focus_bean.fields.id][this.timeslots[i].hash] > 1) {
 					td.style.backgroundColor="#AA4D4D";
 				}
 			}

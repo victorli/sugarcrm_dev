@@ -43,7 +43,7 @@ class UsersViewDetail extends ViewDetail {
  	function UsersViewDetail(){
  		parent::ViewDetail();
  	}
-    
+
     function preDisplay() {
         global $current_user, $app_strings, $sugar_config;
 
@@ -53,7 +53,7 @@ class UsersViewDetail extends ViewDetail {
         }
 
         parent::preDisplay();
-        
+
         $viewHelper = new UserViewHelper($this->ss, $this->bean, 'DetailView');
         $viewHelper->setupAdditionalFields();
 
@@ -93,11 +93,11 @@ class UsersViewDetail extends ViewDetail {
                     )) {
                 if (!$current_user->is_group){
                     $buttons[] = "<input title='".$app_strings['LBL_DUPLICATE_BUTTON_TITLE']."' accessKey='".$app_strings['LBL_DUPLICATE_BUTTON_KEY']."' class='button' onclick=\"this.form.return_module.value='Users'; this.form.return_action.value='DetailView'; this.form.isDuplicate.value=true; this.form.action.value='EditView'\" type='submit' name='Duplicate' value='".$app_strings['LBL_DUPLICATE_BUTTON_LABEL']."'>";
-                    
+
                     if($this->bean->id != $current_user->id) {
                         $buttons[] ="<input type='button' class='button' onclick='confirmDelete();' value='".$app_strings['LBL_DELETE_BUTTON_LABEL']."' />";
                     }
-                    
+
                     if (!$this->bean->portal_only && !$this->bean->is_group && !$this->bean->external_auth_only
                         && isset($sugar_config['passwordsetting']['SystemGeneratedPasswordON']) && $sugar_config['passwordsetting']['SystemGeneratedPasswordON']){
                         $buttons[] = "<input title='".translate('LBL_GENERATE_PASSWORD_BUTTON_TITLE','Users')."' class='button' LANGUAGE=javascript onclick='generatepwd(\"".$this->bean->id."\");' type='button' name='password' value='".translate('LBL_GENERATE_PASSWORD_BUTTON_LABEL','Users')."'>";
@@ -105,7 +105,9 @@ class UsersViewDetail extends ViewDetail {
                 }
             }
         }
-        
+
+        $buttons = array_merge($buttons, $this->ss->get_template_vars('BUTTONS_HEADER'));
+
         $this->ss->assign('EDITBUTTONS',$buttons);
 
         $show_roles = (!($this->bean->is_group=='1' || $this->bean->portal_only=='1'));
@@ -117,7 +119,7 @@ class UsersViewDetail extends ViewDetail {
             echo "<div>";
             require_once('modules/ACLRoles/DetailUserRole.php');
             echo "</div></div>";
-            
+
 
             $role_html = ob_get_contents();
             ob_end_clean();
@@ -149,7 +151,7 @@ class UsersViewDetail extends ViewDetail {
             $this->dv->formName = 'DetailViewGroup';
             $this->dv->view = 'DetailViewGroup';
         }
-	
+
 	    //handle request to reset the homepage
         if(isset($_REQUEST['reset_homepage'])){
             $this->bean->resetPreferences('Home');
@@ -163,7 +165,7 @@ class UsersViewDetail extends ViewDetail {
         return parent::display();
     }
 
-    
+
     /**
      * getHelpText
      *

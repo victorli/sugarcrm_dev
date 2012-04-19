@@ -53,23 +53,6 @@ SUGAR.util.doWhen(function(){
 <tr>
 <td class="buttons" align="left" NOWRAP width="20%">
 <div class="actionsContainer">
-<form action="index.php" method="post" name="DetailView" id="formDetailView">
-<input type="hidden" name="module" value="{$module}">
-<input type="hidden" name="record" value="{$fields.id.value}">
-<input type="hidden" name="return_action">
-<input type="hidden" name="return_module">
-<input type="hidden" name="return_id">
-<input type="hidden" name="module_tab">
-<input type="hidden" name="isDuplicate" value="false">
-<input type="hidden" name="offset" value="{$offset}">
-<input type="hidden" name="action" value="EditView">
-<input type="hidden" name="sugar_body_only">
-{{if isset($form.hidden)}}
-    {{foreach from=$form.hidden item=field}}
-        {{$field}}
-    {{/foreach}}
-{{/if}}
-</form>
 {{if !isset($form.buttons)}}
     {{sugar_button module="$module" id="EDIT" view="$view" form_id="formDetailView" appendTo="detail_header_buttons"}}
     {{sugar_button module="$module" id="DUPLICATE" view="EditView" form_id="formDetailView" appendTo="detail_header_buttons"}}
@@ -93,6 +76,24 @@ SUGAR.util.doWhen(function(){
         {{sugar_button module="$module" id="Audit" view="EditView" form_id="formDetailView" appendTo="detail_header_buttons"}}
     {{/if}}
 {{/if}}
+
+<form action="index.php" method="post" name="DetailView" id="formDetailView">
+    <input type="hidden" name="module" value="{$module}">
+    <input type="hidden" name="record" value="{$fields.id.value}">
+    <input type="hidden" name="return_action">
+    <input type="hidden" name="return_module">
+    <input type="hidden" name="return_id">
+    <input type="hidden" name="module_tab">
+    <input type="hidden" name="isDuplicate" value="false">
+    <input type="hidden" name="offset" value="{$offset}">
+    <input type="hidden" name="action" value="EditView">
+    <input type="hidden" name="sugar_body_only">
+{{if isset($form.hidden)}}
+{{foreach from=$form.hidden item=field}}
+{{$field}}
+{{/foreach}}
+{{/if}}
+</form>
 {{sugar_action_menu id="detail_header_action_menu" buttons=$detail_header_buttons class="fancymenu" }}
 
 </div>

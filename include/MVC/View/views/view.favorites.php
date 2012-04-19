@@ -54,7 +54,8 @@ class ViewFavorites extends SugarView
  	{
  		
  		$favorites = new SugarFavorites();
- 		$results = $favorites->getUserFavoritesByModule($this->module,$GLOBALS['current_user']);
+        $favorites_max_viewed = (!empty($GLOBALS['sugar_config']['favorites_max_viewed']))? $GLOBALS['sugar_config']['favorites_max_viewed'] : 10;
+ 		$results = $favorites->getUserFavoritesByModule($this->module,$GLOBALS['current_user'], "sugarfavorites.date_modified DESC ", $favorites_max_viewed);
  		$items = array();
  		foreach ( $results as $key => $row ) {
  				 $items[$key]['label'] = $row->record_name;

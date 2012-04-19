@@ -395,7 +395,7 @@ if(pageTotal>=0)
 sugarListView.update_count(pageTotal);else if(value)
 sugarListView.update_count(count,true);else
 sugarListView.update_count(-1*count,true);sugarListView.prototype.toggleSelected();}
-sugarListView.check_all=sugarListView.prototype.check_all;sugarListView.confirm_action=sugarListView.prototype.confirm_action;sugarListView.prototype.check_boxes=function(){var inputsCount=0;var checkedCount=0;var existing_onload=window.onload;var theForm=document.MassUpdate;inputs_array=theForm.elements;if(typeof theForm.uid.value!='undefined'&&theForm.uid.value!=""){checked_items=theForm.uid.value.split(",");if(theForm.select_entire_list.value==1){document.MassUpdate.massall.disabled=true;sugarListView.prototype.toggleSelected();}
+sugarListView.check_all=sugarListView.prototype.check_all;sugarListView.confirm_action=sugarListView.prototype.confirm_action;sugarListView.prototype.check_boxes=function(){var inputsCount=0;var checkedCount=0;var existing_onload=window.onload;var theForm=document.MassUpdate;inputs_array=theForm.elements;if(typeof theForm.uid.value!='undefined'&&theForm.uid.value!=""){checked_items=theForm.uid.value.split(",");if(theForm.select_entire_list.value==1){document.MassUpdate.massall.disabled=true;sugarListView.prototype.toggleSelected();$("#button_select_all_top").click();}
 for(var wp=0;wp<inputs_array.length;wp++){if(inputs_array[wp].name=="mass[]"){inputsCount++;if(theForm.select_entire_list.value==1){inputs_array[wp].checked=true;inputs_array[wp].disabled=true;checkedCount++;}
 else{for(i in checked_items){if(inputs_array[wp].value==checked_items[i]){checkedCount++;inputs_array[wp].checked=true;sugarListView.prototype.check_item(inputs_array[wp],document.MassUpdate);}}}}}}
 else{for(var wp=0;wp<inputs_array.length;wp++){if(inputs_array[wp].name=="mass[]"){inputs_array[wp].checked=false;inputs_array[wp].disabled=false;}}
@@ -487,7 +487,7 @@ if(this._doWhenLocked){return;}
 if(SUGAR.isIE){if(!YAHOO.util.Event.DOMReady){this._startDoWhenInterval();return;}}
 this._doWhenLocked=true;var tryAgain=YAHOO.util.Event.DOMReady;if(!tryAgain){tryAgain=(this._doWhenretryCount>0&&this._doWhenStack.length>0);}
 var notAvail=[];var executeItem=function(context,item){if(item.overrideContext){if(item.overrideContext===true){context=item.obj;}else{context=item.overrideContext;}}
-item.fn.call(context,item.obj);};var i,len,item,test;for(i=0,len=this._doWhenStack.length;i<len;i=i+1){item=this._doWhenStack[i];if(item){test=item.check;if((typeof(test)=="string"&&eval(test))||(typeof(test)=="function"&&test())){executeItem(this,item);this._doWhenStack[i]=null;}
+if(item.fn){item.fn.call(context,item.obj);}};var i,len,item,test;for(i=0,len=this._doWhenStack.length;i<len;i=i+1){item=this._doWhenStack[i];if(item){test=item.check;if((typeof(test)=="string"&&eval(test))||(typeof(test)=="function"&&test())){executeItem(this,item);this._doWhenStack[i]=null;}
 else{notAvail.push(item);}}}
 this._doWhenretryCount--;if(tryAgain){for(i=this._doWhenStack.length-1;i>-1;i--){item=this._doWhenStack[i];if(!item||!item.check){this._doWhenStack.splice(i,1);}}
 this._startDoWhenInterval();}else{if(this._doWhenInterval){this._doWhenInterval.cancel();this._doWhenInterval=null;}}

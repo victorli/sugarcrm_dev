@@ -71,7 +71,9 @@
         <div class="clear"></div>
     </section>
     {/foreach}
-    <a href='index.php?module=Home&action=UnifiedSearch&search_form=false&advanced=false&query_string={$queryEncoded}' class="resultAll">View all results</a>
+    <a href='index.php?module=Home&action=UnifiedSearch&search_form=false&advanced=false&query_string={$queryEncoded}' class="resultAll">
+        {$appStrings.LNK_SEARCH_NONFTS_VIEW_ALL}
+    </a>
 {else}
     <section class="resultNull">
         <h1>{$appStrings.LBL_EMAIL_SEARCH_NO_RESULTS}</h1>

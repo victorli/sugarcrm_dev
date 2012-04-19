@@ -274,7 +274,8 @@ $dictionary['Note'] = array(
         'name'=>'contact_email',
         'type'=>'varchar',
 		'vname' => 'LBL_EMAIL_ADDRESS',
-		'source' => 'non-db'
+		'source' => 'non-db',
+        'studio' => false
     ),
 
   'account_id' =>

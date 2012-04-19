@@ -189,10 +189,11 @@ class ViewModulefield extends SugarView
             {
             	if (!empty($def['type']) && $def['type'] == "int" && !empty($def['auto_increment'])) {
             	   $allowAutoInc = false;
-            	   break;
+            	   continue;
             	}
                 if (!empty($def['type']) && $def['type'] == "enum" && $field != $vardef['name'])
                 {
+                    if(!empty($def['studio']) && $def['studio'] == "false") continue; //bug51866 
                     $enumFields[$field] = translate($def['vname'], $moduleName);
                     if (substr($enumFields[$field], -1) == ":")
                         $enumFields[$field] = substr($enumFields[$field], 0, strlen($enumFields[$field]) - 1);

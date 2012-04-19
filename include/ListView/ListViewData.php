@@ -496,8 +496,9 @@ class ListViewData {
 
             foreach( $basicSearchFields as $basicSearchField)
             {
-                $field_name = $basicSearchField['name'] . "_basic";
-                if( isset($_REQUEST[$field_name])  && (!isset($basicSearchField['type']) || $basicSearchField['type'] == 'text') )
+                $field_name = (is_array($basicSearchField) && isset($basicSearchField['name'])) ? $basicSearchField['name'] : $basicSearchField;
+                $field_name .= "_basic";
+                if( isset($_REQUEST[$field_name])  && ( !is_array($basicSearchField) || !isset($basicSearchField['type']) || $basicSearchField['type'] == 'text') )
                 {
                     $queryString = htmlentities($_REQUEST[$field_name]);
                     break;

@@ -50,6 +50,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  *     'buttons' => list of button htmls, such as ( html_element1, html_element2, ..., html_element_n),
  *     'id' => id property for ul element
  *     'class' => class property for ul element
+ * 	   'flat' => controls the display of the menu as a dropdown or flat buttons
  * @param $smarty
  *
  * @return string - compatible sugarActionMenu structure, such as
@@ -116,7 +117,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  */
 function smarty_function_sugar_action_menu($params, &$smarty)
 {
-    $theme = !empty($params['theme']) ? $params['theme'] : SugarThemeRegistry::current()->name;
+    $flat = !empty($params['flat']) ? $params['flat'] : false;
 
     if( !empty($params['params']) ) {
         $addition_params = $params['params'];
@@ -127,7 +128,7 @@ function smarty_function_sugar_action_menu($params, &$smarty)
     if(empty($params['buttons']))
         return '';
 
-    if(is_array($params['buttons']) && $theme != 'Classic') {
+    if(is_array($params['buttons']) && !$flat) {
 
         $menus = array(
             'html' => array_shift($params['buttons']),

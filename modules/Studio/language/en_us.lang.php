@@ -58,7 +58,7 @@ $mod_strings = array (
 'LBL_SUGAR_FIELDS_STAGE' => 'Sugar Fields (click items to add to staging area)',
 'LBL_SUGAR_BIN_STAGE' => 'Sugar Bin (click items to add to staging area)',
 'LBL_VIEW_SUGAR_FIELDS' => 'View Sugar Fields',
-'LBL_VIEW_SUGAR_BIN' => 'View Sugar Bin', 
+'LBL_VIEW_SUGAR_BIN' => 'View Sugar Bin',
 'LBL_FAILED_TO_SAVE' => 'Failed To Save',
 'LBL_CONFIRM_UNSAVE' => 'Any changes will go unsaved. Are you sure you would like to continue?',
 'LBL_PUBLISHING' => 'Publishing ...',
@@ -150,14 +150,14 @@ $mod_strings = array (
 'LBL_MODULES'=>'Modules',
 //nsingh: begin bug#15095 fix
 'LBL_MODULE_NAME' => 'Administration',
-'LBL_CONFIGURE_GROUP_TABS' => 'Configure Grouped Modules',
+'LBL_CONFIGURE_GROUP_TABS' => 'Configure Module Menu Filters',
  //end bug #15095 fix
-'LBL_GROUP_TAB_WELCOME'=>'The groups below will be displayed in the navigation bar for users who choose to view Grouped Modules. Drag and drop modules to and from the Groups to configure which modules appear under the groups. Note: Empty groups will not be displayed in the navigation bar.',
+'LBL_GROUP_TAB_WELCOME'=>'The filters below will be displayed in the More list in the module menu for users to use to view groups of modules within the menu. Drag and drop modules to and from the filters. Note: Empty filters will not be displayed in the menu.',
 'LBL_RENAME_TAB_WELCOME'=>'Click on any tab\'s Display Value in the table below to rename the tab.',
-'LBL_DELETE_MODULE'=>'Remove&nbsp;Module<br />From&nbsp;Group',
+'LBL_DELETE_MODULE'=>'Remove&nbsp;module<br />from&nbsp;filter',
 'LBL_DISPLAY_OTHER_TAB_HELP' => 'Select to display the "Other" tab in the navigation bar.  By default, the "Other" tab displays any modules not already included in other groups.',
 'LBL_TAB_GROUP_LANGUAGE_HELP' => 'Select an available language, edit the Group labels and click Save & Deploy to apply the labels in the selected language.',
-'LBL_ADD_GROUP'=>'Add Group',
+'LBL_ADD_GROUP'=>'Add Filter',
 'LBL_NEW_GROUP'=>'New Group',
 'LBL_RENAME_TABS'=>'Rename Modules',
 'LBL_DISPLAY_OTHER_TAB' => 'Display \'Other\' Tab',
@@ -166,7 +166,7 @@ $mod_strings = array (
 'LBL_DEFAULT'=>'Default',
 'LBL_ADDITIONAL'=>'Additional',
 'LBL_AVAILABLE'=>'Available',
-'LBL_LISTVIEW_DESCRIPTION'=>'There are three columns displayed below. The default column contains the fields that are displayed in a list view by default, the additional column contains fields that a user may choose to use for creating a custom view, and the available columns are columns availabe for you as an admin to either add to the default or additional columns for use by users but are currently not used.', 
+'LBL_LISTVIEW_DESCRIPTION'=>'There are three columns displayed below. The default column contains the fields that are displayed in a list view by default, the additional column contains fields that a user may choose to use for creating a custom view, and the available columns are columns availabe for you as an admin to either add to the default or additional columns for use by users but are currently not used.',
 'LBL_LISTVIEW_EDIT'=>'List View Editor',
 
 //ERRORS

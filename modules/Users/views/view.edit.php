@@ -166,9 +166,9 @@ var $useForSubpanel = true;
         if ( isset($this->fieldHelper->usertype) && ($this->fieldHelper->usertype == 'GROUP'
             )) {
             $this->ev->formName = 'EditViewGroup';
-            
+
             $processSpecial = true;
-            $processFormName = 'EditViewGroup';            
+            $processFormName = 'EditViewGroup';
         }
 
         //Bug#51609 Replace {php} code block in EditViewHeader.tpl
@@ -184,25 +184,40 @@ var $useForSubpanel = true;
 
         $minpwdlength = !empty($PWDSETTINGS['minpwdlength']) ? $PWDSETTINGS['minpwdlength'] : '';
         $maxpwdlength =  !empty($PWDSETTINGS['maxpwdlength']) ? $PWDSETTINGS['maxpwdlength'] : '';
-        $action_button[] = <<<EOD
-                    <input type="button" id="Save" title="{$APP['LBL_SAVE_BUTTON_TITLE']}" accessKey="{$APP['LBL_SAVE_BUTTON_KEY']}"
+        $action_button_header[] = <<<EOD
+                    <input type="button" id="SAVE_HEADER" title="{$APP['LBL_SAVE_BUTTON_TITLE']}" accessKey="{$APP['LBL_SAVE_BUTTON_KEY']}"
                           class="button primary" onclick="var _form = $('#EditView')[0]; if (!set_password(_form,newrules('{$minpwdlength}','{$maxpwdlength}','{$REGEX}'))) return false; if (!Admin_check()) return false; _form.action.value='Save'; {$CHOOSER_SCRIPT} {$REASSIGN_JS} if(verify_data(EditView)) _form.submit();"
                           name="button" value="{$APP['LBL_SAVE_BUTTON_LABEL']}">
 EOD
         ;
-        $action_button[] = <<<EOD
-                    <input	title="{$APP['LBL_CANCEL_BUTTON_TITLE']}" accessKey="{$APP['LBL_CANCEL_BUTTON_KEY']}"
+        $action_button_header[] = <<<EOD
+                    <input	title="{$APP['LBL_CANCEL_BUTTON_TITLE']}" id="CANCEL_HEADER" accessKey="{$APP['LBL_CANCEL_BUTTON_KEY']}"
                               class="button" onclick="var _form = $('#EditView')[0]; _form.action.value='{$RETURN_ACTION}'; _form.module.value='{$RETURN_MODULE}'; _form.record.value='{$RETURN_ID}'; _form.submit()"
                               type="button" name="button" value="{$APP['LBL_CANCEL_BUTTON_LABEL']}">
 EOD
         ;
-        $action_button = array_merge($action_button, $this->ss->get_template_vars('BUTTONS'));
-        $this->ss->assign('ACTION_BUTTON', $action_button);
+        $action_button_header = array_merge($action_button_header, $this->ss->get_template_vars('BUTTONS_HEADER'));
+        $this->ss->assign('ACTION_BUTTON_HEADER', $action_button_header);
+
+        $action_button_footer[] = <<<EOD
+                    <input type="button" id="SAVE_FOOTER" title="{$APP['LBL_SAVE_BUTTON_TITLE']}" accessKey="{$APP['LBL_SAVE_BUTTON_KEY']}"
+                          class="button primary" onclick="var _form = $('#EditView')[0]; if (!set_password(_form,newrules('{$minpwdlength}','{$maxpwdlength}','{$REGEX}'))) return false; if (!Admin_check()) return false; _form.action.value='Save'; {$CHOOSER_SCRIPT} {$REASSIGN_JS} if(verify_data(EditView)) _form.submit();"
+                          name="button" value="{$APP['LBL_SAVE_BUTTON_LABEL']}">
+EOD
+        ;
+        $action_button_footer[] = <<<EOD
+                    <input	title="{$APP['LBL_CANCEL_BUTTON_TITLE']}" id="CANCEL_FOOTER" accessKey="{$APP['LBL_CANCEL_BUTTON_KEY']}"
+                              class="button" onclick="var _form = $('#EditView')[0]; _form.action.value='{$RETURN_ACTION}'; _form.module.value='{$RETURN_MODULE}'; _form.record.value='{$RETURN_ID}'; _form.submit()"
+                              type="button" name="button" value="{$APP['LBL_CANCEL_BUTTON_LABEL']}">
+EOD
+        ;
+        $action_button_footer = array_merge($action_button_footer, $this->ss->get_template_vars('BUTTONS_FOOTER'));
+        $this->ss->assign('ACTION_BUTTON_FOOTER', $action_button_footer);
 
         $this->ev->process($processSpecial,$processFormName);
 
 		echo $this->ev->display($this->showTitle);
-        
+
     }
 
 

@@ -38,7 +38,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 global $db;
 
-if(empty($_REQUEST['id']) || empty($_REQUEST['type']) || !isset($_SESSION['authenticated_user_id'])) {
+if((!isset($_REQUEST['isProfile']) && empty($_REQUEST['id'])) || empty($_REQUEST['type']) || !isset($_SESSION['authenticated_user_id'])) {
 	die("Not a Valid Entry Point");
 }
 else {
@@ -114,7 +114,11 @@ else {
 	if(isset($_REQUEST['isTempFile']) && ($_REQUEST['type']=="SugarFieldImage")) {
 	    $local_location =  "upload://{$_REQUEST['id']}";
     }
-
+    
+    if(isset($_REQUEST['isTempFile']) && ($_REQUEST['type']=="SugarFieldImage") && (isset($_REQUEST['isProfile'])) && empty($_REQUEST['id'])) {
+    	$local_location = "include/images/default-profile.png";
+    }
+    
 	if(!file_exists( $local_location ) || strpos($local_location, "..")) {
 		die($app_strings['ERR_INVALID_FILE_REFERENCE']);
 	} else {
@@ -164,16 +168,26 @@ else {
 		header("Pragma: public");
 		header("Cache-Control: maxage=1, post-check=0, pre-check=0");
 		if(isset($_REQUEST['isTempFile']) && ($_REQUEST['type']=="SugarFieldImage")) {
-		    $mime = getimagesize($download_location);
-		    if(!empty($mime)) {
+			$mime = getimagesize($download_location);
+		   	if(!empty($mime)) {
 			    header("Content-Type: {$mime['mime']}");
 		    } else {
 		        header("Content-Type: image/png");
 		    }
 		} else {
-            header("Content-Type: application/force-download");
-            header("Content-type: application/octet-stream");
-            header("Content-Disposition: attachment; filename=\"".$name."\";");
+						
+			if(preg_match("/\.jpg|\.gif|\.png|\.jpeg/i", $name)){
+				$mime = getimagesize($download_location);
+				if(!empty($mime)) {
+			   		header("Content-Type: {$mime['mime']}");
+				}
+			}
+			else{
+				header("Content-Type: application/force-download");
+            	header("Content-type: application/octet-stream");
+            	header("Content-Disposition: attachment; filename=\"".$name."\";");
+			}
+            
 		}
 		// disable content type sniffing in MSIE
 		header("X-Content-Type-Options: nosniff");
