@@ -64,11 +64,11 @@
 
 {* -- Begin QuickCreate Specific -- *}
 {if $smarty.request.action != 'SubpanelEdits'}
-<input type="hidden" name="primary_address_street" value="{$smarty.request.primary_address_street}">
-<input type="hidden" name="primary_address_city" value="{$smarty.request.primary_address_city}">
-<input type="hidden" name="primary_address_state" value="{$smarty.request.primary_address_state}">
-<input type="hidden" name="primary_address_country" value="{$smarty.request.primary_address_country}">
-<input type="hidden" name="primary_address_postalcode" value="{$smarty.request.primary_address_postalcode}">
+<input type="hidden" name="primary_address_street" value="{$fields.primary_address_street.value}">
+<input type="hidden" name="primary_address_city" value="{$fields.primary_address_city.value}">
+<input type="hidden" name="primary_address_state" value="{$fields.primary_address_state.value}">
+<input type="hidden" name="primary_address_country" value="{$fields.primary_address_country.value}">
+<input type="hidden" name="primary_address_postalcode" value="{$fields.primary_address_postalcode.value}">
 {/if}
 <input type="hidden" name="is_ajax_call" value="1">
 <input type="hidden" name="to_pdf" value="1">

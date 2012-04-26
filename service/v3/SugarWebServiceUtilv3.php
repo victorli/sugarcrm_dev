@@ -95,8 +95,13 @@ class SugarWebServiceUtilv3 extends SoapHelperWebServices {
 		$bean->load_relationship($link_field_name);
 		if (isset($bean->$link_field_name)) {
 			//First get all the related beans
-            $related_beans = $bean->$link_field_name->getBeans();
-			//Create a list of field/value rows based on $link_module_fields
+            $params = array();
+            if (!empty($optional_where))
+            {
+                $params['where'] = $optional_where;
+            }
+            $related_beans = $bean->$link_field_name->getBeans($params);
+            //Create a list of field/value rows based on $link_module_fields
 			$list = array();
             $filterFields = array();
             if (!empty($order_by) && !empty($related_beans))

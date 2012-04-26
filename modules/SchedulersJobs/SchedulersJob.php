@@ -104,6 +104,39 @@ class SchedulersJob extends Basic
         // Hack to work around the mess with dates being auto-converted to user format on retrieve
 	    $this->execute_time_db = $this->db->fromConvert($this->execute_time, 'datetime');
 	    parent::check_date_relationships_load();
+    }
+	/**
+     * handleDateFormat
+     *
+	 * This function handles returning a datetime value.  It allows a user instance to be passed in, but will default to the
+     * user member variable instance if none is found.
+     *
+	 * @param string $date String value of the date to calculate, defaults to 'now'
+	 * @param object $user The User instance to use in calculating the time value, if empty, it will default to user member variable
+	 * @param boolean $user_format Boolean indicating whether or not to convert to user's time format, defaults to false
+     *
+	 * @return string Formatted datetime value
+	 */
+	function handleDateFormat($date='now', $user=null, $user_format=false) {
+		global $timedate;
+		
+		if(!isset($timedate) || empty($timedate))
+        {
+			$timedate = new TimeDate();
+		}
+		
+		// get user for calculation
+		$user = (empty($user)) ? $this->user : $user;
+
+        if($date == 'now')
+        {
+            $dbTime = $timedate->asUser($timedate->getNow(), $user);
+        } else {
+            $dbTime = $timedate->asUser($timedate->fromString($date, $user), $user);
+        }
+
+        // if $user_format is set to true then just return as th user's time format, otherwise, return as database format
+        return $user_format ? $dbTime : $timedate->fromUser($dbTime, $user)->asDb();
 	}
 
 

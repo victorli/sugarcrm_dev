@@ -467,6 +467,8 @@ function validate_user($user_name, $password){
 			}
 
 			$filterFields = $this->filter_fields($value, $fields);
+
+
 			foreach($filterFields as $field){
 				$var = $value->field_defs[$field];
 				if(isset($value->$var['name'])){
@@ -578,9 +580,14 @@ function validate_user($user_name, $password){
 
 		$bean->load_relationship($link_field_name);
 		if (isset($bean->$link_field_name)) {
+            $params = array();
+            if (!empty($optional_where))
+            {
+                $params['where'] = $optional_where;
+            }
 			//First get all the related beans
-            $related_beans = $bean->$link_field_name->getBeans();
-			$filterFields = $this->filter_fields($submodule, $link_module_fields);
+            $related_beans = $bean->$link_field_name->getBeans($params);
+            $filterFields = $this->filter_fields($submodule, $link_module_fields);
             //Create a list of field/value rows based on $link_module_fields
 			$list = array();
             foreach($related_beans as $id => $bean)
@@ -829,6 +836,9 @@ function validate_user($user_name, $password){
                         }
                     }
 					$seed->save();
+                    if($seed->deleted == 1){
+                            $seed->mark_deleted($seed->id);
+                    }
 					$ids[] = $seed->id;
 				}//fi
 			}
@@ -1103,6 +1113,10 @@ function validate_user($user_name, $password){
 		}
 		return false;
 	} // fn
+
+
+
+
 } // clazz
 
 ?>

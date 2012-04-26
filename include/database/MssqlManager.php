@@ -903,6 +903,10 @@ class MssqlManager extends DBManager
             $tbl_name = $module_str;
             $sql = strtolower($sql);
 
+            // Bug #45625 : Getting Multi-part identifier (reports.id) could not be bound error when navigating to next page in reprots in mssql
+            // there is cases when sql string is multiline string and it we cannot find " from " string in it
+            $sql = str_replace(array("\n", "\r"), " ", $sql);
+
             //look for the location of the "from" in sql string
             $fromLoc = strpos($sql," from " );
             if ($fromLoc>0){
@@ -1386,46 +1390,36 @@ class MssqlManager extends DBManager
         return $result;
     }
 
-   	/**
+    /**
      * @see DBManager::get_indices()
      */
-    public function get_indices($tablename)
+    public function get_indices($tableName)
     {
         //find all unique indexes and primary keys.
         $query = <<<EOSQL
-SELECT LEFT(so.[name], 30) TableName,
-        LEFT(si.[name], 50) 'Key_name',
-        LEFT(sik.[keyno], 30) Sequence,
-        LEFT(sc.[name], 30) Column_name,
-		isunique = CASE
-            WHEN si.status & 2 = 2 AND so.xtype != 'PK' THEN 1
-            ELSE 0
-        END
-    FROM sysindexes si
-        INNER JOIN sysindexkeys sik
-            ON (si.[id] = sik.[id] AND si.indid = sik.indid)
-        INNER JOIN sysobjects so
-            ON si.[id] = so.[id]
-        INNER JOIN syscolumns sc
-            ON (so.[id] = sc.[id] AND sik.colid = sc.colid)
-        INNER JOIN sysfilegroups sfg
-            ON si.groupid = sfg.groupid
-    WHERE so.[name] = '$tablename'
-    ORDER BY Key_name, Sequence, Column_name
+SELECT sys.tables.object_id, sys.tables.name as table_name, sys.columns.name as column_name,
+                sys.indexes.name as index_name, sys.indexes.is_unique, sys.indexes.is_primary_key
+            FROM sys.tables, sys.indexes, sys.index_columns, sys.columns
+            WHERE (sys.tables.object_id = sys.indexes.object_id
+                    AND sys.tables.object_id = sys.index_columns.object_id
+                    AND sys.tables.object_id = sys.columns.object_id
+                    AND sys.indexes.index_id = sys.index_columns.index_id
+                    AND sys.index_columns.column_id = sys.columns.column_id)
+                AND sys.tables.name = '$tableName'
 EOSQL;
         $result = $this->query($query);
 
         $indices = array();
         while (($row=$this->fetchByAssoc($result)) != null) {
             $index_type = 'index';
-            if ($row['Key_name'] == 'PRIMARY')
+            if ($row['is_primary_key'] == '1')
                 $index_type = 'primary';
-            elseif ($row['isunique'] == 1 )
+            elseif ($row['is_unique'] == 1 )
                 $index_type = 'unique';
-            $name = strtolower($row['Key_name']);
+            $name = strtolower($row['index_name']);
             $indices[$name]['name']     = $name;
             $indices[$name]['type']     = $index_type;
-            $indices[$name]['fields'][] = strtolower($row['Column_name']);
+            $indices[$name]['fields'][] = strtolower($row['column_name']);
         }
         return $indices;
     }

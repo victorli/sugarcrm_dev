@@ -38,7 +38,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 
-
+require_once('include/generic/SugarWidgets/SugarWidgetSubPanelTopButton.php');
 
 class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 {
@@ -72,7 +72,7 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 				$this->title = $app_strings[$this->button_properties['title']];
 			}
 			if( isset($this->button_properties['accesskey'])) {
-				//$this->accesskey = $app_strings[$this->button_properties['accesskey']];
+				$this->accesskey = $app_strings[$this->button_properties['accesskey']];
 			}
 			if( isset($this->button_properties['form_value'])) {
 				$this->value = $app_strings[$this->button_properties['form_value']];
@@ -163,7 +163,6 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 				}
 			}
 		}
-
         //acl_roles_users_selectuser_button
 
         $json_encoded_php_array = $this->_create_json_encoded_popup_request($popup_request_data);

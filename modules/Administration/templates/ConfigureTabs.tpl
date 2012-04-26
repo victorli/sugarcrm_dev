@@ -63,7 +63,7 @@
 	<div class='add_table' style='margin-bottom:5px'>
 		<table id="ConfigureTabs" class="themeSettings edit view" style='margin-bottom:0px;' border="0" cellspacing="0" cellpadding="0">
 			<tr>
-				<td>
+				<td colspan="2">
 				    <input type='checkbox' name='user_edit_tabs' value=1 class='checkbox' {if !empty($user_can_edit)}CHECKED{/if}>&nbsp;
 				    <b onclick='document.EditView.user_edit_tabs.checked= !document.EditView.user_edit_tabs.checked' style='cursor:default'>{$MOD.LBL_ALLOW_USER_TABS}</b>
 				    &nbsp;{sugar_help text=$MOD.LBL_CONFIG_TABS_ALLOW_USERS_HIDE_TABS_HELP}

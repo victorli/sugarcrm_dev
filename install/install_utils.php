@@ -788,18 +788,19 @@ function handleSugarConfig() {
     if(!empty($_SESSION['fts_type']))
         $sugar_config['full_text_engine']               = array($_SESSION['fts_type'] => array('host'=> $_SESSION['fts_host'], 'port' => $_SESSION['fts_port']));
 
-    /*nsingh(bug 22402): Consolidate logger settings under $config['logger'] as liked by the new logger! If log4pphp exists,
-        these settings will be overwritten by those in log4php.properties when the user access admin->system settings.*/
-    $sugar_config['logger'] =
-        array ('level'=>$setup_site_log_level,
-         'file' => array(
-            'ext' => '.log',
-            'name' => 'sugarcrm',
-            'dateFormat' => '%c',
-            'maxSize' => '10MB',
-            'maxLogs' => 10,
-            'suffix' => '%m_%Y'),
-    );
+	/*nsingh(bug 22402): Consolidate logger settings under $config['logger'] as liked by the new logger! If log4pphp exists,
+		these settings will be overwritten by those in log4php.properties when the user access admin->system settings.*/
+    $sugar_config['logger']	=
+    	array ('level'=>$setup_site_log_level,
+    	 'file' => array(
+			'ext' => '.log',
+			'name' => 'sugarcrm',
+			'dateFormat' => '%c',
+			'maxSize' => '10MB',
+			'maxLogs' => 10,
+			'suffix' => ''), // bug51583, change default suffix to blank for backwards comptability
+  	);
+
     $sugar_config['session_dir']                    = $setup_site_session_path;
     $sugar_config['site_url']                       = $setup_site_url;
     $sugar_config['sugar_version']                  = $setup_sugar_version;

@@ -410,6 +410,7 @@ function handleSave($prefix,$redirect=true,$useRequired=false) {
 	    	}
 	    	// Call the Call module's save function to handle saving other fields besides
 	    	// the users and contacts relationships
+            $focus->update_vcal = false;    // Bug #49195 : don't update vcal b/s related users aren't saved yet, create vcal cache below
 	    	$focus->save(true);
 	    	$return_id = $focus->id;
 
@@ -481,6 +482,9 @@ function handleSave($prefix,$redirect=true,$useRequired=false) {
 	    		}
 	    	}
 
+            // Bug #49195 : update vcal
+            vCal::cache_sugar_vcal($current_user);
+            
 	    	// CCL - Comment out call to set $current_user as invitee
 	    	//set organizer to auto-accept
 	    	//$focus->set_accept_status($current_user, 'accept');

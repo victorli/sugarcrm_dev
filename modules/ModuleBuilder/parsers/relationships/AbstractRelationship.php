@@ -453,11 +453,14 @@ class AbstractRelationship
         
         $properties = array ( ) ;
 
+        //bug 47903
         if ($checkExisting && !empty($dictionary[$relationshipName])
             && !empty($dictionary[$relationshipName][ 'true_relationship_type' ])
             && $dictionary[$relationshipName][ 'true_relationship_type' ]  == $relationshipType
             && !empty($dictionary[$relationshipName]['relationships'][$relationshipName]))
         {
+            //bug 51336
+            $properties [ 'true_relationship_type' ] = $relationshipType ;
             $rel_properties = $dictionary[$relationshipName]['relationships'][$relationshipName];
         } else
         {

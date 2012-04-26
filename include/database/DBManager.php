@@ -975,6 +975,10 @@ protected function checkQuery($sql, $object_name = false)
 			//Ignore len if its not set in the vardef
 			if ($key == 'len' && empty($fielddef2[$key]))
 				continue;
+            // if the length in db is greather than the vardef, ignore it
+            if ($key == 'len' && ($fielddef1[$key] >= $fielddef2[$key])) {
+                continue;
+            }
 			return false;
 		}
 

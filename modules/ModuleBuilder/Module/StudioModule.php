@@ -405,6 +405,7 @@ class StudioModule
         $sources = $this->getViewMetadataSources();
         $sources[] = array('type'  => MB_BASICSEARCH);
         $sources[] = array('type'  => MB_ADVANCEDSEARCH);
+        $sources[] = array('type'  => MB_POPUPSEARCH);        
         
         $GLOBALS [ 'log' ]->debug ( print_r( $sources,true) ) ;
         foreach ( $sources as $name => $defs )

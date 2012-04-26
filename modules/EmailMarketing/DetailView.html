@@ -79,14 +79,20 @@
 	<tr>
 	<td scope="row"><slot>{MOD.LBL_START_DATE_TIME}</slot></td>
 	<td><slot>{DATE_START}&nbsp;{TIME_START}</slot></td>
-	<td scope="row"><slot>{MOD.LBL_TEMPLATE}</slot></td>
-	<td>{EMAIL_TEMPLATE}&nbsp;</td>
+	<td scope="row"><slot>{MOD.LBL_FROM_ADDR}</slot></td>
+	<td>{FROM_ADDR}&nbsp;</td>
 	</tr>
 	<tr>
+	<td scope="row"><slot>{MOD.LBL_TEMPLATE}</slot></td>
+	<td><slot>{EMAIL_TEMPLATE}&nbsp;{TIME_START}</slot></td>
+	<td scope="row"><slot>{MOD.LBL_REPLY_NAME}</slot></td>
+	<td>{REPLY_TO_NAME}&nbsp;</td>
+	</tr>
+    <tr>
 	<td scope="row"><slot>{MOD.LBL_MESSAGE_FOR}</slot></td>
 	<td><slot>{MESSAGE_FOR}&nbsp;</slot></td>
-	<td scope="row"><slot>&nbsp;</slot></td>
-	<td><slot>&nbsp;</slot></td>
+	<td scope="row"><slot>{MOD.LBL_REPLY_ADDR}</slot></td>
+	<td><slot>{REPLY_TO_ADDR}&nbsp;</slot></td>
 	</tr>	
 </table>
 </div>

@@ -183,14 +183,6 @@ if(!$current_user->is_admin  && !$GLOBALS['current_user']->isAdminForModule('Use
 			$focus->setPreference('mailmerge_on','off', 0, 'global');
 		}
 
-		if(isset($_POST['user_max_tabs']))
-		{
-			$current_theme_max_tabs = SugarThemeRegistry::current()->maxTabs;
-			if(empty($current_theme_max_tabs) || $_POST['user_max_tabs'] <= SugarThemeRegistry::current()->maxTabs){
-				$focus->setPreference('max_tabs', $_POST['user_max_tabs'], 0, 'global');
-			}
-		}
-
 	    if(isset($_POST['user_swap_last_viewed']))
 	    {
 	        $focus->setPreference('swap_last_viewed', $_POST['user_swap_last_viewed'], 0, 'global');

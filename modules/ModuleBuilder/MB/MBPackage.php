@@ -234,18 +234,10 @@ function buildInstall($path){
     function save(){
         $path = $this->getPackageDir();
         if(mkdir_recursive($path)){
-            $fp = sugar_fopen($path .'/manifest.php', 'w');
-            
-            
             //Save all the modules when we save a package
             $this->updateModulesMetaData(true);
-            fwrite($fp, $this->getManifest() );
-            fclose($fp);
+            sugar_file_put_contents_atomic($path .'/manifest.php', $this->getManifest());
         }
-        
-        
-        
-        
     }
     
     function build($export=true, $clean = false){

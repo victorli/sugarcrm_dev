@@ -86,8 +86,10 @@ class Bug40019Test extends Sugar_PHPUnit_Framework_TestCase
 	    $history = $tracker->get_recently_viewed($GLOBALS['current_user']->id, 'Contacts');
 	    
 	    $expected = $max > 10 ? 10 : $max;
-        
-        $this->assertTrue(count($history) == $expected);
+        $history_count = count($history);
+
+        $this->assertTrue($history_count <= $expected,
+            "Recently viewed list is not as expected: History count = $history_count, and expected = $expected");
 	}
     
 	// Currently, getBreadCrumbList in BreadCrumbStack.php limits you to 10
@@ -103,7 +105,9 @@ class Bug40019Test extends Sugar_PHPUnit_Framework_TestCase
 	    $history = $tracker->get_recently_viewed($GLOBALS['current_user']->id, '');
 	    
 	    $expected = $max > 10 ? 10 : $max;
-	    
-        $this->assertTrue(count($history) == $expected);
+	    $history_count = count($history);
+
+        $this->assertTrue($history_count <= $expected,
+            "Recently viewed list is not as expected: History count = $history_count, and expected = $expected");
 	}
 }

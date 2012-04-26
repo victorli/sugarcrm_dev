@@ -197,6 +197,13 @@ class TemplateEnum extends TemplateText{
         }
 		parent::save($df);
 	}
+
+    /**
+     * @param DynamicField $df
+     */
+    function delete($df){
+        parent::delete($df);
+    }
 }
 
 

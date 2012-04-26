@@ -3894,9 +3894,13 @@ border-radius: 0px;
 }
 
 td.paginationActionButtons ul.clickMenu .massall,
-ul#selectLink.clickMenu .massall{
-    float: left;
-    margin:2px 0 0 4px;
+ul#selectLink.clickMenu .massall, td.selectCol .massall{
+	float: left;
+	margin: 2px 0 0 4px;
+}
+
+td.paginationActionButtons ul.selectmenu > li > a, td.selectCol ul.selectmenu > li > a, ul#selectLink.clickMenu > li > a {
+	padding: 0px !important;
 }
 ul.clickMenu.showLess .moreOverflow , ul.clickMenu.showLess .moduleMenuOverFlowLess, ul.clickMenu.showMore .moduleMenuOverFlowMore {
 	display:none;

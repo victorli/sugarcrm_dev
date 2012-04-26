@@ -89,21 +89,21 @@ function addRemoveDropdownElement(module) {
 {/if}
 <input type="hidden" name="offset" value="{$offset}">
 {if $bean->aclAccess("save")}
-    <input title='{sugar_translate label="LBL_SAVE_BUTTON_LABEL"}' accessKey="{sugar_translate label='LBL_SAVE_BUTTON_KEY}" class="button primary" 
+    <input title='{sugar_translate label="LBL_SAVE_BUTTON_LABEL"}' id='SAVE_HEADER'accessKey="{sugar_translate label='LBL_SAVE_BUTTON_KEY}" class="button primary"
         onclick="return check_form('{$form_name}');"
         type="submit" name="button" value="{sugar_translate label='LBL_SAVE_BUTTON_LABEL'}">
 {/if}
 
 {if !empty($smarty.request.return_action) && ($smarty.request.return_action == "DetailView" && !empty($record_id))}
-    <input title="{sugar_translate label='LBL_CANCEL_BUTTON'}" accessKey="{sugar_translate label='LBL_CANCEL_BUTTON_KEY'}" class="button" 
+    <input title="{sugar_translate label='LBL_CANCEL_BUTTON'}" id="CANCEL_HEADER" accessKey="{sugar_translate label='LBL_CANCEL_BUTTON_KEY'}" class="button"
         onclick="this.form.action.value='DetailView'; this.form.module.value='{$smarty.request.return_module}'; this.form.record.value='{$smarty.request.return_id}';" 
         type="submit" name="button" value="{sugar_translate label='LBL_CANCEL_BUTTON_LABEL'}">
 {elseif !empty($smarty.request.return_action) && ($smarty.request.return_action == "DetailView" && !empty($smarty.request.return_id))}';
-    <input title="{sugar_translate label='LBL_CANCEL_BUTTON_TITLE'}" accessKey="{sugar_translate label='LBL_CANCEL_BUTTON_KEY'}" class="button" 
+    <input title="{sugar_translate label='LBL_CANCEL_BUTTON_TITLE'}" id="CANCEL_HEADER" accessKey="{sugar_translate label='LBL_CANCEL_BUTTON_KEY'}" class="button"
         onclick="this.form.action.value='DetailView'; this.form.module.value='{$smarty.request.return_module}'; this.form.record.value='{$smarty.request.return_id}';" 
         type="submit" name="button" value="{sugar_translate label='LBL_CANCEL_BUTTON_LABEL'}">
 {else}
-    <input title="{sugar_translate label='LBL_CANCEL_BUTTON_TITLE'}" accessKey="{sugar_translate label='LBL_CANCEL_BUTTON_KEY'}" class="button" 
+    <input title="{sugar_translate label='LBL_CANCEL_BUTTON_TITLE'}" id="CANCEL_HEADER" accessKey="{sugar_translate label='LBL_CANCEL_BUTTON_KEY'}" class="button"
         onclick="this.form.action.value='DetailView'; this.form.module.value='Leads'; this.form.record.value='{$smarty.request.record}';" 
         type="submit" name="button" value="{sugar_translate label='LBL_CANCEL_BUTTON_LABEL'}">
 {/if}

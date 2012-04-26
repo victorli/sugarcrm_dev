@@ -554,7 +554,11 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
                     if(!empty($ieId)) {
                         $GLOBALS['log']->info("[EMAIL] - Start checking email for GUID [{$ieId}] for user [{$current_user->user_name}]");
                         $ie->disconnectMailserver();
-                        $ie->retrieve($ieId);
+                        // If I-E not exist - skip check
+                        if (is_null($ie->retrieve($ieId))) {
+                            $GLOBALS['log']->info("[EMAIL] - Inbound with GUID [{$ieId}] not exist");
+                            continue;
+                        }
                         $ie->checkEmail(false);
                         $GLOBALS['log']->info("[EMAIL] - Done checking email for GUID [{$ieId}] for user [{$current_user->user_name}]");
                     }

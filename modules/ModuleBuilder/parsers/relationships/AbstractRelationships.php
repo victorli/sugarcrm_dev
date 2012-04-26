@@ -289,8 +289,19 @@ class AbstractRelationships
             $basename = strtolower ( $definition [ 'lhs_module' ] . '_' . $definition [ 'rhs_module' ] ) ;
         }
         
-        $name = $basename ;
-        $suffix = 1 ;
+        // Bug #49024 : Relationships Created in Earlier Versions Cause Conflicts and AJAX Errors After Upgrade
+        // ...all custom relationships created via Studio should always have a numeric identifier attached.
+        if ( $this instanceof DeployedRelationships )
+        {
+            $name = $basename . '_1' ;
+            $suffix = 2 ;
+        }
+        else
+        {
+            $name = $basename ;
+            $suffix = 1 ;
+        }
+        
         while ( isset ( $allRelationships [ $name ] ) )
         {
             $name = $basename . "_" . ( string ) ($suffix ++) ;

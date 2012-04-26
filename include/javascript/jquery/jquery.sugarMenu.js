@@ -152,8 +152,8 @@
 					var jNode = $(node);
 					var parent = jNode.parent();
 					var fancymenu = "";
-					var slideUpSpeed = 0;
-					var slideDownSpeed = 0;
+					var slideUpSpeed = 1;
+					var slideDownSpeed = 1;
                     var dropDownHandle;
 
 					//if the dropdown handle doesn't exist, lets create it and

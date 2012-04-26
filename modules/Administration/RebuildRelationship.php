@@ -63,7 +63,7 @@ foreach ( $GLOBALS['beanFiles'] as $bean => $file )
         $focus = new $bean ( ) ;
         if ( $focus instanceOf SugarBean ) {
             $table_name = $focus->table_name ;
-            $empty = '' ;
+            $empty = array() ;
             if (empty ( $_REQUEST [ 'silent' ] ))
                 echo $mod_strings [ 'LBL_REBUILD_REL_PROC_META' ] . $focus->table_name . "..." ;
             SugarBean::createRelationshipMeta ( $focus->getObjectName (), $db, $table_name, $empty, $focus->module_dir ) ;
@@ -86,7 +86,7 @@ foreach ( $GLOBALS['beanFiles'] as $bean => $file )
     $focus = new $bean ( ) ;
     if ( $focus instanceOf SugarBean ) {
         $table_name = $focus->table_name ;
-        $empty = '' ;
+        $empty = array() ;
         if (empty ( $_REQUEST [ 'silent' ] ))
             echo $mod_strings [ 'LBL_REBUILD_REL_PROC_C_META' ] . $focus->table_name . "..." ;
         SugarBean::createRelationshipMeta ( $focus->getObjectName (), $db, $table_name, $empty, $focus->module_dir, true ) ;

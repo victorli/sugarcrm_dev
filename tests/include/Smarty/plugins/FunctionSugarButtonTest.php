@@ -51,6 +51,12 @@ class FunctionSugarButtonTest extends Sugar_PHPUnit_Framework_TestCase
     public function providerCustomCode() {
         $onclick = 'this.form.module.value=\'Contacts\';';
         $expected_onclick = 'var _form = document.getElementById(\'DetailView\');_form.module.value=\'Contacts\';_form.submit();';
+        $onclick2 = 'this.form.module.value=\'Projects\';';
+        $expected_onclick2 = 'var _form = document.getElementById(\'DetailView\');_form.module.value=\'Projects\';_form.submit();';
+        $onclick3 = 'this.form.module.value=\'Meeting\';';
+        $expected_onclick3 = 'var _form = document.getElementById(\'DetailView\');_form.module.value=\'Meeting\';_form.submit();';
+        $onclick4 = 'this.form.module.value=\'Notes\';';
+        $expected_onclick4 = 'var _form = document.getElementById(\'DetailView\');_form.module.value=\'Notes\';_form.submit();';
         return array(
 
             //set #0: simple input code
@@ -360,6 +366,199 @@ class FunctionSugarButtonTest extends Sugar_PHPUnit_Framework_TestCase
                 ),
                 '<input title="{$APP.LBL_SAVE_BUTTON_TITLE}" id="SAVE" disabled onclick="SUGAR.meetings.fill_invitees();document.EditView.action.value=\'Save\'; document.EditView.return_action.value=\'DetailView\'; {if isset($smarty.request.isDuplicate) && $smarty.request.isDuplicate eq "true"}document.EditView.return_id.value=\'\'; {/if} formSubmitCheck();" type="button" name="button" value="{$APP.LBL_SAVE_BUTTON_LABEL}"/>',
             ),
+            //set #12: Contains smarty syntax "ldelim, rdelim"
+            array(
+                '{if $bean->aclAccess("delete") && !empty($smarty.request.record)}<input title="{$APP.LBL_DELETE_BUTTON_TITLE}" accessKey="{$APP.LBL_DELETE_BUTTON_KEY}" class="button" onclick="this.form.return_module.value=\'Users\'; this.form.return_action.value=\'EditView\'; this.form.action.value=\'Delete\'; this.form.return_id.value=\'{$return_id}\'; if (confirm(\'{$APP.NTC_DELETE_CONFIRMATION}\')){ldelim}disableOnUnloadEditView(); return true;{rdelim}else{ldelim}return false;{rdelim};" type="submit" name="Delete" value="{$APP.LBL_DELETE_BUTTON_LABEL}">{/if} ',
+                array(
+                    'smarty' => array(
+                        array(
+                            'template' => '{if $bean->aclAccess("delete") && !empty($smarty.request.record)}[CONTENT0]{/if}',
+                            '[CONTENT0]' => array(
+                                'tag' => 'input',
+                                'self_closing' => true,
+                                'title' => '{$APP.LBL_DELETE_BUTTON_TITLE}',
+                                'accessKey' => '{$APP.LBL_DELETE_BUTTON_KEY}',
+                                'class' => 'button',
+                                'onclick' => 'this.form.return_module.value=\'Users\'; this.form.return_action.value=\'EditView\'; this.form.action.value=\'Delete\'; this.form.return_id.value=\'{$return_id}\'; if (confirm(\'{$APP.NTC_DELETE_CONFIRMATION}\')){ldelim}disableOnUnloadEditView(); return true;{rdelim}else{ldelim}return false;{rdelim};',
+                                'type' => 'submit',
+                                'name' => 'Delete',
+                                'value' => '{$APP.LBL_DELETE_BUTTON_LABEL}',
+                            ),
+                        )
+                    )
+                ),
+                '{if $bean->aclAccess("delete") && !empty($smarty.request.record)}<input title="{$APP.LBL_DELETE_BUTTON_TITLE}" accessKey="{$APP.LBL_DELETE_BUTTON_KEY}" class="button" onclick="var _form = document.getElementById(\'DetailView\'); var _onclick=(function(){ldelim}_form.return_module.value=\'Users\'; _form.return_action.value=\'EditView\'; _form.action.value=\'Delete\'; _form.return_id.value=\'{$return_id}\'; if (confirm(\'{$APP.NTC_DELETE_CONFIRMATION}\')){ldelim}disableOnUnloadEditView(); return true;{rdelim}else{ldelim}return false;{rdelim};{rdelim}()); if(_onclick!==false) _form.submit();" type="button" name="Delete" value="{$APP.LBL_DELETE_BUTTON_LABEL}"/>{/if}'
+            ),
+
+            //set #13: Contains smarty syntax "literal"
+            array(
+                '{if $bean->aclAccess("delete") && !empty($smarty.request.record)}<input title="{$APP.LBL_DELETE_BUTTON_TITLE}" accessKey="{$APP.LBL_DELETE_BUTTON_KEY}" class="button" onclick="this.form.return_module.value=\'Users\'; this.form.return_action.value=\'EditView\'; this.form.action.value=\'Delete\'; this.form.return_id.value=\'{$return_id}\'; {literal}if (confirm(\'{$APP.NTC_DELETE_CONFIRMATION}\')){disableOnUnloadEditView(); return true;}else{return false;};{/literal}" type="submit" name="Delete" value="{$APP.LBL_DELETE_BUTTON_LABEL}">{/if} ',
+                array(
+                    'smarty' => array(
+                        array(
+                            'template' => '{if $bean->aclAccess("delete") && !empty($smarty.request.record)}[CONTENT0]{/if}',
+                            '[CONTENT0]' => array(
+                                'tag' => 'input',
+                                'self_closing' => true,
+                                'title' => '{$APP.LBL_DELETE_BUTTON_TITLE}',
+                                'accessKey' => '{$APP.LBL_DELETE_BUTTON_KEY}',
+                                'class' => 'button',
+                                'onclick' => 'this.form.return_module.value=\'Users\'; this.form.return_action.value=\'EditView\'; this.form.action.value=\'Delete\'; this.form.return_id.value=\'{$return_id}\'; {literal}if (confirm(\'{$APP.NTC_DELETE_CONFIRMATION}\')){disableOnUnloadEditView(); return true;}else{return false;};{/literal}',
+                                'type' => 'submit',
+                                'name' => 'Delete',
+                                'value' => '{$APP.LBL_DELETE_BUTTON_LABEL}',
+                            ),
+                        )
+                    )
+                ),
+                '{if $bean->aclAccess("delete") && !empty($smarty.request.record)}<input title="{$APP.LBL_DELETE_BUTTON_TITLE}" accessKey="{$APP.LBL_DELETE_BUTTON_KEY}" class="button" onclick="var _form = document.getElementById(\'DetailView\'); var _onclick=(function(){ldelim}_form.return_module.value=\'Users\'; _form.return_action.value=\'EditView\'; _form.action.value=\'Delete\'; _form.return_id.value=\'{$return_id}\'; {literal}if (confirm(\'{$APP.NTC_DELETE_CONFIRMATION}\')){disableOnUnloadEditView(); return true;}else{return false;};{/literal};{rdelim}()); if(_onclick!==false) _form.submit();" type="button" name="Delete" value="{$APP.LBL_DELETE_BUTTON_LABEL}"/>{/if}'
+            ),
+
+            //set #14: Multiple conditional statement
+            array(
+                '{if !empty($smarty.request.return_action) && $smarty.request.return_action == "ProjectTemplatesDetailView" && (!empty($fields.id.value) || !empty($smarty.request.return_id)) }'.
+                    '<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="'.$onclick.'" type="submit" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="Cancel"> '.
+                    '{elseif !empty($smarty.request.return_action) && $smarty.request.return_action == "DetailView" && (!empty($fields.id.value) || !empty($smarty.request.return_id)) }'.
+                    '<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="'.$onclick2.'" type="submit" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="Cancel"> '.
+                    '{elseif $is_template}'.
+                    '<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="'.$onclick3.'" type="submit" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="Cancel"> '.
+                    '{else}'.
+                    '<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="'.$onclick4.'" type="submit" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="Cancel"> '.
+                    '{/if}',
+                array(
+                    'smarty' => array(
+                        array(
+                            'template' => '{if !empty($smarty.request.return_action) && $smarty.request.return_action == "ProjectTemplatesDetailView" && (!empty($fields.id.value) || !empty($smarty.request.return_id)) }[CONTENT0]{elseif !empty($smarty.request.return_action) && $smarty.request.return_action == "DetailView" && (!empty($fields.id.value) || !empty($smarty.request.return_id)) }[CONTENT1]{elseif $is_template}[CONTENT2]{else}[CONTENT3]{/if}',
+                            '[CONTENT0]' => array(
+                                'tag' => 'input',
+                                'title' => '{$APP.LBL_CANCEL_BUTTON_TITLE}',
+                                'accessKey' => '{$APP.LBL_CANCEL_BUTTON_KEY}',
+                                'class' => "button",
+                                'type' => "submit",
+                                'name' => "button",
+                                'value' => '{$APP.LBL_CANCEL_BUTTON_LABEL}',
+                                'id' => "Cancel",
+                                'onclick' => $onclick,
+                                'self_closing' => true
+                            ),
+                            '[CONTENT1]' => array(
+                                'tag' => 'input',
+                                'title' => '{$APP.LBL_CANCEL_BUTTON_TITLE}',
+                                'accessKey' => '{$APP.LBL_CANCEL_BUTTON_KEY}',
+                                'class' => "button",
+                                'type' => "submit",
+                                'name' => "button",
+                                'value' => '{$APP.LBL_CANCEL_BUTTON_LABEL}',
+                                'id' => "Cancel",
+                                'onclick' => $onclick2,
+                                'self_closing' => true
+                            ),
+                            '[CONTENT2]' => array(
+                                'tag' => 'input',
+                                'title' => '{$APP.LBL_CANCEL_BUTTON_TITLE}',
+                                'accessKey' => '{$APP.LBL_CANCEL_BUTTON_KEY}',
+                                'class' => "button",
+                                'type' => "submit",
+                                'name' => "button",
+                                'value' => '{$APP.LBL_CANCEL_BUTTON_LABEL}',
+                                'id' => "Cancel",
+                                'onclick' => $onclick3,
+                                'self_closing' => true
+                            ),
+                            '[CONTENT3]' => array(
+                                'tag' => 'input',
+                                'title' => '{$APP.LBL_CANCEL_BUTTON_TITLE}',
+                                'accessKey' => '{$APP.LBL_CANCEL_BUTTON_KEY}',
+                                'class' => "button",
+                                'type' => "submit",
+                                'name' => "button",
+                                'value' => '{$APP.LBL_CANCEL_BUTTON_LABEL}',
+                                'id' => "Cancel",
+                                'onclick' => $onclick4,
+                                'self_closing' => true
+                            ),
+                        )
+                    )
+                ),
+                '{if !empty($smarty.request.return_action) && $smarty.request.return_action == "ProjectTemplatesDetailView" && (!empty($fields.id.value) || !empty($smarty.request.return_id)) }'.
+                    '<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="'.$expected_onclick.'" type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="Cancel"/>'.
+                    '{elseif !empty($smarty.request.return_action) && $smarty.request.return_action == "DetailView" && (!empty($fields.id.value) || !empty($smarty.request.return_id)) }'.
+                    '<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="'.$expected_onclick2.'" type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="Cancel"/>'.
+                    '{elseif $is_template}'.
+                    '<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="'.$expected_onclick3.'" type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="Cancel"/>'.
+                    '{else}'.
+                    '<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="'.$expected_onclick4.'" type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="Cancel"/>'.
+                    '{/if}'
+            ),
+
+            //set #15: Parallel smarty strings
+            array(
+                '{$APP.VALUE1} {$HIDDEN_FIELD} <input type="submit" value="{$APP.BUTTON_LABEL}" onclick="'.$onclick.'">',
+                array(
+                    array(
+                        'smarty' => array(
+                            array(
+                                'template' => '{$APP.VALUE1}',
+                            )
+                        ),
+                    ),
+                    array(
+                        'smarty' => array(
+                            array(
+                                'template' => '{$HIDDEN_FIELD}',
+                            )
+                        ),
+                    ),
+                    array(
+                        'tag' => 'input',
+                        'type' => 'submit',
+                        'self_closing' => true,
+                        'onclick' => $onclick,
+                        'value' => '{$APP.BUTTON_LABEL}'
+                    )
+                ),
+                '{$APP.VALUE1}{$HIDDEN_FIELD}<input type="button" value="{$APP.BUTTON_LABEL}" onclick="'.$expected_onclick.'"/>',
+            ),
+            //set #16: Contains smarty syntax "nocache"
+            array(
+                '<form action="index.php" method="{$PDFMETHOD}" name="ViewPDF" id="form" onsubmit="this.sugarpdf.value =(document.getElementById(\'sugarpdf\'))? document.getElementById(\'sugarpdf\').value: \'\';"><input type="hidden" name="module" value="Quotes">'
+                    .'{nocache}'
+                    .'{sugar_email_btn}'
+                    .'{/nocache}'
+                    .'</form>',
+                array(
+                    'tag' => 'form',
+                    'action' => 'index.php',
+                    'method' => '{$PDFMETHOD}',
+                    'name' => 'ViewPDF',
+                    'id' => 'form',
+                    'onsubmit' => 'this.sugarpdf.value =(document.getElementById(\'sugarpdf\'))? document.getElementById(\'sugarpdf\').value: \'\';',
+                    'container' => array(
+                        array(
+                            'tag' => 'input',
+                            'type' => "hidden",
+                            'name' => "module",
+                            'value' => "Quotes",
+                            'self_closing' => true,
+                        ),
+                        array(
+                            'smarty' => array(
+                                array(
+                                    'template' => '{nocache}{sugar_email_btn}{/nocache}',
+                                ),
+                            )
+                        )
+                    ),
+                    'self_closing' => false,
+                ),
+                '<form action="index.php" method="{$PDFMETHOD}" name="ViewPDF" id="form" onsubmit="this.sugarpdf.value =(document.getElementById(\'sugarpdf\'))? document.getElementById(\'sugarpdf\').value: \'\';"><input type="hidden" name="module" value="Quotes"/>'
+                    .'{nocache}'
+                    .'{sugar_email_btn}'
+                    .'{/nocache}'
+                    .'</form>',
+            ),
+
+
         );
     }
     /**
@@ -377,6 +576,7 @@ class FunctionSugarButtonTest extends Sugar_PHPUnit_Framework_TestCase
             ),
             'form_id' => 'DetailView'
         );
+
 
         //Test for smarty_function_sugar_button for customCode
         $this->assertEquals($expected_customCode, smarty_function_sugar_button($params, $this->_smarty));
@@ -419,7 +619,7 @@ class FunctionSugarButtonTest extends Sugar_PHPUnit_Framework_TestCase
                 '<form name="blah">   <input type="hidden" name="id1">    <input type="hidden" name="id2">     <input type="submit" onclick="'.$onclick.'"></form>',
                 '<form name="blah"><input type="hidden" name="id1"/><input type="hidden" name="id2"/><input type="submit" onclick="'.$onclick.'"/></form>',
                 null
-            )
+            ),
         );
     }
     /**
@@ -443,6 +643,7 @@ class FunctionSugarButtonTest extends Sugar_PHPUnit_Framework_TestCase
     }
 
     public function testBuildSugarHtml() {
+
         $sugar_html = array(
             'type' => 'submit',
             'value' => '{$APP.LBL_CLOSE_AND_CREATE_BUTTON_TITLE}',

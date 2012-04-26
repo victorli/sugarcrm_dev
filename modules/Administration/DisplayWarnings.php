@@ -43,6 +43,21 @@ function displayAdminError($errorString){
 		echo $output;
 }
 
+//BEGIN SUGARCRM flav=pro
+if( file_exists('include/SugarSearchEngine/SugarSearchEngineFactory.php') )
+{
+    require_once('include/SugarSearchEngine/SugarSearchEngineFactory.php');
+    $ftsType = SugarSearchEngineFactory::getFTSEngineNameFromConfig();
+    if(!empty($ftsType) && isset($GLOBALS['sugar_config']['full_text_engine'][$ftsType]['valid']) && !$GLOBALS['sugar_config']['full_text_engine'][$ftsType]['valid'])
+    {
+        displayAdminError(translate('LBL_FTS_CONNECTION_INVALID', 'Administration'));
+    }
+
+}
+//END SUGARCRM flav=pro
+
+
+
 if(isset($_SESSION['rebuild_relationships'])){
 	displayAdminError(translate('MSG_REBUILD_RELATIONSHIPS', 'Administration'));
 }

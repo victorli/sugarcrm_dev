@@ -98,7 +98,7 @@ function to_html($string, $encode=true){
 
         if(is_array($toHTML))
         { // cn: causing errors in i18n test suite ($toHTML is non-array)
-            $string = str_replace($GLOBALS['toHTML_keys'],$GLOBALS['toHTML_values'],$string);
+            $string = str_ireplace($GLOBALS['toHTML_keys'],$GLOBALS['toHTML_values'],$string);
 		}
 	}
 
@@ -127,10 +127,10 @@ function from_html($string, $encode=true) {
     }
 
     // Bug 36261 - Decode &amp; so we can handle double encoded entities
-	$string = str_replace("&amp;", "&", $string);
+	$string = str_ireplace("&amp;", "&", $string);
 
     if (!isset($cache[$string])) {
-        $cache[$string] = str_replace($toHTML_values, $toHTML_keys, $string);
+        $cache[$string] = str_ireplace($toHTML_values, $toHTML_keys, $string);
     }
     return $cache[$string];
 }

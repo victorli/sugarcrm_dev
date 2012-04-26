@@ -2153,7 +2153,7 @@ YAHOO.util.DragDrop.prototype = {
 
         // by default, clicked anchors will not start drag operations. 
         // @TODO what else should be here?  Probably form fields.
-        this.invalidHandleTypes = { A: "A" };
+        this.invalidHandleTypes = { A: "A" , SELECT:"SELECT"};
         this.invalidHandleIds = {};
         this.invalidHandleClasses = [];
 

@@ -281,14 +281,49 @@ class SugarController{
 	/**
 	 * This method is called from SugarApplication->execute and it will bootstrap the entire controller process
 	 */
-	final public function execute(){
-		$this->process();
-		if(!empty($this->view)){
-			$this->processView();
-		}elseif(!empty($this->redirect_url)){
-			$this->redirect();
-		}
+	final public function execute()
+    {
+
+        try
+        {
+            $this->process();
+            if(!empty($this->view))
+            {
+                $this->processView();
+            }
+            elseif(!empty($this->redirect_url))
+            {
+            			$this->redirect();
+            }
+        }
+        catch (Exception $e)
+        {
+            $this->handleException($e);
+        }
+
+
+
 	}
+
+    /**
+      * Handle exception
+      * @param Exception $e
+      */
+    protected function handleException(Exception $e)
+    {
+        $GLOBALS['log']->fatal('Exception in Controller: ' . $e->getMessage());
+        $logicHook = new LogicHook();
+
+        if (isset($this->bean))
+        {
+            $logicHook->setBean($this->bean);
+            $logicHook->call_custom_logic($this->bean->module_dir, "handle_exception", $e);
+        }
+        else
+        {
+            $logicHook->call_custom_logic('', "handle_exception", $e);
+        }
+    }
 
 	/**
 	 * Display the appropriate view.

@@ -439,12 +439,16 @@ SUGAR.subpanelUtils = function() {
 			}
             // reload page if we are setting status to Held
             var reloadpage = false;
-            if ((buttonName == 'Meetings_subpanel_save_button' || buttonName == 'Calls_subpanel_save_button' )
-                 && typeof(theForm) !='undefined' && typeof(document.getElementById(theForm)) != 'undefined'
-                 && typeof(document.getElementById(theForm).status) != 'undefined'
-                 && document.getElementById(theForm).status[document.getElementById(theForm).status.selectedIndex].value == 'Held') {
-                reloadpage = true;
-            }
+            // Bug #51388 - Captivea (qch)
+            reloadpage = reloadpage || ((buttonName == 'Meetings_subpanel_save_button' || buttonName == 'Calls_subpanel_save_button' )
+                	&& typeof(theForm) !='undefined' && typeof(document.getElementById(theForm)) != 'undefined'
+                    && typeof(document.getElementById(theForm).status) != 'undefined'
+                    && document.getElementById(theForm).status[document.getElementById(theForm).status.selectedIndex].value == 'Held');
+            reloadpage = reloadpage || (buttonName == 'Tasks_subpanel_save_button'
+	            	&& typeof(theForm) !='undefined' && typeof(document.getElementById(theForm)) != 'undefined'
+	                && typeof(document.getElementById(theForm).status) != 'undefined'
+	                && document.getElementById(theForm).status[document.getElementById(theForm).status.selectedIndex].value == 'Completed');
+	                
             YAHOO.util.Connect.setForm(theForm, true, true);
 			var cObj = YAHOO.util.Connect.asyncRequest('POST', 'index.php', {success: success, failure: success, upload:success});
 			return false;
@@ -491,6 +495,12 @@ SUGAR.subpanelUtils = function() {
                     form_el;
                 SUGAR.subpanelUtils.dataToDOMAvail = false;
 
+                // Show buttons before we remove subpanel
+                if (typeof currentPanelDiv != 'undefined' && currentPanelDiv != null) {            
+                    var button_elements = YAHOO.util.Selector.query('td.buttons', currentPanelDiv, false);
+                    YAHOO.util.Dom.setStyle(button_elements, 'display', ''); 
+                }
+               
                 // Check if preview subpanel form exists, remove if it does.
                 SUGAR.subpanelUtils.removeSubPanel();
 

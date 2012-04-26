@@ -99,26 +99,32 @@ class ActivitiesRelationship extends OneToManyRelationship
 	        	$labelDefinitions [] = array (
 	            	'module' => 'application' ,
 	            	'system_label' => 'parent_type_display',
-	            	'display_label' => array ( $this->lhs_module => ucfirst ( $this->lhs_module ))
+	            	'display_label' => array(
+                        $this->lhs_module => $this->lhs_label ? $this->lhs_label : ucfirst($this->lhs_module)
+                    )
 	            ) ;
 
 	            $labelDefinitions [] = array (
 	            	'module' => 'application' ,
 	            	'system_label' => 'record_type_display',
-	            	'display_label' => array ( $this->lhs_module => ucfirst ( $this->lhs_module ))
+	            	'display_label' => array(
+                        $this->lhs_module => $this->lhs_label ? $this->lhs_label : ucfirst($this->lhs_module)
+                    )
 	            ) ;
 
 	            $labelDefinitions [] = array (
 	            	'module' => 'application' ,
 	            	'system_label' => 'record_type_display_notes',
-	            	'display_label' => array ( $this->lhs_module => ucfirst ( $this->lhs_module ))
+	            	'display_label' => array(
+                        $this->lhs_module => $this->lhs_label ? $this->lhs_label : ucfirst($this->lhs_module)
+                    )
 	            ) ;
             }
             
             $labelDefinitions [] = array ( 
             	'module' => $this->lhs_module , 
             	'system_label' => 'LBL_' . strtoupper ( $this->relationship_name . '_FROM_' . $this->getRightModuleSystemLabel() ) . '_TITLE' , 
-            	'display_label' => /*'*' .*/ ucfirst ( $this->rhs_module )
+            	'display_label' => $this->lhs_label ? $this->lhs_label : ucfirst($this->lhs_module)
             ) ;
             ActivitiesRelationship::$labelsAdded[$this->lhs_module] = true;
         }

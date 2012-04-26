@@ -224,7 +224,7 @@ class SugarHtml {
 
     /**
      * @static
-     * Disassemble html string into a cascaded array form elements
+     * Disassemble an html string into a cascaded array form elements
      *
      * @param String $code - html string (support the mixed html string with smarty blocks)
      * @param array $appendTo - Precedent siblings
@@ -236,7 +236,13 @@ class SugarHtml {
         $start_pos = strpos($code, ' ') ? strpos($code, ' ') : strpos($code, self::HTML_TAG_END);
         $output = array();
         if(substr($code, 0, 1) != self::HTML_TAG_BEGIN || $start_pos === false) {
-            self::parseSmartyTag($code, $output);
+            $offset = 0;
+            self::parseSmartyTag($code, $output, $offset);
+            $remainder = ltrim(substr($code, $offset));
+            if(!empty($remainder)) {
+                array_push($appendTo, $output);
+                return self::parseHtmlTag($remainder, $appendTo);
+            }
         } else {
             $tag = substr($code, 1, $start_pos - 1);
             $closing_tag = '</'.$tag;
@@ -259,28 +265,29 @@ class SugarHtml {
         }
         return (empty($appendTo)) ? $output : array_merge($appendTo, array($output));
     }
+
     /**
      * @static
+     * Disassemble a smarty string into a cascaded array form elements
      *
-     *
-     * @param $code
-     * @param $output
-     * @param int $i
-     * @param bool $is_attr
+     * @param String $code - smarty encoded string
+     * @param Array $output - parsed attribute
+     * @param int $offset
+     * @param bool $is_attr - whether current smarty block is inside html attributes or not
      */
-    public static function parseSmartyTag($code, &$output, &$i = 0, $is_attr = false) {
+    public static function parseSmartyTag($code, &$output, &$offset = 0, $is_attr = false) {
         if(empty($output['smarty']))
             $output['smarty'] = array();
 
-        $_str = ltrim(substr($code, $i + 1));
+        $_str = ltrim(substr($code, $offset + 1));
 
         preg_match("/^[$\w]+/", $_str, $statement);
         $_smarty_closing = self::SMARTY_TAG_BEGIN.'/'.$statement[0];
         $_left = strlen($statement[0]);
 
-        $_right = strpos($code, $_smarty_closing, $i);
+        $_right = strpos($code, $_smarty_closing, $offset);
         if($_right === false) { //smarty closed itself
-            $_right = strpos($code, self::SMARTY_TAG_END, $i);
+            $_right = strpos($code, self::SMARTY_TAG_END, $offset);
         } else {
             preg_match_all('/\{( |)+'.substr($_str, 0, $_left).'/', substr($_str, 0, $_right), $matches);
 
@@ -291,7 +298,7 @@ class SugarHtml {
 
             $_right = strpos($code, self::SMARTY_TAG_END, $_right);
         }
-        $smarty_string = substr($code, $i, $_right + 1 - $i);
+        $smarty_string = substr($code, $offset, $_right + 1 - $offset);
 
         $clauses = array_slice(
             //split into each clause
@@ -301,22 +308,46 @@ class SugarHtml {
         $smarty_template = array(
             'template' => '',
         );
-
         //Concatenate smarty variables
+        $reserved_strings = array(
+            '$', 'ldelim', 'rdelim'
+        );
+        $reserved_functions = array(
+            'literal' => false,
+            'nocache' => false,
+        );
         $queue = 0;
+        $is_literal = false;
+        $current_literal_string = '';
         for($seq = 0; $seq < count($clauses); $seq++) {
+            $is_reserved = false;
 
-            if($seq > 0 && substr(ltrim($clauses[$seq]), 0, 1) == '$' ) {
-                $clauses[--$queue] .= self::SMARTY_TAG_BEGIN.$clauses[$seq].self::SMARTY_TAG_END;
-                if($seq < count($clauses)) {
+            $current_literal_string = !empty($current_literal_string) ? $current_literal_string : (isset($reserved_functions[trim($clauses[$seq])]) ? trim($clauses[$seq]) : '');
+            $is_literal = $is_literal || !empty($current_literal_string);
+
+            foreach($reserved_strings as $str) {
+                if(substr(ltrim($clauses[$seq]), 0, strlen($str)) == $str) {
+                    $is_reserved = true;
+                    break;
+                }
+            }
+            if($is_literal || ($seq > 0 && $is_reserved)) {
+                if($queue == 0)
+                    $clauses[$queue] = self::SMARTY_TAG_BEGIN.$clauses[$seq].self::SMARTY_TAG_END;
+                else
+                    $clauses[--$queue] .= self::SMARTY_TAG_BEGIN.$clauses[$seq].self::SMARTY_TAG_END;
+                $is_literal = $is_literal && (substr(ltrim($clauses[$seq]), 0, strlen("/".$current_literal_string)) != "/".$current_literal_string);
+                $current_literal_string = ($is_literal) ? $current_literal_string : '';
+                if($seq < count($clauses) - 1) {
                     $clauses[$queue++] .= $clauses[++$seq];
+                } else {
+                    $queue++;
                 }
             } else {
                 $clauses[$queue++] = $clauses[$seq];
             }
         }
         array_splice($clauses, $queue);
-
         //Split phrases for the conditional statement
         $count = 0;
         $queue = 0;
@@ -344,9 +375,11 @@ class SugarHtml {
         $seq = 0;
         foreach($clauses as $index => $clause) {
             if($index % 2 == 0) {
-                $smarty_template['template'] .= '{'.$clause.'}';
-
-            } else {
+                if(self::SMARTY_TAG_BEGIN == substr($clause, 0, 1) && self::SMARTY_TAG_END == substr($clause, -1, 1))
+                    $smarty_template['template'] .= $clause;
+                else
+                    $smarty_template['template'] .= '{'.$clause.'}';
+            } else if( !empty($clause) ){
                 $key = '[CONTENT'.($seq++).']';
                 $smarty_template['template'] .= $key;
                 $params = array();
@@ -358,9 +391,17 @@ class SugarHtml {
             }
         }
         $output['smarty'][] = $smarty_template;
-        $i = $_right + 1;
+        $offset = $_right + 1;
     }
 
+    /**
+     * @static
+     * Disassemble an html attributes into a key-value array form
+     *
+     * @param String $code - attribute string (i.e. - id='form_id' name='button' value='View Detail' ...)
+     * @param Array $output - Parsed the attribute into key-value form
+     * @return string - Remainder string by spliting with ">"
+     */
     public static function extractAttributes($code, &$output) {
         $var_assign = false;
         $quote_encoded = false;
@@ -379,7 +420,7 @@ class SugarHtml {
                         if(empty($var_name)) {
                             $var_name = $string;
                         } else if($var_assign) {
-                            $output[$var_name] = $string;
+                            $output[trim($var_name)] = $string;
                             unset($var_name);
                         }
                     }
@@ -402,7 +443,7 @@ class SugarHtml {
                     if(empty($var_name)) {
                         $var_name = $string;
                     } else if($var_assign) {
-                        $output[$var_name] = $string;
+                        $output[trim($var_name)] = $string;
                         unset($var_name);
                     }
                     $quote_encoded = false;
@@ -441,11 +482,23 @@ class SugarHtml {
         return substr($code, $i + 1);
     }
 
+    /**
+     * @static
+     * Creates HTML attribute elements corresponding key-value pair.
+     *
+     * @param Array $params - Attributes (key-value pair)
+     * @return string - Generated html attribute string
+     */
     public static function createAttributes($params) {
         $options = "";
         foreach($params as $attr => $value) {
-            if($value)
-                $options .= $attr.'="'.$value.'" ';
+            if(is_numeric($attr) === false) {
+                $attr = trim($attr);
+                if($value)
+                    $options .= $attr.'="'.$value.'" ';
+                elseif(!empty($attr))
+                    $options .= $attr.' ';
+            }
         }
         return $options;
     }

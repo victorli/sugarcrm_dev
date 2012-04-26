@@ -467,10 +467,16 @@ function replaceFormClick(&$dom_tree = array(), $js_form = '', &$hidden_field_ex
     //Replace the JS syntax where the sugar_button contains the event handler for this.form
     if(isset($dom_tree['onclick'])) {
         if(strpos($dom_tree['onclick'], "this.form") !== false) {
-            $dom_tree['onclick'] = $js_form.str_replace("this.form", "_form", $dom_tree['onclick']);
+            $dom_tree['onclick'] = str_replace("this.form", "_form", $dom_tree['onclick']);
             if(substr($dom_tree['onclick'], -1) != ';')
                 $dom_tree['onclick'] .= ";";
-            $dom_tree['onclick'] .= "_form.submit();";
+            //Onclick handler contains returning a variable, for example it prompts a confirm message.
+            if(strpos($dom_tree['onclick'], "return ") !== false ) {
+                $dom_tree['onclick'] = $js_form.' var _onclick=(function(){ldelim}'.$dom_tree['onclick']."{rdelim}()); if(_onclick!==false) _form.submit();";
+            } else {
+                $dom_tree['onclick'] = $js_form.$dom_tree['onclick']."_form.submit();";
+            }
+
             $set_submit = true;
         }
     }

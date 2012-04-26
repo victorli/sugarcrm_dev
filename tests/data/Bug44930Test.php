@@ -1,4 +1,5 @@
 <?php
+
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
@@ -35,53 +36,60 @@
  ********************************************************************************/
 
 
-
 /**
- * CallsController.php
+ * Bug #44930
+ * Issue with the opportunity subpanel in Accounts
  *
- * This is the controller file to handle the Calls module specific actions
+ * @author mgusev@sugarcrm.com
+ * @ticked 44930
  */
-
-require_once('include/MVC/Controller/SugarController.php');
-class CallsController extends SugarController
+class Bug44930Test extends Sugar_PHPUnit_Framework_TestCase
 {
 
     /**
-     * action_DisplayInline
+     * Test tries to emulate changing of related field and assert correct result
      *
-     * This method handles the request to display an Ajax view of related many to many records.  It expects a bean_id
-     * $_REQUEST parameter and an option related_id $_REQUEST parameter from the request.
+     * @group 44930
+     * @return void
      */
-	public function action_DisplayInline()
+    public function testChangingOfRelation()
     {
-		$this->view = 'ajax';
-		$body = '';
-		$bean_id = isset($_REQUEST['bean_id']) ? $_REQUEST['bean_id'] : '';
-		$caption = '';
-		if(!empty($bean_id))
-        {
-            global $locale;
-            $query = "SELECT c.first_name, c.last_name, c.salutation, c.title FROM contacts c LEFT JOIN calls_contacts mc ON c.id = mc.contact_id WHERE mc.call_id = '{$bean_id}'";
-            if(!empty($_REQUEST['related_id']))
-            {
-                $query .= " AND c.id != '{$_REQUEST['related_id']}' AND c.deleted=0";
-            }
+        $_REQUEST['relate_id'] = '2';
+        $_REQUEST['relate_to'] = 'test';
 
-            $result = $GLOBALS['db']->query($query);
-            while(($row = $GLOBALS['db']->fetchByAssoc($result)) != null)
-            {
-				$body .=  $locale->getLocaleFormattedName($row['first_name'], $row['last_name'], $row['salutation'], $row['title']) . '<br/>';
-			}
-		}
+        $bean = new SugarBean();
+        $bean->id = '1';
+        $bean->test_id = '3';
+        $bean->field_defs = array(
+            'test' => array(
+                'type' => 'link',
+                'relationship' => 'test',
+                'link_file' => 'data/SugarBean.php',
+                'link_class' => 'Link44930'
+            )
+        );
+        $bean->relationship_fields = array(
+            'test_id' => 'test'
+        );
 
-		global $theme;
-		$json = getJSONobj();
-		$retArray = array();
-		$retArray['body'] = $body;
-		$retArray['caption'] = $caption;
-	    $retArray['width'] = '100';
-	    $retArray['theme'] = $theme;
-	    echo 'result = ' . $json->encode($retArray);
-	}
+        $bean->save_relationship_changes(true);
+
+        $this->assertEquals($bean->test_id, $bean->test->lastCall, 'Last relation should point to test_id instead of relate_id');
+    }
 }
-?>
+
+/**
+ * Emulation of link2 class
+ */
+class Link44930
+{
+    public $lastCall = '';
+
+    function __call($function, $arguments)
+    {
+        if ($function == 'add')
+        {
+            $this->lastCall = reset($arguments);
+        }
+    }
+}

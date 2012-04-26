@@ -84,7 +84,7 @@
 {/if}
 {{/if}}
 {if !$noChange}
-<input type='button' class='button' value='{$APP.LBL_REMOVE}' onclick='SUGAR.field.file.deleteAttachment("{{$idName}}","{{$vardef.docType}}",this);'>
+<input type='button' class='button' id='remove_button' value='{$APP.LBL_REMOVE}' onclick='SUGAR.field.file.deleteAttachment("{{$idName}}","{{$vardef.docType}}",this);'>
 {/if}
 </span>
 {if !$noChange}

@@ -44,15 +44,29 @@ function smarty_function_sugar_replace_vars($params, &$smarty)
 	    $smarty->trigger_error("sugarvar: missing 'subject' parameter");
 	    return;
 	} 
-	$fields = $smarty->get_template_vars('fields');
-	$subject = $params['subject'];
+	$fields = empty($params['fields']) ? $smarty->get_template_vars('fields') : $params['fields'];
+	$lDelim = "[";
+    $rDelim = "]";
+    if ($params['use_curly'])
+    {
+        $lDelim = "{";
+        $rDelim = "}";
+    }
+    $subject = $params['subject'];
 	$matches = array();
-	$count = preg_match_all('/\[([^\]]*)\]/', $subject, $matches);
-	for($i = 0; $i < $count; $i++) {
+	$count = preg_match_all('/\\' . $lDelim . '([^\\' . $rDelim . ']*)\\' . $rDelim . '/', $subject, $matches);
+    for($i = 0; $i < $count; $i++) {
 		$match = $matches[1][$i];
-		if (!empty($fields[$match]) && isset($fields[$match]['value'])) {
-			$value = $fields[$match]['value'];
-			if (isset($fields[$match]['type']) && $fields[$match]['type']=='enum' 
+        //List views will have fields be an array where all the keys are upper case and the values are jsut strings
+        if (!isset($fields[$match]) && isset($fields[strtoupper($match)]))
+            $match = strtoupper($match);
+
+        $value = isset($fields[$match]) ? $fields[$match] : null;
+        if (!is_null($value)) {
+			if (is_array($value) && isset($value['value']))
+                $value = $value['value'];
+
+            if (isset($fields[$match]['type']) && $fields[$match]['type']=='enum'
 				&& isset($fields[$match]['options']) && isset($fields[$match]['options'][$value]))
 			{
 				$subject = str_replace($matches[0][$i], $fields[$match]['options'][$value], $subject);

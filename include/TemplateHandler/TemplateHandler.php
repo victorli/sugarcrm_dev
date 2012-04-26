@@ -395,7 +395,10 @@ class TemplateHandler {
 
 
                 if($field['type'] == 'relate' && isset($field['module']) && (preg_match('/_name$|_c$/si',$name) || !empty($field['quicksearch']))) {
-                    if(!preg_match('/_c$/si',$name) && preg_match('/^(Campaigns|Teams|Users|Contacts|Accounts)$/si', $field['module'], $matches)) {
+                    if (!preg_match('/_c$/si',$name)
+                        && (!isset($field['id_name']) || !preg_match('/_c$/si',$field['id_name']))
+                        && preg_match('/^(Campaigns|Teams|Users|Contacts|Accounts)$/si', $field['module'], $matches)
+                    ) {
 
                         if($matches[0] == 'Campaigns') {
                             $sqs_objects[$name] = $qsd->loadQSObject('Campaigns', 'Campaign', $field['name'], $field['id_name'], $field['id_name']);
@@ -403,7 +406,7 @@ class TemplateHandler {
                             if($field['name'] == 'reports_to_name')
                                 $sqs_objects[$name] = $qsd->getQSUser('reports_to_name','reports_to_id');
                             else {
-                                if ($view == "ConvertLead")
+                                if($view == "ConvertLead" || $field['name'] == 'created_by_name' || $field['name'] == 'modified_by_name')
 								    $sqs_objects[$name] = $qsd->getQSUser($field['name'], $field['id_name']);
 								else
 								    $sqs_objects[$name] = $qsd->getQSUser();

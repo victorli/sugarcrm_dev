@@ -45,78 +45,61 @@
 </td></tr><tr><td><br></td></tr><tr><td colspan='100'>
 
 <form name="ConfigureSubs" method="POST"  method="POST" action="index.php">
-	
-			<form enctype="multipart/form-data" id="SubsForm" name="SubsForm" method="POST" action="index.php">
-			<input type="hidden" name="module" value="Campaigns">
-			<input type="hidden" name="action" value="Subscriptions">
-			<input type="hidden" name="enabled_subs" value="">
-			<input type="hidden" name="disabled_subs" value="">
-			<input type="hidden" name="return_module" value="{$RETURN_MODULE}">
-			<input type="hidden" name="return_action" value="{$RETURN_ACTION}">
-			<input type="hidden" name="module_tab" value="{$smarty.request.module_tab}">
-			<input type="hidden" name="orig_disabled_values" id="orig_disabled_values" value="{$disabled_subs_string}">						
-			<input type="hidden" name="orig_enabled_values" id="orig_enabled_values" value="{$enabled_subs_string}">						
-			<input type="hidden" name="record" value="{$RECORD}">
-			<input type="hidden" name="subs_action" value="process">			
 
+    <form enctype="multipart/form-data" id="SubsForm" name="SubsForm" method="POST" action="index.php">
+    <input type="hidden" name="module" value="Campaigns">
+    <input type="hidden" name="action" value="Subscriptions">
+    <input type="hidden" name="enabled_subs" value="">
+    <input type="hidden" name="disabled_subs" value="">
+    <input type="hidden" name="return_module" value="{$RETURN_MODULE}">
+    <input type="hidden" name="return_action" value="{$RETURN_ACTION}">
+    <input type="hidden" name="module_tab" value="{$smarty.request.module_tab}">
+    <input type="hidden" name="orig_disabled_values" id="orig_disabled_values" value="{$disabled_subs_string}">
+    <input type="hidden" name="orig_enabled_values" id="orig_enabled_values" value="{$enabled_subs_string}">
+    <input type="hidden" name="record" value="{$RECORD}">
+    <input type="hidden" name="subs_action" value="process">
 
-	<table border="0" cellspacing="1" cellpadding="1">
-		<tr>
-			<td>
-				<input title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}" class="button" onclick="save();this.form.action.value='Subscriptions'; " type="submit" name="button" value="  {$APP.LBL_SAVE_BUTTON_LABEL}  " > 
-				<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="this.form.action.value='{$RETURN_ACTION}'; this.form.module.value='{$RETURN_MODULE}';" type="submit" name="button" value="  {$APP.LBL_CANCEL_BUTTON_LABEL}  ">
-			</td>
-		</tr>
-	</table>
+    {sugar_action_menu buttons=$BUTTONS}
 
-	<div class='add_table' style='margin-bottom:5px'>
-		<table id="ConfigureSubs" class="themeSettings edit view" style='margin-bottom:0px;' border="0" cellspacing="0" cellpadding="0">
-			<tr>
-				<td><span><b>{$MOD.LBL_ALREADY_SUBSCRIBED_HEADER}</b></span></td>
-				<td><span><b>{$MOD.LBL_UNSUBSCRIBED_HEADER}</b>{sugar_help text=$MOD.LBL_UNSUBSCRIBED_HEADER_EXPL }
-				
-				</span></td>
-			</tr>
-			<tr>
-				<td width='1%'>
-					<div id="enabled_div" class="enabled_tab_workarea">
-						<ul id="enabled_ul" class="module_draglist">
-						{foreach from=$enabled_subs key=dirname item=name}
-							<li id="{$dirname}" class="noBullet2">{$name}</li>
-						{/foreach}
-						</ul>
-					</div>
-				</td>
-				<td>
-					<div id="disabled_div" class="disabled_tab_workarea">
-						<ul id="disabled_ul" class="module_draglist">
-						{foreach from=$disabled_subs key=dirname item=name}
-							<li id="{$dirname}" class="noBullet2">{$name}</li>
-						{/foreach}
-						</ul>
-					</div>
-				</td>
-			</tr>
-		</table>
-	</div>
-	
-	<table border="0" cellspacing="1" cellpadding="1">
-		<tr>
-			<td>
-				<input title="{$APP.LBL_SAVE_BUTTON_TITLE}" class="button" onclick="save();this.form.action.value='Subscriptions'; " type="submit" name="button" value="  {$APP.LBL_SAVE_BUTTON_LABEL}  " >
-				<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" class="button" onclick="this.form.action.value='{$RETURN_ACTION}'; this.form.module.value='{$RETURN_MODULE}';" type="submit" name="button" value="  {$APP.LBL_CANCEL_BUTTON_LABEL}  ">
+    <div class='add_table' style='margin-bottom:5px'>
+        <table id="ConfigureSubs" class="themeSettings edit view" style='margin-bottom:0px;' border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td><span><b>{$MOD.LBL_ALREADY_SUBSCRIBED_HEADER}</b></span></td>
+                <td><span><b>{$MOD.LBL_UNSUBSCRIBED_HEADER}</b>{sugar_help text=$MOD.LBL_UNSUBSCRIBED_HEADER_EXPL }
+                </span></td>
+            </tr>
+            <tr>
+                <td width='1%'>
+                    <div id="enabled_div" class="enabled_tab_workarea">
+                        <ul id="enabled_ul" class="module_draglist">
+                            {foreach from=$enabled_subs key=dirname item=name}
+                            <li id="{$dirname}" class="noBullet2">{$name}</li>
+                            {/foreach}
+                        </ul>
+                    </div>
+                </td>
+                <td>
+                    <div id="disabled_div" class="disabled_tab_workarea">
+                        <ul id="disabled_ul" class="module_draglist">
+                            {foreach from=$disabled_subs key=dirname item=name}
+                            <li id="{$dirname}" class="noBullet2">{$name}</li>
+                            {/foreach}
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
 
-			</td>
-		</tr>
-	</table>
+    {sugar_action_menu buttons=$BUTTONS}
 </form>
 
 
 <script type="text/javascript">
 {literal}
 
-var Dom = YAHOO.util.Dom; 
-var Event = YAHOO.util.Event; 
+var Dom = YAHOO.util.Dom;
+var Event = YAHOO.util.Event;
 var DDM = YAHOO.util.DragDropMgr;
 
 function save() {
@@ -133,52 +116,52 @@ function save() {
         }
     }
     document.ConfigureSubs.enabled_subs.value = enabled_display_vals != '' ? enabled_display_vals.substr(1,enabled_display_vals.length) : '';
-    
+
     var elements = document.getElementById('disabled_div');
     //Get the li elements
- 	var disabled_list = YAHOO.util.Dom.getElementsByClassName('noBullet2', 'li', elements);
+    var disabled_list = YAHOO.util.Dom.getElementsByClassName('noBullet2', 'li', elements);
     for(var li in disabled_list) {
         if(typeof disabled_list[li] != 'function') {
             disabled_display_vals += ',' + disabled_list[li].getAttribute('id');
         }
     }
-    
+
     document.ConfigureSubs.disabled_subs.value = disabled_display_vals != '' ? disabled_display_vals.substr(1,disabled_display_vals.length) : '';
 }
 
 
 (function() {
 
-YAHOO.example.DDApp = { 
-init: function() { 
-{/literal}	    
-	new YAHOO.util.DDTarget("enabled_ul"); 
-	new YAHOO.util.DDTarget("disabled_ul");
-	
-	{foreach from=$enabled_subs key=module item=moduleDisplay}
+YAHOO.example.DDApp = {
+init: function() {
+{/literal}
+    new YAHOO.util.DDTarget("enabled_ul");
+    new YAHOO.util.DDTarget("disabled_ul");
+
+    {foreach from=$enabled_subs key=module item=moduleDisplay}
     {if $module != $currentTheme}new YAHOO.example.DDList("{$module}");{/if}
-	{/foreach}	
-	 
-	{foreach from=$disabled_subs key=module item=moduleDisplay}
-	     new YAHOO.example.DDList("{$module}");
-	{/foreach} 
-{literal}	        
+    {/foreach}
+
+    {foreach from=$disabled_subs key=module item=moduleDisplay}
+         new YAHOO.example.DDList("{$module}");
+    {/foreach}
+{literal}
 }
 };
 
-YAHOO.example.DDList = function(id, sGroup, config) { 
-    YAHOO.example.DDList.superclass.constructor.call(this, id, sGroup, config); 
-    var el = this.getDragEl(); 
+YAHOO.example.DDList = function(id, sGroup, config) {
+    YAHOO.example.DDList.superclass.constructor.call(this, id, sGroup, config);
+    var el = this.getDragEl();
     Dom.setStyle(el, "opacity", 0.67);
-    this.goingUp = false; 
-    this.lastY = 0; 
-}; 
+    this.goingUp = false;
+    this.lastY = 0;
+};
 
 
 YAHOO.extend(YAHOO.example.DDList, YAHOO.util.DDProxy, {
 
     startDrag: function(x, y) {
-        
+
         // make the proxy look like the source element
         var dragEl = this.getDragEl();
         var clickEl = this.getEl();
@@ -198,14 +181,14 @@ YAHOO.extend(YAHOO.example.DDList, YAHOO.util.DDProxy, {
 
         // Show the proxy element and animate it to the src element's location
         Dom.setStyle(proxy, "visibility", "");
-        var a = new YAHOO.util.Motion( 
-            proxy, { 
-                points: { 
+        var a = new YAHOO.util.Motion(
+            proxy, {
+                points: {
                     to: Dom.getXY(srcEl)
                 }
-            }, 
-            0.2, 
-            YAHOO.util.Easing.easeOut 
+            },
+            0.2,
+            YAHOO.util.Easing.easeOut
         )
         var proxyid = proxy.id;
         var thisid = this.id;
@@ -225,10 +208,10 @@ YAHOO.extend(YAHOO.example.DDList, YAHOO.util.DDProxy, {
         if (DDM.interactionInfo.drop.length === 1) {
 
             // The position of the cursor at the time of the drop (YAHOO.util.Point)
-            var pt = DDM.interactionInfo.point; 
+            var pt = DDM.interactionInfo.point;
 
             // The region occupied by the source element at the time of the drop
-            var region = DDM.interactionInfo.sourceRegion; 
+            var region = DDM.interactionInfo.sourceRegion;
 
             // Check to see if we are over the source element's location.  We will
             // append to the bottom of the list once we are sure it was a drop in
@@ -259,7 +242,7 @@ YAHOO.extend(YAHOO.example.DDList, YAHOO.util.DDProxy, {
     },
 
     onDragOver: function(e, id) {
-    
+
         var srcEl = this.getEl();
         var destEl = Dom.get(id);
 
@@ -285,5 +268,3 @@ Event.onDOMReady(YAHOO.example.DDApp.init, YAHOO.example.DDApp, true);
 })();
 {/literal}
 </script>
-<!-- END: main -->
-

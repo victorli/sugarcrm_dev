@@ -89,8 +89,8 @@ class UserViewHelper {
         $this->assignUserTypes();
         $this->setupButtonsAndTabs();
         $this->setupUserTypeDropdown();
-        $this->setupEmailSettings();
         $this->setupPasswordTab();
+        $this->setupEmailSettings();
         $this->setupThemeTab();
         $this->setupAdvancedTab();
         
@@ -488,17 +488,7 @@ class UserViewHelper {
             $useGroupTabs = $GLOBALS['sugar_config']['default_navigation_paradigm'];
         }
         $this->ss->assign("USE_GROUP_TABS",($useGroupTabs=='gm')?'checked':'');
-        
-        $user_max_tabs = $this->bean->getPreference('max_tabs');
-        if(isset($user_max_tabs) && $user_max_tabs > 0) {
-            $this->ss->assign("MAX_TAB", $user_max_tabs);
-        } elseif(SugarThemeRegistry::current()->maxTabs > 0) {
-            $this->ss->assign("MAX_TAB", SugarThemeRegistry::current()->maxTabs);
-        } else {
-            $this->ss->assign("MAX_TAB", $GLOBALS['sugar_config']['default_max_tabs']);
-        }
-        $this->ss->assign("MAX_TAB_OPTIONS", range(1, ((!empty($GLOBALS['sugar_config']['default_max_tabs']) && $GLOBALS['sugar_config']['default_max_tabs'] > 10 ) ? $GLOBALS['sugar_config']['default_max_tabs'] : 10)));
-        
+
         $user_subpanel_tabs = $this->bean->getPreference('subpanel_tabs');
         if(isset($user_subpanel_tabs)) {
             $this->ss->assign("SUBPANEL_TABS", $user_subpanel_tabs?'checked':'');
@@ -539,7 +529,7 @@ class UserViewHelper {
         $chooser->args['left_label'] =  translate('LBL_DISPLAY_TABS','Users');
         $chooser->args['right_label'] =  translate('LBL_HIDE_TABS','Users');
         require_once('include/Smarty/plugins/function.sugar_help.php');
-        $chooser->args['title'] =  translate('LBL_EDIT_TABS','Users').smarty_function_sugar_help(array("text"=>'Select which modules are accessible within the top navigation bar. Designate the order in which you would like the modules to appear. To select the number of modules that appear in the navigation bar, with the remainder appearing in the overflow menu, use the "Number of Modules in Navigation Bar" field.'),$ss);
+        $chooser->args['title'] =  translate('LBL_EDIT_TABS','Users').smarty_function_sugar_help(array("text"=>translate('LBL_CHOOSE_WHICH','Users')),$ss);
 
         $this->ss->assign('TAB_CHOOSER', $chooser->display());
         $this->ss->assign('CHOOSER_SCRIPT','set_chooser();');

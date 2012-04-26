@@ -109,10 +109,6 @@ function populateFromRow(&$focus,$row){
 		{
 			$focus->$field = $row[$rfield];
 		}
-		else
-		{
-			$focus->$field = $nullvalue;
-		}
 	}
 }
 ?>

@@ -48,7 +48,7 @@
 					<td>
 					<h4>{$mod_strings.LBL_EMAIL_SETTINGS_INBOUND}</h4>
 					</td>
-				    <td style="vertical-align:bottom;"><a href="javascript:void(0);" onclick="javascript:SUGAR.email2.accounts.fillInboundGmailDefaults();">{$app_strings.LBL_EMAIL_ACCOUNTS_GMAIL_DEFAULTS}</a>&nbsp;</td>
+				    <td style="vertical-align:bottom;"><a href="javascript:void(0);" id="prefill_gmail_defaults_link" onclick="javascript:SUGAR.email2.accounts.fillInboundGmailDefaults();">{$app_strings.LBL_EMAIL_ACCOUNTS_GMAIL_DEFAULTS}</a>&nbsp;</td>
 				</tr>
 			    <tr>
 					<td valign="top" scope="row" width="15%" NOWRAP>

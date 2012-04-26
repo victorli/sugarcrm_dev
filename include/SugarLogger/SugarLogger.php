@@ -60,6 +60,7 @@ class SugarLogger implements LoggerTemplate
 	protected $logSize = '10MB';
 	protected $maxLogs = 10;
 	protected $filesuffix = "";
+    protected $date_suffix = "";
 	protected $log_dir = '.';
 
 
@@ -67,8 +68,10 @@ class SugarLogger implements LoggerTemplate
 	 * used for config screen
 	 */
 	public static $filename_suffix = array(
+        //bug#50265: Added none option for previous version users
+        "" => "None",
 	    "%m_%Y"    => "Month_Year",
-	    "%w_%m"    => "Week_Month",
+        "%d_%m"    => "Day_Month",
 	    "%m_%d_%y" => "Month_Day_Year",
 	    );
 
@@ -131,7 +134,12 @@ class SugarLogger implements LoggerTemplate
 	 */
     protected function _doInitialization()
     {
-        $this->full_log_file = $this->log_dir . $this->logfile . $this->ext;
+
+        if( $this->filesuffix && array_key_exists($this->filesuffix, self::$filename_suffix) )
+        { //if the global config contains date-format suffix, it will create suffix by parsing datetime
+            $this->date_suffix = "_" . date(str_replace("%", "", $this->filesuffix));
+        }
+        $this->full_log_file = $this->log_dir . $this->logfile . $this->date_suffix . $this->ext;
         $this->initialized = $this->_fileCanBeCreatedAndWrittenTo();
         $this->rollLog();
     }
@@ -197,18 +205,24 @@ class SugarLogger implements LoggerTemplate
         if (!$this->initialized || empty($this->logSize)) {
             return;
         }
-		// lets get the number of megs we are allowed to have in the file
-		$megs = substr ( $this->logSize, 0, strlen ( $this->logSize ) - 2 );
-		//convert it to bytes
-		$rollAt = ( int ) $megs * 1024 * 1024;
-		//check if our log file is greater than that or if we are forcing the log to roll
-		if ($force || filesize ( $this->full_log_file ) >= $rollAt) {
+		// bug#50265: Parse the its unit string and get the size properly
+        $units = array(
+            'b' => 1,                   //Bytes
+            'k' => 1024,                //KBytes
+            'm' => 1024 * 1024,         //MBytes
+            'g' => 1024 * 1024 * 1024,  //GBytes
+        );
+        if( preg_match('/^\s*([0-9]+\.[0-9]+|\.?[0-9]+)\s*(k|m|g|b)(b?ytes)?/i', $this->logSize, $match) ) {
+            $rollAt = ( int ) $match[1] * $units[strtolower($match[2])];
+        }
+		//check if our log file is greater than that or if we are forcing the log to roll if and only if roll size assigned the value correctly
+		if ( $force || ($rollAt && filesize ( $this->full_log_file ) >= $rollAt) ) {
 			//now lets move the logs starting at the oldest and going to the newest
 			for($i = $this->maxLogs - 2; $i > 0; $i --) {
-				if (file_exists ( $this->log_dir . $this->logfile . $i . $this->ext )) {
+                if (file_exists ( $this->log_dir . $this->logfile . $this->date_suffix . '_'. $i . $this->ext )) {
 					$to = $i + 1;
-					$old_name = $this->log_dir . $this->logfile . $i . $this->ext;
-					$new_name = $this->log_dir . $this->logfile . $to . $this->ext;
+                    $old_name = $this->log_dir . $this->logfile . $this->date_suffix . '_'. $i . $this->ext;
+                    $new_name = $this->log_dir . $this->logfile . $this->date_suffix . '_'. $to . $this->ext;
 					//nsingh- Bug 22548  Win systems fail if new file name already exists. The fix below checks for that.
 					//if/else branch is necessary as suggested by someone on php-doc ( see rename function ).
 					sugar_rename($old_name, $new_name);
@@ -217,7 +231,7 @@ class SugarLogger implements LoggerTemplate
 				}
 			}
 			//now lets move the current .log file
-			sugar_rename ($this->full_log_file, $this->log_dir . $this->logfile . '1' . $this->ext);
+            sugar_rename ($this->full_log_file, $this->log_dir . $this->logfile . $this->date_suffix . '_1' . $this->ext);
 
 		}
 	}

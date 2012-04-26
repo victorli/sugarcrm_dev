@@ -217,9 +217,9 @@ class One2MBeanRelationship extends One2MRelationship
 
             //Add any optional where clause
             if (!empty($params['where'])){
-                $add_where = $this->getOptionalWhereClause($params['where']);
+                $add_where = is_string($params['where']) ? $params['where'] : "$rhsTable." . $this->getOptionalWhereClause($params['where']);
                 if (!empty($add_where))
-                    $where .= " AND $rhsTable.$add_where";
+                    $where .= " AND $add_where";
             }
 
             if (empty($params['return_as_array'])) {

@@ -183,7 +183,7 @@ function change_state(radiobutton) {
 									<img border="0" onmouseout="return nd();" onmouseover="return overlib('{$MOD.LBL_ALLOW_DEFAULT_SELECTION_HELP}', FGCLASS, 'olFgClass', CGCLASS, 'olCgClass', BGCLASS, 'olBgClass', TEXTFONTCLASS, 'olFontClass', CAPTIONFONTCLASS, 'olCapFontClass', CLOSEFONTCLASS, 'olCloseFontClass', WIDTH, -1, NOFOLLOW, 'ol_nofollow')" src="index.php?entryPoint=getImage&themeName={$THEME}&imageName=helpInline.gif">
 							</td>
 				 		    <td width="30%">
-							     <input type='hidden' id="notify_allow_default_outbound" name='notify_allow_default_outbound' value='0'>
+                                 <input type='hidden' id="notify_allow_default_outbound_hidden_input" name='notify_allow_default_outbound' value='0'>
 							     <input id="notify_allow_default_outbound" name='notify_allow_default_outbound' value="2" tabindex='1' class="checkbox" type="checkbox" {$notify_allow_default_outbound_on}>
 							</td>
 							<td width="20%">&nbsp;</td>

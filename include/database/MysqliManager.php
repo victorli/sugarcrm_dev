@@ -361,7 +361,7 @@ class MysqliManager extends MysqlManager
 	 */
 	protected function selectDb($dbname)
 	{
-		return mysqli_select_db($dbname);
+		return mysqli_select_db($this->getDatabase(), $dbname);
 	}
 
 	/**

@@ -61,7 +61,7 @@ function set_focus(){
 <input type='hidden' name='return_record' value='{$RETURN.record}'>
 <input type='hidden' name='return_action' value='{$RETURN.action}'>
 <input type='hidden' name='return_module' value='{$RETURN.module}'> &nbsp;
-{$ACTION_MENU}
+{sugar_action_menu id="roleEditActions" class="clickMenu fancymenu" buttons=$ACTION_MENU flat=true}
 </td>
 </tr>
 </tbody>

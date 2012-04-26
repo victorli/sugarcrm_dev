@@ -734,7 +734,7 @@ AjaxObject.detailView = {
 		  SED.quickCreateEmailCallback = function(instId, tableId) {
               //try to fill up the email address if and only if emailwidget is existed in the form
               if(tableId) {
-                  var eaw = SUGAR.EmailAddressWidget.instances[instId];
+                  var eaw = new SUGAR.EmailAddressWidget.instances[instId];
                   if (eaw) {
                       eaw.prefillEmailAddresses(tableId, SUGAR.email2.detailView.quickCreateEmailsToAdd);
                   } else {

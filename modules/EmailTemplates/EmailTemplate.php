@@ -206,7 +206,8 @@ class EmailTemplate extends SugarBean {
 	function fill_in_additional_detail_fields() {
 	    if (empty($this->body) && !empty($this->body_html))
         {
-            $this->body = strip_tags(html_entity_decode($this->body_html));
+            global $sugar_config;
+            $this->body = strip_tags(html_entity_decode($this->body_html, ENT_COMPAT, $sugar_config['default_charset']));
         }
 		$this->created_by_name = get_assigned_user_name($this->created_by);
 		$this->modified_by_name = get_assigned_user_name($this->modified_user_id);
@@ -419,12 +420,6 @@ class EmailTemplate extends SugarBean {
 		$repl_arr = array();
 
 		// cn: bug 9277 - create a replace array with empty strings to blank-out invalid vars
-		if(!class_exists('Account'))
-		if(!class_exists('Contact'))
-		if(!class_exists('Leads'))
-		if(!class_exists('Prospects'))
-
-		require_once('modules/Accounts/Account.php');
 		$acct = new Account();
 		$contact = new Contact();
 		$lead = new Lead();
@@ -611,6 +606,16 @@ class EmailTemplate extends SugarBean {
 		}
 		return false;
 	}
+
+    static function getTypeOptionsForSearch(){
+        $template = new EmailTemplate();
+        $optionKey = $template->field_defs['type']['options'];
+        $options = $GLOBALS['app_list_strings'][$optionKey];
+        if( ! is_admin($GLOBALS['current_user']) && isset($options['workflow']))
+            unset($options['workflow']);
+
+        return $options;
+    }
 
 	function is_used_by_email_marketing() {
 		$query = "select id from email_marketing where template_id='$this->id' and deleted=0";

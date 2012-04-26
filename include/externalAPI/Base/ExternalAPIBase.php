@@ -135,6 +135,21 @@ abstract class ExternalAPIBase implements ExternalAPIPlugin
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        
+        $proxy_config = SugarModule::get('Administration')->loadBean();
+        $proxy_config->retrieveSettings('proxy');
+        
+        if( !empty($proxy_config) && 
+            !empty($proxy_config->settings['proxy_on']) &&
+            $proxy_config->settings['proxy_on'] == 1) {
+
+            curl_setopt($ch, CURLOPT_PROXY, $proxy_config->settings['proxy_host']);
+            curl_setopt($ch, CURLOPT_PROXYPORT, $proxy_config->settings['proxy_port']);
+            if (!empty($proxy_settings['proxy_auth'])) {
+                curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy_settings['proxy_username'] . ':' . $proxy_settings['proxy_password']);
+            }
+        }   
+        
         if ( ( is_array($postfields) && count($postfields) == 0 ) ||
              empty($postfields) ) {
             curl_setopt($ch, CURLOPT_POST, false);

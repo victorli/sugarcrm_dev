@@ -194,7 +194,7 @@ class LayoutManager
 				'ACL'=>'edit',
 			),
 			'SugarWidgetSubPanelTopSelectFromReportButton' => array(
-				'widget_class'=>'SugarWidgetSubPanelTopSelectButton',
+				'widget_class'=>'SugarWidgetSubPanelTopSelectReportsButton',
 				'module'=>'Reports',
 				'title'=>'LBL_SELECT_REPORTS_BUTTON_LABEL',
 				'access_key'=>'LBL_SELECT_BUTTON_KEY',

@@ -83,7 +83,7 @@ $(document).ready(function(){
 
     <tr><td colspan='2' width="100%" nowrap>
 
-            {sugar_action_menu class="clickMenu fancymenu" buttons=$EDITBUTTONS}
+            {sugar_action_menu id="detail_header_action_menu" class="clickMenu fancymenu" buttons=$EDITBUTTONS}
 
     </td></tr>
 </table>

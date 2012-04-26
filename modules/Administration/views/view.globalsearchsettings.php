@@ -86,5 +86,15 @@ class AdministrationViewGlobalsearchsettings extends SugarView
         echo $sugar_smarty->fetch($tpl);
 
     }
+
+    protected function isFTSConnectionValid()
+    {
+        require_once('include/SugarSearchEngine/SugarSearchEngineFactory.php');
+        $searchEngine = SugarSearchEngineFactory::getInstance();
+        $result = $searchEngine->getServerStatus();
+        if($result['valid'])
+            return TRUE;
+        else
+            return FALSE;
+    }
 }
-?>

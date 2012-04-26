@@ -67,7 +67,7 @@ if (!isset($_POST['confirm']) || !$_POST['confirm']) {
 	allowtransparency='true'</iframe>";
 	*/
     $regPhp="<iframe src='https://www.sugarcrm.com/product-registration/registration_php_080428.php?edition={$sugar_flavor}&instance_key=
-    {$ik}' height='515px' width='700px' frameborder='0' scrolling='no'
+    {$ik}' height='595px' width='700px' frameborder='0' style='overflow-x:hidden; overflow-y: scroll;'
     allowtransparency='true'></iframe>";
 
 

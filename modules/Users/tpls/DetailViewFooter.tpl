@@ -176,10 +176,6 @@
                     <td width="15%" scope="row"><slot>{$MOD.LBL_LOCALE_DEFAULT_NAME_FORMAT|strip_semicolon}:</slot></td>
                     <td><slot>{$NAME_FORMAT}&nbsp;</slot></td>
                     <td><slot></slot>{$MOD.LBL_LOCALE_NAME_FORMAT_DESC}&nbsp;</td>
-                </tr><tr> 
-                    <td width="15%" scope="row"><slot>{$MOD.LBL_FDOW|strip_semicolon}:</slot></td>
-                    <td><slot>{$FDOWDISPLAY}&nbsp;</slot></td>
-                    <td><slot></slot>{$MOD.LBL_FDOW_TEXT}&nbsp;</td>
                 </tr>
             </table>
         </div>
@@ -207,6 +203,11 @@
             <td width="15%" scope="row"><slot>{$MOD.LBL_ICAL_PUB_URL|strip_semicolon}: {sugar_help text=$MOD.LBL_ICAL_PUB_URL_HELP}</slot></td>
             <td colspan=2><slot>{$CALENDAR_ICAL_URL}</slot></td>
             </tr>
+            <tr> 
+            <td width="15%" scope="row"><slot>{$MOD.LBL_FDOW|strip_semicolon}:</slot></td>
+            <td><slot>{$FDOWDISPLAY}&nbsp;</slot></td>
+            <td><slot></slot>{$MOD.LBL_FDOW_TEXT}&nbsp;</td>
+            </tr>
             </table>
         </div>
         <div id='edit_tabs'>
@@ -218,11 +219,6 @@
             <td width="15%" scope="row"><slot>{$MOD.LBL_USE_GROUP_TABS|strip_semicolon}:</slot></td>
             <td><slot><input class="checkbox" type="checkbox" disabled {$USE_GROUP_TABS}></slot></td>
             <td><slot>{$MOD.LBL_NAVIGATION_PARADIGM_DESCRIPTION}&nbsp;</slot></td>
-            </tr>
-            <tr>
-            <td width="15%" scope="row"><slot>{$MOD.LBL_MAX_TAB|strip_semicolon}:</slot></td>
-            <td width="15%"><slot>{$MAX_TAB}&nbsp;</slot></td>
-            <td><slot>{$MOD.LBL_MAX_TAB_DESCRIPTION}&nbsp;</slot></td>
             </tr>
             <tr>
             <td width="15%" scope="row"><slot>{$MOD.LBL_SUBPANEL_TABS|strip_semicolon}:</slot></td>

@@ -1236,7 +1236,7 @@ eoq;
 			$from = (isset($email->from_name) && !empty($email->from_name)) ? $email->from_name : $email->from_addr;
 
 			if(isset($_REQUEST['sugarEmail']) && !empty($_REQUEST['sugarEmail']))
-                $from = (isset($email->from_name) && !empty($email->from_name)) ? $email->from_name : $email->from_addr_name;
+               	$from = (isset($email->to_addrs_names) && !empty($email->to_addrs_names)) ? $email->to_addrs_names : $email->to_addrs;
 
 
 			$name = explode(" ", trim($from));

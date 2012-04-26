@@ -245,6 +245,9 @@ class Campaign extends SugarBean {
         $this->db->query($query);
         $query = "update accounts set campaign_id = null where campaign_id = '{$id}' ";
         $this->db->query($query);
+        // bug49632 - delete campaign logs for the campaign as well
+        $query = "update campaign_log set deleted = 1 where campaign_id = '{$id}' ";
+        $this->db->query($query);
 		return parent::mark_deleted($id);
 	}
 
@@ -258,6 +261,17 @@ class Campaign extends SugarBean {
 
 		return $xtpl;
 	}
+
+    function track_log_leads()
+    {
+        $this->load_relationship('log_entries');
+        $query_array = $this->log_entries->getQuery(true);
+
+        $query_array['select'] = 'SELECT campaign_log.* ';
+        $query_array['where']  = $query_array['where']. " AND activity_type = 'lead' AND archived = 0 AND target_id IS NOT NULL";
+
+        return implode(' ', $query_array);
+    }
 
 	function track_log_entries($type=array()) {
         //get arguments being passed in
@@ -399,6 +413,20 @@ class Campaign extends SugarBean {
 
 		//If distinct parameter not found, default to SugarBean's function
     	return parent::create_list_count_query($query);
+    }
+
+    /**
+     * Returns count of deleted leads,
+     * which were created through generated lead form
+     *
+     * @return integer
+     */
+    function getDeletedCampaignLogLeadsCount()
+    {
+        $query = "SELECT COUNT(*) AS count FROM campaign_log WHERE campaign_id = '" . $this->getFieldValue('id') . "' AND target_id IS NULL AND activity_type = 'lead'";
+        $result = $this->db->fetchOne($query);
+
+        return (int)$result['count'];
     }
 }
 ?>

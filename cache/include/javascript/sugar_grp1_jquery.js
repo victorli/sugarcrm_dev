@@ -1732,10 +1732,11 @@ Note:
             var $$ = $(this),
             menu = getMenu($$),
             o = sf.op;
-
+            //Bug#52225: Activate submenu while hs-activated
             if($$.parent().hasClass("hs-active")) {
-                //Bug#51993: deactive submenu while hoverscroll is activated
-                return;
+                $$.addClass("iefix");
+            } else {
+                $$.removeClass("iefix");
             }
 
             if (!o.firstOnClick || menuActive || $$.parent()[0] != menu)
@@ -1749,9 +1750,20 @@ Note:
         },
         out = function() {
             var $$ = $(this),
-            menu = getMenu($$),
-            o = sf.op,
-            $menu = $(menu);
+                menu = getMenu($$),
+                o = sf.op,
+                $menu = $(menu);
+
+            if($$.parent().hasClass("hs-active")) {
+                $$.addClass("iefix");
+                setTimeout(function() {
+                    if($menu.hasClass(sf.defaults['retainClass']) === false)
+                        $$.hideSuperfishUl();
+                }, o.delay);
+            } else {
+                $$.removeClass("iefix");
+            }
+
             clearTimeout(menu.sfTimer);
             menu.sfTimer = $menu.hasClass(sf.defaults['retainClass']) ? null : setTimeout(function() {
                 if($menu.hasClass(sf.defaults['retainClass']) === false) {
@@ -1916,7 +1928,7 @@ Note:
      *              if $ul is not given, it will restore back to the original structure
      */
     sf.IEfix = function($ul) {
-        if ($.browser.msie && $.browser.version > 6) {
+        if ( ($.browser.msie && $.browser.version > 6) || $(this).hasClass("iefix") ) {
             if($ul) {
                 //Take out the element out of the fixed box model,
                 //and then append it into the end of body container
@@ -1924,7 +1936,7 @@ Note:
                     var $$ = $(this),
                         o = sf.op,
                         _id = $$.attr("ul-child-id") ? $$.attr("ul-child-id") : ($ul.attr('id')) ? $ul.attr('id') : o.megamenuID ? o.megamenuID + ++sf.counter : 'megamenu' + ++sf.counter,
-                        _top = $$.position().top + $$.parent().position().top,
+                        _top = $$.position().top + $$.parent().offset().top - $(document).scrollTop(),
                         _left = $$.offset().left - sf.cssValue.call($ul, "border-left-width"),
                         $menu = $('ul.' + sf.c.menuClass + ':visible');
                     //handling sub-sliding menu
@@ -1960,9 +1972,11 @@ Note:
                             var menu = sf.getMenu($menu),
                                 o = sf.op;
                             clearTimeout(menu.sfTimer);
+
                             menu.sfTimer = setTimeout(function() {
                                 $$.hideSuperfishUl();
                                 $(menu).removeClass(sf.defaults['retainClass']);
+                                $(menu).hideSuperfishUl();
                             }, o.delay)
                         })
                     );
@@ -2390,8 +2404,8 @@ Note:
 					var jNode = $(node);
 					var parent = jNode.parent();
 					var fancymenu = "";
-					var slideUpSpeed = 0;
-					var slideDownSpeed = 0;
+					var slideUpSpeed = 1;
+					var slideDownSpeed = 1;
                     var dropDownHandle;
 
 					//if the dropdown handle doesn't exist, lets create it and
