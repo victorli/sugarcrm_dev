@@ -39,7 +39,7 @@
 <div class="buttons">
 {{if !empty($form) && !empty($form.buttons)}}
    {{foreach from=$form.buttons key=val item=button}}
-      {{sugar_button module="$module" id="$button" view="$view"}}
+      {{sugar_button module="$module" id="$button" view="$view" location="FOOTER"}}
    {{/foreach}}
 {{else}}
 {{sugar_button module="$module" id="SAVE" view="$view" location="FOOTER"}}

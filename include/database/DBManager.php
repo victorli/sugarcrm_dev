@@ -2681,9 +2681,9 @@ protected function checkQuery($sql, $object_name = false)
 		        if(count($parts) > 2) {
 		            // some weird name, cut to table.name
 		            array_splice($parts, 0, count($parts)-2);
-		            $parts = $this->getValidDBName($parts, $ensureUnique, $type, $force);
-                    return join(".", $parts);
 		        }
+		        $parts = $this->getValidDBName($parts, $ensureUnique, $type, $force);
+                return join(".", $parts);
 		    }
 			// first strip any invalid characters - all but word chars (which is alphanumeric and _)
 			$name = preg_replace( '/[^\w]+/i', '', $name ) ;

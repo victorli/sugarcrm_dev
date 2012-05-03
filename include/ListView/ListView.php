@@ -1108,11 +1108,11 @@ function getUserVariable($localVarName, $varName) {
                 $dynamic_url .='&'. $this->getSessionVariableName($html_varName,'ORDER_BY') . '='. $this->getSessionVariable($html_varName,'ORDER_BY').'&sort_order='.$this->sort_order.'&to_pdf=true&action=SubPanelViewer&subpanel=' . $this->subpanel_module;
             }
 
-            $current_URL = $this->base_URL.$current_offset.$dynamic_url;
-            $start_URL = $this->base_URL."0".$dynamic_url;
-            $previous_URL  = $this->base_URL.$previous_offset.$dynamic_url;
-            $next_URL  = $this->base_URL.$next_offset.$dynamic_url;
-            $end_URL  = $this->base_URL.'end'.$dynamic_url;
+            $current_URL = htmlentities($this->base_URL.$current_offset.$dynamic_url);
+            $start_URL = htmlentities($this->base_URL."0".$dynamic_url);
+            $previous_URL  = htmlentities($this->base_URL.$previous_offset.$dynamic_url);
+            $next_URL  = htmlentities($this->base_URL.$next_offset.$dynamic_url);
+            $end_URL  = htmlentities($this->base_URL.'end'.$dynamic_url);
 
             if(!empty($this->start_link_wrapper)) {
                 $current_URL = $this->start_link_wrapper.$current_URL.$this->end_link_wrapper;

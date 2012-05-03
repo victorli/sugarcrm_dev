@@ -134,6 +134,7 @@ class ProjectTaskViewList extends ViewList{
 		if (!is_admin($current_user)){
 			$params = array( 'massupdate' => false );
 			$lv->export = false;
+            $lv->multiSelect = false;
 		}
 		else{
 			$params = array( 'massupdate' => true, 'export' => true);

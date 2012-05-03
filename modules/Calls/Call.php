@@ -43,10 +43,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * Contributor(s): ______________________________________..
  ********************************************************************************/
 
-// Call is used to store customer information.
-require_once('modules/Activities/Activity.php');
-class Call extends Activity
-{
+class Call extends SugarBean {
 	var $field_name_map;
 	// Stored fields
 	var $id;
@@ -113,6 +110,7 @@ class Call extends Activity
 										'user_id'			=> 'users',
 										'assigned_user_id'	=> 'users',
 										'note_id'			=> 'notes',
+                                        'lead_id'			=> 'leads',
 								);
 
 	function Call() {
@@ -159,7 +157,9 @@ class Call extends Activity
 			}
 			if((empty($this->id) && isset($_REQUEST['assigned_user_id']) && !empty($_REQUEST['assigned_user_id']) && $GLOBALS['current_user']->id != $_REQUEST['assigned_user_id']) || (isset($old_assigned_user_id) && !empty($old_assigned_user_id) && isset($_REQUEST['assigned_user_id']) && !empty($_REQUEST['assigned_user_id']) && $old_assigned_user_id != $_REQUEST['assigned_user_id']) ){
 				$this->special_notification = true;
-				$check_notify = true;
+				if(!isset($GLOBALS['resavingRelatedBeans']) || $GLOBALS['resavingRelatedBeans'] == false) {
+					$check_notify = true;
+				}
                 if(isset($_REQUEST['assigned_user_name'])) {
                     $this->new_assigned_user_name = $_REQUEST['assigned_user_name'];
                 }
@@ -426,16 +426,8 @@ class Call extends Activity
 		}
 
         $call_fields['CONTACT_ID'] = $this->contact_id;
-        //If we have a contact id and there are more than one contacts found for this meeting then let's create a hover link
-        if($this->alter_many_to_many_query && !empty($this->contact_id) && isset($this->secondary_select_count) && $this->secondary_select_count > 1)
-        {
-           $call_fields['CONTACT_NAME'] = $this->createManyToManyDetailHoverLink($this->contact_name, $this->contact_id);
-        } else {
-           $call_fields['CONTACT_NAME'] = $this->contact_name;
-        }
-
+        $call_fields['CONTACT_NAME'] = $this->contact_name;
 		$call_fields['PARENT_NAME'] = $this->parent_name;
-
         $call_fields['REMINDER_CHECKED'] = $this->reminder_time==-1 ? false : true;
 
 		return $call_fields;

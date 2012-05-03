@@ -151,6 +151,13 @@ class JitReports extends Jit {
 			if ((isset($dataset[$total]) && $total != $dataset[$total]['numerical_value']) || !array_key_exists($key, $dataset)){
 					$data .= $this->processReportData($dataset, 4, $first);
 			}
+			else if(count($this->data_set) == 1 && $first){
+			    foreach ($dataset as $k=>$v){
+			        if(isset($v['numerical_value'])) {
+			            $data .= $this->processDataGroup(4, $k, $v['numerical_value'], $v['numerical_value'], '');
+			        }
+			    }
+			}			
 
 			if (!$first){											
 				$not_processed = array_diff($this->super_set, $this->processed_report_keys);
@@ -162,6 +169,7 @@ class JitReports extends Jit {
 					}
 				}
 			}
+			
 			$data .= $this->tab('</subgroups>', 3);				
 			$data .= $this->tab('</group>', 2);				
 			$this->processed_report_keys = array();

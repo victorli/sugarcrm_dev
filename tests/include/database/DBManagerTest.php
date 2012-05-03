@@ -2068,5 +2068,23 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
         }
     }
 
+    public function testGetIndicesContainsPrimary()
+    {
+        $indices = $this->_db->get_indices('accounts');
+
+        // find if any are primary
+        $found = false;
+
+        foreach($indices as $index)
+        {
+            if($index['type'] == "primary") {
+                $found = true;
+                break;
+            }
+        }
+
+        $this->assertTrue($found, 'Primary Key Not Found On Module');
+    }
+
 
 }

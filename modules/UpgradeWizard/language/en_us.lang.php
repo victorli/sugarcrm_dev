@@ -117,6 +117,7 @@ $mod_strings = array(
 	'LBL_UW_COMPLIANCE_MEMORY'					=> 'PHP Setting: Memory Limit',
 	'LBL_UW_COMPLIANCE_MSSQL_MAGIC_QUOTES'		=> 'MS SQL Server & PHP Magic Quotes GPC',
 	'LBL_UW_COMPLIANCE_MYSQL'					=> 'Minimum MySQL Version',
+    'LBL_UW_COMPLIANCE_DB'                      => 'Minimum Database Version',
 	'LBL_UW_COMPLIANCE_PHP_INI'					=> 'Location of php.ini',
 	'LBL_UW_COMPLIANCE_PHP_VERSION'				=> 'Minimum PHP Version',
 	'LBL_UW_COMPLIANCE_SAFEMODE'				=> 'PHP Setting: Safe Mode',

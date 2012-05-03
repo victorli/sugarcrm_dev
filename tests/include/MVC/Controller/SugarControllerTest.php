@@ -339,6 +339,28 @@ class SugarControllerTest extends Sugar_PHPUnit_Framework_TestCase
         
         $this->assertEquals("index.php?module=yuck&action=yuckyuck&record=",$controller->redirect_url);
     }
+
+    public function testExecuteException()
+    {
+        $controller = $this->getMock('SugarController', array('process', 'handleException'));
+        $controller->expects($this->once())
+            ->method('process')
+            ->will($this->throwException(new Exception('test')));
+        $controller->expects($this->once())
+            ->method('handleException');
+        $controller->execute();
+    }
+
+    public function testExecuteNoException()
+    {
+        $controller = $this->getMockBuilder('SugarController')
+            ->setMethods(array('execute'))
+            ->getMock();
+        $controller->expects($this->never())
+            ->method('handleException');
+        $controller->execute();
+    }
+
 }
 
 class SugarControllerMock extends SugarController

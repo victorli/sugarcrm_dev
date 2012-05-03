@@ -467,6 +467,8 @@ function validate_user($user_name, $password){
 			}
 
 			$filterFields = $this->filter_fields($value, $fields);
+
+
 			foreach($filterFields as $field){
 				$var = $value->field_defs[$field];
 				if(isset($value->$var['name'])){
@@ -1103,6 +1105,10 @@ function validate_user($user_name, $password){
 		}
 		return false;
 	} // fn
+
+
+
+
 } // clazz
 
 ?>

@@ -89,8 +89,8 @@ class UserViewHelper {
         $this->assignUserTypes();
         $this->setupButtonsAndTabs();
         $this->setupUserTypeDropdown();
-        $this->setupEmailSettings();
         $this->setupPasswordTab();
+        $this->setupEmailSettings();
         $this->setupThemeTab();
         $this->setupAdvancedTab();
         

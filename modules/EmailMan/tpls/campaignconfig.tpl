@@ -51,7 +51,7 @@ function change_state(radiobutton)
 	} 
 	else {
 		radiobutton.form['massemailer_tracking_entities_location'].disabled=false;
-		radiobutton.form['massemailer_tracking_entities_location'].value=null;
+		radiobutton.form['massemailer_tracking_entities_location'].value='{/literal}{$SITEURL}{literal}';
 	}
 }
 {/literal}
@@ -96,7 +96,7 @@ function change_state(radiobutton)
 					<td scope="row">
 					</td>
 					<td >
-						<input name='massemailer_tracking_entities_location' {$tracking_entries_location_state} maxlength='128' type="text" value="{$TRACKING_ENTRIES_LOCATION}">
+						<input name='massemailer_tracking_entities_location' {$TRACKING_ENTRIES_LOCATION_STATE} maxlength='128' type="text" value="{$TRACKING_ENTRIES_LOCATION}">
 					</td>
 				</tr>
 				<tr>

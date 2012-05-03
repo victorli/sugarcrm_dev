@@ -3507,9 +3507,14 @@ SUGAR.searchForm = function() {
                 }
                 else if ( elemType == 'hidden' ) {
                     // We only want to reset the hidden values that link to the select boxes.
+                    // _c custom field kludge added to fix Bug 41384
                     if ( ( elem.name.length > 3 && elem.name.substring(elem.name.length-3) == '_id' )
                          || ((elem.name.length > 9) && (elem.name.substring(elem.name.length - 9) == '_id_basic'))
-                         || ( elem.name.length > 12 && elem.name.substring(elem.name.length-12) == '_id_advanced' ) ) {
+                         || ( elem.name.length > 12 && elem.name.substring(elem.name.length-12) == '_id_advanced' )
+                         || ( elem.name.length > 2 && elem.name.substring(elem.name.length-2) == '_c' )
+                         || ((elem.name.length > 8) && (elem.name.substring(elem.name.length - 8) == '_c_basic'))
+                         || ( elem.name.length > 11 && elem.name.substring(elem.name.length-11) == '_c_advanced' ) )
+                    {
                         elem.value = '';
                     }
                 }
@@ -4497,9 +4502,10 @@ closeActivityPanel: {
                         var callback = {
                             success:function(o)
                             {
-                                // Bug 45792: Firefox seems to believe reloading a page after an ajax request means you are re-submitting a form and gives you the warning for it.
-                                // So instead, we reload from a timeout
-								window.setTimeout("window.location.reload(true);",0);
+                                // Bug 51984: We need to submit the form just incase we have a form already submitted
+                                // so we dont get a popup stating that the form needs to be resubmitted like it doesn,
+                                // when you do a reload/refresh
+                                window.setTimeout(function(){if(document.getElementById('search_form')) document.getElementById('search_form').submit(); else window.location.reload(true);}, 0);
                             },
                             argument:{'parentContainerId':parentContainerId}
                         };

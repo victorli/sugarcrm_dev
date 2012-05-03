@@ -219,7 +219,10 @@ class aSubPanel
 			}
 		}
 
-		global $modules_exempt_from_availability_check ;
+        //by default all the activities modules are exempt, so hiding them won't affect their appearance unless the 'activity' subpanel itself is hidden.
+        //add email to the list temporarily so it is not affected in activities subpanel
+        global $modules_exempt_from_availability_check ;
+        $modules_exempt_from_availability_check['Emails'] = 'Emails';
 
 		$listFieldMap = array();
 

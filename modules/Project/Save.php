@@ -98,7 +98,13 @@ if(!$sugarbean->ACLAccess('Save')){
         sugar_cleanup(true);
 }
 
-$sugarbean->save(false);
+if (isset($GLOBALS['check_notify'])) {
+    $check_notify = $GLOBALS['check_notify'];
+}
+else {
+    $check_notify = FALSE;
+}
+$sugarbean->save($check_notify);
 $return_id = $sugarbean->id;
 
 if(isset($_REQUEST['save_type']) || isset($_REQUEST['duplicateSave']) && $_REQUEST['duplicateSave'] === "true") {

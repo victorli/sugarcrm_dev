@@ -57,7 +57,15 @@
 			loadCustomChartForReports = function(){ldelim}
 				loadSugarChart('{$chartId}','{$filename}',css,chartConfig);
 			{rdelim};
-			loadCustomChartForReports();
+			// bug51857: fixed issue on report running in a loop when clicking on hide chart then run report in IE8 only
+			// When hide chart button is clicked, the value of element showHideChartButton is set to $showchart.
+			// Don't need to call the loadCustomChartForReports() function when hiding the chart.
+			{if !isset($showchart)}
+				loadCustomChartForReports();
+			{else}
+			    if (document.getElementById('showHideChartButton').value != '{$showchart}')
+			        loadCustomChartForReports();
+			{/if}
 			{literal}
 		}
 	);

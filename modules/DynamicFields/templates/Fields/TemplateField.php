@@ -429,8 +429,11 @@ class TemplateField{
 		foreach($this->vardef_map as $vardef=>$field){
 
 			if(isset($_REQUEST[$vardef])){		    
-			  //  Bug #48826
-                $this->$vardef = is_string($_REQUEST[$vardef]) && in_array($vardef, $this->decode_from_request_fields_map) ? html_entity_decode($_REQUEST[$vardef]) : $_REQUEST[$vardef];
+                $this->$vardef = $_REQUEST[$vardef];
+
+			    //  Bug #48826. Some fields are allowed to have special characters and must be decoded from the request
+                if (is_string($this->$vardef) && in_array($vardef, $this->decode_from_request_fields_map))
+                  $this->$vardef = html_entity_decode($this->$vardef);
 
 				// Bug 49774, 49775: Strip html tags from 'formula' and 'dependency'. 
 				// Add to the list below if we need to do the same for other fields.

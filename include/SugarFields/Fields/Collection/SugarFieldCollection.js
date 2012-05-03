@@ -68,12 +68,11 @@ return isFirstFieldEmpty;},show_arrow_label:function(show){var more_div=document
 return false;}};SUGAR.collection.safe_clone=function(e,recursive)
 {if(e.nodeName=="#text")
 {return document.createTextNode(e.data);}
-if(!e.tagName)return false;var newNode=document.createElement(e.tagName);if(!newNode)return false;var properties=['class','style','name','type','valign','border','width','height','top','bottom','left','right','scope','row','columns','src','href','className','align','nowrap'];if(SUGAR.isIE7&&e.tagName.toLowerCase()=='input')
-{var properties=['class','style','name','type','valign','border','width','top','bottom','left','right','scope','row','columns','src','href','className','align','nowrap'];}else{var properties=['class','style','name','type','valign','border','width','height','top','bottom','left','right','scope','row','columns','src','href','className','align','nowrap'];}
+if(!e.tagName)return false;var newNode=document.createElement(e.tagName);if(!newNode)return false;var properties=['id','class','style','name','type','valign','border','width','height','top','bottom','left','right','scope','row','columns','src','href','className','align','nowrap'];if(SUGAR.isIE7&&e.tagName.toLowerCase()=='input')
+{var properties=['id','class','style','name','type','valign','border','width','top','bottom','left','right','scope','row','columns','src','href','className','align','nowrap'];}
 for(var i in properties)
 {if(e[properties[i]])
-{if(((properties[i]!='style'&&properties[i]!='type')||!SUGAR.isIE)&&(properties[i]!='href'||e.tagName=='a'||e.tagName=='iframe'))
-{newNode[properties[i]]=e[properties[i]];}}}
+{if((properties[i]!='style'||!SUGAR.isIE)&&(properties[i]!='href'||e.tagName=='a'||e.tagName=='iframe')){if(properties[i]=="type"){newNode.setAttribute(properties[i],e[properties[i]]);}else{newNode[properties[i]]=e[properties[i]];}}}}
 if(recursive)
 {for(var i in e.childNodes)
 {if(e.childNodes[i].nodeName&&(!e.className||e.className!="yui-ac-container"))

@@ -793,7 +793,7 @@ function handleSugarConfig() {
 			'dateFormat' => '%c',
 			'maxSize' => '10MB',
 			'maxLogs' => 10,
-			'suffix' => '%m_%Y'),
+			'suffix' => ''), // bug51583, change default suffix to blank for backwards comptability
   	);
     $sugar_config['session_dir']                    = $setup_site_session_path;
     $sugar_config['site_url']                       = $setup_site_url;

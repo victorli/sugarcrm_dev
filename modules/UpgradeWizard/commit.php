@@ -338,7 +338,7 @@ eoq;
 				      'dateFormat' => '%c',
 				      'maxSize' => '10MB',
 				      'maxLogs' => 10,
-				      'suffix' => '%m_%Y',
+				      'suffix' => '', // bug51583, change default suffix to blank for backwards comptability
 			  	  ),
 			);
 		}

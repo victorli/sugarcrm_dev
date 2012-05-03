@@ -156,18 +156,42 @@
         * @param array $headers HTTP headers
         * @return string
         */
-       public function fetch($url, $params = null, $method = 'GET', $headers = null)
-       {
-           $acc = $this->makeAccessToken();
-           if ( strpos($url,'?') ) {
+        
+        public function fetch($url, $params = null, $method = 'GET', $headers = null)
+        {
+            $acc = $this->makeAccessToken();
+            if ( strpos($url,'?') ) {
                list($clean_url, $query) = explode('?', $url);
                if($query) {
                    $url = $clean_url;
                    parse_str($query, $query_params);
                    $params = array_merge($params?$params:array(), $query_params);
                }
-           }
+            }
             $client = $acc->getHttpClient($this->_oauth_config, $url);
+            
+            Zend_Loader::loadClass('Zend_Http_Client_Adapter_Proxy');
+            $proxy_config = SugarModule::get('Administration')->loadBean();
+            $proxy_config->retrieveSettings('proxy');
+            
+            if( !empty($proxy_config) && 
+                !empty($proxy_config->settings['proxy_on']) &&
+                $proxy_config->settings['proxy_on'] == 1) {
+                
+                $proxy_settings = array();                
+                $proxy_settings['proxy_host'] = $proxy_config->settings['proxy_host'];
+                $proxy_settings['proxy_port'] = $proxy_config->settings['proxy_port'];
+    
+                if(!empty($proxy_config->settings['proxy_auth'])){
+                    $proxy_settings['proxy_user'] = $proxy_config->settings['proxy_username'];
+                    $proxy_settings['proxy_pass'] = $proxy_config->settings['proxy_password'];
+                }
+                
+                $adapter = new Zend_Http_Client_Adapter_Proxy();
+                $adapter->setConfig($proxy_settings);
+                $client->setAdapter($adapter);            
+            }
+            
             $client->setMethod($method);
             if(!empty($headers)) {
                 $client->setHeaders($headers);

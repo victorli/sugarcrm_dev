@@ -501,7 +501,7 @@ class DynamicField {
                 return !empty($vardefs[$name]);
             else if(empty($name)){
                 foreach($vardefs as $def){
-                    if($def['type'] == $type)
+                    if(!empty($def['type']) && $def['type'] == $type)
                         return true;
                 }
                 return false;

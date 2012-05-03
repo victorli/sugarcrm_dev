@@ -72,12 +72,6 @@
 	<td ><slot><select tabindex='2' id='status' name='status'>{STATUS_OPTIONS}</select></slot></td>
 	</tr>
 	<tr>
-	<td scope="row"><slot>{MOD.LBL_FROM_MAILBOX_NAME}</slot></td>
-	<td ><slot><select  id='inbound_email_id' tabindex='1' onchange='set_from_email_and_name(this);' name='inbound_email_id'>{MAILBOXES}</select>&nbsp;<SPAN id='from_email' style="font-style:italic">{DEFAULT_FROM_EMAIL}</SPAN></slot></td>
-	<td scope="row"><slot>{MOD.LBL_FROM_NAME} <span class="required">{APP.LBL_REQUIRED_SYMBOL}</span></slot></td>
-	<td class="datafield"><slot><input name='from_name' id='from_name' tabindex='2' size='25' maxlength='25' type="text" value="{FROM_NAME}"></slot></td>
-	</tr>
-	<tr>
 	<td scope="row"><slot>{MOD.LBL_START_DATE_TIME} <span class="required">{APP.LBL_REQUIRED_SYMBOL}</span></slot></td>
 	<td class="datafield"><slot><table  cellpadding="0" cellspacing="0"><tr><td nowrap><input name='date_start' onblur="parseDate(this, '{CALENDAR_DATEFORMAT}');" id='date_start_date' size='11' tabindex='1' maxlength='10' type="text" value="{DATE_START}"> <img src="index.php?entryPoint=getImage&themeName={THEME}&imageName=jscalendar.gif" alt="{CALENDAR_DATEFORMAT}"  id="jscal_trigger" align="absmiddle">&nbsp;</td>
     <td nowrap><input type="text" size='5' maxlength='5' name='time_start' tabindex="1" value="{TIME_START}"/>{TIME_MERIDIEM}</td></tr><tr><td nowrap><span class="dateFormat">{USER_DATEFORMAT}</span></td><td nowrap><span class="dateFormat">{TIME_FORMAT}</span></td></tr></table></slot></td>
@@ -98,6 +92,25 @@
 	<td scope="row"><slot>&nbsp;</slot></td>
 	<td><slot>&nbsp;</slot></td>
 	</tr>
+    <tr>
+        <td scope="row"><slot>{MOD.LBL_FROM_MAILBOX_NAME}</slot></td>
+        <td ><slot><select  id='inbound_email_id' tabindex='1' onchange='set_from_email_and_name(this);' name='inbound_email_id'>{MAILBOXES}</select>&nbsp;<SPAN id='from_email' style="font-style:italic">{DEFAULT_FROM_EMAIL}</SPAN></slot></td>
+        <td scope="row"><slot>&nbsp;</slot></td>
+        <td class="datafield"><slot>&nbsp;</slot></td>
+    </tr>
+    <tr>
+        <td scope="row"><slot>{MOD.LBL_FROM_NAME} <span class="required">{APP.LBL_REQUIRED_SYMBOL}</span></slot></td>
+        <td ><slot><input name='from_name' id='from_name' tabindex='2' size='25' maxlength='25' type="text" value="{FROM_NAME}"></slot></td>
+        <td scope="row"><slot>{MOD.LBL_FROM_ADDR}</slot></td>
+        <td class="datafield"><slot><input name='from_addr' id='from_addr' title='{MOD.LBL_FROM_ADDR}' tabindex='2' size='25' maxlength='25' type="text" value="{FROM_ADDR}"></slot></td>
+    </tr>
+    <tr>
+        <td width="15%" scope="row"><slot>{MOD.LBL_REPLY_NAME}</slot></td>
+        <td width="35%" class="datafield"><slot><input name='reply_to_name' id='reply_to_name' title='{MOD.LBL_REPLY_NAME}' tabindex='2' size='25' maxlength='25' type="text" value="{REPLY_NAME}"></slot></td>
+        <td scope="row"><slot>{MOD.LBL_REPLY_ADDR}</slot></td>
+        <td class="datafield"><slot><input name='reply_to_addr' id='reply_to_addr' title='{MOD.LBL_REPLY_ADDR}' tabindex='2' size='25' maxlength='25' type="text" value="{REPLY_ADDR}"></slot></td>
+    </tr>
+
 	<tr>
 	<td scope="row"><slot>&nbsp;</slot></td>
 	<td width="35%" class="datafield"><slot><select {MESSAGE_FOR_DISABLED}  tabindex='1' multiple size="5" id="message_for" name='message_for[]'>{SCOPE_OPTIONS}</select></slot></td>
@@ -204,21 +217,49 @@ function toggle_message_for(all_prospects_checkbox) {
 	}
 }
 
+//get values to populate from and reply boxes on change of mail box dropdown
+var ie_stored_options = {IEStoredOptions};
 var from_emails=new Array({FROM_EMAILS});
 
 function set_from_email_and_name(mailbox) {
-	from_email_span = document.getElementById('from_email');
-	from_name = document.getElementById('from_name');
-	for (i=0;i<=from_emails.length; i++) {
-		if ((mailbox.value=='' &&  from_emails[i] =='EMPTY') || from_emails[i] == mailbox.value) {
-			var j=i+1;
-			from_email_span.innerHTML=from_emails[j+1];
-			if (from_name.value=='') {
-				from_name.value=from_emails[j];
-			}
-			return;
-		}
-	}
+    var fn = document.getElementById('from_name');
+    var fa = document.getElementById('from_addr');
+    var rn = document.getElementById('reply_to_name');
+    var ra = document.getElementById('reply_to_addr');
+
+    if(mailbox.value != '') {
+        if(ie_stored_options[mailbox.value]) {
+            var focusIe = ie_stored_options[mailbox.value];
+            // from name
+            if(focusIe.from_name && focusIe.from_name != "")
+                fn.value = focusIe.from_name;
+            else
+                fn.value = '';
+
+            // from addr
+            if(focusIe.from_addr && focusIe.from_addr != "")
+                fa.value = focusIe.from_addr;
+            else
+                fa.value = '';
+
+            // reply name
+            if(focusIe.reply_to_name && focusIe.reply_to_name != "")
+                rn.value = focusIe.reply_to_name;
+            else
+                rn.value = '';
+
+            // reply add
+            if(focusIe.reply_to_addr && focusIe.reply_to_addr != "")
+                ra.value = focusIe.reply_to_addr;
+            else
+                ra.value = '';
+        }
+    } else {
+        fn.value = '';
+        fa.value = '';
+        rn.value = '';
+        ra.value = '';
+    }
 }
 </script>
 {JAVASCRIPT}

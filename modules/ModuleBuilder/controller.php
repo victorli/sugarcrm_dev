@@ -227,11 +227,11 @@ class ModuleBuilderController extends SugarController
             require_once ('ModuleInstall/PackageManager/PackageManager.php') ;
             $pm = new PackageManager ( ) ;
             $info = $mb->packages [ $load ]->build ( false ) ;
-            $cachedir = sugar_cached('/upload/upgrades/module/');
-            mkdir_recursive ($cachedir) ;
-            rename ( $info [ 'zip' ], $cachedir . $info [ 'name' ] . '.zip' ) ;
-            copy ( $info [ 'manifest' ], $cachedir . $info [ 'name' ] . '-manifest.php' ) ;
-            $_REQUEST [ 'install_file' ] = $cachedir. $info [ 'name' ] . '.zip' ;
+            $uploadDir = $pm->upload_dir.'/upgrades/module/';
+            mkdir_recursive ($uploadDir) ;
+            rename ( $info [ 'zip' ], $uploadDir . $info [ 'name' ] . '.zip' ) ;
+            copy ( $info [ 'manifest' ], $uploadDir . $info [ 'name' ] . '-manifest.php' ) ;
+            $_REQUEST [ 'install_file' ] = $uploadDir. $info [ 'name' ] . '.zip' ;
             $GLOBALS [ 'mi_remove_tables' ] = false ;
             $pm->performUninstall ( $load ) ;
             //#23177 , js cache clear
@@ -616,6 +616,11 @@ class ModuleBuilderController extends SugarController
             {
                 require_once ('modules/DynamicFields/DynamicField.php') ;
                 $moduleName = $_REQUEST [ 'view_module' ] ;
+
+                // bug 51325 make sure we make this switch or delete will not work
+                if( $moduleName == 'Employees' )
+                    $moduleName = 'Users';
+                
                 $class_name = $GLOBALS [ 'beanList' ] [ $moduleName ] ;
                 require_once ($GLOBALS [ 'beanFiles' ] [ $class_name ]) ;
                 $seed = new $class_name ( ) ;

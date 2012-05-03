@@ -432,6 +432,7 @@ $mod_strings = array (
 	'LBL_DELETE_INLINE' => 'Delete' /*for 508 compliance fix*/,
 	'LBL_DELETE' => 'Remove' /*for 508 compliance fix*/,
     'LBL_VIEW_INLINE' => 'View',
+    'LBL_LEADS_DELETED_SINCE_CREATED' => '{0} leads that were created through this campaign have been deleted since creation.',
 );
 
 

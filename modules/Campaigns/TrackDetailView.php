@@ -258,6 +258,15 @@ $subpanel = new SubPanelTiles($focus, 'Campaigns');
         }//_pp($subpanel->subpanel_definitions->layout_defs);
     }//end else
 
+$deletedCampaignLogLeadsCount = $focus->getDeletedCampaignLogLeadsCount();
+if ($deletedCampaignLogLeadsCount > 0)
+{
+    $subpanel->subpanel_definitions->layout_defs['subpanel_setup']['lead']['top_buttons'][] = array(
+        'widget_class' => 'SubPanelTopMessage',
+        'message' => string_format($mod_strings['LBL_LEADS_DELETED_SINCE_CREATED'], array($deletedCampaignLogLeadsCount)),
+    );
+}
+
 $alltabs=$subpanel->subpanel_definitions->get_available_tabs();
 if (!empty($alltabs)) {
 

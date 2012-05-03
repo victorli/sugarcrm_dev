@@ -731,7 +731,7 @@ AjaxObject.detailView = {
 		  var instId = ret.module + count;
 		  SED.quickCreateEmailsToAdd = ret.emailAddress;
 		  SED.quickCreateEmailCallback = function(instId, tableId) {
-			  var eaw = SUGAR.EmailAddressWidget.instances[instId];
+			  var eaw = new SUGAR.EmailAddressWidget(instId);
 			  if (typeof(eaw) == "undefined")
 				  window.setTimeout("SUGAR.email2.detailView.quickCreateEmailCallback('"
 					  	+ instId + "','" + tableId + "');", 100);

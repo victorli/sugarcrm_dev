@@ -175,6 +175,7 @@ $dictionary['Note'] = array(
   	'type' =>'parent_type',
     'dbType' => 'varchar',
     'group'=>'parent_name',
+    'options'=> 'parent_type_display',
   	'len'=> '255',
   	'comment' => 'Sugar module the Note is associated with'
   ),

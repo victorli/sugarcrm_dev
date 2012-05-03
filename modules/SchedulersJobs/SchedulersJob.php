@@ -152,29 +152,37 @@ class SchedulersJob extends SugarBean {
 	}
 
 	/**
-	 * handles some date/time foramtting
-	 * @param string time Time (usually "now")
-	 * @param object user User, usually admin (id = '1')
-	 * @param boolean to_local, convert to user's time format
-	 * @return string formatted time.
+     * handleDateFormat
+     *
+	 * This function handles returning a datetime value.  It allows a user instance to be passed in, but will default to the
+     * user member variable instance if none is found.
+     *
+	 * @param string $date String value of the date to calculate, defaults to 'now'
+	 * @param object $user The User instance to use in calculating the time value, if empty, it will default to user member variable
+	 * @param boolean $user_format Boolean indicating whether or not to convert to user's time format, defaults to false
+     *
+	 * @return string Formatted datetime value
 	 */
-	function handleDateFormat($time, $user=null, $to_local=true) {
+	function handleDateFormat($date='now', $user=null, $user_format=false) {
 		global $timedate;
 		
-		if(!isset($timedate) || empty($timedate)) {
+		if(!isset($timedate) || empty($timedate))
+        {
 			$timedate = new TimeDate();
 		}
 		
-		// get proper user
+		// get user for calculation
 		$user = (empty($user)) ? $this->user : $user;
-		$dbTime = $timedate->nowDb();
 
-		if ($to_local) {
-		    $ret = $timedate->to_display_date_time($dbTime, true, true, $user);
-		    return $ret;
-		}
-		
-		return $dbTime;
+        if($date == 'now')
+        {
+            $dbTime = $timedate->asUser($timedate->getNow(), $user);
+        } else {
+            $dbTime = $timedate->asUser($timedate->fromString($date, $user), $user);
+        }
+
+        // if $user_format is set to true then just return as th user's time format, otherwise, return as database format
+        return $user_format ? $dbTime : $timedate->fromUser($dbTime, $user)->asDb();
 	}
 
 	function setJobFlag($flag) {

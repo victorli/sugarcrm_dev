@@ -101,7 +101,9 @@ class JsChart extends SugarChart {
 		$this->saveJsonFile($json);
 		$this->ss->assign("chartId", $this->chartId);
 		$this->ss->assign("filename", $this->jsonFilename);
-
+		global $mod_strings;
+		if (isset($mod_strings['LBL_REPORT_SHOW_CHART']))
+		    $this->ss->assign("showchart", $mod_strings['LBL_REPORT_SHOW_CHART']);
 
 		$dimensions = $this->getChartDimensions($xmlStr);
 		$this->ss->assign("width", $dimensions['width']);

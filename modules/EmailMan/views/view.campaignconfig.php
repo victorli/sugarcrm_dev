@@ -84,7 +84,7 @@ class ViewCampaignconfig extends SugarView
         global $current_user;
         
         echo $this->getModuleTitle(false);
-        global $currentModule;
+        global $currentModule, $sugar_config;
         
         $focus = new Administration();
         $focus->retrieveSettings(); //retrieve all admin settings.
@@ -113,6 +113,8 @@ class ViewCampaignconfig extends SugarView
             $this->ss->assign("userdefined_checked", "checked");
             $this->ss->assign("TRACKING_ENTRIES_LOCATION",$focus->settings["massemailer_tracking_entities_location"]);
         }
+        $this->ss->assign("SITEURL",$sugar_config['site_url']);
+        
         
         // Change the default campaign to not store a copy of each message.
         if (!empty($focus->settings['massemailer_email_copy']) and $focus->settings['massemailer_email_copy']=='1') {

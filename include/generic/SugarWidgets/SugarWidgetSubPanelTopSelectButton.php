@@ -38,7 +38,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 
-
+require_once('include/generic/SugarWidgets/SugarWidgetSubPanelTopButton.php');
 
 class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 {
@@ -53,9 +53,9 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 	{
 		global $app_strings;
 		$initial_filter = '';
-	
+
 		$this->title = $app_strings['LBL_SELECT_BUTTON_TITLE'];
-		//$this->accesskey = $app_strings['LBL_SELECT_BUTTON_KEY'];
+		$this->accesskey = $app_strings['LBL_SELECT_BUTTON_KEY'];
 		$this->value = $app_strings['LBL_SELECT_BUTTON_LABEL'];		
 
 		if (is_array($this->button_properties)) {
@@ -63,7 +63,7 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 				$this->title = $app_strings[$this->button_properties['title']];
 			}
 			if( isset($this->button_properties['accesskey'])) {
-				//$this->accesskey = $app_strings[$this->button_properties['accesskey']];
+				$this->accesskey = $app_strings[$this->button_properties['accesskey']];
 			}
 			if( isset($this->button_properties['form_value'])) {
 				$this->value = $app_strings[$this->button_properties['form_value']];
@@ -155,8 +155,17 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 			}
 		}
 		$json_encoded_php_array = $this->_create_json_encoded_popup_request($popup_request_data);
-		return ' <input type="button" name="' . $this->getWidgetId() . '_select_button" id="' . $this->getWidgetId() . '_select_button" class="button"' . "\n"
-				. ' title="' . $this->title . '"'
+
+        //#46725, add proper ID for given in the duplicated button ID in the "Select From Report"
+        $button_class_name = str_replace("SubPanelTop", "", $widget_data['widget_class']);
+
+        //create unique button id from the class name by converting camel case letters to the underscore form
+        $func_to_underscore = create_function('$args', 'return "_" . strtolower($args[0]);');
+        $inputID = $this->getWidgetId() . preg_replace_callback('/[A-Z]/', $func_to_underscore, $button_class_name);
+
+		return ' <input type="button" name="' . $this->getWidgetId() . '_select_button" id="' . $inputID . '" class="button"' . "\n"
+			. ' title="' . $this->title . '"'
+			. ' accesskey="' . $this->accesskey . '"'
 			. ' value="' . $this->value . "\"\n"
 			. " onclick='open_popup(\"$this->module_name\",600,400,\"$initial_filter\",true,true,$json_encoded_php_array,\"$popup_mode\",$create);' />\n";
 	}

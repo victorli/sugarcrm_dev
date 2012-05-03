@@ -35,7 +35,7 @@
  ********************************************************************************/
 
 
- 
+
 require_once 'tests/service/SOAPTestCase.php';
 /**
  * This class tests that get_modified_entries returns xml with CDATA for <value> tags
@@ -78,15 +78,15 @@ class Bug47683Test extends SOAPTestCase
         unset($GLOBALS['beanFiles']);
     }
 
-    public function testGetModifiedEntriesWithCDATA()
+    public function testGetModifiedEntries()
     {
         $this->_login();
         $ids = array($this->_contact->id);
         $result = $this->_soapClient->call('get_modified_entries', array('session' => $this->_sessionId, 'module_name' => 'Contacts', 'ids' => $ids, 'select_fields' => array()));
         $decoded = base64_decode($result['result']);
 
-        // ensure value tags are using CDATA
-        $this->assertTrue(strpos($decoded, '<value><![CDATA')!==false);
+        $this->assertContains("<value>{$this->_contact->first_name}</value>", $decoded, "First name not found in data");
+        $this->assertContains("<value>{$this->_contact->last_name}</value>", $decoded, "Last name not found in data");
     }
 
 
@@ -95,6 +95,8 @@ class Bug47683Test extends SOAPTestCase
      **********************************/
     private function _setupTestContact() {
         $this->_contact = SugarTestContactUtilities::createContact();
+        $this->_contact->last_name .= " Пупкин-Васильев"; // test special chars
+        $this->_contact->description = "<==>";
         //$this->_contact->contacts_users_id = $this->_user->id;
         $this->_contact->save();
     }

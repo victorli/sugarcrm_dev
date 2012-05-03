@@ -56,9 +56,11 @@ class BeanFactory {
      * @static
      * @param  String $module
      * @param String $id
+     * @param Bool $encode @see SugarBean::retrieve
+     * @param Bool $deleted @see SugarBean::retrieve
      * @return SugarBean
      */
-    public static function getBean($module, $id = null)
+    public static function getBean($module, $id = null, $encode = true, $deleted = true)
     {
         if (!isset(self::$loadedBeans[$module])) {
             self::$loadedBeans[$module] = array();
@@ -74,7 +76,7 @@ class BeanFactory {
             if (empty(self::$loadedBeans[$module][$id]))
             {
                 $bean = new $beanClass();
-                $result = $bean->retrieve($id);
+                $result = $bean->retrieve($id, $encode, $deleted);
                 if($result == null)
                     return FALSE;
                 else

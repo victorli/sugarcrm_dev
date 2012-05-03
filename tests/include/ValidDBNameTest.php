@@ -100,13 +100,20 @@ class ValidDBNameTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertFalse(isValidDBName('sugar crm', 'mssql'));
         $this->assertFalse(isValidDBName('#sugarCRM_ver6', 'mssql'));
     }
-    
+
     public function longNameProvider()
     {
         return array(
             array("eeeee_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee_opportunities", "eeeee_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1_opportunities"),
             array("abc_auctions_abc_contactauctions", "abc_auctionsleadsources_abc_contact_auctions")
          );
+    }
+
+    public function testDots()
+    {
+        $this->assertEquals("foo.bar", getValidDbName("foo.bar"));
+        $this->assertEquals("bar.baz", getValidDbName("foo.bar.baz"));
+        $this->assertEquals("foobar.foobaz", getValidDbName("foo#bar.foo#baz"));
     }
 
     /**
