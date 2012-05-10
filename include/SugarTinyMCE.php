@@ -53,28 +53,27 @@ class SugarTinyMCE {
 	var $buttonConfigs = array(
 			'default' => array(
 						'buttonConfig' => "code,help,separator,bold,italic,underline,strikethrough,separator,justifyleft,justifycenter,justifyright,
-	                     					justifyfull,separator,forecolor,backcolor,separator,styleselect,formatselect,fontselect,fontsizeselect,", 
+	                     					justifyfull,separator,forecolor,backcolor,separator,styleselect,formatselect,fontselect,fontsizeselect,",
 	                    'buttonConfig2' => "cut,copy,paste,pastetext,pasteword,selectall,separator,search,replace,separator,bullist,numlist,separator,outdent,
 	                     					indent,separator,ltr,rtl,separator,undo,redo,separator, link,unlink,anchor,image,separator,sub,sup,separator,charmap,
-	                     					visualaid", 
-	                    'buttonConfig3' => "tablecontrols,separator,advhr,hr,removeformat,separator,insertdate,inserttime,separator,preview,spellchecker"),
+	                     					visualaid",
+	                    'buttonConfig3' => "tablecontrols,separator,advhr,hr,removeformat,separator,insertdate,inserttime,separator,preview"),
 	        'email_compose' => array(
 						'buttonConfig' => "code,help,separator,bold,italic,underline,strikethrough,separator,bullist,numlist,separator,justifyleft,justifycenter,justifyright,
-	                     					justifyfull,separator,forecolor,backcolor,separator,spellchecker,seperator,styleselect,formatselect,fontselect,fontsizeselect", 
-	                    'buttonConfig2' => "", 
+	                     					justifyfull,separator,forecolor,backcolor,separator,styleselect,formatselect,fontselect,fontsizeselect,",
+	                    'buttonConfig2' => "",
 	                    'buttonConfig3' => ""),
 	        'email_compose_light' => array(
 						'buttonConfig' => "code,help,separator,bold,italic,underline,strikethrough,separator,bullist,numlist,separator,justifyleft,justifycenter,justifyright,
-	                     					justifyfull,separator,forecolor,backcolor,separator,spellchecker,seperator,styleselect,formatselect,fontselect,fontsizeselect", 
-	                    'buttonConfig2' => "", 
+	                     					justifyfull,separator,forecolor,backcolor,separator,styleselect,formatselect,fontselect,fontsizeselect,",
+	                    'buttonConfig2' => "",
 	                    'buttonConfig3' => ""),
 	);
-	
-	var $pluginsConfig = array(
-	    'email_compose_light' => 'insertdatetime,paste,directionality,safari,spellchecker',
-        'email_compose' => 'advhr,insertdatetime,table,preview,paste,searchreplace,directionality,fullpage,spellchecker',
-	);
 
+	var $pluginsConfig = array(
+	    'email_compose_light' => 'insertdatetime,paste,directionality,safari',
+        'email_compose' => 'advhr,insertdatetime,table,preview,paste,searchreplace,directionality,fullpage',
+	);
 
 	var $defaultConfig = array(
 	    'convert_urls' => false,
@@ -90,7 +89,7 @@ class SugarTinyMCE {
 		'strict_loading_mode'	=> true,
 		'mode'	=> 'exact',
 		'language' => 'en',
-	    'plugins' => 'advhr,insertdatetime,table,preview,paste,searchreplace,directionality,spellchecker',
+	    'plugins' => 'advhr,insertdatetime,table,preview,paste,searchreplace,directionality',
 		'elements'	=> '',
         'extended_valid_elements' => 'style[dir|lang|media|title|type],hr[class|width|size|noshade],@[class|style]',
         'content_css' => 'include/javascript/tiny_mce/themes/advanced/skins/default/content.css',
