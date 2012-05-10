@@ -437,7 +437,8 @@ class ListViewDisplay {
 	function buildSelectedObjectsSpan($echo = true, $total=0) {
 		global $app_strings;
 
-		$selectedObjectSpan = "<span style='display: none;' id='selectedRecordsTop'>{$app_strings['LBL_LISTVIEW_SELECTED_OBJECTS']}<input  style='border: 0px; background: transparent; font-size: inherit; color: inherit' type='text' id='selectCountTop' readonly name='selectCount[]' value='{$total}' /></span>";
+        $displayStyle = $total > 0 ? "" : "display: none;";
+		$selectedObjectSpan = "<span style='$displayStyle' id='selectedRecordsTop'>{$app_strings['LBL_LISTVIEW_SELECTED_OBJECTS']}<input  style='border: 0px; background: transparent; font-size: inherit; color: inherit' type='text' id='selectCountTop' readonly name='selectCount[]' value='{$total}' /></span>";
 
         return $selectedObjectSpan;
 	}

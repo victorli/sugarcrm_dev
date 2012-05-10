@@ -572,7 +572,8 @@ if($configOptions['db_type'] == 'mysql'){
 	//Change the db wait_timeout for this session
 	$now_timeout = $db->getOne("select @@wait_timeout");
 	logThis('Wait Timeout before change ***** '.$now_timeout , $path);
-	$now_timeout = $db->getOne("set wait_timeout=28800");
+	$db->query("set wait_timeout=28800");	
+	$now_timeout = $db->getOne("select @@wait_timeout");	
 	logThis('Wait Timeout after change ***** '.$now_timeout , $path);
 }
 

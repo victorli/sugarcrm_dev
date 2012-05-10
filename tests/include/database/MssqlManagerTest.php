@@ -208,5 +208,23 @@ class MssqlManagerTest extends Sugar_PHPUnit_Framework_TestCase
              $result);
     }
 
+    /**
+     * @group bug50024 - connect fails when not passed a db_name config option
+     */
+    public function testConnectWithNoDbName()
+    {
+        if ( ($GLOBALS['db']->dbType != 'mssql') || !function_exists('mssql_connect'))
+            $this->markTestSkipped('Only applies to SQL Server legacy driver.');
+
+        // set up a connection w/o a db_name
+        $configOptions = array(
+            'db_host_name' => $GLOBALS['db']->connectOptions['db_host_name'],
+            'db_host_instance' => $GLOBALS['db']->connectOptions['db_host_instance'],
+            'db_user_name' => $GLOBALS['db']->connectOptions['db_user_name'],
+            'db_password' => $GLOBALS['db']->connectOptions['db_password'],
+        );
+
+        $this->assertTrue($this->_db->connect($configOptions));
+    }
 
 }

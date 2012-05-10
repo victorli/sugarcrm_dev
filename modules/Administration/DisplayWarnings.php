@@ -44,7 +44,7 @@ function displayAdminError($errorString){
 }
 
 //BEGIN SUGARCRM flav=pro
-if( file_exists('include/SugarSearchEngine/SugarSearchEngineFactory.php') )
+if( is_admin($current_user) && file_exists('include/SugarSearchEngine/SugarSearchEngineFactory.php') )
 {
     require_once('include/SugarSearchEngine/SugarSearchEngineFactory.php');
     $ftsType = SugarSearchEngineFactory::getFTSEngineNameFromConfig();

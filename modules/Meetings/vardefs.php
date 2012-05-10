@@ -303,7 +303,7 @@ $dictionary['Meeting'] = array('table' => 'meetings',
     'len' => '11',
     'reportable' => false,
     'default'=>0,
-    'comment' => 'Meeting update sequence for meetings as per iCalendar standards'
+    'comment' => 'Meeting update sequence for meetings as per iCalendar standards',
   ),
 
   'contact_name' =>

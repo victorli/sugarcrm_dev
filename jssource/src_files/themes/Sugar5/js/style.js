@@ -36,6 +36,13 @@
  
 
 
+	//set up any action style menus
+	$(document).ready(function(){
+		$("ul.clickMenu").each(function(index, node){
+	  		$(node).sugarActionMenu();
+	  	});
+	});
+
 /**
  * Handles loading the sitemap popup
  */

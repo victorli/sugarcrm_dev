@@ -120,7 +120,7 @@ if(typeof(SimpleList) == 'undefined'){
         if(drop_value.value == ""){
             html += "[" + SUGAR.language.get('ModuleBuilder', 'LBL_BLANK') + "]";
         }else{
-            html += "["+drop_value.value+"]";
+            html += "["+YAHOO.lang.escapeHTML(drop_value.value)+"]";
         }
         html += "</span>";
         html += "<span class='fieldValue' id='span_edit_"+liObj.id+"' style='display:none'>";

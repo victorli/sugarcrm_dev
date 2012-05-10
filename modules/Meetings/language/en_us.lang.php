@@ -174,5 +174,13 @@ $mod_strings = array (
     'LBL_CANCEL_CREATE_INVITEE' => 'Cancel',
     'LBL_EMPTY_SEARCH_RESULT' => 'Sorry, no results were found. Please create an invitee below.',
     'LBL_NO_ACCESS' => 'You have no access to create $module',
+    
+    'LBL_REPEAT_TYPE' => 'Repeat Type',
+    'LBL_REPEAT_INTERVAL' => 'Repeat Interval',
+    'LBL_REPEAT_DOW' => 'Repeat Dow',
+    'LBL_REPEAT_UNTIL' => 'Repeat Until',
+    'LBL_REPEAT_COUNT' => 'Repeat Count',
+    'LBL_REPEAT_PARENT_ID' => 'Repeat Parent ID',
+    'LBL_RECURRING_SOURCE' => 'Recurring Source',
 );
 ?>

@@ -247,6 +247,20 @@ class AbstractRelationship
 		}
 		return $this->rhs_module;
     }
+
+    /**
+     * Returns a key=>value set of labels used in this relationship for use when desplaying the relationship in MB
+     * @return array labels used in this relationship
+     */
+    public function getLabels() {
+        $labels = array();
+        $labelDefinitions = $this->buildLabels();
+        foreach($labelDefinitions as $def){
+            $labels[$def['module']][$def['system_label']] = $def['display_label'];
+        }
+
+        return $labels;
+    }
 	
     /*
      * GET methods called by the BUILD methods of the subclasses to construct the relationship metadata

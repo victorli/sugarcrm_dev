@@ -765,6 +765,24 @@ EOQ;
 	}
 
 	/**
+	 * Sets new password and resets password expiration timers
+	 * @param string $new_password
+	 */
+	public function setNewPassword($new_password, $system_generated = '0')
+	{
+        $user_hash = self::getPasswordHash($new_password);
+        $this->setPreference('loginexpiration','0');
+	    $this->setPreference('lockout','');
+		$this->setPreference('loginfailed','0');
+		$this->savePreferencesToDB();
+        //set new password
+        $now = TimeDate::getInstance()->nowDb();
+		$query = "UPDATE $this->table_name SET user_hash='$user_hash', system_generated_password='$system_generated', pwd_last_changed='$now' where id='$this->id'";
+		$this->db->query($query, true, "Error setting new password for $this->user_name: ");
+        $_SESSION['hasExpiredPassword'] = '0';
+	}
+
+	/**
 	 * Verify that the current password is correct and write the new password to the DB.
 	 *
 	 * @param string $user name - Must be non null and at least 1 character.
@@ -789,8 +807,6 @@ EOQ;
 		    return false;
 		}
 
-		$old_user_hash = strtolower(md5($user_password));
-
 		if (!$current_user->isAdminForModule('Users')) {
 			//check old password first
 			$row = self::findUserPassword($this->user_name, md5($user_password));
@@ -801,13 +817,7 @@ EOQ;
 			}
 		}
 
-        $user_hash = self::getPasswordHash($new_password);
-        $this->setPreference('loginexpiration','0');
-        //set new password
-        $now = TimeDate::getInstance()->nowDb();
-		$query = "UPDATE $this->table_name SET user_hash='$user_hash', system_generated_password='$system_generated', pwd_last_changed='$now' where id='$this->id'";
-		$this->db->query($query, true, "Error setting new password for $this->user_name: ");
-        $_SESSION['hasExpiredPassword'] = '0';
+		$this->setNewPassword($new_password, $system_generated);
 		return true;
 	}
 
@@ -1815,15 +1825,7 @@ EOQ;
             $emailObj->save();
             if (!isset($additionalData['link']) || $additionalData['link'] == false)
             {
-                $user_hash = strtolower(md5($additionalData['password']));
-                $this->setPreference('loginexpiration', '0');
-                $this->setPreference('lockout', '');
-                $this->setPreference('loginfailed', '0');
-                $this->savePreferencesToDB();
-                //set new password
-                $now=TimeDate::getInstance()->nowDb();
-                $query = "UPDATE $this->table_name SET user_hash='$user_hash', system_generated_password='1', pwd_last_changed='$now' where id='$this->id'";
-                $this->db->query($query, true, "Error setting new password for $this->user_name: ");
+                $this->setNewPassword($additionalData['password'], '1');
             }
         }
 

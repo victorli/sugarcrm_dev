@@ -24,9 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // ----------------------------------------------------------------------------
+/*
+    Modified on 4-26-12 by SugarCRM
+    get and insert functions modifed for better IE8 compatibility.
+    Various global varaible cleanups
+ */
 (function($) {
 	$.fn.markItUp = function(settings, extraSettings) {
-		var options, ctrlKey, shiftKey, altKey;
+		var options, ctrlKey, shiftKey, altKey, selection, caretPosition;
 		ctrlKey = shiftKey = altKey = false;
 	
 		options = {	id:						'',
@@ -53,7 +58,7 @@
 		// compute markItUp! path
 		if (!options.root) {
 			$('script').each(function(a, tag) {
-				miuScript = $(tag).get(0).src.match(/(.*)jquery\.markitup(\.pack)?\.js$/);
+				var miuScript = $(tag).get(0).src.match(/(.*)jquery\.markitup(\.pack)?\.js$/);
 				if (miuScript !== null) {
 					options.root = miuScript[1];
 				}
@@ -107,7 +112,7 @@
 
 				// add the resize handle after textarea
 				if (options.resizeHandle === true && $.browser.safari !== true) {
-					resizeHandle = $('<div class="markItUpResizeHandle"></div>')
+					var resizeHandle = $('<div class="markItUpResizeHandle"></div>')
 						.insertAfter($$)
 						.bind("mousedown", function(e) {
 							var h = $$.height(), y = e.clientY, mouseMove, mouseUp;
@@ -148,7 +153,7 @@
 				var ul = $('<ul></ul>'), i = 0;
 				$('li:hover > ul', ul).css('display', 'block');
 				$.each(markupSet, function() {
-					var button = this, t = '', title, li, j;
+					var button = this, t = '', title, li, j, key;
 					title = (button.key) ? (button.name||'')+' [Ctrl+'+button.key+']' : (button.name||'');
 					key   = (button.key) ? 'accesskey="'+button.key+'"' : '';
 					if (button.separator) {
@@ -164,7 +169,7 @@
 						}).click(function() {
 							return false;
 						}).bind("focusin", function(){
-                            $$.focus();
+							$$.focus();
 						}).mouseup(function() {
 							if (button.call) {
 								eval(button.call)();
@@ -234,6 +239,7 @@
 
 			// build block to insert
 			function build(string) {
+				var block, line;
 				var openWith 			= prepare(clicked.openWith);
 				var placeHolder 		= prepare(clicked.placeHolder);
 				var replaceWith 		= prepare(clicked.replaceWith);
@@ -276,7 +282,7 @@
 
 			// define markup to insert
 			function markup(button) {
-				var len, j, n, i;
+				var len, j, n, i, lines, string, start;
 				hash = clicked = button;
 				get();
 				$.extend(hash, {	line:"", 
@@ -381,16 +387,13 @@
 				
 			// add markup
 			function insert(block) {	
-				if (document.selection) {
-					var newSelection = document.selection.createRange();
-					newSelection.text = block;
-				} else {
-					textarea.value =  textarea.value.substring(0, caretPosition)  + block + textarea.value.substring(caretPosition + selection.length, textarea.value.length);
-				}
+				textarea.value =  textarea.value.substring(0, caretPosition)  + block
+                    + textarea.value.substring(caretPosition + selection.length, textarea.value.length);
 			}
 
 			// set a selection
 			function set(start, len) {
+				var range;
 				if (textarea.createTextRange){
 					// quick fix to make it work on Opera 9.5
 					if ($.browser.opera && $.browser.version >= 9.5 && len == 0) {
@@ -416,12 +419,27 @@
 				if (document.selection) {
 					selection = document.selection.createRange().text;
 					if ($.browser.msie) { // ie
-						var range = document.selection.createRange(), rangeCopy = range.duplicate();
-						rangeCopy.moveToElementText(textarea);
-						caretPosition = -1;
-						while(rangeCopy.inRange(range)) {
-							rangeCopy.moveStart('character');
-							caretPosition ++;
+						var range = document.selection.createRange(),
+							rangeCopy = range.duplicate();
+						//If nothing is selected, we have to use a different technique to find the caret position
+						if (document.selection.type =="None")
+						{
+							var sel = range;
+                            range = textarea.createTextRange();
+                            rangeCopy = range.duplicate();
+							range.moveToBookmark(sel.getBookmark());
+                            rangeCopy.setEndPoint("EndToStart", range);
+							if (rangeCopy.parentElement() == textarea)
+                                caretPosition = rangeCopy.text.length;
+						}
+						else {
+							rangeCopy.moveToElementText(textarea);
+                            caretPosition = -1;
+                            var inrange = false;
+                            while(rangeCopy.inRange(range, inrange)) {
+                                rangeCopy.moveStart('character');
+                                caretPosition ++;
+                            }
 						}
 					} else { // opera
 						caretPosition = textarea.selectionStart;

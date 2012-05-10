@@ -122,6 +122,13 @@
 		<td colspan="3"><slot>{$ATTACHMENTS}</slot></td>
 	</tr>
 </table>
+{literal}
+<script>
+$(document).ready(function(){
+	SUGAR.themes.actionMenu();
+});
+</script>
+{/literal}
 
 {$SUBPANEL}
 <!-- END: main -->

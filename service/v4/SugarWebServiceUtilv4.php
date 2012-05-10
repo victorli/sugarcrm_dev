@@ -533,6 +533,9 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
                         }
                     }
 					$seed->save();
+					if($seed->deleted == 1){
+						$seed->mark_deleted($seed->id);
+					}
 					$ids[] = $seed->id;
 				}//fi
 			}

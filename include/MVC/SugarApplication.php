@@ -691,7 +691,7 @@ class SugarApplication
 	    $_COOKIE[$name] = $value;
 	}
 
-	protected $redirectVars = array('module', 'action', 'record', 'token', 'oauth_token');
+	protected $redirectVars = array('module', 'action', 'record', 'token', 'oauth_token', 'mobile');
 
 	/**
 	 * Create string to attach to login URL with vars to preserve post-login
@@ -708,6 +708,9 @@ class SugarApplication
             if(!empty($_REQUEST[$var])) {
                 $ret["login_".$var] = $_REQUEST[$var];
             }
+        }
+        if(isset($_REQUEST['mobile'])) {
+            $ret['mobile'] = $_REQUEST['mobile'];
         }
         if(empty($ret)) return '';
         return "&".http_build_query($ret);
@@ -739,7 +742,14 @@ class SugarApplication
         foreach($this->redirectVars as $var) {
             if(!empty($_REQUEST['login_'.$var])) $vars[$var] = $_REQUEST['login_'.$var];
         }
+        if(isset($_REQUEST['mobile'])) {
+            $vars['mobile'] = $_REQUEST['mobile'];
+        }
 
+        if(isset($_REQUEST['mobile']))
+        {
+         	      $vars['mobile'] = $_REQUEST['mobile'];
+        }
         if(empty($vars)) {
             return "index.php?module=Home&action=index";
         } else {

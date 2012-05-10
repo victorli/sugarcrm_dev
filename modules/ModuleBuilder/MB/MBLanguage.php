@@ -261,6 +261,25 @@ class MBLanguage{
 			$this->templates = null;
 			$this->load();
 		}
+
+    /**
+     * Attempts to translate the given label if it is contained in this
+     * undeployed module's language strings
+     *
+     * @param string $label Label to translate
+     * @param string $language Language to use to translate the label
+     * @return string
+     */
+    public function translate($label, $language = "en_us"){
+            $language = $language . ".lang.php";
+            if (isset($this->strings[$language][$label]))
+                return $this->strings[$language][$label];
+
+            if (isset($this->appListStrings[$language][$label]))
+                return $this->appListStrings[$language][$label];
+
+            return $label;
+        }
 		
 	
 }

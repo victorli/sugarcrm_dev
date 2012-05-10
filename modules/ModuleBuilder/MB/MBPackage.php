@@ -83,11 +83,33 @@ class MBPackage{
         }
     }
     
+    /**
+     * @param $name
+     * @param bool $force
+     * @return MBModule
+     */
     function getModule($name, $force=true){
-        if(!$force && !empty($this->modules[$name]))return;
+        if(!$force && !empty($this->modules[$name]))
+            return $this->modules[$name];
+
         $path = $this->getPackageDir();
-        
         $this->modules[$name] = new MBModule($name, $path, $this->name, $this->key);
+
+        return $this->modules[$name];
+    }
+
+    /**
+     * Returns an MBModule by the given full name (package key + module name)
+     * if it exists in this package
+     *
+     * @param string $name
+     * @return MBModule
+     */
+    public function getModuleByFullName($name){
+        foreach($this->modules as $mname => $module) {
+            if ($this->key . "_" . $mname == $name)
+                return $module;
+        }
     }
     
     function deleteModule($name){

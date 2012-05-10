@@ -52,23 +52,23 @@ $subpanel_layout = array(
 	    	'name' => 'document_name',
 	 		'vname' => 'LBL_LIST_DOCUMENT_NAME',
 			'widget_class' => 'SubPanelDetailViewLink',
-			'width' => '30%',
+			'width' => '40%',
 	   ),
        'is_template'=>array(
  	    	'name' => 'is_template',
 	 	    'vname' => 'LBL_LIST_IS_TEMPLATE',
-		    'width' => '5%',
+		    'width' => '15%',
 		    'widget_type'=>'checkbox',
 		),
        'template_type'=>array(
  	    	'name' => 'template_types',
 	 	    'vname' => 'LBL_LIST_TEMPLATE_TYPE',
-		    'width' => '15%',
+		    'width' => '20%',
 		),		
        'latest_revision'=>array(
  	    	'name' => 'latest_revision',
 	 	    'vname' => 'LBL_LATEST_REVISION',
-		    'width' => '10%',
+		    'width' => '15%',
             'sortable' => false
 		),
 		'edit_button'=>array(

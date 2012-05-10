@@ -220,7 +220,7 @@ class quicksearchQuery
                 default:
                     array_push(
                         $conditionArray,
-                        $table_prefix.$db->getValidDBName($condition['name']) . sprintf(" like '%s%%", $db->quote($condition['value']))
+                        $table_prefix.$db->getValidDBName($condition['name']) . sprintf(" like '%s%%'", $db->quote($condition['value']))
                     );
             }
         }
@@ -498,7 +498,8 @@ class quicksearchQuery
         $this->extra_where = '';
 
         // Sanitize group
-        if(!empty($args['group'])  && strcasecmp($args['group'], 'and')) {
+        /* BUG: 52684 properly check for 'and' jeff@neposystems.com */
+        if(!empty($args['group'])  && strcasecmp($args['group'], 'and') == 0) {
             $args['group'] = 'AND';
         } else {
             $args['group'] = 'OR';

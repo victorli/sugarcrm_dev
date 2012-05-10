@@ -575,7 +575,6 @@ function validate_user($user_name, $password){
 
 	function getRelationshipResults($bean, $link_field_name, $link_module_fields, $optional_where = '') {
 		$GLOBALS['log']->info('Begin: SoapHelperWebServices->getRelationshipResults');
-		require_once('include/TimeDate.php');
 		global $current_user, $disable_date_format,  $timedate;
 
 		$bean->load_relationship($link_field_name);
@@ -587,12 +586,19 @@ function validate_user($user_name, $password){
             }
 			//First get all the related beans
             $related_beans = $bean->$link_field_name->getBeans($params);
-            $filterFields = $this->filter_fields($submodule, $link_module_fields);
-            //Create a list of field/value rows based on $link_module_fields
+            if(isset($related_beans[0])) {
+                // use first bean to filter fields since all records have same module
+                // and  $this->filter_fields doesn't use ACLs
+                $filterFields = $this->filter_fields($related_beans[0], $link_module_fields);
+            } else {
+                $filterFields = $this->filter_fields(null, $link_module_fields);
+            }
 			$list = array();
             foreach($related_beans as $id => $bean)
             {
                 $row = array();
+                //Create a list of field/value rows based on $link_module_fields
+
                 foreach ($filterFields as $field) {
                     if (isset($bean->$field))
                     {

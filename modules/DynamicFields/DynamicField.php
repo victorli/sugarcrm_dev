@@ -573,12 +573,12 @@ class DynamicField {
                 // unsetting temporary member variable
                 unset($field->no_default);
                 if(!empty($query)){
-                	$GLOBALS['db']->query($query, false, "Cannot create column");
+                	$GLOBALS['db']->query($query, true, "Cannot create column");
 	                $field->default = $fmd->default_value;
 	                $field->default_value = $fmd->default_value;
 	                $query = $field->get_db_modify_alter_table($this->bean->table_name . '_cstm');
 	                if(!empty($query)){
-	                	$GLOBALS['db']->query($query, false, "Cannot set default");
+	                	$GLOBALS['db']->query($query, true, "Cannot set default");
 	            	}
                 }
             }else{

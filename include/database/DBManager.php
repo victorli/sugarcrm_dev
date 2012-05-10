@@ -2449,12 +2449,11 @@ protected function checkQuery($sql, $object_name = false)
             }
         }
 
+        $default = '';
 		if (isset($fieldDef['default']) && strlen($fieldDef['default']) > 0)
 			$default = " DEFAULT ".$this->quoted($fieldDef['default']);
-		elseif (!isset($default) && $type == 'bool')
+		elseif (!isset($fieldDef['default']) && $type == 'bool')
 			$default = " DEFAULT 0 ";
-		elseif (!isset($default))
-			$default = '';
 
 		$auto_increment = '';
 		if(!empty($fieldDef['auto_increment']) && $fieldDef['auto_increment'])

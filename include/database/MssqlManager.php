@@ -232,7 +232,7 @@ class MssqlManager extends DBManager
         //mssql db maximum number of 5 times at the interval of .2 second. If can not connect
         //it will throw an Unable to select database message.
 
-        if(!@mssql_select_db($configOptions['db_name'], $this->database)){
+        if(!empty($configOptions['db_name']) && !@mssql_select_db($configOptions['db_name'], $this->database)){
 			$connected = false;
 			for($i=0;$i<5;$i++){
 				usleep(200000);

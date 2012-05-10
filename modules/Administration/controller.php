@@ -148,13 +148,16 @@ class AdministrationController extends SugarController
 		 {
 		     sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);
 		 }
-        $GLOBALS['log']->fatal("*** SAVING ");
-    	 try {
+
+    	 try
+         {
 	    	 require_once('modules/Home/UnifiedSearchAdvanced.php');
 	    	 $unifiedSearchAdvanced = new UnifiedSearchAdvanced();
 	    	 $unifiedSearchAdvanced->saveGlobalSearchSettings();
-	    	 echo "true";
-    	 } catch (Exception $ex) {
+	    	    echo "true";
+    	 }
+         catch (Exception $ex)
+         {
     	 	 echo "false";
     	 }
     }

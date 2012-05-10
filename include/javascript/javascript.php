@@ -261,6 +261,10 @@ class javascript{
 		}
 	}
 
+    function addActionMenu() {
+        $this->script .= "$(document).ready(SUGAR.themes.actionMenu);";
+    }
+
 	function getScript($showScriptTag = true, $clearValidateFields = true){
 		$tempScript = $this->script;
 		$this->script = "";

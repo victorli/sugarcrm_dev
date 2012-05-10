@@ -2326,9 +2326,9 @@ sugarListView.prototype.updateUid = function(cb  , form){
 sugarListView.prototype.check_entire_list = function(form, field, value, list_count) {
 	// count number of items
 	count = 0;
-	document.MassUpdate.massall.checked = true;
-	document.MassUpdate.massall.disabled = true;
-
+    $(document.MassUpdate.massall).each(function(){
+            $(this).attr('checked', true).attr('disabled', true);
+        });
 	for (i = 0; i < form.elements.length; i++) {
 		if(form.elements[i].name == field && form.elements[i].disabled == false) {
 			if(form.elements[i].checked != value) count++;
@@ -2344,14 +2344,17 @@ sugarListView.prototype.check_entire_list = function(form, field, value, list_co
 sugarListView.prototype.check_all = function(form, field, value, pageTotal) {
 	// count number of items
 	count = 0;
-	document.MassUpdate.massall.checked = value;
+    $(document.MassUpdate.massall).each(function(){$(this).attr('checked', value);});
 	if (document.MassUpdate.select_entire_list &&
-		document.MassUpdate.select_entire_list.value == 1) {
+		document.MassUpdate.select_entire_list.value == 1)
+    {
         sugarListView.prototype.toggleSelected();
-		document.MassUpdate.massall.disabled = true;
-	} else
-		document.MassUpdate.massall.disabled = false;
-
+        $(document.MassUpdate.massall).each(function(){$(this).attr('disabled', true);});
+	}
+    else
+    {
+        $(document.MassUpdate.massall).each(function(){$(this).attr('disabled', false);});
+    }
 	for (i = 0; i < form.elements.length; i++) {
 		if(form.elements[i].name == field && !(form.elements[i].disabled == true && form.elements[i].checked == false)) {
 			form.elements[i].disabled = false;
@@ -2404,7 +2407,8 @@ sugarListView.prototype.check_boxes = function() {
 						if(inputs_array[wp].value == checked_items[i]) {
 							checkedCount++;
 							inputs_array[wp].checked = true;
-							sugarListView.prototype.check_item(inputs_array[wp], document.MassUpdate);
+                            //Bug#52748: Total # of checked items are calculated in back-end side
+							//sugarListView.prototype.check_item(inputs_array[wp], document.MassUpdate);
 						}
 					}
 				}
@@ -3328,64 +3332,63 @@ SUGAR.util = function () {
                 }
                 this._doWhenLocked = false;
             },
-        buildAccessKeyLabels : function()
-                {
-                    if (typeof(Y.env.ua) !== 'undefined'){
-                        envStr = '';
-                        browserOS = Y.env.ua['os'];
-                        isIE = Y.env.ua['ie'];
-                        isCR = Y.env.ua['chrome'];
-                        isFF = Y.env.ua['gecko'];
-                        isWK = Y.env.ua['webkit'];
-                        isOP = Y.env.ua['opera'];
-                        controlKey = '';
+        buildAccessKeyLabels : function() {
+            if (typeof(Y.env.ua) !== 'undefined'){
+                envStr = '';
+                browserOS = Y.env.ua['os'];
+                isIE = Y.env.ua['ie'];
+                isCR = Y.env.ua['chrome'];
+                isFF = Y.env.ua['gecko'];
+                isWK = Y.env.ua['webkit'];
+                isOP = Y.env.ua['opera'];
+                controlKey = '';
 
-                        //first determine the OS
-                        if(browserOS=='macintosh'){
-                            //we got a mac, lets use the mac specific commands while we check the browser
-                            if(isIE){
-                                //IE on a Mac? Not possible, but let's assign alt anyways for completions sake
-                                controlKey = 'Alt+';
-                            }else if(isWK){
-                                //Chrome or safari on a mac
-                                controlKey = 'Ctrl+Opt+';
-                            }else if(isOP){
-                                //Opera on a mac
-                                controlKey = 'Shift+Esc: ';
-                            }else{
-                                //default FF and everything else on a mac
-                                controlKey = 'Ctrl+';
-                            }
-                        }else{
-                            //this is not a mac so let's use the windows/unix commands while we check the browser
-                            if(isFF){
-                                //FF on windows/unix
-                                controlKey = 'Alt+Shift+';
-                            }else if(isOP){
-                                //Opera on windows/unix
-                                controlKey = 'Shift+Esc: ';
-                            }else {
-                                //this is the default for safari, IE and Chrome
-                                //if this is webkit and is NOT google, then we are most likely looking at Safari
-                                controlKey = 'Alt+';
-                            }
+                //first determine the OS
+                if(browserOS=='macintosh'){
+                    //we got a mac, lets use the mac specific commands while we check the browser
+                    if(isIE){
+                        //IE on a Mac? Not possible, but let's assign alt anyways for completions sake
+                        controlKey = 'Alt+';
+                    }else if(isWK){
+                        //Chrome or safari on a mac
+                        controlKey = 'Ctrl+Opt+';
+                    }else if(isOP){
+                        //Opera on a mac
+                        controlKey = 'Shift+Esc: ';
+                    }else{
+                        //default FF and everything else on a mac
+                        controlKey = 'Ctrl+';
+                    }
+                }else{
+                    //this is not a mac so let's use the windows/unix commands while we check the browser
+                    if(isFF){
+                        //FF on windows/unix
+                        controlKey = 'Alt+Shift+';
+                    }else if(isOP){
+                        //Opera on windows/unix
+                        controlKey = 'Shift+Esc: ';
+                    }else {
+                        //this is the default for safari, IE and Chrome
+                        //if this is webkit and is NOT google, then we are most likely looking at Safari
+                        controlKey = 'Alt+';
+                    }
 
-                        }
+                }
 
-                        //now lets retrieve all elements of type input
-                        allButtons = document.getElementsByTagName('input');
-                        //iterate through list and modify title if the accesskey is not empty
-                        for(i=0;i<allButtons.length;i++){
-                            if(allButtons[i].getAttribute('accesskey') && allButtons[i].getAttribute('type') && allButtons[i].getAttribute('type')=='button'){
-                                allButtons[i].setAttribute('title',allButtons[i].getAttribute('title')+' ['+controlKey+allButtons[i].getAttribute('accesskey')+']');
-                            }
-                        }
-                        //now change the text in the help div
-			if(typeof(keyboardhelpText) =='string'){
-                                keyboardhelpText = keyboardhelpText.replace(/Alt\+/g,controlKey);
-                        }
-                    }// end if (typeof(Y.env.ua) !== 'undefined')
-                }//end buildAccessKeyLabels()
+                //now lets retrieve all elements of type input
+                allButtons = document.getElementsByTagName('input');
+                //iterate through list and modify title if the accesskey is not empty
+                for(i=0;i<allButtons.length;i++){
+                    if(allButtons[i].getAttribute('accesskey') && allButtons[i].getAttribute('type') && allButtons[i].getAttribute('type')=='button'){
+                        allButtons[i].setAttribute('title',allButtons[i].getAttribute('title')+' ['+controlKey+allButtons[i].getAttribute('accesskey')+']');
+                    }
+                }
+                //now change the text in the help div
+                $("#shortcuts_dialog").html(function(i, text)  {
+                    return text.replace(/Alt\+/g,controlKey);
+                });
+            }// end if (typeof(Y.env.ua) !== 'undefined')
+        }//end buildAccessKeyLabels()
 	};
 }(); // end util
 SUGAR.util.additionalDetailsCache = new Array();
@@ -4644,7 +4647,7 @@ closeActivityPanel: {
                                 // Bug 51984: We need to submit the form just incase we have a form already submitted
                                 // so we dont get a popup stating that the form needs to be resubmitted like it doesn,
                                 // when you do a reload/refresh
-                                window.setTimeout("document.getElementById('search_form').submit()", 0);
+                                window.setTimeout(function(){if(document.getElementById('search_form')) document.getElementById('search_form').submit(); else window.location.reload(true);}, 0);
                             },
                             argument:{'parentContainerId':parentContainerId}
                         };

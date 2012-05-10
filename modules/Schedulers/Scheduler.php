@@ -527,8 +527,12 @@ class Scheduler extends SugarBean {
 				// if not, add NOW
                 if(!empty($validJobTime) && ($focus->last_run < $validJobTime[0]) && ($now > $validJobTime[0])) {
 				// cn: empty() bug 5914;
-				//if(!empty) should be checked, becasue if a scheduler is defined to run every day 4pm, then after 4pm, and it runs as 4pm, the $validJobTime will be empty, and it should not catch up
-				//if $focus->last_run is the the day before yesterday,  it should run yesterday and tomorrow,  but it hadn't run yesterday, then it should catch up today. But today is already filtered out when doing date check before. The catch up will not work on this occasion. If the scheduler runs at least one time on each day, I think this bug can be avoided.
+				// if(!empty) should be checked, becasue if a scheduler is defined to run every day 4pm, then after 4pm, and it runs as 4pm,
+				// the $validJobTime will be empty, and it should not catch up.
+				// If $focus->last_run is the the day before yesterday,  it should run yesterday and tomorrow,
+				// but it hadn't run yesterday, then it should catch up today.
+				// But today is already filtered out when doing date check before. The catch up will not work on this occasion.
+				// If the scheduler runs at least one time on each day, I think this bug can be avoided.
 					$validJobTime[] = $now;
 				}
 			}

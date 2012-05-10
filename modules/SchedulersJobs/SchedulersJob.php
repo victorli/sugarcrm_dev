@@ -119,12 +119,12 @@ class SchedulersJob extends Basic
 	 */
 	function handleDateFormat($date='now', $user=null, $user_format=false) {
 		global $timedate;
-		
+
 		if(!isset($timedate) || empty($timedate))
         {
 			$timedate = new TimeDate();
 		}
-		
+
 		// get user for calculation
 		$user = (empty($user)) ? $this->user : $user;
 
@@ -295,7 +295,21 @@ class SchedulersJob extends Basic
         $this->addMessages($message);
         $this->resolution = $resolution;
         $this->save();
+        if($this->status == self::JOB_STATUS_DONE && $this->resolution == self::JOB_SUCCESS) {
+            $this->updateSchedulerSuccess();
+        }
         return true;
+    }
+
+    /**
+     * Update schedulers table on job success
+     */
+    protected function updateSchedulerSuccess()
+    {
+        if(empty($this->scheduler_id)) {
+            return;
+        }
+        $this->db->query("UPDATE schedulers SET last_run={$this->db->now()} WHERE id=".$this->db->quoted($this->scheduler_id));
     }
 
     /**

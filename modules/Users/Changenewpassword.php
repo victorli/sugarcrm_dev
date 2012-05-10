@@ -54,9 +54,9 @@ $mod_strings=return_module_language('','Users');
 ///////////////////////////////////////////////////////////////////////////////
 ////	RECAPTCHA CHECK ONLY
 
-if(isset($_REQUEST['recaptcha_challenge_field']) && isset($_REQUEST['recaptcha_response_field'])){    
+if(isset($_REQUEST['recaptcha_challenge_field']) && isset($_REQUEST['recaptcha_response_field'])){
 	require_once('include/reCaptcha/recaptchalib.php');
-	
+
 	$admin=new Administration();
 	$admin->retrieveSettings('captcha');
 	if($admin->settings['captcha_on']=='1' && !empty($admin->settings['captcha_private_key'])){
@@ -80,9 +80,9 @@ if(isset($_REQUEST['recaptcha_challenge_field']) && isset($_REQUEST['recaptcha_r
 			break;
 		case 'unknown' :
 			echo $mod_strings['LBL_RECAPTCHA_UNKNOWN'];
-			break;	
-			
-		default: 
+			break;
+
+		default:
 			echo "Invalid captcha entry, go back and fix. ". $response->error. " ";
 		}
 	}
@@ -90,7 +90,7 @@ if(isset($_REQUEST['recaptcha_challenge_field']) && isset($_REQUEST['recaptcha_r
 		echo("Success");
 	}
 	return;
-} 
+}
 ////	RECAPTCHA CHECK ONLY
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -101,7 +101,7 @@ if(isset($_REQUEST['recaptcha_challenge_field']) && isset($_REQUEST['recaptcha_r
 //// This script :  - check the link expiration
 ////			   - send the filled form to authenticate.php after changing the password in the database
 $redirect='1';
-if (isset($_REQUEST['guid'])) 
+if (isset($_REQUEST['guid']))
  	{
  	$Q="select * from users_password_link where id='".$_REQUEST['guid']."' and deleted='0'";
  	$result =$GLOBALS['db']->limitQuery($Q,0,1,false);
@@ -115,26 +115,21 @@ if (isset($_REQUEST['guid']))
 			$expiretime = TimeDate::getInstance()->fromTimestamp($stim)->get("+$delay  minutes")->asDb();
 	    	$timenow = TimeDate::getInstance()->nowDb();
 	    	if ($timenow > $expiretime)
-	    		$expired='1';	
+	    		$expired='1';
 	    }
-				
+
 	    if (!$expired)
 	    	{
 	    		// if the form is filled and we want to login
 	    		if (isset($_REQUEST['login']) && $_REQUEST['login'] =='1'){
-	    			if ( $row['username'] == $_POST['user_name'] ){	
-						
+	    			if ( $row['username'] == $_POST['user_name'] ){
+
 						$usr= new user();
 						$usr_id=$usr->retrieve_user_id($_POST['user_name']);
 	    				$usr->retrieve($usr_id);
-	    				$user_hash = strtolower(md5($_POST['new_password']));
-					    $usr->setPreference('loginexpiration','0');
-					    //set new password
-					    $now=TimeDate::getInstance()->nowDb();
-					    $query1 = "UPDATE $usr->table_name SET user_hash='$user_hash', system_generated_password='0', pwd_last_changed='$now' where id='$usr->id'";
-					    $GLOBALS['db']->query($query1, true, "Error setting new password for $usr->user_name: ");
+	    				$usr->setNewPassword($_POST['new_password']);
 					    $query2 = "UPDATE users_password_link SET deleted='1' where id='".$_REQUEST['guid']."'";
-				   		$GLOBALS['db']->query($query2, true, "Error setting link for $usr->user_name: ");				   		
+				   		$GLOBALS['db']->query($query2, true, "Error setting link for $usr->user_name: ");
 				   		$_POST['user_name'] = $_REQUEST['user_name'];
 						$_POST['user_password'] = $_REQUEST['new_password'];
 						$_POST['module'] = 'Users';
@@ -159,16 +154,16 @@ if (isset($_REQUEST['guid']))
 			{
 				$query2 = "UPDATE users_password_link SET deleted='1' where id='".$_REQUEST['guid']."'";
 		    	$GLOBALS['db']->query($query2, true, "Error setting link");
-			}	
- 		} 		
+			}
+ 		}
  	}
 
 if ($redirect!='0')
-	{	
+	{
 	header('location:index.php?action=Login&module=Users');
 	exit ();
 	}
-	
+
 ////	PASSWORD GENERATED LINK CHECK USING
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -176,9 +171,9 @@ if ($redirect!='0')
 	$view= new SugarView();
 	$view->init();
 	$view->displayHeader();
-	
+
 	$sugar_smarty = new Sugar_Smarty();
-	
+
 	$admin = new Administration();
 	$admin->retrieveSettings('captcha');
 	$add_captcha = 0;
@@ -202,14 +197,14 @@ if ($redirect!='0')
 		var handleFailure=handleSuccess;
 		var handleSuccess = function(o){
 			if(o.responseText!==undefined && o.responseText =='Success'){
-				
+
 				document.getElementById('user_password').value=document.getElementById('new_password').value;
 				document.getElementById('ChangePasswordForm').submit();
 			}
 			else{
 				alert(o.responseText);
 				Recaptcha.reload();
-				
+
 			}
 		}
 		var callback2 =
@@ -221,9 +216,9 @@ if ($redirect!='0')
 				var form = document.getElementById('form');
 				var url = '&to_pdf=1&module=Home&action=index&entryPoint=Changenewpassword&recaptcha_challenge_field='+Recaptcha.get_challenge()+'&recaptcha_response_field='+ Recaptcha.get_response();
 				YAHOO.util.Connect.asyncRequest('POST','index.php',callback2,url);
-				
+
 		}
-		
+
 	</script>";
 	$Captcha.=$captcha_js;
 	$Captcha.= "<tr>
@@ -231,7 +226,7 @@ if ($redirect!='0')
 		            <td width='70%'><input type='text' size='26' id='recaptcha_response_field' value=''></td>
 		        	<th rowsapn='2' class='x-sqs-list' ><div  id='recaptcha_image'></div></th>
 			    </tr>
-			    
+
 			    <tr>
 		         	<td colspan='2'>
 		         		<a href='javascript:Recaptcha.reload()'> ".$mod_strings['LBL_RECAPTCHA_NEW_CAPTCHA']."</a>&nbsp;&nbsp;
@@ -242,7 +237,7 @@ if ($redirect!='0')
 
 	}else{
 		echo"<script>function validateCaptchaAndSubmit(){document.getElementById('user_password').value=document.getElementById('new_password').value;document.getElementById('ChangePasswordForm').submit();}</script>";
-	}	
+	}
 $pwd_settings=$GLOBALS['sugar_config']['passwordsetting'];
 
 $sugar_smarty->assign('sugar_md',getWebPath('include/images/sugar_md_open.png'));
@@ -261,7 +256,7 @@ $rules = "'','',''";
 
 $sugar_smarty->assign('SUBMIT_BUTTON','<input title="'.$mod_strings['LBL_LOGIN_BUTTON_TITLE']
 	.'" class="button" '
-	. 'onclick="if(!set_password(form,newrules(' . $rules . '))) return false; validateCaptchaAndSubmit();" ' 
+	. 'onclick="if(!set_password(form,newrules(' . $rules . '))) return false; validateCaptchaAndSubmit();" '
 	. 'type="button" tabindex="3" id="login_button" name="Login" value="'.$mod_strings['LBL_LOGIN_BUTTON_LABEL'].'" /><br>&nbsp');
 
 if(!empty($_REQUEST['guid'])) $sugar_smarty->assign("GUID", $_REQUEST['guid']);

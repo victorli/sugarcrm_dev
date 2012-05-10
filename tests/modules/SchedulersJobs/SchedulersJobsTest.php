@@ -42,6 +42,7 @@ require_once 'tests/SugarTestAccountUtilities.php';
 class SchedulersJobsTest extends Sugar_PHPUnit_Framework_TestCase
 {
     public $jobs = array();
+    public $scheduler;
 
     public function setUp()
     {
@@ -58,6 +59,9 @@ class SchedulersJobsTest extends Sugar_PHPUnit_Framework_TestCase
         $ids = SugarTestAccountUtilities::getCreatedAccountIds();
         if(!empty($ids)) {
             SugarTestAccountUtilities::removeAllCreatedAccounts();
+        }
+        if(!empty($this->scheduler)) {
+           $this->db->query("DELETE FROM schedulers where id = '{$this->scheduler->id}'");
         }
     }
 
@@ -464,6 +468,29 @@ class SchedulersJobsTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEmpty($job->id);
     }
 
+    /**
+     * @ticket 52705
+     */
+    public function testJobLastRun()
+    {
+        $this->scheduler = new Scheduler(false);
+        $this->scheduler->job_interval =  "*::*::*::*::*";
+        $this->scheduler->job = "function::testJobFunction1";
+        $this->scheduler->status = "Active";
+        $this->scheduler->last_run = null;
+        $this->scheduler->save();
+        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+        $testJobFunction1Args = array();
+        $job = $this->createJob(array("name" => "Test Func", "status" => SchedulersJob::JOB_STATUS_RUNNING,
+        	"target" => "function::testJobFunction1", "assigned_user_id" => $GLOBALS['current_user']->id,
+        	"scheduler_id" => $this->scheduler->id));
+        $job->runJob();
+        $job->retrieve($job->id);
+        $this->assertEquals(SchedulersJob::JOB_SUCCESS, $job->resolution, "Wrong resolution");
+        $this->assertEquals(SchedulersJob::JOB_STATUS_DONE, $job->status, "Wrong status");
+        $this->scheduler->retrieve($this->scheduler->id);
+        $this->assertNotEmpty($this->scheduler->last_run, "Last run was not updated");
+    }
 }
 
 class TestSchedulersJob extends SchedulersJob

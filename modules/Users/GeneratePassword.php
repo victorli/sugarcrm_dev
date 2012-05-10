@@ -248,15 +248,7 @@ if (isset($_POST['link']) && $_POST['link'] == '1'){
         $retId = $emailObj->save();
         echo '1';
         if (!isset($_POST['link'])){
-	        $user_hash = User::getPasswordHash($password);
-	        $usr->setPreference('loginexpiration','0');
-	        $usr->setPreference('lockout','');
-		$usr->setPreference('loginfailed','0');
-		$usr->savePreferencesToDB();
-	        //set new password
-	        $now=TimeDate::getInstance()->nowDb();
-	        $query = "UPDATE $usr->table_name SET user_hash='$user_hash', system_generated_password='1', pwd_last_changed='$now' where id='$usr->id'";
-	        $usr->db->query($query, true, "Error setting new password for $usr->user_name: ");
+            $usr->setNewPassword($password, '1');
         }
     }else{
     	$new_pwd='4';
