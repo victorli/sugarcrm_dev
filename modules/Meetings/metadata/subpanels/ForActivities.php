@@ -56,7 +56,7 @@ $subpanel_layout = array(
 		'name'=>array(
 			 'vname' => 'LBL_LIST_SUBJECT',
 			 'widget_class' => 'SubPanelDetailViewLink',
-			 'width' => '30%',
+			 'width' => '42%',
 		),
 		'status'=>array(
 			 'widget_class' => 'SubPanelActivitiesStatusField',

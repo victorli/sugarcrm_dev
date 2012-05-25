@@ -339,10 +339,11 @@ class TemplateField{
 		    'help'=> (isset($this->help)) ?  $this->help : '',
 		    'importable'=>$this->importable,
 			'duplicate_merge'=>$this->duplicate_merge,
-			'duplicate_merge_dom_value'=> isset($this->duplicate_merge_dom_value) ? $this->duplicate_merge_dom_value : $this->duplicate_merge,
+			'duplicate_merge_dom_value'=> $this->getDupMergeDomValue(),
 			'audited'=>$this->convertBooleanValue($this->audited),
 			'reportable'=>$this->convertBooleanValue($this->reportable),
-            'unified_search'=>$this->convertBooleanValue($this->unified_search)
+            'unified_search'=>$this->convertBooleanValue($this->unified_search),
+            'merge_filter' => empty($this->merge_filter) ? "disabled" : $this->merge_filter
 		);
         if (isset($this->full_text_search)) {
             $array['full_text_search'] = $this->full_text_search;
@@ -353,7 +354,8 @@ class TemplateField{
 		if(!empty($this->size)){
 			$array['size'] = $this->size;
 		}
-		$this->get_dup_merge_def($array);
+
+        $this->get_dup_merge_def($array);
 
 		return $array;
 	}
@@ -372,13 +374,14 @@ class TemplateField{
 	/* if the field is duplicate merge enabled this function will return the vardef entry for the same.
 	 */
 	function get_dup_merge_def(&$def) {
-
-		switch ($def['duplicate_merge_dom_value']) {
+        switch ($def['duplicate_merge_dom_value']) {
 			case 0:
 				$def['duplicate_merge']='disabled';
+                $def['merge_filter']='disabled';
 				break;
 			case 1:
 				$def['duplicate_merge']='enabled';
+                $def['merge_filter']='disabled';
 				break;
 			case 2:
 				$def['merge_filter']='enabled';
@@ -395,6 +398,45 @@ class TemplateField{
 		}
 
 	}
+
+    /**
+     * duplicate_merge_dom_value drives the dropdown in the studio editor. This dropdown drives two fields though,
+     * duplicate_merge and merge_filter. When duplicate_merge_dom_value is not set, we need to derive it from the values
+     * of those two fields. Also, when studio sends this value down to be read in PopulateFromPost, it is set to
+     * duplicate_merge rather than duplicate_merge_dom_value, so we must check if duplicate_merge is a number rather
+     * than a string as well.
+     * @return int
+     */
+    function getDupMergeDomValue(){
+        if (isset($this->duplicate_merge_dom_value)) {
+            return $this->duplicate_merge_dom_value;
+        }
+
+        //If duplicate merge is numeric rather than a string, it is probably what duplicate_merge_dom_value was set to.
+        if (is_numeric($this->duplicate_merge))
+            return $this->duplicate_merge;
+
+
+        //Figure out the duplicate_merge_dom_value based on the values of merge filter and duplicate merge
+        if (empty($this->merge_filter) || $this->merge_filter === 'disabled' )
+        {
+            if (empty($this->duplicate_merge) || $this->duplicate_merge === 'disabled') {
+                $this->duplicate_merge_dom_value = 0;
+            } else {
+                $this->duplicate_merge_dom_value = 1;
+            }
+        } else {
+            if ($this->merge_filter === "selected")
+                $this->duplicate_merge_dom_value = 3;
+            else if (empty($this->duplicate_merge) || $this->duplicate_merge === 'disabled') {
+                $this->duplicate_merge_dom_value = 4;
+            } else {
+                $this->duplicate_merge_dom_value = 2;
+            }
+        }
+
+        return $this->duplicate_merge_dom_value;
+    }
 
 	/*
 		HELPER FUNCTIONS

@@ -213,7 +213,20 @@ SUGAR.mySugar = function() {
 		 	var fillInDashlet = function(data) {
 
 		 		ajaxStatus.hideStatus();
-				if(data) {		
+				if(data) {
+                    
+                    // before we refresh, lets make sure that the returned data is for the current dashlet in focus
+                    // AND that it is not the initial 'please reload' verbage, start by grabbing the current dashlet id
+                    current_dashlet_id = SUGAR.mySugar.currentDashlet.getAttribute('id');
+
+                    //lets extract the guid portion of the id, to use as a reference
+                    dashlet_guid =  current_dashlet_id.substr('dashlet_entire'.length);
+
+                    //now that we have the guid portion, let's search the returned text for it.  There should be many references to it.
+                    if(data.responseText.indexOf(dashlet_guid)<0 &&  data.responseText != SUGAR.language.get('app_strings', 'LBL_RELOAD_PAGE') ){
+                        //guid id was not found in the returned html, that means we have stale dashlet info due to an auto refresh, do not update
+                        return false;
+                    }
 					SUGAR.mySugar.currentDashlet.innerHTML = data.responseText;			
 				}
 

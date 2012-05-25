@@ -181,7 +181,7 @@ UploadStream::register();
 if (!defined('SUGAR_PATH')) {
     define('SUGAR_PATH', realpath(dirname(__FILE__) . '/..'));
 }
-require_once SUGAR_PATH . '/include/SugarObjects/SugarRegistry.php';
+require_once 'include/SugarObjects/SugarRegistry.php';
 
 if(empty($GLOBALS['installing'])){
 ///////////////////////////////////////////////////////////////////////////////

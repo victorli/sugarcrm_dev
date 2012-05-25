@@ -336,7 +336,7 @@ class SugarWidgetFieldDateTime extends SugarWidgetReportField
 	function queryFilterTP_this_month($layout_def)
 	{
 		global $timedate;
-		return $this->queryMonth($layout_def, $this->now()->get_day_by_index_this_month(1));
+		return $this->queryMonth($layout_def, $this->now()->get_day_by_index_this_month(0));
 	}
 
 	function queryFilterTP_next_month($layout_def)

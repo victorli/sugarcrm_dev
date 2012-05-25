@@ -382,7 +382,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
             }
             if ($controller->bean->module_dir == 'Cases') {
 	            if($controller->bean->load_relationship('contacts')) {
-	            	$emailAddressWithName = $ie->email->from_addr_name;
+	            	$emailAddressWithName = $ie->email->from_addr;
 	            	if (!empty($ie->email->reply_to_addr)) {
 	            		$emailAddressWithName = $ie->email->reply_to_addr;
 	            	} // if
@@ -1199,7 +1199,7 @@ eoq;
         $out = $email->sendEmailTest($_REQUEST['mail_smtpserver'], $_REQUEST['mail_smtpport'], $_REQUEST['mail_smtpssl'],
         							(isset($_REQUEST['mail_smtpauth_req']) ? 1 : 0), $_REQUEST['mail_smtpuser'],
         							$pass, $_REQUEST['outboundtest_from_address'], $_REQUEST['outboundtest_from_address']);
-        							
+
         $out = $json->encode($out);
         echo $out;
         break;

@@ -355,7 +355,7 @@ EOD;
 
 require_once('include/Smarty/plugins/function.sugar_action_menu.php');
 $action_button = smarty_function_sugar_action_menu(array(
-    'id' => 'archived_emails_edit_action_buttons',
+    'id' => 'detail_header_action_menu',
     'buttons' => $buttons,
     'class' => 'clickMenu fancymenu',
 ), $xtpl);
@@ -417,7 +417,7 @@ EOD;
 
 require_once('include/Smarty/plugins/function.sugar_action_menu.php');
 $action_button_sent_email = smarty_function_sugar_action_menu(array(
-    'id' => 'sent_emails_detail_action_buttons',
+    'id' => 'detail_header_action_menu',
     'buttons' => $buttons_sent_email,
     'class' => 'clickMenu fancymenu',
 ), $xtpl);

@@ -42,6 +42,7 @@ require_once ('modules/DynamicFields/DynamicField.php') ;
 class StandardField extends DynamicField
 {
 	var $custom_def = array();
+	var $base_def = array();
 	var $baseField;
 	
 
@@ -58,6 +59,17 @@ class StandardField extends DynamicField
             if (!empty($dictionary[$beanList[$this->module]]) && isset($dictionary[$beanList[$this->module]]["fields"][$field]))
                 $this->custom_def = $dictionary[$beanList[$this->module]]["fields"][$field];
     	}
+    }
+
+    protected function loadBaseDef($field){
+        global $beanList;
+        if (!empty($beanList[$this->module]) && is_file("modules/{$this->module}/vardefs.php"))
+        {
+            $dictionary = array();
+            include("modules/{$this->module}/vardefs.php");
+            if (!empty($dictionary[$beanList[$this->module]]) && isset($dictionary[$beanList[$this->module]]["fields"][$field]))
+                $this->base_def = $dictionary[$beanList[$this->module]]["fields"][$field];
+        }
     }
     
     /**
@@ -80,6 +92,7 @@ class StandardField extends DynamicField
 
         $currdef = $dictionary[$bean_name]["fields"][$field->name];
         $this->loadCustomDef($field->name);
+        $this->loadBaseDef($field->name);
         $newDef = $field->get_field_def();
         
         require_once ('modules/DynamicFields/FieldCases.php') ;
@@ -92,17 +105,32 @@ class StandardField extends DynamicField
             	continue;
        	 		
             // Bug 37043 - Avoid writing out vardef defintions that are the default value.
-            if (isset($newDef[$property]) && 
+            if (isset($newDef[$property]) &&
             	((!isset($currdef[$property]) && !$this->isDefaultValue($property,$newDef[$property], $this->baseField))
             		|| (isset($currdef[$property]) && $currdef[$property] != $newDef[$property])
             	)
             ){
-            	$this->custom_def[$property] = 
+            	$this->custom_def[$property] =
                     is_string($newDef[$property]) ? htmlspecialchars_decode($newDef[$property], ENT_QUOTES) : $newDef[$property];
             }
             
+            //Remove any orphaned entries
             if (isset($this->custom_def[$property]) && !isset($newDef[$property]))
             	unset($this->custom_def[$property]);
+
+            //Handle overrides of out of the box definitions with empty
+            if (!empty($this->base_def[$property]) && !isset($newDef[$property]))
+            {
+                //Switch on type of the property to find what the correct 'empty' is.
+                if(is_string($this->base_def[$property]))
+                    $this->custom_def[$property] = "";
+                else if(is_array($this->base_def[$property]))
+                    $this->custom_def[$property] = array();
+                else if(is_bool($this->base_def[$property]))
+                    $this->custom_def[$property] = false;
+                else
+                    $this->custom_def[$property] = null;
+            }
         }
         
         if (isset($this->custom_def["duplicate_merge_dom_value"]) && !isset($this->custom_def["duplicate_merge"]))

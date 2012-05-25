@@ -56,6 +56,7 @@
 	CAL.update_dd = new YAHOO.util.CustomEvent("update_dd");
 	CAL.dd_registry = new Object();
 	CAL.resize_registry = new Object();
+	CAL.print = false;
 	
 	CAL.dom = YAHOO.util.Dom;
 	CAL.get = YAHOO.util.Dom.get;
@@ -1957,6 +1958,10 @@
 		
 		var day_width;
 		var cal_width = document.getElementById("cal-width-helper").offsetWidth;
+		
+		if (CAL.print) {
+			cal_width = 800;
+		}
 			
 		var left_width = 80;
 		if(CAL.style == "basic"){

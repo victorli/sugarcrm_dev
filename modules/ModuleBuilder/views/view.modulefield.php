@@ -141,7 +141,7 @@ class ViewModulefield extends SugarView
             }
         }
 
-        if(! isset($_REQUEST['view_package']) || $_REQUEST['view_package'] == 'studio' || empty ( $_REQUEST [ 'view_package' ] ) ) {
+        if(empty($_REQUEST['view_package']) || $_REQUEST['view_package'] == 'studio') {
             $moduleName = $_REQUEST['view_module'];
             $objectName = BeanFactory::getObjectName($moduleName);
             $module = BeanFactory::getBean($moduleName);
@@ -178,7 +178,7 @@ class ViewModulefield extends SugarView
             $tf->module = $module;
             $tf->populateFromRow($vardef);
 			$vardef = array_merge($vardef, $tf->get_field_def());
-            
+
             //          $GLOBALS['log']->debug('vardefs after loading = '.print_r($vardef,true));
            
             

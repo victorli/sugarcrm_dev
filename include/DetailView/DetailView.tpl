@@ -166,7 +166,7 @@ class="yui-navset detailview_tabs"
 	</table>
 {{/if}}
 </div>
-{if $panelFieldCount == 0 && !$useTabs}}
+{if $panelFieldCount == 0 && !$useTabs}
 
 <script>document.getElementById("{{$label}}").style.display='none';</script>
 {/if}

@@ -78,4 +78,4 @@ return;ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_LOADING'));ur
 SUGAR.util.additionalDetailsRpcCall=window.setTimeout('toggle_more_go()',250);}
 SUGAR.util.doWhen("window.document.forms['popup_query_form'] != null "
 +"&& typeof(window.document.forms['popup_query_form'].request_data) != 'undefined'",function(){if(window.document.forms['popup_query_form'].request_data.value=="")
-{window.document.forms['popup_query_form'].request_data.value=window.opener.get_popup_request_data();}});
+{window.document.forms['popup_query_form'].request_data.value=window.opener.get_popup_request_data();}});$(document).ready(function(){$("ul.clickMenu").each(function(index,node){$(node).sugarActionMenu();});});

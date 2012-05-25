@@ -3798,4 +3798,21 @@ protected function checkQuery($sql, $object_name = false)
 	 * @return array
 	 */
 	abstract public function installConfig();
+
+    /**
+     * Returns a DB specific FROM clause which can be used to select against functions.
+     * Note that depending on the database that this may also be an empty string.
+     * @abstract
+     * @return string
+     */
+    abstract public function getFromDummyTable();
+
+    /**
+     * Returns a DB specific piece of SQL which will generate GUID (UUID)
+     * This string can be used in dynamic SQL to do multiple inserts with a single query.
+     * I.e. generate a unique Sugar id in a sub select of an insert statement.
+     * @abstract
+     * @return string
+     */
+    abstract public function getGuidSQL();
 }

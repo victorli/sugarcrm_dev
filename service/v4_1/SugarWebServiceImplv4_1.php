@@ -75,29 +75,73 @@ class SugarWebServiceImplv4_1 extends SugarWebServiceImplv4
      * @param Number $offset -- where to start in the return
      * @param Number $limit -- number of results to return (defaults to all)
      * @return Array 'entry_list' -- Array - The records that were retrieved
-     *                  'relationship_list' -- Array - The records link field data. The example is if asked about accounts contacts email address then return data would look like Array ( [0] => Array ( [name] => email_addresses [records] => Array ( [0] => Array ( [0] => Array ( [name] => id [value] => 3fb16797-8d90-0a94-ac12-490b63a6be67 ) [1] => Array ( [name] => email_address [value] => hr.kid.qa@example.com ) [2] => Array ( [name] => opt_out [value] => 0 ) [3] => Array ( [name] => primary_address [value] => 1 ) ) [1] => Array ( [0] => Array ( [name] => id [value] => 403f8da1-214b-6a88-9cef-490b63d43566 ) [1] => Array ( [name] => email_address [value] => kid.hr@example.name ) [2] => Array ( [name] => opt_out [value] => 0 ) [3] => Array ( [name] => primary_address [value] => 0 ) ) ) ) )
+     *               'relationship_list' -- Array - The records link field data. The example is if asked about accounts contacts email address then return data would look like Array ( [0] => Array ( [name] => email_addresses [records] => Array ( [0] => Array ( [0] => Array ( [name] => id [value] => 3fb16797-8d90-0a94-ac12-490b63a6be67 ) [1] => Array ( [name] => email_address [value] => hr.kid.qa@example.com ) [2] => Array ( [name] => opt_out [value] => 0 ) [3] => Array ( [name] => primary_address [value] => 1 ) ) [1] => Array ( [0] => Array ( [name] => id [value] => 403f8da1-214b-6a88-9cef-490b63d43566 ) [1] => Array ( [name] => email_address [value] => kid.hr@example.name ) [2] => Array ( [name] => opt_out [value] => 0 ) [3] => Array ( [name] => primary_address [value] => 0 ) ) ) ) )
      * @exception 'SoapFault' -- The SOAP error, if any
      */
     function get_relationships($session, $module_name, $module_id, $link_field_name, $related_module_query, $related_fields, $related_module_link_name_to_fields_array, $deleted, $order_by = '', $offset = 0, $limit = false)
     {
-        $return = parent::get_relationships($session, $module_name, $module_id, $link_field_name, $related_module_query, $related_fields, $related_module_link_name_to_fields_array, $deleted, $order_by);
+        $GLOBALS['log']->info('Begin: SugarWebServiceImpl->get_relationships');
+        self::$helperObject = new SugarWebServiceUtilv4_1();
+        global  $beanList, $beanFiles;
+    	$error = new SoapError();
 
-        if (is_array($return) && !empty($return['entry_list'])) {
-            $entry_list = $return['entry_list'];
-            $rel_list = $return['relationship_list'];
-            if ($limit === false || !is_numeric($limit)) {
-                $limit = null;
-            }
-            $entry_list = array_slice($entry_list, $offset, $limit, true);
-            if (!empty($rel_list)) {
-                $rel_list = array_slice($entry_list, $offset, $limit, true);
-            }
+    	if (!self::$helperObject->checkSessionAndModuleAccess($session, 'invalid_session', $module_name, 'read', 'no_access', $error)) {
+    		$GLOBALS['log']->info('End: SugarWebServiceImpl->get_relationships');
+    		return;
+    	} // if
 
-            $return['entry_list'] = $entry_list;
-            $return['relationship_list'] = $rel_list;
-        }
+    	$mod = BeanFactory::getBean($module_name, $module_id);
 
-        return $return;
+        if (!self::$helperObject->checkQuery($error, $related_module_query, $order_by)) {
+    		$GLOBALS['log']->info('End: SugarWebServiceImpl->get_relationships');
+        	return;
+        } // if
+
+        if (!self::$helperObject->checkACLAccess($mod, 'DetailView', $error, 'no_access')) {
+    		$GLOBALS['log']->info('End: SugarWebServiceImpl->get_relationships');
+        	return;
+        } // if
+
+        $output_list = array();
+    	$linkoutput_list = array();
+
+    	// get all the related modules data.
+        $result = self::$helperObject->getRelationshipResults($mod, $link_field_name, $related_fields, $related_module_query, $order_by, $offset, $limit);
+
+        if (self::$helperObject->isLogLevelDebug()) {
+    		$GLOBALS['log']->debug('SoapHelperWebServices->get_relationships - return data for getRelationshipResults is ' . var_export($result, true));
+        } // if
+    	if ($result) {
+
+    		$list = $result['rows'];
+    		$filterFields = $result['fields_set_on_rows'];
+
+    		if (sizeof($list) > 0) {
+    			// get the related module name and instantiate a bean for that
+    			$submodulename = $mod->$link_field_name->getRelatedModuleName();
+                $submoduletemp = BeanFactory::getBean($submodulename);
+
+    			foreach($list as $row) {
+    				$submoduleobject = @clone($submoduletemp);
+    				// set all the database data to this object
+    				foreach ($filterFields as $field) {
+    					$submoduleobject->$field = $row[$field];
+    				} // foreach
+    				if (isset($row['id'])) {
+    					$submoduleobject->id = $row['id'];
+    				}
+    				$output_list[] = self::$helperObject->get_return_value_for_fields($submoduleobject, $submodulename, $filterFields);
+    				if (!empty($related_module_link_name_to_fields_array)) {
+    					$linkoutput_list[] = self::$helperObject->get_return_value_for_link_fields($submoduleobject, $submodulename, $related_module_link_name_to_fields_array);
+    				} // if
+
+    			} // foreach
+    		}
+
+    	} // if
+
+    	$GLOBALS['log']->info('End: SugarWebServiceImpl->get_relationships');
+    	return array('entry_list'=>$output_list, 'relationship_list' => $linkoutput_list);
     }
 
 
@@ -142,6 +186,7 @@ class SugarWebServiceImplv4_1 extends SugarWebServiceImplv4
             return array('result_count'=>0, 'next_offset'=>0, 'field_list'=>$select_fields, 'entry_list'=>array(), 'error'=>$error->get_soap_array());
         }
 
+        self::$helperObject = new SugarWebServiceUtilv4_1();
         if (!self::$helperObject->checkSessionAndModuleAccess($session, 'invalid_session', $module_name, 'read', 'no_access', $error))
         {
        		$GLOBALS['log']->info('End: SugarWebServiceImpl->get_modified_relationships');

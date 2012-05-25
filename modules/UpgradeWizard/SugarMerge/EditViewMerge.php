@@ -192,7 +192,6 @@ class EditViewMerge{
             'Meetings' => array('created_by_name'=>'date_entered', 'modified_by_name'=>'date_modified'),
  			'ProspectLists' => array('created_by_name'=>'date_entered', 'modified_by_name'=>'date_modified'),
             'Prospects' => array('created_by_name'=>'date_entered', 'modified_by_name'=>'date_modified'),
-            'Tasks' => array('created_by_name'=>'date_entered', 'modified_by_name'=>'date_modified'),
 	);
 	
 	/**

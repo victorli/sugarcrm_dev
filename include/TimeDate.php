@@ -424,6 +424,7 @@ class TimeDate
     public function get_date_time_format_cache_key($user)
     {
         $cacheKey = get_class($this) ."dateTimeFormat";
+        $user = $this->_getUser($user);
 
         if($user instanceof User)
         {

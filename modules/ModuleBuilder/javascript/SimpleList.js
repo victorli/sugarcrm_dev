@@ -205,7 +205,7 @@ if(typeof(SimpleList) == 'undefined'){
             var out = [];
             for (i=0;i<items.length;i=i+1) {
                 var name = items[i].id;
-                var value = document.getElementById('input_'+name).value;
+                var value = document.getElementById('value_'+name).value;
                 out[i] = [ name , unescape(value) ];
             }
             return YAHOO.lang.JSON.stringify(out);

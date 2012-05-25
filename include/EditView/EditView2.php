@@ -383,6 +383,13 @@ class EditView
 
         //the retrieve already did this work;
         //$this->focus->fill_in_relationship_fields();
+        //Bug#53261: If quickeditview is loaded after editview.tpl is created,
+        //           the th->checkTemplate will return true. So, the following
+        //           code prevent avoid rendering popup editview container.
+        if(!empty($this->formName)) {
+            $formName = $this->formName;
+            $checkFormName = true;
+        }
 
         if (!$this->th->checkTemplate($this->module, $this->view, $checkFormName, $formName))
         {

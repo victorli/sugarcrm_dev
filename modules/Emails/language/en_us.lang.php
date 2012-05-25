@@ -76,6 +76,7 @@ $mod_strings = array (
 	'LBL_ADD_FILE'				=> 'Add Files',
 	'LBL_ARCHIVED_EMAIL'		=> 'Archived Email',
 	'LBL_ARCHIVED_MODULE_NAME'	=> 'Create Archived Emails',
+    'LBL_ARCHIVED_EMAILS_CREATE'  => 'Create',
 	'LBL_ATTACHMENTS'			=> 'Attachments:',
 	'LBL_HAS_ATTACHMENT'		=> 'Has Attachment?:',
 	'LBL_BCC'					=> 'Bcc:',

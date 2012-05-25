@@ -97,6 +97,7 @@ $viewdefs['Project']['DetailView'] = array(
                         'htmlOptions' => array(
                             'title' => '{$APP.LBL_DELETE_BUTTON_TITLE}',
                             'accessKey' => '{$APP.LBL_DELETE_BUTTON_KEY}',
+                            'id'    => 'delete_button',
                             'class' => 'button',
                             'onclick' =>
                                 '{if $IS_TEMPLATE}'.

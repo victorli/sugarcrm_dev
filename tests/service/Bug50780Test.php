@@ -72,6 +72,7 @@ class Bug50780Test extends SOAPTestCase
         parent::tearDown();
     }
 
+
     public function testGetRelationshipReturnAllMeetings()
     {
         $result = $this->_soapClient->call('get_relationships', array(
@@ -104,7 +105,7 @@ class Bug50780Test extends SOAPTestCase
                 'deleted' => 0,
                 'order_by' => 'date_entered',
                 'offset' => 5,
-                'limit' => false)
+                'limit' => 4)
         );
 
         $this->assertEquals(0, count($result['entry_list']));

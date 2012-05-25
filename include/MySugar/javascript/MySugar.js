@@ -47,7 +47,8 @@ configureDlg.setHeader(result['header']);configureDlg.setBody(result['body']);va
 SUGAR.mySugar.configureDashletId=id;var cObj=YAHOO.util.Connect.asyncRequest('GET','index.php?to_pdf=1&module='+module+'&action=DynamicAction&DynamicAction=configureDashlet&id='+id,{success:fillInConfigureDiv,failure:fillInConfigureDiv},null);},retrieveDashlet:function(id,url,callback,dynamic){ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_LOADING'));if(!url){url='index.php?action=DynamicAction&DynamicAction=displayDashlet&session_commit=1&module='+module+'&to_pdf=1&id='+id;is_chart_dashlet=false;}
 else if(url=='predefined_chart'){url='index.php?action=DynamicAction&DynamicAction=displayDashlet&session_commit=1&module='+module+'&to_pdf=1&id='+id;scriptUrl='index.php?action=DynamicAction&DynamicAction=getPredefinedChartScript&session_commit=1&module='+module+'&to_pdf=1&id='+id;is_chart_dashlet=true;}
 if(dynamic){url+='&dynamic=true';}
-var fillInDashlet=function(data){ajaxStatus.hideStatus();if(data){SUGAR.mySugar.currentDashlet.innerHTML=data.responseText;}
+var fillInDashlet=function(data){ajaxStatus.hideStatus();if(data){current_dashlet_id=SUGAR.mySugar.currentDashlet.getAttribute('id');dashlet_guid=current_dashlet_id.substr('dashlet_entire'.length);if(data.responseText.indexOf(dashlet_guid)<0&&data.responseText!=SUGAR.language.get('app_strings','LBL_RELOAD_PAGE')){return false;}
+SUGAR.mySugar.currentDashlet.innerHTML=data.responseText;}
 SUGAR.util.evalScript(data.responseText);if(callback)callback();var processChartScript=function(scriptData){SUGAR.util.evalScript(scriptData.responseText);SUGAR.mySugar.sugarCharts.loadSugarCharts(activePage);}
 if(typeof(is_chart_dashlet)=='undefined'){is_chart_dashlet=false;}
 if(is_chart_dashlet){var chartScriptObj=YAHOO.util.Connect.asyncRequest('GET',scriptUrl,{success:processChartScript,failure:processChartScript},null);}}

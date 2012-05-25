@@ -32,7 +32,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by SugarCRM".
  ********************************************************************************/
-var CAL={};CAL.slot_height=14;CAL.dropped=0;CAL.records_openable=true;CAL.moved_from_cell="";CAL.deleted_id="";CAL.deleted_module="";CAL.tmp_header="";CAL.disable_creating=false;CAL.record_editable=false;CAL.shared_users={};CAL.shared_users_count=0;CAL.script_evaled=false;CAL.editDialog=false;CAL.settingsDialog=false;CAL.sharedDialog=false;CAL.basic={};CAL.basic.items={};CAL.update_dd=new YAHOO.util.CustomEvent("update_dd");CAL.dd_registry=new Object();CAL.resize_registry=new Object();CAL.dom=YAHOO.util.Dom;CAL.get=YAHOO.util.Dom.get;CAL.query=YAHOO.util.Selector.query;CAL.arrange_slot=function(cell_id){if(!cell_id)
+var CAL={};CAL.slot_height=14;CAL.dropped=0;CAL.records_openable=true;CAL.moved_from_cell="";CAL.deleted_id="";CAL.deleted_module="";CAL.tmp_header="";CAL.disable_creating=false;CAL.record_editable=false;CAL.shared_users={};CAL.shared_users_count=0;CAL.script_evaled=false;CAL.editDialog=false;CAL.settingsDialog=false;CAL.sharedDialog=false;CAL.basic={};CAL.basic.items={};CAL.update_dd=new YAHOO.util.CustomEvent("update_dd");CAL.dd_registry=new Object();CAL.resize_registry=new Object();CAL.print=false;CAL.dom=YAHOO.util.Dom;CAL.get=YAHOO.util.Dom.get;CAL.query=YAHOO.util.Selector.query;CAL.arrange_slot=function(cell_id){if(!cell_id)
 return;cellElm=document.getElementById(cell_id);if(cellElm){var total_height=0;var prev_i=0;var first=1;var top=0;var height=0;var cnt=0;var child_cnt=cellElm.childNodes.length;for(var i=0;i<child_cnt;i++){var width_p=(92 / child_cnt);width=width_p.toString()+"%";if(cellElm.childNodes[i].tagName=="DIV"){cellElm.childNodes[i].style.top="-1px";cellElm.childNodes[i].style.left="-"+(cnt+1)+"px";cellElm.childNodes[i].style.width=width
 cnt++;prev_i=i;}}}}
 CAL.arrange_column=function(column){for(var i=0;i<column.childNodes.length;i++){for(var j=0;j<column.childNodes[i].childNodes.length;j++){var el=column.childNodes[i].childNodes[j];if(YAHOO.util.Dom.hasClass(el,"empty")){el.parentNode.removeChild(el);j--;}}}
@@ -256,7 +256,8 @@ CAL.update_vcal=function(){var v=CAL.current_user_id;var callback={success:funct
 if(typeof GLOBAL_REGISTRY.freebusy_adjusted=='undefined'){GLOBAL_REGISTRY.freebusy_adjusted=new Object();}
 GLOBAL_REGISTRY.freebusy[v]=SugarVCalClient.parseResults(result.responseText,false);GLOBAL_REGISTRY.freebusy_adjusted[v]=SugarVCalClient.parseResults(result.responseText,true);SugarWidgetScheduler.update_time();}};var url="vcal_server.php?type=vfb&source=outlook&user_id="+v;YAHOO.util.Connect.asyncRequest('GET',url,callback,false);}
 CAL.fit_grid=function(control_call){if(CAL.view=='year'){return;}
-var day_width;var cal_width=document.getElementById("cal-width-helper").offsetWidth;var left_width=80;if(CAL.style=="basic"){if(CAL.view!="month"){left_width=20;}else
+var day_width;var cal_width=document.getElementById("cal-width-helper").offsetWidth;if(CAL.print){cal_width=800;}
+var left_width=80;if(CAL.style=="basic"){if(CAL.view!="month"){left_width=20;}else
 left_width=60;}
 if(CAL.view=="day"){day_width=parseInt((cal_width-left_width-10));if(typeof control_call=="undefined"||!control_call){setTimeout(function(){CAL.fit_grid(true);setTimeout(function(){CAL.fit_grid(true);},100);},100);}}else{day_width=parseInt((cal_width-left_width)/ 7);}
 var nodes=CAL.query("#cal-grid div.col");CAL.each(nodes,function(i,v){nodes[i].style.width=day_width+"px";});var nodes=CAL.query("#cal-grid .cal-basic .act_item");CAL.each(nodes,function(i,v){var days=nodes[i].getAttribute('days');nodes[i].style.width=(day_width*days-1)+"px";});document.getElementById("cal-grid").style.visibility="";}

@@ -153,7 +153,8 @@ $from = $current_user->getEmailInfo();
 ///////////////////////////////////////////////////////////////////////////////
 ////	XTEMPLATE ASSIGNMENT
 if($email_type == 'archived') {
-    $params_module_title=array($mod_strings['LBL_ARCHIVED_MODULE_NAME'], $focus->name);
+    if(isset($focus->name)) $params_module_title=array($mod_strings['LBL_ARCHIVED_EMAILS_CREATE'], $focus->name);
+    else $params_module_title=array($mod_strings['LBL_ARCHIVED_EMAILS_CREATE']);
 	echo getClassicModuleTitle('Emails', $params_module_title, true);
 	$xtpl=new XTemplate('modules/Emails/EditViewArchive.html');
 } else {

@@ -56,6 +56,9 @@ $viewdefs['Schedulers']['EditView'] = array(
                            array('adv_interval'),
                            array(array('name'=>'job_interval', 'label' => 'LBL_INTERVAL', 'customCode'=>'
 				<div id="job_interval_advanced">
+				<script>
+					var adv_interval = {$adv_interval};
+				</script>
 				<table cellpadding="0" cellspacing="0">
 					<tr>
 						<td>{$MOD.LBL_MINS}</td>

@@ -56,7 +56,7 @@
                 menu = getMenu($$),
                 o = sf.op,
                 $menu = $(menu);
-
+            //Bug#52225: Activate submenu while hs-activated
             if($$.parent().hasClass("hs-active")) {
                 $$.addClass("iefix");
                 setTimeout(function() {
@@ -177,16 +177,58 @@
     };
     
      sf.positionMenu = function($ul) {
-    	
+         //reset css generating by positionMenu
+        this.removeClass("rtl ltr");
+
     	if(this.offset() && this.parent().parent().hasClass('sf-menu') != true) {
-    	var viewPortHeight = $(window).height(),
-    		submenuHeight = this.outerHeight(),
-    		submenuTop = this.offset().top - $(document).scrollTop();
-    		
+            //reset position to origin
+            var is_rtl_theme = sf.op['rtl'] || sf.defaults['rtl'];
+            if(is_rtl_theme) {
+                this.css({
+                    'left' : 'auto',
+                    'right' : this.attr("right") ? this.attr("right") : this.css("right"),
+                    'top' : 0,
+                    'bottom' : 'auto'
+                });
+            } else {
+                this.css({
+                    'left' : this.attr("left") ? this.attr("left") : this.css("left"),
+                    'right' : 'auto',
+                    'top' : 0,
+                    'bottom' : 'auto'
+                });
+            }
+            var viewPortHeight = $(window).height(),
+                viewPortWidth = $(window).width(),
+                submenuHeight = this.outerHeight(),
+                megamenuWidth = (is_rtl_theme) ? this.parent().outerWidth() : sf.cssValue.call(this, 'left'),
+                submenuTop = this.offset().top - $(document).scrollTop(),
+                submenuLeft = this.offset().left - $(document).scrollLeft(),
+                megamenuLeft = this.parent().offset().left - $(document).scrollLeft(),
+                viewPortRSpace = (is_rtl_theme) ? viewPortWidth - megamenuLeft - megamenuWidth : viewPortWidth - submenuLeft,
+                viewPortLSpace = (is_rtl_theme) ? megamenuLeft : submenuLeft - megamenuWidth;
+
+            //Followings are required to optimize calculation in IE
+            if(megamenuWidth == 0) {
+                megamenuWidth = this.parent().outerWidth();
+                viewPortRSpace -= megamenuWidth;
+            }
     		if(submenuTop + submenuHeight > viewPortHeight) {
-    			this.css('top','auto');
-    			this.css('bottom','0px');
-    		} 
+    			this.css('top',viewPortHeight - submenuTop - submenuHeight);
+    		}
+            if(is_rtl_theme === false && viewPortRSpace < viewPortLSpace && viewPortRSpace < megamenuWidth) {
+                var _left = this.css('left');
+                this.attr("left", _left).css({
+                    'left': 'auto',
+                    'right': _left
+                }).addClass("rtl");
+            } else if(is_rtl_theme && viewPortRSpace > viewPortLSpace && viewPortLSpace < megamenuWidth) {
+                var _right = this.css('right');
+                this.attr("right", _right).css({
+                    'left': _right,
+                    'right': 'auto'
+                }).addClass("ltr");
+            }
     	}
     }
     /**
@@ -238,13 +280,26 @@
                 this.each(function(){
                     var $$ = $(this),
                         o = sf.op,
+                        is_rtl_theme = sf.op['rtl'] || sf.defaults['rtl'],
                         _id = $$.attr("ul-child-id") ? $$.attr("ul-child-id") : ($ul.attr('id')) ? $ul.attr('id') : o.megamenuID ? o.megamenuID + ++sf.counter : 'megamenu' + ++sf.counter,
                         _top = $$.position().top + $$.parent().offset().top - $(document).scrollTop(),
-                        _left = $$.offset().left - sf.cssValue.call($ul, "border-left-width"),
+                        _rtl_adjustment = $$.width() - $ul.width(),
+                        _left = $$.offset().left - sf.cssValue.call($ul, "border-left-width") - $(document).scrollLeft(),
+                        _right = $(window).width() - _left - $$.width() - sf.cssValue.call($ul, "border-right-width"),
                         $menu = $('ul.' + sf.c.menuClass + ':visible');
+
                     //handling sub-sliding menu
                     if($$.css('position') == 'static' || $$.parent().hasClass('megamenuSiblings')) {
-                        _left += $$.outerWidth() + sf.cssValue.call($ul, "border-right-width");
+
+                        //When the submenu is positioned to the left-hand side, the absolute position should be adjusted as expected
+                        if(is_rtl_theme) {
+                            _right = $ul.hasClass("ltr") ?_right - $ul.outerWidth()
+                                : _right + $$.outerWidth();
+                        } else {
+                            _left = $ul.hasClass("rtl") ? _left - $ul.outerWidth()
+                                : _left + $$.outerWidth();
+                        }
+                        _top += sf.cssValue.call($ul, "top");
                         $ul.addClass('sf-sub-modulelist').on('mouseover', function(){
                                 $$.addClass(sf.defaults['retainClass']);
                             }).on('mouseout', function(){
@@ -261,7 +316,8 @@
                     //append the item into the body element, and then save the id to restore back later
                     $('body').append($ul.attr("id", _id).css({
                         top: _top,
-                        left:_left,
+                        left: (is_rtl_theme) ? '' : _left,
+                        right: (is_rtl_theme) ? _right : '',
                         position: 'fixed'
                         }).on('mouseover',function(){
                             //maintaining the dropdown container
@@ -289,8 +345,15 @@
             } else {
                 //restore back the element to the original structure
                 this.each(function(){
-                    var _id = $(this).attr("ul-child-id");
-                    $(this).append($("body>#"+_id).off('mouseover mouseout'));
+                    var _id = $(this).attr("ul-child-id"),
+                        _elem = $("#"+_id);
+                    $(this).append(_elem.off('mouseover mouseout').css({
+                        'left' : '',
+                        'right' : '',
+                        'top' : '',
+                        'bottom' : '',
+                        'position': ''
+                    }));
                 });
             }
         }
@@ -322,8 +385,10 @@
         onBeforeShow: function() {},
         onShow: function() {},
         onHide: function() {},
-        firstOnClick: false
-        // true - open first level on click (like classic application menu)
+        firstOnClick: false,
+        // true - open first level on click (like classic application menu),
+        rtl: false
+        // true - if it is RTL theme
 
     };
     $.fn.extend({
@@ -341,8 +406,8 @@
             var o = sf.op,
             sh = sf.c.shadowClass + '-off',
             $ul = this.addClass(o.hoverClass).find('>ul:hidden').show().css('visibility', 'visible');
-            sf.IE7fix.call($ul);
             sf.positionMenu.call($ul);
+            sf.IE7fix.call($ul);
             o.onBeforeShow.call($ul);
             sf.IEfix.call(this, $ul);
             $ul.animate(o.animation, o.speed,

@@ -4922,6 +4922,27 @@ function save_relationship_changes($is_update, $exclude=array())
         //if it is not one of the above views then it should be implemented on the page level
         return true;
     }
+
+    /**
+    * Get owner field
+    *
+    * @return STRING
+    */
+    function getOwnerField()
+    {
+        if (isset($this->field_defs['assigned_user_id']))
+        {
+            return $this->assigned_user_id;
+        }
+
+        if (isset($this->field_defs['created_by']))
+        {
+            return $this->created_by;
+        }
+
+        return '';
+    }
+
     /**
     * Returns true of false if the user_id passed is the owner
     *

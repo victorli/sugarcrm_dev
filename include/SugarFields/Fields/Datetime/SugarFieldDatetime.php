@@ -195,13 +195,17 @@ class SugarFieldDatetime extends SugarFieldBase {
 
         //check to see if the date is in the proper format
         $user_dateFormat = $timedate->get_date_format();
-        if(isset($vardef['value'])  && !$timedate->check_matching_format( $vardef['value'],$user_dateFormat)){
+        if(!empty($vardef['value']) && !$timedate->check_matching_format( $vardef['value'],$user_dateFormat)){
 
             //date is not in proper user format, so get the SugarDateTiemObject and inject the vardef with a new element
             $sdt = $timedate->fromString($vardef['value'],$current_user);
 
-            //the new 'date_formatted_value' array element will be used in include/SugarFields/Fields/Datetime/DetailView.tpl if it exists
-            $vardef['date_formatted_value'] = $timedate->asUserDate($sdt,$current_user);
+            if (!empty($sdt))
+            {
+                //the new 'date_formatted_value' array element will be used in include/SugarFields/Fields/Datetime/DetailView.tpl if it exists
+                $vardef['date_formatted_value'] = $timedate->asUserDate($sdt,$current_user);
+            }
+
         }
 
         return $this->getSmartyView($parentFieldArray, $vardef, $displayParams, $tabindex, 'DetailView');

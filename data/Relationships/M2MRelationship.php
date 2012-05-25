@@ -309,15 +309,17 @@ class M2MRelationship extends SugarRelationship
         if ($this->linkIsLHS($link)) {
             $knownKey = $this->def['join_key_lhs'];
             $targetKey = $this->def['join_key_rhs'];
+            $relatedSeed = BeanFactory::getBean($this->getRHSModule());
             if (!empty($params['where']))
-                $whereTable = (empty($params['right_join_table_alias']) ? BeanFactory::getBean($this->getRHSModule())->table_name : $params['right_join_table_alias']);
+                $whereTable = (empty($params['right_join_table_alias']) ? $relatedSeed->table_name : $params['right_join_table_alias']);
         }
         else
         {
             $knownKey = $this->def['join_key_rhs'];
             $targetKey = $this->def['join_key_lhs'];
+            $relatedSeed = BeanFactory::getBean($this->getLHSModule());
             if (!empty($params['where']))
-                $whereTable = (empty($params['left_join_table_alias']) ? BeanFactory::getBean($this->getLHSModule())->table_name : $params['left_join_table_alias']);
+                $whereTable = (empty($params['left_join_table_alias']) ? $relatedSeed->table_name : $params['left_join_table_alias']);
         }
         $rel_table = $this->getRelationshipTable();
 
@@ -339,7 +341,8 @@ class M2MRelationship extends SugarRelationship
             $query = "SELECT $targetKey id FROM $from WHERE $where AND $rel_table.deleted=$deleted";
             //Limit is not compatible with return_as_array
             if (!empty($params['limit']) && $params['limit'] > 0) {
-                $query = DBManagerFactory::getInstance()->limitQuery($query, 0, $params['limit'], false, "", false);
+                $offset = isset($params['offset']) ? $params['offset'] : 0;
+                $query = DBManagerFactory::getInstance()->limitQuery($query, $offset, $params['limit'], false, "", false);
             }
             return $query;
         }

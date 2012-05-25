@@ -52,6 +52,11 @@ class Company extends Basic
  	 */
 	public function save($check_notify=false) 
  	{
+ 	    if(!empty($GLOBALS['resavingRelatedBeans']))
+ 	    {
+ 	        parent::save($check_notify);
+ 	        return $this;
+ 	    } 	    
 		$this->add_address_streets('billing_address_street');
 		$this->add_address_streets('shipping_address_street');
         $ori_in_workflow = empty($this->in_workflow) ? false : true;

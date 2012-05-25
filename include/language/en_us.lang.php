@@ -319,7 +319,7 @@ $app_list_strings = array (
         'Prof.' => 'Prof.',
       ),
   //time is in seconds; the greater the time the longer it takes;
-  'reminder_max_time' => 18000,
+  'reminder_max_time' => 90000,
   'reminder_time_options' => array( 60=> '1 minute prior',
                                   300=> '5 minutes prior',
                                   600=> '10 minutes prior',
@@ -1687,6 +1687,7 @@ $app_strings = array (
     'LBL_BILL_TO_ACCOUNT'=>'Bill to Account',
     'LBL_BILL_TO_CONTACT'=>'Bill to Contact',
     'LBL_BILLING_ADDRESS'=>'Billing Address',
+    'LBL_QUICK_CREATE_TITLE' => 'Quick Create',
     'LBL_BROWSER_TITLE' => 'SugarCRM - Commercial Open Source CRM',
     'LBL_BUGS'=>'Bugs',
     'LBL_BY' => 'by',
@@ -3245,7 +3246,6 @@ $app_list_strings ['emailTemplates_type_list'] = array (
     '' => '' ,
     'campaign' => 'Campaign' ,
     'email' => 'Email',
-    'workflow' => 'Workflow',
   );
 
 $app_list_strings ['emailTemplates_type_list_campaigns'] = array (

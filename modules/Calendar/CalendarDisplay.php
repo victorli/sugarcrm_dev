@@ -119,6 +119,8 @@ class CalendarDisplay {
 			$height = 20;
 		}
 		$ss->assign('basic_min_height',$height);
+		
+		$ss->assign('isPrint', $this->cal->isPrint() ? 'true': 'false');
 
 
 		if(count($cal->shared_ids)){
@@ -417,6 +419,8 @@ class CalendarDisplay {
 		$ss = new Sugar_Smarty();
 		$ss->assign("MOD",$cal_strings);
 		$ss->assign("view",$this->cal->view);
+
+		$ss->assign('print', $this->cal->isPrint());
 
 		if($controls){
 			$current_date = str_pad($this->cal->date_time->month,2,'0',STR_PAD_LEFT)."/".str_pad($this->cal->date_time->day,2,'0',STR_PAD_LEFT)."/".$this->cal->date_time->year;
