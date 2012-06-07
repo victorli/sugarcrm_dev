@@ -75,7 +75,6 @@ class Bug43653Test extends Sugar_PHPUnit_Framework_OutputTestCase
 
 		SugarTestTaskUtilities::removeAllCreatedTasks();
 		SugarTestAccountUtilities::removeAllCreatedAccounts();
-
         unset($GLOBALS['beanList']);
         unset($GLOBALS['beanFiles']);
     }
@@ -102,6 +101,3 @@ class Bug43653Test extends Sugar_PHPUnit_Framework_OutputTestCase
 	}
 
 }
-
-?>
-

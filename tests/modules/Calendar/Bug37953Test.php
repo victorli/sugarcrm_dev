@@ -56,7 +56,7 @@ class Bug37953Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function testCallAppearsWithinMonthView()
     {
-        $this->markTestSkipped('Skipping for now.  Communicated with Yuri about properly resolving this since eCalendar moves out the get_occurs_within_where clause to CalendarActivity.php');
+        $this->markTestIncomplete('Skipping for now.  Communicated with Yuri about properly resolving this since eCalendar moves out the get_occurs_within_where clause to CalendarActivity.php');
         global $timedate,$sugar_config,$DO_USER_TIME_OFFSET , $current_user;
 
         $DO_USER_TIME_OFFSET = true;

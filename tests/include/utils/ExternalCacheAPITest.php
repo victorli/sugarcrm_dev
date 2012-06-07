@@ -111,7 +111,42 @@ class ExternalCacheAPITest extends Sugar_PHPUnit_Framework_TestCase
             $this->_cacheValue2,
             sugar_cache_retrieve($this->_cacheKey2));
     }
-    
+
+    public function testStoreAndRetrieveWithTTL()
+    {
+        sugar_cache_put($this->_cacheKey1,$this->_cacheValue1, 100);
+        sugar_cache_put($this->_cacheKey2,$this->_cacheValue2, 100);
+        sugar_cache_put($this->_cacheKey3,$this->_cacheValue3,100);
+        $this->assertEquals(
+            $this->_cacheValue1,
+            sugar_cache_retrieve($this->_cacheKey1));
+        $this->assertEquals(
+            $this->_cacheValue2,
+            sugar_cache_retrieve($this->_cacheKey2));
+        $this->assertEquals(
+            $this->_cacheValue3,
+            sugar_cache_retrieve($this->_cacheKey3));
+    }
+
+    public function testStoreAndRetrieveWithTTLZero()
+    {
+        $sc = SugarCache::instance();
+        $cacheStub = $this->getMock(get_class($sc), array('_setExternal'));
+        $cacheStub->expects($this->never())
+                       ->method('_setExternal');
+        $cacheStub->set($this->_cacheKey1,$this->_cacheValue1,0);
+    }
+
+    public function testStoreAndRetrieveWithTTLNull()
+    {
+        $sc = SugarCache::instance();
+        $cacheStub = $this->getMock(get_class($sc), array('_setExternal'));
+        $cacheStub->expects($this->once())
+                       ->method('_setExternal');
+        $cacheStub->set($this->_cacheKey1,$this->_cacheValue1,null);
+    }
+
+
     /**
      * @ticket 40797
      */

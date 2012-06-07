@@ -97,7 +97,7 @@ class EmptyCustomDateFieldTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->markTestSkipped('causes all sorts of damage downhill');
+        $this->markTestIncomplete('causes all sorts of damage downhill');
         $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
         $beanList = array();
         $beanFiles = array();

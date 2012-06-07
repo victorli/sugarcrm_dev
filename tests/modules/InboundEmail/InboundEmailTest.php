@@ -53,7 +53,7 @@ class InboundEmailTest extends Sugar_PHPUnit_Framework_TestCase
     	global $inbound_account_id;
     	
     	// the email server is down, so this test doesn't work
-    	$this->markTestSkipped('Connection to mail server is down.');
+    	$this->markTestIncomplete('Connection to mail server is down.');
     	
     	if (empty($inbound_account_id)) {
         	$this->_setupTestUser();

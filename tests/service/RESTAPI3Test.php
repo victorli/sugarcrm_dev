@@ -59,8 +59,7 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
         $GLOBALS['mod_strings'] = return_module_language($GLOBALS['current_language'], 'Accounts');
         //Create an anonymous user for login purposes/
-        $this->_user = new User();
-        $this->_user->retrieve('1');
+        $this->_user = SugarTestUserUtilities::createAnonymousUser();
         $GLOBALS['current_user'] = $this->_user;
 
         self::$helperObject = new APIv3Helper();
@@ -105,6 +104,7 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $GLOBALS['db']->query("DELETE FROM calls WHERE name like 'UNIT TEST%' ");
         $GLOBALS['db']->query("DELETE FROM tasks WHERE name like 'UNIT TEST%' ");
         $GLOBALS['db']->query("DELETE FROM meetings WHERE name like 'UNIT TEST%' ");
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
 	}
 
     protected function _makeRESTCall($method,$parameters)
@@ -404,7 +404,7 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function testGetAvailableModules()
     {
-        $this->markTestSkipped('Will be updated week of June 21, 2010');
+        $this->markTestIncomplete('Will be updated week of June 21, 2010');
 
         $result = $this->_login();
         $this->assertTrue(!empty($result['id']) && $result['id'] != -1,$this->_returnLastRawResponse());

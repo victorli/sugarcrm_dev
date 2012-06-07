@@ -46,7 +46,7 @@ class SugarTestViewConvertLeadUtilities
     public static function createViewConvertLead($id = '')
     {
         $view_conv_lead = new ViewConvertLead();
-        require_once('modules/Leads/metadata/convertdefs.php');
+        require('modules/Leads/metadata/convertdefs.php');
         $view_conv_lead->defs = $viewdefs;
         self::$_createdViewConvertLeads[] = $view_conv_lead;
         return $view_conv_lead;

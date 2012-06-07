@@ -112,7 +112,7 @@ class FunctionSugarLinkTest extends Sugar_PHPUnit_Framework_TestCase
             $this->_smarty);
         
         $this->assertContains(
-            '<a href="' . ajaxLink('index.php?module=Dog&action=cat') . '" id="foo1" class="foo4" style="color:red;" scope="row">foo3</a>',$output);
+            '<a href="' . ajaxLink('index.php?module=Dog&action=cat') . '" id="foo1" class="foo4" style="color:red;" scope="row" title="foo2" module="Dog">foo3</a>',$output);
 
     }
 }

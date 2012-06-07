@@ -76,6 +76,36 @@ class MeetingTest extends Sugar_PHPUnit_Framework_TestCase
 		// Assert doc type default is 'Sugar'
     	$this->assertEquals($row['type'], 'Sugar');
 	}
+	
+	function testRecurringFromOutlook(){
+		$meeting = new Meeting();
+		$meeting->id = uniqid();
+		$meeting->name = 'Test Meeting Recurring';
+		
+		$meeting->recurring_source = 'Outlook';
+        // can't edit
+		$this->assertFalse($meeting->ACLAccess('edit'));
+		
+		$meeting->recurring_source = '';
+		// can edit
+		$this->assertTrue($meeting->ACLAccess('edit'));
+	}
+	
+	function testEmailReminder(){
+		$meeting = new Meeting();
+		$meeting->email_reminder_time = "20";
+		$meeting->name = 'Test Email Reminder';
+		$meeting->status = "Planned";
+		$meeting->date_start = $GLOBALS['timedate']->nowDb();
+		$meeting->save();
+		
+		require_once("modules/Activities/EmailReminder.php");
+		$er = new EmailReminder();
+		$to_remind = $er->getMeetingsForRemind();
+
+		$this->assertTrue(in_array($meeting->id,$to_remind));
+		$GLOBALS['db']->query("DELETE FROM meetings WHERE id = '{$meeting->id}'");
+	}
 
 }
 ?>

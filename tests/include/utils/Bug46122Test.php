@@ -131,9 +131,11 @@ class LogicHookMock extends LogicHook
 
     function process_hooks($hook_array, $event, $arguments)
     {
-        if($event == 'after_ui_frame')
-        {
-            $this->hookRunCount++;
+        if(!empty($hook_array[$event])){
+            if($event == 'after_ui_frame')
+            {
+                $this->hookRunCount++;
+            }
         }
     }
 }

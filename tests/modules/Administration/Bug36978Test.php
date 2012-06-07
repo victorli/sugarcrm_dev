@@ -42,7 +42,7 @@ var $moduleList;
 
 function setUp() 
 {
-    $this->markTestSkipped("Skipping unless otherwise specified");
+    $this->markTestIncomplete("Skipping unless otherwise specified");
     
     $admin = new User();
     $GLOBALS['current_user'] = $admin->retrieve('1');	

@@ -186,21 +186,17 @@ EOHTML
     /**
      * @dataProvider providerGetReminderTime
      */
-	public function testGetReminderTime(
-	    $view,
-	    $returnValue
-	    )
+	public function testGetReminderTime($view,$returnValue)
     {
+        $this->markTestSkipped("getReminderTime deprecated as of 6.5.0");
         $focus = new Call();
         
-        $this->assertEquals(
-            getReminderTime($focus,'','',$view),
-            $returnValue
-            );
+        $this->assertEquals( getReminderTime($focus,'','',$view),$returnValue);
     }
     
     public function testGetReminderTimeNonDefaultValue()
     {
+        $this->markTestSkipped("getReminderTime deprecated as of 6.5.0");
         $focus = new Call();
         $focus->reminder_time = '600';
         
@@ -220,17 +216,17 @@ EOHTML
     
     public function testGetReminderTimeNonDefaultValueDetailView()
     {
+        $this->markTestSkipped("getReminderTime deprecated as of 6.5.0");
+
         $focus = new Call();
         $focus->reminder_time = '300';
         
-        $this->assertEquals(
-            getReminderTime($focus,'','','DetailView'),
-            '5 minutes prior'
-            );
+        $this->assertEquals( getReminderTime($focus,'','','DetailView'),'5 minutes prior');
     }
     
     public function testGetReminderTimeFromRequest()
     {
+        $this->markTestSkipped("getReminderTime deprecated as of 6.5.0");
         $focus = new Call();
         $_REQUEST['reminder_time'] = '900';
         $_REQUEST['full_form'] = true;
@@ -254,6 +250,7 @@ EOHTML
     
     public function testGetReminderTimeFromValue()
     {
+        $this->markTestSkipped("getReminderTime deprecated as of 6.5.0");
         $focus = new Call();
         unset($focus->reminder_time);
         

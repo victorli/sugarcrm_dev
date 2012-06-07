@@ -34,7 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 require_once('modules/InboundEmail/InboundEmail.php');
 
 /**
@@ -63,13 +63,13 @@ class Bug43554Test extends Sugar_PHPUnit_Framework_TestCase
     public function getUrls()
     {
         return array(
-            array("http://localhost:8888/sugarent/index.php?composeLayoutId=composeLayout1&fromAccount=1&module=Emails&action=EmailUIAjax&emailUIAction=sendEmail&setEditor=1"),
-            array("http://localhost:8888/index.php?composeLayoutId=composeLayout1&fromAccount=1&module=Emails&action=EmailUIAjax&emailUIAction=sendEmail&setEditor=1"),
-            array(to_html("http://localhost:8888/index.php?composeLayoutId=composeLayout1&fromAccount=1&module=Emails&action=EmailUIAjax&emailUIAction=sendEmail&setEditor=1")),
-            array("/index.php?composeLayoutId=composeLayout1&fromAccount=1&module=Emails&action=EmailUIAjax&emailUIAction=sendEmail&setEditor=1"),
-            array("index.php?composeLayoutId=composeLayout1&fromAccount=1&module=Emails&action=EmailUIAjax&emailUIAction=sendEmail&setEditor=1"),
-            array("/?composeLayoutId=composeLayout1&fromAccount=1&module=Emails&action=EmailUIAjax&emailUIAction=sendEmail&setEditor=1"),
-            array("https://localhost/?composeLayoutId=composeLayout1&fromAccount=1&module=Emails&action=EmailUIAjax&emailUIAction=sendEmail&setEditor=1"),
+            array("http://localhost:8888/sugarent/index.php?composeLayoutId=composeLayout1&fromAccount=1&module=Emails&action=EmailUIAjax&emailUIAction=sendEmail&setEditor=1", TRUE),
+            array("http://localhost:8888/index.php?composeLayoutId=composeLayout1&fromAccount=1&module=Emails&action=EmailUIAjax&emailUIAction=sendEmail&setEditor=1", TRUE),
+            array(to_html("http://localhost:8888/index.php?composeLayoutId=composeLayout1&fromAccount=1&module=Emails&action=EmailUIAjax&emailUIAction=sendEmail&setEditor=1"), TRUE),
+            array("/index.php?composeLayoutId=composeLayout1&fromAccount=1&module=Emails&action=EmailUIAjax&emailUIAction=sendEmail&setEditor=1", TRUE),
+            array("index.php?composeLayoutId=composeLayout1&fromAccount=1&module=Emails&action=EmailUIAjax&emailUIAction=sendEmail&setEditor=1", FALSE),
+            array("/?composeLayoutId=composeLayout1&fromAccount=1&module=Emails&action=EmailUIAjax&emailUIAction=sendEmail&setEditor=1", TRUE),
+            array("https://localhost/?composeLayoutId=composeLayout1&fromAccount=1&module=Emails&action=EmailUIAjax&emailUIAction=sendEmail&setEditor=1", TRUE),
             );
     }
 
@@ -77,10 +77,17 @@ class Bug43554Test extends Sugar_PHPUnit_Framework_TestCase
      * @dataProvider getUrls
      * @param string $url
      */
-	function testEmailCleanup($url)
+	function testEmailCleanup($url,$imgShouldBeRemoved)
 	{
         $data = "Test: <img src=\"$url\">";
-        $res = str_replace("<img />", "", self::$ie->cleanContent($data));
-        $this->assertNotContains("<img", $res);
+        if($imgShouldBeRemoved)
+        {
+            $res = str_replace("<img />", "", SugarCleaner::cleanHtml($data));
+            $this->assertNotContains("<img", $res);
+        }
+        else
+        {
+            $this->assertContains("<img", SugarCleaner::cleanHtml($data));
+        }
 	}
 }

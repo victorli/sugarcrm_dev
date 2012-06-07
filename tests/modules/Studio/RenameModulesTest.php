@@ -210,7 +210,7 @@ class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testSubpanelRenaming()
     {
-        $this->markTestSkipped('Because of bug 47239,  Skipping test.');
+        $this->markTestIncomplete('Because of bug 47239,  Skipping test.');
 
         $module = 'Accounts';
         $newSingular = 'Account1';

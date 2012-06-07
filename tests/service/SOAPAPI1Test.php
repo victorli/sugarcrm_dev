@@ -107,7 +107,7 @@ class SOAPAPI1Test extends SOAPTestCase
 
 	public function testSearchBy()
     {
-        $this->markTestSkipped('SOAP call "search" is deprecated');
+        $this->markTestIncomplete('SOAP call "search" is deprecated');
 
 		$result = $this->_soapClient->call('search', array('user_name' => $GLOBALS['current_user']->user_name, 'password' => $GLOBALS['current_user']->user_hash, 'name' => $this->_contact->first_name));
     	$this->assertTrue(!empty($result) && count($result) > 0, "Incorrect number of results returned - Returned $result results. HTTP Response: ".$this->_soapClient->response);

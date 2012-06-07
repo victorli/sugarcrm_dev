@@ -59,7 +59,7 @@ class RepairCustomFieldsTest extends Sugar_PHPUnit_Framework_TestCase
     
     public function setUp()
     {
-        $this->markTestSkipped("Skipping for now...");
+        $this->markTestIncomplete("Skipping for now...");
         $this->field = get_widget('varchar');
         $this->field->id = $this->modulename.'foo_c';
         $this->field->name = 'foo_c';

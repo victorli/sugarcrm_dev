@@ -34,7 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 
 require_once('modules/InboundEmail/InboundEmail.php');
 
@@ -69,6 +69,6 @@ class Bug44009Test extends Sugar_PHPUnit_Framework_TestCase
      */
 	function testEmailCleanup($data, $res)
 	{
-        $this->assertEquals($res,$this->ie->cleanContent($data));
+        $this->assertEquals($res,SugarCleaner::cleanHtml($data));
 	}
 }

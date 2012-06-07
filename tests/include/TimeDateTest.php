@@ -123,16 +123,17 @@ class TimeDateTest extends Sugar_PHPUnit_Framework_TestCase
 	protected function _noUserCache()
 	{
 		$this->time_date->allow_cache = false;
+        sugar_cache_clear($this->time_date->get_date_time_format_cache_key(null));
 	}
 
 	protected function _setPrefs($datef, $timef, $tz)
 	{
-			$GLOBALS['current_user']->setPreference('datef', $datef);
-			$GLOBALS['current_user']->setPreference('timef', $timef);
-			$GLOBALS['current_user']->setPreference('timezone', $tz);
-			// new object to avoid TZ caching
-			$this->time_date = new TimeDate();
-			$this->_noUserCache();
+        $GLOBALS['current_user']->setPreference('datef', $datef);
+        $GLOBALS['current_user']->setPreference('timef', $timef);
+        $GLOBALS['current_user']->setPreference('timezone', $tz);
+        // new object to avoid TZ caching
+        $this->time_date = new TimeDate();
+        $this->_noUserCache();
 	}
 
 	protected function _dateOnly($datetime)

@@ -59,7 +59,7 @@ class Bug40233Test extends Sugar_PHPUnit_Framework_TestCase
 	
 	public function setUp()
     {
-        $this->markTestSkipped('Marking this skipped until we figure out why it is causing the SQL server connection to go away.');
+        $this->markTestIncomplete('Marking this skipped until we figure out why it is causing the SQL server connection to go away.');
     	$this->clear_database = true;
     	$this->remove_beans = true;
     	$this->saved_current_user = $GLOBALS['current_user'];

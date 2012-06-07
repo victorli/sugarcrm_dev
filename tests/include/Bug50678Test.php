@@ -95,6 +95,3 @@ class Bug50678Test extends Sugar_PHPUnit_Framework_TestCase
     }
 
 }
-
-?>
- 

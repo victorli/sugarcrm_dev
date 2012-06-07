@@ -42,7 +42,7 @@ class Bug35014Test extends Sugar_PHPUnit_Framework_TestCase
 	public function setUp()
     {
 
-        $this->markTestSkipped('SugarTestCampaignUtilities does not exist');
+        $this->markTestIncomplete('SugarTestCampaignUtilities does not exist');
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
         $campaign = SugarTestCampaignUtilities::createCampaign();
         $this->campaign_id = $campaign->id;

@@ -84,17 +84,17 @@ class Bug49543Test extends Sugar_PHPUnit_Framework_TestCase
         $insert[0] = $this->createMail($subj.'_new', 'from@test.com', 'to@test.com', '12', '2012-11-11 11:11:11', '12');
         
         //old trash item which should be updated
-        $insert[1] = $this->createMail($subj, 'from@test.com', 'to@test.com', '11', '2011-11-11 11:11:11', '11');
+        $insert[1] = $this->createMail($subj.'_old', 'from@test.com', 'to@test.com', '11', '2011-11-11 11:11:11', '11');
         
         $ie = new InboundEmail();
         $ie->id = $ie_id;
         
         $ie->setCacheValue($mailbox, $insert, '', '');
         
-        $fr = $GLOBALS['db']->fetchRow($GLOBALS['db']->query("SELECT ie_id FROM email_cache WHERE imap_uid = '11'"));
+        $fr = $GLOBALS['db']->fetchRow($GLOBALS['db']->query("SELECT subject FROM email_cache WHERE imap_uid = '11'"));
         
-        //if old trash items were updated successfully then 'ie_id' became empty
-        $this->assertEmpty($fr['ie_id']);
+        //if old trash item was updated successfully then 'subject' has new value
+        $this->assertTrue($fr['subject'] == $subj.'_old');
         
         $GLOBALS['db']->query(sprintf("DELETE FROM email_cache WHERE mbox = '%s'", $mailbox));
     }

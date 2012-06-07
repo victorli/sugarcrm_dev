@@ -42,7 +42,7 @@ class UserPreferenceTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->markTestSkipped('Mark this test as skipped for now');
+        $this->markTestIncomplete('Mark this test as skipped for now');
         $this->_user = SugarTestUserUtilities::createAnonymousUser();
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
     }
