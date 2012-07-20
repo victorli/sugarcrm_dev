@@ -59,19 +59,32 @@ class Bug42683Test extends SOAPTestCase
         $lead = SugarTestLeadUtilities::createLead();
 
         $this->_login();
-
         $result = $this->_soapClient->call(
             'get_entry_list',
             array(
                 'session' => $this->_sessionId,
                 "module_name" => 'Leads',
                 "query" => "leads.id = '{$lead->id}'",
-                '',
-                0,
-                array(),
-                array(array('name' =>  'email_addresses', 'value' => array('id', 'email_address', 'opt_out', 'primary_address'))),
-                )
-            );
+                'order_by' => '',
+                'offset' => 0,
+                'select_fields' => array(
+                    'name'
+                ),
+                'link_name_to_fields_array' => array(
+                    array(
+                        'name' => 'email_addresses',
+                        'value' => array(
+                            'id',
+                            'email_address',
+                            'opt_out',
+                            'primary_address'
+                        )
+                    )
+                ),
+                'max_results' => 1,
+                'deleted' => 0
+            )
+        );
 
         $this->assertEquals('primary_address', $result['relationship_list'][0][0]['records'][0][3]['name']);
 

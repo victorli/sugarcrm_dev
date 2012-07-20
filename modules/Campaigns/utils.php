@@ -175,6 +175,7 @@ function log_campaign_activity($identifier, $activity, $update=true, $clicked_ur
                 $data['activity_type']="'" .  $activity . "'";
                 $data['activity_date']="'" . TimeDate::getInstance()->nowDb() . "'";
                 $data['hits']=1;
+                $data['deleted']=0;
                 if (!empty($clicked_url_key)) {
                     $data['related_id']="'".$clicked_url_key."'";
                     $data['related_type']="'".'CampaignTrackers'."'";
@@ -236,6 +237,7 @@ function log_campaign_activity($identifier, $activity, $update=true, $clicked_ur
                 $data['list_id']="'" .  $row['list_id'] . "'";
                 $data['marketing_id']="'" .  $row['marketing_id'] . "'";
                 $data['hits']=1;
+                $data['deleted']=0;
                 if (!empty($clicked_url_key)) {
                     $data['related_id']="'".$clicked_url_key."'";
                     $data['related_type']="'".'CampaignTrackers'."'";
@@ -858,7 +860,7 @@ function write_mail_merge_log_entry($campaign_id,$pl_row) {
         $data['activity_date']="'" . TimeDate::getInstance()->nowDb() . "'";
         $data['list_id']="'" .  $GLOBALS['db']->quote($pl_row['prospect_list_id']) . "'";
         $data['hits']=1;
-
+        $data['deleted']=0;
         $insert_query="INSERT into campaign_log (" . implode(",",array_keys($data)) . ")";
         $insert_query.=" VALUES  (" . implode(",",array_values($data)) . ")";
         $GLOBALS['db']->query($insert_query);
@@ -873,9 +875,9 @@ function write_mail_merge_log_entry($campaign_id,$pl_row) {
         $current_date = $focus->db->now();
         $guidSQL = $focus->db->getGuidSQL();
 
-        $insert_query= "INSERT INTO campaign_log (id,activity_date, campaign_id, target_tracker_key,list_id, target_id, target_type, activity_type";
+        $insert_query= "INSERT INTO campaign_log (id,activity_date, campaign_id, target_tracker_key,list_id, target_id, target_type, activity_type, deleted";
         $insert_query.=')';
-        $insert_query.="SELECT {$guidSQL}, $current_date, plc.campaign_id,{$guidSQL},plp.prospect_list_id, plp.related_id, plp.related_type,'targeted' ";
+        $insert_query.="SELECT {$guidSQL}, $current_date, plc.campaign_id,{$guidSQL},plp.prospect_list_id, plp.related_id, plp.related_type,'targeted',0 ";
         $insert_query.="FROM prospect_lists INNER JOIN prospect_lists_prospects plp ON plp.prospect_list_id = prospect_lists.id";
         $insert_query.=" INNER JOIN prospect_list_campaigns plc ON plc.prospect_list_id = prospect_lists.id";
         $insert_query.=" WHERE plc.campaign_id='".$GLOBALS['db']->quote($focus->id)."'";

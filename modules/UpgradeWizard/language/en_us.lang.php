@@ -115,6 +115,7 @@ $mod_strings = array(
 	'LBL_UW_COMPLIANCE_MBSTRING'				=> 'MBStrings Module',
 	'LBL_UW_COMPLIANCE_MBSTRING_FUNC_OVERLOAD'	=> 'MBStrings mbstring.func_overload Parameter',
 	'LBL_UW_COMPLIANCE_MEMORY'					=> 'PHP Setting: Memory Limit',
+    'LBL_UW_COMPLIANCE_STREAM'                  => 'PHP Setting: Stream',
 	'LBL_UW_COMPLIANCE_MSSQL_MAGIC_QUOTES'		=> 'MS SQL Server & PHP Magic Quotes GPC',
 	'LBL_UW_COMPLIANCE_MYSQL'					=> 'Minimum MySQL Version',
     'LBL_UW_COMPLIANCE_DB'                      => 'Minimum Database Version',
@@ -307,4 +308,3 @@ $mod_strings = array(
 	'LBL_UPGRADE' => 'Upgrade' /*for 508 compliance fix*/,
 	'LBL_PROCESSING' => 'Processing' /*for 508 compliance fix*/,
 );
-?>

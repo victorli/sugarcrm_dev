@@ -43,7 +43,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * Contributor(s): ______________________________________..
  ********************************************************************************/
 
-
+require_once('include/SugarFields/SugarFieldHandler.php');
 require_once('modules/MySettings/TabController.php');
 
 $display_tabs_def = isset($_REQUEST['display_tabs_def']) ? urldecode($_REQUEST['display_tabs_def']) : '';
@@ -101,10 +101,20 @@ if(!$current_user->is_admin  && !$GLOBALS['current_user']->isAdminForModule('Use
 
 
     // Populate the custom fields
-    foreach ($focus->field_defs as $fieldName => $field ) {
-        if ( isset($field['source']) && $field['source'] == 'custom_fields' ) {
-            if ( isset($_POST[$fieldName]) ) {
-                $focus->$field = $_POST[$fieldName];
+    $sfh = new SugarFieldHandler();
+    foreach ($focus->field_defs as $fieldName => $field)
+    {
+        if (isset($field['source']) && $field['source'] == 'custom_fields')
+        {
+            $type = !empty($field['custom_type']) ? $field['custom_type'] : $field['type'];
+            $sf = $sfh->getSugarField($type);
+            if ($sf != null)
+            {
+                $sf->save($focus, $_POST, $fieldName, $field, '');
+            }
+            else
+            {
+                $GLOBALS['log']->fatal("Field '$fieldName' does not have a SugarField handler");
             }
         }
     }
@@ -144,22 +154,34 @@ if(!$current_user->is_admin  && !$GLOBALS['current_user']->isAdminForModule('Use
 	// if the user saved is a Regular User
 	if(!$focus->is_group && !$focus->portal_only){
 
-		foreach($focus->column_fields as $field)
-		{
-			if(isset($_POST[$field]))
-			{
-				$value = $_POST[$field];
-				$focus->$field = $value;
-			}
-		}
-		foreach($focus->additional_column_fields as $field)
-		{
-			if(isset($_POST[$field]))
-			{
-				$value = $_POST[$field];
-				$focus->$field = $value;
-			}
-		}
+        foreach ($focus->column_fields as $fieldName)
+        {
+            $field = $focus->field_defs[$fieldName];
+            $type = !empty($field['custom_type']) ? $field['custom_type'] : $field['type'];
+            $sf = $sfh->getSugarField($type);
+            if ($sf != null)
+            {
+                $sf->save($focus, $_POST, $fieldName, $field, '');
+            }
+            else
+            {
+                $GLOBALS['log']->fatal("Field '$fieldName' does not have a SugarField handler");
+            }
+        }
+        foreach ($focus->additional_column_fields as $fieldName)
+        {
+            $field = $focus->field_defs[$fieldName];
+            $type = !empty($field['custom_type']) ? $field['custom_type'] : $field['type'];
+            $sf = $sfh->getSugarField($type);
+            if ($sf != null)
+            {
+                $sf->save($focus, $_POST, $fieldName, $field, '');
+            }
+            else
+            {
+                $GLOBALS['log']->fatal("Field '$fieldName' does not have a SugarField handler");
+            }
+        }
 
 		$focus->is_group=0;
 		$focus->portal_only=0;

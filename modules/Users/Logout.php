@@ -63,8 +63,6 @@ session_destroy();
 
 LogicHook::initialize();
 $GLOBALS['logic_hook']->call_custom_logic('Users', 'after_logout');
-// go to the login screen.
-header("Location: index.php?action=Login&module=Users");
-sugar_cleanup(true);
 
-?>
+/** @var AuthenticationController $authController */
+$authController->authController->logout();

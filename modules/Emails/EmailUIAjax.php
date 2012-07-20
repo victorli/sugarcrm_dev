@@ -155,6 +155,8 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
         $GLOBALS['log']->debug("********** EMAIL 2.0 - Asynchronous - at: removeUploadedAttachment");
         $fileFromRequest = from_html($_REQUEST['file']);
         $fileGUID = substr($fileFromRequest, 0, 36);
+        // Bug52727: sanitize fileGUID to remove path components: /\.
+        $fileGUID = cleanDirName($fileGUID);
         $fileName = $email->et->userCacheDir . "/" . $fileGUID;
         $filePath = clean_path($fileName);
         unlink($filePath);
@@ -444,7 +446,21 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
     	        $email->parent_id = $modId;
                 $email->parent_type = $_REQUEST['parent_type'];
                 $email->status = 'read';
+
+                // BUG FIX BEGIN
+                // Bug 50979 - relating a message in group inbox removes message
+                if (empty($email->assigned_user_id))
+                {
+                    $email->setFieldNullable('assigned_user_id');
+                }
                 $email->save();
+                // Bug 50979 - reset assigned_user_id field defs
+                if (empty($email->assigned_user_id))
+                {
+                    $email->revertFieldNullable('assigned_user_id');
+                }
+                // BUG FIX END
+
                 $email->load_relationship($mod);
                 $email->$mod->add($modId);
     	    }
@@ -475,8 +491,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
         $GLOBALS['log']->debug("********** EMAIL 2.0 - Asynchronous - at: markEmail");
         if(isset($_REQUEST['uids']) && !empty($_REQUEST['uids']) &&
         isset($_REQUEST['type']) && !empty($_REQUEST['type']) &&
-        isset($_REQUEST['ieId']) && !empty($_REQUEST['ieId']) &&
-        isset($_REQUEST['folder']) && !empty($_REQUEST['folder'])) {
+        isset($_REQUEST['folder']) && !empty($_REQUEST['folder']) &&
+		isset($_REQUEST['ieId']) && (!empty($_REQUEST['ieId']) || (empty($_REQUEST['ieId']) && strpos($_REQUEST['folder'], 'sugar::') !== false))
+        ) {
         	$uid = $json->decode(from_html($_REQUEST['uids']));
         	$uids = array();
         	if(is_array($uid)) {
@@ -1556,8 +1573,8 @@ eoq;
         if(isset($_REQUEST['person']) && !empty($_REQUEST['person'])) {
             $person = $_REQUEST['person'];
         }
-        if(isset($_REQUEST['start']) && !empty($_REQUEST['start'])) {
-            $start = $_REQUEST['start'];
+        if(!empty($_REQUEST['start'])) {
+            $start = intval($_REQUEST['start']);
         } else {
         	$start = 0;
         }
@@ -1576,11 +1593,11 @@ eoq;
 	        $time = microtime(true);
 
 	        //Handle sort and order requests
-	        $sort = !empty($_REQUEST['sort']) ? $_REQUEST['sort'] : "id";
+	        $sort = !empty($_REQUEST['sort']) ? $ie->db->getValidDBName($_REQUEST['sort']) : "id";
 	        $sort = ($sort == 'bean_id') ? 'id' : $sort;
 	        $sort = ($sort == 'email') ? 'email_address' : $sort;
 	        $sort = ($sort == 'name') ? 'last_name' : $sort;
-	        $direction = !empty($_REQUEST['dir']) ? $_REQUEST['dir'] : "asc";
+	        $direction = !empty($_REQUEST['dir']) && in_array(strtolower($_REQUEST['dir']), array("asc", "desc")) ? $_REQUEST['dir'] : "asc";
 	        $order = ( !empty($sort) && !empty($direction) ) ? " ORDER BY {$sort} {$direction}" : "";
 
 	        $r = $ie->db->limitQuery($qArray['query'] . " $order ", $start, 25, true);

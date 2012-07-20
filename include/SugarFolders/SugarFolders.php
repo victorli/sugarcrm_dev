@@ -344,7 +344,7 @@ ENDQ;
 				  " JOIN emails_text on emails.id = emails_text.email_id
                   WHERE folders_rel.folder_id = '{$folderId}' AND folders_rel.deleted = 0 AND emails.deleted = 0";
 			if ($this->is_group) {
-				$q = $q . " AND emails.assigned_user_id is null";
+				$q = $q . " AND (emails.assigned_user_id is null or emails.assigned_user_id = '')";
 			}
 			$r = $this->db->limitQuery($q . $order, $start, $pageSize);
 		}
@@ -400,7 +400,7 @@ ENDQ;
 			$q = "SELECT count(*) c FROM folders_rel JOIN emails ON emails.id = folders_rel.polymorphic_id" .
 			" WHERE folder_id = '{$folderId}' AND folders_rel.deleted = 0 AND emails.deleted = 0" ;
 			if ($this->is_group) {
-				$q .= " AND emails.assigned_user_id IS null";
+				$q .= " AND (emails.assigned_user_id is null or emails.assigned_user_id = '')";
 			}
 			$r = $this->db->query ( $q ) ;
 		}
@@ -426,7 +426,7 @@ ENDQ;
             $q = "SELECT count(*) c FROM folders_rel fr JOIN emails on fr.folder_id = '{$folderId}' AND fr.deleted = 0 " .
                "AND fr.polymorphic_id = emails.id AND emails.status = 'unread' AND emails.deleted = 0" ;
             if ($this->is_group) {
-                $q .= " AND emails.assigned_user_id IS null";
+                $q .= " AND (emails.assigned_user_id is null or emails.assigned_user_id = '')";
             }
             $r = $this->db->query ( $q ) ;
         }

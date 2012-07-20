@@ -53,6 +53,12 @@ class SugarWidgetSubPanelTopComposeEmailButton extends SugarWidgetSubPanelTopBut
 
 	function display($defines)
 	{
+		if((ACLController::moduleSupportsACL($defines['module'])  && !ACLController::checkAccess($defines['module'], 'edit', true) ||
+			$defines['module'] == "Activities" & !ACLController::checkAccess("Emails", 'edit', true))){
+			$temp = '';
+			return $temp;
+		}
+		
 		global $app_strings,$current_user,$sugar_config,$beanList,$beanFiles;
 		$title = $app_strings['LBL_COMPOSE_EMAIL_BUTTON_TITLE'];
 		//$accesskey = $app_strings['LBL_COMPOSE_EMAIL_BUTTON_KEY'];

@@ -59,11 +59,11 @@ class SugarWidgetSubPanelTopCreateCampaignLogEntryButton extends SugarWidgetSubP
         $this->module = 'Campaigns';//'CampaignLog';
         $this->module_name = 'Campaigns';
 
-       
-        $this->button_properties = $widget_data;        
-        
-        
-        
+
+        $this->button_properties = $widget_data;
+
+
+
         $focus = $widget_data['focus'];
         if(ACLController::moduleSupportsACL($widget_data['module']) && !ACLController::checkAccess($widget_data['module'], 'list', true)){
             $button = ' <input type="button" name="' . $this->getWidgetId() . '" id="' . $this->getWidgetId() . '" class="button"' . "\n"
@@ -105,8 +105,8 @@ class SugarWidgetSubPanelTopCreateCampaignLogEntryButton extends SugarWidgetSubP
         }
         $return_module = $_REQUEST['module'];
         $return_action = 'SubPanelViewer';
-        $return_id = $_REQUEST['record']; 
-        
+        $return_id = $_REQUEST['record'];
+
         //field_to_name_array
         $fton_array= array('id' => 'subpanel_id');
         if(isset($widget_data['field_to_name_array']) && is_array($widget_data['field_to_name_array'])){
@@ -130,17 +130,12 @@ class SugarWidgetSubPanelTopCreateCampaignLogEntryButton extends SugarWidgetSubP
 
         if (is_array($this->button_properties) && !empty($this->button_properties['add_to_passthru_data'])) {
             $popup_request_data['passthru_data']= array_merge($popup_request_data['passthru_data'],$this->button_properties['add_to_passthru_data']);
-        }       
-        
+        }
+
         if (is_array($this->button_properties) && !empty($this->button_properties['add_to_passthru_data']['return_type'])) {
-            
+
             if ($this->button_properties['add_to_passthru_data']['return_type']=='report') {
                 $initial_filter = "&module_name=". urlencode($widget_data['module']);
-            }
-            if ($this->button_properties['add_to_passthru_data']['return_type']=='addtoprospectlist') {
-                if (isset($widget_data['query'])) {
-                    $popup_request_data['passthru_data']['query']=$widget_data['query'];
-                }
             }
         }
         $json_encoded_php_array = $this->_create_json_encoded_popup_request($popup_request_data);
@@ -150,6 +145,4 @@ class SugarWidgetSubPanelTopCreateCampaignLogEntryButton extends SugarWidgetSubP
             . ' value="' . $this->value . "\"\n"
             . " onclick='open_popup(\"$this->module_name\",600,400,\"$initial_filter\",true,true,$json_encoded_php_array,\"$popup_mode\",$create);' /></form>\n";
     }
-}        
-        
-?>
+}

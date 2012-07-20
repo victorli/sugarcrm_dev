@@ -110,7 +110,7 @@
 			{if $prerow}
 				<td nowrap="nowrap" width="43px" class="selectCol td_alt">
 				<div style="width:43px">
-					{sugar_action_menu id=$link_select_id params=$selectLink theme="Sugar"}
+					{sugar_action_menu id=$link_select_id params=$selectLink}
 				</div>
 				</td>
 				<td class='td_alt' nowrap="nowrap" width='1%'>&nbsp;</td>

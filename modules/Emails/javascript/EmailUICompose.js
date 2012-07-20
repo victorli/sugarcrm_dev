@@ -767,6 +767,7 @@ SE.composeLayout = {
     bccHidden : true,
     outboundAccountErrors : null,
     loadedTinyInstances : {}, //Tracks which tinyMCE editors have initalized with html content.
+    subjectMaxlen : 255,
 
     showAddressDetails : function(e) {
     	var linkElement = document.getElementById("More"+e.id);
@@ -1638,6 +1639,7 @@ SE.composeLayout = {
      * @param int Instance index
      */
     saveDraft : function(tinyInstance) {
+        SE.tinyInstances.currentHtmleditor = 'htmleditor' + tinyInstance;
         this.sendEmail(tinyInstance, true);
     },
 
@@ -1808,7 +1810,7 @@ SE.composeLayout = {
         var composeOptionsFormName = "composeOptionsForm" + idx;
 
 
-        var t = SE.util.getTiny(SE.tinyInstances.currentHtmleditor);
+        var t = SE.util.getTiny('htmleditor' + idx);
         if (t != null || typeof(t) != "undefined") {
             var html = t.getContent();
         } else {

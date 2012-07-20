@@ -389,6 +389,7 @@ class InboundEmail extends SugarBean {
 
 				if(!empty($line)) {
 					$key = trim(substr($line, 0, strpos($line, ":")));
+					$key = strip_tags($key);
 					$value = trim(substr($line, strpos($line, ":") + 1));
 					$value = to_html($value);
 
@@ -872,7 +873,7 @@ class InboundEmail extends SugarBean {
 						case "mailsize":
 						case "senddate":
 						case "mbox":
-                        case "ie_id":
+						case "ie_id":
 						break;
 
 						default:
@@ -3427,12 +3428,12 @@ class InboundEmail extends SugarBean {
 				// we will take either 'attachments' or 'inline'
 				if(strtolower($part->disposition) == 'attachment' || ((strtolower($part->disposition) == 'inline') && $part->type != 0)) {
 					$attach = $this->getNoteBeanForAttachment($emailId);
-					$fname = $this->handleEncodedFilename($this->retrieveAttachmentNameFromStructure($part->dparameters));
+					$fname = $this->handleEncodedFilename($this->retrieveAttachmentNameFromStructure($part));
 
 					if(!empty($fname)) {//assign name to attachment
 						$attach->name = $fname;
 					} else {//if name is empty, default to filename
-						$attach->name = urlencode($this->retrieveAttachmentNameFromStructure($part->dparameters));
+						$attach->name = urlencode($this->retrieveAttachmentNameFromStructure($part));
 					}
 					$attach->filename = $attach->name;
 					if (empty($attach->filename)) {
@@ -3512,17 +3513,16 @@ class InboundEmail extends SugarBean {
 	}
 
 	/**
-	 * Return the filename of the attachment by examining the dparameters returned from imap_fetch_structure which
-	 * represet the content-disposition of the MIME header.
-	 *
-	 * @param array $dparamaters
+	 * Return the filename of the attachment by examining the dparameters or parameters returned from imap_fetch_structure
+     *
+	 * @param object $part
 	 * @return string
 	 */
-	function retrieveAttachmentNameFromStructure($dparamaters)
+	function retrieveAttachmentNameFromStructure($part)
 	{
 	   $result = "";
 
-	   foreach ($dparamaters as $k => $v)
+	   foreach ($part->dparamaters as $k => $v)
 	   {
 	       if( strtolower($v->attribute) == 'filename')
 	       {
@@ -3531,6 +3531,15 @@ class InboundEmail extends SugarBean {
 	       }
 	   }
 
+		if (empty($result)) {
+			foreach ($part->parameters as $k => $v) {
+				if (strtolower($v->attribute) == 'name') {
+					$result = $v->value;
+					break;
+				}
+			}
+		}
+		
 	   return $result;
 
     }
@@ -3981,10 +3990,13 @@ class InboundEmail extends SugarBean {
 			// handle UTF-8/charset encoding in the ***headers***
 			global $db;
 			$email->name			= $this->handleMimeHeaderDecode($header->subject);
-			$email->date_start = (!empty($unixHeaderDate)) ? $timedate->asUserDate($unixHeaderDate) : "";
-			$email->time_start = (!empty($unixHeaderDate)) ? $timedate->asUserTime($unixHeaderDate) : "";
 			$email->type = 'inbound';
-			$email->date_created = (!empty($unixHeaderDate)) ? $timedate->asUser($unixHeaderDate) : "";
+			if(!empty($unixHeaderDate)) {
+			    $email->date_sent = $timedate->asUser($unixHeaderDate);
+			    list($email->date_start, $email->time_start) = $timedate->split_date_time($email->date_sent);
+			} else {
+			    $email->date_start = $email->time_start = $email->date_sent = "";
+			}
 			$email->status = 'unread'; // this is used in Contacts' Emails SubPanel
 			if(!empty($header->toaddress)) {
 				$email->to_name	 = $this->handleMimeHeaderDecode($header->toaddress);
@@ -5052,8 +5064,15 @@ eoq;
 
 					// when you move from My Emails to Group Folder, Assign To field for the Email should become null
 					if ($fromSugarFolder->is_dynamic && $toSugarFolder->is_group) {
+                        // Bug 50972 - assigned_user_id set to empty string not true null
+                        // Modifying the field defs in just this one place to allow
+                        // a true null since this is what is expected when reading
+                        // inbox folders
+                        $email->setFieldNullable('assigned_user_id');
 						$email->assigned_user_id = "";
 						$email->save();
+                        $email->revertFieldNullable('assigned_user_id');
+                        // End fix 50972
 						if (!$toSugarFolder->checkEmailExistForFolder($id)) {
 							$fromSugarFolder->deleteEmailFromAllFolder($id);
 							$toSugarFolder->addBean($email);

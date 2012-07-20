@@ -53,6 +53,10 @@ public function setUp()
         $this->markTestSkipped('imagecreatetruecolor function not found.  skipping test');
         return;
     }
+    if (empty($GLOBALS['sugar_config']['use_sprites']))
+    {
+        $GLOBALS['sugar_config']['use_sprites'] = null;
+    }
 
     $this->useSprites = $GLOBALS['sugar_config']['use_sprites'];
     $GLOBALS['sugar_config']['use_sprites'] = true;

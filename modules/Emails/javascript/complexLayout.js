@@ -151,7 +151,11 @@ function complexLayoutInit() {
 			var listV =  this.getInnerLayout2Rows();
 			listV.set("height", tp.get("element").clientHeight - 25);
 			listV.render();
-            
+            tp.on("activeTabChange", function ()
+            {
+             	se.complexLayout.resize();
+            });
+
             se.leftTabs = new YAHOO.widget.TabView("lefttabs");
             var folderTab = new YAHOO.widget.Tab({ 
 				label: app_strings.LBL_EMAIL_FOLDERS_SHORT,

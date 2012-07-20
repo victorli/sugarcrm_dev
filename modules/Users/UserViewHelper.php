@@ -442,9 +442,19 @@ class UserViewHelper {
         } else {
             $publish_url .= '&user_name='.$this->bean->user_name;
         }
+
+        $ical_url = $sugar_config['site_url'].'/ical_server.php?type=ics&key=<span id="ical_pub_key_span">'.$this->bean->getPreference('calendar_publish_key' ) . '</span>';
+        if (! empty($this->bean->email1))
+        {
+            $ical_url .= '&email='.$this->bean->email1;
+        } else
+        {
+            $ical_url .= '&user_name='.$this->bean->user_name;
+        }
+
         $this->ss->assign("CALENDAR_PUBLISH_URL", $publish_url);
         $this->ss->assign("CALENDAR_SEARCH_URL", $sugar_config['site_url'].'/vcal_server.php/type=vfb&email=%NAME%@%SERVER%');
-        $this->ss->assign("CALENDAR_ICAL_URL", $sugar_config['site_url'].'/ical_server.php?type=ics&key=%MYSECRETKEY%&user_name=%MYUSERNAME%');
+        $this->ss->assign("CALENDAR_ICAL_URL", $ical_url);
 
         $this->ss->assign("SETTINGS_URL", $sugar_config['site_url']);
 

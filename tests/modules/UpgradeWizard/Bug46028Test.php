@@ -53,6 +53,11 @@ var $opportunitiesSearchFields;
 
 public function setUp()
 {
+    $beanList = array();
+    $beanFiles = array();
+    require('include/modules.php');
+    $GLOBALS['beanList'] = $beanList;
+    $GLOBALS['beanFiles'] = $beanFiles;
     if(file_exists('custom/modules/Opportunities/metadata/SearchFields.php'))
     {
         $this->customOpportunitiesSearchFields = file_get_contents('custom/modules/Opportunities/metadata/SearchFields.php');

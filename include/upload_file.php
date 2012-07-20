@@ -508,6 +508,74 @@ class UploadStream
     protected static $upload_dir;
 
     /**
+     * Method checks Suhosin restrictions to use streams in php
+     *
+     * @static
+     * @return bool is allowed stream or not
+     */
+    public static function getSuhosinStatus()
+    {
+        // looks like suhosin patch doesn't block protocols, only suhosin extension (tested on FreeBSD)
+        // if suhosin is not installed it is okay for us
+        if (extension_loaded('suhosin') == false)
+        {
+            return true;
+        }
+        $configuration = ini_get_all('suhosin', false);
+
+        // suhosin simulation is okay for us
+        if ($configuration['suhosin.simulation'] == true)
+        {
+            return true;
+        }
+
+        // checking that UploadStream::STREAM_NAME is allowed by white list
+        $streams = $configuration['suhosin.executor.include.whitelist'];
+        if ($streams != '')
+        {
+            $streams = explode(',', $streams);
+            foreach($streams as $stream)
+            {
+                $stream = explode('://', $stream, 2);
+                if (count($stream) == 1)
+                {
+                    if ($stream[0] == UploadStream::STREAM_NAME)
+                    {
+                        return true;
+                    }
+                }
+                elseif ($stream[1] == '' && $stream[0] == UploadStream::STREAM_NAME)
+                {
+                    return true;
+                }
+            }
+
+            $GLOBALS['log']->fatal('Stream ' . UploadStream::STREAM_NAME . ' is not listed in suhosin.executor.include.whitelist and blocked because of it');
+            return false;
+        }
+
+        // checking that UploadStream::STREAM_NAME is not blocked by black list
+        $streams = $configuration['suhosin.executor.include.blacklist'];
+        if ($streams != '')
+        {
+            $streams = explode(',', $streams);
+            foreach($streams as $stream)
+            {
+                $stream = explode('://', $stream, 2);
+                if ($stream[0] == UploadStream::STREAM_NAME)
+                {
+                    $GLOBALS['log']->fatal('Stream ' . UploadStream::STREAM_NAME . 'is listed in suhosin.executor.include.blacklist and blocked because of it');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        $GLOBALS['log']->fatal('Suhosin blocks all streams, please define ' . UploadStream::STREAM_NAME . ' stream in suhosin.executor.include.whitelist');
+        return false;
+    }
+
+    /**
      * Get upload directory
      * @return string
      */

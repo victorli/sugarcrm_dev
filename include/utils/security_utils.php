@@ -49,7 +49,7 @@ $modules_exempt_from_availability_check['History']='History';
 $modules_exempt_from_availability_check['Calls']='Calls';
 $modules_exempt_from_availability_check['Meetings']='Meetings';
 $modules_exempt_from_availability_check['Tasks']='Tasks';
-$modules_exempt_from_availability_check['Notes']='Notes';
+//$modules_exempt_from_availability_check['Notes']='Notes';
 
 $modules_exempt_from_availability_check['CampaignLog']='CampaignLog';
 $modules_exempt_from_availability_check['CampaignTrackers']='CampaignTrackers';

@@ -41,25 +41,26 @@
 class Bug51596Test extends Sugar_PHPUnit_Framework_TestCase
 {
     /**
-* @var Contact
-*/
+    * @var Contact
+    */
     protected $contact1,
         $contact2;
 
     /**
-* @var Account
-*/
+     * @var Account
+     * @var Account
+     */
     protected $account1,
         $account2;
 
     protected $field_name = 'bug51596test';
 
     /**
-* Sets up the fixture, for example, open a network connection.
-* This method is called before a test is executed.
-*
-* @return void
-*/
+    * Sets up the fixture, for example, open a network connection.
+    * This method is called before a test is executed.
+    *
+    * @return void
+    */
     public function setUp()
     {
         $this->markTestIncomplete("Disabling broken test on CI. Working with Sergei to get it fixed");
@@ -71,15 +72,15 @@ class Bug51596Test extends Sugar_PHPUnit_Framework_TestCase
             'Contact' => array(
                 'fields' => array(
                     $this->field_name => array (
-                        'name' => $this->field_name,
-                        'rname' => 'name',
-                        'id_name' => 'account_id',
+                        'name'      => $this->field_name,
+                        'rname'     => 'name',
+                        'id_name'   => 'account_id',
                         'join_name' => 'accounts',
-                        'type' => 'relate',
-                        'link' => 'accounts',
-                        'table' => 'accounts',
-                        'module' => 'Accounts',
-                        'source' => 'non-db',
+                        'type'      => 'relate',
+                        'link'      => 'accounts',
+                        'table'     => 'accounts',
+                        'module'    => 'Accounts',
+                        'source'    => 'non-db',
                     ),
                 ),
             ),
@@ -118,17 +119,17 @@ class Bug51596Test extends Sugar_PHPUnit_Framework_TestCase
 
         // will update "do_not_call" attribute of found contacts
         $_REQUEST['massupdate'] = 'true';
-        $_REQUEST['entire'] = true;
-        $_REQUEST['module'] = 'Contacts';
-        $_POST['do_not_call'] = 1;
+        $_REQUEST['entire']     = true;
+        $_REQUEST['module']     = 'Contacts';
+        $_POST['do_not_call']   = 1;
     }
 
     /**
-* Tears down the fixture, for example, close a network connection.
-* This method is called after a test is executed.
-*
-* @return void
-*/
+     * Tears down the fixture, for example, close a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return void
+     */
     public function tearDown()
     {
         unset($_REQUEST['massupdate'], $_REQUEST['entire'], $_REQUEST['module'], $_POST['do_not_call']);
@@ -159,11 +160,11 @@ class Bug51596Test extends Sugar_PHPUnit_Framework_TestCase
     }
 
     /**
-* Verifies that objects are found and updated by name of custom related
-* object
-*
-* @return void
-*/
+     * Verifies that objects are found and updated by name of custom related
+     * object
+     *
+     * @return void
+     */
     public function testSearchAndUpdate()
     {
         $contact = new Contact();
@@ -174,7 +175,7 @@ class Bug51596Test extends Sugar_PHPUnit_Framework_TestCase
 
         // search for contacts related to Bug51596Test_Account1 (e.g. Contact1)
         $current_query_by_page = array (
-            'searchFormTab' => 'basic_search',
+            'searchFormTab'              => 'basic_search',
             $this->field_name . '_basic' => 'Bug51596Test_Account1',
         );
 
@@ -193,14 +194,14 @@ class Bug51596Test extends Sugar_PHPUnit_Framework_TestCase
     }
 
     /**
-* Utility function. Registers vardef extension for specified module.
-*
-* @static
-* @param string $module
-* @param string $filename
-* @param array $data
-* @return void
-*/
+     * Utility function. Registers vardef extension for specified module.
+     *
+     * @static
+     * @param string $module
+     * @param string $filename
+     * @param array $data
+     * @return void
+     */
     protected static function registerExtension($module, $filename, array $data)
     {
         $directory = 'custom/Extension/modules/' . $module . '/Ext/Vardefs';
@@ -224,13 +225,13 @@ HERE;
     }
 
     /**
-* Utility function. Unregisters vardef extension for specified module.
-*
-* @static
-* @param string $module
-* @param string $filename
-* @return void
-*/
+     * Utility function. Unregisters vardef extension for specified module.
+     *
+     * @static
+     * @param string $module
+     * @param string $filename
+     * @return void
+     */
     protected static function unregisterExtension($module, $filename)
     {
         $directory = 'custom/Extension/modules/' . $module . '/Ext/Vardefs';
@@ -247,15 +248,16 @@ HERE;
     }
 
     /**
-* Utility function. Rebuilds extensions for specified module.
-*
-* @static
-* @param string $module
-* @return void
-*/
+     * Utility function. Rebuilds extensions for specified module.
+     *
+     * @static
+     * @param string $module
+     * @return void
+     */
     protected static function rebuildExtensions($module)
     {
         $rc = new RepairAndClear();
         $rc->repairAndClearAll(array('rebuildExtensions'), array($module), false, false);
     }
+
 }

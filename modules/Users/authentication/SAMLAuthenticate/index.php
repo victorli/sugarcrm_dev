@@ -25,10 +25,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
+require_once('modules/Users/authentication/SAMLAuthenticate/lib/onelogin/saml.php');
 require(get_custom_file_if_exists('modules/Users/authentication/SAMLAuthenticate/settings.php'));
-require('modules/Users/authentication/SAMLAuthenticate/lib/onelogin/saml.php');
-  
-$authrequest = new SamlAuthRequest(get_saml_settings());
+
+$authrequest = new SamlAuthRequest($settings);
 $url = $authrequest->create();
 
 header("Location: $url");

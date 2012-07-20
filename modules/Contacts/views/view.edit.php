@@ -76,6 +76,10 @@ class ContactsViewEdit extends ViewEdit
                $this->ev->focus->portal_password = '';
                $this->ev->focus->portal_acitve = 0;
            }
+           else {
+               $this->ev->fieldDefs['portal_password']['value'] = '';
+               $this->ev->fieldDefs['portal_password1']['value'] = '';               
+           }
 		   echo getVersionedScript('modules/Contacts/Contact.js');
 		   echo '<script language="javascript">';
 		   echo 'addToValidateComparison(\'EditView\', \'portal_password\', \'varchar\', false, SUGAR.language.get(\'app_strings\', \'ERR_SQS_NO_MATCH_FIELD\') + SUGAR.language.get(\'Contacts\', \'LBL_PORTAL_PASSWORD\'), \'portal_password1\');';

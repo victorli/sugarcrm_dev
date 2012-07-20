@@ -285,6 +285,9 @@ class SugarWebServiceImplv4 extends SugarWebServiceImplv3_1 {
         if($offset == '' || $offset == -1){
             $offset = 0;
         } // if
+        if($deleted){
+            $deleted = -1;
+        }
         if($using_cp){
             $response = $seed->retrieveTargetList($query, $select_fields, $offset,-1,-1,$deleted);
         }else

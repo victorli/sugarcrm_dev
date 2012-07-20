@@ -481,12 +481,14 @@ class SugarWidgetFieldDateTime extends SugarWidgetReportField
 		return parent :: querySelect($layout_def)." \n";
 	}
 	function & displayListday(& $layout_def) {
-		return parent:: displayListPlain($layout_def);
+		$value = parent:: displayListPlain($layout_def);
+		return $value;
 	}
 
 	function & displayListyear(& $layout_def) {
 		global $app_list_strings;
-    	return parent:: displayListPlain($layout_def);
+    	$value = parent:: displayListPlain($layout_def);
+    	return $value;
 	}
 
 	function displayListmonth($layout_def)

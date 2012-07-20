@@ -64,6 +64,7 @@ $job_strings = array (
 	4 => 'trimTracker',
 	/*4 => 'securityAudit()',*/
     12 => 'sendEmailReminders',
+    14 => 'cleanJobQueue',
 
 );
 
@@ -437,6 +438,26 @@ function sendEmailReminders(){
 }
 
 
+
+function cleanJobQueue($job)
+{
+    $td = TimeDate::getInstance();
+    // soft delete all jobs that are older than cutoff
+    $soft_cutoff = 7;
+    if(isset($GLOBALS['sugar_config']['jobs']['soft_lifetime'])) {
+        $soft_cutoff = $GLOBALS['sugar_config']['jobs']['soft_lifetime'];
+    }
+    $soft_cutoff_date = $job->db->quoted($td->getNow()->modify("- $soft_cutoff days")->asDb());
+    $job->db->query("UPDATE {$job->table_name} SET deleted=1 WHERE status='done' AND date_modified < ".$job->db->convert($soft_cutoff_date, 'datetime'));
+    // hard delete all jobs that are older than hard cutoff
+    $hard_cutoff = 21;
+    if(isset($GLOBALS['sugar_config']['jobs']['hard_lifetime'])) {
+        $hard_cutoff = $GLOBALS['sugar_config']['jobs']['hard_lifetime'];
+    }
+    $hard_cutoff_date = $job->db->quoted($td->getNow()->modify("- $hard_cutoff days")->asDb());
+    $job->db->query("DELETE FROM {$job->table_name} WHERE status='done' AND date_modified < ".$job->db->convert($hard_cutoff_date, 'datetime'));
+    return true;
+}
 
 if (file_exists('custom/modules/Schedulers/_AddJobsHere.php')) {
 	require('custom/modules/Schedulers/_AddJobsHere.php');

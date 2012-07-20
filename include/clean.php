@@ -262,8 +262,11 @@ class SugarURIFilter extends HTMLPurifier_URIFilter
         // Here we try to block URLs that may be used for nasty XSRF stuff by
         // referring back to Sugar URLs
         // allow URLs that don't start with /? or /index.php?
-		if(!empty($uri->path) && $uri->path != '/' && strtolower(substr($uri->path, -10)) != '/index.php') {
-			return true;
+		if(!empty($uri->path) && $uri->path != '/') {
+		    $lpath = strtolower($uri->path);
+		    if(substr($lpath, -10) != '/index.php' && $lpath != 'index.php') {
+    			return true;
+	    	}
 		}
 
         $query_items = array();

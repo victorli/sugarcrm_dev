@@ -412,9 +412,11 @@ function Admin_check(){
 $(document).ready(function() {
     $('#calendar_publish_key').keypress(function(){
         $('#cal_pub_key_span').html( $(this).val());
+        $('#ical_pub_key_span').html( $(this).val());
     });
     $('#calendar_publish_key').change(function(){
-            $('#cal_pub_key_span').html( $(this).val());
+        $('#cal_pub_key_span').html( $(this).val());
+        $('#ical_pub_key_span').html( $(this).val());
     });
 });
 {/literal}

@@ -265,7 +265,7 @@ function handleSave($prefix,$redirect=true,$useRequired=false) {
   			$_POST['user_invitees'] .= ','.$_POST['assigned_user_id'].', ';
   			$_POST['user_invitees'] = str_replace(',,', ',', $_POST['user_invitees']);
   		}
-  	}elseif (empty($focus->id) ){
+  	}else {
 	  	//this is not from long form so add assigned and current user automatically as there is no invitee list UI.
 	  	//This call could be through an ajax call from subpanels or shortcut bar
 	  	$_POST['user_invitees'] .= ','.$_POST['assigned_user_id'].', ';
@@ -280,7 +280,8 @@ function handleSave($prefix,$redirect=true,$useRequired=false) {
   	}
 
     if( (isset($_POST['isSaveFromDetailView']) && $_POST['isSaveFromDetailView'] == 'true') ||
-        (isset($_POST['is_ajax_call']) && !empty($_POST['is_ajax_call']) && !empty($focus->id))
+        (isset($_POST['is_ajax_call']) && !empty($_POST['is_ajax_call']) && !empty($focus->id) ||
+        (isset($_POST['return_action']) && $_POST['return_action'] == 'SubPanelViewer') && !empty($focus->id))
     ){
         $focus->save(true);
         $return_id = $focus->id;

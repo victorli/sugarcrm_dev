@@ -135,7 +135,7 @@ return;var duration_coef=el.getAttribute("duration_coef");real_celcount=CAL.cell
 celpos=celpos+1;if(real_celcount-celpos-duration_coef<0)
 duration_coef=real_celcount-celpos+1;el.style.height=parseInt((CAL.slot_height+1)*duration_coef-1)+"px";}
 CAL.init_edit_dialog=function(params){CAL.editDialog=false;var rd=CAL.get("cal-edit");var content=CAL.get("edit-dialog-content");if(CAL.dashlet&&rd){document.getElementById("content").appendChild(rd);}
-rd.style.width=params.width+"px";content.style.height=params.height+"px";content.style.overflow="auto";content.style.padding="0";CAL.editDialog=new YAHOO.widget.Dialog("cal-edit",{draggable:true,visible:false,modal:true,close:true,zIndex:10});var listeners=new YAHOO.util.KeyListener(document,{keys:27},{fn:function(){CAL.editDialog.cancel();}});CAL.editDialog.cfg.queueProperty("keylisteners",listeners);CAL.editDialog.cancelEvent.subscribe(function(e,a,o){CAL.close_edit_dialog();});rd.style.display="block";CAL.editDialog.render();rd.style.overflow="auto";rd.style.overflowX="hidden";rd.style.outline="0 none";rd.style.height="auto";}
+rd.style.width=params.width+"px";content.style.height=params.height+"px";content.style.overflow="auto";content.style.padding="0";CAL.editDialog=new YAHOO.widget.Dialog("cal-edit",{draggable:true,visible:false,modal:true,close:true,y:1,zIndex:10});var listeners=new YAHOO.util.KeyListener(document,{keys:27},{fn:function(){CAL.editDialog.cancel();}});CAL.editDialog.cfg.queueProperty("keylisteners",listeners);CAL.editDialog.cancelEvent.subscribe(function(e,a,o){CAL.close_edit_dialog();});rd.style.display="block";CAL.editDialog.render();rd.style.overflow="auto";rd.style.overflowX="hidden";rd.style.outline="0 none";rd.style.height="auto";}
 CAL.open_edit_dialog=function(params){document.getElementById("form_content").innerHTML="";CAL.editDialog.center();CAL.editDialog.show();var nodes=CAL.query("#cal-tabs li a");CAL.each(nodes,function(i,v){YAHOO.util.Event.on(nodes[i],'click',function(){CAL.select_tab(this.getAttribute("tabname"));});});stay_on_tab=false
 if(typeof params!="undefined"&&typeof params.stay_on_tab!="undefined"&&params.stay_on_tab)
 stay_on_tab=true;if(!stay_on_tab){var nodes_li=CAL.query("#cal-tabs li");CAL.each(nodes_li,function(j,v){CAL.dom.removeClass(nodes_li[j],"selected");if(j==0)
@@ -257,7 +257,9 @@ CAL.update_vcal=function(){var v=CAL.current_user_id;var callback={success:funct
 if(typeof GLOBAL_REGISTRY.freebusy_adjusted=='undefined'){GLOBAL_REGISTRY.freebusy_adjusted=new Object();}
 GLOBAL_REGISTRY.freebusy[v]=SugarVCalClient.parseResults(result.responseText,false);GLOBAL_REGISTRY.freebusy_adjusted[v]=SugarVCalClient.parseResults(result.responseText,true);SugarWidgetScheduler.update_time();}};var url="vcal_server.php?type=vfb&source=outlook&user_id="+v;YAHOO.util.Connect.asyncRequest('GET',url,callback,false);}
 CAL.fit_grid=function(control_call){if(CAL.view=='year'){return;}
-var day_width;var cal_width=document.getElementById("cal-width-helper").offsetWidth;if(CAL.print){cal_width=800;}
+var day_width;var cal_width=document.getElementById("cal-width-helper").offsetWidth;if(CAL.print){if(CAL.view=="day")
+cal_width=720;else
+cal_width=800;}
 var left_width=80;if(CAL.style=="basic"){if(CAL.view!="month"){left_width=20;}else
 left_width=60;}
 if(CAL.view=="day"){day_width=parseInt((cal_width-left_width-10));if(typeof control_call=="undefined"||!control_call){setTimeout(function(){CAL.fit_grid(true);setTimeout(function(){CAL.fit_grid(true);},100);},100);}}else{day_width=parseInt((cal_width-left_width)/ 7);}

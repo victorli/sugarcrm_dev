@@ -42,9 +42,15 @@ class FunctionSugarHelpTest extends Sugar_PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
+        SugarTestHelper::setUp('app_strings');
         $this->_smarty = new Sugar_Smarty;
     }
-    
+
+    public function tearDown()
+    {
+        SugarTestHelper::tearDown();
+    }
+
     public function providerSpecialCharactersHandledInTextParameter()
     {
         return array(

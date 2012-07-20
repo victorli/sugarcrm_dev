@@ -60,14 +60,15 @@ class SugarFieldDatetime extends SugarFieldBase {
         if(!isset($displayParams['hiddeCalendar'])) {
            $displayParams['hiddeCalendar'] = false;
         }
-
-        $this->setup($parentFieldArray, $vardef, $displayParams, $tabindex);
+        
+        // jpereira@dri - #Bug49552 - Datetime field unable to follow parent class methods
         //jchi , bug #24557 , 10/31/2008
         if(isset($vardef['name']) && ($vardef['name'] == 'date_entered' || $vardef['name'] == 'date_modified')){
-        	return $this->fetch($this->findTemplate('DetailView'));
+            return $this->getDetailViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex);
         }
         //end
-        return $this->fetch($this->findTemplate('EditView'));
+        return parent::getEditViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex);
+        // ~ jpereira@dri - #Bug49552 - Datetime field unable to follow parent class methods
     }
 
     function getImportViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex)
@@ -200,12 +201,10 @@ class SugarFieldDatetime extends SugarFieldBase {
             //date is not in proper user format, so get the SugarDateTiemObject and inject the vardef with a new element
             $sdt = $timedate->fromString($vardef['value'],$current_user);
 
-            if (!empty($sdt))
-            {
+            if (!empty($sdt)) {
                 //the new 'date_formatted_value' array element will be used in include/SugarFields/Fields/Datetime/DetailView.tpl if it exists
                 $vardef['date_formatted_value'] = $timedate->asUserDate($sdt,$current_user);
             }
-
         }
 
         return $this->getSmartyView($parentFieldArray, $vardef, $displayParams, $tabindex, 'DetailView');

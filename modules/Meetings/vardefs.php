@@ -138,19 +138,22 @@ $dictionary['Meeting'] = array('table' => 'meetings',
     'name' => 'duration_hours',
     'vname' => 'LBL_DURATION_HOURS',
     'type' => 'int',
+    'group'=>'duration',
     'len' => '3',
     'comment' => 'Duration (hours)',
     'importable' => 'required',
     'required' => true,
+    'studio' => 'false',
   ),
   'duration_minutes' =>
   array (
     'name' => 'duration_minutes',
     'vname' => 'LBL_DURATION_MINUTES',
     'type' => 'int',
-    'group'=>'duration_hours',
+    'group'=>'duration',
     'len' => '2',
-    'comment' => 'Duration (minutes)'
+    'comment' => 'Duration (minutes)',
+    'studio' => 'false',
   ),
   'date_start' =>
   array (

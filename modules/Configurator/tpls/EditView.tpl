@@ -173,6 +173,20 @@
         <td colspan="2">&nbsp;</td>
     </tr>
 
+    <tr>
+        <td  scope="row" nowrap>{$MOD.LBL_ENABLE_ACTION_MENU}: &nbsp;{sugar_help text=$MOD.LBL_ENABLE_ACTION_MENU_DESC}</td>
+    {if isset($config.enable_action_menu) && $config.enable_action_menu != "true" }
+        {assign var='enable_action_menu' value=''}
+        {else}
+        {assign var='enable_action_menu' value='CHECKED'}
+    {/if}
+        <td>
+            <input type='hidden' name='enable_action_menu' value='false'>
+            <input name='enable_action_menu'  type="checkbox" value="true" {$enable_action_menu}>
+        </td>
+        <td colspan="2">&nbsp;</td>
+    </tr>
+
 
 
 
@@ -360,12 +374,6 @@
 </div>
 {$JAVASCRIPT}
 
-
-<script>
-addToValidate('ConfigureSettings', 'system_name', 'varchar', true,'System Name' );
-addToValidateMoreThan('ConfigureSettings', 'list_max_entries_per_page', 'int', true, '', 1);
-addToValidateMoreThan('ConfigureSettings', 'list_max_entries_per_subpanel', 'int', true, '', 1);
-</script>
 </form>
 <div id='upload_panel' style="display:none">
     <form id="upload_form" name="upload_form" method="POST" action='index.php' enctype="multipart/form-data">

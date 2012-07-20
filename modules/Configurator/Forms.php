@@ -71,6 +71,8 @@ function add_checks(f) {
 	removeFromValidate('ConfigureSettings', 'proxy_username');
 	removeFromValidate('ConfigureSettings', 'proxy_password');
 	
+	removeFromValidate('ConfigureSettings', 'list_max_entries_per_page');
+	removeFromValidate('ConfigureSettings', 'list_max_entries_per_subpanel');	
 	
 	if (typeof f.mail_sendtype != "undefined" && f.mail_sendtype.value == "SMTP") {
 		addToValidate('ConfigureSettings', 'mail_smtpserver', 'varchar', 'true', '{$mod_strings['LBL_MAIL_SMTPSERVER']}');
@@ -89,6 +91,10 @@ function add_checks(f) {
 			addToValidate('ConfigureSettings', 'proxy_password', 'varchar', 'true', '{$mod_strings['LBL_PROXY_PASSWORD']}');
 		}
 	}
+	
+	addToValidateMoreThan('ConfigureSettings', 'list_max_entries_per_page', 'int', true, '', 1);
+	addToValidateMoreThan('ConfigureSettings', 'list_max_entries_per_subpanel', 'int', true, '', 1);
+	
 	return true;
 }
 

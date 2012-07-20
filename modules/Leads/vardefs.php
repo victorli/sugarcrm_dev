@@ -288,6 +288,7 @@ $dictionary['Lead'] = array('table' => 'leads','audited'=>true, 'unified_search'
       'isnull' => 'true',
       'module' => 'Campaigns',
       'source' => 'non-db',
+      'additionalFields' => array('id' => 'campaign_id')
     ),
     'campaign_leads' =>
     array (
@@ -441,6 +442,7 @@ $dictionary['Lead'] = array('table' => 'leads','audited'=>true, 'unified_search'
     'type' => 'url',
     'dbType' => 'varchar',
     'len' => 255,
+    'link_target' => '_blank',
     'comment' => 'URL of website for the company',
   ),
 

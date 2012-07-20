@@ -54,6 +54,6 @@ class ConfiguratorTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEquals($cfg->config['admin_export_only'], false);
         $this->assertEquals($cfg->config['upload_dir'], 'yummy');
         
-        unset($_POST);
+        $_POST = array();
     }
 }

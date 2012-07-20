@@ -35,23 +35,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*
- * Created on Oct 4, 2005
- *
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
- */
-
-
-
-
-
 
 require_once ('include/JSON.php');
 require_once('modules/MailMerge/modules_array.php');
-
-
-
+require_once('modules/MailMerge/merge_query.php');
 
 global $app_strings;
 global $app_list_strings;
@@ -71,12 +58,12 @@ if(!isset($_SESSION['MAILMERGE_MODULE']))
 	if(isset($_POST['mailmerge_module']))
 	{
 		$_SESSION['MAILMERGE_MODULE'] = $_POST['mailmerge_module'];
-	}	
+	}
 }
 
 if(isset($_POST['contains_contact_info'])){
 
-	$_SESSION['MAILMERGE_CONTAINS_CONTACT_INFO'] = $_POST['contains_contact_info'];	
+	$_SESSION['MAILMERGE_CONTAINS_CONTACT_INFO'] = $_POST['contains_contact_info'];
 
 }
 
@@ -90,7 +77,7 @@ if(!isset($_SESSION["MAILMERGE_DOCUMENT_ID"]))
 $document_id = $_SESSION["MAILMERGE_DOCUMENT_ID"];
 $document = new Document();
 $document->retrieve($document_id);
-$_SESSION["MAILMERGE_TEMPLATE"] = $document->document_name;	
+$_SESSION["MAILMERGE_TEMPLATE"] = $document->document_name;
 
 if(!empty($_POST['selected_objects']))
 {
@@ -104,17 +91,8 @@ else
 $sel_obj = array();
 parse_str(html_entity_decode($selObjs, ENT_QUOTES),$sel_obj);
 $step_num = 3;
-if(isset($_SESSION['MAILMERGE_RECORD']))
-{
-	$xtpl->assign("PREV_STEP", '2');
-	$step_num = 3;
-	//$xtpl->assign("RECORD", $_SESSION['MAILMERGE_RECORD']);	
-}
-else
-{
-	$xtpl->assign("PREV_STEP", '2');
-}
-$xtpl->assign("STEP_NUM", "Step ".$step_num.":");
+$xtpl->assign("PREV_STEP", '2');
+$xtpl->assign("STEP_NUM", "Step 3:");
 $popup_request_data = array ('call_back_function' => 'set_return', 'form_name' => 'EditView', 'field_to_name_array' => array ('id' => 'rel_id', 'name' => 'rel_name',),);
 	$json = getJSONobj();
 
@@ -137,35 +115,8 @@ $xtpl->assign("STEP3_HEADER", "Set ".get_singular_bean_name($relModule)." Associ
 
 
 $select = "Select id, name from contacts";
-
-$selQuery = array ('Contacts'=>array('Accounts' => 'SELECT contacts.* FROM contacts LEFT JOIN accounts_contacts ON contacts.id=accounts_contacts.contact_id AND (accounts_contacts.deleted is NULL or accounts_contacts.deleted=0)',
-'Contacts' => '',
-'Opportunities' => 'SELECT contacts.* FROM contacts LEFT JOIN opportunities_contacts ON contacts.id=opportunities_contacts.contact_id AND (opportunities_contacts.deleted is NULL or opportunities_contacts.deleted=0)',
-'Leads' => '',
-'Cases' => 'SELECT contacts.* FROM contacts LEFT JOIN contacts_cases ON contacts.id=contacts_cases.contact_id AND (contacts_cases.deleted is NULL or contacts_cases.deleted=0)',
-'Bugs' => 'SELECT contacts.* FROM contacts LEFT JOIN contacts_bugs ON contacts.id=contacts_bugs.contact_id AND (contacts_bugs.deleted is NULL or contacts_bugs.deleted=0)',
-'Quotes' => 'SELECT contacts.* FROM contacts LEFT JOIN quotes_contacts ON contacts.id=quotes_contacts.contact_id AND (quotes_contacts.deleted is NULL or quotes_contacts.deleted=0)'),
-'Opportunities'=>array("Accounts"=>'SELECT opportunities.id, opportunities.name FROM opportunities LEFT JOIN accounts_opportunities ON opportunities.id = accounts_opportunities.opportunity_id AND (accounts_opportunities.deleted is NULL or accounts_opportunities.deleted=0)'),
-'Accounts'=>array("Opportunities"=>'SELECT accounts.id, accounts.name FROM accounts LEFT JOIN accounts_opportunities ON accounts.id = accounts_opportunities.account_id AND (accounts_opportunities.deleted is NULL or accounts_opportunities.deleted=0)'),
-);
-$whereQuery = array('Contacts' => array('Accounts' => 'accounts_contacts.contact_id = contacts.id AND accounts_contacts.account_id = ',
-'Contacts' => '',
-'Opportunities' => 'opportunities_contacts.contact_id = contacts.id AND opportunities_contacts.opportunity_id = ',
-'Leads' => '',
-'Cases' => 'contacts_cases.contact_id = contacts.id AND contacts_cases.case_id = ',
-'Bugs' => 'contacts_bugs.contact_id = contacts.id AND contacts_bugs.bug_id = ',
-'Quotes' => 'quotes_contacts.contact_id = contacts.id AND quotes_contacts.quote_id = '),
-'Opportunities'=>array('Accounts'=>'accounts_opportunities.opportunity_id = opportunities.id AND accounts_opportunities.account_id = '),
-'Accounts'=>array('Opportunities'=>'accounts_opportunities.account_id = accounts.id  AND accounts_opportunities.opportunity_id = '),
-);
-
-
-
-$contact = new Contact();
-
-
 global $beanList, $beanFiles;
-$class_name = $beanList[$relModule ];
+$class_name = $beanList[$relModule];
 require_once($beanFiles[$class_name]);
 $seed = new $class_name();
 
@@ -184,42 +135,28 @@ foreach($sel_obj as $key => $value)
 {
 	$value = str_replace("##", "&", $value);
 	$value = stripslashes($value);
-	$code = str_replace('-', '', $key);
+	$code = md5($key);
 	$popup_request_data = array ('call_back_function' => 'set_return', 'form_name' => 'EditView', 'field_to_name_array' => array ('id' => 'rel_id_'.$code, 'name' => 'rel_name_'.$code,),);
 	$encoded_popup_request_data = urlencode($json->encode($popup_request_data));
 
-	if(empty($selQuery[$relModule][$_SESSION['MAILMERGE_MODULE']])){
-		$select = generateSelect($seed, $relModule);
-	}else{
-		$select = $selQuery[$relModule][$_SESSION['MAILMERGE_MODULE']];
-	}
-	if(empty($whereQuery[$relModule][$_SESSION['MAILMERGE_MODULE']])){
-		$where = "{$seed->table_name}.id = ";
-	}else{
-		$where = $whereQuery[$relModule][$_SESSION['MAILMERGE_MODULE']];
-	}
-	
-	if($relModule == "Contacts"){
-	$limitSelect = str_replace('contacts.*', 'contacts.first_name, contacts.last_name, contacts.id, contacts.date_entered', $select);
-	}
-	else{
-		$limitSelect = str_replace(strtolower($relModule).'.*', strtolower($relModule).'.name, '.strtolower($relModule).'.date_entered', $select);
-	}
-	$fullQuery = $limitSelect." WHERE ".$where."'".$key."' ORDER BY date_entered";
-	
+	$fullQuery = get_merge_query($seed, $_SESSION['MAILMERGE_MODULE'], $key);
 	$result = $seed->db->limitQuery($fullQuery, 0, 1, true, "Error performing limit query");
+
 	$full_name = '';
 	$contact_id = '';
 	if($row = $seed->db->fetchByAssoc($result, 0)) {
-			if($relModule == "Contacts"){
-			$full_name = $locale->getLocaleFormattedName($row['first_name'], $row['last_name']);
-			}
-			else{
+			if($relModule == "Contacts") {
+			    $full_name = $locale->getLocaleFormattedName($row['first_name'], $row['last_name']);
+			} else {
 				$full_name = $row['name'];
 			}
 			$contact_id = $row['id'];
 	}
-	$change_parent_button = "<input title='".$app_strings['LBL_SELECT_BUTTON_TITLE']."' tabindex='2'  type='button' class='button' value='".$app_strings['LBL_SELECT_BUTTON_LABEL']."' name='button' onclick='open_popup(document.EditView.rel_type_".$code.".value, 600, 400, \"&html=mail_merge&select=$select&where=$where&id=$key&request_data=$encoded_popup_request_data\", true, false, {});' $disabled/>";
+	$umodule =urlencode($_SESSION['MAILMERGE_MODULE']);
+	$ukey = urlencode($key);
+	$change_parent_button = "<input title='{$app_strings['LBL_SELECT_BUTTON_TITLE']}' tabindex='2'  type='button' class='button' value='{$app_strings['LBL_SELECT_BUTTON_LABEL']}'
+		name='button' onclick='open_popup(document.EditView.rel_type_{$code}.value, 600, 400,
+			\"&html=mail_merge&rel_module=$umodule&id=$ukey&request_data=$encoded_popup_request_data\", true, false, {});' $disabled/>";
 	$items = array(
 	'ID' => $key,
 	'NAME' => $value,
@@ -232,7 +169,7 @@ foreach($sel_obj as $key => $value)
 	);
 
 	$xtpl->assign("MAILMERGE", $items);
-	
+
 	if($oddRow)
    	{
         //todo move to themes

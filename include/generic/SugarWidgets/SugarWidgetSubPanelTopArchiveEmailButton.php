@@ -44,10 +44,12 @@ class SugarWidgetSubPanelTopArchiveEmailButton extends SugarWidgetSubPanelTopBut
 {
 	function display($defines)
 	{
-		if(ACLController::moduleSupportsACL($defines['module'])  && !ACLController::checkAccess($defines['module'], 'edit', true)){
+		if((ACLController::moduleSupportsACL($defines['module'])  && !ACLController::checkAccess($defines['module'], 'edit', true) ||
+			$defines['module'] == "History" & !ACLController::checkAccess("Emails", 'edit', true))){
 			$temp = '';
 			return $temp;
 		}
+		
 		global $app_strings;
 		global $mod_strings;
 		global $currentModule;

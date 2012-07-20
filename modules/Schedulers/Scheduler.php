@@ -805,7 +805,7 @@ class Scheduler extends SugarBean {
 	 * ones.
 	 */
 	function rebuildDefaultSchedulers() {
-		global $mod_strings;
+		$mod_strings = return_module_language($GLOBALS['current_language'], 'Schedulers');
 		// truncate scheduler-related tables
 		$this->db->query('DELETE FROM schedulers');
 
@@ -885,6 +885,17 @@ class Scheduler extends SugarBean {
         $sched12->catch_up           = '0';
         $sched12->save();
 
+        $sched13 = new Scheduler();
+        $sched13->name               = $mod_strings['LBL_OOTB_CLEANUP_QUEUE'];
+        $sched13->job                = 'function::cleanJobQueue';
+        $sched13->date_time_start    = create_date(2012,1,1) . ' ' . create_time(0,0,1);
+        $sched13->date_time_end      = create_date(2030,12,31) . ' ' . create_time(23,59,59);
+        $sched13->job_interval       = '0::5::*::*::*';
+        $sched13->status             = 'Active';
+        $sched13->created_by         = '1';
+        $sched13->modified_user_id   = '1';
+        $sched13->catch_up           = '0';
+        $sched13->save();
 	}
 
 	////	END SCHEDULER HELPER FUNCTIONS

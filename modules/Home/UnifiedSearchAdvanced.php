@@ -182,9 +182,12 @@ class UnifiedSearchAdvanced {
 			$modules_to_search = array();
 			if(!empty($_REQUEST['search_modules']))
 			{
-			    foreach(explode (',', $_REQUEST['search_modules'] ) as $e)
+			    foreach(explode (',', $_REQUEST['search_modules'] ) as $key)
 	            {
-	                $modules_to_search[$e] = $beanList[$e];
+                    if (isset($unified_search_modules_display[$key]) && !empty($unified_search_modules_display[$key]['visible']))
+                    {
+                        $modules_to_search[$key] = $beanList[$key];
+                    }
 	            }
 			}
 
@@ -671,5 +674,3 @@ function unified_search_modules_cmp($a, $b) {
 
 	return $name1 < $name2 ? -1 : 1;
 }
-
-?>

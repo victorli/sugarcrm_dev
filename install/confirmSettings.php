@@ -37,7 +37,12 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 
-global $sugar_config,$db;
+global $sugar_config, $db, $app_strings;
+if (isset($sugar_config['default_language']) == false)
+{
+    $sugar_config['default_language'] = $GLOBALS['current_language'];
+}
+$app_strings = return_application_language($GLOBALS['current_language']);
 
 if( !isset( $install_script ) || !$install_script ){
     die($mod_strings['ERR_NO_DIRECT_SCRIPT']);
@@ -454,7 +459,22 @@ if( $memory_limit == "" ){          // memory_limit disabled at compile time, no
             <td  >'.$spriteSupportStatus.'</td>
           </tr>';
 
-
+        // Suhosin allow to use upload://
+        if (UploadStream::getSuhosinStatus() == true || (strpos(ini_get('suhosin.perdir'), 'e') !== false && strpos($_SERVER["SERVER_SOFTWARE"],'Microsoft-IIS') === false))
+        {
+            $suhosinStatus = "{$mod_strings['LBL_CHECKSYS_OK']}";
+        }
+        else
+        {
+            $suhosinStatus = "<span class='stop'><b>{$app_strings['ERR_SUHOSIN']}</b></span>";
+        }
+        $envString .= '
+        <tr>
+            <td></td>
+            <td><strong>PHP allows to use stream (' . UploadStream::STREAM_NAME . '://)</strong></td>
+            <td>' . $suhosinStatus . '</td>
+        </tr>
+        ';
 
 // PHP.ini
 $phpIniLocation = get_cfg_var("cfg_file_path");
@@ -592,5 +612,3 @@ function togglePass(){
 
 EOQ;
 echo $out;
-
-?>

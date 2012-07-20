@@ -335,6 +335,7 @@ class TemplateField{
 			'type'=>$this->type,
 			'massupdate'=>$this->massupdate,
 			'default'=>$this->default,
+            'no_default'=> !empty($this->no_default),
 			'comments'=> (isset($this->comments)) ? $this->comments : '',
 		    'help'=> (isset($this->help)) ?  $this->help : '',
 		    'importable'=>$this->importable,

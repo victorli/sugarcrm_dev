@@ -107,7 +107,7 @@ function smarty_function_sugar_menu($params, &$smarty)
         if(isset($item['items']) && count($item['items'])) {
             $output .= smarty_function_sugar_menu(array(
                 'items' => $item['items'],
-                'htmlOptions' => !empty($params['submenuHtmlOptions']) ? $params['submenuHtmlOptions'] : array()
+                'htmlOptions' => !empty($params['submenuHtmlOptions']) ? $params['submenuHtmlOptions'] : (!empty($item['submenuHtmlOptions']) ? $item['submenuHtmlOptions'] : array())
             ), $smarty);
         }
         $output .= SugarHtml::createCloseTag("li");

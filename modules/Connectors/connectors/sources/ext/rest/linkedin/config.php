@@ -45,8 +45,6 @@ $config = array (
   'properties' => 
   array (
     'company_url'=>'http://www.linkedin.com/companyInsider?script&useBorder=no',
-    'oauth_consumer_key' => '',
-    'oauth_consumer_secret' => '',
   ),
 );
 ?>

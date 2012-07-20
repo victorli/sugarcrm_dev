@@ -74,13 +74,15 @@ class CalendarGrid {
 		$this->weekdays = $weekdays;
 
 		$this->scrollable = false;
-		if(in_array($this->cal->view,array('day','week'))){
-			$this->scrollable = true;
-			if($this->cal->time_step < 30)
-				$this->scroll_height = 480;
-			else
-				$this->scroll_height = $this->cal->celcount * 15 + 1;
-		}
+        if (!($this->cal->isPrint() && $this->cal->view == 'day')) {
+            if(in_array($this->cal->view,array('day','week'))){
+               $this->scrollable = true;
+               if($this->cal->time_step < 30)
+                    $this->scroll_height = 480;
+               else
+                    $this->scroll_height = $this->cal->celcount * 15 + 1;
+           }
+        }
 
 		$this->time_step = $this->cal->time_step;
 		$this->time_format = $GLOBALS['timedate']->get_time_format();

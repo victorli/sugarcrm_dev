@@ -178,7 +178,7 @@ class MBModule
 
     function fieldExists ($name = '' , $type = '')
     {
-        $vardefs = $this->mbvardefs->getVardef () ;
+        $vardefs = $this->getVardefs();
         if (! empty ( $vardefs ))
         {
             if (empty ( $type ) && empty ( $name ))

@@ -98,9 +98,11 @@ class SearchForm {
         //require_once('modules/' . $module . '/metadata/SearchFields.php');
         $this->searchFields = $searchFields[$module];
         if(empty($tpl)) {
-            $this->tpl = 'modules/' . $module . '/SearchForm.html';
             if(!empty($GLOBALS['layout_edit_mode'])){
             	 $this->tpl = sugar_cached('studio/custom/working/modules/' . $module . '/SearchForm.html');
+            }
+            else {
+             	 $this->tpl = get_custom_file_if_exists('modules/' . $module . '/SearchForm.html');
             }
         }
         else {

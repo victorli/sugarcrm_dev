@@ -72,7 +72,7 @@ class ViewDetail extends SugarView
  	    $metadataFile = $this->getMetaDataFile();
  	    $this->dv = new DetailView2();
  	    $this->dv->ss =&  $this->ss;
- 	    $this->dv->setup($this->module, $this->bean, $metadataFile, 'include/DetailView/DetailView.tpl'); 		
+ 	    $this->dv->setup($this->module, $this->bean, $metadataFile, get_custom_file_if_exists('include/DetailView/DetailView.tpl'));
     } 	
  	
     /**

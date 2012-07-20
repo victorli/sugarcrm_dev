@@ -354,6 +354,13 @@ class SugarAuthenticate{
      */
     function pre_login()
     {
+        if (isset($_SESSION['authenticated_user_id']))
+        {
+            ob_clean();
+            // fixing bug #46837: Previosly links/URLs to records in Sugar from MSO Excel/Word were referred to the home screen and not the record
+            // It used to appear when default browser was not MS IE
+            header("Location: ".$GLOBALS['app']->getLoginRedirect());
+            sugar_cleanup(true);
+        }
     }
-
 }

@@ -42,7 +42,7 @@ class SugarAutoLoader{
 		'Sugar_Smarty'=>'include/Sugar_Smarty.php',
 		'Javascript'=>'include/javascript/javascript.php',
         'SugarSearchEngineFullIndexer'=>'include/SugarSearchEngine/SugarSearchEngineFullIndexer.php',
-
+        'SugarSearchEngineSyncIndexer'=>'include/SugarSearchEngine/SugarSearchEngineSyncIndexer.php',
 	);
 
 	public static $noAutoLoad = array(

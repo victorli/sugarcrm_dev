@@ -231,7 +231,7 @@ function portal_get_entry_list_filter($session, $module_name, $order_by, $select
     }else if($module_name == 'Contacts'){
         $sugar = new Contact();
     }else if($module_name == 'Accounts'){
-        $sugar = new Account(); 
+        $sugar = new Account();
     } else if($module_name == 'Bugs'){
         $sugar = new Bug();
     } else if($module_name == 'KBDocuments' || $module_name == 'FAQ') {
@@ -293,15 +293,15 @@ $server->register(
 function portal_get_entry($session, $module_name, $id,$select_fields ){
     global  $beanList, $beanFiles;
     $error = new SoapError();
-    
+
     if(!portal_validate_authenticated($session)){
         $error->set_error('invalid_session');
         return array('result_count'=>-1, 'entry_list'=>array(), 'error'=>$error->get_soap_array());
     }
-    
+
     //set the working module
     set_module_in(array('list'=>array($id=>$id), 'in'=>'('.$id.')'), $module_name);
-    
+
     if($_SESSION['type'] == 'lead'){
         $error->set_error('no_access');
         return array('result_count'=>-1, 'entry_list'=>array(), 'error'=>$error->get_soap_array());
@@ -483,7 +483,7 @@ function portal_remove_note_attachment($session, $id)
         $error->set_error('no_access');
         return array('result_count'=>-1, 'entry_list'=>array(), 'error'=>$error->get_soap_array());
     }
-    
+
     $focus = new Note();
     $focus->retrieve($id);
     $result = $focus->deleteAttachment();
@@ -510,7 +510,7 @@ function portal_get_note_attachment($session,$id)
         return array('result_count'=>-1, 'entry_list'=>array(), 'error'=>$error->get_soap_array());
     }
     $current_user = $seed_user;
-    
+
     $note = new Note();
     $note->retrieve($id);
     require_once('modules/Notes/NoteSoap.php');

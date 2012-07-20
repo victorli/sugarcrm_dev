@@ -87,7 +87,7 @@ function Datetimecombo (datetime, field, timeformat, tabindex, showCheckbox, che
     this.datetime = this.datetime.substr(0,10);
     this.showCheckbox = showCheckbox;
     this.checked = parseInt(checked);
-    document.getElementById(this.fieldname + '_date').value = this.datetime;
+    YAHOO.util.Selector.query('input#' + this.fieldname + '_date')[0].value = this.datetime;
 
     //A safety scan to make sure hrs and minutes are formatted correctly
 	if (this.mins > 0 && this.mins < 15) {
@@ -140,17 +140,17 @@ Datetimecombo.prototype.jsscript = function(callback) {
 	text += '\ncalendar.hide();';
 	text += '\n}'
 	*/
-    text += '\nd = document.getElementById("' + this.fieldname + '_date").value;';
-    text += '\nh = document.getElementById("' + this.fieldname + '_hours").value;';
-    text += '\nm = document.getElementById("' + this.fieldname + '_minutes").value;';
+    text += '\nd = YAHOO.util.Selector.query("input#' + this.fieldname + '_date")[0].value;';
+    text += '\nh = YAHOO.util.Selector.query("select#' + this.fieldname + '_hours")[0].value;';
+    text += '\nm = YAHOO.util.Selector.query("select#' + this.fieldname + '_minutes")[0].value;';
     text += '\nnewdate = d + " " + h + "' + this.timeseparator + '" + m;';
     if(this.hasMeridiem) {
-       text += '\nif(typeof document.getElementById("' + this.fieldname + '_meridiem") != "undefined") {';
-       text += '\n   newdate += document.getElementById("' + this.fieldname + '_meridiem").value;';
-       text += '\n}';
+        text += '\nif(typeof YAHOO.util.Selector.query("select#' + this.fieldname + '_meridiem")[0] != "undefined") {';
+        text += '\n   newdate += YAHOO.util.Selector.query("select#' + this.fieldname + '_meridiem")[0].value;';
+        text += '\n}';
     }
     text += '\nif(trim(newdate) =="'+ this.timeseparator +'") newdate="";';
-    text += '\ndocument.getElementById("' + this.fieldname + '").value = newdate;';
+    text += '\nYAHOO.util.Selector.query("select#' + this.fieldname + '")[0].value = newdate;';
     text += '\n' + callback;
     text += '\n}';
     //text += '\n</script>';
@@ -222,12 +222,12 @@ Datetimecombo.prototype.update = function(updateListeners) {
 
 	// Bug 42025: hour/minute/second still required when start_date is non required
 	//			  Fixing this by just assigning default when they aren't required
-    var d = window.document.getElementById(this.fieldname + '_date');
-	var h = window.document.getElementById(this.fieldname + '_hours');
-	var m = window.document.getElementById(this.fieldname + '_minutes');
-	var mer = document.getElementById(this.fieldname + "_meridiem");
-	
-	if(d.value == "") { // if date is not set wipe time settings
+    var d = YAHOO.util.Selector.query('input#' + this.fieldname + '_date')[0];
+    var h = YAHOO.util.Selector.query('select#' + this.fieldname + '_hours')[0];
+    var m = YAHOO.util.Selector.query('select#' + this.fieldname + '_minutes')[0];
+    var mer = YAHOO.util.Selector.query('select#' + this.fieldname + "_meridiem")[0];
+
+    if(d.value == "") { // if date is not set wipe time settings
 		h.selectedIndex = 0;
 		m.selectedIndex = 0;
 		if(mer) mer.selectedIndex = 0;
@@ -242,14 +242,14 @@ Datetimecombo.prototype.update = function(updateListeners) {
 	var newdate = d.value + ' ' + h.value + this.timeseparator  + m.value;
 
 	if(this.hasMeridiem) {
-	   ampm = document.getElementById(this.fieldname + "_meridiem").value;
-	   newdate += ampm;
+        ampm = YAHOO.util.Selector.query('select#' + this.fieldname + "_meridiem")[0].value;
+        newdate += ampm;
 	}
 	if(trim(newdate) == ""+this.timeseparator+""){
 		newdate = '';
 	}
-	document.getElementById(this.fieldname).value = newdate;
-	//Check for onchange actions and fire them
+    YAHOO.util.Selector.query('input#' + this.fieldname)[0].value = newdate;
+    //Check for onchange actions and fire them
 	if(updateListeners)
 		SUGAR.util.callOnChangeListers(this.fieldname);
 
@@ -258,19 +258,21 @@ Datetimecombo.prototype.update = function(updateListeners) {
          date = this.fieldname + '_date';
          hours = this.fieldname + '_hours';
          mins = this.fieldname + '_minutes';
-         
-		 if(document.getElementById(flag).checked) {
-			document.getElementById(flag).value=1;
-			document.getElementById(this.fieldname).value = '';
-			document.getElementById(date).disabled=true;
-			document.getElementById(hours).disabled=true;
-			document.getElementById(mins).disabled=true;
-		 } else {
-			document.getElementById(flag).value=0;
-			document.getElementById(date).disabled=false;
-			document.getElementById(hours).disabled=false;
-			document.getElementById(mins).disabled=false;		 
-		 } 
-	}
-	  
+
+        if (YAHOO.util.Selector.query('input#' + flag)[0].checked)
+        {
+            YAHOO.util.Selector.query('input#' + flag)[0].value = 1;
+            YAHOO.util.Selector.query('input#' + this.fieldname)[0].value = '';
+            YAHOO.util.Selector.query('input#' + date)[0].disabled = true;
+            YAHOO.util.Selector.query('select#' + hours)[0].disabled = true;
+            YAHOO.util.Selector.query('select#' + mins)[0].disabled = true;
+        }
+        else
+        {
+            YAHOO.util.Selector.query('input#' + flag)[0].value = 0;
+            YAHOO.util.Selector.query('input#' + date)[0].disabled = false;
+            YAHOO.util.Selector.query('select#' + hours)[0].disabled = false;
+            YAHOO.util.Selector.query('select#' + mins)[0].disabled = false;
+        }
+    }
 };

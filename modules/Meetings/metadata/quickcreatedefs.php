@@ -156,7 +156,7 @@ array (
                     {literal}
                     SUGAR.util.doWhen(function(){return typeof DurationDependency != "undefined" && typeof document.getElementById("duration") != "undefined"}, function(){
                         var duration_dependency = new DurationDependency("date_start","date_end","duration",date_time_format);
-                    	initEditView($("#duration")[0].form);
+                        initEditView(YAHOO.util.Selector.query(\'select#duration\')[0].form);
                     });
                     {/literal}
                 </script>            

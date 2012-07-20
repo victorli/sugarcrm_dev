@@ -40,9 +40,7 @@ onchange='document.{{$form_name}}.{{sugarvar key='name'}}.value="";document.{{$f
         changeParentQSSearchView("{{sugarvar key='name'}}"); checkParentType(document.{{$form_name}}.{{$vardef.type_name}}.value, document.{{$form_name}}.btn_{{sugarvar key='name'}});'>
 {html_options options={{sugarvar key='options' string=true}} selected=$fields.{{$vardef.type_name}}.value}
 </select>
-{{if $displayParams.split}}
 <br>
-{{/if}}
 {if empty({{sugarvar key='options' string=true}}[$fields.{{$vardef.type_name}}.value])}
 	{assign var="keepParent" value = 0}
 {else}

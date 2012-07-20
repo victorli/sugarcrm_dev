@@ -147,6 +147,22 @@ class ViewModulefields extends SugarView
 
             foreach($this->mbModule->mbvardefs->vardefs['fields'] as $k=>$v)
             {
+                if ($k != $this->mbModule->name)
+                {
+                    foreach($v as $field => $def)
+                    {
+                        if (in_array($field, array_keys($this->mbModule->mbvardefs->vardefs['fields'][$this->mbModule->name])))
+                        {
+                            $this->mbModule->mbvardefs->vardefs['fields'][$k][$field] = $this->mbModule->mbvardefs->vardefs['fields'][$this->mbModule->name][$field];
+
+                            unset($this->mbModule->mbvardefs->vardefs['fields'][$this->mbModule->name][$field]);
+                        }
+                    }
+                }
+            }
+
+            foreach($this->mbModule->mbvardefs->vardefs['fields'] as $k=>$v)
+            {
                 if($k != $module_name)
                 {
                     $titleLBL[$k]=translate("LBL_".strtoupper($k),'ModuleBuilder');

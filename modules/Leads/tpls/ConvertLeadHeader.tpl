@@ -37,6 +37,33 @@
 *}
 {literal}
 <script type="text/javascript">
+
+/**
+  *  Start Bug#50590 
+  *  mod_array global array that contains required modules
+  *  addDropdownElements fills lead_conv_ac_op_sel with all required modules except Contacts 
+  *  as this module is in the list by default
+  */
+
+ var mod_array = new Array; 
+ function addDropdownElements(){
+   var i;
+   for(i=0; i<=mod_array.length-1; i++){
+     if(mod_array[i] != 'Contacts'){
+       var dropdown = document.getElementById('lead_conv_ac_op_sel');
+       var opt = document.createElement("option");
+       opt.text = SUGAR.language.get('app_list_strings', "moduleListSingular")[mod_array[i]];
+       opt.value = mod_array[i];
+       opt.label = opt.text;
+       dropdown.options.add(opt);
+     }
+   }
+ }
+ /**
+  *   End Bug#50590
+  */    
+
+
 function addRemoveDropdownElement(module) {
     var accountText = document.getElementById('account_name');
     var checkbox = document.getElementById('new'+module);
@@ -83,8 +110,8 @@ function addRemoveDropdownElement(module) {
 <input type="hidden" name="return_id" value="{$smarty.request.return_id}">
 <input type="hidden" name="module_tab"> 
 <input type="hidden" name="contact_role">
-{if !empty($smarty.request.return_module)}
-<input type="hidden" name="relate_to" value="{if $smarty.request.return_relationship}{$smarty.request.return_relationship}{else}{$smarty.request.return_module}{/if}">
+{if !empty($smarty.request.return_module) || !empty($smarty.request.relate_to)}
+<input type="hidden" name="relate_to" value="{if $smarty.request.return_relationship}{$smarty.request.return_relationship}{elseif $smarty.request.relate_to && empty($smarty.request.from_dcmenu)}{$smarty.request.relate_to}{elseif empty($isDCForm) && empty($smarty.request.from_dcmenu)}{$smarty.request.return_module}{/if}">
 <input type="hidden" name="relate_id" value="{$smarty.request.return_id}">
 {/if}
 <input type="hidden" name="offset" value="{$offset}">

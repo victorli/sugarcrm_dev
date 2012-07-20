@@ -71,15 +71,15 @@ class ChartsDashlet extends Dashlet {
      */
     function display() {
     	require_once("modules/Reports/Report.php");
-			
-	
+		
 //		ini_set('display_errors', 'false');
 		
 		$chartReport = new SavedReport();
 		$chartExists = $chartReport->retrieve($this->report_id, false);
-		
+
 		if (!is_null($chartExists)){
-	        $this->title = $chartReport->name;
+			$title = getReportNameTranslation($chartReport->name);
+	        $this->title = $title; 
 				
 			$reporter = new Report($chartReport->content);
 			$reporter->is_saved_report = true;

@@ -69,10 +69,10 @@ class Bug50936Test extends Sugar_PHPUnit_Framework_OutputTestCase
 
 $contents = <<<EOQ
 <?php
-        require(get_custom_file_if_exists('modules/Users/authentication/SAMLAuthenticate/settings.php'));
         require('modules/Users/authentication/SAMLAuthenticate/lib/onelogin/saml.php');
+        require(get_custom_file_if_exists('modules/Users/authentication/SAMLAuthenticate/settings.php'));
 
-        \$authrequest = new SamlAuthRequest(get_saml_settings());
+        \$authrequest = new SamlAuthRequest(\$settings);
         \$url = \$authrequest->create();
         echo \$url;
 EOQ;
@@ -81,8 +81,6 @@ EOQ;
 
 $contents = <<<EOQ
 <?php
-            function get_saml_settings()
-            {
                 // this function should be modified to return the SAML settings for the current use
                 \$settings = new SamlSettings();
                 // when using Service Provider Initiated SSO (starting at index.php), this URL asks the IdP to authenticate the user.
@@ -99,9 +97,6 @@ $contents = <<<EOQ
 
                 // Tells the IdP to return the email address of the current user
                 \$settings->name_identifier_format = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress";
-
-                return \$settings;
-            }
 
         ?>
 EOQ;

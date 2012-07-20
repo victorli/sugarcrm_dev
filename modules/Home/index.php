@@ -101,7 +101,7 @@ if(!$hasUserPreferences){
                                          'module' => 'Home',
                                          'forceColumn' => 0,
                                          'fileLocation' => $dashletsFiles['iFrameDashlet']['file'],
-                                         'options' => array('title' => translate('LBL_DASHLET_DISCOVER_SUGAR_PRO','Home'),
+                                         'options' => array('titleLabel' => 'LBL_DASHLET_DISCOVER_SUGAR_PRO',
                                                             'url' => 'http://www.sugarcrm.com/crm/product/gopro',
                                                             'height' => 315,
                                              ));
@@ -116,7 +116,7 @@ if(!$hasUserPreferences){
                                          'module' => 'Home',
                                          'forceColumn' => 1,
                                          'fileLocation' => $dashletsFiles['iFrameDashlet']['file'],
-                                         'options' => array('title' => translate('LBL_DASHLET_SUGAR_NEWS','Home'),
+                                         'options' => array('titleLabel' => 'LBL_DASHLET_SUGAR_NEWS',
                                                             'url' => 'http://www.sugarcrm.com/crm/product/news',
                                                             'height' => 315,
                                              ));
@@ -187,7 +187,7 @@ if (empty($pages)){
 	$pageIndex = 0;
 	$pages[0]['columns'] = $columns;
 	$pages[0]['numColumns'] = '2';
-	$pages[0]['pageTitle'] = $mod_strings['LBL_HOME_PAGE_1_NAME'];	// "My Sugar"
+	$pages[0]['pageTitleLabel'] = 'LBL_HOME_PAGE_1_NAME';	// "My Sugar"
 	$pageIndex++;
 	$current_user->setPreference('pages', $pages, 0, 'Home');
     $activePage = 0;
@@ -301,7 +301,13 @@ $resources = $sugarChart->getChartResources();
 $mySugarResources = $sugarChart->getMySugarChartResources();
 $sugar_smarty->assign('chartResources', $resources);
 $sugar_smarty->assign('mySugarChartResources', $mySugarResources);
-echo $sugar_smarty->fetch('include/MySugar/tpls/MySugar.tpl');
+
+if (file_exists("custom/include/MySugar/tpls/MySugar.tpl")) {
+	echo $sugar_smarty->fetch('custom/include/MySugar/tpls/MySugar.tpl');
+} else {
+	echo $sugar_smarty->fetch('include/MySugar/tpls/MySugar.tpl');
+}
+
 //init the quickEdit listeners after the dashlets have loaded on home page the first time
 echo"<script>if(typeof(qe_init) != 'undefined'){qe_init();}</script>";
 ?>

@@ -1197,7 +1197,7 @@ function validate_form(formname, startsWith){
 		for(var wp = 0; wp < inputsWithErrors.length; wp++) {
 			var elementCoor = findElementPos(inputsWithErrors[wp]);
 			if(!(elementCoor.x >= nwX && elementCoor.y >= nwY &&
-				elementCoor.x <= seX && elementCoor.y <= seY)) { // if input is not within viewport
+                elementCoor.x <= seX+nwX && elementCoor.y <= seY+nwY)) { // if input is not within viewport, modify for SI bug 52497
 					inView = false;
 					scrollToTop = elementCoor.y - 75;
 					scrollToLeft = elementCoor.x - 75;
@@ -3538,6 +3538,22 @@ SUGAR.searchForm = function() {
 	                    }
 					}
 				}
+
+                //clear thesearch form accesekeys and reset them to the appropriate link
+                adv = document.getElementById('advanced_search_link');
+                bas = document.getElementById('basic_search_link');
+                adv.setAttribute('accesskey','');
+                bas.setAttribute('accesskey','');
+                a_key = SUGAR.language.get("app_strings", "LBL_ADV_SEARCH_LNK_KEY");
+
+                //reset the ccesskey based on theview
+                if(theView === 'advanced_search'){
+
+                    bas.setAttribute('accesskey',a_key);
+                }else{
+                    adv.setAttribute('accesskey',a_key);
+                }
+                
 				// show the good search form.
 				document.getElementById(module + theView + 'SearchForm').style.display = '';
                 //if its not the first tab show there is a previous tab.
@@ -3635,6 +3651,11 @@ SUGAR.searchForm = function() {
                 else if ( elemType == 'select' || elemType == 'select-one' || elemType == 'select-multiple' ) {
                     // We have, what I hope, is a select box, time to unselect all options
                     var optionList = elem.options;
+
+                    if (optionList.length > 0) {
+                    	optionList[0].selected = "selected";
+                    }
+
                     for ( var ii = 0 ; ii < optionList.length ; ii++ ) {
                         optionList[ii].selected = false;
                     }
@@ -4222,16 +4243,16 @@ function open_popup(module_name, width, height, initial_filter, close_popup, hid
 		+ ',height=' + height
 		+ ',resizable=1,scrollbars=1';
 
-	if (popup_mode == '' && popup_mode == 'undefined') {
+	if (popup_mode == '' || popup_mode == undefined) {
 		popup_mode='single';
 	}
 	URL+='&mode='+popup_mode;
-	if (create == '' && create == 'undefined') {
+	if (create == '' || create == undefined) {
 		create = 'false';
 	}
 	URL+='&create='+create;
 
-	if (metadata != '' && metadata != 'undefined') {
+	if (metadata != '' && metadata != undefined) {
 		URL+='&metadata='+metadata;
 	}
 
@@ -4243,7 +4264,8 @@ function open_popup(module_name, width, height, initial_filter, close_popup, hid
 		var request_data = popup_request_data;
 	}
     var field_to_name_array_url = '';
-    if (request_data && request_data.field_to_name_array != 'undefined') {
+
+    if (request_data && request_data.field_to_name_array != undefined) {
         for(var key in request_data.field_to_name_array) {
             if ( key.toLowerCase() != 'id' ) {
                 field_to_name_array_url += '&field_to_name[]='+encodeURIComponent(key.toLowerCase());

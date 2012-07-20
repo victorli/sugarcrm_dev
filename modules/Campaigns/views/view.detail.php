@@ -71,7 +71,9 @@ class CampaignsViewDetail extends ViewDetail {
     }        
 
  	function display() {
-        
+ 	    global $app_list_strings; 
+ 	    $this->ss->assign('APP_LIST', $app_list_strings);
+ 	    
         if (isset($_REQUEST['mode']) && $_REQUEST['mode']=='set_target'){
             require_once('modules/Campaigns/utils.php');
             //call function to create campaign logs

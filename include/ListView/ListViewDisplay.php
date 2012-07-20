@@ -298,7 +298,8 @@ class ListViewDisplay {
         $link = array(
             'class' => 'clickMenu selectmenu',
             'id' => 'selectLink',
-            'buttons' => $menuItems
+            'buttons' => $menuItems,
+            'flat' => false,
         );
         return $link;
 	}
@@ -346,7 +347,8 @@ class ListViewDisplay {
             'class' => 'clickMenu selectActions fancymenu',
             'id' => 'selectActions',
             'name' => 'selectActions',
-            'buttons' => $menuItems
+            'buttons' => $menuItems,
+            'flat' => false,
         );
         return $link;
 

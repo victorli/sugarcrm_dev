@@ -462,3 +462,14 @@ function cleanFileName($name)
 {
     return preg_replace('/[^\w-._]+/i', '', $name);
 }
+
+/**
+ * Filter dir name to not contain path components - no slashes, no .., etc.
+ * @param string $name
+ * @return string
+ */
+function cleanDirName($name)
+{
+    return str_replace(array("\\", "/", "."), "", $name);
+}
+

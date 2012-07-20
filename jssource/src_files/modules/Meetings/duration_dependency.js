@@ -53,45 +53,52 @@ function DurationDependency(start_field,end_field,duration_field,format){
 	this.date_delimiter = /([-.\\/])/.exec(this.date_format)[0];
 	this.time_delimiter = /([.:])/.exec(this.time_format)[0];
 	this.has_meridiem = /p/i.test(this.format);
-	
-	var date_format_cleaned = this.date_format.replace(/%/g,"").replace(new RegExp(this.date_delimiter, 'g'),"");
+
+	var delimiter = (this.date_delimiter=="."?"\\"+this.date_delimiter:this.date_delimiter);
+	var date_format_cleaned = this.date_format.replace(/%/g,"").replace(new RegExp(delimiter, 'g'),"");
 	this.month_pos = date_format_cleaned.search(/m/);
 	this.day_pos = date_format_cleaned.search(/d/);
-	this.year_pos = date_format_cleaned.search(/Y/);	
-	
-	if(document.getElementById(end_field).value != "")
-		this.calculate_duration();
-	else
-		this.change_duration();	
-	
+	this.year_pos = date_format_cleaned.search(/Y/);
+
+    if (YAHOO.util.Selector.query('input#' + end_field)[0].value != "")
+    {
+        this.calculate_duration();
+    }
+    else
+    {
+        this.change_duration();
+    }
+
 	this.update_duration_fields();
 	this.set_duration_handler();
 	
 	
-	var self = this;		
-	YAHOO.util.Event.addListener(start_field, "change", function(){
-		self.change_start();		
-	});	
-	YAHOO.util.Event.addListener(end_field, "change", function(){
-		if(self.lock_end_listener)
-			return;
-		self.calculate_duration();
-		self.update_duration_fields();
-		self.set_duration_handler();				
-	});
+	var self = this;
+    YAHOO.util.Event.addListener(YAHOO.util.Selector.query('input#' + start_field)[0], "change", function(){
+        self.change_start();
+    });
+    YAHOO.util.Event.addListener(YAHOO.util.Selector.query('input#' + end_field)[0], "change", function(){
+        if (self.lock_end_listener)
+        {
+            return;
+        }
+        self.calculate_duration();
+        self.update_duration_fields();
+        self.set_duration_handler();
+    });
 	if(duration_field != null){
-		YAHOO.util.Event.addListener(duration_field, "change", function(){
-			self.change_duration();
-			self.update_duration_fields();	
-			SugarWidgetScheduler.update_time();	
-		});
+        YAHOO.util.Event.addListener(YAHOO.util.Selector.query('select#' + duration_field)[0], "change", function(){
+            self.change_duration();
+            self.update_duration_fields();
+            SugarWidgetScheduler.update_time();
+        });
 	}
 }
 
 DurationDependency.prototype.calculate_duration = function(){
 	try{
-		var start = this.parse_date(document.getElementById(this.start_field).value);
-		var end = this.parse_date(document.getElementById(this.end_field).value);	
+        var start = this.parse_date(YAHOO.util.Selector.query('input#' + this.start_field)[0].value);
+        var end = this.parse_date(YAHOO.util.Selector.query('input#' + this.end_field)[0].value);
 		this.duration = (end.getTime() - start.getTime()) / 1000;
 	}catch (e){
 		this.duration = 0;
@@ -101,7 +108,7 @@ DurationDependency.prototype.calculate_duration = function(){
 DurationDependency.prototype.change_start = function(){
 	this.lock_end_listener = true;
 				
-	var start = this.parse_date(document.getElementById(this.start_field).value);	
+    var start = this.parse_date(YAHOO.util.Selector.query('input#' + this.start_field)[0].value);
 	var end = new Date(start.getTime() + this.duration * 1000);	
 	this.set_date(end,this.end_field);
 			
@@ -112,11 +119,11 @@ DurationDependency.prototype.change_start = function(){
 }
 
 DurationDependency.prototype.change_duration = function(){	
-	this.lock_end_listener = true;	
-	
-	this.duration = document.getElementById(this.duration_field).value;	
-	var start = this.parse_date(document.getElementById(this.start_field).value);	
-	var end = new Date(start.getTime() + this.duration * 1000);
+	this.lock_end_listener = true;
+
+    this.duration = YAHOO.util.Selector.query('select#' + this.duration_field)[0].value;
+    var start = this.parse_date(YAHOO.util.Selector.query('input#' + this.start_field)[0].value);
+    var end = new Date(start.getTime() + this.duration * 1000);
 	this.set_date(end,this.end_field);
 		
 	var self = this;
@@ -127,23 +134,23 @@ DurationDependency.prototype.change_duration = function(){
 
 DurationDependency.prototype.update_duration_fields = function(){
 	var minutes = this.duration / 60;
-	
-	var hours_elm = document.getElementById(this.duration_field + "_hours");
-	var minutes_elm = document.getElementById(this.duration_field + "_minutes");
-	if(!hours_elm){
+
+    var hours_elm = YAHOO.util.Selector.query('input#' + this.duration_field + "_hours")[0];
+    var minutes_elm = YAHOO.util.Selector.query('input#' + this.duration_field + "_minutes")[0];
+    if(!hours_elm){
 		hours_elm = document.createElement("input");
 		hours_elm.setAttribute("type","hidden");
 		hours_elm.name = this.duration_field + "_hours";
 		hours_elm.id = hours_elm.name;
-		document.getElementById(this.end_field).parentNode.appendChild(hours_elm);
-	}
+        YAHOO.util.Selector.query('input#' + this.end_field)[0].parentNode.appendChild(hours_elm);
+    }
 	if(!minutes_elm){
 		minutes_elm = document.createElement("input");
 		minutes_elm.setAttribute("type","hidden");
 		minutes_elm.name = this.duration_field + "_minutes";
 		minutes_elm.id = minutes_elm.name;
-		document.getElementById(this.end_field).parentNode.appendChild(minutes_elm);
-	}
+        YAHOO.util.Selector.query('input#' + this.end_field)[0].parentNode.appendChild(minutes_elm);
+    }
 	
 	hours_elm.value = parseInt(minutes / 60);
 	minutes_elm.value = parseInt(minutes % 60);
@@ -176,9 +183,9 @@ DurationDependency.prototype.get_duration_text = function(){
 DurationDependency.prototype.set_duration_handler = function(){
 	if(this.duration_field == null)
 		return;
-	var dur_elm = document.getElementById(this.duration_field);
-	
-	if(dur_elm){	
+    var dur_elm = YAHOO.util.Selector.query('select#' + this.duration_field)[0];
+
+    if(dur_elm){
 		if(this.duration >= 0){
 			this.add_custom_duration(dur_elm);
 		}	
@@ -295,21 +302,21 @@ DurationDependency.prototype.set_date = function(date,field){
 			date += month;
 		if(i == this.day_pos)
 			date += day;
-	}	
+	}
 
-	document.getElementById(field + "_date").value = date;	
-	document.getElementById(field + "_hours").value = hour;
-	document.getElementById(field + "_minutes").value = minute;
-	if(this.has_meridiem){
-		var nodes = document.getElementById(field + "_meridiem").childNodes;
-		for(var i = 0; i < nodes.length; i++){
+    YAHOO.util.Selector.query('input#' + field + "_date")[0].value = date;
+    YAHOO.util.Selector.query('select#' + field + "_hours")[0].value = hour;
+    YAHOO.util.Selector.query('select#' + field + "_minutes")[0].value = minute;
+    if(this.has_meridiem){
+        var nodes = YAHOO.util.Selector.query('select#' + field + "_meridiem")[0].childNodes;
+        for(var i = 0; i < nodes.length; i++){
 			if(nodes[i].value == "AM"){
 				meridiem = meridiem.toUpperCase();
 				break;
 			}
-		}	
-		document.getElementById(field + "_meridiem").value = meridiem;
-	}
+		}
+        YAHOO.util.Selector.query('select#' + field + "_meridiem")[0].value = meridiem;
+    }
 	
 	eval("combo_" + field + ".update()");	
 }

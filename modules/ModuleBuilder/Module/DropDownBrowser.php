@@ -37,6 +37,15 @@
 
 class DropDownBrowser
 {
+    // Restrict the full dropdown list to remove some options that shouldn't be edited by the end users
+    public static $restrictedDropdowns = array(
+        'eapm_list',
+        'eapm_list_documents',
+        'eapm_list_import',
+        'extapi_meeting_password',
+        // 'moduleList', // We may want to put this in at a later date
+        // 'moduleListSingular', // Same with this
+    );
  
     function getNodes()
     {
@@ -51,6 +60,11 @@ class DropDownBrowser
         		unset($my_list_strings[$key]);
         	}
         }
+
+        foreach ( self::$restrictedDropdowns as $restrictedDropdown ) {
+            unset($my_list_strings[$restrictedDropdown]);
+        }
+
         $dropdowns = array_keys($my_list_strings);
         asort($dropdowns);
         foreach($dropdowns as $dd)

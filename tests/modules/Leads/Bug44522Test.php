@@ -35,7 +35,7 @@
  ********************************************************************************/
 
  
-class Bug44522Test extends Sugar_PHPUnit_Framework_TestCase
+class Bug44522Test extends Sugar_PHPUnit_Framework_OutputTestCase
 {
     var $user;
     var $account;
@@ -89,8 +89,6 @@ class Bug44522Test extends Sugar_PHPUnit_Framework_TestCase
     //run test to make sure there is an entry in campaign_log table for newly created contact during lead conversion (bug 44522)
     public function testConvertContactInCampaignLog()
     {
-        //there will be output from display function, so call ob_start to trap it
-        ob_start();
 
         $_POST = array();
         
@@ -125,6 +123,5 @@ class Bug44522Test extends Sugar_PHPUnit_Framework_TestCase
         }
         
         $this->assertEquals($contact_id, $test_contact_id);
-        $output = ob_get_clean();
     }
 }

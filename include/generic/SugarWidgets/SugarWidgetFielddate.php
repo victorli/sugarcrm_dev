@@ -106,4 +106,18 @@ class SugarWidgetFieldDate extends SugarWidgetFieldDateTime
         return $this->queryFilterOn($layout_def);
 	}
 
+    protected function queryMonth($layout_def, $month)
+    {
+        $end = clone($month);
+        $end->setDate($month->year, $month->month, $month->days_in_month);
+        $beginDate = $month->asDbDate();
+        $endDate = $end->asDbDate();
+        return $this->get_start_end_date_filter($layout_def, $beginDate, $endDate);
+    }
+
+    protected function now()
+    {
+        global $timedate;
+        return $timedate->tzGMT($timedate->getNow(), $this->getAssignedUser());
+    }
 }

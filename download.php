@@ -52,6 +52,7 @@ else {
     $app_strings = return_application_language($GLOBALS['current_language']);
     $mod_strings = return_module_language($GLOBALS['current_language'], 'ACL');
 	$file_type = strtolower($_REQUEST['type']);
+    $check_image = false;
     if(!isset($_REQUEST['isTempFile'])) {
 	    //Custom modules may have capitalizations anywhere in their names. We should check the passed in format first.
 		require('include/modules.php');
@@ -93,12 +94,12 @@ else {
         // See if it is a remote file, if so, send them that direction
         if ( isset($focus->doc_url) && !empty($focus->doc_url) ) {
             header('Location: '.$focus->doc_url);
-            sugar_die();
+            sugar_die("Remote file detected, location header sent.");
         }
 
         if ( isset($focusRevision) && isset($focusRevision->doc_url) && !empty($focusRevision->doc_url) ) {
             header('Location: '.$focusRevision->doc_url);
-            sugar_die();
+            sugar_die("Remote file detected, location header sent.");
         }
 
     } // if
@@ -134,6 +135,7 @@ else {
 		}  elseif($file_type == 'notes') {
 			$query = "SELECT filename name FROM notes ";
 			$query .= "WHERE notes.id = '" . $db->quote($_REQUEST['id']) ."'";
+            $check_image = true;
 		} elseif( !isset($_REQUEST['isTempFile']) && !isset($_REQUEST['tempName'] ) && isset($_REQUEST['type']) && $file_type!='temp' ){ //make sure not email temp file.
 			$query = "SELECT filename name FROM ". $file_type ." ";
 			$query .= "WHERE ". $file_type .".id= '".$db->quote($_REQUEST['id'])."'";
@@ -187,7 +189,7 @@ else {
             	header("Content-type: application/octet-stream");
             	header("Content-Disposition: attachment; filename=\"".$name."\";");
 			}
-            
+
 		}
 		// disable content type sniffing in MSIE
 		header("X-Content-Type-Options: nosniff");

@@ -86,10 +86,10 @@ $relArray = array();
 //build relationship array
 foreach($sel_obj as $key=>$value)
 {
-	$id = 'rel_id_'.str_replace('-', '', $key);	
+	$id = 'rel_id_'.md5($key);
 	if(isset($_POST[$id]) && !empty($_POST[$id]))
 	{
-		$relArray[$key] = $_POST[$id];	
+		$relArray[$key] = $_POST[$id];
 	}
 }
 
@@ -106,7 +106,7 @@ require_once($beanFiles[$class_name]);
 
 	$seed = new $class_name();
 	foreach($sel_obj as $key=>$value)
-	{	
+	{
 		$builtArray[$key] = $value;
 		if(isset($relArray[$key]))
 		{
@@ -125,7 +125,7 @@ require_once($beanFiles[$class_name]);
 }
 else
 {
-	$builtArray = $sel_obj;	
+	$builtArray = $sel_obj;
 }
 
 $xtpl->assign("MAILMERGE_MODULE", $_SESSION['MAILMERGE_MODULE']);
@@ -144,7 +144,7 @@ else
 {
 	$xtpl->assign("PREV_STEP", "3");
 }
-	
+
 $xtpl->assign("STEP_NUM", "Step ".$step_num.":");
 
 $xtpl->parse("main");

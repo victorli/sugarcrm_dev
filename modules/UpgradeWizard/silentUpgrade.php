@@ -60,6 +60,13 @@ function build_argument_string($arguments=array()) {
    return $argument_string;
 }
 
+//Bug 52872. Dies if the request does not come from CLI.
+$sapi_type = php_sapi_name();
+if (substr($sapi_type, 0, 3) != 'cli') {
+    die("This is command-line only script");
+}
+//End of #52872
+
 $php_path = '';
 $run_dce_upgrade = false;
 if(isset($argv[3]) && is_dir($argv[3]) && file_exists($argv[3]."/ini_setup.php")) {

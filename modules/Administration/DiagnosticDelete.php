@@ -39,6 +39,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 if (!is_admin($GLOBALS['current_user'])) {
     sugar_die("Unauthorized access to administration.");
 }
+if (isset($GLOBALS['sugar_config']['hide_admin_diagnostics']) && $GLOBALS['sugar_config']['hide_admin_diagnostics'])
+{
+    sugar_die("Unauthorized access to diagnostic tool.");
+}
 
 echo getClassicModuleTitle(
         "Administration",

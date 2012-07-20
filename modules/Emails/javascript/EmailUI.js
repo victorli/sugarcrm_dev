@@ -483,18 +483,20 @@ SE.accounts = {
             document.getElementById("mail_smtpuser_label").innerHTML = mod_strings.LBL_YAHOOMAIL_SMTPUSER;
             break;
         case "gmail":
-            document.getElementById("mail_smtpserver").value = 'smtp.gmail.com';
-            document.getElementById("mail_smtpport").value = '587';
-            document.getElementById("mail_smtpauth_req").checked = true;
-            var ssl = document.getElementById("mail_smtpssl");
-            for(var j=0;j<ssl.options.length;j++) {
-                if(ssl.options[j].text == 'TLS') {
-                    ssl.options[j].selected = true;
-                    break;
+            if(document.getElementById("mail_smtpserver").value == "" || document.getElementById("mail_smtpserver").value == 'plus.smtp.mail.yahoo.com') {
+                document.getElementById("mail_smtpserver").value = 'smtp.gmail.com';
+                document.getElementById("mail_smtpport").value = '587';
+                document.getElementById("mail_smtpauth_req").checked = true;
+                var ssl = document.getElementById("mail_smtpssl");
+                for(var j=0;j<ssl.options.length;j++) {
+                    if(ssl.options[j].text == 'TLS') {
+                        ssl.options[j].selected = true;
+                        break;
+                    }
                 }
             }
-            document.getElementById("mailsettings1").style.display = 'none';
-            document.getElementById("mailsettings2").style.display = 'none';
+            //document.getElementById("mailsettings1").style.display = 'none';
+            //document.getElementById("mailsettings2").style.display = 'none';
             document.getElementById("mail_smtppass_label").innerHTML = mod_strings.LBL_GMAIL_SMTPPASS;
             document.getElementById("mail_smtpuser_label").innerHTML = mod_strings.LBL_GMAIL_SMTPUSER;
             break;
@@ -2391,13 +2393,13 @@ SE.folders = {
 
         if(node != null && node.data) {
             SUGAR.showMessageBox(app_strings.LBL_EMAIL_FOLDERS_ADD_DIALOG_TITLE,
-                    app_strings.LBL_EMAIL_SETTINGS_NAME,
+                    app_strings.LBL_EMAIL_FOLDERS_NEW_FOLDER,
                     'prompt', {fn:SE.folders.folderAddXmlCall, beforeShow: SE.folders.folderAddRegisterEnter, beforeHide: SE.folders.folderRemoveRegisterEnter});
         } else {
             alert(app_strings.LBL_EMAIL_FOLDERS_NO_VALID_NODE);
         }
     },
-
+    
     folderAddRegisterEnter : function() {
     	this.enterKeyListener = new YAHOO.util.KeyListener(YAHOO.util.Dom.get("sugar-message-prompt"),
     															{keys: YAHOO.util.KeyListener.KEY.ENTER},

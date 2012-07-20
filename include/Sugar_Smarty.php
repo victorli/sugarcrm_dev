@@ -49,7 +49,6 @@ if(!defined('SUGAR_SMARTY_DIR'))
  */
 class Sugar_Smarty extends Smarty
 {
-
 	function Sugar_Smarty()
 	{
 		if(!file_exists(SUGAR_SMARTY_DIR))mkdir_recursive(SUGAR_SMARTY_DIR, true);
@@ -73,6 +72,19 @@ class Sugar_Smarty extends Smarty
 		$this->assign("VERSION_MARK", getVersionedPath(''));
 	}
 
+	/**
+	 * Override default _unlink method call to fix Bug 53010
+	 *
+	 * @param string $resource
+     * @param integer $exp_time
+     */
+    function _unlink($resource, $exp_time = null)
+    {
+        if(file_exists($resource)) {
+            return parent::_unlink($resource, $exp_time);
+        }
+        
+        // file wasn't found, so it must be gone.
+        return true;
+    }
 }
-
-?>

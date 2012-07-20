@@ -26,30 +26,18 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
   
-/**
- * Return a SamlSettings object with user settings.
- *
- * @return SamlSettings object
- */
-function get_saml_settings()
-{
-    // this function should be modified to return the SAML settings for the current user
+$settings                           = new SamlSettings();
+// when using Service Provider Initiated SSO (starting at index.php), this URL asks the IdP to authenticate the user. 
+$settings->idp_sso_target_url       = isset($GLOBALS['sugar_config']['SAML_loginurl']) ? $GLOBALS['sugar_config']['SAML_loginurl'] : '';
 
-    $settings                           = new SamlSettings();
-    // when using Service Provider Initiated SSO (starting at index.php), this URL asks the IdP to authenticate the user. 
-    $settings->idp_sso_target_url       = $GLOBALS['sugar_config']['SAML_loginurl'];
-    
-    // the certificate for the users account in the IdP
-    $settings->x509certificate          = $GLOBALS['sugar_config']['SAML_X509Cert'];
-    
-    // The URL where to the SAML Response/SAML Assertion will be posted
-    $settings->assertion_consumer_service_url = $GLOBALS['sugar_config']['site_url']. "/index.php?module=Users&action=Authenticate";
+// the certificate for the users account in the IdP
+$settings->x509certificate          = isset($GLOBALS['sugar_config']['SAML_X509Cert']) ? $GLOBALS['sugar_config']['SAML_X509Cert'] : '';
 
-    // Name of this application
-    $settings->issuer                         = "php-saml";
+// The URL where to the SAML Response/SAML Assertion will be posted
+$settings->assertion_consumer_service_url = $GLOBALS['sugar_config']['site_url']. "/index.php?module=Users&action=Authenticate";
 
-    // Tells the IdP to return the email address of the current user
-    $settings->name_identifier_format         = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress";
+// Name of this application
+$settings->issuer                         = "php-saml";
 
-    return $settings;
-}
+// Tells the IdP to return the email address of the current user
+$settings->name_identifier_format         = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress";

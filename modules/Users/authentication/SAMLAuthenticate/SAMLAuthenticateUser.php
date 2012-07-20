@@ -68,38 +68,28 @@ class SAMLAuthenticateUser extends SugarAuthenticateUser{
 		
 		$GLOBALS['log']->debug('have saml data.'); // JMH
 		// Look for custom versions of settings.php if it exists
+
+		require_once('modules/Users/authentication/SAMLAuthenticate/lib/onelogin/saml.php');
         require(get_custom_file_if_exists('modules/Users/authentication/SAMLAuthenticate/settings.php'));
 
-		require('modules/Users/authentication/SAMLAuthenticate/lib/onelogin/saml.php');
-
-		$samlresponse = new SamlResponse(get_saml_settings(), $_POST['SAMLResponse']);
+        $samlresponse = new SamlResponse($settings, $_POST['SAMLResponse']);
 
 		if ($samlresponse->is_valid()){
 			$GLOBALS['log']->debug('response is valid');
-			$settings = get_saml_settings();
 			$customFields = $this->getAdditionalFieldsToSelect($samlresponse, $settings);
 			$GLOBALS['log']->debug('got this many custom fields:' . count($customFields));
-			$xmlDoc = new DOMDocument();
-			$xmlDoc->loadXML(base64_decode($_POST['SAMLResponse']));
-			$xpath = new DOMXpath($xmlDoc);
-			$query = $settings->saml_settings['check']['user_name'];
-			$entries = $xpath->query($query);
-			$nameId = $entries->item(0)->nodeValue;
-	
-			$sql = "SELECT id, status $customFields FROM users WHERE " . $settings->id . "='" . $nameId . "' AND deleted = 0";
-			$dbresult = $GLOBALS['db']->query("SELECT id, status $customFields FROM users WHERE " . $settings->id . "='" . $nameId . "' AND deleted = 0");
-	
-			$GLOBALS['log']->debug("sql: {$sql}"); // JMH
-					
-			$GLOBALS['log']->debug('queried the db'); // JMH
+
+            $id = $this->get_user_id($samlresponse, $settings);
+            $user = $this->fetch_user($id, $settings->id);
+
 			//user already exists use this one
-			if($row = $GLOBALS['db']->fetchByAssoc($dbresult)){
+			if ($user->id){
 				$GLOBALS['log']->debug('have db results'); // JMH
-				if($row['status'] != 'Inactive')
+				if($user->status != 'Inactive')
 				{
 					$GLOBALS['log']->debug('have current user'); // JMH
-					$this->updateCustomFields($row, $_POST['SAMLResponse'], $settings);
-					return $row['id'];
+					$this->updateCustomFields($user, $samlresponse, $settings);
+					return $user->id;
 				}
 				else
 				{
@@ -109,9 +99,11 @@ class SAMLAuthenticateUser extends SugarAuthenticateUser{
 			}
 			else
 			{
+                $xmlDoc = $samlresponse->xml;
+                $xpath = new DOMXpath($xmlDoc);
                 if (isset($settings->customCreateFunction))
                 {
-                    call_user_func($settings->customCreateFunction, $this, $samlresponse->get_nameid(), $xpath, $settings);
+                    return call_user_func($settings->customCreateFunction, $this, $samlresponse->get_nameid(), $xpath, $settings);
                 } else {
                     return $this->createUser($samlresponse->get_nameid(), $xpath, $settings);
                 }
@@ -130,14 +122,14 @@ class SAMLAuthenticateUser extends SugarAuthenticateUser{
 	* by that xpath. If the value of the node does not equal the value in our
 	* records, update our records to match the value from the xml.
 	*
-	* @param hash $dbData - data for this user from our db.
-	* @param string $xmlSAMLAssertion - xml text, a valid saml assertion.
+	* @param User $user - user fetched from our db.
+	* @param SamlResponse $samlresponse - saml provider response.
 	* @param SamlSettings $settings - our settings object.
 	* @return int - 0 = no action taken, 1 = user record saved, -1 = no update.
 	*
 	* Contributed by Mike Andersen, SugarCRM.
 	**/
-	function updateCustomFields($dbData, $xmlSAMLAssertion, $settings)
+	function updateCustomFields($user, $samlresponse, $settings)
 	{
 		$customFields = $this->getCustomFields($settings, 'update');
 
@@ -147,12 +139,9 @@ class SAMLAuthenticateUser extends SugarAuthenticateUser{
 			return 0;
 		}
 		
-		$user = new User();
-		$user->retrieve($dbData['id']);
 		$GLOBALS['log']->debug("updateCF()... userid={$user->id}"); // JMH
 		
-		$xmlDoc = new DOMDocument();
-		$xmlDoc->loadXML(base64_decode($xmlSAMLAssertion));
+		$xmlDoc = $samlresponse->xml;
 		$xpath = new DOMXpath($xmlDoc);
 		$GLOBALS['log']->debug("Created xpath object."); // JMH
 		
@@ -161,13 +150,13 @@ class SAMLAuthenticateUser extends SugarAuthenticateUser{
 		foreach ($customFields as $field)
 		{
 			$GLOBALS['log']->debug("Top of fields loop with $field."); // JMH
-			if (!array_key_exists($field, $dbData))
+			if (!property_exists($user, $field))
 			{
-				$GLOBALS['log']->debug("$field is not in \$dbData. \n\$dbData=" . var_export($dbData, TRUE)); // JMH
+				$GLOBALS['log']->debug("$field is not a user field. \nThe fields are: " . var_export(array_keys(get_object_vars($user)), TRUE)); // JMH
 				// custom field not listed in db query results!
 				continue;
 			}
-			$customFieldValue = $dbData[$field];
+			$customFieldValue = $user->$field;
 			
 			$xmlNodes = $xpath->query($settings->saml_settings['update'][$field]);
 			if ($xmlNodes === false)
@@ -312,5 +301,89 @@ class SAMLAuthenticateUser extends SugarAuthenticateUser{
   	$GLOBALS['log']->debug("New user id is " . $user->id);
 		return $user->id;
 	}
+
+    /**
+     * Retrieves user ID from SamlResponse according to SamlSettings
+     *
+     * @param SamlResponse $samlresponse
+     * @param SamlSettings $settings
+     * @return string
+     */
+    protected function get_user_id($samlresponse, $settings)
+    {
+        if (isset($settings->saml_settings['check']['user_name']))
+        {
+            $xmlDoc = $samlresponse->xml;
+            $xpath = new DOMXpath($xmlDoc);
+            $query = $settings->saml_settings['check']['user_name'];
+            $entries = $xpath->query($query);
+            $name_id = $entries->item(0)->nodeValue;
+        }
+        else
+        {
+            $name_id = $samlresponse->get_nameid();
+        }
+
+        return $name_id;
+    }
+
+    /**
+     * Fetches user by provided ID and field name
+     *
+     * @param mixed $id
+     * @param string $field
+     * @return User
+     */
+    protected function fetch_user($id, $field = null)
+    {
+        $user = new User();
+
+        if (null !== $field)
+        {
+            switch ($field)
+            {
+                case 'user_name':
+                    // fetch user id by username
+                    $sql = 'select id from users where user_name = '
+                        . $user->db->quoted($id) . ' and deleted = 0';
+                    $data = $user->db->fetchOne($sql);
+                    if (is_array($data)) {
+                        $id = reset($data);
+                        $user->retrieve($id);
+                    }
+                    break;
+                case 'id':
+                    $user->retrieve($id);
+                    break;
+                default:
+                    // nothing else is implemented
+                    break;
+            }
+        }
+        else
+        {
+            // use email as a default primary key (onelogin.com provides it)
+            $user->retrieve_by_email_address($id);
+        }
+
+        return $user;
+    }
+
+    /**
+     * This is called when a user logs in
+     *
+     * @param string $name
+     * @param string $password
+     * @param boolean $fallback - is this authentication a fallback from a failed authentication
+     * @param array $PARAMS
+     * @return boolean
+     */
+    public function loadUserOnLogin($name, $password, $fallback = false, $PARAMS = array())
+    {
+        // provide dummy login and password to parent class so that authentication
+        // process could go on
+        return parent::loadUserOnLogin('onelogin', 'onelogin', $fallback, $PARAMS);
+    }
 }
+
 ?>

@@ -335,13 +335,6 @@ $dictionary['Account'] = array('table' => 'accounts', 'audited'=>true, 'unified_
     'table' => 'users',
   ),
 
-  'products' => array(
-      'name' => 'products',
-      'type' => 'link',
-      'relationship' => 'products_accounts',
-      'source' => 'non-db',
-      'vname' => 'LBL_PRODUCTS',
-  ),
 
  'campaign_id' =>
   array (

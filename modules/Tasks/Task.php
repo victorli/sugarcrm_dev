@@ -300,8 +300,7 @@ class Task extends SugarBean {
 		//make sure we grab the localized version of the contact name, if a contact is provided
 		if (!empty($this->contact_id)) {
             // Bug# 46125 - make first name, last name, salutation and title of Contacts respect field level ACLs
-            $contact = new Contact();
-			$contact->retrieve($this->contact_id);
+            $contact = BeanFactory::getBean("Contacts", $this->contact_id);
 			if(isset($contact->id)) {
 			    $this->contact_name = $contact->full_name;
                 $this->contact_phone = $contact->phone_work;

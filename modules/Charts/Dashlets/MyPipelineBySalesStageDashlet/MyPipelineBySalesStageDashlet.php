@@ -94,7 +94,7 @@ class MyPipelineBySalesStageDashlet extends DashletGenericChart
      */
     public function display()
     {
-		global $sugar_config, $current_user;
+        global $sugar_config, $current_user, $timedate;
 
         require_once('include/SugarCharts/SugarChartFactory.php');
 		$sugarChart = SugarChartFactory::getInstance();
@@ -125,6 +125,24 @@ class MyPipelineBySalesStageDashlet extends DashletGenericChart
 			$total = format_number($this->getHorizBarTotal($dataset), 0, 0, array('convert'=>true));
 			$pipeline_total_string = translate('LBL_TOTAL_PIPELINE', 'Charts') . $sugarChart->currency_symbol . $total . $sugarChart->thousands_symbol;
 			$sugarChart->setProperties($pipeline_total_string, $subtitle, 'horizontal bar chart');
+
+        // Bug #53753 We have to add values for filter based on "Expected Close Date" field
+        if (!empty($this->mypbss_date_start) && !empty($this->mypbss_date_end))
+        {
+            $sugarChart->url_params['date_closed_advanced_range_choice'] = 'between';
+            $sugarChart->url_params['start_range_date_closed_advanced'] = $timedate->to_display_date($this->mypbss_date_start, false);
+            $sugarChart->url_params['end_range_date_closed_advanced'] = $timedate->to_display_date($this->mypbss_date_end, false);
+        }
+        elseif (!empty($this->mypbss_date_start))
+        {
+            $sugarChart->url_params['date_closed_advanced_range_choice'] = 'greater_than';
+            $sugarChart->url_params['range_date_closed_advanced'] = $timedate->to_display_date($this->mypbss_date_start, false);
+        }
+        elseif (!empty($this->mypbss_date_end))
+        {
+            $sugarChart->url_params['date_closed_advanced_range_choice'] = 'less_than';
+            $sugarChart->url_params['range_date_closed_advanced'] = $timedate->to_display_date($this->mypbss_date_end, false);
+        }
 
         $xmlFile = $sugarChart->getXMLFileName($this->id);
         $sugarChart->saveXMLFile($xmlFile, $sugarChart->generateXML());

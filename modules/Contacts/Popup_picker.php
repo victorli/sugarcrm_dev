@@ -36,33 +36,12 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
-
-global $theme;
-
-
 require_once('modules/Contacts/ContactFormBase.php');
-
-
-
-
-
-
 
 class Popup_Picker
 {
-	
-	
 	/*
-	 * 
-	 */
-	function Popup_Picker()
-	{
-		
-	}
-	
-	/*
-	 * 
+	 *
 	 */
 	function _get_where_clause()
 	{
@@ -89,13 +68,13 @@ class Popup_Picker
 		global $app_strings;
 		global $currentModule;
 		global $sugar_version, $sugar_config;
-		
+
 		$output_html = '';
 		$where = '';
-		
+
 		$where = $this->_get_where_clause();
-		
-		
+
+
 		$formBase = new ContactFormBase();
 		if(isset($_REQUEST['doAction']) && $_REQUEST['doAction'] == 'save')
 		{
@@ -110,7 +89,7 @@ class Popup_Picker
 		$lbl_save_button_title = $app_strings['LBL_SAVE_BUTTON_TITLE'];
 		$lbl_save_button_key = $app_strings['LBL_SAVE_BUTTON_KEY'];
 		$lbl_save_button_label = $app_strings['LBL_SAVE_BUTTON_LABEL'];
-		
+
 		// TODO: cleanup the construction of $addform
 		$formbody = $formBase->getFormBody('','','EmailEditView');
 		$addform = '<table><tr><td nowrap="nowrap" valign="top">'
@@ -149,7 +128,7 @@ EOQ;
 		$form->assign('LAST_NAME', $last_name);
 		$form->assign('ACCOUNT_NAME', $account_name);
 		$form->assign('request_data', $request_data);
-		
+
 		// fill in for mass update
 		$button = "<input type='hidden' name='module' value='Contacts'>".
 		          "<input type='hidden' id='form_action' name='action' value='CloseContactAddressPopup'>".
@@ -157,13 +136,13 @@ EOQ;
 		          "<input type='hidden' name='delete' value='false'>".
 		          "<input type='hidden' name='mass' value='Array'>".
 		          "<input type='hidden' name='Update' value='Update'>";
-		          
+
 		if(isset($_REQUEST['mass']) && is_array($_REQUEST['mass'])) {
 			foreach(array_unique($_REQUEST['mass']) as $record) {
 				$button .= "<input style='display: none' checked type='checkbox' name='mass[]' value='$record'>\n";
-			}		
+			}
 		}
-		
+
 		$button .= "<input type='hidden' name='query' value='true'>";
 		$button .= "<input type='hidden' name='saved_associated_data' value=''>";
 		$button .= "<input type='hidden' name='close_window' value='true'>";
@@ -191,7 +170,7 @@ EOQ;
 		insert_popup_header($theme);
 		$output_html .= ob_get_contents();
 		ob_end_clean();
-				
+
 		// Reset the sections that are already in the page so that they do not print again later.
 		$form->reset('main.SearchHeader');
 
@@ -207,17 +186,17 @@ EOQ;
 		$ListView->setHeaderText($button);
 		$ListView->setQuery($where, '', '', 'CONTACT');
 		$ListView->setModStrings($mod_strings);
-		
+
 		ob_start();
 		$ListView->processListViewMulti($seed_bean, 'main', 'CONTACT');
 		$output_html .= ob_get_contents();
 		ob_end_clean();
-       
-        // Regular Expression to override sListView 
-        $exp = '/sListView.save_checks/si'; 
+
+        // Regular Expression to override sListView
+        $exp = '/sListView.save_checks/si';
         $change = 'save_checks';
         $output_html = preg_replace(array($exp), array($change), $output_html);
-        
+
 		$output_html .= <<<EOJS
         <script type="text/javascript">
         <!--
@@ -232,11 +211,11 @@ EOQ;
         }
         checked_items = Array();
         inputs_array = document.MassUpdate.elements;
-        
+
         for(wp = 0 ; wp < inputs_array.length; wp++) {
             if(inputs_array[wp].name == "mass[]" && inputs_array[wp].style.display == "none") {
                 checked_items.push(inputs_array[wp].value);
-            } 
+            }
         }
         for(i in checked_items) {
             for(wp = 0 ; wp < inputs_array.length; wp++) {
@@ -248,11 +227,11 @@ EOQ;
         -->
         </script>
 EOJS;
-		
+
 		$output_html .= insert_popup_footer();
 		return $output_html;
 	}
-	
+
 	function process_page_for_merge()
 	{
 		global $theme;
@@ -260,14 +239,12 @@ EOJS;
 		global $app_strings;
 		global $currentModule;
 		global $sugar_version, $sugar_config;
-		
+
 		$output_html = '';
 		$where = '';
-		
+
 		$where = $this->_get_where_clause();
-		
-		
-		
+
 		$first_name = empty($_REQUEST['first_name']) ? '' : $_REQUEST['first_name'];
 		$last_name = empty($_REQUEST['last_name']) ? '' : $_REQUEST['last_name'];
 		$account_name = empty($_REQUEST['account_name']) ? '' : $_REQUEST['account_name'];
@@ -310,15 +287,15 @@ EOJS;
 		insert_popup_header($theme);
 		$output_html .= ob_get_contents();
 		ob_end_clean();
-		
+
 		$output_html .= get_form_header($mod_strings['LBL_SEARCH_FORM_TITLE'], '', false);
-		
+
 		$form->parse('main.SearchHeader');
 		$output_html .= $form->text('main.SearchHeader');
-		
+
 		// Reset the sections that are already in the page so that they do not print again later.
 		$form->reset('main.SearchHeader');
-		
+
 		// create the listview
 		$seed_bean = new Contact();
 		$ListView = new ListView();
@@ -335,11 +312,12 @@ EOJS;
 		ob_start();
 		$output_html .= get_form_header($mod_strings['LBL_LIST_FORM_TITLE'], $button, false);
 				//BEGIN ATHENA CUSTOMIZATION - rsmith
-			$query = $_REQUEST['select'].' WHERE '.$_REQUEST['where']."'".$_REQUEST['id']."'";
-			
-			//$response = $seed_bean->process_list_query($_REQUEST['select'], 0, -1, -1, $_REQUEST['where']."'".$_REQUEST['id']."'");
-			
-			$result = $seed_bean->db->query($query,true,"Error retrieving $seed_bean->object_name list: ");
+        require_once('modules/MailMerge/merge_query.php');
+        $rel_module = empty($_REQUEST['rel_module'])?'': $_REQUEST['rel_module'];
+        $id = empty($_REQUEST['id'])?'': $_REQUEST['id'];
+
+		$query = get_merge_query($seed_bean, $rel_module, $id);
+		$result = $seed_bean->db->query($query,true,"Error retrieving $seed_bean->object_name list: ");
 
 			$list = Array();
 				while(($row = $seed_bean->db->fetchByAssoc($result)) != null)
@@ -347,33 +325,32 @@ EOJS;
 						$seed_bean = new Contact();
 						foreach($seed_bean->field_defs as $field=>$value)
 						{
-							if (isset($row[$field])) 
+							if (isset($row[$field]))
 							{
 								$seed_bean->$field = $row[$field];
 							}
-							else if (isset($row[$seed_bean->table_name .'.'.$field])) 
+							else if (isset($row[$seed_bean->table_name .'.'.$field]))
 							{
 								$seed_bean->$field = $row[$seed_bean->table_name .'.'.$field];
 							}
 							else
 							{
 								$seed_bean->$field = "";
-							}	
+							}
 						}
 						$seed_bean->fill_in_additional_list_fields();
 
 						$list[] = $seed_bean;
 			    	}
-					
+
 			$ListView->processListViewTwo($list, 'main', 'CONTACT');
 
 		//END ATHENA CUSTOMIZATION - rsmith
 		$output_html .= ob_get_contents();
 		ob_end_clean();
-				
+
 		$output_html .= insert_popup_footer();
 		return $output_html;
-		
+
 	}
 }
-?>

@@ -91,6 +91,33 @@ class SugarBeanTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertNotContains("select * from config", $bean->db->lastQuery);
     }
 
+
+
+
+    /**
+     * Test to make sure that when a bean is cloned it removes all loaded relationships so they can be recreated on
+     * the cloned copy if they are called.
+     *
+     * @group 51630
+     * @return void
+     */
+    public function testCloneBeanDoesntKeepRelationship()
+    {
+        $account = SugarTestAccountUtilities::createAccount();
+
+        $account->load_relationship('contacts');
+
+        // lets make sure the relationship is loaded
+        $this->assertTrue(isset($account->contacts));
+
+        $clone_account = clone $account;
+
+        // lets make sure that the relationship is not on the cloned record
+        $this->assertFalse(isset($clone_account->contacts));
+
+        SugarTestAccountUtilities::removeAllCreatedAccounts();
+    }
+
 }
 
 // Using Mssql here because mysql needs real connection for quoting

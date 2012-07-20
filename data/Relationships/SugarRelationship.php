@@ -334,6 +334,19 @@ abstract class SugarRelationship
     }
 
     /**
+     * Call the before add logic hook for a given link
+     * @param  SugarBean $focus base bean the hooks is triggered from
+     * @param  SugarBean $related bean being added/removed/updated from relationship
+     * @param string $link_name name of link being triggerd
+     * @return void
+     */
+    protected function callBeforeAdd($focus, $related, $link_name="")
+    {
+        $custom_logic_arguments = $this->getCustomLogicArguments($focus, $related, $link_name);
+        $focus->call_custom_logic('before_relationship_add', $custom_logic_arguments);
+    }
+
+    /**
      * Call the after add logic hook for a given link
      * @param  SugarBean $focus base bean the hooks is triggered from
      * @param  SugarBean $related bean being added/removed/updated from relationship
@@ -344,6 +357,18 @@ abstract class SugarRelationship
     {
         $custom_logic_arguments = $this->getCustomLogicArguments($focus, $related, $link_name);
         $focus->call_custom_logic('after_relationship_add', $custom_logic_arguments);
+    }
+
+    /**
+     * @param  SugarBean $focus
+     * @param  SugarBean $related
+     * @param string $link_name
+     * @return void
+     */
+    protected function callBeforeDelete($focus, $related, $link_name="")
+    {
+        $custom_logic_arguments = $this->getCustomLogicArguments($focus, $related, $link_name);
+        $focus->call_custom_logic('before_relationship_delete', $custom_logic_arguments);
     }
 
     /**

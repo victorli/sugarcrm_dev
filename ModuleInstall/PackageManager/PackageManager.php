@@ -569,21 +569,25 @@ class PackageManager{
     	$uh->id_name = $name;
     	$found = $uh->checkForExisting($uh);
     	if($found != null){
-
     		global $sugar_config;
 	        global $mod_strings;
 	        global $current_language;
 	        $base_upgrade_dir       = $this->upload_dir.'/upgrades';
 	        $base_tmp_upgrade_dir   = "$base_upgrade_dir/temp";
-	    	if(!isset($GLOBALS['mi_remove_tables']))$GLOBALS['mi_remove_tables'] = true;
-	    	$unzip_dir = mk_temp_dir( $base_tmp_upgrade_dir );
-	    	unzip($found->filename, $unzip_dir );
-	    	$mi = new ModuleInstaller();
-	        $mi->silent = true;
-	        $mi->uninstall( "$unzip_dir");
-	        $found->delete();
-	        unlink(remove_file_extension( $found->filename ) . '-manifest.php');
-	        unlink($found->filename);
+            if(is_file($found->filename)){
+                if(!isset($GLOBALS['mi_remove_tables']))$GLOBALS['mi_remove_tables'] = true;
+                $unzip_dir = mk_temp_dir( $base_tmp_upgrade_dir );
+                unzip($found->filename, $unzip_dir );
+                $mi = new ModuleInstaller();
+                $mi->silent = true;
+                $mi->uninstall( "$unzip_dir");
+                $found->delete();
+                unlink(remove_file_extension( $found->filename ) . '-manifest.php');
+                unlink($found->filename);
+            }else{
+                //file(s_ have been deleted or are not found in the directory, allow database delete to happen but no need to change filesystem
+                $found->delete();
+            }
     	}
     }
 

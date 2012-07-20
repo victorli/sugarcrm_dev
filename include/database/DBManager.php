@@ -306,7 +306,7 @@ abstract class DBManager
 	public function checkError($msg = '', $dieOnError = false)
 	{
 		if (empty($this->database)) {
-			$this->registerError("$msg: Database Is Not Connected", $dieOnError);
+			$this->registerError($msg, "Database Is Not Connected", $dieOnError);
 			return true;
 		}
 
@@ -2388,8 +2388,9 @@ protected function checkQuery($sql, $object_name = false)
      * @param string $type Column type
      * @return array|bool array containing the different components of the passed in type or false in case the type contains illegal characters
      */
-    public function getTypeParts($type) {
-        if(preg_match("((?'type'\w+)\s*(?'arg'\((?'len'\w+)\s*(,\s*(?'scale'\d+))*\))*)", $type, $matches))
+    public function getTypeParts($type)
+    {
+        if(preg_match("#(?P<type>\w+)\s*(?P<arg>\((?P<len>\w+)\s*(,\s*(?P<scale>\d+))*\))*#", $type, $matches))
         {
             $return = array();  // Not returning matches array as such as we don't want to expose the regex make up on the interface
             $return['baseType'] = $matches['type'];
@@ -2450,10 +2451,20 @@ protected function checkQuery($sql, $object_name = false)
         }
 
         $default = '';
-		if (isset($fieldDef['default']) && strlen($fieldDef['default']) > 0)
-			$default = " DEFAULT ".$this->quoted($fieldDef['default']);
-		elseif (!isset($fieldDef['default']) && $type == 'bool')
-			$default = " DEFAULT 0 ";
+
+        // Bug #52610 We should have ability don't add DEFAULT part to query for boolean fields
+        if (!empty($fieldDef['no_default']))
+        {
+            // nothing to do
+        }
+        elseif (isset($fieldDef['default']) && strlen($fieldDef['default']) > 0)
+        {
+            $default = " DEFAULT ".$this->quoted($fieldDef['default']);
+        }
+        elseif (!isset($default) && $type == 'bool')
+        {
+            $default = " DEFAULT 0 ";
+        }
 
 		$auto_increment = '';
 		if(!empty($fieldDef['auto_increment']) && $fieldDef['auto_increment'])
@@ -3814,5 +3825,5 @@ protected function checkQuery($sql, $object_name = false)
      * @abstract
      * @return string
      */
-    abstract public function getGuidSQL();
+	abstract public function getGuidSQL();
 }

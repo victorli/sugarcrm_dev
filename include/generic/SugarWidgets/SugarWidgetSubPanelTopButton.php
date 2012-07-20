@@ -296,43 +296,7 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
 	 */
 	function _create_json_encoded_popup_request($popup_request_data)
 	{
-		$popup_request_array = array();
-
-		if(!empty($popup_request_data['call_back_function']))
-		{
-			$popup_request_array[] = '"call_back_function":"' . $popup_request_data['call_back_function'] . '"';
-		}
-
-		if(!empty($popup_request_data['form_name']))
-		{
-			$popup_request_array[] = '"form_name":"' . $popup_request_data['form_name'] . '"';
-		}
-
-		if(!empty($popup_request_data['field_to_name_array']))
-		{
-			$field_to_name_array = array();
-			foreach($popup_request_data['field_to_name_array'] as $field => $name)
-			{
-				$field_to_name_array[] = '"' . $field . '":"' . $name . '"';
-			}
-
-			$popup_request_array[] = '"field_to_name_array":{' . implode(',', $field_to_name_array) . '}';
-		}
-
-		if(!empty($popup_request_data['passthru_data']))
-		{
-			$passthru_array = array();
-			foreach($popup_request_data['passthru_data'] as $field => $name)
-			{
-				$passthru_array[] = '"' . $field . '":"' . $name . '"';
-			}
-
-			$popup_request_array[] = '"passthru_data":{' . implode(',', $passthru_array) . '}';
-		}
-
-		$encoded_popup_request = '{' . implode(',', $popup_request_array) . '}';
-
-		return $encoded_popup_request;
+	    return json_encode($popup_request_data);
 	}
 
 	/**

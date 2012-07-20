@@ -169,12 +169,18 @@ class MyMeetingsDashlet extends DashletGeneric {
                                      'clear' => $GLOBALS['app_strings']['LBL_CLEAR_BUTTON_LABEL'],
                                      ));
 
-        require_once('modules/Meetings/Meeting.php');
-        $types = getMeetingsExternalApiDropDown();
-        $this->currentSearchFields['type']['input'] = '<select size="3" multiple="true" name="type[]">'
-                                     . get_select_options_with_id($types, (empty($this->filters['type']) ? '' : $this->filters['type']))
-                                     . '</select>';
-        $this->configureSS->assign('searchFields', $this->currentSearchFields);
+        // the 'type' search field exists in default dashlet's definition,
+        // but we need to check it anyways because user can re-define the search fields using he studio
+        // and the 'type' field can be removed
+        if (isset($this->currentSearchFields['type']))
+        {
+            require_once('modules/Meetings/Meeting.php');
+            $types = getMeetingsExternalApiDropDown();
+            $this->currentSearchFields['type']['input'] = '<select size="3" multiple="true" name="type[]">'
+                    . get_select_options_with_id($types, (empty($this->filters['type']) ? '' : $this->filters['type']))
+                    . '</select>';
+            $this->configureSS->assign('searchFields', $this->currentSearchFields);
+        }
 
         return $this->configureSS->fetch($this->configureTpl);
     }

@@ -196,7 +196,9 @@ $javascript->setFormName('EditView');
 
 //If we are creating a duplicate, remove the email_password from being required since this
 //can be derived from the InboundEmail we are duplicating from
-if($isDuplicate && isset($focus->required_fields['email_password']))
+// Bug 47863 - email_password shouldn't be required on a modified Inbound Email account
+// either.
+if(($isDuplicate || !$validatePass) && isset($focus->required_fields['email_password']))
 {
    unset($focus->required_fields['email_password']);
 }

@@ -123,6 +123,10 @@ class SugarWidgetSubPanelDetailViewLink extends SugarWidgetField
 			|| ACLController::checkAccess($layout_def['owner_module'], 'view', $layout_def['owner_id'] == $current_user->id)))
         {
             $link = ajaxLink("index.php?module=$module&action=$action&record={$record}{$parent}");
+            if ($module == 'EAPM')
+            {
+                $link = "index.php?module=$module&action=$action&record={$record}{$parent}";
+            }
             return '<a href="' . $link . '" >'."$value</a>";
 
 		}else{

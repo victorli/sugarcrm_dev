@@ -331,6 +331,12 @@ function threeWayMerge(){
 ////	END UTILITIES THAT MUST BE LOCAL :(
 ///////////////////////////////////////////////////////////////////////////////
 
+//Bug 52872. Dies if the request does not come from CLI.
+$sapi_type = php_sapi_name();
+if (substr($sapi_type, 0, 3) != 'cli') {
+    die("This is command-line only script");
+}
+//End of #52872
 
 // only run from command line
 if(isset($_SERVER['HTTP_USER_AGENT'])) {

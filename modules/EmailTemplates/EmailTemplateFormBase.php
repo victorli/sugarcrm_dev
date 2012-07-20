@@ -166,7 +166,11 @@ EOQ;
 			preg_match_all('#<img[^>]*[\s]+src[^=]*=[\s]*["\']cache/images/(.+?)["\']#si', $emailTemplateBodyHtml, $matches);
 			foreach($matches[1] as $match) {
 				$filename = urldecode($match);
-
+                if($filename != pathinfo($filename, PATHINFO_BASENAME)) {
+                    // don't allow paths there
+                    $emailTemplateBodyHtml = str_replace("cache/images/$match", "", $emailTemplateBodyHtml);
+                    continue;
+                }
 				$file_location = sugar_cached("images/{$filename}");
 				$mime_type = pathinfo($filename, PATHINFO_EXTENSION);
 
@@ -351,7 +355,7 @@ EOQ;
 	///////////////////////////////////////////////////////////////////////////////
 
         clear_register_value('select_array', $focus->object_name);
-        
+
 		if($redirect) {
 		$GLOBALS['log']->debug("Saved record with id of ".$return_id);
 			handleRedirect($return_id, "EmailTemplates");

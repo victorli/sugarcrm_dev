@@ -1350,9 +1350,9 @@ EOHTML;
         if (isset($this->action)){
             switch ($this->action) {
             case 'EditView':
-                if(!empty($this->bean->id)) {
-                    $params[] = $this->bean->get_summary_text();
-                    //$params[] = $GLOBALS['app_strings']['LBL_EDIT_BUTTON_LABEL'];
+                if(!empty($this->bean->id) && (empty($_REQUEST['isDuplicate']) || $_REQUEST['isDuplicate'] === 'false')) {
+                    $params[] = "<a href='index.php?module={$this->module}&action=DetailView&record={$this->bean->id}'>".$this->bean->get_summary_text()."</a>";
+                    $params[] = $GLOBALS['app_strings']['LBL_EDIT_BUTTON_LABEL'];
                 }
                 else
                     $params[] = $GLOBALS['app_strings']['LBL_CREATE_BUTTON_LABEL'];
@@ -1486,7 +1486,7 @@ EOHTML;
         {
             foreach ($sugar_config['js_available'] as $configKey)
             {
-                if (isset($sugar_config[$configKey])) 
+                if (isset($sugar_config[$configKey]))
                 {
                     $jsVariableStatement = $this->prepareConfigVarForJs($configKey, $sugar_config[$configKey]);
                     if (!array_search($jsVariableStatement, $config_js))

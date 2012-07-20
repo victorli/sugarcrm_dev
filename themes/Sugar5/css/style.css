@@ -3670,7 +3670,7 @@ td.teamset-row, .edit tr td.teamset-row, .edit tr td table tr td.teamset-row {
 
 ul.clickMenu {
 	list-style: none;
-	padding: 0px 3px 0px 0px;	
+	padding: 0px 0px 0px 0px;
 	margin: 0 !important;
 	vertical-align: bottom;
     background-color: #ECF1F4;
@@ -3686,18 +3686,22 @@ ul.clickMenu form{
 ul.SugarActionMenuIESub {
 }
 
-ul.clickMenu:hover {
+#globalLinksModule ul.clickMenu.SugarActionMenu li a:hover,
+#globalLinksModule ul.clickMenu li:hover span,
+ul.SugarActionMenuIESub li a:hover, ul.clickMenu.SugarActionMenu li a:hover, ul.clickMenu.SugarActionMenu li span.subhover:hover,
+ul#globalLinksSubnav li a:hover, ul#quickCreateULSubnav li a:hover,
+ul.clickMenu li ul.subnav li a:hover,ul.clickMenu li ul.subnav li input:hover, ul.clickMenu.subpanel.records li ul.subnav li a:hover, ul.clickMenu ul.subnav-sub li a:hover { /*--Hover effect for subnav links--*/
+
    		background-color: #4e8ccf;
-   		background-image: none;
-		border-color: #4e8ccf;
+   		border-color: #4e8ccf;
 		color: #fff;	
 }
 ul#globalLinksSubnav.SugarActionMenuIESub li a:hover, ul#quickCreateULSubnav.SugarActionMenuIESub li a:hover,
 ul.clickMenu:hover > li > span > a, ul.clickMenu:hover > li > a {
-	color: #fff !important;	
+	/*color: #fff !important;*/
 }
 
-ul.clickMenu:hover > li > span {
+ul.clickMenu li span.ab:hover {
 	background-position: 6px 0px;
 }
 ul.clickMenu li, ul.SugarActionMenuIESub li {
@@ -3730,7 +3734,7 @@ ul.clickMenu li.single a{
 ul.clickMenu li a:hover{
 text-decoration: none !important;
 }
-ul.clickMenu li > span { /*--Drop down trigger styles--*/
+ul.clickMenu li span.ab { /*--Drop down trigger styles--*/
 	width: 17px;
 	height: 16px;
 	float: left;
@@ -3738,7 +3742,7 @@ ul.clickMenu li > span { /*--Drop down trigger styles--*/
 	cursor: pointer;
 }
 
-ul.clickMenu li > span.ab { /*--Drop down trigger styles--*/
+ul.clickMenu li span.ab { /*--Drop down trigger styles--*/
     border-left: 1px #aaa solid;
     padding-left: 5px;
 }
@@ -3778,25 +3782,27 @@ ul.clickMenu.subpanel.records {
 	background-image: none;
 }
 
+/*
 ul.clickMenu.subpanel.records:hover {
 	background-color: #4e8ccf !important;
 	background-image: none !important;
 	border-color: #4e8ccf !important;
 }
+*/
 
 ul.clickMenu.subpanel.records li a{ 
 	color: #aaa;	
 }
-ul.clickMenu.subpanel.records:hover > li div a{ 
-	color: #fff !important;	
+ul.clickMenu.subpanel.records > li div:hover a{
+	color: #fff !important;
 }
 
 ul.clickMenu.subpanel.records li > span{ 
 	opacity: .5;
     height: 16px;
-    padding: 0 !important;
-    width: 15px;
-    background-position: right -28px;
+    width: 17px;
+    padding:0 5px 0 0 !important;
+    background-position: 50% -28px;
 }
 
 ul.clickMenu.subpanel.records:hover li > span{ 
@@ -3808,23 +3814,26 @@ ul.clickMenu.subpanel.records li ul.subnav li a span {
 	width: 0px;
 	background-image: none;
 }
+ul.clickMenu.button li span.ab:hover {
+    background-position: 50% 0px;
 
+}
 ul.clickMenu.button li > span {
 	width: auto;
-	background-position: right -20px;	
+	background-position: 50% -20px;
 	padding: 3px 15px 3px 10px !important;
 	height: auto;
 }
 
 ul.clickMenu.button:hover li > span {
-	background-position: right 0px;
+
 }
 
 ul.clickMenu.button li > span a {
 	padding: 0px !important;
 }
 
-ul.clickMenu.button {
+ul.clickMenu.button span {
 	padding-right: 5px;
 }
 
@@ -3882,7 +3891,7 @@ ul.clickMenu li ul.subnav li input {
 }
 ul.SugarActionMenuIESub li a:hover,
 ul.clickMenu li ul.subnav li a:hover,ul.clickMenu li ul.subnav li input:hover, ul.clickMenu.subpanel.records li ul.subnav li a:hover, ul.clickMenu ul.subnav-sub li a:hover { /*--Hover effect for subnav links--*/
-background-color: #355b7e;
+background-color: #4e8ccf;
 color: #fff;
 font-weight: normal !important;
 font-size: 12px !important;

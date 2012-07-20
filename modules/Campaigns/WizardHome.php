@@ -234,8 +234,8 @@ function create_campaign_summary  ($focus){
     $cmpgn_tbl .= "<td align='right'>$cmp_input</td></tr>";
     $colorclass = '';
     foreach($fields as $key){
-    	        
-                if(!empty($focus->$key)){
+
+                if(!empty($focus->$key) && !empty($mod_strings[$focus->field_name_map[$key]['vname']])){
                     $cmpgn_tbl .= "<tr><td scope='row' width='15%'>".$mod_strings[$focus->field_name_map[$key]['vname']]."</td>\n";
                     if($key == 'team_name') {
 					   require_once('modules/Teams/TeamSetManager.php');
@@ -246,7 +246,6 @@ function create_campaign_summary  ($focus){
                 }            
     }
     $cmpgn_tbl .= "</table></p>";
-    
     
     return $cmpgn_tbl ;
 }

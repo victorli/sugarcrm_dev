@@ -91,7 +91,9 @@ $form->assign('THEME', $theme);
 $form->assign('MODULE_NAME', $currentModule);
 $form->assign('NAME', $name);
 $form->assign('DOCUMENT_NAME', $document_name);
-$form->assign('DOCUMENT_TARGET', $_REQUEST['target']);
+if(isset($_REQUEST['target'])) $form->assign('DOCUMENT_TARGET', $_REQUEST['target']);
+else $form->assign('DOCUMENT_TARGET', '');
+
 $form->assign('DOCUMENT_REVISION_ID', $document_revision_id);
 
 $form->assign("CATEGORY_OPTIONS", get_select_options_with_id($app_list_strings['document_category_dom'], $category_id));

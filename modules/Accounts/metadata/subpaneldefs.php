@@ -119,6 +119,7 @@ $layout_defs['Accounts'] = array(
             		'get_subpanel_data' => 'function:get_emails_by_assign_or_link',
           			'function_parameters' => array('import_function_file' => 'include/utils.php', 'link' => 'contacts'),
                     'generate_select'=>true,
+                    'get_distinct_data'=> true,
 				),
 			)
 		),

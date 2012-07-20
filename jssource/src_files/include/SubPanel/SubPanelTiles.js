@@ -206,7 +206,13 @@ function set_return_and_save_background(popup_reply_data)
 
 	var returnstuff = http_fetch_sync('index.php',query_string);
 	request_id++;
- 	got_data(returnstuff, true);
+
+	// Bug 52843
+	// If returnstuff.responseText is empty, don't process, because it will blank the innerHTML
+	if (typeof returnstuff != 'undefined' && typeof returnstuff.responseText != 'undefined' && returnstuff.responseText.length != 0) {
+		got_data(returnstuff, true);
+	}
+	
  	if(refresh_page == 1){
  		document.location.reload(true);
  	}

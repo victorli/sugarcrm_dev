@@ -108,6 +108,9 @@ class EAPMController extends SugarController
         if($this->return_module == 'Import'){
             $this->set_redirect("index.php?module=Import&action=Step1&import_module=". $this->return_action . "&application=" . $this->bean->application);
         }
+        if($this->module == 'EAPM') {
+            $this->set_redirect('index.php?module=Users&action=EditView&record=' . $_POST['assigned_user_id']);
+        }
         // Override the redirect location to add the hash
         $this->redirect_url = $this->redirect_url.'#tab5';
         if ( $this->api->authMethod == 'oauth' && !$this->bean->deleted ) {

@@ -58,46 +58,56 @@ ARGS:
 
 require_once('include/formbase.php');
 
-function add_prospects_to_prospect_list($query,$parent_module,$parent_type,$parent_id,$child_id,$link_attribute,$link_type) {
-
-	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$query);
+function add_prospects_to_prospect_list($query_panel,$parent_module,$parent_type,$parent_id,$child_id,$link_attribute,$link_type, $parent)
+{
+	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$query_panel);
 	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$parent_module);
 	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$parent_type);
 	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$parent_id);
 	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$child_id);
 	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$link_attribute);
 	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$link_type);
+    require_once('include/SubPanel/SubPanelTiles.php');
 
 
 	if (!class_exists($parent_type)) {
-		require_once('modules/'.$parent_module.'/'.$parent_type.'.php');
+		require_once('modules/'.cleanDirName($parent_module).'/'.cleanDirName($parent_type).'.php');
 	}
 	$focus = new $parent_type();
 	$focus->retrieve($parent_id);
+	if(empty($focus->id)) {
+	    return false;
+	}
+	if(empty($parent)) {
+	    return false;
+	}
 
 	//if link_type is default then load relationship once and add all the child ids.
 	$relationship_attribute=$link_attribute;
 
 	//find all prospects based on the query
-	$db = DBManagerFactory::getInstance();
-	$result=$db->query($query);
-	while(($row=$db->fetchByAssoc($result)) != null) {
 
-		$GLOBALS['log']->debug('target_id'.$row[$child_id]);
+	$subpanel = new SubPanelTiles($parent, $parent->module_dir);
+    $thisPanel=$subpanel->subpanel_definitions->load_subpanel($query_panel);
+    if(empty($thisPanel)) {
+        return false;
+    }
+    $result = SugarBean::get_union_related_list($parent, '', '', '', 0, -1,-1,'', $thisPanel);
 
-		if ($link_type != 'default') {
-			$relationship_attribute=strtolower($row[$link_attribute]);
-		}
-
-		$GLOBALS['log']->debug('add_prospects_to_prospect_list:relationship_attribute:'.$relationship_attribute);
-
-		//load relationship for the first time or on change of relationship attribute.
-		if (empty($focus->$relationship_attribute)) {
-			$focus->load_relationship($relationship_attribute);
-		}
-		//add
-		$focus->$relationship_attribute->add($row[$child_id]);
-	}
+    if(!empty($result['list'])) {
+        foreach($result['list'] as $object) {
+		    if ($link_type != 'default') {
+			    $relationship_attribute=strtolower($object->$link_attribute);
+		    }
+            $GLOBALS['log']->debug('add_prospects_to_prospect_list:relationship_attribute:'.$relationship_attribute);
+		    // load relationship for the first time or on change of relationship atribute.
+		    if (empty($focus->$relationship_attribute)) {
+			    $focus->load_relationship($relationship_attribute);
+		    }
+		    //add
+		    $focus->$relationship_attribute->add($object->$child_id);
+        }
+    }
 }
 
 //Link rows returned by a report to parent record.
@@ -153,8 +163,9 @@ if (isset($_REQUEST['return_type'])  && $_REQUEST['return_type'] == 'report') {
 } else if (isset($_REQUEST['return_type'])  && $_REQUEST['return_type'] == 'addtoprospectlist') {
 
 	$GLOBALS['log']->debug(print_r($_REQUEST,true));
-	add_prospects_to_prospect_list(urldecode($_REQUEST['query']),$_REQUEST['parent_module'],$_REQUEST['parent_type'],$_REQUEST['subpanel_id'],
-			$_REQUEST['child_id'],$_REQUEST['link_attribute'],$_REQUEST['link_type']);
+	$parent = BeanFactory::getBean($_REQUEST['module'], $_REQUEST['record']);
+	add_prospects_to_prospect_list(urldecode($_REQUEST['subpanel_module_name']),$_REQUEST['parent_module'],$_REQUEST['parent_type'],$_REQUEST['subpanel_id'],
+			$_REQUEST['child_id'],$_REQUEST['link_attribute'],$_REQUEST['link_type'], $parent);
 
 	$refreshsubpanel=false;
 }else if (isset($_REQUEST['return_type'])  && $_REQUEST['return_type'] == 'addcampaignlog') {
@@ -197,7 +208,8 @@ else {
  		$current_query_by_page_array = unserialize(base64_decode($current_query_by_page));
 
         $module = $current_query_by_page_array['module'];
- 		$seed = loadBean($module);
+        $seed = BeanFactory::getBean($module);
+        if(empty($seed)) sugar_die($GLOBALS['app_strings']['ERROR_NO_BEAN']);
  		$where_clauses = '';
  		require_once('include/SearchForm/SearchForm2.php');
 
@@ -282,4 +294,3 @@ if ($refreshsubpanel) {
 	}
 }
 exit;
-?>

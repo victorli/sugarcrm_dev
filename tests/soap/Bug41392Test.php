@@ -48,7 +48,7 @@ class Bug41392Test extends SOAPTestCase
 {
     public function setUp()
     {
-        $this->_soapURL = $GLOBALS['sugar_config']['site_url'].'/soap.php?XDEBUG_SESSION_START=michael';
+        $this->_soapURL = $GLOBALS['sugar_config']['site_url'].'/soap.php';
         parent::setUp();
     }
 

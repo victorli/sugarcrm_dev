@@ -37,7 +37,7 @@
  
 require_once('include/MVC/View/views/view.vcard.php');
 
-class ViewVcardTest extends Sugar_PHPUnit_Framework_TestCase
+class ViewVcardTest extends Sugar_PHPUnit_Framework_OutputTestCase
 {   
     public function setUp()
     {
@@ -69,17 +69,8 @@ class ViewVcardTest extends Sugar_PHPUnit_Framework_TestCase
 	    $view = new ViewVcard;
 	    $view->bean = SugarTestContactUtilities::createContact();
 	    $view->module = 'Contacts';
-	    
-        ob_start();
         $view->display();
-        $output = ob_get_contents();
-        ob_end_clean();
-        
         SugarTestContactUtilities::removeAllCreatedContacts();
-        
-        $this->assertContains(
-            'BEGIN:VCARD',
-            $output
-            );
+        $this->expectOutputRegex('/BEGIN\:VCARD/');
 	}
 }

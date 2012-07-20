@@ -134,7 +134,7 @@ class Call extends SugarBean {
          if(!empty($GLOBALS['app_list_strings']['duration_intervals']))
         	$this->minutes_values = $GLOBALS['app_list_strings']['duration_intervals'];
 	}
-	
+
 	/**
 	 * Disable edit if call is recurring and source is not Sugar. It should be edited only from Outlook.
 	 * @param $view string
@@ -194,11 +194,11 @@ class Call extends SugarBean {
         if (empty($this->status) ) {
             $this->status = $this->getDefaultStatus();
         }
-        
+
 		// prevent a mass mailing for recurring meetings created in Calendar module
 		if (empty($this->id) && !empty($_REQUEST['module']) && $_REQUEST['module'] == "Calendar" && !empty($_REQUEST['repeat_type']) && !empty($this->repeat_parent_id)) {
 			$check_notify = false;
-		}       
+		}
 		/*nsingh 7/3/08  commenting out as bug #20814 is invalid
 		if($current_user->getPreference('reminder_time')!= -1 &&  isset($_POST['reminder_checked']) && isset($_POST['reminder_time']) && $_POST['reminder_checked']==0  && $_POST['reminder_time']==-1){
 			$this->reminder_checked = '1';
@@ -409,14 +409,14 @@ class Call extends SugarBean {
 		if (empty($this->email_reminder_time)) {
 			$this->email_reminder_time = -1;
 		}
-		if(empty($this->id)){ 
+		if(empty($this->id)){
 			$reminder_t = $GLOBALS['current_user']->getPreference('email_reminder_time');
 			if(isset($reminder_t))
 		    		$this->email_reminder_time = $reminder_t;
 		}
 		$this->email_reminder_checked = $this->email_reminder_time == -1 ? false : true;
 
-		if (isset ($_REQUEST['parent_type'])) {
+		if (isset ($_REQUEST['parent_type']) && (!isset($_REQUEST['action']) || $_REQUEST['action'] != 'SubpanelEdits')) {
 			$this->parent_type = $_REQUEST['parent_type'];
 		} elseif (is_null($this->parent_type)) {
 			$this->parent_type = $app_list_strings['record_type_default_key'];
@@ -461,10 +461,8 @@ class Call extends SugarBean {
 
 		//make sure we grab the localized version of the contact name, if a contact is provided
 		if (!empty($this->contact_id)) {
-		    global $locale;
            // Bug# 46125 - make first name, last name, salutation and title of Contacts respect field level ACLs
-            $contact_temp = new Contact();
-            $contact_temp->retrieve($this->contact_id);
+            $contact_temp = BeanFactory::getBean("Contacts", $this->contact_id);
             $contact_temp->_create_proper_name_field();
             $this->contact_name = $contact_temp->full_name;
 		}
@@ -473,7 +471,7 @@ class Call extends SugarBean {
         $call_fields['CONTACT_NAME'] = $this->contact_name;
 		$call_fields['PARENT_NAME'] = $this->parent_name;
         $call_fields['REMINDER_CHECKED'] = $this->reminder_time==-1 ? false : true;
-	$call_fields['EMAIL_REMINDER_CHECKED'] = $this->email_reminder_time==-1 ? false : true;
+	    $call_fields['EMAIL_REMINDER_CHECKED'] = $this->email_reminder_time==-1 ? false : true;
 
 		return $call_fields;
 	}
@@ -727,12 +725,12 @@ class Call extends SugarBean {
         }
         return '';
     }
-    
+
     public function mark_deleted($id)
     {
         require_once("modules/Calendar/CalendarUtils.php");
         CalendarUtils::correctRecurrences($this, $id);
-                
+
         parent::mark_deleted($id);
     }
 }

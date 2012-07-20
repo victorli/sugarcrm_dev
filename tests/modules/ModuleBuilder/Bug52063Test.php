@@ -134,8 +134,8 @@ class Bug52063Test extends Sugar_PHPUnit_Framework_TestCase
         unset($GLOBALS['beanList']);
         unset($GLOBALS['beanFiles']);
         unset($GLOBALS['app_list_strings']);
-        unset($_REQUEST);
-
+        $_REQUEST = array();
+        SugarCache::$isCacheReset = false;
     }
 
     /**

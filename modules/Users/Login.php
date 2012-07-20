@@ -42,15 +42,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * All Rights Reserved.
  * Contributor(s): ______________________________________..
  ********************************************************************************/
-if (isset($_SESSION['authenticated_user_id']))
-{
-    ob_clean();
-    // fixing bug #46837: Previosly links/URLs to records in Sugar from MSO Excel/Word were referred to the home screen and not the record
-    // It used to appear when default browser was not MS IE
-    header("Location: ".$GLOBALS['app']->getLoginRedirect());
-    sugar_cleanup(true);
-    return;
-}
+/** @var AuthenticationController $authController */
+$authController->authController->pre_login();
+
 global $current_language, $mod_strings, $app_strings;
 if(isset($_REQUEST['login_language'])){
     $lang = $_REQUEST['login_language'];

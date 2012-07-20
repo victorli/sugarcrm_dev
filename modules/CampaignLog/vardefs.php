@@ -52,21 +52,24 @@ $dictionary['CampaignLog'] = array ('audited'=>false,
 			'name' => 'campaign_id',
 			'vname' => 'LBL_CAMPAIGN_ID',
 			'type' => 'id',
-			'comment' => 'Campaign identifier'
+			'comment' => 'Campaign identifier',
+            'reportable' => false,
 			),
 		'target_tracker_key' => array (
 			'name' => 'target_tracker_key',
 			'vname' => 'LBL_TARGET_TRACKER_KEY',
 			'type' => 'varchar',
 			'len' => '36',
-			'comment' => 'Identifier of Tracker URL'
+			'comment' => 'Identifier of Tracker URL',
+            'reportable' => false,
 			),
 		'target_id' => array (
 			'name' => 'target_id',
 			'vname' => 'LBL_TARGET_ID',
 			'type' => 'varchar',
 			'len' => '36',
-			'comment' => 'Identifier of target record'
+			'comment' => 'Identifier of target record',
+            'reportable' => false,
 			),
 		'target_type' => array (
 			'name' => 'target_type',
@@ -94,6 +97,7 @@ $dictionary['CampaignLog'] = array ('audited'=>false,
 			'vname' => 'LBL_RELATED_ID',
 			'type' => 'varchar',
 			'len' => '36',
+            'reportable' => false,
 			),
 		'related_type' => array (
 			'name' => 'related_type',
@@ -231,6 +235,27 @@ $dictionary['CampaignLog'] = array ('audited'=>false,
             'relationship' => 'campaignlog_lead',
             'source'=>'non-db',
         ),
+        'created_opportunities'=> array (
+            'name'         => 'created_opportunities',
+            'vname'        => 'LBL_CREATED_OPPORTUNITY',
+            'type'         => 'link',
+            'relationship' => 'campaignlog_created_opportunities',
+            'source'       => 'non-db',
+        ),
+        'targeted_user' => array(
+            'name'         => 'targeted_user',
+            'vname'        => 'LBL_TARGETED_USER',
+            'type'         => 'link',
+            'relationship' => 'campaignlog_targeted_users',
+            'source'       => 'non-db',
+        ),
+        'sent_email'    => array(
+            'name'         => 'sent_email',
+            'vname'        => 'LBL_SENT_EMAIL',
+            'type'         => 'link',
+            'relationship' => 'campaignlog_sent_emails',
+            'source'       => 'non-db',
+        ),
 	),
 	'indices' => array (
 		array (
@@ -289,9 +314,33 @@ $dictionary['CampaignLog'] = array ('audited'=>false,
 							        'rhs_table'=> 'leads',
 							        'rhs_key' => 'id',
 							        'relationship_type'=>'one-to-many'),
-
-        )
-
-
+        'campaignlog_created_opportunities' => array(
+            'lhs_module'=> 'CampaignLog',
+            'lhs_table'=> 'campaign_log',
+            'lhs_key' => 'related_id',
+            'rhs_module'=> 'Opportunities',
+            'rhs_table'=> 'opportunities',
+            'rhs_key' => 'id',
+            'relationship_type'=>'one-to-many'
+        ),
+        'campaignlog_targeted_users' => array(
+            'lhs_module'=> 'CampaignLog',
+            'lhs_table'=> 'campaign_log',
+            'lhs_key' => 'target_id',
+            'rhs_module'=> 'Users',
+            'rhs_table'=> 'users',
+            'rhs_key' => 'id',
+            'relationship_type'=>'one-to-many'
+        ),
+        'campaignlog_sent_emails' => array(
+            'lhs_module'=> 'CampaignLog',
+            'lhs_table'=> 'campaign_log',
+            'lhs_key' => 'related_id',
+            'rhs_module'=> 'Emails',
+            'rhs_table'=> 'emails',
+            'rhs_key' => 'id',
+            'relationship_type'=>'one-to-many'
+        ),
+    )
 );
 ?>

@@ -305,7 +305,19 @@ class LayoutManager
 			}
 		}
 
+        $parent_bean = null;
+
+        if (isset($widget_def['parent_bean']))
+        {
+            $parent_bean = $widget_def['parent_bean'];
+        }
+        elseif (isset($widget_def['focus']))
+        {
+            $parent_bean = $widget_def['focus'];
+        }
+
 		$widget = new $class_name($this); // cache disabled $this->getClassFromCache($class_name);
+        $widget->setParentBean($parent_bean);
 		return $widget;
 	}
 

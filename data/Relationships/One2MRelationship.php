@@ -124,16 +124,41 @@ class One2MRelationship extends M2MRelationship
         //If the current data matches the existing data, don't do anything
         if (!$this->checkExisting($dataToInsert))
         {
-            $rhsLinkName = $this->rhsLink;
-            //In a one to many, any existing links from the many (right) side must be removed first
-            $rhs->load_relationship($rhsLinkName);
-            $this->removeAll($rhs->$rhsLinkName);
+			// If it's a One2Many self-referencing relationship
+        	// the positions of the default One (LHS) and Many (RHS) are swaped
+        	// so we should clear the links from the many (left) side
+        	if ($this->selfReferencing) {
+        		// Load right hand side relationship name
+	            $linkName = $this->rhsLink;
+	            // Load the relationship into the left hand side bean
+	            $lhs->load_relationship($linkName);
+	            
+	            // Pick the loaded link
+	            $link = $lhs->$linkName;
+	            // Get many (LHS) side bean
+	            $focus = $link->getFocus();
+	            // Get relations
+	        	$related = $link->getBeans();
+	        	
+        		// Clear the relations from many side bean
+	        	foreach($related as $relBean) {
+	        		$this->remove($focus, $relBean);
+	        	}
+            } else { // For non self-referencing, just load the many (RHS) side, and remove all the relationships from it
+            	$rhsLinkName = $this->rhsLink;
+	            //In a one to many, any existing links from the many (right) side must be removed first
+            	$rhs->load_relationship($rhsLinkName);
+            	$this->removeAll($rhs->$rhsLinkName);
+            }
+            // Add relationship
             parent::add($lhs, $rhs, $additionalFields);
         }
     }
 
     /**
      * Just overriding the function from M2M to prevent it from occuring
+     * 
+     * The logic for dealing with adding self-referencing one-to-many relations is in the add() method
      */
     protected function addSelfReferencing($lhs, $rhs, $additionalFields = array())
     {

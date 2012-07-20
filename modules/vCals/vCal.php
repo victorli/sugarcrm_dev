@@ -166,8 +166,12 @@ class vCal extends SugarBean {
            $email = $user_focus->email1;
 
            // get current date for the user
-           $now_date_time = $timedate->getNow(true);
-
+            if (!empty($_REQUEST['datestart'])) {
+                $now_date_time = SugarDateTime::createFromFormat($GLOBALS['timedate']->get_date_time_format(),$_REQUEST['datestart']." 00:00");
+                $cached=false;
+            } else {
+                $now_date_time = $timedate->getNow(true);
+            }
            // get start date ( 1 day ago )
            $start_date_time = $now_date_time->get("yesterday");
 

@@ -88,7 +88,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 	    	}
 	    	}
     		$viewdefs = array_change_key_case($viewdefs['searchfields']);
-    		$viewdefs = $this->_viewdefs = $this->convertSearchToListDefs($viewdefs);
+            $viewdefs = $this->_viewdefs = $this->ConvertSearchToDashletDefs($viewdefs);
     	}
     	else if ($this->_view == MB_DASHLET && isset($viewdefs['columns']))
     	{

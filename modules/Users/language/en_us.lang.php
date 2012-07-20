@@ -234,6 +234,9 @@ $mod_strings = array (
    	'LBL_LOGIN_LOGIN_TIME_SECONDS'      => 'sec.',
     'LBL_LOGIN_ADMIN_CALL'              => 'Please contact the system administrator.',
 	// END LOGIN PAGE STRINGS
+    'LBL_LOGGED_OUT_1' => 'You have been logged out. To login again please click ',
+    'LBL_LOGGED_OUT_2' => 'here',
+    'LBL_LOGGED_OUT_3' => '.',
 	'LBL_MAIL_FROMADDRESS'				=> 'Reply-to address',
 	'LBL_MAIL_FROMNAME'					=> 'Reply-to name',
 	'LBL_MAIL_OPTIONS_TITLE'			=> 'Email Settings',

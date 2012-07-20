@@ -51,10 +51,11 @@ global $mod_strings;
 global $app_strings;
 
 
-$rawsource = false;
 //-----------begin replacing text input tags that have been marked with text area tags
 //get array of text areas strings to process
 $bodyHTML = html_entity_decode($_REQUEST['body_html'],ENT_QUOTES);
+//Bug53791
+$bodyHTML = str_replace(chr(160), " ", $bodyHTML);
 
 while (strpos($bodyHTML, "ta_replace") !== false){
 
@@ -77,47 +78,29 @@ while (strpos($bodyHTML, "ta_replace") !== false){
 	//merge the processed string back into bodyhtml string
 	$bodyHTML = str_replace($working_str , $new_str, $bodyHTML);
 }
-
-//replace the request html value with the processed bodyHTML
-$bodyHTML = htmlentities($bodyHTML,ENT_QUOTES);
-$_REQUEST['body_html'] = $bodyHTML;
 //<<<----------end replacing marked text inputs with text area tags
-$form_name = 'WebToLeadForm_'.time().'.html';
-if(!empty($_REQUEST['body_html'])){
-  $dir_path = sugar_cached("generated_forms/");
-  if(!file_exists($dir_path)){
-  	sugar_mkdir($dir_path,0777);
-  }
-  //Check to ensure we have <html> tags in the form. Without them, IE8 will attempt to display the page as XML.
-  $rawsource = $_REQUEST['body_html'];
 
-  $SugarTiny =  new SugarTinyMCE();
-  $rawsource = $SugarTiny->cleanEncodedMCEHtml($rawsource);
-  $html = from_html($rawsource);
+$guid = create_guid();
+$form_file = "upload://$guid";
 
-  if (stripos($html, "<html") === false)
-  {
+$SugarTiny =  new SugarTinyMCE();
+$html = $SugarTiny->cleanEncodedMCEHtml($bodyHTML);
+
+//Check to ensure we have <html> tags in the form. Without them, IE8 will attempt to display the page as XML.
+if (stripos($html, "<html") === false) {
     $langHeader = get_language_header();
-  	$html = "<html {$langHeader}><body>" . $html . "</body></html>";
-  }
-  $file = $dir_path.$form_name;
-  $fp = sugar_fopen($file,'wb');
-  fwrite($fp, $html);
-  fclose($fp);
+    $html = "<html {$langHeader}><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"></head><body>" . $html . "</body></html>";
 }
+file_put_contents($form_file, $html);
+
 $xtpl=new XTemplate ('modules/Campaigns/WebToLeadDownloadForm.html');
 $xtpl->assign("MOD", $mod_strings);
 $xtpl->assign("APP", $app_strings);
 
 $webformlink = "<b>$mod_strings[LBL_DOWNLOAD_TEXT_WEB_TO_LEAD_FORM]</b><br/>";
-$webformlink .= "<a href=\"cache/generated_forms/$form_name\">$mod_strings[LBL_DOWNLOAD_WEB_TO_LEAD_FORM]</a>";
+$webformlink .= "<a href=\"index.php?entryPoint=download&id={$guid}&isTempFile=1&tempName=WebToLeadForm.html&type=temp\">$mod_strings[LBL_DOWNLOAD_WEB_TO_LEAD_FORM]</a>";
 $xtpl->assign("LINK_TO_WEB_FORM",$webformlink);
-if ($rawsource !== false)
-{
-	$xtpl->assign("RAW_SOURCE", $rawsource);
-	$xtpl->parse("main.copy_source");
-}
-	$xtpl->parse("main");
+$xtpl->assign("RAW_SOURCE", htmlentities($html, ENT_QUOTES));
+$xtpl->parse("main.copy_source");
+$xtpl->parse("main");
 $xtpl->out("main");
-
-?>

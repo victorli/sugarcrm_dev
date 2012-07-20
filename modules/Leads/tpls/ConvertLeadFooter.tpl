@@ -134,3 +134,6 @@
 </td>
 </tr>
 </table>
+ <script type="text/javascript">
+   addDropdownElements();//Bug#50590 after  lead_conv_ac_op_sel is loaded fill it with all required modules
+ </script>

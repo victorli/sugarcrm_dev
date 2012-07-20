@@ -235,6 +235,11 @@ class Campaign extends SugarBean {
 
 		$this->unformat_all_fields();
 
+		// Bug53301
+		if($this->campaign_type != 'NewsLetter') {
+		    $this->frequency = '';
+		}
+		
 		return parent::save($check_notify);
 
 	}

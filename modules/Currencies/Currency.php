@@ -387,6 +387,7 @@ function format_number($amount, $round = null, $decimals = null, $params = array
 
 		if($checkAmount >= 1000 || $checkAmount <= -1000) {
 			$amount = round(($amount / 1000), 0);
+			$amount = number_format($amount, 0, $dec_sep, $num_grp_sep); // add for SI bug 52498
 			$amount = $amount . 'k';
 			$amount = format_place_symbol($amount, $symbol,(empty($params['symbol_space']) ? false : true));
 		} else {
@@ -529,7 +530,7 @@ function toString($echo = true) {
 
 function getCurrencyDropDown($focus, $field='currency_id', $value='', $view='DetailView'){
     $view = ucfirst($view);
-	if($view == 'EditView' || $view == 'MassUpdate' || $view == 'QuickCreate'){
+	if($view == 'EditView' || $view == 'MassUpdate' || $view == 'QuickCreate' || $view == 'ConvertLead'){
         if ( isset($_REQUEST[$field]) && !empty($_REQUEST[$field]) ) {
             $value = $_REQUEST[$field];
 	    } elseif ( empty($focus->id) ) {
@@ -553,7 +554,12 @@ function getCurrencyDropDown($focus, $field='currency_id', $value='', $view='Det
         $selectCurrency = $currency->getSelectOptions($value);
 
 		$currency->setCurrencyFields($currency_fields);
-		$html = '<select name="'. $field. '" id="' . $field  . '_select" ';
+		$html = '<select name="';
+		// If it's a lead conversion (ConvertLead view), add the module_name before the $field
+		if ($view == "ConvertLead") {
+			$html .= $focus->module_name;
+		}
+		$html .= $field. '" id="' . $field  . '_select" ';
 		if($view != 'MassUpdate')
 			$html .= 'onchange="CurrencyConvertAll(this.form);"';
 		$html .= '>'. $selectCurrency . '</select>';

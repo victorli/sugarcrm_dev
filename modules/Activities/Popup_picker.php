@@ -258,6 +258,11 @@ class Popup_Picker
 					$email->contact_name = $email_contacts[0]->name;
 				}
 			}
+			$ts = '';
+			if(!empty($email->fetched_row['date_sent'])) {
+			    //emails can have an empty date sent field
+			    $ts = $timedate->fromDb($email->fetched_row['date_sent'])->ts;
+			}
 			$history_list[] = array('name' => $email->name,
 									 'id' => $email->id,
 									 'type' => "Email",
@@ -272,7 +277,7 @@ class Popup_Picker
 									 'date_modified' => $email->date_start." ".$email->time_start,
 									 'description' => $this->getEmailDetails($email),
 									 'date_type' => $app_strings['DATA_TYPE_SENT'],
-									 'sort_value' => $timedate->fromDb($email->fetched_row['date_sent'])->ts,
+									 'sort_value' => $ts,
 									 );
 		} //end Emails
 

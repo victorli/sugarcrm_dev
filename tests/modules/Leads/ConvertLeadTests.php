@@ -35,6 +35,7 @@
  ********************************************************************************/
 
 
+require_once('tests/SugarTestViewConvertLeadUtilities.php');
 require_once 'modules/Leads/views/view.convertlead.php';
 require_once 'tests/SugarTestViewConvertLeadUtilities.php';
 
@@ -150,7 +151,45 @@ class ConvertLeadTests extends Sugar_PHPUnit_Framework_TestCase
         SugarTestLeadUtilities::removeAllCreatedLeads();
     }
 
-    public function testActivityCopy() {
+
+    public function testActivityCopyWithParent() {
+        // lets the run the activity copy again, only this time we pass in a parent account
+        $lead = SugarTestLeadUtilities::createLead();
+        $contact = SugarTestContactUtilities::createContact();
+        $meeting = SugarTestMeetingUtilities::createMeeting();
+        $account = SugarTestAccountUtilities::createAccount();
+        SugarTestMeetingUtilities::addMeetingParent($meeting->id, $lead->id);
+                $relation_id = SugarTestMeetingUtilities::addMeetingLeadRelation($meeting->id, $lead->id);
+        $_REQUEST['record'] = $lead->id;
+
+        // refresh the meeting to include parent_id and parent_type
+        $meeting_id = $meeting->id;
+        $meeting = new Meeting();
+        $meeting->retrieve($meeting_id);
+
+        // action: copy meeting from lead to contact
+        $convertObj = new TestViewConvertLead();
+        $convertObj->copyActivityWrapper($meeting, $contact, array('id'=>$account->id,'type'=>'Accounts'));
+
+
+        // 2a a newly created meeting with no parent info passed in, so parent id and type are empty
+        //parent type=Contatcs and parent_id=$contact->id
+        //$sql = "select id from meetings where parent_id='{$contact->id}' and parent_type= 'Contacts' and deleted=0";
+        $sql = "select id, parent_id from meetings where name = '{$meeting->name}'";
+        $result = $GLOBALS['db']->query($sql);
+        while ($row = $GLOBALS['db']->fetchByAssoc($result)){
+            //skip if this is the original message
+            if($row['id'] == $meeting_id){
+                continue;
+            }
+
+            $this->assertEquals($row['parent_id'], $account->id, 'parent id of meeting should be equal to passed in account id: '.$account->id);
+        }
+
+    }
+
+    
+    public function testActivityCopyWithNoParent() {
         // init
         $lead = SugarTestLeadUtilities::createLead();
         $contact = SugarTestContactUtilities::createContact();
@@ -173,15 +212,20 @@ class ConvertLeadTests extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEquals('Leads', $meeting->parent_type, 'parent_type of the original meeting was changed from Leads to '.$meeting->parent_type);
         $this->assertEquals($lead->id, $meeting->parent_id, 'parent_id of the original meeting was changed from '.$lead->id.' to '.$meeting->parent_id);
 
-        // 2. a newly created meeting with parent type=Contatcs and parent_id=$contact->id
-        $sql = "select id from meetings where parent_id='{$contact->id}' and parent_type= 'Contacts' and deleted=0";
-        $result = $GLOBALS['db']->query($sql);
-        $row = $GLOBALS['db']->fetchByAssoc($result);
-        $this->assertNotNull($row, 'Could not find the newly created meeting with parent_type=Contacts and parent_id='.$contact->id);
+        // 2. a newly created meeting with no parent info passed in, so parent id and type are empty
         $new_meeting_id = '';
-        if ($row) {
-            $new_meeting_id = $row['id'];
-        }
+        $sql = "select id, parent_id from meetings where name = '{$meeting->name}'";
+              $result = $GLOBALS['db']->query($sql);
+              while ($row = $GLOBALS['db']->fetchByAssoc($result)){
+                  //skip if this is the original message
+                  if($row['id'] == $meeting_id){
+                      continue;
+                  }
+                  $new_meeting_id = $row['id'];
+                  $this->assertEmpty($row['parent_id'],'parent id of meeting should be empty as no parent was sent in ');
+              }
+
+
 
         // 3. record should not be deleted from meetings_leads table
         $sql = "select id from meetings_leads where meeting_id='{$meeting->id}' and lead_id='{$lead->id}' and deleted=0";
@@ -342,18 +386,18 @@ class ConvertLeadTests extends Sugar_PHPUnit_Framework_TestCase
         $row = $GLOBALS['db']->fetchByAssoc($result);
         $this->assertFalse(empty($row), "Meeting-Contact relationship is not added.");
 
-        // 7. the parent_type of the new meeting should be Contacts
+        // 7. the parent_type of the new meeting should be empty
         $new_meeting_id = $row['meeting_id'];
         $sql = "select id, parent_type, parent_id from meetings where id='{$new_meeting_id}' and deleted=0";
         $result = $GLOBALS['db']->query($sql);
         $row = $GLOBALS['db']->fetchByAssoc($result);
         $this->assertFalse(empty($row), "New meeting is not added for contact.");
-        $this->assertEquals('Contacts', $row['parent_type'], 'Parent type of the new meeting should be Contacts');
+        $this->assertEmpty($row['parent_type'], 'Parent type of the new meeting should be Empty');
 
         // 8. the parent_id of the new meeting should be contact id
-        $this->assertEquals($contact_id, $row['parent_id'], 'Parent id of the new meeting should be contact id.');
+        $this->assertEmpty($row['parent_id'], 'Parent id of the new meeting should be empty.');
 
-        // clean up
+       // clean up
         unset($_REQUEST['record']);
         $GLOBALS['db']->query("delete from meetings where parent_id='{$lead->id}' and parent_type= 'Leads'");
         $GLOBALS['db']->query("delete from meetings where parent_id='{$contact_id}' and parent_type= 'Contacts'");
@@ -466,8 +510,8 @@ class TestViewConvertLead extends ViewConvertLead
         parent::moveActivity($activity, $bean);
     }
 
-    public function copyActivityWrapper($activity, $bean) {
-        parent::copyActivityAndRelateToBean($activity, $bean);
+    public function copyActivityWrapper($activity, $bean,$parent=array()) {
+        parent::copyActivityAndRelateToBean($activity, $bean,$parent);
     }
 
     public function testMeetingsUsersRelationships()

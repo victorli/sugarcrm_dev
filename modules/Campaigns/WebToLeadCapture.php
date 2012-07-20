@@ -103,6 +103,11 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
             unset($lead->required_fields['id']);
             unset($lead->required_fields['team_name']);
             unset($lead->required_fields['team_count']);
+
+            // Bug #52563 : Web to Lead form redirects to Sugar when duplicate detected
+            // prevent duplicates check
+            $_POST['dup_checked'] = true;
+
             // checkRequired needs a major overhaul before it works for web to lead forms.
             $lead = $leadForm->handleSave($prefix, false, false, false, $lead);
             

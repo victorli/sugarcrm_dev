@@ -215,7 +215,7 @@ class ViewList extends SugarView{
 
             $searchMetaData = SearchForm::retrieveSearchDefs($this->module);
 
-            $this->searchForm = new SearchForm($this->seed, $this->module, $this->action);
+            $this->searchForm = $this->getSearchForm2($this->seed, $this->module, $this->action);
             $this->searchForm->setup($searchMetaData['searchdefs'], $searchMetaData['searchFields'], 'SearchFormGeneric.tpl', $view, $this->listViewDefs);
             $this->searchForm->lv = $this->lv;
         }
@@ -265,6 +265,17 @@ class ViewList extends SugarView{
             $this->listViewPrepare();
             $this->listViewProcess();
         }
+    }
+
+      /**
+       *
+       * @return SearchForm
+       */
+    protected function getSearchForm2($seed, $module, $action = "index")
+    {
+        // SearchForm2.php is required_onced above before calling this function
+        // hence the order of parameters is different from SearchForm.php
+        return new SearchForm($seed, $module, $action);
     }
 }
 ?>

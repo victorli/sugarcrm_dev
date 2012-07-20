@@ -63,9 +63,9 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 		global $app_strings;
 		$initial_filter = '';
 
-		$this->title = $app_strings['LBL_SELECT_BUTTON_TITLE'];
-		$this->accesskey = $app_strings['LBL_SELECT_BUTTON_KEY'];
-		$this->value = $this->getDisplayName();
+	    $this->title     = $this->getTitle();
+        $this->accesskey = $this->getAccesskey();
+        $this->value     = $this->getDisplayName();
 
 		if (is_array($this->button_properties)) {
 			if( isset($this->button_properties['title'])) {
@@ -157,11 +157,6 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 			if ($this->button_properties['add_to_passthru_data']['return_type']=='report') {
 				$initial_filter = "&module_name=". urlencode($widget_data['module']);
 			}
-			if ($this->button_properties['add_to_passthru_data']['return_type']=='addtoprospectlist') {
-				if (isset($widget_data['query'])) {
-					$popup_request_data['passthru_data']['query']=$widget_data['query'];
-				}
-			}
 		}
         //acl_roles_users_selectuser_button
 
@@ -171,5 +166,22 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 			. ' value="' . $this->value . "\"\n"
 			. " onclick='open_popup(\"$this->module_name\",600,400,\"$initial_filter\",true,true,$json_encoded_php_array,\"$popup_mode\",$create);' />\n";
 	}
+
+    /**
+    * @return string
+    */
+    protected function getTitle()
+    {
+       return translate('LBL_SELECT_BUTTON_TITLE');
+    }
+
+    /**
+    * @return string
+    */
+    protected function getAccesskey()
+    {
+       return translate('LBL_SELECT_BUTTON_KEY');
+    }
+
 }
 ?>

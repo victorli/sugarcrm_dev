@@ -306,7 +306,7 @@ SugarRest.buildColumnDefs = function(){
   };
 
    SugarRest.callLink = function(elCell, oRecord, oColumn, oData) {
-            elCell.innerHTML = "<a href='callto://" + oData+ "'>"+ oData+ "</a>";
+            elCell.innerHTML = "<a href='callto:" + oData+ "'>"+ oData+ "</a>";
   };
 
    SugarRest.checkboxField = function(elCell, oRecord, oColumn, oData) {

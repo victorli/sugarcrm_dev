@@ -55,6 +55,7 @@ $mod_strings = array (
 'LBL_OOTB_TRACKER'		=> 'Prune Tracker Tables',
 'LBL_UPDATE_TRACKER_SESSIONS' => 'Update tracker_sessions Table',
 'LBL_OOTB_SEND_EMAIL_REMINDERS'	=> 'Run Email Reminder Notifications',
+'LBL_OOTB_CLEANUP_QUEUE' => 'Clean Jobs Queue',
 
 // List Labels
 'LBL_LIST_JOB_INTERVAL' => 'Interval:',
@@ -158,5 +159,6 @@ $mod_strings = array (
 'LBL_PRUNEDATABASE' => 'Prune Database on 1st of Month',
 'LBL_TRIMTRACKER' => 'Prune Tracker Tables',
 'LBL_SENDEMAILREMINDERS'=> 'Run Email Reminders Sending',
+'LBL_CLEANJOBQUEUE' => 'Cleanup Job Queue',
 );
 ?>

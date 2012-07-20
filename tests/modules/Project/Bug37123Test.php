@@ -40,10 +40,9 @@ class Bug37123Test extends Sugar_PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        global $current_user, $currentModule ;
-        global $beanList;
-        require('include/modules.php');
-        $current_user = SugarTestUserUtilities::createAnonymousUser();
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('current_user');
         $unid = uniqid();
         $time = date('Y-m-d H:i:s');
 
@@ -97,10 +96,6 @@ class Bug37123Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-        unset($GLOBALS['current_user']);
-        unset($GLOBALS['mod_strings']);
-
         $GLOBALS['db']->query("DELETE FROM contacts WHERE id= '{$this->contact->id}'");
         $GLOBALS['db']->query("DELETE FROM accounts WHERE id = '{$this->account->id}'");
         $GLOBALS['db']->query("DELETE FROM accounts_contacts WHERE id = '{$this->ac_id}'");
@@ -113,6 +108,7 @@ class Bug37123Test extends Sugar_PHPUnit_Framework_TestCase
         unset($this->ac_id);
         unset($GLOBALS['relate_id']);
         unset($GLOBALS['relate_to']);
+        SugarTestHelper::tearDown();
     }
 
 

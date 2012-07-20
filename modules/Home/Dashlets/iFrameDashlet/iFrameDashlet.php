@@ -50,11 +50,15 @@ class iFrameDashlet extends Dashlet {
         parent::Dashlet($id);
         $this->isConfigurable = true;
 
-        if(empty($options['title'])) {
-            $this->title = translate('LBL_DASHLET_TITLE', 'Home');
-            $this->title = translate('LBL_DASHLET_DISCOVER_SUGAR_PRO', 'Home');
+        if(!empty($options['titleLabel'])) {
+        	$this->title = translate($options['titleLabel'], 'Home');
         } else {
-            $this->title = $options['title'];
+	        if(empty($options['title'])) {
+	            $this->title = translate('LBL_DASHLET_TITLE', 'Home');
+	            $this->title = translate('LBL_DASHLET_DISCOVER_SUGAR_PRO', 'Home');
+	        } else {
+	            $this->title = $options['title'];
+	        }
         }
         if(empty($options['url'])) {
             $this->url = $this->defaultURL;

@@ -91,6 +91,21 @@ class StandardField extends DynamicField
             return false;
 
         $currdef = $dictionary[$bean_name]["fields"][$field->name];
+
+        // set $field->unified_search=true if field supports unified search
+        // regarding #51427
+        if($field->supports_unified_search)
+        {
+            if(isset($dictionary[$bean_name]['unified_search_default_enabled']) && isset($dictionary[$bean_name]['unified_search'])
+            && $dictionary[$bean_name]['unified_search_default_enabled'] && $dictionary[$bean_name]['unified_search'])
+            {
+                $currdef['unified_search'] = $field->unified_search = isset($currdef['unified_search'])
+                 ? $currdef['unified_search']
+                 : true;
+            }
+        }
+        // end #51427
+
         $this->loadCustomDef($field->name);
         $this->loadBaseDef($field->name);
         $newDef = $field->get_field_def();

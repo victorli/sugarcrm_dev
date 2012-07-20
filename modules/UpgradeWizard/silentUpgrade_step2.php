@@ -177,6 +177,13 @@ function rebuildRelations($pre_path = '')
 	include($pre_path.'modules/ACL/install_actions.php');
 }
 
+//Bug 52872. Dies if the request does not come from CLI.
+$sapi_type = php_sapi_name();
+if (substr($sapi_type, 0, 3) != 'cli') {
+    die("This is command-line only script");
+}
+//End of #52872
+
 // only run from command line
 if(isset($_SERVER['HTTP_USER_AGENT'])) {
 	fwrite(STDERR,'This utility may only be run from the command line or command prompt.');

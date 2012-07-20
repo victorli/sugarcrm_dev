@@ -917,7 +917,7 @@ EOREGEX
 						}
 
 						if(substr(trim($table),0,1) == '(') {
-							$base_expr=$this->trimSubquery(trim);
+							$base_expr=$this->trimSubquery($table);
 							$join_type = 'JOIN';
 							$sub_tree = $this->process_from($this->split_sql($base_expr));
 							$alias="";

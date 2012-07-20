@@ -175,7 +175,15 @@ $dictionary['SchedulersJob'] = array('table' => 'job_queue',
 			'vname' => 'LBL_PERCENT',
 			'type' => 'int',
 			'required' => false,
-		),
+	    	),
+	    'schedulers' => array (
+			'name'            => 'schedulers',
+			'vname'            => 'LBL_SCHEDULER_ID',
+			'type'            => 'link',
+			'relationship'    => 'schedulers_jobs_rel',
+			'source'        => 'non-db',
+	        'link_type' => 'one',
+	   ),
 		),
 	'indices' => array (
 		array(

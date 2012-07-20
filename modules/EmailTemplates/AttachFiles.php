@@ -44,9 +44,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 require_once('include/JSON.php');
 require_once('include/upload_file.php');
 
-$GLOBALS['log']->debug(print_r($_FILES, true));
-         $file_ext_allow = FALSE;
-
 if (!is_dir($cachedir = sugar_cached('images/')))
     mkdir_recursive($cachedir);
 
@@ -56,11 +53,21 @@ $imgType = array('image/gif', 'image/png', 'image/x-png', 'image/bmp', 'image/jp
 $ret = array();
 
 foreach($_FILES as $k => $file) {
-	if(in_array(strtolower($_FILES[$k]['type']), $imgType)) {
-		$dest = $cachedir.$_FILES[$k]['name'];
-		if(is_uploaded_file($_FILES[$k]['tmp_name'])) {
-			move_uploaded_file($_FILES[$k]['tmp_name'], $dest);
-		    $ret[] = $dest;
+	if(in_array(strtolower($_FILES[$k]['type']), $imgType) && $_FILES[$k]['size'] > 0) {
+	    $upload_file = new UploadFile($k);
+		// check the file
+		if($upload_file->confirm_upload()) {
+		    $dest = $cachedir.basename($upload_file->get_stored_file_name()); // target name
+		    $guid = create_guid();
+		    if($upload_file->final_move($guid)) { // move to uploads
+		        $path = $upload_file->get_upload_path($guid);
+		        // if file is OK, copy to cache
+		        if(verify_uploaded_image($path) && copy($path, $dest)) {
+		            $ret[] = $dest;
+		        }
+		        // remove temp file
+		        unlink($path);
+		    }
 		}
 	}
 }
@@ -70,5 +77,3 @@ if (!empty($ret)) {
 	echo $json->encode($ret);
 	//return the parameters
 }
-
-?>

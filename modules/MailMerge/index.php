@@ -54,5 +54,5 @@ else
 {
 	$step = '1';
 }
-include ('modules/MailMerge/Step'. clean_string($step). '.php'); 
+include ('modules/MailMerge/Step'. intval($step). '.php');
 ?>

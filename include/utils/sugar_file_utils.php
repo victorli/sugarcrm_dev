@@ -177,9 +177,15 @@ function sugar_file_put_contents_atomic($filename, $data, $mode='wb', $use_inclu
     fwrite($f, $data);
     fclose($f);
 
-    if (!@rename($temp, $filename)) {
+    if (!@rename($temp, $filename))
+    {
         @unlink($filename);
-        @rename($temp, $filename);
+        if (!@rename($temp, $filename))
+        {
+            // cleaning up temp file to avoid filling up temp dir
+            @unlink($temp);
+            trigger_error("sugar_file_put_contents_atomic() : fatal rename failure '$temp' -> '$filename'", E_USER_ERROR);
+        }
     }
 
     if(file_exists($filename))

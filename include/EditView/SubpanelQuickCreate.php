@@ -41,12 +41,26 @@ require_once('include/EditView/EditView2.php');
  * @api
  */
 class SubpanelQuickCreate{
-	var $defaultProcess = true;
+    public $defaultProcess = true;
+
+    /**
+     * The view type to use
+     *
+     * @var string
+     */
+    public $viewType = 'QuickCreate';
 
     public function SubpanelQuickCreate($module, $view='QuickCreate', $proccessOverride = false)
     {
+        $this->viewType = $view;
+
         //treat quickedit and quickcreate views as the same
-        if($view == 'QuickEdit') {$view = 'QuickCreate';}
+        if($this->viewType == 'QuickEdit') {
+            $this->viewType = 'QuickCreate';
+        }
+
+        // Get the viewdefs source file, called here to ensure proper viewType setting
+        $source = $this->getModuleViewDefsSourceFile($module, $this->viewType);
 
 		// locate the best viewdefs to use: 1. custom/module/quickcreatedefs.php 2. module/quickcreatedefs.php 3. custom/module/editviewdefs.php 4. module/editviewdefs.php
 		$base = 'modules/' . $module . '/metadata/';
@@ -67,7 +81,7 @@ class SubpanelQuickCreate{
 		}
 
         $this->ev = $this->getEditView();
-		$this->ev->view = $view;
+		$this->ev->view = $this->viewType;
 		$this->ev->ss = new Sugar_Smarty();
 		//$_REQUEST['return_action'] = 'SubPanelViewer';
 
@@ -81,7 +95,7 @@ class SubpanelQuickCreate{
 
 
 		// Bug 49219 - Check empty before set defaults, or the settings from viewdefs above will be overridden.
-		if (!isset($this->ev->defs['templateMeta']['form']['headerTpl']))
+        if (!isset($this->ev->defs['templateMeta']['form']['headerTpl']))
         {
             $this->ev->defs['templateMeta']['form']['headerTpl'] = 'include/EditView/header.tpl';
         }
@@ -142,6 +156,9 @@ class SubpanelQuickCreate{
 	}
 
 	function process($module){
+        if($_REQUEST['target_action'] == 'QuickCreate'){
+            $this->ev->view = 'QuickCreate';
+        }
         $form_name = 'form_Subpanel'.$this->ev->view .'_'.$module;
         $this->ev->formName = $form_name;
         $this->ev->process(true, $form_name);
@@ -155,5 +172,35 @@ class SubpanelQuickCreate{
     protected function getEditView()
     {
         return new EditView();
+    }
+
+
+    /**
+     * Finds and returns the best viewdefs to use:
+     *  1. custom/module/quickcreatedefs.php
+     *  2. module/quickcreatedefs.php
+     *  3. custom/module/editviewdefs.php
+     *  4. module/editviewdefs.php
+     *
+     * @param $module
+     * @param $view
+     * @return string The path to the viewdefs file to use
+     */
+    public function getModuleViewDefsSourceFile($module, $view) {
+        $base = 'modules/' . $module . '/metadata/';
+		$source = 'custom/' . $base . strtolower($view) . 'defs.php';
+		if (!file_exists($source)) {
+			$source = $base . strtolower($view) . 'defs.php';
+			if (!file_exists($source)) {
+				//if our view does not exist default to EditView
+				$this->viewType = 'EditView';
+				$source = 'custom/' . $base . 'editviewdefs.php';
+				if (!file_exists($source)) {
+					$source = $base . 'editviewdefs.php';
+				}
+			}
+		}
+
+        return $source;
     }
 }

@@ -49,6 +49,7 @@ $vardefs = array (
 			'comment' => 'Visual unique identifier',
 			'duplicate_merge' => 'disabled',
 			'disable_num_format' => true,
+			'studio' => array('quickcreate' => false),
 		),
 
 		'name' => array (

@@ -61,7 +61,7 @@ require_once('include/EditView/EditView2.php');
         $metadataFile = $this->getMetaDataFile();
         $this->ev = $this->getEditView();
         $this->ev->ss =& $this->ss;
-        $this->ev->setup($this->module, $this->bean, $metadataFile, 'include/EditView/EditView.tpl');
+        $this->ev->setup($this->module, $this->bean, $metadataFile, get_custom_file_if_exists('include/EditView/EditView.tpl'));
     }
 
  	function display(){

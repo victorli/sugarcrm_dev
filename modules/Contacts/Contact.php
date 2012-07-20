@@ -146,9 +146,6 @@ class Contact extends Person {
 		parent::Person();
 	}
 
-
-
-
 	function add_list_count_joins(&$query, $where)
 	{
 		// accounts.name

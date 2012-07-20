@@ -420,6 +420,9 @@ class ListViewData {
 
 			    $temp->setupCustomFields($temp->module_dir);
 				$temp->loadFromRow($row);
+				if (empty($this->seed->assigned_user_id) && !empty($temp->assigned_user_id)) {
+				    $this->seed->assigned_user_id = $temp->assigned_user_id;
+				}
 				if($idIndex[$row[$id_field]][0] == $dataIndex){
 				    $pageData['tag'][$dataIndex] = $temp->listviewACLHelper();
 				}else{

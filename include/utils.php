@@ -218,6 +218,8 @@ function make_sugar_config(&$sugar_config)
 		    'min_retry_interval' => 60, // minimal job retry delay
 		    'max_retries' => 5, // how many times to retry the job
 		    'timeout' => 86400, // how long a job may spend as running before being force-failed
+		    'soft_lifetime' => 7, // how many days until job record will be soft deleted after completion
+		    'hard_lifetime' => 21, // how many days until job record will be purged from DB
 		),
 		"cron" => array(
 			'max_cron_jobs' => 10, // max jobs per cron schedule run
@@ -973,7 +975,8 @@ function return_application_language($language)
 	}
 
 	// If we are in debug mode for translating, turn on the prefix now!
-	if($sugar_config['translation_string_prefix']) {
+    if(!empty($sugar_config['translation_string_prefix']))
+    {
 		foreach($app_strings as $entry_key=>$entry_value) {
 			$app_strings[$entry_key] = $language.' '.$entry_value;
 		}
@@ -2393,7 +2396,7 @@ function get_emails_by_assign_or_link($params)
     	'join_table_link_alias' => 'linkt',
     ));
     $rel_join = str_replace("{$bean->table_name}.id", "'{$bean->id}'", $rel_join);
-    $return_array['select']='SELECT emails.id ';
+    $return_array['select']='SELECT DISTINCT emails.id ';
     $return_array['from'] = "FROM emails ";
     $return_array['join'] = " INNER JOIN (".
         // directly assigned emails
@@ -3792,12 +3795,13 @@ function getTrackerSubstring($name) {
 	}
 
 	if($strlen > $max_tracker_item_length) {
-		$chopped = function_exists('mb_substr') ? mb_substr($name, 0, $max_tracker_item_length, "UTF-8") : substr($name, 0, $max_tracker_item_length);
+		$chopped = function_exists('mb_substr') ? mb_substr($name, 0, $max_tracker_item_length-3, "UTF-8") : substr($name, 0, $max_tracker_item_length-3);
+		$chopped .= "...";
 	} else {
 		$chopped = $name;
 	}
 
-	return $chopped;
+	return to_html($chopped);
 }
 function generate_search_where ($field_list=array(),$values=array(),&$bean,$add_custom_fields=false,$module='') {
 	$where_clauses= array();
@@ -4516,7 +4520,8 @@ function verify_image_file($path, $jpeg = false)
             if(file_put_contents($path, $image)) {
                 return true;
             }
-        } elseif ($filetype == "image/png") { // else if the filetype is png, create png
+        } elseif ($filetype == "image/png") {
+            // else if the filetype is png, create png
         	imagealphablending($img, true);
         	imagesavealpha($img, true);
         	ob_start();
@@ -4551,7 +4556,7 @@ function verify_image_file($path, $jpeg = false)
 
 /**
  * Verify uploaded image
- * Verifies that image has proper extension, MIME type and doesn't contain hostile contant
+ * Verifies that image has proper extension, MIME type and doesn't contain hostile content
  * @param string $path  Image path
  * @param bool $jpeg_only  Accept only JPEGs?
  */
@@ -4569,7 +4574,7 @@ function verify_uploaded_image($path, $jpeg_only = false)
 	$img_size = getimagesize($path);
 	$filetype = $img_size['mime'];
 	$ext = end(explode(".", $path));
-	if(substr_count('..', $path) > 0 || ($ext !== $path && !in_array(strtolower($ext), array_keys($supportedExtensions))) ||
+	if(substr_count('..', $path) > 0 || ($ext !== $path && !isset($supportedExtensions[strtolower($ext)])) ||
 	    !in_array($filetype, array_values($supportedExtensions))) {
 	        return false;
 	}
@@ -4795,4 +4800,77 @@ function generateETagHeader($etag){
 			die();
 		}
 	}
+}
+
+/**
+ * isSearchEngineDown
+ *
+ * This function checks the existence of a cache file
+ *
+ * @return boolean true if file found, false otherwise
+ */
+function isSearchEngineDown()
+{
+    $cacheDir = empty($GLOBALS['sugar_config']['cache_dir']) ? 'cache/' : $GLOBALS['sugar_config']['cache_dir'];
+    if (file_exists($cacheDir.'fts/fts_down'))
+    {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * searchEngineDown
+ *
+ * This function creates a cache file to indicate search engine is down
+ *
+ */
+function searchEngineDown()
+{
+    $cacheDir = create_cache_directory('fts/');
+    sugar_touch($cacheDir.'/fts_down');
+}
+
+/**
+ * restoreSearchEngine
+ *
+ * This function removes the cache file to indicate search engine has been restored
+ *
+ */
+function restoreSearchEngine()
+{
+    $cacheDir = empty($GLOBALS['sugar_config']['cache_dir']) ? 'cache/' : $GLOBALS['sugar_config']['cache_dir'];
+    $down_file = $cacheDir.'fts/fts_down';
+    if (file_exists($down_file))
+    {
+        unlink($down_file);
+    }
+}
+
+/**
+ * getReportNameTranslation
+ *
+ * Translates the report name if a translation exists,
+ * otherwise just returns the name
+ *
+ * @param string $reportName
+ * @return string translated report name
+ */
+function getReportNameTranslation($reportName) {
+	global $current_language;
+
+	// Used for translating reports
+    $mod_strings = return_module_language($current_language, 'Reports');
+
+	// Search for the report name in the default language and get the key
+	$key = array_search($reportName, return_module_language("", "Reports"));
+
+	// If the key was found, use it to get a translation, otherwise just use report name
+	if (!empty($key)) {
+		$title = $mod_strings[$key];
+	} else {
+		$title = $reportName;
+	}
+
+	return $title;
 }

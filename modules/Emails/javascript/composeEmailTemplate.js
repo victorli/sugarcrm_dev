@@ -135,7 +135,7 @@ SUGAR.email2.templates['compose'] = '<div id="composeLayout{idx}" class="ylayout
 '							</td>' +
 '							<td class="emailUIField" NOWRAP width="99%">' +
 '								<div class="ac_autocomplete">' +
-'									&nbsp;&nbsp;<input class="ac_input" type="text" size="96" id="emailSubject{idx}" name="subject{idx}" value="">' +
+'									&nbsp;&nbsp;<input class="ac_input" type="text" size="96" id="emailSubject{idx}" name="subject{idx}" value="" maxlength="'+SUGAR.email2.composeLayout.subjectMaxlen+'">' +
 '								</div>' +
 '							</td>' +
 '						</tr>' +

@@ -101,7 +101,7 @@ class SugarFieldRelate extends SugarFieldBase {
             $field_to_name = array();
             $field_to_name['id'] = $vardef['id_name'];
             $field_to_name['name'] = $vardef['name'];
-            $address_fields = array('_address_street', '_address_city', '_address_state', '_address_postalcode', '_address_country');
+            $address_fields = isset($displayParams['field_to_name_array']) ? $displayParams['field_to_name_array'] : array('_address_street', '_address_city', '_address_state', '_address_postalcode', '_address_country');
             $count = 0;
             foreach($form as $f) {
                 foreach($address_fields as $afield) {

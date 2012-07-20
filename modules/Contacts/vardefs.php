@@ -131,7 +131,7 @@ array (
 			),
 			'vname' =>'LBL_ANY_EMAIL',
 			'studio' => array('visible'=>false, 'searchview'=>true),
-		),	
+		),
 	'opportunity_role' =>
 		array(
 			'name' => 'opportunity_role',

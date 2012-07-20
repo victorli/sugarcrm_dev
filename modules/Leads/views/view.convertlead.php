@@ -114,6 +114,13 @@ class ViewConvertLead extends SugarView
         $qsd->setFormName("ConvertLead");
 
         $this->contact = new Contact();
+        // Bug #50126 We have to fill account_name & add ability to select account from popup with pre populated name
+        if (!empty($this->focus->account_name))
+        {
+            $smarty->assign('displayParams', array(
+                'initial_filter' => '&name_advanced=' . urlencode($this->focus->account_name))
+            );
+        }
         $smarty->assign("contact_def", $this->contact->field_defs);
         $smarty->assign("form_name", "ConvertLead");
         $smarty->assign("form_id", "ConvertLead");
@@ -372,6 +379,8 @@ class ViewConvertLead extends SugarView
                 return;
             }
             $this->new_contact = true;
+        } elseif (isset($_POST['ContinueContact'])) {
+            $this->new_contact = true;
         }
         if (!empty($_REQUEST['selectedAccount']))
         {
@@ -566,6 +575,20 @@ class ViewConvertLead extends SugarView
 
     	$activities = $this->getActivitiesFromLead($lead);
 
+        //if account is being created, we will specify the account as the parent bean
+        $accountParentInfo = array();
+
+        //determine the account id info ahead of time if it is being created as part of this conversion
+        if(!empty($beans['Accounts'])){
+            $account_id = create_guid();
+            if(!empty($beans['Accounts']->id)){
+                $account_id = $beans['Accounts']->id;
+            }else{
+                $beans['Accounts']->id = $account_id;
+            }
+            $accountParentInfo = array('id'=>$account_id,'type'=>'Accounts');
+        }
+
     	foreach($beans as $module => $bean)
     	{
 	    	if (isset($parent_types[$module]))
@@ -585,7 +608,7 @@ class ViewConvertLead extends SugarView
 	                                    if (is_array($_POST['lead_conv_ac_op_sel'])) {
 	                                        foreach ($_POST['lead_conv_ac_op_sel'] as $mod) {
 	                                            if ($mod == $module) {
-	                                                $this->copyActivityAndRelateToBean($activity, $bean);
+	                                                $this->copyActivityAndRelateToBean($activity, $bean, $accountParentInfo);
 	                                                break;
 	                                            }
 	                                        }
@@ -684,7 +707,8 @@ class ViewConvertLead extends SugarView
 
 	protected function copyActivityAndRelateToBean(
 	    $activity,
-	    $bean
+	    $bean,
+        $parentArr = array()
 	    )
 	{
 		global $beanList;
@@ -693,10 +717,24 @@ class ViewConvertLead extends SugarView
 		$newActivity->id = create_guid();
 		$newActivity->new_with_id = true;
 
+        //set the parent id and type if it was passed in, otherwise use blank to wipe it out
+        $parentID = '';
+        $parentType = '';
+        if(!empty($parentArr)){
+            if(!empty($parentArr['id'])){
+                $parentID = $parentArr['id'];
+            }
+
+            if(!empty($parentArr['type'])){
+                $parentType = $parentArr['type'];
+            }
+
+        }
+
 		//Special case to prevent duplicated tasks from appearing under Contacts multiple times
     	if ($newActivity->module_dir == "Tasks" && $bean->module_dir != "Contacts")
     	{
-    		$newActivity->contact_id = $activity->contact_name = "";
+            $newActivity->contact_id = $newActivity->contact_name = "";
     	}
 
 		if ($rel = $this->findRelationship($newActivity, $bean))
@@ -714,9 +752,13 @@ class ViewConvertLead extends SugarView
                 $key = $relObj->rhs_key;
                 $newActivity->$key = $bean->id;
             }
-            $newActivity->parent_id = $bean->id;
-	        $newActivity->parent_type = $bean->module_dir;
-	        $newActivity->update_date_modified = false; //bug 41747 
+
+            //parent (related to field) should be blank unless it is explicitly sent in
+            //it is not sent in unless the account is being created as well during lead conversion
+            $newActivity->parent_id =  $parentID;
+            $newActivity->parent_type = $parentType;
+
+	        $newActivity->update_date_modified = false; //bug 41747
 	        $newActivity->save();
             $newActivity->$rel->add($bean);
             if ($newActivity->module_dir == "Notes" && $newActivity->filename) {

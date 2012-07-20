@@ -64,7 +64,7 @@ class Bug33284_Test extends Sugar_PHPUnit_Framework_TestCase
         
         $test_string = 'The quick brown fox jumps over lazy dogs';
         $display_string = getTrackerSubstring($test_string);
-        $this->assertEquals(strlen($display_string), $default_length, 'Assert that the string length is equal to ' . $default_length . ' characters');
+        $this->assertEquals(strlen(from_html($display_string)), $default_length, 'Assert that the string length is equal to ' . $default_length . ' characters');
     }
     
     
@@ -78,12 +78,12 @@ class Bug33284_Test extends Sugar_PHPUnit_Framework_TestCase
         $sugar_config['tracker_max_display_length'] = $default_length;
         
         $display_string = getTrackerSubstring($test_string);  
-        $this->assertEquals(strlen($display_string), $default_length, 'Assert that the string length is equal to ' . $default_length . ' characters (default)');
+        $this->assertEquals(strlen(from_html($display_string)), $default_length, 'Assert that the string length is equal to ' . $default_length . ' characters (default)');
 
 		$test_string = '早前於美國完成民族音樂學博士學位回港後在大專院校的音樂系任教123456789';
         $display_string = getTrackerSubstring($test_string);
 
-        $this->assertEquals(mb_strlen($display_string, 'UTF-8'), $default_length, 'Assert that the string length is equal to ' . $default_length . ' characters (default)');    
+        $this->assertEquals(mb_strlen(from_html($display_string), 'UTF-8'), $default_length, 'Assert that the string length is equal to ' . $default_length . ' characters (default)');    
     }  
 }
 

@@ -61,6 +61,10 @@ class ViewBackups extends SugarView
 	    if (!is_admin($current_user)) {
 	        sugar_die("Unauthorized access to administration.");
         }
+        if (isset($GLOBALS['sugar_config']['hide_admin_backup']) && $GLOBALS['sugar_config']['hide_admin_backup'])
+        {
+            sugar_die("Unauthorized access to backups.");
+        }
 	}
     
     /**

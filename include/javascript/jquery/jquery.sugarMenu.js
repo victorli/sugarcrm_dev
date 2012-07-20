@@ -11,7 +11,7 @@
  *          ...                             -  Elements in popout menu
  *          <li></li>                       - /
  *          <li>
- *              <a></a> or <input></input>  - element contains submenu
+ *              <input></input>  - element contains submenu
  *              <ul class="subnav-sub">     - sub-popout menu (shown when mouseover on the above element)
  *                  <li></li>               - \
  *                  ...                     -  Elements in sub-popout menu

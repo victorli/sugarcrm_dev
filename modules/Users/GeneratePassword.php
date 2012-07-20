@@ -49,6 +49,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
     global $app_strings;
     global $sugar_config;
     global $new_pwd;
+    global $current_user;
 
   	$mod_strings=return_module_language('','Users');
   	$res=$GLOBALS['sugar_config']['passwordsetting'];
@@ -56,16 +57,31 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 ///////////////////////////////////////////////////
 ///////  Retrieve user
+$username = '';
+$useremail = '';
+if(isset( $_POST['user_name'])){
+        $username = $_POST['user_name'];
+}else if(isset( $_POST['username'])){
+        $username = $_POST['username'];
+}
+
+if(isset( $_POST['Users0emailAddress0'])){
+        $useremail = $_POST['Users0emailAddress0'];
+}else if(isset( $_POST['user_email'])){
+        $useremail = $_POST['user_email'];
+}
 
     $usr= new user();
-    if(isset( $_POST['user_name']) && isset($_POST['Users0emailAddress0'] )){
-    	if ($_POST['user_name'] != '' && $_POST['Users0emailAddress0'] != ''){
-	        $usr_id=$usr->retrieve_user_id($_POST['user_name']);
-	        $usr->retrieve($usr_id);
-	        if ($usr->email1 !=  $_POST['Users0emailAddress0']){
-	            echo $mod_strings['ERR_PASSWORD_USERNAME_MISSMATCH'];
-	            return;
-    	    }
+    if(isset($username) && $username != '' && isset($useremail) && $useremail != '')
+    {
+        if ($username != '' && $useremail != ''){
+            $usr_id=$usr->retrieve_user_id($username);
+            $usr->retrieve($usr_id);
+            if ($usr->email1 !=  $useremail){
+                echo $mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL'];
+                return;
+            }
+
     	    if ($usr->portal_only || $usr->is_group){
 	            echo $mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL'];
 	            return;
@@ -82,14 +98,20 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
             $usr->retrieve($_POST['userId']);
         }
         else{
-        	if(isset( $_POST['sugar_user_name']) && isset($_POST['sugar_user_name'] )){
+        	if(!empty( $_POST['sugar_user_name'])){
 				$usr_id=$usr->retrieve_user_id($_POST['sugar_user_name']);
 	        	$usr->retrieve($usr_id);
 			}
     		else{
-    			echo  $mod_strings['ERR_USER_INFO_NOT_FOUND'];
+    			echo  $mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL'];
             	return;
     		}
+    	}
+
+    	// Check if current_user is admin or the same user
+    	if(empty($current_user->id) || empty($usr->id) || ($usr->id != $current_user->id && !$current_user->is_admin)) {
+    	    echo  $mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL'];
+    	    return;
     	}
     }
 
@@ -106,158 +128,56 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 ///////
 ///////////////////////////////////////////////////
-
-
-	// if i need to generate a password (not a link)
-    if (!isset($_POST['link'])){
-	    $charBKT='';
-	    //chars to select from
-	    $LOWERCASE = "abcdefghijklmnpqrstuvwxyz";
-	    $NUMBER = "0123456789";
-	    $UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	    $SPECIAL = '~!@#$%^&*()_+=-{}|';
-	    $condition = 0;
-	    $charBKT.=$UPPERCASE.$LOWERCASE.$NUMBER;
-	    $password="";
-
-	    	$lenght='6';
-	    // Create random characters for the ones that doesnt have requirements
-	    for ($i=0;$i<$lenght-$condition;$i++)  // loop and create password
-	       $password = $password . substr ($charBKT, rand() % strlen($charBKT), 1);
-
-    }
+    $isLink = isset($_POST['link']) && $_POST['link'] == '1';
+    // if i need to generate a password (not a link)
+    $password = $isLink ? '' : User::generatePassword();
 
 ///////////////////////////////////////////////////
 ///////  Create URL
 
 // if i need to generate a link
-if (isset($_POST['link']) && $_POST['link'] == '1'){
+if ($isLink){
 	global $timedate;
 	$guid=create_guid();
 	$url=$GLOBALS['sugar_config']['site_url']."/index.php?entryPoint=Changenewpassword&guid=$guid";
 	$time_now=TimeDate::getInstance()->nowDb();
-	//$q2="UPDATE `users_password_link` SET `deleted` = '1' WHERE `username` = '".$_POST['username']."'";
+	//$q2="UPDATE `users_password_link` SET `deleted` = '1' WHERE `username` = '".$username."'";
 	//$usr->db->query($q2);
-	$q = "INSERT INTO users_password_link (id, username, date_generated) VALUES('".$guid."','".$_POST['user_name']."',' ".$time_now."' ) ";
+	$q = "INSERT INTO users_password_link (id, username, date_generated) VALUES('".$guid."','".$username."','".$time_now."') ";
 	$usr->db->query($q);
 }
 ///////
 ///////////////////////////////////////////////////
 
 ///////  Email creation
-	global $sugar_config, $current_user;
-    if (isset($_POST['link']) && $_POST['link'] == '1')
+    if ($isLink)
     	$emailTemp_id = $res['lostpasswordtmpl'];
     else
     	$emailTemp_id = $res['generatepasswordtmpl'];
 
-    $emailTemp = new EmailTemplate();
-    $emailTemp->disable_row_level_security = true;
-    if ($emailTemp->retrieve($emailTemp_id) == ''){
-        echo $mod_strings['LBL_EMAIL_TEMPLATE_MISSING'];
-        $new_pwd='4';
-        return;}
-
-    //replace instance variables in email templates
-    $htmlBody = $emailTemp->body_html;
-    $body = $emailTemp->body;
-    if (isset($_POST['link']) && $_POST['link'] == '1'){
-    	$htmlBody = str_replace('$contact_user_link_guid', $url, $htmlBody);
-    	$body = str_replace('$contact_user_link_guid', $url, $body);
+    $additionalData = array(
+        'link' => $isLink,
+        'password' => $password
+    );
+    if (isset($url))
+    {
+        $additionalData['url'] = $url;
     }
-    else{
-    	$htmlBody = str_replace('$contact_user_user_hash', $password, $htmlBody);
-    	$body = str_replace('$contact_user_user_hash', $password, $body);
-    }
-    // Bug 36833 - Add replacing of special value $instance_url
-    $htmlBody = str_replace('$config_site_url',$sugar_config['site_url'], $htmlBody);
-    $body = str_replace('$config_site_url',$sugar_config['site_url'], $body);
-
-    $htmlBody = str_replace('$contact_user_user_name', $usr->user_name, $htmlBody);
-    $htmlBody = str_replace('$contact_user_pwd_last_changed', TimeDate::getInstance()->nowDb(), $htmlBody);
-    $body = str_replace('$contact_user_user_name', $usr->user_name, $body);
-    $body = str_replace('$contact_user_pwd_last_changed', TimeDate::getInstance()->nowDb(), $body);
-    $emailTemp->body_html = $htmlBody;
-    $emailTemp->body = $body;
-    require_once('include/SugarPHPMailer.php');
-
-    $itemail=$usr->emailAddress->getPrimaryAddress($usr);
-    //retrieve IT Admin Email
-    //_ppd( $emailTemp->body_html);
-    //retrieve email defaults
-    $emailObj = new Email();
-    $defaults = $emailObj->getSystemDefaultEmail();
-    $mail = new SugarPHPMailer();
-    $mail->setMailerForSystem();
-    //$mail->IsHTML(true);
-    $mail->From = $defaults['email'];
-    $mail->FromName = $defaults['name'];
-    $mail->ClearAllRecipients();
-    $mail->ClearReplyTos();
-    $mail->Subject=from_html($emailTemp->subject);
-    if($emailTemp->text_only != 1){
-        $mail->IsHTML(true);
-        $mail->Body=from_html($emailTemp->body_html);
-        $mail->AltBody=from_html($emailTemp->body);
-    }
-    else {
-        $mail->Body_html=from_html($emailTemp->body_html);
-        $mail->Body=from_html($emailTemp->body);
-    }
-    if($mail->Body == '' && $current_user->is_admin){
-    	echo $app_strings['LBL_EMAIL_TEMPLATE_EDIT_PLAIN_TEXT'];
-        $new_pwd='4';
-    	return;}
-    if($mail->Mailer == 'smtp' && $mail->Host ==''&& $current_user->is_admin){
-    	echo $mod_strings['ERR_SERVER_SMTP_EMPTY'];
-        $new_pwd='4';
-    	return;}
-
-    $mail->prepForOutbound();
-    $hasRecipients = false;
-
-    if (!empty($itemail)){
-        if($hasRecipients){
-            $mail->AddBCC($itemail);
-        }else{
-            $mail->AddAddress($itemail);
-        }
-        $hasRecipients = true;
-    }
-    $success = false;
-    if($hasRecipients){
-    	$success = @$mail->Send();
+    $result = $usr->sendEmailForPassword($emailTemp_id, $additionalData);
+    if ($result['status'] == false && $result['message'] != '')
+    {
+        echo $result['message'];
+        $new_pwd = '4';
+        return;
     }
 
-    //now create email
-    if($success){
-
-        $emailObj->team_id = 1;
-        $emailObj->to_addrs= '';
-        $emailObj->type= 'archived';
-        $emailObj->deleted = '0';
-        $emailObj->name = $mail->Subject ;
-        $emailObj->description = $mail->Body;
-        $emailObj->description_html =null;
-        $emailObj->from_addr = $mail->From;
-        $emailObj->parent_type = 'User';
-        $emailObj->date_sent =TimeDate::getInstance()->nowDb();
-        $emailObj->modified_user_id = '1';
-        $emailObj->created_by = '1';
-        $emailObj->status='sent';
-        $retId = $emailObj->save();
+    if ($result['status'] == true)
+    {
         echo '1';
-        if (!isset($_POST['link'])){
-            $usr->setNewPassword($password, '1');
-        }
-    }else{
+    } else {
     	$new_pwd='4';
     	if ($current_user->is_admin){
     		$email_errors=$mod_strings['ERR_EMAIL_NOT_SENT_ADMIN'];
-    		if ($mail->Mailer == 'smtp')
-    			$email_errors.="\n-".$mod_strings['ERR_SMTP_URL_SMTP_PORT'];
-    		if ($mail->SMTPAuth)
-    		 	$email_errors.="\n-".$mod_strings['ERR_SMTP_USERNAME_SMTP_PASSWORD'];
     		$email_errors.="\n-".$mod_strings['ERR_RECIPIENT_EMAIL'];
     		$email_errors.="\n-".$mod_strings['ERR_SERVER_STATUS'];
     		echo $email_errors;
@@ -266,3 +186,5 @@ if (isset($_POST['link']) && $_POST['link'] == '1'){
     		echo $mod_strings['LBL_EMAIL_NOT_SENT'];
     }
     return;
+
+?>

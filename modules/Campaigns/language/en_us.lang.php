@@ -122,6 +122,7 @@ $mod_strings = array (
   'LBL_TEST_BUTTON_KEY'=>'e',
   'LBL_TEST_BUTTON_LABEL'=>'Send Test',
   'LBL_COPY_AND_PASTE_CODE' => 'Or copy and paste the html below into an existing page',
+  'LBL_CHARSET_NOTICE' => 'NOTE: Please make sure that the page containing the web-to-lead form has the following lines in the &lt;head&gt; section:',
 
   'LBL_TODETAIL_BUTTON_TITLE'=>'View Details',
   'LBL_TODETAIL_BUTTON_KEY'=>'T',
