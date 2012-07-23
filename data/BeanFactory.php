@@ -54,26 +54,14 @@ class BeanFactory {
      * Returns a SugarBean object by id. The Last 10 loaded beans are cached in memory to prevent multiple retrieves per request.
      * If no id is passed, a new bean is created.
      * @static
-     * @param String $module
+     * @param  String $module
      * @param String $id
-     * @param Array $params A name/value array of parameters. Names: encode, deleted, 
-     *        If $params is boolean we revert to the old arguments (encode, deleted), and use $params as $encode.
-     *        This will be changed to using only $params in later versions.
+     * @param Bool $encode @see SugarBean::retrieve
      * @param Bool $deleted @see SugarBean::retrieve
      * @return SugarBean
      */
-    public static function getBean($module, $id = null, $params = array(), $deleted = true)
+    public static function getBean($module, $id = null, $encode = true, $deleted = true)
     {
-    	
-    	// Check if params is an array, if not use old arguments
-    	if (isset($params) && !is_array($params)) {
-    		$params = array('encode' => $params);
-    	}
-    	
-    	// Pull values from $params array
-    	$encode = isset($params['encode']) ? $params['encode'] : true;
-    	$deleted = isset($params['deleted']) ? $params['deleted'] : $deleted;
-    	
         if (!isset(self::$loadedBeans[$module])) {
             self::$loadedBeans[$module] = array();
             self::$touched[$module] = array();
