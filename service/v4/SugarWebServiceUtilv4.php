@@ -463,7 +463,9 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
 				if($module_name == 'Users' && !empty($seed->id) && ($seed->id != $current_user->id) && $field_name == 'user_hash'){
 					continue;
 				}
-
+				if(!empty($seed->field_name_map[$field_name]['sensitive'])) {
+					continue;
+				}
 				$seed->$field_name = $val;
 			}
 

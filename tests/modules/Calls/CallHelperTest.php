@@ -41,12 +41,15 @@ class CallHelperTest extends Sugar_PHPUnit_Framework_TestCase
 {
     public function setup()
     {
-        $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('app_list_strings');
+        SugarTestHelper::setUp('current_user');
     }
     
     public function tearDown()
     {
-        unset($GLOBALS['app_list_strings']);
+        SugarTestHelper::tearDown();
     }
     
     public function providerGetDurationMinutesOptions()

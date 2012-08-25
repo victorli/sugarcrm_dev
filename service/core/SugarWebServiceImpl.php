@@ -462,6 +462,9 @@ function set_entry($session,$module_name, $name_value_list){
 		if($module_name == 'Users' && !empty($seed->id) && ($seed->id != $current_user->id) && $name == 'user_hash'){
 			continue;
 		}
+		if(!empty($seed->field_name_map[$name]['sensitive'])) {
+			continue;
+		}
 		if(!is_array($value)){
 			$seed->$name = $value;
 		}else{

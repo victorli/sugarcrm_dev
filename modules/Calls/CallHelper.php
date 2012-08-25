@@ -60,8 +60,7 @@ function getDurationMinutesOptions($focus, $field, $value, $view) {
 		$focus->duration_hours = "0";
 	if (is_null($focus->duration_minutes))
 		$focus->duration_minutes = "1";
-		
-   
+	
     if($view == 'EditView' || $view == 'MassUpdate' || $view == "QuickCreate"
     ) {
        $html = '<select id="duration_minutes" ';

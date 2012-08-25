@@ -51,15 +51,7 @@
 <tr><td class='mbLBL'>{sugar_translate module="DynamicFields" label="COLUMN_TITLE_IMPORTABLE"}:</td><td>
     {if $hideLevel < 5}
         {html_options name="importable" id="importable" selected=$vardef.importable options=$importable_options}
-		{sugar_getimage alt=$mod_strings.LBL_HELP name="helpInline" ext=".png" other_attributes='id="importTipIcon" '}
-        <script>
-            if (!ModuleBuilder.importToolTip)
-                 ModuleBuilder.importToolTip = new YAHOO.widget.Tooltip("importTipPopup", {ldelim}
-                    context:"importTipIcon", text:"{$mod_strings.LBL_POPHELP_IMPORTABLE}"
-                 {rdelim});
-            else
-                ModuleBuilder.importToolTip.cfg.setProperty("context", "importTipIcon");
-        </script>
+        {sugar_help text=$mod_strings.LBL_POPHELP_IMPORTABLE FIXX=250 FIXY=80}
     {else}
         {if isset($vardef.importable)}{$importable_options[$vardef.importable]}
         {else}{$importable_options.true}{/if}
@@ -70,15 +62,7 @@
 <tr><td class='mbLBL'>{sugar_translate module="DynamicFields" label="COLUMN_TITLE_DUPLICATE_MERGE"}:</td><td>
 {if $hideLevel < 5}
     {html_options name="duplicate_merge" id="duplicate_merge" selected=$vardef.duplicate_merge_dom_value options=$duplicate_merge_options}
-    {sugar_getimage alt=$mod_strings.LBL_HELP name="helpInline" ext=".png" other_attributes='id="duplicateTipIcon" '}
-    <script>
-        if (!ModuleBuilder.duplicateToolTip)
-             ModuleBuilder.duplicateToolTip = new YAHOO.widget.Tooltip("duplicateTipPopup", {ldelim}
-                context:"duplicateTipIcon", text:"{$mod_strings.LBL_POPHELP_DUPLICATE_MERGE}"
-             {rdelim});
-        else
-            ModuleBuilder.duplicateToolTip.cfg.setProperty("context", "duplicateTipIcon");
-    </script>
+    {sugar_help text=$mod_strings.LBL_POPHELP_DUPLICATE_MERGE FIXX=250 FIXY=80}
 {else}
     {if isset($vardef.duplicate_merge_dom_value)}{$vardef.duplicate_merge_dom_value}
     {else}{$duplicate_merge_options[0]}{/if}

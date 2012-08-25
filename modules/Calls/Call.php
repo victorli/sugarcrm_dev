@@ -128,8 +128,8 @@ class Call extends SugarBean {
 			$this->field_name_map[$field['name']] = $field;
 		}
 
-		
-		
+
+
 
          if(!empty($GLOBALS['app_list_strings']['duration_intervals']))
         	$this->minutes_values = $GLOBALS['app_list_strings']['duration_intervals'];
@@ -161,15 +161,15 @@ class Call extends SugarBean {
 	function save($check_notify = FALSE) {
 		global $timedate,$current_user;
 
-	    if(isset($this->date_start) && isset($this->duration_hours) && isset($this->duration_minutes)) 
+	    if(isset($this->date_start) && isset($this->duration_hours) && isset($this->duration_minutes))
         {
     	    $td = $timedate->fromDb($this->date_start);
     	    if($td)
     	    {
 	        	$this->date_end = $td->modify("+{$this->duration_hours} hours {$this->duration_minutes} mins")->asDb();
-    	    }	
+    	    }
         }
-        		
+
 		if(!empty($_REQUEST['send_invites']) && $_REQUEST['send_invites'] == '1') {
 			$check_notify = true;
         } else {
@@ -463,8 +463,10 @@ class Call extends SugarBean {
 		if (!empty($this->contact_id)) {
            // Bug# 46125 - make first name, last name, salutation and title of Contacts respect field level ACLs
             $contact_temp = BeanFactory::getBean("Contacts", $this->contact_id);
-            $contact_temp->_create_proper_name_field();
-            $this->contact_name = $contact_temp->full_name;
+            if(!empty($contact_temp)) {
+                $contact_temp->_create_proper_name_field();
+                $this->contact_name = $contact_temp->full_name;
+            }
 		}
 
         $call_fields['CONTACT_ID'] = $this->contact_id;
@@ -485,7 +487,7 @@ class Call extends SugarBean {
 
         // rrs: bug 42684 - passing a contact breaks this call
 		$notifyUser =($call->current_notify_user->object_name == 'User') ? $call->current_notify_user : $current_user;
-		        
+
 
 		// Assumes $call dates are in user format
 		$calldate = $timedate->fromDb($call->date_start);

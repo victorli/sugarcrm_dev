@@ -56,6 +56,26 @@ class JitReports extends Jit {
 		return $total;
 	}	
 	
+    /**
+     * Method checks is our dataset from currency field or not
+     *
+     * @param array $dataset of chart
+     * @return bool is currency
+     */
+    public function isCurrencyReportGroupTotal(array $dataset)
+    {
+        $isCurrency = true;
+        foreach ($dataset as $value)
+        {
+            if (empty($value['numerical_is_currency']))
+            {
+                $isCurrency = false;
+                break;
+            }
+        }
+        return $isCurrency;
+    }
+
 	function processReportData($dataset, $level=1, $first=false){
 		$data = '';
 		
@@ -133,7 +153,9 @@ class JitReports extends Jit {
 		return $data;
 	}
 	
-	function xmlDataReportChart(){
+    function xmlDataReportChart()
+    {
+        global $app_strings;
 		$data = '';
 		// correctly process the first row
 		$first = true;	
@@ -141,12 +163,26 @@ class JitReports extends Jit {
 			
 			$total = $this->calculateReportGroupTotal($dataset);
 			$this->checkYAxis($total);
-			
+
 			$data .= $this->tab('<group>', 2);
 			$data .= $this->tabValue('title',$key, 3);
 			$data .= $this->tabValue('value',$total, 3);
-			$data .= $this->tabValue('label',$total, 3);				
-			$data .= $this->tab('<subgroups>', 3);
+
+            $label = $total;
+            if ($this->isCurrencyReportGroupTotal($dataset))
+            {;
+                $label = currency_format_number($total, array(
+                    'currency_symbol' => $this->currency_symbol,
+                    'decimals' => ($this->chart_properties['thousands'] ? 0 : null)
+                ));
+            }
+            if ($this->chart_properties['thousands'])
+            {
+                $label .= $app_strings['LBL_THOUSANDS_SYMBOL'];
+            }
+            $data .= $this->tabValue('label', $label, 3);
+
+            $data .= $this->tab('<subgroups>', 3);
 			
 			if ((isset($dataset[$total]) && $total != $dataset[$total]['numerical_value']) || !array_key_exists($key, $dataset)){
 					$data .= $this->processReportData($dataset, 4, $first);
@@ -219,7 +255,7 @@ class JitReports extends Jit {
 		parent::display($name, $xmlFile, $width, $height, $resize=false);			
 		
 		return $this->ss->fetch('include/SugarCharts/Jit/tpls/chart.tpl');	
+		
+		
 	}
 }
-
-?>

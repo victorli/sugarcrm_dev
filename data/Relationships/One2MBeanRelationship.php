@@ -315,13 +315,28 @@ class One2MBeanRelationship extends One2MRelationship
         $alias = $GLOBALS['db']->getValidDBName($alias, false, 'alias');
 
         $tableInRoleFilter = "";
-        if ($targetTable == "meetings" && $linkIsLHS == false) { 
-            if ($alias == "meetings_activities_1_meetings_rel" ||
-                $alias == "meetings_activities_1_tasks_rel" ||
-                $alias == "meetings_activities_1_calls_rel" ||
-                $alias == "meetings_activities_1_emails_rel" ||
-                $alias == "meetings_activities_1_notes_rel")
+        if (($targetTable == "meetings" ||
+            $targetTable == "notes" ||
+            $targetTable == "tasks" ||
+            $targetTable == "calls") && $linkIsLHS == false) {
+            if (substr($alias, -25) == "activities_1_meetings_rel" ||
+                substr($alias, -22) == "activities_1_tasks_rel" ||
+                substr($alias, -22) == "activities_1_calls_rel" ||
+                substr($alias, -23) == "activities_1_emails_rel" ||
+                substr($alias, -22) == "activities_1_notes_rel")
                 $tableInRoleFilter = $alias;
+        }
+        else if (($startingTable == "meetings" ||
+            $startingTable == "notes" ||
+            $startingTable == "tasks" ||
+            $startingTable == "calls" ||
+            $startingTable == "emails") && empty($linkIsLHS)) {
+            if (substr($alias, -23) == "activities_meetings_rel" ||
+                substr($alias, -20) == "activities_tasks_rel" ||
+                substr($alias, -20) == "activities_calls_rel" ||
+                substr($alias, -21) == "activities_emails_rel" ||
+                substr($alias, -20) == "activities_notes_rel")
+                $tableInRoleFilter = $startingTable;
         }
         
         //Set up any table aliases required

@@ -228,6 +228,7 @@ class ViewLayoutView extends ViewEdit
         $smarty->assign ( 'maxColumns', $parser->getMaxColumns() ) ;
         $smarty->assign ( 'nextPanelId', $parser->getFirstNewPanelId() ) ;
         $smarty->assign ( 'displayAsTabs', $parser->getUseTabs() ) ;
+        $smarty->assign ( 'tabDefs', $parser->getTabDefs() ) ;
         $smarty->assign ( 'syncDetailEditViews', $parser->getSyncDetailEditViews() ) ;
         $smarty->assign ( 'fieldwidth', 150 ) ;
         $smarty->assign ( 'translate', $this->fromModuleBuilder ? false : true ) ;

@@ -132,6 +132,7 @@ class SugarWebServiceUtilv3 extends SoapHelperWebServices {
                 if(is_a($bean, 'User') && $current_user->id != $bean->id && isset($row['user_hash'])) {
                     $row['user_hash'] = "";
                 }
+                $row = clean_sensitive_data($bean->field_defs, $row);
                 $list[] = $row;
             }
             $GLOBALS['log']->info('End: SoapHelperWebServices->getRelationshipResults');

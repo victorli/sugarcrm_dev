@@ -270,7 +270,12 @@ class SugarBean
      * @var array
      */
     protected $loaded_relationships = array();
-
+	
+	/**
+     * set to true if dependent fields updated
+     */
+    protected $is_updated_dependent_fields = false;
+	
     /**
      * Constructor for the bean, it performs following tasks:
      *
@@ -2138,7 +2143,8 @@ function save_relationship_changes($is_update, $exclude=array())
         {
             $this->custom_fields->fill_relationships();
         }
-
+		
+		$this->is_updated_dependent_fields = false;
         $this->fill_in_additional_detail_fields();
         $this->fill_in_relationship_fields();
         //make a copy of fields in the relationship_fields array. These field values will be used to
@@ -2454,6 +2460,8 @@ function save_relationship_changes($is_update, $exclude=array())
     $row_offset = 0, $limit=-1, $max=-1, $show_deleted = 0)
     {
         global $layout_edit_mode;
+        $query_array = array();
+
         if(isset($layout_edit_mode) && $layout_edit_mode)
         {
             $response = array();
@@ -2472,7 +2480,18 @@ function save_relationship_changes($is_update, $exclude=array())
         }
 
         $this->load_relationship($related_field_name);
-        $query_array = $this->$related_field_name->getQuery(true);
+        
+        if ($this->$related_field_name instanceof Link) {
+            
+            $query_array = $this->$related_field_name->getQuery(true);
+        } else {
+            
+            $query_array = $this->$related_field_name->getQuery(array(
+                "return_as_array" => true,
+                'where' => '1=1' // hook for 'where' clause in M2MRelationship file
+                    ));
+        }
+
         $entire_where = $query_array['where'];
         if(!empty($where))
         {
@@ -2717,7 +2736,11 @@ function save_relationship_changes($is_update, $exclude=array())
                 $query_array = $subquery['query_array'];
                 $select_position=strpos($query_array['select'],"SELECT");
                 $distinct_position=strpos($query_array['select'],"DISTINCT");
-                if ($select_position !== false && $distinct_position!= false)
+                if (!empty($subquery['params']['distinct']) && !empty($subpanel_def->table_name))
+                {
+                    $query_rows = "( SELECT count(DISTINCT ". $subpanel_def->table_name . ".id)".  $subquery['from_min'].$query_array['join']. $subquery['where'].' )';
+                }
+                elseif ($select_position !== false && $distinct_position!= false)
                 {
                     $query_rows = "( ".substr_replace($query_array['select'],"SELECT count(",$select_position,6). ")" .  $subquery['from_min'].$query_array['join']. $subquery['where'].' )';
                 }
@@ -4476,7 +4499,6 @@ function save_relationship_changes($is_update, $exclude=array())
     function list_view_parse_additional_sections(&$list_form)
     {
     }
-
     /**
      * Assigns all of the values into the template for the list view
      */
@@ -4485,7 +4507,6 @@ function save_relationship_changes($is_update, $exclude=array())
         static $cache = array();
         // cn: bug 12270 - sensitive fields being passed arbitrarily in listViews
         $sensitiveFields = array('user_hash' => '');
-
         
         $return_array = Array();
         global $app_list_strings, $mod_strings;
@@ -4548,9 +4569,10 @@ function save_relationship_changes($is_update, $exclude=array())
     /**
      * Construct where clause from a list of name-value pairs.
      * @param array $fields_array Name/value pairs for column checks
+     * @param boolean $deleted Optional, default true, if set to false deleted filter will not be added.
      * @return string The WHERE clause
      */
-    function get_where($fields_array)
+    function get_where($fields_array, $deleted=true)
     {
         $where_clause = "";
         foreach ($fields_array as $name=>$value)
@@ -4563,9 +4585,13 @@ function save_relationship_changes($is_update, $exclude=array())
             $where_clause .= "$name = ".$this->db->quoted($value,false);
         }
         if(!empty($where_clause)) {
-            return "WHERE $where_clause AND deleted=0";
+            if($deleted) {
+                return "WHERE $where_clause AND deleted=0";
+            } else {
+                return "WHERE $where_clause";
+            }
         } else {
-            return "WHERE deleted=0";
+            return "";
         }
     }
 
@@ -4576,11 +4602,12 @@ function save_relationship_changes($is_update, $exclude=array())
      * Internal function, do not override.
      * @param array @fields_array  array of name value pairs used to construct query.
      * @param boolean $encode Optional, default true, encode fetched data.
+     * @param boolean $deleted Optional, default true, if set to false deleted filter will not be added.
      * @return object Instance of this bean with fetched data.
      */
-    function retrieve_by_string_fields($fields_array, $encode=true)
+    function retrieve_by_string_fields($fields_array, $encode=true, $deleted=true)
     {
-        $where_clause = $this->get_where($fields_array);
+        $where_clause = $this->get_where($fields_array, $deleted);
         if(isset($this->custom_fields))
         $custom_join = $this->custom_fields->getJOIN();
         else $custom_join = false;
@@ -4614,6 +4641,7 @@ function save_relationship_changes($is_update, $exclude=array())
         $row = $this->convertRow($row);
         $this->fetched_row = $row;
         $this->fromArray($row);
+		$this->is_updated_dependent_fields = false;
         $this->fill_in_additional_detail_fields();
         return $this;
     }

@@ -321,10 +321,16 @@ class SugarFieldBase {
     	$this->button = '';
     	$this->buttons = '';
     	$this->image = '';
-    	if ($twopass){
-	        $this->ss->left_delimiter = '{{';
-	        $this->ss->right_delimiter = '}}';
-    	}
+        if ($twopass)
+        {
+            $this->ss->left_delimiter = '{{';
+            $this->ss->right_delimiter = '}}';
+        }
+        else
+        {
+            $this->ss->left_delimiter = '{';
+            $this->ss->right_delimiter = '}';
+        }
         $this->ss->assign('parentFieldArray', $parentFieldArray);
         $this->ss->assign('vardef', $vardef);
         $this->ss->assign('tabindex', $tabindex);

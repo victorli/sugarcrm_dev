@@ -65,12 +65,12 @@ class Bug42326Test extends Sugar_PHPUnit_Framework_TestCase
         $dataset = array(
             // check labels for regression of normal bar chart
             array('<?xml version="1.0" encoding="UTF-8"?><sugarcharts version="1.0"><data><group><title>Label1</title><value>4</value><label>4</label><subgroups></subgroups></group><group><title>Label2</title><value>3</value><label>3</label><subgroups></subgroups></group></data></sugarcharts>',
-                  "\t'label': [\n\n\t\t'Label1'\n,\n\t\t'Label2'\n\n\t],\n\n",),
+                  "\t\"label\": [\n\n\t\t\"Label1\"\n,\n\t\t\"Label2\"\n\n\t],\n\n",),
 
             // check labels on stacked bar chart generate correct JSON
             // before the fix, this would have resulted in "\t'label': [\n\n\t\t'Name1'\n],\n\n"
             array('﻿<?xml version="1.0" encoding="UTF-8"?><sugarcharts version="1.0"><data><group><title>Name1</title><value>1</value><label>1</label><subgroups><group><title>Label1</title><value>1</value><label>1</label><link></link></group><group><title>Label2</title><value>NULL</value><label></label><link></link></group></subgroups></group></data></sugarcharts>',
-                  "\t'label': [\n\n\t\t'Label1'\n,\n\t\t'Label2'\n\n\t],\n\n"),
+                  "\t\"label\": [\n\n\t\t\"Label1\"\n,\n\t\t\"Label2\"\n\n\t],\n\n"),
         );
         return $dataset;
     }

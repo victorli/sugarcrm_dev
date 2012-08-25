@@ -297,8 +297,16 @@ if(document.DetailView != null &&
 			$div_display = $default_div_display;
 			$cookie_name =   $tab . '_v';
 
+			if (isset($thisPanel->_instance_properties['collapsed']) && $thisPanel->_instance_properties['collapsed'])
+			{
+				$div_display = 'none';
+			}
+				
 			if(isset($div_cookies[$cookie_name])){
-				$div_display = 	$div_cookies[$cookie_name];
+				//If defaultSubPanelExpandCollapse is set, ignore the cookie that remembers whether the panel is expanded or collapsed.
+				//To be used with the above 'collapsed' metadata setting so they will always be set the same when the page is loaded.
+				if(!isset($sugar_config['defaultSubPanelExpandCollapse']) || $sugar_config['defaultSubPanelExpandCollapse'] == false)
+					$div_display = 	$div_cookies[$cookie_name];
 			}
 			if(!empty($sugar_config['hide_subpanels'])){
 				$div_display = 'none';

@@ -103,7 +103,8 @@ if(isset($_REQUEST['recaptcha_challenge_field']) && isset($_REQUEST['recaptcha_r
 $redirect='1';
 if (isset($_REQUEST['guid']))
  	{
- 	$Q="select * from users_password_link where id='".$_REQUEST['guid']."' and deleted='0'";
+ 	// Change 'deleted = 0' clause to 'COALESCE(deleted, 0) = 0' because by default the values were NULL
+ 	$Q = "SELECT * FROM users_password_link WHERE id = '" . $_REQUEST['guid'] . "' AND COALESCE(deleted, 0) = '0'";
  	$result =$GLOBALS['db']->limitQuery($Q,0,1,false);
 	$row = $GLOBALS['db']->fetchByAssoc($result);
 	if (!empty($row)){

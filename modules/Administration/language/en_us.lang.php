@@ -361,6 +361,7 @@ $mod_strings = array (
     'LBL_LICENSE_VALIDATION_KEY'           => 'Validation Key',
     'LBL_LICENSE_VALIDATION'           => 'License Validation',
     'LBL_LICENSE'               => 'License',
+    'LBL_LICENSE_UNAUTHORIZED_ACCESS'               => 'Unauthorized access to license settings.',
     'LBL_LIST_FIRST_CONNECT_DATE' => 'First Connect Date',
     'LBL_LIST_LAST_CONNECT_DATE' => 'Last Connect Date',
     'LBL_LIST_NUM_SYNCS' => 'Num. of Syncs',

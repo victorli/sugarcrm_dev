@@ -48,6 +48,8 @@ require_once('SoapHelperWebService.php');
 require_once('SugarRestUtils.php');
 require_once($webservice_path);
 require_once($registry_path);
+if(isset($webservice_impl_class_path))
+    require_once($webservice_impl_class_path);
 $url = $GLOBALS['sugar_config']['site_url'].$location;
 $service = new $webservice_class($url);
 $service->registerClass($registry_class);

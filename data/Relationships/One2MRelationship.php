@@ -121,9 +121,17 @@ class One2MRelationship extends M2MRelationship
     public function add($lhs, $rhs, $additionalFields = array())
     {
         $dataToInsert = $this->getRowToInsert($lhs, $rhs, $additionalFields);
+        
         //If the current data matches the existing data, don't do anything
         if (!$this->checkExisting($dataToInsert))
         {
+			// Pre-load the RHS relationship, which is used later in the add() function and expects a Bean
+			// and we also use it for clearing relationships in case of non self-referencing O2M relations
+			// (should be preloaded because when using the relate_to field for updating/saving relationships,
+			// only the bean id is loaded into $rhs->$rhsLinkName)
+			$rhsLinkName = $this->rhsLink;
+			$rhs->load_relationship($rhsLinkName);
+        	
 			// If it's a One2Many self-referencing relationship
         	// the positions of the default One (LHS) and Many (RHS) are swaped
         	// so we should clear the links from the many (left) side
@@ -144,12 +152,10 @@ class One2MRelationship extends M2MRelationship
 	        	foreach($related as $relBean) {
 	        		$this->remove($focus, $relBean);
 	        	}
-            } else { // For non self-referencing, just load the many (RHS) side, and remove all the relationships from it
-            	$rhsLinkName = $this->rhsLink;
-	            //In a one to many, any existing links from the many (right) side must be removed first
-            	$rhs->load_relationship($rhsLinkName);
+            } else { // For non self-referencing, remove all the relationships from the many (RHS) side
             	$this->removeAll($rhs->$rhsLinkName);
             }
+            
             // Add relationship
             parent::add($lhs, $rhs, $additionalFields);
         }

@@ -1,61 +1,27 @@
 <?php
-
-/*
-
-Modification information for LGPL compliance
-
-r56990 - 2010-06-16 13:05:36 -0700 (Wed, 16 Jun 2010) - kjing - snapshot "Mango" svn branch to a new one for GitHub sync
-
-r56989 - 2010-06-16 13:01:33 -0700 (Wed, 16 Jun 2010) - kjing - defunt "Mango" svn dev branch before github cutover
-
-r55980 - 2010-04-19 13:31:28 -0700 (Mon, 19 Apr 2010) - kjing - create Mango (6.1) based on windex
-
-r51719 - 2009-10-22 10:18:00 -0700 (Thu, 22 Oct 2009) - mitani - Converted to Build 3  tags and updated the build system 
-
-r51634 - 2009-10-19 13:32:22 -0700 (Mon, 19 Oct 2009) - mitani - Windex is the branch for Sugar Sales 1.0 development
-
-r50375 - 2009-08-24 18:07:43 -0700 (Mon, 24 Aug 2009) - dwong - branch kobe2 from tokyo r50372
-
-r43691 - 2009-01-29 15:25:53 -0800 (Thu, 29 Jan 2009) - faissah - 27521  : Update to phpmailer version 2.3.
-
-r42807 - 2008-12-29 11:16:59 -0800 (Mon, 29 Dec 2008) - dwong - Branch from trunk/sugarcrm r42806 to branches/tokyo/sugarcrm
-
-r11652 - 2006-02-21 18:24:06 -0800 (Tue, 21 Feb 2006) - chris - Bug 4719: updating PHPMailer classes for security (DDoS)
-Touched:
-include/phpmailer (everything)
-include/SugarPHPMailer.php (adding our constructor)
-modules/Email/Email.php (to use the new constructor)
-
-r6543 - 2005-07-27 23:37:07 -0700 (Wed, 27 Jul 2005) - andrew - Fixed syntax error in comment.
-
-r915 - 2004-10-08 15:31:10 -0700 (Fri, 08 Oct 2004) - julian - E-mail notification feature + new admin console
-
-
+/**
+* PHPMailer language file: refer to English translation for definitive list
+* Turkish version
+* TÃ¼rkÃ§e Versiyonu
+* ÃZYAZILIM - ElÃ§in Ã–zel - Can YÃ½lmaz - Mehmet BenlioÃ°lu
 */
 
-
-/**
- * PHPMailer dil dosyasý.
- * Türkçe Versiyonu
- * ÝZYAZILIM - Elçin Özel - Can Yýlmaz - Mehmet Benlioðlu
- */
-
-$PHPMAILER_LANG = array();
-
-$PHPMAILER_LANG["provide_address"]      = 'En az bir tane mail adresi belirtmek zorundasýnýz ' .
-                                          'alýcýnýn email adresi.';
-$PHPMAILER_LANG["mailer_not_supported"] = ' mailler desteklenmemektedir.';
-$PHPMAILER_LANG["execute"]              = 'Çalýþtýrýlamýyor: ';
-$PHPMAILER_LANG["instantiate"]          = 'Örnek mail fonksiyonu yaratýlamadý.';
-$PHPMAILER_LANG["authenticate"]         = 'SMTP Hatasý: Doðrulanamýyor.';
-$PHPMAILER_LANG["from_failed"]          = 'Baþarýsýz olan gönderici adresi: ';
-$PHPMAILER_LANG["recipients_failed"]    = 'SMTP Hatasý:  ' .
-                                          'alýcýlara ulaþmadý: ';
-$PHPMAILER_LANG["data_not_accepted"]    = 'SMTP Hatasý: Veri kabul edilmedi.';
-$PHPMAILER_LANG["connect_host"]         = 'SMTP Hatasý: SMTP hosta baðlanýlamýyor.';
-$PHPMAILER_LANG["file_access"]          = 'Dosyaya eriþilemiyor: ';
-$PHPMAILER_LANG["file_open"]            = 'Dosya Hatasý: Dosya açýlamýyor: ';
-$PHPMAILER_LANG["encoding"]             = 'Bilinmeyen þifreleme: ';
-$PHPMAILER_LANG["signing"]              = 'Signing Error: ';
-
+$PHPMAILER_LANG['authenticate']         = 'SMTP HatasÃ½: DoÃ°rulanamÃ½yor.';
+$PHPMAILER_LANG['connect_host']         = 'SMTP HatasÃ½: SMTP hosta baÃ°lanÃ½lamÃ½yor.';
+$PHPMAILER_LANG['data_not_accepted']    = 'SMTP HatasÃ½: Veri kabul edilmedi.';
+//$PHPMAILER_LANG['empty_message']        = 'Message body empty';
+$PHPMAILER_LANG['encoding']             = 'Bilinmeyen Ã¾ifreleme: ';
+$PHPMAILER_LANG['execute']              = 'Ã‡alÃ½Ã¾tÃ½rÃ½lamÃ½yor: ';
+$PHPMAILER_LANG['file_access']          = 'Dosyaya eriÃ¾ilemiyor: ';
+$PHPMAILER_LANG['file_open']            = 'Dosya HatasÃ½: Dosya aÃ§Ã½lamÃ½yor: ';
+$PHPMAILER_LANG['from_failed']          = 'BaÃ¾arÃ½sÃ½z olan gÃ¶nderici adresi: ';
+$PHPMAILER_LANG['instantiate']          = 'Ã–rnek mail fonksiyonu yaratÃ½lamadÃ½.';
+//$PHPMAILER_LANG['invalid_email']        = 'Not sending, email address is invalid: ';
+$PHPMAILER_LANG['provide_address']      = 'En az bir tane mail adresi belirtmek zorundasÃ½nÃ½z alÃ½cÃ½nÃ½n email adresi.';
+$PHPMAILER_LANG['mailer_not_supported'] = ' mailler desteklenmemektedir.';
+$PHPMAILER_LANG['recipients_failed']    = 'SMTP HatasÃ½: alÃ½cÃ½lara ulaÃ¾madÃ½: ';
+//$PHPMAILER_LANG['signing']              = 'Signing Error: ';
+//$PHPMAILER_LANG['smtp_connect_failed']  = 'SMTP Connect() failed.';
+//$PHPMAILER_LANG['smtp_error']           = 'SMTP server error: ';
+//$PHPMAILER_LANG['variable_set']         = 'Cannot set or reset variable: ';
 ?>

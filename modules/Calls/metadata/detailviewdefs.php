@@ -76,7 +76,7 @@ array (
                       'title' => '{$APP.LBL_CLOSE_BUTTON_TITLE}',
                       'accesskey' => '{$APP.LBL_CLOSE_BUTTON_KEY}',
                       'class' => 'button',
-                      'onclick' => 'this.form.status.value=\'Held\'; this.form.action.value=\'Save\';this.form.return_module.value=\'Calls\';this.form.isSave.value=true;this.form.return_action.value=\'DetailView\'; this.form.return_id.value=\'{$fields.id.value}\'',
+                      'onclick' => 'this.form.status.value=\'Held\'; this.form.action.value=\'Save\';this.form.return_module.value=\'Calls\';this.form.isSave.value=true;this.form.return_action.value=\'DetailView\'; this.form.return_id.value=\'{$fields.id.value}\';this.form.isSaveFromDetailView.value=true',
                       'name' => 'button1',
                       'id' => 'close_button',
                   ),

@@ -84,8 +84,7 @@ EOHTML;
 <td colspan='10' width='100%'><IMG height='1' width='1' src='$blankImageURL' alt=''></td>
 </tr>
 <tr>
-<td align='left' valign='middle' nowrap style='padding-bottom: 2px;'>$other_text</td>
-<td width='100%'><IMG height='1' width='1' src='$blankImageURL' alt=''></td>
+<td width='100%' align='left' valign='middle' nowrap style='padding-bottom: 2px;'>$other_text</td>
 EOHTML;
         if ($show_help) {
             $the_form .= "<td align='right' nowrap>";

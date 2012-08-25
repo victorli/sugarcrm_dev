@@ -39,8 +39,7 @@
 {{if $preForm}}
 	{{$preForm}}
 {{/if}}
-
-<script language="javascript">
+ <script language="javascript">
 {literal}
 SUGAR.util.doWhen(function(){
     return $("#contentTable").length == 0;

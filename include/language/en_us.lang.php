@@ -1123,6 +1123,11 @@ $app_list_strings = array (
 );
 
 $app_strings = array (
+  'LBL_TOUR_NEXT' => 'Next',
+  'LBL_TOUR_SKIP' => 'Skip',
+  'LBL_TOUR_BACK' => 'Back',
+  'LBL_TOUR_CLOSE' => 'Close',
+  'LBL_TOUR_TAKE_TOUR' => 'Take the tour',
   'LBL_MY_AREA_LINKS' => 'My area links: ' /*for 508 compliance fix*/,
   'LBL_GETTINGAIR' => 'Getting Air' /*for 508 compliance fix*/,
   'LBL_WELCOMEBAR' => 'Welcome' /*for 508 compliance fix*/,
@@ -3265,4 +3270,12 @@ $app_list_strings ['emailTemplates_type_list_no_workflow'] = array (
     'campaign' => 'Campaign' ,
     'email' => 'Email',
   );
+$app_strings ['documentation'] = array (
+    'LBL_DOCS' => 'Documentation',
+    'ULT' => '02_Sugar_Ultimate',
+	'ENT' => '02_Sugar_Enterprise',
+	'CORP' => '03_Sugar_Corporate',
+	'PRO' => '04_Sugar_Professional',
+	'COM' => '05_Sugar_Community_Edition'
+);
 ?>

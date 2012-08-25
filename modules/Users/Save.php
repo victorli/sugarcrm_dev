@@ -194,7 +194,7 @@ if(!$current_user->is_admin  && !$GLOBALS['current_user']->isAdminForModule('Use
 		}
 		if((isset($_POST['is_admin']) && ($_POST['is_admin'] == 'on' || $_POST['is_admin'] == '1')) ||
            (isset($_POST['UserType']) && $_POST['UserType'] == "Administrator")) $focus->is_admin = 1;
-		elseif(empty($_POST['is_admin'])) $focus->is_admin = 0;
+		elseif(isset($_POST['is_admin']) && empty($_POST['is_admin'])) $focus->is_admin = 0;
 		//if(empty($_POST['portal_only']) || !empty($_POST['is_admin'])) $focus->portal_only = 0;
 		//if(empty($_POST['is_group'])    || !empty($_POST['is_admin'])) $focus->is_group = 0;
 		if(empty($_POST['receive_notifications'])) $focus->receive_notifications = 0;

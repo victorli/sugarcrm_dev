@@ -51,7 +51,10 @@ class="yui-navset"
     <ul class="yui-nav">
     {{foreach name=section from=$sectionPanels key=label item=panel}}
         {{counter name="tabCount" print=false}}
+        {{capture name=label_upper assign=label_upper}}{{$label|upper}}{{/capture}}
+        {{if (isset($tabDefs[$label_upper].newTab) && $tabDefs[$label_upper].newTab == true)}}
         <li class="selected"><a id="tab{{$tabCount}}" href="javascript:void({{$tabCount}})"><em>{sugar_translate label='{{$label}}' module='{{$module}}'}</em></a></li>
+        {{/if}}
     {{/foreach}}
     </ul>
     {{/if}}
@@ -60,15 +63,21 @@ class="yui-navset"
 {{assign var='tabIndexVal' value=0}}
 {{* Loop through all top level panels first *}}
 {{counter name="panelCount" start=-1 print=false assign="panelCount"}}
-
+{{counter name="tabCount" start=-1 print=false assign="tabCount"}}
 {{foreach name=section from=$sectionPanels key=label item=panel}}
 {{counter name="panelCount" print=false}}
+{{capture name=label_upper assign=label_upper}}{{$label|upper}}{{/capture}}
+  {{if (isset($tabDefs[$label_upper].newTab) && $tabDefs[$label_upper].newTab == true)}}
+    {{counter name="tabCount" print=false}}
+    {{if $tabCount != 0}}</div>{{/if}}
+    <div id='tabcontent{{$tabCount}}'>
+  {{/if}}
 
 {{* Print out the table data *}}
 {{if $label == 'DEFAULT'}}
-	<div id="Default_{$module}_Subpanel">
+  <div id="detailpanel_{{$smarty.foreach.section.iteration}}" >
 {{else}}
-	<div id="{{$label}}">
+  <div id="detailpanel_{{$smarty.foreach.section.iteration}}" class="{$def.templateMeta.panelClass|default:'edit view edit508'}">
 {{/if}}
 
 {counter name="panelFieldCount" start=0 print=false assign="panelFieldCount"}
@@ -78,15 +87,32 @@ class="yui-navset"
     {sugar_include type='php' file='{{$panel}}'}
 {{else}}
 
-<table width="100%" border="0" cellspacing="1" cellpadding="0"  class="yui3-skin-sam {$def.templateMeta.panelClass|default:'edit view dcQuickEdit edit508'}">
 {{* Only show header if it is not default or an int value *}}
-{{if !empty($label) && !is_int($label) && $label != 'DEFAULT' && !$useTabs && $showSectionPanelsTitles}}
-<tr>
-<th align="left" colspan="8">
-<h4>{sugar_translate label='{{$label}}' module='{{$module}}'}</h4>
-</th>
-</tr>
-{{/if}}
+{{if !empty($label) && !is_int($label) && $label != 'DEFAULT' && $showSectionPanelsTitles && (!isset($tabDefs[$label_upper].newTab) || (isset($tabDefs[$label_upper].newTab) && $tabDefs[$label_upper].newTab == false)) && $view != "QuickCreate"}}
+<h4>&nbsp;&nbsp;
+  <a href="javascript:void(0)" class="collapseLink" onclick="collapsePanel({{$smarty.foreach.section.iteration}});">
+  <img border="0" id="detailpanel_{{$smarty.foreach.section.iteration}}_img_hide" src="{sugar_getimagepath file="basic_search.gif"}"></a>
+  <a href="javascript:void(0)" class="expandLink" onclick="expandPanel({{$smarty.foreach.section.iteration}});">
+  <img border="0" id="detailpanel_{{$smarty.foreach.section.iteration}}_img_show" src="{sugar_getimagepath file="advanced_search.gif"}"></a>
+  {sugar_translate label='{{$label}}' module='{{$module}}'}
+  {{if ( isset($tabDefs[$label_upper].panelDefault) && $tabDefs[$label_upper].panelDefault == "collapsed" && isset($tabDefs[$label_upper].newTab) && $tabDefs[$label_upper].newTab == false) }}
+    {{assign var='panelState' value=$tabDefs[$label_upper].panelDefault}}
+  {{else}}
+    {{assign var='panelState' value="expanded"}}
+  {{/if}}
+  {{if isset($panelState) && $panelState == 'collapsed'}}
+    <script>
+      document.getElementById('detailpanel_{{$smarty.foreach.section.iteration}}').className += ' collapsed';
+    </script>
+    {{else}}
+    <script>
+      document.getElementById('detailpanel_{{$smarty.foreach.section.iteration}}').className += ' expanded';
+    </script>
+  {{/if}}
+</h4>
+ {{/if}}
+<table width="100%" border="0" cellspacing="1" cellpadding="0" {{if $label == 'DEFAULT'}} id='Default_{$module}_Subpanel' {{else}} id='{{$label}}' {{/if}} class="edit view panelContainer">
+
 
 {{assign var='rowCount' value=0}}
 {{assign var='ACCKEY' value=''}}
@@ -121,10 +147,10 @@ class="yui-navset"
 			   <label for="{{$fields[$colData.field.name].name}}">{{$colData.field.customLabel}}</label>
 			{{elseif isset($colData.field.label)}}
 			   {capture name="label" assign="label"}{sugar_translate label='{{$colData.field.label}}' module='{{$module}}'}{/capture}
-			   <label for="{{$fields[$colData.field.name].name}}">{$label|strip_semicolon}:</label>
+			   {$label|strip_semicolon}:
 			{{elseif isset($fields[$colData.field.name])}}
 			   {capture name="label" assign="label"}{sugar_translate label='{{$fields[$colData.field.name].vname}}' module='{{$module}}'}{/capture}
-			   <label for="{{$fields[$colData.field.name].name}}">{$label|strip_semicolon}:</label>
+			   {$label|strip_semicolon}:
 			{{else}}
 			    &nbsp;
 			{{/if}}
@@ -213,6 +239,9 @@ class="yui-navset"
 {/if}
 {{/foreach}}
 </table>
+{{if !empty($label) && !is_int($label) && $label != 'DEFAULT' && $showSectionPanelsTitles && (!isset($tabDefs[$label_upper].newTab) || (isset($tabDefs[$label_upper].newTab) && $tabDefs[$label_upper].newTab == false)) && $view != "QuickCreate"}}
+<script type="text/javascript">SUGAR.util.doWhen("typeof initPanel == 'function'", function() {ldelim} initPanel({{$smarty.foreach.section.iteration}}, '{{$panelState}}'); {rdelim}); </script>
+{{/if}}
 
 {{/if}}
 
@@ -240,4 +269,10 @@ window.onbeforeunload = function () {ldelim} return disableOnUnloadEditView(); {
 {{else}}
 window.onbeforeunload = function () {ldelim} return onUnloadEditView(); {rdelim};
 {{/if}}
+// bug 55468 -- IE is too aggressive with onUnload event
+if ($.browser.msie) {ldelim}
+$(document).ready(function() {ldelim}
+    $(".collapseLink,.expandLink").click(function (e) {ldelim} e.preventDefault(); {rdelim});
+  {rdelim});
+{rdelim}
 </script>

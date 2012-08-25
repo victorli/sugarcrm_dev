@@ -142,6 +142,9 @@ function json_query($request_id, $params) {
 		$list_arr[$i]['module']= $list_return[$i]->object_name;
 
 		foreach($args['field_list'] as $field) {
+		    if(!empty($list_return[$i]->field_name_map[$field]['sensitive'])) {
+		        continue;
+		    }
 			// handle enums
 			if(	(isset($list_return[$i]->field_name_map[$field]['type']) && $list_return[$i]->field_name_map[$field]['type'] == 'enum') ||
 				(isset($list_return[$i]->field_name_map[$field]['custom_type']) && $list_return[$i]->field_name_map[$field]['custom_type'] == 'enum')) {
@@ -236,7 +239,8 @@ function authenticate() {
 	return $result;
 }
 
-function construct_where(&$query_obj, $table='',$module=null) {
+function construct_where(&$query_obj, $table='',$module=null)
+{
 	if(! empty($table)) {
 		$table .= ".";
 	}
@@ -247,7 +251,9 @@ function construct_where(&$query_obj, $table='',$module=null) {
 	}
 
 	foreach($query_obj['conditions'] as $condition) {
-
+        if($condition['name'] == 'user_hash') {
+            continue;
+        }
 		if ($condition['name']=='email1' or $condition['name']=='email2') {
 
 			$email1_value=strtoupper($condition['value']);
@@ -276,8 +282,12 @@ function construct_where(&$query_obj, $table='',$module=null) {
 	if($table == 'users.') {
 		$cond_arr[] = $table."status='Active'";
 	}
+	$group = strtolower(trim($query_obj['group']));
+	if($group != "and" && $group != "or") {
+	    $group = "and";
+	}
 
-	return implode(" {$query_obj['group']} ",$cond_arr);
+	return implode(" $group ",$cond_arr);
 }
 
 ////	END UTILS

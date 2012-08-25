@@ -168,6 +168,20 @@ Studio2 = {
 		ModuleBuilder.helpRegisterByID('layoutEditorButtons','input');
 		ModuleBuilder.helpSetup('layoutEditor','default');
 
+        var elem = document.getElementById('prepareForSave').elements;
+        if (elem != null) {
+            var has_tab = false;
+
+            for (var i = 0; i < elem.length; i++) {
+                if (elem[i].name.match(/^tabDefs_.*_newTab$/)) {
+                    if (elem[i].value == '1' && elem[i].name != 'tabDefs_' + Studio2.firstPanelId + '_newTab')
+                        has_tab = true;
+                }
+            }
+            if (has_tab == true) {
+                document.getElementById('le_paneltype_select_' + Studio2.firstPanelIdCount).disabled = true;
+            }
+        }
 	},
 	
 	resizeDivs : function () {
@@ -984,4 +998,5 @@ Studio2 = {
     }
 };
 
-
+Studio2.firstPanelId = "";
+Studio2.firstPanelIdCount = 0;

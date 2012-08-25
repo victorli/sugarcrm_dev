@@ -308,9 +308,9 @@ function pruneDatabase() {
 			while($aDel = $db->fetchByAssoc($rDel, false)) {
 				// build column names
 
-				$queryString[] = $db->insertParams($table, $columns, $rDel, null, false);
+				$queryString[] = $db->insertParams($table, $columns, $aDel, null, false);
 
-				if(!empty($custom_columns) && !empty($rDel['id'])) {
+				if(!empty($custom_columns) && !empty($aDel['id'])) {
                     $qDelCstm = 'SELECT * FROM '.$table.'_cstm WHERE id_c = '.$db->quoted($aDel['id']);
                     $rDelCstm = $db->query($qDelCstm);
 

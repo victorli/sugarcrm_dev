@@ -82,14 +82,8 @@ SugarVCalClient.prototype.init = function() {}
 SugarVCalClient.prototype.load = function(user_id, request_id) {
     this.user_id = user_id;
 
-    var vcal_server = './vcal_server.php?type=vfb&source=outlook&user_id=' + user_id;
-    if (typeof(window.combo_date_start) != 'undefined') {
-        var date_start = window.combo_date_start.datetime;
-        vcal_server += '&datestart='+date_start;
-    }
-
     // Bug 44239: Removed reliance on jsolait
-    YAHOO.util.Connect.asyncRequest('GET', vcal_server, {
+    YAHOO.util.Connect.asyncRequest('GET', './vcal_server.php?type=vfb&source=outlook&user_id=' + user_id, {
         success: function (result) {
             if (typeof GLOBAL_REGISTRY.freebusy == 'undefined') {
                 GLOBAL_REGISTRY.freebusy = new Object();

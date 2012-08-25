@@ -301,7 +301,6 @@ $resources = $sugarChart->getChartResources();
 $mySugarResources = $sugarChart->getMySugarChartResources();
 $sugar_smarty->assign('chartResources', $resources);
 $sugar_smarty->assign('mySugarChartResources', $mySugarResources);
-
 if (file_exists("custom/include/MySugar/tpls/MySugar.tpl")) {
 	echo $sugar_smarty->fetch('custom/include/MySugar/tpls/MySugar.tpl');
 } else {

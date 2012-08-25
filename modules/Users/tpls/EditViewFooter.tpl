@@ -36,6 +36,11 @@
 
 *}
 <!-- END METADATA GENERATED CONTENT -->
+
+{{if $useTabs}}
+    <!-- include a closing div if the useTabs variable is set to true -->
+    </div>
+{{/if}}
             <div id="email_options">
             <table width="100%" border="0" cellspacing="1" cellpadding="0" class="edit view">
                             <tr>

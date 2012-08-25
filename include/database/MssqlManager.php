@@ -840,6 +840,9 @@ class MssqlManager extends DBManager
 				if($containsCommaPos !== false) {
 					$col_name = substr($col_name, $containsCommaPos+1);
 				}
+                //add the "asc/desc" order back
+                $col_name = $col_name. " ". $asc_desc;
+
                 //return column name
                 return $col_name;
             }
@@ -1540,7 +1543,7 @@ EOSQL;
             break;
         case 'primary':
             if ($drop)
-                $sql = "ALTER TABLE {$table} DROP PRIMARY KEY";
+                $sql = "ALTER TABLE {$table} DROP CONSTRAINT {$name}";
             else
                 $sql = "ALTER TABLE {$table} ADD CONSTRAINT {$name} PRIMARY KEY ({$fields})";
             break;

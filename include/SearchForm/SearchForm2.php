@@ -1021,21 +1021,15 @@ require_once('include/EditView/EditView2.php');
                                      //check to see if this is a universal search OR the field has db_concat_fields set in vardefs, AND the field name is "last_name"
                                      //BUG 45709: Tasks Advanced Search: Contact Name field does not return matches on full names
                                      //Frank: Adding Surabhi's fix back which seem to have gone missing in CottonCandy merge
-                                     if(($UnifiedSearch || !empty($this->seed->field_name_map[$field]['db_concat_fields'])) && (strpos($db_field, 'last_name') !== false) || strpos($db_field, 'name_2') !== false){
+                                     if(($UnifiedSearch || !empty($this->seed->field_name_map[$field]['db_concat_fields'])) && strpos($db_field, 'last_name') !== false){
                                          //split the string value, and the db field name
                                          $string = explode(' ', $field_value);
                                          $column_name =  explode('.', $db_field);
                                          //when a search is done with a space, we concatenate and search against the full name.
                                          if(count($string)>1){
-                                             //add where clause against concatenated field
-                                             $first_field = $parms['db_field'][0];
-                                             $second_field = $parms['db_field'][1];
-                                             $first_db_fields = explode('.', $first_field);
-                                             $second_db_fields = explode('.', $second_field);
-                                             if(count($first_db_fields)==2) $first_field = $first_db_fields[1];
-                                             if(count($second_db_fields)==2) $second_field = $second_db_fields[1];
-                                             $where .= $this->seed->db->concat($column_name[0],array($first_field,$second_field)) . " LIKE ".$this->seed->db->quoted($field_value.'%');
-                                             $where .= ' OR ' . $this->seed->db->concat($column_name[0],array($second_field,$first_field)) . " LIKE ".$this->seed->db->quoted($field_value.'%');
+                                             //add where clause against concatenated fields
+                                             $where .= $this->seed->db->concat($column_name[0],array('first_name','last_name')) . " LIKE ".$this->seed->db->quoted($field_value.'%');
+                                             $where .= ' OR ' . $this->seed->db->concat($column_name[0],array('last_name','first_name')) . " LIKE ".$this->seed->db->quoted($field_value.'%');
                                          }else{
                                              //no space was found, add normal where clause
                                              $where .=  $db_field . " like ".$this->seed->db->quoted(sql_like_string($field_value, $like_char));

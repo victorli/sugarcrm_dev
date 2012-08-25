@@ -35,7 +35,6 @@
  ********************************************************************************/
 
 *}
-
 <script>
     {literal}
     $(document).ready(function(){
@@ -65,7 +64,7 @@
 <input type="hidden" name="return_id" value="{$smarty.request.return_id}">
 <input type="hidden" name="module_tab"> 
 <input type="hidden" name="contact_role">
-{if !empty($smarty.request.return_module) || !empty($smarty.request.relate_to)}
+{if (!empty($smarty.request.return_module) || !empty($smarty.request.relate_to)) && !(isset($smarty.request.isDuplicate) && $smarty.request.isDuplicate eq "true")}
 <input type="hidden" name="relate_to" value="{if $smarty.request.return_relationship}{$smarty.request.return_relationship}{elseif $smarty.request.relate_to && empty($smarty.request.from_dcmenu)}{$smarty.request.relate_to}{elseif empty($isDCForm) && empty($smarty.request.from_dcmenu)}{$smarty.request.return_module}{/if}">
 <input type="hidden" name="relate_id" value="{$smarty.request.return_id}">
 {/if}

@@ -531,7 +531,8 @@ class Link2 {
      */
     protected function getRelatedBean($id = false)
     {
-        return BeanFactory::getBean($this->getRelatedModuleName(), $id);
+        $params = array('encode' => true, 'deleted' => true);
+        return BeanFactory::getBean($this->getRelatedModuleName(), $id, $params);
     }
 
     public function &__get($name)

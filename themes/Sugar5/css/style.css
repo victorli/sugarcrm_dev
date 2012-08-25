@@ -616,6 +616,7 @@ div.moduleTitle
     vertical-align: middle;
 }
 
+.collapsed .panelContainer, .collapsed .collapseLink, .expanded .expandLink { display:none; }
 
 /* DetailView styles */
 .detail h4	
@@ -3734,8 +3735,8 @@ ul.clickMenu li.single a{
 ul.clickMenu li a:hover{
 text-decoration: none !important;
 }
-ul.clickMenu li span.ab { /*--Drop down trigger styles--*/
-	width: 17px;
+ul.clickMenu li span { /*--Drop down trigger styles--*/
+	width: 22px;
 	height: 16px;
 	float: left;
 	background: url(../../../../index.php?entryPoint=getImage&imageName=actionMenuArrow.png) no-repeat 6px -28px;
@@ -3744,7 +3745,8 @@ ul.clickMenu li span.ab { /*--Drop down trigger styles--*/
 
 ul.clickMenu li span.ab { /*--Drop down trigger styles--*/
     border-left: 1px #aaa solid;
-    padding-left: 5px;
+    /* Remove the padding, not needed when we select records */
+    /* padding-left: 5px; */
 }
 ul.clickMenu li span.subhover {
 	cursor: pointer;

@@ -75,6 +75,7 @@ $global_control_links['help'] = array(
     'submenu' => ''
  );
 */
+
 $global_control_links['users'] = array(
 'linkinfo' => array($app_strings['LBL_LOGOUT'] => 'index.php?module=Users&action=Logout'),
 'submenu' => ''

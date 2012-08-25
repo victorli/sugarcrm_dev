@@ -388,8 +388,19 @@ class TemplateHandler {
                 if ($view == "ConvertLead")
                 {
                     $field['name'] = $module . $field['name'];
-					if (!empty($field['id_name']))
-					   $field['id_name'] = $field['name'] . "_" . $field['id_name'];
+                    if (isset($field['module']) && isset($field['id_name']) && substr($field['id_name'], -4) == "_ida") {
+                        $lc_module = strtolower($field['module']);
+                        $ida_suffix = "_".$lc_module.$lc_module."_ida";
+                        if (preg_match('/'.$ida_suffix.'$/', $field['id_name']) > 0) {
+                            $field['id_name'] = $module . $field['id_name'];
+                        }
+                        else
+                            $field['id_name'] = $field['name'] . "_" . $field['id_name'];
+                    }
+                    else {
+                        if (!empty($field['id_name']))
+                            $field['id_name'] = $field['name'] . "_" . $field['id_name'];
+                    }
                 }
 				$name = $qsd->form_name . '_' . $field['name'];
 
@@ -403,13 +414,16 @@ class TemplateHandler {
                         if($matches[0] == 'Campaigns') {
                             $sqs_objects[$name] = $qsd->loadQSObject('Campaigns', 'Campaign', $field['name'], $field['id_name'], $field['id_name']);
                         } else if($matches[0] == 'Users'){
-                            if($field['name'] == 'reports_to_name')
+                            if($field['name'] == 'reports_to_name'){
                                 $sqs_objects[$name] = $qsd->getQSUser('reports_to_name','reports_to_id');
-                            else {
-                                if($view == "ConvertLead" || $field['name'] == 'created_by_name' || $field['name'] == 'modified_by_name')
-								    $sqs_objects[$name] = $qsd->getQSUser($field['name'], $field['id_name']);
-								else
-								    $sqs_objects[$name] = $qsd->getQSUser();
+                             // Bug #52994 : QuickSearch for a 1-M User relationship changes assigned to user
+                            }elseif($field['name'] == 'assigned_user_name'){
+                                 $sqs_objects[$name] = $qsd->getQSUser('assigned_user_name','assigned_user_id');
+                             }
+                             else
+                             {
+                                 $sqs_objects[$name] = $qsd->getQSUser($field['name'], $field['id_name']);
+
 							}
                         } else if($matches[0] == 'Campaigns') {
                             $sqs_objects[$name] = $qsd->loadQSObject('Campaigns', 'Campaign', $field['name'], $field['id_name'], $field['id_name']);
@@ -453,6 +467,33 @@ class TemplateHandler {
                 } else if($field['type'] == 'parent') {
                     $sqs_objects[$name] = $qsd->getQSParent();
                 } //if-else
+
+                // Bug 53949 - Captivea (sve) - Partial fix : Append metadata fields that are not already included in $sqs_objects array
+                // (for example with hardcoded modules before, metadata arrays are not taken into account in 6.4.x 6.5.x)
+                // As QuickSearchDefault methods are called at other places, this will not fix the SQS problem for everywhere, but it fixes it on Editview
+
+                //merge populate_list && field_list with vardef
+                if (!empty($field['field_list']) && !empty($field['populate_list'])) {
+                    for ($j=0; $j<count($field['field_list']); $j++) {
+                		//search for the same couple (field_list_item,populate_field_item)
+               			$field_list_item = $field['field_list'][$j];
+               			$field_list_item_alternate = $qsd->form_name . '_' . $field['field_list'][$j];
+               			$populate_list_item = $field['populate_list'][$j];
+                		$found = false;
+                		for ($k=0; $k<count($sqs_objects[$name]['field_list']); $k++) {
+                			if (($field_list_item == $sqs_objects[$name]['populate_list'][$k] || $field_list_item_alternate == $sqs_objects[$name]['populate_list'][$k]) && //il faut inverser field_list et populate_list (cf lignes 465,466 ci-dessus)
+                				$populate_list_item == $sqs_objects[$name]['field_list'][$k]) {
+                				$found = true;
+                				break;
+                			}
+                		}
+                		if (!$found) {
+                			$sqs_objects[$name]['field_list'][] = $field['populate_list'][$j]; // as in lines 462 and 463
+                			$sqs_objects[$name]['populate_list'][] = $field['field_list'][$j];
+                		}
+                	}
+                }
+
             } //foreach
         }
 
