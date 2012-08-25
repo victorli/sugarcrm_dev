@@ -1,5 +1,5 @@
 <?php
-// created: 2012-08-22 10:17:34
+// created: 2012-08-24 10:39:16
 $md5_string = array (
   './LICENSE.txt' => 'd3f150e4a5bed444763ebe8a81742a95',
   './.htaccess' => 'd41d8cd98f00b204e9800998ecf8427e',
@@ -5348,7 +5348,7 @@ $md5_string = array (
   './metadata/prospect_lists_prospectsMetaData.php' => 'fe3dc7d813428ca0fa774884a88ef5c4',
   './metadata/inboundEmail_autoreplyMetaData.php' => '7c670a62c7142827bbdf675c8b4be221',
   './metadata/acl_roles_actionsMetaData.php' => 'a3446107943a271bf6e329a80deb06e8',
-  './sugar_version.php' => '1d0d9c3f57e59bd9da12fc219472bbb2',
+  './sugar_version.php' => '0cebec6c0b594e0b0ec24f6752d3cda8',
   './cron.php' => '96a6fd7893809132e902086e77dde30c',
   './log4php/LoggerManager.php' => 'fa34194306cd50c01b71d8d5060ee362',
   './TreeData.php' => '7040af43bf01c450f4e225ece5e3f30c',
