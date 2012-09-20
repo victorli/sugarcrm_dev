@@ -298,7 +298,7 @@ $server->register(
  *               'error' -- The SOAP error, if any
  */
 function get_entry_list($session, $module_name, $query, $order_by,$offset, $select_fields, $max_results, $deleted ){
-	global  $beanList, $beanFiles;
+	global  $beanList, $beanFiles, $current_user;
 	$error = new SoapError();
 	if(!validate_authenticated($session)){
 		$error->set_error('invalid_login');
@@ -367,6 +367,13 @@ function get_entry_list($session, $module_name, $query, $order_by,$offset, $sele
     }
 	// retrieve the vardef information on the bean's fields.
 	$field_list = array();
+    
+    require_once 'modules/Currencies/Currency.php';
+
+    $userCurrencyId = $current_user->getPreference('currency');
+    $userCurrency = new Currency;
+    $userCurrency->retrieve($userCurrencyId);
+
 	foreach($list as $value)
 	{
 		if(isset($value->emailAddress)){
@@ -376,6 +383,36 @@ function get_entry_list($session, $module_name, $query, $order_by,$offset, $sele
             $value->retrieveEmailText();
         }
 		$value->fill_in_additional_detail_fields();
+
+        // bug 55129 - populate currency from user settings
+        if (property_exists($value, 'currency_id') && $userCurrency->deleted != 1)
+        {
+            // walk through all currency-related fields
+            foreach ($value->field_defs as $temp_field)
+            {
+                if (isset($temp_field['type']) && 'relate' == $temp_field['type']
+                    && isset($temp_field['module'])  && 'Currencies' == $temp_field['module']
+                    && isset($temp_field['id_name']) && 'currency_id' == $temp_field['id_name'])
+                {
+                    // populate related properties manually
+                    $temp_property     = $temp_field['name'];
+                    $currency_property = $temp_field['rname'];
+                    $value->$temp_property = $userCurrency->$currency_property;
+                }
+                else if ($value->currency_id != $userCurrency->id
+                         && isset($temp_field['type'])
+                         && 'currency' == $temp_field['type']
+                         && substr($temp_field['name'], -9) != '_usdollar')
+                {
+                    $temp_property = $temp_field['name'];
+                    $value->$temp_property *= $userCurrency->conversion_rate;
+                }
+            }
+
+            $value->currency_id = $userCurrencyId;
+        }
+        // end of bug 55129
+
 		$output_list[] = get_return_value($value, $module_name);
 		if(empty($field_list)){
 			$field_list = get_field_list($value);

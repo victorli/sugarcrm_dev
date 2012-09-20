@@ -828,7 +828,7 @@ b.dequeue()})})}})(jQuery);
 })( jQuery );
 /* End of File include/javascript/jquery/jquery.json-2.3.js */
 
-﻿/*******************************************************************************
+/*******************************************************************************
  jquery.mb.components
  Copyright (c) 2001-2010. Matteo Bicocchi (Pupunzi); Open lab srl, Firenze - Italy
  email: info@pupunzi.com

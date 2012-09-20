@@ -4514,17 +4514,17 @@ eoq;
 				if (!empty($emailAddressString)) {
 					$emailAddressString .= ",";
 				}
-				$emailAddressString .= 	"'" . $emailAddress. "'";
+				$emailAddressString .= $this->db->quoted(trim($emailAddress));
 			} // foreach
 			$email = $emailAddressString;
 		} else {
-			$email = "'" . $email . "'";
+			$email = $this->db->quoted($email);
 		} // else
-		$module = ucfirst($module);
+		$module = $this->db->quoted(ucfirst($module));
 
 		$q = "SELECT bean_id FROM email_addr_bean_rel eabr
 				JOIN email_addresses ea ON (eabr.email_address_id = ea.id)
-				WHERE bean_module = '{$module}' AND ea.email_address_caps in ( {$email} ) AND eabr.deleted=0";
+				WHERE bean_module = $module AND ea.email_address_caps in ( {$email} ) AND eabr.deleted=0";
 
 		$r = $this->db->query($q, true);
 

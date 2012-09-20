@@ -890,6 +890,7 @@ function _mergeCustomAppListStrings($file , $app_list_strings){
 
         // FG - bug 45525 - Specific codelists must NOT be overwritten
 	$exemptDropdowns[] = "moduleList";
+	$exemptDropdowns[] = "moduleListSingular";
         $exemptDropdowns[] = "parent_type_display";
         $exemptDropdowns[] = "record_type_display";
         $exemptDropdowns[] = "record_type_display_notes";
@@ -3801,7 +3802,7 @@ function getTrackerSubstring($name) {
 		$chopped = $name;
 	}
 
-	return to_html($chopped);
+	return $chopped;
 }
 function generate_search_where ($field_list=array(),$values=array(),&$bean,$add_custom_fields=false,$module='') {
 	$where_clauses= array();
@@ -3908,6 +3909,18 @@ function rebuildConfigFile($sugar_config, $sugar_version) {
 	else {
 		return false;
 	}
+}
+
+/**
+ * Loads clean configuration, not overridden by config_override.php
+ *
+ * @return array
+ */
+function loadCleanConfig()
+{
+    $sugar_config = array();
+    require 'config.php';
+    return $sugar_config;
 }
 
 /**
@@ -4800,51 +4813,6 @@ function generateETagHeader($etag){
 			die();
 		}
 	}
-}
-
-/**
- * isSearchEngineDown
- *
- * This function checks the existence of a cache file
- *
- * @return boolean true if file found, false otherwise
- */
-function isSearchEngineDown()
-{
-    $cacheDir = empty($GLOBALS['sugar_config']['cache_dir']) ? 'cache/' : $GLOBALS['sugar_config']['cache_dir'];
-    if (file_exists($cacheDir.'fts/fts_down'))
-    {
-        return true;
-    }
-    return false;
-}
-
-/**
- * searchEngineDown
- *
- * This function creates a cache file to indicate search engine is down
- *
- */
-function searchEngineDown()
-{
-    $cacheDir = create_cache_directory('fts/');
-    sugar_touch($cacheDir.'/fts_down');
-}
-
-/**
- * restoreSearchEngine
- *
- * This function removes the cache file to indicate search engine has been restored
- *
- */
-function restoreSearchEngine()
-{
-    $cacheDir = empty($GLOBALS['sugar_config']['cache_dir']) ? 'cache/' : $GLOBALS['sugar_config']['cache_dir'];
-    $down_file = $cacheDir.'fts/fts_down';
-    if (file_exists($down_file))
-    {
-        unlink($down_file);
-    }
 }
 
 /**

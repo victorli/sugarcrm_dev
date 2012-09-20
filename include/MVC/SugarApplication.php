@@ -359,10 +359,10 @@ class SugarApplication
  	function checkDatabaseVersion($dieOnFailure = true)
  	{
  	    $row_count = sugar_cache_retrieve('checkDatabaseVersion_row_count');
- 	    if ( empty($row_count) ) {
-            global $sugar_db_version;
+ 	    if ( empty($row_count) )
+ 	    {
             $version_query = "SELECT count(*) as the_count FROM config WHERE category='info' AND name='sugar_version' AND ".
-            	$GLOBALS['db']->convert('value', 'text2char')." = ".$GLOBALS['db']->quoted($sugar_db_version);
+            $GLOBALS['db']->convert('value', 'text2char')." = ".$GLOBALS['db']->quoted($GLOBALS['sugar_db_version']);
 
             $result = $GLOBALS['db']->query($version_query);
             $row = $GLOBALS['db']->fetchByAssoc($result);
@@ -370,12 +370,20 @@ class SugarApplication
             sugar_cache_put('checkDatabaseVersion_row_count', $row_count);
         }
 
-		if($row_count == 0 && empty($GLOBALS['sugar_config']['disc_client'])){
-			$sugar_version = $GLOBALS['sugar_version'];
+		if ($row_count == 0 && empty($GLOBALS['sugar_config']['disc_client']))
+		{
 			if ( $dieOnFailure )
-				sugar_die("Sugar CRM $sugar_version Files May Only Be Used With A Sugar CRM $sugar_db_version Database.");
+			{
+				$replacementStrings = array(
+					0 => $GLOBALS['sugar_version'],
+					1 => $GLOBALS['sugar_db_version'],
+				);
+				sugar_die(string_format($GLOBALS['app_strings']['ERR_DB_VERSION'], $replacementStrings));
+			}
 			else
+			{
 			    return false;
+			}
 		}
 
 		return true;

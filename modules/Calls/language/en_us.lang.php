@@ -96,6 +96,7 @@ $mod_strings = array (
     'LBL_REMINDER' => 'Reminders:',
     'LBL_REMINDER_POPUP' => 'Popup',
     'LBL_REMINDER_EMAIL' => 'Email',
+    'LBL_REMINDER_EMAIL_ALL_INVITEES' => 'Email all invitees',
     'LBL_EMAIL_REMINDER' => 'Email Reminder',
     'LBL_EMAIL_REMINDER_TIME' => 'Email Reminder Time',
     'LBL_SEND_BUTTON_TITLE'=>'Save & Send Invites [Alt+I]',
@@ -157,6 +158,8 @@ $mod_strings = array (
     'LBL_RECURRING_SOURCE' => 'Recurring Source',
     
     'LBL_SYNCED_RECURRING_MSG' => 'This call originated in another system and was synced to Sugar. To make changes, go to the original call within the other system. Changes made in the other system can be synced to this record.',
+    'LBL_RELATED_TO' => 'Related to:',
+
 );
 
 

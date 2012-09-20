@@ -288,11 +288,19 @@ EOJAVASCRIPT;
 				WHERE users_last_import.assigned_user_id = '{$current_user->id}' AND users_last_import.bean_type='Prospect' AND users_last_import.bean_id=prospects.id
 				AND users_last_import.deleted=0 AND prospects.deleted=0";
 
+        $prospect_id='';
+        if(!empty($query)){
+            $res=$GLOBALS['db']->query($query);
+            while($row = $GLOBALS['db']->fetchByAssoc($res))
+            {
+                $prospect_id[]=$row['id'];
+            }
+        }
         $popup_request_data = array(
             'call_back_function' => 'set_return_and_save_background',
             'form_name' => 'DetailView',
             'field_to_name_array' => array(
-                'id' => 'subpanel_id',
+                'id' => 'prospect_list_id',
             ),
             'passthru_data' => array(
                 'child_field' => 'notused',
@@ -306,10 +314,9 @@ EOJAVASCRIPT;
                 'child_id'=>'id',
                 'link_attribute'=>'prospects',
                 'link_type'=>'default',	 //polymorphic or default
+                'prospect_ids'=>$prospect_id,
             )
         );
-
-        $popup_request_data['passthru_data']['query'] = urlencode($query);
 
         $json = getJSONobj();
         $encoded_popup_request_data = $json->encode($popup_request_data);

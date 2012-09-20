@@ -53,6 +53,7 @@ $entry_point_registry = array(
 	'pdf' => array('file' => 'pdf.php', 'auth' => true),
 	'minify' => array('file' => 'jssource/minify.php', 'auth' => true),
     'json_server' => array('file' => 'json_server.php', 'auth' => true),
+    'get_url' => array('file' => 'get_url.php', 'auth' => true),
 	'HandleAjaxCall' => array('file' => 'HandleAjaxCall.php', 'auth' => true),
 	'TreeData' => array('file' => 'TreeData.php', 'auth' => true),
     'image' => array('file' => 'modules/Campaigns/image.php', 'auth' => false),

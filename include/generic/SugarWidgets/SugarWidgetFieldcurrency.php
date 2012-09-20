@@ -185,38 +185,55 @@ class SugarWidgetFieldCurrency extends SugarWidgetFieldInt
 
  function querySelect(&$layout_def)
  {
-     // We need to fetch the currency id as well
-     if ( !$this->isSystemCurrency($layout_def) && empty($layout_def['group_function'])) {
-         
+    // add currency column to select
+    $table = $this->getCurrencyIdTable($layout_def);
+    if($table) {
+        return $this->_get_column_select($layout_def)." ".$this->_get_column_alias($layout_def)." , ".$table.".currency_id ". $this->getTruncatedColumnAlias($this->_get_column_alias($layout_def)."_currency") . "\n";
+    }
+    return $this->_get_column_select($layout_def)." ".$this->_get_column_alias($layout_def)."\n";
+ }
+
+ function queryGroupBy($layout_def)
+ {
+    // add currency column to group by
+    $table = $this->getCurrencyIdTable($layout_def);
+    if($table) {
+        return $this->_get_column_select($layout_def)." , ".$table.".currency_id \n";
+    }
+    return $this->_get_column_select($layout_def)." \n";
+ }
+
+ function getCurrencyIdTable($layout_def)
+ {
+    // We need to fetch the currency id as well
+    if ( !$this->isSystemCurrency($layout_def) && empty($layout_def['group_function'])) {
+
         if ( !empty($layout_def['table_alias']) ) {
-             $table = $layout_def['table_alias'];
-         } else {
-             $table = '';
-         }
-         
-         $real_table = '';
-         if (!empty($this->reporter->all_fields[$layout_def['column_key']]['real_table']))
+            $table = $layout_def['table_alias'];
+        } else {
+            $table = '';
+        }
+
+        $real_table = '';
+        if (!empty($this->reporter->all_fields[$layout_def['column_key']]['real_table']))
             $real_table = $this->reporter->all_fields[$layout_def['column_key']]['real_table'];
-            
-         $add_currency_id = false;
-         if(!empty($table)) {
+
+        $add_currency_id = false;
+        if(!empty($table)) {
             $cols = $GLOBALS['db']->getHelper()->get_columns($real_table);
             $add_currency_id = isset($cols['currency_id']) ? true : false;
-            
+
             if(!$add_currency_id && preg_match('/.*?_cstm$/i', $real_table)) {
-               $table = str_replace('_cstm', '', $table);
-               $cols = $GLOBALS['db']->getHelper()->get_columns($table);
-               $add_currency_id = isset($cols['currency_id']) ? true : false;
+                $table = str_replace('_cstm', '', $table);
+                $cols = $GLOBALS['db']->getHelper()->get_columns($table);
+                $add_currency_id = isset($cols['currency_id']) ? true : false;
             }
-         }
-         if($add_currency_id) {             
-            return $this->_get_column_select($layout_def)." ".$this->_get_column_alias($layout_def)." , ".$table.".currency_id ". $this->getTruncatedColumnAlias($this->_get_column_alias($layout_def)."_currency") . "\n";
-         } else {
-            return $this->_get_column_select($layout_def)." ".$this->_get_column_alias($layout_def)."\n";
-         }      
-     } else {
-         return $this->_get_column_select($layout_def)." ".$this->_get_column_alias($layout_def)."\n";
-     }
+            if($add_currency_id) {
+                return $table;
+            }
+        }
+    }
+    return false;
  }
 
 }

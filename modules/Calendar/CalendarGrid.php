@@ -117,6 +117,9 @@ class CalendarGrid {
 		$str .= "<div class='left_col'>";
 			//if(!$this->scrollable)
 			//	$str .= "<div class='col_head'>".$head_content."</div>";
+            $cell_number = 0;
+            $first_cell  = $this->cal->scroll_slot;
+            $last_cell   = $first_cell + $this->cal->celcount - 1;
 			for($i = 0; $i < 24; $i++){
 				for($j = 0; $j < 60; $j += $this->time_step){
 					if($j == 0){
@@ -129,9 +132,13 @@ class CalendarGrid {
 					}else{
 						$class = "";
 					}
-					$str .= "<div class='left_slot".$class."'>".$innerText."</div>";
-				}
-			}
+                    if ($this->scrollable || ($cell_number >= $first_cell && $cell_number <= $last_cell))
+                    {
+                        $str .= "<div class='left_slot".$class."'>".$innerText."</div>";
+                    }
+                    $cell_number++;
+                }
+            }
 		$str .= "</div>";
 		return $str;
 	}
@@ -148,6 +155,9 @@ class CalendarGrid {
 		$str = "";
 		$str .= "<div class='col'>";
 		//$str .= $this->get_day_head($start,$day);
+        $cell_number = 0;
+        $first_cell  = $this->cal->scroll_slot;
+        $last_cell   = $first_cell + $this->cal->celcount - 1;
 		for($i = 0; $i < 24; $i++){
 			for($j = 0; $j < 60; $j += $this->time_step){
 				$timestr = $GLOBALS['timedate']->fromTimestamp($curr_time)->format($this->time_format);
@@ -156,7 +166,11 @@ class CalendarGrid {
 				}else{
 					$class = "";
 				}
-				$str .= "<div id='t_".$curr_time.$suffix."' class='slot".$class."' time='".$timestr."' datetime='".$GLOBALS['timedate']->fromTimestamp($curr_time)->format($this->date_time_format)."'></div>";
+                if ($this->scrollable || ($cell_number >= $first_cell && $cell_number <= $last_cell))
+                {
+                    $str .= "<div id='t_".$curr_time.$suffix."' class='slot".$class."' time='".$timestr."' datetime='".$GLOBALS['timedate']->fromTimestamp($curr_time)->format($this->date_time_format)."'></div>";
+                }
+                $cell_number++;
 				$curr_time += $this->time_step*60;
 			}
 		}

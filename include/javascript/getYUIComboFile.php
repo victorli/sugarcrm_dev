@@ -44,7 +44,7 @@ $yui_path = array(
 	"3_3_0" => "include/javascript/yui3"
 );
 $types = array(
-    "js" => "application/x-javascript",
+    "js" => "application/javascript",
 	"css" => "text/css",
 );
 $out = "";

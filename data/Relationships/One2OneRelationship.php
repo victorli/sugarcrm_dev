@@ -71,8 +71,11 @@ class One2OneRelationship extends M2MRelationship
             $rhs->load_relationship($rhsLinkName);
             $this->removeAll($rhs->$rhsLinkName);
 
-            parent::add($lhs, $rhs, $additionalFields);
+            return parent::add($lhs, $rhs, $additionalFields);
         }
+
+        // data matched what was there so return false, since nothing happened
+        return false;
     }
 
 

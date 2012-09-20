@@ -93,11 +93,8 @@ class TemplateField{
 		'duplicate_merge_dom_value'=>'duplicate_merge_dom_value', //bug #14897
 		'merge_filter'=>'merge_filter',
 		'reportable' => 'reportable',
-		'min'=>'ext1',
-		'max'=>'ext2',
 		'ext2'=>'ext2',
 		'ext4'=>'ext4',
-	//'disable_num_format'=>'ext3',
 	    'ext3'=>'ext3',
 		'label_value'=>'label_value',
 		'unified_search'=>'unified_search',

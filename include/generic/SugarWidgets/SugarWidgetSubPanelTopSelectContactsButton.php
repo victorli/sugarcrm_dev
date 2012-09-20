@@ -148,7 +148,7 @@ class SugarWidgetSubPanelTopSelectContactsButton extends SugarWidgetSubPanelTopS
 				'return_url' => urlencode($return_url),
 				'link_field_name' => $link_field_name,
 				'module_name' => $this->module_name,
-				'refresh_page'=>true,
+				'refresh_page' => 1,
 			),
 		);
 

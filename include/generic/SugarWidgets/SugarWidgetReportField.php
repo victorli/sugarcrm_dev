@@ -250,11 +250,13 @@ class SugarWidgetReportField extends SugarWidgetField
  {
         $alias_arr = array();
 
-				if ($layout_def['table_key'] == 'self' && !empty($layout_def['name']) && $layout_def['name'] == 'id')
-				{
-					return 'primaryid';
-				}
+	if (!empty($layout_def['table_key']) && $layout_def['table_key'] == 'self' && !empty($layout_def['name']) && $layout_def['name'] == 'id')
+	{
+		return 'primaryid';
+	}
 
+     // Bug: 44605
+     // this comment is being added to trigger the upgrade package
         if ( ! empty($layout_def['group_function']) && $layout_def['group_function']=='count')
         {
                 return 'count';

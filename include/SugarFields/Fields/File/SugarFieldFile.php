@@ -89,7 +89,11 @@ class SugarFieldFile extends SugarFieldBase {
         return parent::getEditViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex);
     }
     
-	public function save(&$bean, $params, $field, $vardef, $prefix = ''){
+    function getSearchViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex) {
+    	return $this->getSmartyView($parentFieldArray, $vardef, $displayParams, $tabindex, 'SearchView');
+    }
+    
+    public function save(&$bean, $params, $field, $vardef, $prefix = ''){
         $fakeDisplayParams = array();
         $this->fillInOptions($vardef,$fakeDisplayParams);
 
@@ -187,5 +191,5 @@ class SugarFieldFile extends SugarFieldBase {
                 $bean->$clearField = '';
             }
         }
-	}
+    }
 }

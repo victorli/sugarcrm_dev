@@ -41,15 +41,18 @@ class QuickSearchTest extends Sugar_PHPUnit_Framework_OutputTestCase
 	
 	public function setUp() 
     {
-    	
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('current_user', array(true, 1));
     }
     
     public function tearDown() 
     {
         unset($_REQUEST['data']);
         unset($_REQUEST['query']);
-        $q = "delete from product_templates where name = 'MasonUnitTest';";
+        $q = "delete from product_templates where name = 'MasonUnitTest'";
         $GLOBALS['db']->query($q);
+        SugarTestHelper::tearDown();
     }
 	
     public function testFormatResults()
@@ -64,7 +67,7 @@ class QuickSearchTest extends Sugar_PHPUnit_Framework_OutputTestCase
     	
     	$_REQUEST['data'] = '{"conditions":[{"end":"%","name":"name","op":"like_custom","value":""}],"field_list":["name","id","type_id","mft_part_num","cost_price","list_price","discount_price","pricing_factor","description","cost_usdollar","list_usdollar","discount_usdollar","tax_class_name"],"form":"EditView","group":"or","id":"EditView_product_name[1]","limit":"30","method":"query","modules":["ProductTemplates"],"no_match_text":"No Match","order":"name","populate_list":["name_1","product_template_id_1"],"post_onblur_function":"set_after_sqs"}';
         $_REQUEST['query'] = 'MasonUnitTest';
-        require_once 'modules/home/quicksearchQuery.php';
+        require('modules/Home/quicksearchQuery.php');
         
         $json = getJSONobj();
 		$data = $json->decode(html_entity_decode($_REQUEST['data']));
@@ -81,4 +84,3 @@ class QuickSearchTest extends Sugar_PHPUnit_Framework_OutputTestCase
 		$this->assertEquals($resultBean['fields'][0]['description'], $tempPT->description);
     }
 }
-?>

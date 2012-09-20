@@ -225,59 +225,91 @@ class EmailTemplate extends SugarBean {
 		return $fields;
 	}
 
-	//function all string that match the pattern {.} , also catches the list of found strings.
-	//the cache will get refreshed when the template bean instance changes.
-	//The found url key patterns are replaced with name value pairs provided as function parameter. $tracked_urls.
-	//$url_template is used to construct the url for the email message. the template should have place holder for 1 variable parameter, represented by %1
-	//$template_text_array is a list of text strings that need to be searched. usually the subject, html body and text body of the email message.
-	//$removeme_url_template, if the url has is_optout property checked then use this template.
-	function parse_tracker_urls($template_text_array,$url_template,$tracked_urls,$removeme_url_template) {
-		global $beanFiles,$beanList, $app_list_strings,$sugar_config;
-		if (!isset($this->parsed_urls))
-			$this->parsed_urls=array();
+//function all string that match the pattern {.} , also catches the list of found strings.
+    //the cache will get refreshed when the template bean instance changes.
+    //The found url key patterns are replaced with name value pairs provided as function parameter. $tracked_urls.
+    //$url_template is used to construct the url for the email message. the template should have place holder for 1 variable parameter, represented by %1
+    //$template_text_array is a list of text strings that need to be searched. usually the subject, html body and text body of the email message.
+    //$removeme_url_template, if the url has is_optout property checked then use this template.
+    function parse_tracker_urls($template_text_array,$url_template,$tracked_urls,$removeme_url_template) {
+        global $beanFiles,$beanList, $app_list_strings,$sugar_config;
+        if (!isset($this->parsed_urls))
+            $this->parsed_urls=array();
 
-		//parse the template and find all the dynamic strings that need replacement.
-		$pattern = '/\{*[^\{\}]*\}/'; // cn: bug 6638, find multibyte strings
-		foreach ($template_text_array as $key=>$template_text) {
-			if (!empty($template_text)) {
-            	if(!isset($this->parsed_urls[$key]) || $this->parsed_urls[$key]['text'] != $template_text) {
-                    // Fix for bug52014.
-                    $template_text = urldecode($template_text);
+        $return_array = $template_text_array;
+        if(count($tracked_urls) > 0)
+        {
+            //parse the template and find all the dynamic strings that need replacement.
+            foreach ($template_text_array as $key=>$template_text) {
+                if (!empty($template_text)) {
 
-					$matches=array();
-					$count=preg_match_all($pattern,$template_text,$matches,PREG_OFFSET_CAPTURE);
-					$this->parsed_urls[$key]=array('matches' => $matches, 'text' => $template_text);
-				} else {
-					$matches=$this->parsed_urls[$key]['matches'];
-					if(!empty($matches[0])) {
-						$count=count($matches[0]);
-					} else {
-						$count=0;
-					}
-				}
-
-				//navigate thru all the matched keys and replace the keys with actual strings.
-				for ($i=($count -1); $i>=0; $i--) {
-					$url_key_name=$matches[0][$i][0];
-
-					if (!empty($tracked_urls[$url_key_name])) {
-						if ($tracked_urls[$url_key_name]['is_optout']==1){
-							$tracker_url = $removeme_url_template;
-						} else {
-							$tracker_url = sprintf($url_template,$tracked_urls[$url_key_name]['id']);
-						}
-					}
-					if(!empty($tracker_url) && !empty($template_text) && !empty($matches[0][$i][0]) && !empty($tracked_urls[$matches[0][$i][0]])){
-                        $template_text=substr_replace($template_text,$tracker_url,$matches[0][$i][1], strlen($matches[0][$i][0]));
-                        $template_text=str_replace($sugar_config['site_url'].'/'.$sugar_config['site_url'],$sugar_config['site_url'],$template_text);
+                    if(!isset($this->parsed_urls[$key]) || $this->parsed_urls[$key]['text'] != $template_text) {
+                        // Fix for bug52014.
+                        $template_text = urldecode($template_text);
+                        $matches = $this->_preg_match_tracker_url($template_text);
+                        $count = count($matches[0]);
+                        $this->parsed_urls[$key]=array('matches' => $matches, 'text' => $template_text);
+                    } else {
+                        $matches=$this->parsed_urls[$key]['matches'];
+                        if(!empty($matches[0])) {
+                            $count=count($matches[0]);
+                        } else {
+                            $count=0;
+                        }
                     }
-				}
-			}
-			$return_array[$key]=$template_text;
-		}
 
-		return $return_array;
-	}
+                    //navigate thru all the matched keys and replace the keys with actual strings.
+
+                    if($count > 0)
+                    {
+                        for ($i=($count -1); $i>=0; $i--) {
+                            $url_key_name=$matches[0][$i][0];
+                            if (!empty($tracked_urls[$url_key_name])) {
+                                if ($tracked_urls[$url_key_name]['is_optout']==1){
+                                    $tracker_url = $removeme_url_template;
+                                } else {
+                                    $tracker_url = sprintf($url_template,$tracked_urls[$url_key_name]['id']);
+                                }
+                            }
+                            if(!empty($tracker_url) && !empty($template_text) && !empty($matches[0][$i][0]) && !empty($tracked_urls[$matches[0][$i][0]])){
+                                $template_text=substr_replace($template_text,$tracker_url,$matches[0][$i][1], strlen($matches[0][$i][0]));
+                                $template_text=str_replace($sugar_config['site_url'].'/'.$sugar_config['site_url'],$sugar_config['site_url'],$template_text);
+                            }
+                        }
+                    }
+                }
+                $return_array[$key]=$template_text;
+            }
+        }
+        return $return_array;
+    }
+
+    /**
+     *
+     * Method for replace "preg_match_all" in method "parse_tracker_urls"
+     * @param $text string String in which we need to search all string that match the pattern {.}
+     * @return array result of search
+     */
+    private function _preg_match_tracker_url($text)
+    {
+        $result = array();
+        $ind = 0;
+        $switch = false;
+        for($i = 0; $i < strlen($text); $i++)
+        {
+            if($text[$i] == '{')
+            {
+                $ind = $i;
+                $switch = true;
+            }
+            elseif($text[$i] == '}' && $switch === true)
+            {
+                $switch = false;
+                array_push($result, array(substr($text, $ind, $i - $ind + 1), $ind));
+            }
+        }
+        return array($result);
+    }
 
 	function parse_email_template($template_text_array, $focus_name, $focus, &$macro_nv) {
 

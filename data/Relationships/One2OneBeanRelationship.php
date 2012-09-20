@@ -63,7 +63,7 @@ class One2OneBeanRelationship extends One2MBeanRelationship
         $lhs->load_relationship($lhsLinkName);
         $this->removeAll($lhs->$lhsLinkName);
 
-        parent::add($lhs, $rhs, $additionalFields);
+        return parent::add($lhs, $rhs, $additionalFields);
     }
 
     protected function updateLinks($lhs, $lhsLinkName, $rhs, $rhsLinkName)

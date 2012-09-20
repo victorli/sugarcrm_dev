@@ -434,7 +434,7 @@ class VardefManager{
             {
                 if (is_readable($cachedfile))
                 {
-                    include_once($cachedfile);
+                    include($cachedfile);
                 }
                 // now that we hae loaded the data from disk, put it in the cache.
                 if(!empty($GLOBALS['dictionary'][$object]))

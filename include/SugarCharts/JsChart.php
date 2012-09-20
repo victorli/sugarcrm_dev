@@ -101,7 +101,7 @@ class JsChart extends SugarChart {
 		$this->saveJsonFile($json);
 		$this->ss->assign("chartId", $this->chartId);
 		$this->ss->assign("filename", $this->jsonFilename);
-		global $mod_strings;
+		global $mod_strings, $app_strings;
 		if (isset($mod_strings['LBL_REPORT_SHOW_CHART']))
 		    $this->ss->assign("showchart", $mod_strings['LBL_REPORT_SHOW_CHART']);
 
@@ -119,7 +119,7 @@ class JsChart extends SugarChart {
 		$chartConfig['imageExportType'] = $this->image_export_type;
 		$this->ss->assign("config", $chartConfig);
 		if($json == "No Data") {
-			$this->ss->assign("error", "No Data");
+			$this->ss->assign("error", $app_strings['LBL_NO_DATA']);
 		}
 
 		if(!$this->isSupported($this->chartType)) {

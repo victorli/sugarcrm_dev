@@ -55,7 +55,6 @@ class SugarWidgetFieldBool extends SugarWidgetReportField
     function displayListPlain($layout_def)
     {
         $value = $this->_get_list_value($layout_def);
-        $module = $this->reporter->all_fields[$layout_def['column_key']]['module'];
         $name = $layout_def['name'];
         $layout_def['name'] = 'id';
         $key = $this->_get_column_alias($layout_def);

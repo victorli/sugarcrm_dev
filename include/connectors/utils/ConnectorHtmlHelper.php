@@ -54,17 +54,7 @@ class ConnectorHtmlHelper
     {
         require_once('include/connectors/formatters/FormatterFactory.php');
 
-        //If there is only one source, just show the icon or some standalone view
-        if (count($shown_sources) == 1)
-        {
-            $code = $this->getButton($shown_sources[0], $module, $smarty);
-        }
-        else
-        {
-            $code = $this->getPopup($shown_sources, $module, $smarty);
-        }
-
-        return $code;
+        return $this->getButton($shown_sources, $module, $smarty);
     }
 
     /**
@@ -75,25 +65,27 @@ class ConnectorHtmlHelper
      * @param mixed $smarty
      * @return string
      */
-    private function getButton($shown_source, $module, $smarty)
+    private function getButton(array $shown_sources, $module, $smarty)
     {
         $code = '';
 
-        $formatter = FormatterFactory::getInstance($shown_source);
-        $formatter->setModule($module);
-        $formatter->setSmarty($smarty);
-        $formatter_code = $formatter->getDetailViewFormat();
-        if (!empty($formatter_code))
-        {
-            $iconFilePath = $formatter->getIconFilePath();
-            $iconFilePath = empty($iconFilePath) ? 'themes/default/images/MoreDetail.png' : $iconFilePath;
+         foreach($shown_sources as $id) {
+             $formatter = FormatterFactory::getInstance($id);
+             $formatter->setModule($module);
+             $formatter->setSmarty($smarty);
+             $formatter_code = $formatter->getDetailViewFormat();
+             if (!empty($formatter_code))
+             {
+                 $iconFilePath = $formatter->getIconFilePath();
+                 $iconFilePath = empty($iconFilePath) ? 'themes/default/images/MoreDetail.png' : $iconFilePath;
 
-            $code = '<!--not_in_theme!--><img id="dswidget_img" border="0" src="' . $iconFilePath .'" alt="'
-                    . $shown_source .'" onmouseover="show_' . $shown_source . '(event);">';
+            $code .= '<!--not_in_theme!--><img id="dswidget_img" border="0" src="' . $iconFilePath .'" alt="'
+                         . $id .'" onclick="show_' . $id . '(event);">';
 
             $code .= "<script type='text/javascript' src='{sugar_getjspath file='include/connectors/formatters/default/company_detail.js'}'></script>";
-            $code .= $formatter->getDetailViewFormat();
-            $code .= $formatter_code;
+                 //$code .= $formatter->getDetailViewFormat();
+                 $code .= $formatter_code;
+             }
         }
 
         return $code;

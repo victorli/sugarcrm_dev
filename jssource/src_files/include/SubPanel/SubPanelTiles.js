@@ -195,6 +195,10 @@ function set_return_and_save_background(popup_reply_data)
 		} else {
 			if (prop=='module_name') {
 				query_array.push('subpanel_module_name='+escape(passthru_data[prop]));
+			} else if(prop == 'prospect_ids'){
+				for(var i=0;i<passthru_data[prop].length;i++){
+					query_array.push(prop + '[]=' + escape(passthru_data[prop][i]));
+				}
 			} else {
 				query_array.push(prop+'='+escape(passthru_data[prop]));
 			}

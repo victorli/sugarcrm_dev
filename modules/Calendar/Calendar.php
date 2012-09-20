@@ -141,7 +141,7 @@ class Calendar {
 			
 		$this->enable_repeat = SugarConfig::getInstance()->get('calendar.enable_repeat',true);	
 
-		if(in_array($this->view,array('month','shared','year'))){
+		if(in_array($this->view,array('month','year'))){
 			$this->style = "basic";	
 		}else{
 			$displayTimeslots = $GLOBALS['current_user']->getPreference('calendar_display_timeslots');

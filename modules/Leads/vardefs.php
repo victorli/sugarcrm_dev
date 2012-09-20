@@ -602,5 +602,3 @@ $dictionary['Lead'] = array('table' => 'leads','audited'=>true, 'unified_search'
 VardefManager::createVardef('Leads','Lead', array('default', 'assignable',
 'person'));
 
-
-?>

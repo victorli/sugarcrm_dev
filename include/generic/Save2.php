@@ -58,36 +58,65 @@ ARGS:
 
 require_once('include/formbase.php');
 
-function add_prospects_to_prospect_list($query_panel,$parent_module,$parent_type,$parent_id,$child_id,$link_attribute,$link_type, $parent)
+function add_prospects_to_prospect_list($parent_id,$child_id)
 {
-	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$query_panel);
-	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$parent_module);
-	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$parent_type);
-	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$parent_id);
-	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$child_id);
-	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$link_attribute);
-	$GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$link_type);
+    $focus=BeanFactory::getBean('Prospects');
+    if(is_array($child_id)){
+        $uids = $child_id;
+    }
+    else{
+        $uids = array($child_id);
+    }
+
+    $relationship = '';
+    foreach($focus->get_linked_fields() as $field => $def) {
+        if ($focus->load_relationship($field)) {
+            if ( $focus->$field->getRelatedModuleName() == 'ProspectLists' ) {
+                $relationship = $field;
+                break;
+            }
+        }
+    }
+
+    if ( $relationship != '' ) {
+        foreach ( $uids as $id) {
+            $focus->retrieve($id);
+            $focus->load_relationship($relationship);
+            $focus->prospect_lists->add( $parent_id );
+        }
+    }
+}
+
+function add_to_prospect_list($query_panel,$parent_module,$parent_type,$parent_id,$child_id,$link_attribute,$link_type,$parent)
+{
+    $GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$query_panel);
+    $GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$parent_module);
+    $GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$parent_type);
+    $GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$parent_id);
+    $GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$child_id);
+    $GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$link_attribute);
+    $GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$link_type);
     require_once('include/SubPanel/SubPanelTiles.php');
 
 
-	if (!class_exists($parent_type)) {
-		require_once('modules/'.cleanDirName($parent_module).'/'.cleanDirName($parent_type).'.php');
-	}
-	$focus = new $parent_type();
-	$focus->retrieve($parent_id);
-	if(empty($focus->id)) {
-	    return false;
-	}
-	if(empty($parent)) {
-	    return false;
-	}
+    if (!class_exists($parent_type)) {
+        require_once('modules/'.cleanDirName($parent_module).'/'.cleanDirName($parent_type).'.php');
+    }
+    $focus = new $parent_type();
+    $focus->retrieve($parent_id);
+    if(empty($focus->id)) {
+        return false;
+    }
+    if(empty($parent)) {
+        return false;
+    }
 
-	//if link_type is default then load relationship once and add all the child ids.
-	$relationship_attribute=$link_attribute;
+    //if link_type is default then load relationship once and add all the child ids.
+    $relationship_attribute=$link_attribute;
 
-	//find all prospects based on the query
+    //find all prospects based on the query
 
-	$subpanel = new SubPanelTiles($parent, $parent->module_dir);
+    $subpanel = new SubPanelTiles($parent, $parent->module_dir);
     $thisPanel=$subpanel->subpanel_definitions->load_subpanel($query_panel);
     if(empty($thisPanel)) {
         return false;
@@ -96,16 +125,16 @@ function add_prospects_to_prospect_list($query_panel,$parent_module,$parent_type
 
     if(!empty($result['list'])) {
         foreach($result['list'] as $object) {
-		    if ($link_type != 'default') {
-			    $relationship_attribute=strtolower($object->$link_attribute);
-		    }
+            if ($link_type != 'default') {
+                $relationship_attribute=strtolower($object->$link_attribute);
+            }
             $GLOBALS['log']->debug('add_prospects_to_prospect_list:relationship_attribute:'.$relationship_attribute);
-		    // load relationship for the first time or on change of relationship atribute.
-		    if (empty($focus->$relationship_attribute)) {
-			    $focus->load_relationship($relationship_attribute);
-		    }
-		    //add
-		    $focus->$relationship_attribute->add($object->$child_id);
+            // load relationship for the first time or on change of relationship atribute.
+            if (empty($focus->$relationship_attribute)) {
+                $focus->load_relationship($relationship_attribute);
+            }
+            //add
+            $focus->$relationship_attribute->add($object->$child_id);
         }
     }
 }
@@ -163,9 +192,19 @@ if (isset($_REQUEST['return_type'])  && $_REQUEST['return_type'] == 'report') {
 } else if (isset($_REQUEST['return_type'])  && $_REQUEST['return_type'] == 'addtoprospectlist') {
 
 	$GLOBALS['log']->debug(print_r($_REQUEST,true));
-	$parent = BeanFactory::getBean($_REQUEST['module'], $_REQUEST['record']);
-	add_prospects_to_prospect_list(urldecode($_REQUEST['subpanel_module_name']),$_REQUEST['parent_module'],$_REQUEST['parent_type'],$_REQUEST['subpanel_id'],
-			$_REQUEST['child_id'],$_REQUEST['link_attribute'],$_REQUEST['link_type'], $parent);
+	if(!empty($_REQUEST['prospect_list_id']) and !empty($_REQUEST['prospect_ids']))
+	{
+	    add_prospects_to_prospect_list(
+	        $_REQUEST['prospect_list_id'],
+	        $_REQUEST['prospect_ids']
+	    );
+	}
+	else
+	{
+	    $parent = BeanFactory::getBean($_REQUEST['module'], $_REQUEST['record']);
+	    add_to_prospect_list(urldecode($_REQUEST['subpanel_module_name']),$_REQUEST['parent_module'],$_REQUEST['parent_type'],$_REQUEST['subpanel_id'],
+	        $_REQUEST['child_id'],$_REQUEST['link_attribute'],$_REQUEST['link_type'], $parent);
+	}
 
 	$refreshsubpanel=false;
 }else if (isset($_REQUEST['return_type'])  && $_REQUEST['return_type'] == 'addcampaignlog') {
@@ -292,5 +331,5 @@ if ($refreshsubpanel) {
 		$inline = isset($_REQUEST['inline'])?$_REQUEST['inline']: $inline;
 		header("Location: index.php?sugar_body_only=1&module=".$_REQUEST['module']."&subpanel=".$_REQUEST['subpanel_module_name']."&action=SubPanelViewer&inline=$inline&record=".$_REQUEST['record']);
 	}
+	exit;
 }
-exit;

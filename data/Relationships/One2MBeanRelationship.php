@@ -109,6 +109,8 @@ class One2MBeanRelationship extends One2MRelationship
         //If we aren't already in a relationship save, intitiate a save now.
         if (empty($GLOBALS['resavingRelatedBeans']))
             SugarRelationship::resaveRelatedBeans();
+        
+        return true;
     }
 
     protected function updateLinks($lhs, $lhsLinkName, $rhs, $rhsLinkName)
@@ -143,7 +145,7 @@ class One2MBeanRelationship extends One2MRelationship
 
         //If this relationship has already been removed, we can just return
         if ($rhs->$rhsID != $lhs->id)
-            return;
+            return false;
 
         $rhs->$rhsID = '';
 
@@ -164,6 +166,8 @@ class One2MBeanRelationship extends One2MRelationship
             $this->callAfterDelete($lhs, $rhs);
             $this->callAfterDelete($rhs, $lhs);
         }
+
+        return true;
     }
 
     /**
@@ -315,28 +319,25 @@ class One2MBeanRelationship extends One2MRelationship
         $alias = $GLOBALS['db']->getValidDBName($alias, false, 'alias');
 
         $tableInRoleFilter = "";
-        if (($targetTable == "meetings" ||
-            $targetTable == "notes" ||
-            $targetTable == "tasks" ||
-            $targetTable == "calls") && $linkIsLHS == false) {
-            if (substr($alias, -25) == "activities_1_meetings_rel" ||
-                substr($alias, -22) == "activities_1_tasks_rel" ||
-                substr($alias, -22) == "activities_1_calls_rel" ||
-                substr($alias, -23) == "activities_1_emails_rel" ||
-                substr($alias, -22) == "activities_1_notes_rel")
-                $tableInRoleFilter = $alias;
-        }
-        else if (($startingTable == "meetings" ||
-            $startingTable == "notes" ||
-            $startingTable == "tasks" ||
-            $startingTable == "calls" ||
-            $startingTable == "emails") && empty($linkIsLHS)) {
-            if (substr($alias, -23) == "activities_meetings_rel" ||
-                substr($alias, -20) == "activities_tasks_rel" ||
-                substr($alias, -20) == "activities_calls_rel" ||
-                substr($alias, -21) == "activities_emails_rel" ||
-                substr($alias, -20) == "activities_notes_rel")
-                $tableInRoleFilter = $startingTable;
+        if (
+            (
+                $startingTable == "meetings"
+                || $startingTable == "notes"
+                || $startingTable == "tasks"
+                || $startingTable == "calls"
+                || $startingTable == "emails"
+            )
+            &&
+            (
+                $targetTable == "meetings"
+                || $targetTable == "notes"
+                || $targetTable == "tasks"
+                || $targetTable == "calls"
+            )
+            && substr($alias, 0, 12 + strlen($targetTable)) == $targetTable . "_activities_"
+        )
+        {
+            $tableInRoleFilter = $linkIsLHS ? $alias : $startingTable;
         }
         
         //Set up any table aliases required

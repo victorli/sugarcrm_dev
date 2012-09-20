@@ -105,6 +105,7 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $GLOBALS['db']->query("DELETE FROM tasks WHERE name like 'UNIT TEST%' ");
         $GLOBALS['db']->query("DELETE FROM meetings WHERE name like 'UNIT TEST%' ");
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        unset($GLOBALS['reload_vardefs']);
 	}
 
     protected function _makeRESTCall($method,$parameters)
@@ -450,7 +451,6 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         //Test a fake module
         $result = $this->_makeRESTCall('get_module_fields_md5', array('session' => $session, 'module' => 'BadModule' ));
         $this->assertEquals('Module Does Not Exist', $result['name']);
-        unset($GLOBALS['reload_vardefs']);
     }
 
     public function testAddNewAccountAndThenDeleteIt()

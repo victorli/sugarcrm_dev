@@ -238,5 +238,3 @@ $dictionary['Prospect'] = array(
 VardefManager::createVardef('Prospects','Prospect', array('default', 'assignable',
 'person'));
 
-
-?>

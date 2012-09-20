@@ -79,6 +79,8 @@ class EmailAddressRelationship extends M2MRelationship
                 $lhs->$lhsLinkName->addBean($rhs);
 
             $this->callAfterAdd($lhs, $rhs, $lhsLinkName);
+
+        return true;
     }
 
     public function remove($lhs, $rhs)
@@ -126,5 +128,7 @@ class EmailAddressRelationship extends M2MRelationship
                 $this->callAfterDelete($lhs, $rhs, $lhsLinkName);
             }
         }
+
+        return true;
     }
 }

@@ -213,7 +213,7 @@ CAL.full_form=function(){var e=document.createElement('input');e.setAttribute('t
 CAL.disable_buttons=function(){CAL.get("btn-save").setAttribute("disabled","disabled");CAL.get("btn-send-invites").setAttribute("disabled","disabled");CAL.get("btn-delete").setAttribute("disabled","disabled");CAL.get("btn-full-form").setAttribute("disabled","disabled");if(CAL.enable_repeat){CAL.get("btn-edit-all-recurrences").setAttribute("disabled","disabled");CAL.get("btn-remove-all-recurrences").setAttribute("disabled","disabled");}}
 CAL.enable_buttons=function(){CAL.get("btn-save").removeAttribute("disabled");CAL.get("btn-send-invites").removeAttribute("disabled");if(CAL.get("record").value!="")
 CAL.get("btn-delete").removeAttribute("disabled");CAL.get("btn-full-form").removeAttribute("disabled");if(CAL.enable_repeat){CAL.get("btn-edit-all-recurrences").removeAttribute("disabled");CAL.get("btn-remove-all-recurrences").removeAttribute("disabled");}}
-CAL.dialog_create=function(cell){var e,user_id,user_name;CAL.get("title-cal-edit").innerHTML=CAL.lbl_loading;CAL.open_edit_dialog();CAL.disable_buttons();var module_name=CAL.get("current_module").value;if(CAL.view=='shared'){user_name=cell.parentNode.parentNode.parentNode.parentNode.parentNode.getAttribute("user_name");user_id=cell.parentNode.parentNode.parentNode.parentNode.parentNode.getAttribute("user_id");CAL.GR_update_user(user_id);}else{user_id=CAL.current_user_id;user_name=CAL.current_user_name;CAL.GR_update_user(CAL.current_user_id);}
+CAL.dialog_create=function(cell){var e,user_id,user_name;CAL.get("title-cal-edit").innerHTML=CAL.lbl_loading;CAL.open_edit_dialog();CAL.disable_buttons();var module_name=CAL.get("current_module").value;if(CAL.view=='shared'){parentWithUserValues=$('div[user_id][user_name]');user_name=parentWithUserValues.attr('user_name');user_id=parentWithUserValues.attr('user_id');CAL.GR_update_user(user_id);}else{user_id=CAL.current_user_id;user_name=CAL.current_user_name;CAL.GR_update_user(CAL.current_user_id);}
 var params={'module_name':module_name,'user_id':user_id,'user_name':user_name,'date_start':cell.getAttribute("datetime")};CAL.current_params=params;CAL.load_create_form(CAL.current_params);}
 CAL.dialog_save=function(){CAL.disable_buttons();ajaxStatus.showStatus(SUGAR.language.get('app_strings','LBL_SAVING'));if(CAL.get("send_invites").value=="1"){CAL.get("title-cal-edit").innerHTML=CAL.lbl_sending;}else{CAL.get("title-cal-edit").innerHTML=CAL.lbl_saving;}
 CAL.fill_invitees();CAL.fill_repeat_data();var callback={success:function(o){try{res=eval("("+o.responseText+")");}catch(err){alert(CAL.lbl_error_saving);CAL.editDialog.cancel();ajaxStatus.hideStatus();return;}
@@ -257,12 +257,15 @@ CAL.update_vcal=function(){var v=CAL.current_user_id;var callback={success:funct
 if(typeof GLOBAL_REGISTRY.freebusy_adjusted=='undefined'){GLOBAL_REGISTRY.freebusy_adjusted=new Object();}
 GLOBAL_REGISTRY.freebusy[v]=SugarVCalClient.parseResults(result.responseText,false);GLOBAL_REGISTRY.freebusy_adjusted[v]=SugarVCalClient.parseResults(result.responseText,true);SugarWidgetScheduler.update_time();}};var url="vcal_server.php?type=vfb&source=outlook&user_id="+v;YAHOO.util.Connect.asyncRequest('GET',url,callback,false);}
 CAL.fit_grid=function(control_call){if(CAL.view=='year'){return;}
-var day_width;var cal_width=document.getElementById("cal-width-helper").offsetWidth;if(CAL.print){if(CAL.view=="day")
-cal_width=720;else
-cal_width=800;}
-var left_width=80;if(CAL.style=="basic"){if(CAL.view!="month"){left_width=20;}else
-left_width=60;}
-if(CAL.view=="day"){day_width=parseInt((cal_width-left_width-10));if(typeof control_call=="undefined"||!control_call){setTimeout(function(){CAL.fit_grid(true);setTimeout(function(){CAL.fit_grid(true);},100);},100);}}else{day_width=parseInt((cal_width-left_width)/ 7);}
-var nodes=CAL.query("#cal-grid div.col");CAL.each(nodes,function(i,v){nodes[i].style.width=day_width+"px";});var nodes=CAL.query("#cal-grid .cal-basic .act_item");CAL.each(nodes,function(i,v){var days=nodes[i].getAttribute('days');nodes[i].style.width=(day_width*days-1)+"px";});document.getElementById("cal-grid").style.visibility="";}
-YAHOO.util.DDCAL=function(id,sGroup,config){this.cont=config.cont;YAHOO.util.DDCAL.superclass.constructor.apply(this,arguments);}
+var container_width=document.getElementById("cal-width-helper").offsetWidth;var left_column_width=53;var scroll_padding=0;if(CAL.print){if(CAL.view=="day")
+container_width=720;else
+container_width=800;}
+else{var is_scrollable=document.getElementById("cal-scrollable");if(is_scrollable){scroll_padding=30;}}
+var data_width=container_width-left_column_width-scroll_padding;var num_columns;if(CAL.view=="day"){num_columns=1;if(typeof control_call=="undefined"||!control_call){setTimeout(function(){CAL.fit_grid(true);setTimeout(function(){CAL.fit_grid(true);},100);},100);}}else{num_columns=7;}
+var columns_width=CAL.calculate_columns_width(data_width,num_columns);var cell_nodes=CAL.query("#cal-grid div.col");CAL.each(cell_nodes,function(i)
+{cell_nodes[i].style.width=columns_width[i%num_columns]+"px";});document.getElementById("cal-grid").style.visibility="";};CAL.calculate_columns_width=function(width,count)
+{var result=[];var integer=Math.floor(width / count);var remainder=width-count*integer;var dispensed=0;for(var i=1,value;i<=count;i++)
+{value=integer;if(dispensed*count<i*remainder){value++;dispensed++;}
+result.push(value);}
+return result;};YAHOO.util.DDCAL=function(id,sGroup,config){this.cont=config.cont;YAHOO.util.DDCAL.superclass.constructor.apply(this,arguments);}
 YAHOO.extend(YAHOO.util.DDCAL,YAHOO.util.DD,{cont:null,init:function(){YAHOO.util.DDCAL.superclass.init.apply(this,arguments);this.initConstraints();CAL.update_dd.subscribe(function(type,args,dd){dd.resetConstraints();dd.initConstraints();},this);},initConstraints:function(){var region=YAHOO.util.Dom.getRegion(this.cont);var el=this.getEl();var xy=YAHOO.util.Dom.getXY(el);var width=parseInt(YAHOO.util.Dom.getStyle(el,'width'),10);var height=parseInt(YAHOO.util.Dom.getStyle(el,'height'),10);var left=xy[0]-region.left;var right=region.right-xy[0]-width;var top=xy[1]-region.top;var bottom=region.bottom-xy[1]-height;if(xy){this.setXConstraint(left,right);this.setYConstraint(top,bottom);}}});CAL.remove_edit_dialog();var cal_loaded=true;

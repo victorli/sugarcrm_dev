@@ -92,6 +92,13 @@ class ListViewData {
 				$direction = 'DESC';
 			}
 		}
+		if(!empty($direction)) {
+    		if(strtolower($direction) == "desc") {
+    		    $direction = 'DESC';
+    		} else {
+    		    $direction = 'ASC';
+    		}
+		}
 		return array('orderBy' => $orderBy, 'sortOrder' => $direction);
 	}
 
@@ -485,10 +492,10 @@ class ListViewData {
         if(!$this->seed->ACLAccess('ListView')) {
             $pageData['error'] = 'ACL restricted access';
         }
-        
+
         $queryString = '';
-		
-        if( isset($_REQUEST["searchFormTab"]) && $_REQUEST["searchFormTab"] == "advanced_search" || 
+
+        if( isset($_REQUEST["searchFormTab"]) && $_REQUEST["searchFormTab"] == "advanced_search" ||
         	isset($_REQUEST["type_basic"]) && (count($_REQUEST["type_basic"] > 1) || $_REQUEST["type_basic"][0] != "") ||
         	isset($_REQUEST["module"]) && $_REQUEST["module"] == "MergeRecords")
         {
@@ -596,12 +603,12 @@ class ListViewData {
         {
             $results['string'] = $app_strings['LBL_NONE'];
         }
-         	$close = false;   
+         	$close = false;
             $extra = "<img alt='{$app_strings['LBL_INFOINLINE']}' style='padding: 0px 5px 0px 2px' border='0' onclick=\"SUGAR.util.getStaticAdditionalDetails(this,'";
-            
+
             $extra .= str_replace(array("\rn", "\r", "\n"), array('','','<br />'), $results['string']) ;
             $extra .= "','<div style=\'float:left\'>{$app_strings['LBL_ADDITIONAL_DETAILS']}</div><div style=\'float: right\'>";
-            
+
 	        if($editAccess && !empty($results['editLink']))
 	        {
 	            $extra .=  "<a title=\'{$app_strings['LBL_EDIT_BUTTON']}\' href={$results['editLink']}><img style=\'margin-left: 2px;\' border=\'0\' src=\'".SugarThemeRegistry::current()->getImageURL('edit_inline.png')."\'></a>";
@@ -609,12 +616,12 @@ class ListViewData {
 	        }
 	        $close = (!empty($results['viewLink'])) ? true : $close;
 	        $extra .= (!empty($results['viewLink']) ? "<a title=\'{$app_strings['LBL_VIEW_BUTTON']}\' href={$results['viewLink']}><img style=\'margin-left: 2px;\' border=\'0\' src=".SugarThemeRegistry::current()->getImageURL('view_inline.png')."></a>" : '');
-            
+
             if($close == true) {
-            	$closeVal = "true";	
+            	$closeVal = "true";
             	$extra .=  "<a title=\'{$app_strings['LBL_ADDITIONAL_DETAILS_CLOSE_TITLE']}\' href=\'javascript: SUGAR.util.closeStaticAdditionalDetails();\'><img style=\'margin-left: 2px;\' border=\'0\' src=\'".SugarThemeRegistry::current()->getImageURL('close.png')."\'></a>";
             } else {
-            	$closeVal = "false";	
+            	$closeVal = "false";
             }
             $extra .= "',".$closeVal.")\" src='".SugarThemeRegistry::current()->getImageURL('info_inline.png')."' class='info'>";
 

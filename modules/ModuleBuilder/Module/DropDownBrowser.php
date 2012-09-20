@@ -46,7 +46,7 @@ class DropDownBrowser
         // 'moduleList', // We may want to put this in at a later date
         // 'moduleListSingular', // Same with this
     );
- 
+
     function getNodes()
     {
 	    global $mod_strings, $app_list_strings;
@@ -69,7 +69,10 @@ class DropDownBrowser
         asort($dropdowns);
         foreach($dropdowns as $dd)
         {
-        	$nodes[$dd] = array( 'name'=>$dd, 'action'=>"module=ModuleBuilder&action=dropdown&view_package=studio&dropdown_name=$dd",'imageTitle' => 'SPSync', 'help' => 'editDropDownBtn');       	
+            if (!empty($dd))
+            {
+                $nodes[$dd] = array( 'name'=>$dd, 'action'=>"module=ModuleBuilder&action=dropdown&view_package=studio&dropdown_name=$dd",'imageTitle' => 'SPSync', 'help' => 'editDropDownBtn');
+            }
         }
         return $nodes;
     }

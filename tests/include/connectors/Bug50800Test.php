@@ -50,7 +50,7 @@ class Bug50800Test extends Sugar_PHPUnit_Framework_TestCase
     var $custom_contents;
 
     function setUp() {
-
+        SugarTestHelper::setUp('app_strings');
         if(file_exists($this->custom_path.'/connectors.php'))
         {
            $this->custom_contents = file_get_contents($this->custom_path.'/connectors.php');
@@ -68,7 +68,7 @@ class Bug50800Test extends Sugar_PHPUnit_Framework_TestCase
         {
            file_put_contents($this->custom_path.'/connectors.php', $this->custom_contents);
         }
-
+        SugarTestHelper::tearDown();
     }
     
     function testConnectorFailsStringGracefully()
@@ -91,4 +91,3 @@ class Bug50800Test extends Sugar_PHPUnit_Framework_TestCase
         $this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $cu->getConnectors(true), 'ConnectorsUtils::getConnectors() failed to return an array when connectors array was missing. ');
     }
 }
-?>

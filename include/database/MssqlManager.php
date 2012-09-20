@@ -1403,7 +1403,7 @@ class MssqlManager extends DBManager
     {
         if($start_value > 1)
             $start_value -= 1;
-		$this->query("DBCC CHECKIDENT ('$table', RESEED, $start_value)");
+		$this->query("DBCC CHECKIDENT ('$table', RESEED, $start_value) WITH NO_INFOMSGS");
         return true;
     }
 

@@ -316,6 +316,7 @@ $mod_strings = array (
 	'LBL_REMINDER'						=> 'Reminders',
 	'LBL_REMINDER_POPUP' => 'Popup',
 	'LBL_REMINDER_EMAIL' => 'Email',
+    'LBL_REMINDER_EMAIL_ALL_INVITEES'   => 'Email all invitees',
 	'LBL_REMOVED_TABS'					=> 'Admin Remove Tabs',
 	'LBL_REPORTS_TO_NAME'				=> 'Reports to',
 	'LBL_REPORTS_TO'					=> 'Reports to',

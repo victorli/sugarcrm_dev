@@ -218,6 +218,7 @@ class SugarBean
     var $relationship_fields = array();
     var $current_notify_user;
     var $fetched_row=false;
+    var $fetched_rel_row = array();
     var $layout_def;
     var $force_load_details = false;
     var $optimistic_lock = false;
@@ -1651,33 +1652,51 @@ class SugarBean
     }
 
     /**
-    * This function is a good location to save changes that have been made to a relationship.
-    * This should be overriden in subclasses that have something to save.
-    *
-    * @param $is_update true if this save is an update.
-    */
-function save_relationship_changes($is_update, $exclude=array())
+     * This function is a good location to save changes that have been made to a relationship.
+     * This should be overridden in subclasses that have something to save.
+     *
+     * @param boolean $is_update    true if this save is an update.
+     * @param array $exclude        a way to exclude relationships
+     */
+    public function save_relationship_changes($is_update, $exclude = array())
     {
+        list($new_rel_id, $new_rel_link) = $this->set_relationship_info($exclude);
+
+        $new_rel_id = $this->handle_preset_relationships($new_rel_id, $new_rel_link, $exclude);
+
+        $this->handle_remaining_relate_fields($exclude);
+
+        $this->handle_request_relate($new_rel_id, $new_rel_link);
+    }
+
+    /**
+     * Look in the bean for the new relationship_id and relationship_name if $this->not_use_rel_in_req is set to true,
+     * otherwise check the $_REQUEST param for a relate_id and relate_to field.  Once we have that make sure that it's
+     * not excluded from the passed in array of relationships to exclude
+     *
+     * @param array $exclude        any relationship's to exclude
+     * @return array                The relationship_id and relationship_name in an array
+     */
+    protected function set_relationship_info($exclude = array())
+    {
+
         $new_rel_id = false;
         $new_rel_link = false;
-
         // check incoming data
-        if(isset($this->not_use_rel_in_req) && $this->not_use_rel_in_req)
-        {
+        if (isset($this->not_use_rel_in_req) && $this->not_use_rel_in_req == true) {
             // if we should use relation data from properties (for REQUEST-independent calls)
-            $rel_id=isset($this->new_rel_id) ? $this->new_rel_id : '';
-            $rel_link=isset($this->new_rel_relname) ? $this->new_rel_relname : '';
+            $rel_id = isset($this->new_rel_id) ? $this->new_rel_id : '';
+            $rel_link = isset($this->new_rel_relname) ? $this->new_rel_relname : '';
         }
-        else 
-        {  
+        else
+        {
             // if we should use relation data from REQUEST
-            $rel_id=isset($_REQUEST['relate_id']) ? $_REQUEST['relate_id'] : '';
-            $rel_link=isset($_REQUEST['relate_to']) ? $_REQUEST['relate_to'] : '';
+            $rel_id = isset($_REQUEST['relate_id']) ? $_REQUEST['relate_id'] : '';
+            $rel_link = isset($_REQUEST['relate_to']) ? $_REQUEST['relate_to'] : '';
         }
 
         // filter relation data
-        if($rel_id && $rel_link && !in_array($rel_link, $exclude) && $rel_id != $this->id)
-        {
+        if ($rel_id && $rel_link && !in_array($rel_link, $exclude) && $rel_id != $this->id) {
             $new_rel_id = $rel_id;
             $new_rel_link = $rel_link;
             // Bug #53223 : wrong relationship from subpanel create button
@@ -1700,17 +1719,30 @@ function save_relationship_changes($is_update, $exclude=array())
                     }
                 }
             }
-         }
+        }
 
+        return array($new_rel_id, $new_rel_link);
+    }
 
-        // First we handle the preset fields listed in the fixed relationship_fields array hardcoded into the OOB beans
-        // TODO: remove this mechanism and replace with mechanism exclusively based on the vardefs
-        if (isset($this->relationship_fields) && is_array($this->relationship_fields))
-        {
-            foreach ($this->relationship_fields as $id=>$rel_name)
+    /**
+     * Handle the preset fields listed in the fixed relationship_fields array hardcoded into the OOB beans
+     *
+     * TODO: remove this mechanism and replace with mechanism exclusively based on the vardefs
+     *
+     * @api
+     * @see save_relationship_changes
+     * @param string|boolean $new_rel_id    String of the ID to add
+     * @param string                        Relationship Name
+     * @param array $exclude                any relationship's to exclude
+     * @return string|boolean               Return the new_rel_id if it was not used.  False if it was used.
+     */
+    protected function handle_preset_relationships($new_rel_id, $new_rel_link, $exclude = array())
+    {
+        if (isset($this->relationship_fields) && is_array($this->relationship_fields)) {
+            foreach ($this->relationship_fields as $id => $rel_name)
             {
 
-                if(in_array($id, $exclude))continue;
+                if (in_array($id, $exclude)) continue;
 
                 if(!empty($this->$id))
                 {
@@ -1721,60 +1753,82 @@ function save_relationship_changes($is_update, $exclude=array())
                     }
                     $GLOBALS['log']->debug('save_relationship_changes(): From relationship_field array - adding a relationship record: '.$rel_name . ' = ' . $this->$id);
                     //already related the new relationship id so let's set it to false so we don't add it again using the _REQUEST['relate_i'] mechanism in a later block
-                    if($this->$id == $new_rel_id){
+                    $this->load_relationship($rel_name);
+                    $rel_add = $this->$rel_name->add($this->$id);
+                    // move this around to only take out the id if it was save successfully
+                    if ($this->$id == $new_rel_id && $rel_add == true) {
                         $new_rel_id = false;
                     }
-                    $this->load_relationship($rel_name);
-                    $this->$rel_name->add($this->$id);
-                    $related = true;
-                }
-                else
-                {
+                } else {
                     //if before value is not empty then attempt to delete relationship
-                    if(!empty($this->rel_fields_before_value[$id]))
-                    {
-                        $GLOBALS['log']->debug('save_relationship_changes(): From relationship_field array - attempting to remove the relationship record, using relationship attribute'.$rel_name);
+                    if (!empty($this->rel_fields_before_value[$id])) {
+                        $GLOBALS['log']->debug('save_relationship_changes(): From relationship_field array - attempting to remove the relationship record, using relationship attribute' . $rel_name);
                         $this->load_relationship($rel_name);
-                        $this->$rel_name->delete($this->id,$this->rel_fields_before_value[$id]);
+                        $this->$rel_name->delete($this->id, $this->rel_fields_before_value[$id]);
                     }
                 }
             }
         }
 
-/*      Next, we'll attempt to update all of the remaining relate fields in the vardefs that have 'save' set in their field_def
-        Only the 'save' fields should be saved as some vardef entries today are not for display only purposes and break the application if saved
-        If the vardef has entries for field <a> of type relate, where a->id_name = <b> and field <b> of type link
-        then we receive a value for b from the MVC in the _REQUEST, and it should be set in the bean as $this->$b
-*/
+        return $new_rel_id;
+    }
 
-        foreach ( $this->field_defs as $def )
+    /**
+     * Next, we'll attempt to update all of the remaining relate fields in the vardefs that have 'save' set in their field_def
+     * Only the 'save' fields should be saved as some vardef entries today are not for display only purposes and break the application if saved
+     * If the vardef has entries for field <a> of type relate, where a->id_name = <b> and field <b> of type link
+     * then we receive a value for b from the MVC in the _REQUEST, and it should be set in the bean as $this->$b
+     *
+     * @api
+     * @see save_relationship_changes
+     * @param array $exclude            any relationship's to exclude
+     * @return array                    the list of relationships that were added or removed successfully or if they were a failure
+     */
+    protected function handle_remaining_relate_fields($exclude = array())
+    {
+
+        $modified_relationships = array(
+            'add' => array('success' => array(), 'failure' => array()),
+            'remove' => array('success' => array(), 'failure' => array()),
+        );
+
+        foreach ($this->field_defs as $def)
         {
-            if ($def [ 'type' ] == 'relate' && isset ( $def [ 'id_name'] ) && isset ( $def [ 'link'] ) && isset ( $def[ 'save' ]) )
-            {
-                if (  in_array( $def['id_name'], $exclude) || in_array( $def['id_name'], $this->relationship_fields ) )
-                    continue ; // continue to honor the exclude array and exclude any relationships that will be handled by the relationship_fields mechanism
+            if ($def ['type'] == 'relate' && isset ($def ['id_name']) && isset ($def ['link']) && isset ($def['save'])) {
+                if (in_array($def['id_name'], $exclude) || in_array($def['id_name'], $this->relationship_fields))
+                    continue; // continue to honor the exclude array and exclude any relationships that will be handled by the relationship_fields mechanism
 
-                $linkField = $def [ 'link' ] ;
-                if (isset( $this->field_defs[$linkField ] ))
-                {
-                    $linkfield = $this->field_defs[$linkField] ;
-
-                    if ($this->load_relationship ( $linkField))
-                    {
+                $linkField = $def ['link'];
+                if (isset($this->field_defs[$linkField])) {
+                    if ($this->load_relationship($linkField)) {
                         $idName = $def['id_name'];
 
-                        if (!empty($this->rel_fields_before_value[$idName]) && empty($this->$idName))
-                        {
+                        if (!empty($this->rel_fields_before_value[$idName]) && empty($this->$idName)) {
                             //if before value is not empty then attempt to delete relationship
                             $GLOBALS['log']->debug("save_relationship_changes(): From field_defs - attempting to remove the relationship record: {$def [ 'link' ]} = {$this->rel_fields_before_value[$def [ 'id_name' ]]}");
-                            $this->$def ['link' ]->delete($this->id, $this->rel_fields_before_value[$def [ 'id_name' ]] );
+                            $success = $this->$def ['link']->delete($this->id, $this->rel_fields_before_value[$def ['id_name']]);
+                            // just need to make sure it's true and not an array as it's possible to return an array
+                            if($success == true) {
+                                $modified_relationships['remove']['success'][] = $def['link'];
+                            } else {
+                                $modified_relationships['remove']['failure'][] = $def['link'];
+                            }
+                            $GLOBALS['log']->debug("save_relationship_changes(): From field_defs - attempting to remove the relationship record returned " . var_export($success, true));
                         }
 
-                        if (!empty($this->$idName) && is_string($this->$idName))
-                        {
-                            $GLOBALS['log']->debug("save_relationship_changes(): From field_defs - attempting to add a relationship record - {$def [ 'link' ]} = {$this->$def [ 'id_name' ]}" );
+                        if (!empty($this->$idName) && is_string($this->$idName)) {
+                            $GLOBALS['log']->debug("save_relationship_changes(): From field_defs - attempting to add a relationship record - {$def [ 'link' ]} = {$this->$def [ 'id_name' ]}");
 
-                            $this->$linkField->add($this->$idName);
+                            $success = $this->$linkField->add($this->$idName);
+
+                            // just need to make sure it's true and not an array as it's possible to return an array
+                            if($success == true) {
+                                $modified_relationships['add']['success'][] = $linkField;
+                            } else {
+                                $modified_relationships['add']['failure'][] = $linkField;
+                            }
+
+                            $GLOBALS['log']->debug("save_relationship_changes(): From field_defs - add a relationship record returned " . var_export($success, true));
                         }
                     } else {
                         $GLOBALS['log']->fatal("Failed to load relationship {$linkField} while saving {$this->module_dir}");
@@ -1783,40 +1837,52 @@ function save_relationship_changes($is_update, $exclude=array())
             }
         }
 
-        // Finally, we update a field listed in the _REQUEST['*/relate_id']/_REQUEST['relate_to'] mechanism (if it hasn't already been updated above)
-        if(!empty($new_rel_id)){
+        return $modified_relationships;
+    }
 
-            if($this->load_relationship($new_rel_link)){
-                $this->$new_rel_link->add($new_rel_id);
+    /**
+     * Finally, we update a field listed in the _REQUEST['%/relate_id']/_REQUEST['relate_to'] mechanism (if it has not already been updated)
+     *
+     * @api
+     * @see save_relationship_changes
+     * @param string|boolean $new_rel_id
+     * @param string $new_rel_link
+     * @return boolean
+     */
+    protected function handle_request_relate($new_rel_id, $new_rel_link)
+    {
+        if (!empty($new_rel_id)) {
 
-            }else{
+            if ($this->load_relationship($new_rel_link)) {
+                return $this->$new_rel_link->add($new_rel_id);
+            } else {
                 $lower_link = strtolower($new_rel_link);
-                if($this->load_relationship($lower_link)){
-                    $this->$lower_link->add($new_rel_id);
+                if ($this->load_relationship($lower_link)) {
+                    return $this->$lower_link->add($new_rel_id);
 
-                }else{
+                } else {
                     require_once('data/Link2.php');
-                    $rel = Relationship::retrieve_by_modules($new_rel_link, $this->module_dir, $GLOBALS['db'], 'many-to-many');
+                    $rel = Relationship::retrieve_by_modules($new_rel_link, $this->module_dir, $this->db, 'many-to-many');
 
-                    if(!empty($rel)){
-                        foreach($this->field_defs as $field=>$def){
-                            if($def['type'] == 'link' && !empty($def['relationship']) && $def['relationship'] == $rel){
+                    if (!empty($rel)) {
+                        foreach ($this->field_defs as $field => $def) {
+                            if ($def['type'] == 'link' && !empty($def['relationship']) && $def['relationship'] == $rel) {
                                 $this->load_relationship($field);
-                                $this->$field->add($new_rel_id);
-                                return;
-
+                                return $this->$field->add($new_rel_id);
                             }
 
                         }
                         //ok so we didn't find it in the field defs let's save it anyway if we have the relationshp
 
-                        $this->$rel=new Link2($rel, $this, array());
-                        $this->$rel->add($new_rel_id);
+                        $this->$rel = new Link2($rel, $this, array());
+                        return $this->$rel->add($new_rel_id);
                     }
                 }
-
             }
         }
+
+        // nothing was saved so just return false;
+        return false;
     }
 
     /**
@@ -2147,6 +2213,14 @@ function save_relationship_changes($is_update, $exclude=array())
 		$this->is_updated_dependent_fields = false;
         $this->fill_in_additional_detail_fields();
         $this->fill_in_relationship_fields();
+// save related fields values for audit
+         foreach ($this->get_related_fields() as $rel_field_name)
+         {
+             if (! empty($this->$rel_field_name['name']))
+             {
+                 $this->fetched_rel_row[$rel_field_name['name']] = $this->$rel_field_name['name'];
+             }
+         }        
         //make a copy of fields in the relationship_fields array. These field values will be used to
         //clear relationship.
         foreach ( $this->field_defs as $key => $def )

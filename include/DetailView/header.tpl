@@ -112,10 +112,12 @@ SUGAR.util.doWhen(function(){
 {{* Add $form.links if they are defined *}}
 {{if !empty($form) && isset($form.links)}}
 	<td align="right" width="10%">&nbsp;</td>
-	<td align="right" width="100%" NOWRAP>
-	{{foreach from=$form.links item=link}}
-	    {{$link}}&nbsp;
-	{{/foreach}}
+	<td align="right" width="100%" NOWRAP class="buttons">
+        <div class="actionsContainer">
+            {{foreach from=$form.links item=link}}
+                {{$link}}&nbsp;
+            {{/foreach}}
+        </div>
 	</td>
 {{/if}}
 </tr>

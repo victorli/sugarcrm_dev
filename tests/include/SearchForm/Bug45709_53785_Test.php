@@ -39,30 +39,39 @@ require_once "modules/Tasks/Task.php";
 require_once "modules/Contacts/Contact.php";
 require_once "include/SearchForm/SearchForm2.php";
 
-class Bug45709Test extends Sugar_PHPUnit_Framework_TestCase
+/**
+ * 
+ * Test checks if SearchDef with 'force_unifiedsearch' => true concatenates the db_field array properly,
+ * when the search value is a multiple word term (contains space between the words)
+ * 
+ * @author snigam@sugarcrm.com, avucinic@sugarcrm.com
+ *
+ */
+class Bug45709_53785_Test extends Sugar_PHPUnit_Framework_TestCase
 {
 	var $task = null;
 	var $contact = null;
+	var $team = null;
 	var $requestArray = null;
 	var $searchForm = null;
 
     public function setUp()
     {
-		$GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
-		$GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
-		$GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+		SugarTestHelper::setUp('app_list_strings');
+		SugarTestHelper::setUp('app_strings');
+		SugarTestHelper::setUp('current_user');
+		
 		$this->contact = SugarTestContactUtilities::createContact();
-    	$this->task =SugarTestTaskUtilities::createTask();
+    	$this->task = SugarTestTaskUtilities::createTask();
     	$this->task->contact_id = $this->contact->id;
     	$this->task->save();
     }
 
     public function tearDown()
     {
-
         SugarTestContactUtilities::removeAllCreatedContacts();
         SugarTestTaskUtilities::removeAllCreatedTasks();
-        unset($GLOBALS['current_user']);
+        SugarTestHelper::tearDown();
     }
 
     /**
@@ -70,36 +79,44 @@ class Bug45709Test extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testGenerateSearchWhereForFieldsWhenFullContactNameGiven()
     {
-        //test GenerateSearchWhere for fields that have db_concat_fields set in vardefs
-        //Contact in advanced search panel in Tasks module is one of those
-
-    	//array to simulate REQUEST object
+    	// Array to simulate REQUEST object
     	$this->requestArray['module'] = 'Tasks';
     	$this->requestArray['action'] = 'index';
     	$this->requestArray['searchFormTab'] = 'advanced_search';
-    	$this->requestArray['contact_name_advanced'] = $this->contact->first_name. " ". $this->contact->last_name; //value of a contact name field set in REQUEST object
+    	$this->requestArray['contact_name_advanced'] = $this->contact->first_name . " " . $this->contact->last_name; //value of a contact name field set in REQUEST object
     	$this->requestArray['query'] = 'true';
 
+		// Initialize search form
+    	$this->searchForm = new SearchForm($this->task, 'Tasks');
 
-    	$this->searchForm = new SearchForm($this->task,'Tasks');
-
+    	// Load the vardefs and search metadata
     	require 'modules/Tasks/vardefs.php';
     	require 'modules/Tasks/metadata/SearchFields.php';
     	require 'modules/Tasks/metadata/searchdefs.php';
         $this->searchForm->searchFields = $searchFields[$this->searchForm->module];
         $this->searchForm->searchdefs = $searchdefs[$this->searchForm->module];
         $this->searchForm->fieldDefs = $this->task->getFieldDefinitions();
+        
+        // Fill the data from the array we are using to simulate REQUEST
     	$this->searchForm->populateFromArray($this->requestArray,'advanced_search',false);
+    	
+    	// Get the generated search clause
     	$whereArray = $this->searchForm->generateSearchWhere(true, $this->task->module_dir);
+    	
+    	// And use it to load the contact created
     	$test_query = "SELECT id FROM contacts WHERE " . $whereArray[0];
     	$result = $GLOBALS['db']->query($test_query);
     	$row = $GLOBALS['db']->fetchByAssoc($result);
-
+    	
+    	// Check if the contact was successfully loaded
     	$this->assertEquals($this->contact->id, $row['id'], "Didn't find the correct contact id");
 
+    	// Load the task using the contact_id we got from the previous query
     	$result2 = $GLOBALS['db']->query("SELECT * FROM tasks WHERE tasks.contact_id='{$this->task->contact_id}'");
         $row2 = $GLOBALS['db']->fetchByAssoc($result2);
-
+        
+    	// Check if the task is loaded properly	
         $this->assertEquals($this->task->id, $row2['id'], "Couldn't find the expected related task");
     }
+
 }

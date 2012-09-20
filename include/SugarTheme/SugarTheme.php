@@ -696,8 +696,12 @@ EOHTML;
 				if( (!is_null($width) && $sp['width'] == $width) || (is_null($width)) &&
 					(!is_null($height) && $sp['height'] == $height) || (is_null($height)) )
 				{
-					if($sprite = $this->getSprite($sp['class'], $other_attributes, $alt))
-						return $sprite;
+                    $other_attributes .= ' data-orig="'.$imageName.'"';
+
+                     if($sprite = $this->getSprite($sp['class'], $other_attributes, $alt))
+                     {
+                         return $sprite;
+                     }
 				}
 			}
 		}

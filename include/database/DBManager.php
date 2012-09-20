@@ -2818,7 +2818,7 @@ protected function checkQuery($sql, $object_name = false)
     /**
      * Uses the audit enabled fields array to find fields whose value has changed.
      * The before and after values are stored in the bean.
-     * Uses $bean->fetched_row to compare
+     * Uses $bean->fetched_row && $bean->fetched_rel_row to compare
      *
      * @param SugarBean $bean Sugarbean instance that was changed
      * @return array
@@ -2828,10 +2828,16 @@ protected function checkQuery($sql, $object_name = false)
 		$changed_values=array();
 		$audit_fields=$bean->getAuditEnabledFieldDefinitions();
 
-		if (is_array($audit_fields) and count($audit_fields) > 0) {
+        $fetched_row = array();
+        if (is_array($bean->fetched_row)) 
+        {
+            $fetched_row = array_merge($bean->fetched_row, $bean->fetched_rel_row);
+        }
+
+		if ($fetched_row && is_array($audit_fields) and count($audit_fields) > 0) {
 			foreach ($audit_fields as $field=>$properties) {
-				if (!empty($bean->fetched_row) && array_key_exists($field, $bean->fetched_row)) {
-					$before_value=$bean->fetched_row[$field];
+				if (array_key_exists($field, $fetched_row)) {
+					$before_value = $fetched_row[$field];
 					$after_value=$bean->$field;
 					if (isset($properties['type'])) {
 						$field_type=$properties['type'];

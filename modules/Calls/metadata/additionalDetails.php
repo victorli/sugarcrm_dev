@@ -58,6 +58,14 @@ function additionalDetailsCall($fields) {
         }
         $overlib_string .=  '<br>';
 	}
+    if (!empty($fields['PARENT_ID']))
+    {
+            $overlib_string .= "<b>". $mod_strings['LBL_RELATED_TO'] . "</b> ".
+                    "<a href='index.php?module=".$fields['PARENT_TYPE']."&action=DetailView&record=".$fields['PARENT_ID']."'>".
+                    $fields['PARENT_NAME'] . "</a>";
+            $overlib_string .= '<br>';
+    }
+
 	if(!empty($fields['DESCRIPTION'])) {
 		$overlib_string .= '<b>'. $mod_strings['LBL_DESCRIPTION'] . '</b> ' . substr($fields['DESCRIPTION'], 0, 300);
 		if(strlen($fields['DESCRIPTION']) > 300) $overlib_string .= '...';

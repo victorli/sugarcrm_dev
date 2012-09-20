@@ -160,6 +160,8 @@ class M2MRelationship extends SugarRelationship
 
             $this->callAfterAdd($lhs, $rhs, $lhsLinkName);
             $this->callAfterAdd($rhs, $lhs, $rhsLinkName);
+
+        return true;
     }
 
     protected function getRowToInsert($lhs, $rhs, $additionalFields = array())
@@ -279,6 +281,8 @@ class M2MRelationship extends SugarRelationship
                 $this->callAfterDelete($rhs, $lhs, $rhsLinkName);
             }
         }
+
+        return true;
     }
 
     /**

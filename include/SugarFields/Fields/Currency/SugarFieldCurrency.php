@@ -73,4 +73,22 @@ class SugarFieldCurrency extends SugarFieldFloat
         
         return $settings->float($value,$vardef,$focus);
     }
+
+    /**
+	 * format the currency field based on system locale values for currency
+     * Note that this may be different from the precision specified in the vardefs.
+	 * @param string $rawfield value of the field
+     * @param string $somewhere vardef for the field being processed
+	 * @return number formatted according to currency settings
+	 */
+    public function formatField($rawField, $vardef){
+        // for currency fields, use the user or system precision, not the precision in the vardef
+        //this is achived by passing in $precision as null
+        $precision = null;
+
+        if ( $rawField === '' || $rawField === NULL ) {
+            return '';
+        }
+        return format_number($rawField,$precision,$precision);
+    }
 }

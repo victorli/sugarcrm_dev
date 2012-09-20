@@ -122,7 +122,7 @@ class MySugar{
 	}
 
 	function displayDashlet(){
-		global $current_user, $mod_strings;
+		global $current_user, $mod_strings, $app_strings;
 
 		if(!empty($_REQUEST['id'])) {
 		    $id = $_REQUEST['id'];
@@ -151,7 +151,7 @@ class MySugar{
 		    }
 		    if(!empty($_REQUEST['dynamic']) && $_REQUEST['dynamic'] == 'true' && $dashlet->hasScript) {
 		        $dashlet->isConfigurable = false;
-		        echo $dashlet->getTitle('') . $mod_strings['LBL_RELOAD_PAGE'];
+		        echo $dashlet->getTitle('') . $app_strings['LBL_RELOAD_PAGE'];
 		    }
 		    else {
 		        $lvsParams = array();

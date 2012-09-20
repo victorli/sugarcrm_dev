@@ -157,7 +157,10 @@ if(!isset($_SESSION['reassignRecords']['assignedModuleListCache'])){
 	//Leon bug 20739
 	$beanListDupDisp=array() ;
 	foreach($beanListDup as $m => $p){
-		$beanListDupDisp[$app_list_strings['moduleList'][$m]]=$p;
+		if (isset($app_list_strings['moduleList'][$m]))
+		{
+		    $beanListDupDisp[$app_list_strings['moduleList'][$m]]=$p;
+		}
 	}
 	$_SESSION['reassignRecords']['assignedModuleListCache'] = $beanListDup;
 	$_SESSION['reassignRecords']['assignedModuleListCacheDisp'] = $beanListDupDisp;

@@ -36,4 +36,13 @@
 
 *}
 
-<input type='text' name='{sugarvar objectName=$parentFieldArray memberName=$vardef.name key='name'}' size='50' value=''>
+{if strlen({{sugarvar key='value' string=true}}) <= 0}
+{assign var="value" value={{sugarvar key='default_value' string=true}} }
+{else}
+{assign var="value" value={{sugarvar key='value' string=true}} }
+{/if}  
+<input type='text' name='{{if empty($displayParams.idName)}}{{sugarvar key='name'}}{{else}}{{$displayParams.idName}}{{/if}}' 
+    id='{{if empty($displayParams.idName)}}{{sugarvar key='name'}}{{else}}{{$displayParams.idName}}{{/if}}' size='{{$displayParams.size|default:30}}' 
+    {{if isset($displayParams.maxlength)}}maxlength='{{$displayParams.maxlength}}'{{elseif isset($vardef.len)}}maxlength='{{$vardef.len}}'{{/if}} 
+    value='{$value}' title='{{$vardef.help}}' {{if !empty($tabindex)}} tabindex='{{$tabindex}}' {{/if}}
+    {{if !empty($displayParams.accesskey)}} accesskey='{{$displayParams.accesskey}}' {{/if}} {{$displayParams.field}}>

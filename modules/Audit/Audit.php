@@ -127,7 +127,12 @@ class Audit extends SugarBean {
                                 }
                                 
                                 if ($field['name'] == 'date_created') {
-                                	$temp_list[$field['name']]=$timedate->to_display_date_time($temp_list[$field['name']]);
+                                   $date_created = '';
+                                   if (!empty($temp_list[$field['name']])) {
+                                        $date_created = $timedate->to_display_date_time($temp_list[$field['name']]);
+                                        $date_created = !empty($date_created)?$date_created:$temp_list[$field['name']];
+                                   }
+                                   $temp_list[$field['name']]=$date_created;
                                 }
 								 if(($field['name'] == 'before_value_string' || $field['name'] == 'after_value_string') && ($row['data_type'] == "enum" || $row['data_type'] == "multienum"))
 								 {

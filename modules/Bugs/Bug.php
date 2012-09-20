@@ -323,13 +323,11 @@ class Bug extends SugarBean {
         // The new listview code only fetches columns that we're displaying and not all
         // the columns so we need these checks. 
 	   $the_array['NAME'] = (($this->name == "") ? "<em>blank</em>" : $this->name);
-        if (!empty($this->priority))
-    	   $the_array['PRIORITY'] = $app_list_strings['bug_priority_dom'][$this->priority];
-        if (!empty($this->status))           
-    	   $the_array['STATUS'] =$app_list_strings['bug_status_dom'][$this->status];
+        $the_array['PRIORITY'] = empty($this->priority)? "" : (!isset($app_list_strings[$this->field_name_map['priority']['options']][$this->priority]) ? $this->priority : $app_list_strings[$this->field_name_map['priority']['options']][$this->priority]);
+        $the_array['STATUS'] = empty($this->status)? "" : (!isset($app_list_strings[$this->field_name_map['status']['options']][$this->status]) ? $this->status : $app_list_strings[$this->field_name_map['status']['options']][$this->status]);
+        $the_array['TYPE'] = empty($this->type)? "" : (!isset($app_list_strings[$this->field_name_map['type']['options']][$this->type]) ? $this->type : $app_list_strings[$this->field_name_map['type']['options']][$this->type]);
+       
 	   $the_array['RELEASE']= $this->release_name;
-        if (!empty($this->type))           
-        	$the_array['TYPE']=  $app_list_strings['bug_type_dom'][$this->type];
 	   $the_array['BUG_NUMBER'] = $this->bug_number;
 	   $the_array['ENCODED_NAME']=$this->name;
     			

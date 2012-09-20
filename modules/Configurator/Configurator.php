@@ -121,11 +121,11 @@ class Configurator {
 
 		foreach($overrideArray as $key => $val) {
 			if (in_array($key, $this->allow_undefined) || isset ($sugar_config[$key])) {
-				if (strcmp("$val", 'true') == 0) {
+				if (is_string($val) && strcmp($val, 'true') == 0) {
 					$val = true;
 					$this->config[$key] = $val;
 				}
-				if (strcmp("$val", 'false') == 0) {
+				if (is_string($val) && strcmp($val, 'false') == 0) {
 					$val = false;
 					$this->config[$key] = false;
 				}

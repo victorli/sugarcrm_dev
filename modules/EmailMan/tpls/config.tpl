@@ -520,8 +520,12 @@ function sendTestEmail()
     var callbackOutboundTest = {
     	success	: function(o) {
     		hideOverlay();
-    		overlay("{/literal}{$APP.LBL_EMAIL_TEST_OUTBOUND_SETTINGS}{literal}", "{/literal}{$APP.LBL_EMAIL_TEST_NOTIFICATION_SENT}{literal}", 'alert');
-    	}
+			var responseObject = YAHOO.lang.JSON.parse(o.responseText);
+			if (responseObject.status)
+				overlay("{/literal}{$APP.LBL_EMAIL_TEST_OUTBOUND_SETTINGS}{literal}", "{/literal}{$APP.LBL_EMAIL_TEST_NOTIFICATION_SENT}{literal}", 'alert');
+			else
+				overlay("{/literal}{$APP.LBL_EMAIL_TEST_OUTBOUND_SETTINGS}{literal}", responseObject.errorMessage, 'alert');
+		}
     };
     var smtpServer = document.getElementById('mail_smtpserver').value;
     var smtpPort = document.getElementById('mail_smtpport').value;

@@ -51,12 +51,13 @@ if($json->decode(html_entity_decode($_REQUEST['forQuotes']))){
     $returnArray['forQuotes']="company";
 }
 $upload_ok = false;
+$upload_path = 'tmp_logo_' . $returnArray['forQuotes'] . '_upload';
 if(isset($_FILES['file_1'])){
     $upload = new UploadFile('file_1');
     if($upload->confirm_upload()) {
-        $dir = "upload://cache/images";
-        UploadStream::ensureDir($dir);
-        $file_name = $dir."/".$upload->get_stored_file_name();
+        $upload_dir  = 'upload://' . $upload_path;
+        UploadStream::ensureDir($upload_dir);
+        $file_name = $upload_dir."/".$upload->get_stored_file_name();
         if($upload->final_move($file_name)) {
             $upload_ok = true;
         }
@@ -69,8 +70,9 @@ if(!$upload_ok) {
     exit();
 }
 if(file_exists($file_name) && is_file($file_name)) {
-    $returnArray['path']=substr($file_name, 9); // strip upload prefix
-    $returnArray['url']= 'cache/images/'.$upload->get_stored_file_name();
+    $encoded_file_name = rawurlencode($upload->get_stored_file_name());
+    $returnArray['path'] = $upload_path . '/' . $encoded_file_name;
+    $returnArray['url']= 'cache/images/'.$encoded_file_name;
     if(!verify_uploaded_image($file_name, $returnArray['forQuotes'] == 'quotes')) {
         $returnArray['data']='other';
         $returnArray['path'] = '';

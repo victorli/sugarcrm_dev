@@ -136,7 +136,10 @@ class Person extends Basic
         $this->add_address_streets('alt_address_street');
         $ori_in_workflow = empty($this->in_workflow) ? false : true;
         $this->emailAddress->handleLegacySave($this, $this->module_dir);
+        // bug #39188 - store emails state before workflow make any changes
+        $this->emailAddress->stash($this->id, $this->module_dir);
         parent::save($check_notify);
+        // $this->emailAddress->evaluateWorkflowChanges($this->id, $this->module_dir);
         $override_email = array();
         if(!empty($this->email1_set_in_workflow)) {
             $override_email['emailAddress0'] = $this->email1_set_in_workflow;
@@ -149,6 +152,7 @@ class Person extends Basic
         }
         if($ori_in_workflow === false || !empty($override_email)){
             $this->emailAddress->save($this->id, $this->module_dir, $override_email,'','','','',$this->in_workflow);
+            // $this->emailAddress->applyWorkflowChanges($this->id, $this->module_dir);
         }
 		return $this->id;
 	}

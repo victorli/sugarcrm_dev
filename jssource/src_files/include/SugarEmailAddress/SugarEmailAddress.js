@@ -75,7 +75,7 @@
 		prefillEmailAddresses: function(tableId, o){
 			for (i = 0; i < o.length; i++) {
 				o[i].email_address = o[i].email_address.replace('&#039;', "'");
-				this.addEmailAddress(tableId, o[i].email_address, o[i].primary_address, o[i].reply_to_address, o[i].opt_out, o[i].invalid_email);
+				this.addEmailAddress(tableId, o[i].email_address, o[i].primary_address, o[i].reply_to_address, o[i].opt_out, o[i].invalid_email, o[i].email_address_id);
 			}
 		},
 		
@@ -206,7 +206,7 @@
 		    return false;
 		},//freezeEvent
 		
-		addEmailAddress : function (tableId, address, primaryFlag, replyToFlag, optOutFlag, invalidFlag) {
+		addEmailAddress : function (tableId, address, primaryFlag, replyToFlag, optOutFlag, invalidFlag, emailId) {
 			if (this.addInProgress)
 			    return;
 			this.addInProgress = true;
@@ -217,6 +217,7 @@
 		    var newContent = document.createElement("input");
 		    var nav = new String(navigator.appVersion);
 
+		    var newContentRecordId = document.createElement("input");
 		    var newContentPrimaryFlag = document.createElement("input");
 		    var newContentReplyToFlag = document.createElement("input");
 		    var newContentOptOutFlag = document.createElement("input");
@@ -261,14 +262,22 @@
 		    removeButton.setAttribute("id", this.id + "removeButton" + this.numberEmailAddresses);
 			removeButton.setAttribute("class", "id-ff-remove");
 		    removeButton.setAttribute("name", this.numberEmailAddresses);
-			removeButton.eaw = this;
+		    removeButton.setAttribute("type", "button");
             removeButton.setAttribute("tabindex", tabIndexCount);
-		    removeButton.onclick = function(){
-		    	this.eaw.removeEmailAddress(this.name);
-		    	return false;
-		    };
+            removeButton.onclick = (function(eaw) {
+                return function() {
+                    eaw.removeEmailAddress(this.name);
+                }
+            })(this);
             removeButton.appendChild(removeButtonImg);
 		    
+		    // set record id
+		    newContentRecordId.setAttribute("type", "hidden");
+		    newContentRecordId.setAttribute("name", this.id + "emailAddressId" + this.numberEmailAddresses);
+		    newContentRecordId.setAttribute("id", this.id + "emailAddressId" + this.numberEmailAddresses);
+		    newContentRecordId.setAttribute("value", typeof(emailId) != 'undefined' ? emailId : '');
+		    newContentRecordId.setAttribute("enabled", "true");
+
 		    // set primary flag
 		    newContentPrimaryFlag.setAttribute("type", "radio");
 		    newContentPrimaryFlag.setAttribute("name", this.id + "emailAddressPrimaryFlag");
@@ -360,6 +369,7 @@
 		    td6.setAttribute("align", "center");
 
 		    td1.appendChild(newContent);
+		    td1.appendChild(newContentRecordId);
 		    td1.appendChild(document.createTextNode(" "));
 		    spanNode = document.createElement('span');
 		    spanNode.innerHTML = '&nbsp;';
@@ -446,13 +456,10 @@
 
 		removeEmailAddress : function(index) {
 			removeFromValidate(this.emailView, this.id + 'emailAddress' + index);
-			var oNodeToRemove = $("#" + this.id +  'emailAddressRow' + index);
-            var form = oNodeToRemove.parents("form")[0];
-            oNodeToRemove.find("input").each(function(index, node){
-            	$(node).remove();
-            });
-            oNodeToRemove.css("display", "none");
-            
+            var oNodeToRemove = Dom.get(this.id +  'emailAddressRow' + index);
+            var form = Dom.getAncestorByTagName(oNodeToRemove, "form");
+            oNodeToRemove.parentNode.removeChild(oNodeToRemove);
+
             var removedIndex = parseInt(index);
             //If we are not deleting the last email address, we need to shift the numbering to fill the gap
             if(this.numberEmailAddresses != removedIndex) {
