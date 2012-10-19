@@ -71,7 +71,7 @@ class SubpanelQuickEdit{
 		$this->ev = new EditView();
 		$this->ev->view = $view;
 		$this->ev->ss = new Sugar_Smarty();
-		//$_REQUEST['return_action'] = 'SubPanelViewer';
+		$_REQUEST['return_action'] = 'SubPanelViewer';
 
 
 

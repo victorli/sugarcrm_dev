@@ -79,6 +79,7 @@ class ConnectorHtmlHelper
                  $iconFilePath = $formatter->getIconFilePath();
                  $iconFilePath = empty($iconFilePath) ? 'themes/default/images/MoreDetail.png' : $iconFilePath;
 
+
             $code .= '<!--not_in_theme!--><img id="dswidget_img" border="0" src="' . $iconFilePath .'" alt="'
                          . $id .'" onclick="show_' . $id . '(event);">';
 

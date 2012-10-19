@@ -375,11 +375,13 @@ return false;var hide=document.getElementById('setEditor'+idx).checked;SE.compos
 if(idx!=null){var sel=document.getElementById('signatures'+idx);}else{var sel=document.getElementById('signature_id');idx=SE.tinyInstances.currentHtmleditor;}
 if(typeof(SE.composeLayout.loadedTinyInstances[idx])!='undefined'&&SE.composeLayout.loadedTinyInstances[idx]==false){setTimeout("SE.composeLayout.setSignature("+idx+");",1000);return;}
 var signature='';try{signature=sel.options[sel.selectedIndex].value;}catch(e){}
-var openTag='<div><span>&nbsp;</span>';var closeTag='<span>&nbsp;</span></div>';var t=tinyMCE.getInstanceById('htmleditor'+idx);if(typeof(t)!='undefined')
+var openTag='<br class="signature-begin" />';var closeTag='<br class="signature-end" />';var t=tinyMCE.getInstanceById('htmleditor'+idx);if(typeof(t)!='undefined')
 {t.contentDocument=t.contentWindow.document;var html=t.getContent();}
 else
 {var html='';}
-var htmllow=html.toLowerCase();var start=htmllow.indexOf(openTag);var end=htmllow.indexOf(closeTag)+closeTag.length;if(signature==''){if(start>-1){var htmlPart1=html.substr(0,start);var htmlPart2=html.substr(end,html.length);html=htmlPart1+htmlPart2;t.setContent(html);}
+var htmllow=html.toLowerCase();var start=htmllow.indexOf(openTag);var end=htmllow.indexOf(closeTag);if(end>=0){end+=closeTag.length;}
+else{end=htmllow.length;}
+if(signature==''){if(start>-1){var htmlPart1=html.substr(0,start);var htmlPart2=html.substr(end,html.length);html=htmlPart1+htmlPart2;t.setContent(html);}
 SE.signatures.lastAttemptedLoad='';return false;}
 if(!SE.signatures.lastAttemptedLoad)
 SE.signatures.lastAttemptedLoad='';SE.signatures.lastAttemptedLoad=signature;if(typeof(SE.signatures[signature])=='undefined'){SE.signatures.lastAttemptedLoad='';SE.signatures.targetInstance=(idx)?idx:"";AjaxObject.target='';AjaxObject.startRequest(callbackLoadSignature,urlStandard+"&emailUIAction=getSignature&id="+signature);}else{var newSignature=this.prepareSignature(SE.signatures[signature]);if(SE.signatures.lastAttemptedLoad&&start>-1){var htmlPart1=html.substr(0,start);var htmlPart2=html.substr(end,html.length);html=htmlPart1+htmlPart2;}

@@ -430,6 +430,11 @@ class EditView
                 $this->focus->assigned_user_name = get_assigned_user_name($this->focus->assigned_user_id);
             }
 
+            if (!empty($this->focus->job) && $this->focus->job_function == '')
+            {
+                $this->focus->job_function = $this->focus->job;
+            }
+
             foreach ($this->focus->toArray() as $name => $value)
             {
                 $valueFormatted = false;

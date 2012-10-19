@@ -228,7 +228,7 @@ function buildInstall($path){
     }
     
     function getBuildDir(){
-        return MB_PACKAGE_BUILD . '/' . $this->name;
+        return MB_PACKAGE_BUILD . DIRECTORY_SEPARATOR . $this->name;
     }
     
     function getZipDir(){
@@ -370,7 +370,7 @@ function buildInstall($path){
         //creation of the installdefs[] array for the manifest when exporting customizations
     function customBuildInstall($modules, $path, $extensions = array()){
         $columns=$this->getColumnsName();
-        $installdefs = array ('id' => $this->name);
+        $installdefs = array ('id' => $this->name, 'relationships' => array());
         $include_path="$path/SugarModules/include/language";
         if(file_exists($include_path) && is_dir($include_path)){
             $dd= dir($include_path);
@@ -397,8 +397,16 @@ function buildInstall($path){
                     $this->getCustomMetadataManifestForModule($value, $installdefs);
                 }//fi
             }//foreach
+            $relationshipsMetaFiles = $this->getCustomRelationshipsMetaFilesByModuleName($value, true, true);
+            if($relationshipsMetaFiles)
+            {
+                foreach ($relationshipsMetaFiles as $file)
+                {
+                    $installdefs['relationships'][] = array('meta_data' => str_replace('custom', '<basepath>', $file)); 
+                }
+            }
         }//foreach
-        if (is_dir("$path/Extension"))
+        if (is_dir($path . DIRECTORY_SEPARATOR . 'Extension'))
         {
             $this->getExtensionsManifestForPackage($path, $installdefs);
         }
@@ -407,10 +415,10 @@ function buildInstall($path){
     
     private function getLanguageManifestForModule($module, &$installdefs)
     {
-    	$lang_path = 'custom/modules/' . $module . '/language';
+    	$lang_path = 'custom' . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'language';
         foreach(scandir($lang_path) as $langFile)
         {
-	        if(substr($langFile, 0, 1) != '.' && is_file($lang_path . '/' . $langFile)){
+	        if(substr($langFile, 0, 1) != '.' && is_file($lang_path . DIRECTORY_SEPARATOR . $langFile)){
 	            $lang = substr($langFile, 0, strpos($langFile, '.'));
 	            $installdefs['language'][] = array(
 	                'from'=> '<basepath>/SugarModules/modules/' . $module . '/language/'. $langFile,
@@ -485,33 +493,36 @@ function buildInstall($path){
     		}
     	}
     }
-    
-    private function getExtensionsManifestForPackage($path, &$installdefs)
+
+    /**
+     * @todo private changed protected for testing purposes.
+     * 
+     * @param string $path
+     * @param array $installdefs link
+     */
+    protected function getExtensionsManifestForPackage($path, &$installdefs)
     {
-        $extPath = "$path/Extension/modules";
-        foreach(scandir($extPath) as $moduleDir)
+        $installdefs['copy'] = array();
+        $generalPath = DIRECTORY_SEPARATOR . 'Extension' . DIRECTORY_SEPARATOR . 'modules';
+
+        $recursiveIterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($path . $generalPath),
+                RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        /* @var $fInfo SplFileInfo */
+        foreach (new RegexIterator($recursiveIterator, "/\.php$/i") as $fInfo)
         {
-        	if(substr($moduleDir, 0, 1) != '.' && is_dir("$extPath/$moduleDir/Ext")){
-        		foreach(scandir("$extPath/$moduleDir/Ext") as $type)
-        		{
-        			if(substr($type, 0, 1) != '.' && is_dir("$extPath/$moduleDir/Ext/$type")){
-        				foreach(scandir("$extPath/$moduleDir/Ext/$type") as $file)
-        				{
-        					if(substr($file, 0, 1) != '.' && strtolower(substr($file, -4)) == ".php")
-        					{
-        						$installdefs['copy'][] = array(
-			                        'from'=> "<basepath>/Extension/modules/$moduleDir/Ext/$type/$file",
-			                        'to'=> "custom/Extension/modules/$moduleDir/Ext/$type/$file",   
-			                    );
-        					}
-        				}
-        			}
-        		}
-            }
+
+            $newPath = substr($fInfo->getPathname(), strrpos($fInfo->getPathname(), $generalPath));
+
+            $installdefs['copy'][] = array(
+                'from' => '<basepath>' . $newPath,
+                'to' => 'custom' . $newPath
+            );
         }
     }
 
-    
     //return an array which contain the name of fields_meta_data table's columns 
     function getColumnsName(){
          
@@ -526,40 +537,44 @@ function buildInstall($path){
 
     //creation of the custom fields ZIP file (use getmanifest() and customBuildInstall() )  
     function exportCustom($modules, $export=true, $clean = true){
-        $path=$this->getBuildDir();
-        if($clean && file_exists($path))rmdir_recursive($path);
+        
+        $relationshipFiles = array();
+
+        $path = $this->getBuildDir();
+        if ($clean && file_exists($path)) {
+            rmdir_recursive($path);
+        }
         //Copy the custom files to the build dir
-        foreach($modules as $mod){
-        	$extensions = $this->getExtensionsList($mod);
-            $pathmod="$path/SugarModules/modules/$mod";
-            if(mkdir_recursive($pathmod)){
-                if(file_exists("custom/modules/$mod")){
-                    copy_recursive("custom/modules/$mod", "$pathmod");
+        foreach ($modules as $module) {
+            $pathmod = "$path/SugarModules/modules/$module";
+            if (mkdir_recursive($pathmod)) {
+                if (file_exists("custom/modules/$module")) {
+                    copy_recursive("custom/modules/$module", "$pathmod");
                     //Don't include cached extension files
                     if (is_dir("$pathmod/Ext"))
                         rmdir_recursive("$pathmod/Ext");
                 }
                 //Convert modstring files to extension compatible arrays
-	            $this->convertLangFilesToExtensions("$pathmod/language");
+                $this->convertLangFilesToExtensions("$pathmod/language");
             }
-            $pathext="$path/Extension/modules/$mod/Ext";
-            if (!empty($extensions) && mkdir_recursive($pathext))
-            {
-                foreach($extensions as $type => $files)
-                {
-                    sugar_mkdir("$pathext/$type");
-                	foreach($files as $file => $filePath)
-                    {
-                        copy  ($filePath, "$pathext/$type/$file");
-                    }
-                }
+
+            $extensions = $this->getExtensionsList($module, $modules);
+            $relMetaFiles = $this->getCustomRelationshipsMetaFilesByModuleName($module, true);
+            $extensions = array_merge($extensions, $relMetaFiles);
+
+            foreach ($extensions as $file) {
+                $fileInfo = new SplFileInfo($file);
+                $trimmedPath = ltrim($fileInfo->getPath(), 'custom');
+
+                sugar_mkdir($path . $trimmedPath, NULL, true);
+                copy($file, $path . $trimmedPath . '/' . $fileInfo->getFilename());
             }
         }
-        
+
         $this->copyCustomDropdownValuesForModules($modules,$path);
         if(file_exists($path)){
             $manifest = $this->getManifest(true).$this->customBuildInstall($modules,$path);
-            sugar_file_put_contents($path .'/manifest.php', $manifest);;
+            sugar_file_put_contents($path .'/manifest.php', $manifest);
         }
         if(file_exists('modules/ModuleBuilder/MB/LICENSE.txt')){
             copy('modules/ModuleBuilder/MB/LICENSE.txt', $path . '/LICENSE.txt');
@@ -707,46 +722,77 @@ function buildInstall($path){
         }
     }
 	
-	private function getExtensionsList($module, $excludeRelationships = true)
-	{
-		require_once 'modules/ModuleBuilder/parsers/relationships/DeployedRelationships.php' ;
-		$extPath = 'custom/Extension/modules/';
-		$modExtPath = $extPath . $module . '/Ext';
-		$rels = new DeployedRelationships($module);
-		$relList = $rels->getRelationshipList ();
-		
-		$ret = array();
-		if (is_dir($modExtPath))
-		{
-            $extFolders = scandir($modExtPath);
-			foreach($extFolders as $extFolder)
-			{
-                if (!is_dir("$modExtPath/$extFolder") || substr($extFolder, 0, 1) == ".")
-				    continue;
-                
-				foreach( scandir("$modExtPath/$extFolder") as $extFile)
-				{
-					
-					if (substr($extFile, 0, 1) == "." || strtolower(substr($extFile, -4)) != ".php")
-                        continue;
-					//Exclude relattionship extension files
-                    if ($excludeRelationships && (
-                        (substr($extFile, 0, 6) == "custom" && isset($relList[substr($extFile, 6, strlen($extFile) - 10)])) ||
-                        (substr($extFile, 6, 6) == "custom" && isset($relList[substr($extFile, 12, strlen($extFile) - 16)]))
-                    )) {
-                       continue;
+    /**
+     * Get _custom_ extensions for module.
+     * Default path - custom/Extension/modules/$module/Ext.
+     * 
+     * @param array $module Name.
+     * @param mixed $includeRelationships ARRAY - relationships files between $module and names in array;
+     * TRUE - with all relationships files; 
+     * @return array Paths.
+     */
+    protected function getExtensionsList($module, $includeRelationships = true)
+    {
+        if (BeanFactory::getBeanName($module) === false)
+        {
+            return array();
+        }
+        
+        $result = array();
+        $includeMask = false;
+        $extPath = sprintf('custom%1$sExtension%1$smodules%1$s' . $module . '%1$sExt', DIRECTORY_SEPARATOR);
+
+        if (is_array($includeRelationships))
+        {
+            $includeMask = array();
+            $customRels = $this->getCustomRelationshipsByModuleName($module);
+
+            $includeRelationships[] = $module;
+
+            foreach ($customRels as $k => $v)
+            {
+                if (
+                    in_array($v->getLhsModule(), $includeRelationships) &&
+                    in_array($v->getRhsModule(), $includeRelationships)
+                )
+                {
+                    $includeMask[] = $k;
+                }
+            }
+        }
+
+        $recursiveIterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($extPath),
+                RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        /* @var $fileInfo SplFileInfo */
+        foreach ($recursiveIterator as $fileInfo)
+        {
+
+            if ($fileInfo->isFile() && !in_array($fileInfo->getPathname(), $result))
+            {
+                if ($includeMask === false)
+                {
+                    $result[] = $fileInfo->getPathname();
+                } 
+                else 
+                {
+                    foreach ($includeMask as $v)
+                    {
+                        if (strpos($fileInfo->getFilename(), $v) !== false)
+                        {
+                            $result[] = $fileInfo->getPathname();
+                            break;
+                        }
                     }
-					
-					if (!isset($ret[$extFolder]))
-					   $ret[$extFolder] = array();
-					   
-					$ret[$extFolder][$extFile  ] =  "$modExtPath/$extFolder/$extFile";
-				}
-			}
-		}
-		return $ret;
-	}
-    
+                }
+            }
+        }
+
+        return $result;
+    }
+
     /**
      * Returns a set of field defs for fields that will exist when this package is deployed
      * based on the relationships in all of its modules.
@@ -823,6 +869,97 @@ function buildInstall($path){
         return $zipDir. '/project_'. $this->name. $date. '.zip';
     }
     
+    /**
+     * @param string $moduleName
+     * @param bool $lhs Return relationships where $moduleName - left module in join.
+     * @return mixed Array or false when module name is wrong.
+     */
+    protected function getCustomRelationshipsByModuleName($moduleName, $lhs = false)
+    {
+        if (BeanFactory::getBeanName($moduleName) === false)
+        {
+            return false;
+        }
+        
+        $result = array();
+        $relation = null;
+        $module = new StudioModule($moduleName);
+
+        /* @var $rel DeployedRelationships */
+        $rel = $module->getRelationships();
+
+        $relList = $rel->getRelationshipList();
+
+        foreach ($relList as $relationshipName)
+        {
+            $relation = $rel->get($relationshipName);
+
+            if ($relation->getFromStudio())
+            {
+                if ($lhs && $relation->getLhsModule() != $moduleName)
+                {
+                    continue;
+                }
+                $result[$relationshipName] = $relation;
+            }
+        }
+
+        return $result;
+    }
     
+    /**
+     * @param string $moduleName
+     * @param bool $lhs Return relationships where $moduleName - left module in join.
+     * @param bool $metadataOnly Return only relationships metadata file.
+     * @return array
+     */
+    protected function getCustomRelationshipsMetaFilesByModuleName($moduleName, $lhs = false, $metadataOnly = false)
+    {
+        
+        $path = $metadataOnly ?
+                'custom' . DIRECTORY_SEPARATOR . 'metadata' . DIRECTORY_SEPARATOR :
+                'custom' . DIRECTORY_SEPARATOR;
+        $result = array();
+
+        $relationships = $this->getCustomRelationshipsByModuleName($moduleName, $lhs);
+        
+        if (!$relationships)
+        {
+            return array();
+        }
+        
+        $recursiveIterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($path),
+                RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        /**
+         * @var $fileInfo SplFileInfo 
+         */
+        foreach ($recursiveIterator as $fileInfo)
+        {
+            if ($fileInfo->isFile() && !in_array($fileInfo->getPathname(), $result))
+            {
+                foreach ($relationships as $k => $v)
+                {
+
+                    if (strpos($fileInfo->getFilename(), $k) !== false)
+                    {
+                        $result[] = $fileInfo->getPathname();
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    public function deleteBuild()
+    {
+        return rmdir_recursive($this->getBuildDir());
+    }
+
 }
+
 ?>

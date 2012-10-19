@@ -117,6 +117,7 @@ $mod_strings = array (
 	'LBL_CHANGE_SYSTEM_PASSWORD'		=> 'Please provide a new password.',
 	'LBL_CHANGE_PASSWORD_TITLE'         => 'Password',
     'LBL_CHOOSE_A_KEY'					=> 'Choose a key to prevent unauthorized publishing of your calendar',
+    'LBL_NO_KEY'                        => 'Key is not set. Please set key to enable publishing.',
 	'LBL_CHOOSE_WHICH'					=> 'Select which modules are accessible within the top navigation bar. Designate the order in which you would like the modules to appear.',
 	'LBL_CITY'							=> 'City',
 

@@ -160,7 +160,6 @@ class DeployedMetaDataImplementation extends AbstractMetaDataImplementation impl
         			$type = $module->getType () ;
 					$this->_sourceFilename = self::getFileName ( $view, $moduleName, MB_CUSTOMMETADATALOCATION ) ;
 
-					// Now we can copy the wireless view from the template
 					global $current_language;
 					$mod = return_module_language($current_language , $moduleName);
 					$loadedForWrite = $this->_loadFromPopupFile (  "include/SugarObjects/templates/$type/metadata/".basename ( $this->_sourceFilename )  , $mod, $view, true);

@@ -133,10 +133,10 @@ function formSubmitCheck(){ldelim}if(check_form(\'EditView\')){ldelim}document.E
               'updateCallback' => 'SugarWidgetScheduler.update_time();',
             ),
           ),
-          
           array (
-            'name' => 'parent_name',
-            'label' => 'LBL_LIST_RELATED_TO',
+            'name' => 'location',
+            'comment' => 'Meeting location',
+            'label' => 'LBL_LOCATION',
           ),
         ),
         
@@ -151,11 +151,9 @@ function formSubmitCheck(){ldelim}if(check_form(\'EditView\')){ldelim}document.E
               'updateCallback' => 'SugarWidgetScheduler.update_time();',
             ),
           ),
-          
           array (
-            'name' => 'location',
-            'comment' => 'Meeting location',
-            'label' => 'LBL_LOCATION',
+            'name' => 'parent_name',
+            'label' => 'LBL_LIST_RELATED_TO',
           ),
         ),      
         
@@ -178,6 +176,11 @@ function formSubmitCheck(){ldelim}if(check_form(\'EditView\')){ldelim}document.E
                 </script>            
             ',
             'customCodeReadOnly' => '{$fields.duration_hours.value}{$MOD.LBL_HOURS_ABBREV} {$fields.duration_minutes.value}{$MOD.LBL_MINSS_ABBREV} ',
+          ),
+          array (
+            'name' => 'add_parent_invitee',
+    		'comment' => 'Link to add invitees',
+    		'customCode' => '<a id="add_parent_invitee" style="color:#0B578F; text-decoration:underline; cursor:pointer" onclick="SugarWidgetSchedulerAttendees.formAddParent();">{$MOD.LBL_ADD_PARENT_INVITEE}</a>',
           ),
         ),
         array (

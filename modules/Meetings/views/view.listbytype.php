@@ -47,19 +47,19 @@ class MeetingsViewListbytype extends ViewList {
     }
     
  	function listViewProcess(){
-        if (!$eapmBean = EAPM::getLoginInfo('LotusLive', true) ) {
+        if (!$eapmBean = EAPM::getLoginInfo('IBMSmartCloud', true) ) {
             $smarty = new Sugar_Smarty();
-            echo $smarty->fetch('include/externalAPI/LotusLive/LotusLiveSignup.'.$GLOBALS['current_language'].'.tpl');
+            echo $smarty->fetch('include/externalAPI/IBMSmartCloud/IBMSmartCloudSignup.'.$GLOBALS['current_language'].'.tpl');
             return;
         }
 
-        $apiName = 'LotusLive';
+        $apiName = 'IBMSmartCloud';
         $api = ExternalAPIFactory::loadAPI($apiName,true);
         $api->loadEAPM($eapmBean);
 
         $quickCheck = $api->quickCheckLogin();
         if ( ! $quickCheck['success'] ) {
-            $errorMessage = string_format(translate('LBL_ERR_FAILED_QUICKCHECK','EAPM'), array('LotusLive'));
+            $errorMessage = string_format(translate('LBL_ERR_FAILED_QUICKCHECK','EAPM'), array('IBM SmartCloud'));
             $errorMessage .= '<form method="POST" target="_EAPM_CHECK" action="index.php">';
             $errorMessage .= '<input type="hidden" name="module" value="EAPM">';
             $errorMessage .= '<input type="hidden" name="action" value="Save">';
@@ -108,7 +108,7 @@ class MeetingsViewListbytype extends ViewList {
 
     function processSearchForm(){
    		// $type = 'LotusLiveDirect';
-   		$type = 'LotusLive';
+   		$type = 'IBMSmartCloud';
           global $timedate;
 
          $two_hours_ago = $GLOBALS['db']->convert($GLOBALS['db']->quoted($timedate->asDb($timedate->getNow()->get("-2 hours"))), 'datetime');

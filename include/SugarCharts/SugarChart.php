@@ -450,7 +450,11 @@ class SugarChart {
 		$this->chart_yAxis['yMax'] = $this->chart_properties['gaugeTarget'];
 		$this->chart_yAxis['yStep'] = 1;
 		$data .= $this->processDataGroup(2, 'GaugePosition', $gaugePosition, $gaugePosition, '');
-		$data .= $this->processGauge($gaugePosition, $this->chart_properties['gaugeTarget']);
+		if (isset($this->chart_properties['gaugePhases']) && is_array($this->chart_properties['gaugePhases'])) {
+			$data .= $this->processGauge($gaugePosition, $this->chart_properties['gaugeTarget'], $this->chart_properties['gaugePhases']);
+		} else {
+			$data .= $this->processGauge($gaugePosition, $this->chart_properties['gaugeTarget']);
+		}
 
 		return $data;
 	}

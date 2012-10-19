@@ -48,30 +48,6 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
 
         $view = strtolower($view);
         switch (strtolower($type)){
-            case 'wireless':
-                if( $view == 'list'){
-                    require_once('include/SugarWireless/SugarWirelessListView.php');
-                    $GLOBALS['module'] = $moduleName; //WirelessView keys off global variable not instance variable...
-                    $v = new SugarWirelessListView();
-                    $results = $v->getMetaDataFile();
-                    $results = self::formatWirelessListViewResultsToArray($results);
-
-                }
-                elseif ($view == 'subpanel')
-                    $results = $this->get_subpanel_defs($moduleName, $type);
-                else{
-                    require_once('include/SugarWireless/SugarWirelessView.php');
-                    $v = new SugarWirelessView();
-                    $v->module = $moduleName;
-                    $fullView = ucfirst($view) . 'View';
-                    $meta = $v->getMetaDataFile('Wireless' . $fullView);
-                    $metadataFile = $meta['filename'];
-                    require($metadataFile);
-                    //Wireless detail metadata may actually be just edit metadata.
-                    $results = isset($viewdefs[$meta['module_name']][$fullView] ) ? $viewdefs[$meta['module_name']][$fullView] : $viewdefs[$meta['module_name']]['EditView'];
-                }
-
-                break;
             case 'default':
             default:
                 if ($view == 'subpanel')
@@ -97,26 +73,6 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
         return $results;
     }
 
-    /**
-     * Format the results for wirless list view metadata from an associative array to a
-     * numerically indexed array.  This conversion will ensure that consumers of the metadata
-     * can eval the json response and iterative over the results with the order of the fields
-     * preserved.
-     *
-     * @param array $fields
-     * @return array
-     */
-    function formatWirelessListViewResultsToArray($fields)
-    {
-        $results = array();
-        foreach($fields as $key => $defs)
-        {
-            $defs['name'] = $key;
-            $results[] = $defs;
-        }
-
-        return $results;
-    }
 
     /**
      * Equivalent of get_list function within SugarBean but allows the possibility to pass in an indicator
@@ -179,89 +135,6 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
         return $fav;
     }
 
-   /**
-	 * Parse wireless editview metadata and add ACL values.
-	 *
-	 * @param String $module_name
-	 * @param array $metadata
-	 * @return array Metadata with acls added
-	 */
-	function metdataAclParserWirelessEdit($module_name, $metadata)
-	{
-	    global  $beanList, $beanFiles;
-	    $class_name = $beanList[$module_name];
-	    require_once($beanFiles[$class_name]);
-	    $seed = new $class_name();
-
-	    $results = array();
-	    $results['templateMeta'] = $metadata['templateMeta'];
-	    $aclRows = array();
-	    //Wireless metadata only has a single panel definition.
-	    foreach ($metadata['panels'] as $row)
-	    {
-	        $aclRow = array();
-	        foreach ($row as $field)
-	        {
-	            $aclField = array();
-	            if( is_string($field) )
-	                $aclField['name'] = $field;
-	            else
-	                $aclField = $field;
-
-	            if($seed->bean_implements('ACL'))
-	                $aclField['acl'] = $this->getFieldLevelACLValue($seed->module_dir, $aclField['name']);
-	            else
-	                $aclField['acl'] = ACL_FIELD_DEFAULT;
-
-	            $aclRow[] = $aclField;
-	        }
-	        $aclRows[] = $aclRow;
-	    }
-
-	    $results['panels'] = $aclRows;
-	    return $results;
-	}
-
-	/**
-	 * Parse wireless detailview metadata and add ACL values.
-	 *
-	 * @param String $module_name
-	 * @param array $metadata
-	 * @return array Metadata with acls added
-	 */
-	function metdataAclParserWirelessDetail($module_name, $metadata)
-	{
-	    return self::metdataAclParserWirelessEdit($module_name, $metadata);
-	}
-
-    /**
-	 * Parse wireless listview metadata and add ACL values.
-	 *
-	 * @param String $module_name
-	 * @param array $metadata
-	 * @return array Metadata with acls added
-	 */
-	function metdataAclParserWirelessList($module_name, $metadata)
-	{
-	    global  $beanList, $beanFiles;
-	    $class_name = $beanList[$module_name];
-	    require_once($beanFiles[$class_name]);
-	    $seed = new $class_name();
-
-	    $results = array();
-	    foreach ($metadata as $entry)
-	    {
-	        $field_name = $entry['name'];
-	        if($seed->bean_implements('ACL'))
-	            $entry['acl'] = $this->getFieldLevelACLValue($seed->module_dir, strtolower($field_name));
-	        else
-	            $entry['acl'] = 99;
-
-	        $results[] = $entry;
-	    }
-
-	    return $results;
-	}
 
 	/**
 	 * Processes the filter_fields attribute to use with SugarBean::create_new_list_query()

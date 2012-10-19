@@ -788,11 +788,6 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
         {       
 	        foreach ( $panels as $rows) {
 	            foreach ($rows as $fields) {
-	            	//wireless layouts have one less level of depth
-	                if (is_array($fields) && isset($fields['name'])) {
-	                	$ret[$fields['name']] = $fields;  
-	                	continue;
-	                }
 	                if (!is_array($fields)) {
 	                	$ret[$fields] = $fields;
 	                	continue;

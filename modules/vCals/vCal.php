@@ -35,15 +35,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description:
- ********************************************************************************/
-
-
-
-
-
 
 require_once('modules/Calendar/Calendar.php');
 
@@ -133,6 +124,9 @@ class vCal extends SugarBean {
 		global $DO_USER_TIME_OFFSET,$timedate;
 
 		$DO_USER_TIME_OFFSET = true;
+		if(empty($GLOBALS['current_user']) || empty($GLOBALS['current_user']->id)) {
+		    $GLOBALS['current_user'] = $user_bean;
+		}
 		// get activities.. queries Meetings and Calls
 		$acts_arr =
 		CalendarActivity::get_activities($user_bean->id,
@@ -236,13 +230,13 @@ class vCal extends SugarBean {
             $focus->user_id = $user_focus->id;
             $focus->save();
         }
-        
+
 	/**
 	 * get ics file content for meeting invite email
 	 */
-	public static function get_ical_event(SugarBean $bean, User $user){        
+	public static function get_ical_event(SugarBean $bean, User $user){
 		$str = "";
-		
+
 		$str .= "BEGIN:VCALENDAR\n";
 		$str .= "VERSION:2.0\n";
 		$str .= "PRODID:-//SugarCRM//SugarCRM Calendar//EN\n";
@@ -253,11 +247,11 @@ class vCal extends SugarBean {
 		$str .= "DTEND:".SugarDateTime::createFromFormat($GLOBALS['timedate']->get_db_date_time_format(),$bean->date_end)->format(self::UTC_FORMAT)."\n";
 		$str .= "DTSTAMP:". $GLOBALS['timedate']->getNow(false)->format(self::UTC_FORMAT) ."\n";
 		$str .= "SUMMARY:" . $bean->name . "\n";
-		$str .= "DESCRIPTION:" . $bean->description . "\n";		
+		$str .= "DESCRIPTION:" . $bean->description . "\n";
 		$str .= "END:VEVENT\n";
 		$str .= "END:VCALENDAR\n";
-				
-		return $str;		
+
+		return $str;
 	}
 
 }

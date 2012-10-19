@@ -235,9 +235,6 @@ class SugarFieldBase {
         if ( $displayType == 'ListView'
                 || $displayType == 'popupView'
                 || $displayType == 'searchView'
-                || $displayType == 'wirelessEditView'
-                || $displayType == 'wirelessDetailView'
-                || $displayType == 'wirelessListView'
                 ) {
             // Traditionally, before 6.0, additional functions were never called, so this code doesn't get called unless the vardef forces it
             if ( $onListView ) {

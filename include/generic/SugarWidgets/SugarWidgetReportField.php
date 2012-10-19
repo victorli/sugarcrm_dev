@@ -165,7 +165,11 @@ class SugarWidgetReportField extends SugarWidgetField
                 $order_by .= ', ' . $layout_def['table_alias'].".".$field_def['sort_on2'];
     }
 	else {
-		$order_by = $this->_get_column_alias($layout_def)." \n";
+	/**
+         * Bug #54990
+         * use the table and column names in order by in order to support all databases
+         */
+        $order_by = $layout_def['table_alias'] . "." . $layout_def['name'] . " \n";	
 	}
 
 			if ( empty($layout_def['sort_dir']) || $layout_def['sort_dir'] == 'a')

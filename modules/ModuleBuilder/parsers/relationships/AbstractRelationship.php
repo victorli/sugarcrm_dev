@@ -162,7 +162,21 @@ class AbstractRelationship
         $this->deleted = $this->definition [ 'deleted' ] = true ;
     }
     
-    
+    public function getFromStudio()
+    {
+        return $this->from_studio;
+    }
+
+    public function getLhsModule()
+    {
+        return $this->lhs_module;
+    }
+
+    public function getRhsModule()
+    {
+        return $this->rhs_module;
+    }
+
     public function getType ()
     {
         return $this->relationship_type ;

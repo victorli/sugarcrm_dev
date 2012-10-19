@@ -49,6 +49,7 @@ $mod_strings = array (
 	'LBL_ACCEPT_THIS'=>'Accept?',
 	'LBL_ADD_BUTTON'=> 'Add',
 	'LBL_ADD_INVITEE' => 'Add Invitees',
+	'LBL_ADD_PARENT_INVITEE' => 'Add Related person to invitees',
 	'LBL_COLON' => ':',
 	'LBL_CONTACT_NAME' => 'Contact:',
 	'LBL_CONTACTS_SUBPANEL_TITLE' => 'Contacts',

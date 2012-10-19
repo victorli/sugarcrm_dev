@@ -82,7 +82,7 @@ $dictionary['DocumentRevision'] = array('table' => 'document_revisions'
   	'type' => 'enum',
     'function' => 'getDocumentsExternalApiDropDown',
   	'len' => '100',
-  	'comment' => 'Document type (ex: Google, box.net, LotusLive)',
+  	'comment' => 'Document type (ex: Google, box.net, IBM SmartCloud)',
 	'studio' => 'false',
   ),
 'doc_url' =>

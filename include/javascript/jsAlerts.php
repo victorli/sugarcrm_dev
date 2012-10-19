@@ -95,7 +95,7 @@ EOQ;
 				AND meetings_users.accept_status != 'decline'
 				AND meetings.reminder_time != -1
 				AND meetings_users.deleted != 1
-				AND meetings.status != 'Held'
+				AND meetings.status = 'Planned'
 			    AND date_start >= $dateTimeNow
 			    AND date_start <= $dateTimeMax";
 		$result = $db->query($selectMeetings);
@@ -168,7 +168,7 @@ EOQ;
 				    AND calls_users.accept_status != 'decline'
 				    AND calls.reminder_time != -1
 					AND calls_users.deleted != 1
-					AND calls.status != 'Held'
+					AND calls.status = 'Planned'
 				    AND date_start >= $dateTimeNow
 				    AND date_start <= $dateTimeMax";
 

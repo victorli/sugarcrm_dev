@@ -1618,11 +1618,32 @@
 			if(CAL.view == 'shared'){
 				// Pick the div that contains 2 custom attributes we
 				// use for storing values in case of 'shared' view
-				parentWithUserValues = $('div[user_id][user_name]'); 
+				parentWithUserValues = $('div[user_id][user_name]');
 				// Pull out the values
 				user_name = parentWithUserValues.attr('user_name');
 				user_id = parentWithUserValues.attr('user_id');
-				
+
+				// Shared by multiple users, need to get attributes from user whom is clicked
+				if (parentWithUserValues.length > 1) {
+				    var theUserName, theUserId;
+				    var theUser = cell.parentNode;
+				    while (theUser) {
+				        if (theUser.getAttribute("user_name") && theUser.getAttribute("user_id")) {
+				            theUserName = theUser.getAttribute("user_name");
+				            theUserId = theUser.getAttribute("user_id");
+				            break;
+				        }
+				        else {
+				            theUser = theUser.parentNode;
+				        }
+				    }
+				    // Found user in the parentNode iteration, use it
+				    if (theUserName && theUserId) {
+				        user_name = theUserName;
+				        user_id = theUserId;
+				    }
+				}
+
 				CAL.GR_update_user(user_id);
 			}else{
 				user_id = CAL.current_user_id;

@@ -36,7 +36,7 @@
  ********************************************************************************/
 
 
-class Bug52113Test extends Sugar_PHPUnit_Framework_TestCase
+class Bug52133Test extends Sugar_PHPUnit_Framework_TestCase
 {
     protected $bean;
     protected $hook;

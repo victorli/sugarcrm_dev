@@ -1,4 +1,4 @@
-{*
+<?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
@@ -34,9 +34,49 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-*}
 
-{multienum_to_array string=$vardef.value default=$vardef.default assign="values"}
-<select id="{$vardef.name}" name="{$vardef.name}[]" multiple="true">
-    {html_options options=$vardef.options selected=$values}
-</select>
+require_once "modules/ModuleBuilder/parsers/views/AbstractMetaDataParser.php";
+
+/**
+ * Bug #39729
+ * "Email Address field is not avialable in the ToolBox if removed from Leeds > Convert Leeds > Contacts Layout"
+ *
+ * @author Mikhail Yarotsky
+ * @ticket 39729
+ */
+class Bug39729Test extends Sugar_PHPUnit_Framework_TestCase
+{
+    /**
+     * @var $_view;
+     */
+    private $_view;
+
+    /**
+     * @var $def;
+     */
+    private $def;
+
+    public function setUp()
+    {
+        global $dictionary;
+        $this->_view = 'editview';
+        VardefManager::loadVardef('Contacts', 'Contact');
+        $this->def = $dictionary['Contact']['fields']['email1'];
+
+    }
+
+    public function tearDown()
+    {
+        unset($this->_view);
+        unset($this->def);
+    }
+
+    /**
+     * Relate to email1 should be true
+     * @group 39729
+     */
+    public function testEmail1FieldOnTrue()
+    {
+        $this->assertTrue(AbstractMetaDataParser::validField ( $this->def,  $this->_view ));
+    }
+}

@@ -47,25 +47,6 @@ if(!empty($_SESSION['display_lotuslive_alert'])){
     displayAdminError(translate('MSG_RECONNECT_LOTUSLIVE', 'Administration'));
 }
 
-//BEGIN SUGARCRM flav=pro
-if( is_admin($current_user) && file_exists('include/SugarSearchEngine/SugarSearchEngineFactory.php') )
-{
-    require_once('include/SugarSearchEngine/SugarSearchEngineFactory.php');
-    $ftsType = SugarSearchEngineFactory::getFTSEngineNameFromConfig();
-    if(!empty($ftsType) && isset($GLOBALS['sugar_config']['full_text_engine'][$ftsType]['valid']) && !$GLOBALS['sugar_config']['full_text_engine'][$ftsType]['valid'])
-    {
-        displayAdminError(translate('LBL_FTS_CONNECTION_INVALID', 'Administration'));
-    }
-
-}
-if (is_admin($current_user))
-{
-    if (!empty($GLOBALS['sugar_config']['fts_disable_notification']))
-    {
-        displayAdminError(translate('LBL_FTS_DISABLED', 'Administration'));
-    }
-}
-//END SUGARCRM flav=pro
 
 
 

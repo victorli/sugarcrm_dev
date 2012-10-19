@@ -458,8 +458,11 @@ function process_dynamic_listview($source_module, $sugarbean,$subpanel_def)
 		                $this->xTemplate->assign('CELL', $widget_contents);
 		                $this->xTemplate->parse($xtemplateSection.".row.cell");
                 	} elseif (preg_match("/button/i", $list_field['name'])) {
-                		if($layout_manager->widgetDisplay($list_field) != "")
-                		$button_contents[] = $layout_manager->widgetDisplay($list_field);
+                        if ( '' != $_content = $layout_manager->widgetDisplay($list_field) )
+                        {
+                            $button_contents[] = $_content;
+                            unset($_content);
+                        }
                 	} else {
                			$count++;
                			$this->xTemplate->assign('CLASS', "");

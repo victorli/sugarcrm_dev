@@ -60,7 +60,7 @@ class DocumentsViewExtdoc extends SugarView
         }
         
         if ( !isset($_REQUEST['apiName']) ) {
-            $apiName = 'LotusLive';
+            $apiName = 'IBMSmartCloud';
         } else {
             $tmpApi = ExternalAPIFactory::loadAPI($_REQUEST['apiName'],true);
             if ( $tmpApi === false )

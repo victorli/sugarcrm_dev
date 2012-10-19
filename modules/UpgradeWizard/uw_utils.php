@@ -3022,6 +3022,20 @@ function upgradeUserPreferences() {
             $current_user->savePreferencesToDB();
         }
 
+        $changed = false;
+        if(!$current_user->getPreference('calendar_publish_key')) {
+        	// set publish key if not set already
+        	$current_user->setPreference('calendar_publish_key', create_guid());
+        	$changed = true;
+        }
+
+
+        // we need to force save the changes to disk, otherwise we lose them.
+        if($changed)
+        {
+            $current_user->savePreferencesToDB();
+        }
+
 	} //while
 }
 

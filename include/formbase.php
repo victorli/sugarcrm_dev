@@ -337,4 +337,133 @@ function isCloseAndCreateNewPressed() {
 }
 
 
+/**
+ * Functions from Save2.php
+ * @see include/generic/Save2.php
+ */
+
+function add_prospects_to_prospect_list($parent_id,$child_id)
+{
+    $focus=BeanFactory::getBean('Prospects');
+    if(is_array($child_id)){
+        $uids = $child_id;
+    }
+    else{
+        $uids = array($child_id);
+    }
+
+    $relationship = '';
+    foreach($focus->get_linked_fields() as $field => $def) {
+        if ($focus->load_relationship($field)) {
+            if ( $focus->$field->getRelatedModuleName() == 'ProspectLists' ) {
+                $relationship = $field;
+                break;
+            }
+        }
+    }
+
+    if ( $relationship != '' ) {
+        foreach ( $uids as $id) {
+            $focus->retrieve($id);
+            $focus->load_relationship($relationship);
+            $focus->prospect_lists->add( $parent_id );
+        }
+    }
+}
+
+function add_to_prospect_list($query_panel,$parent_module,$parent_type,$parent_id,$child_id,$link_attribute,$link_type,$parent)
+{
+    $GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$query_panel);
+    $GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$parent_module);
+    $GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$parent_type);
+    $GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$parent_id);
+    $GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$child_id);
+    $GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$link_attribute);
+    $GLOBALS['log']->debug('add_prospects_to_prospect_list:parameters:'.$link_type);
+    require_once('include/SubPanel/SubPanelTiles.php');
+
+
+    if (!class_exists($parent_type)) {
+        require_once('modules/'.cleanDirName($parent_module).'/'.cleanDirName($parent_type).'.php');
+    }
+    $focus = new $parent_type();
+    $focus->retrieve($parent_id);
+    if(empty($focus->id)) {
+        return false;
+    }
+    if(empty($parent)) {
+        return false;
+    }
+
+    //if link_type is default then load relationship once and add all the child ids.
+    $relationship_attribute=$link_attribute;
+
+    //find all prospects based on the query
+
+    $subpanel = new SubPanelTiles($parent, $parent->module_dir);
+    $thisPanel=$subpanel->subpanel_definitions->load_subpanel($query_panel);
+    if(empty($thisPanel)) {
+        return false;
+    }
+    $result = SugarBean::get_union_related_list($parent, '', '', '', 0, -99,-99,'', $thisPanel);
+
+    if(!empty($result['list'])) {
+        foreach($result['list'] as $object) {
+            if ($link_type != 'default') {
+                $relationship_attribute=strtolower($object->$link_attribute);
+            }
+            $GLOBALS['log']->debug('add_prospects_to_prospect_list:relationship_attribute:'.$relationship_attribute);
+            // load relationship for the first time or on change of relationship atribute.
+            if (empty($focus->$relationship_attribute)) {
+                $focus->load_relationship($relationship_attribute);
+            }
+            //add
+            $focus->$relationship_attribute->add($object->$child_id);
+        }
+    }
+}
+
+//Link rows returned by a report to parent record.
+function save_from_report($report_id,$parent_id, $module_name, $relationship_attr_name) {
+    global $beanFiles;
+    global $beanList;
+
+    $GLOBALS['log']->debug("Save2: Linking with report output");
+    $GLOBALS['log']->debug("Save2:Report ID=".$report_id);
+    $GLOBALS['log']->debug("Save2:Parent ID=".$parent_id);
+    $GLOBALS['log']->debug("Save2:Module Name=".$module_name);
+    $GLOBALS['log']->debug("Save2:Relationship Attribute Name=".$relationship_attr_name);
+
+    $bean_name = $beanList[$module_name];
+    $GLOBALS['log']->debug("Save2:Bean Name=".$bean_name);
+    require_once($beanFiles[$bean_name]);
+    $focus = new $bean_name();
+
+    $focus->retrieve($parent_id);
+    $focus->load_relationship($relationship_attr_name);
+
+    //fetch report definition.
+    global $current_language, $report_modules, $modules_report;
+
+    $mod_strings = return_module_language($current_language,"Reports");
+
+
+    $saved = new SavedReport();
+    $saved->disable_row_level_security = true;
+    $saved->retrieve($report_id, false);
+
+    //initiailize reports engine with the report definition.
+    require_once('modules/Reports/SubpanelFromReports.php');
+    $report = new SubpanelFromReports($saved);
+    $report->run_query();
+
+    $sql = $report->query_list[0];
+    $GLOBALS['log']->debug("Save2:Report Query=".$sql);
+    $result = $report->db->query($sql);
+    while($row = $report->db->fetchByAssoc($result))
+    {
+        $focus->$relationship_attr_name->add($row['primaryid']);
+    }
+}
+
 ?>

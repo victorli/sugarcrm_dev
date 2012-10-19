@@ -44,13 +44,13 @@ require_once 'modules/Calendar/Calendar.php';
 
 require_once 'include/HTTP_WebDAV_Server/Server.php';
 
-    
+
     /**
      * Filesystem access using WebDAV
      *
      * @access public
      */
-    class HTTP_WebDAV_Server_vCal extends HTTP_WebDAV_Server 
+    class HTTP_WebDAV_Server_vCal extends HTTP_WebDAV_Server
     {
         /**
          * Root directory for WebDAV access
@@ -77,14 +77,14 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
          * Serve a webdav request
          *
          * @access public
-         * @param  string  
+         * @param  string
          */
-        function ServeRequest($base = false) 
+        function ServeRequest($base = false)
         {
 
             global $sugar_config,$current_language;
 
-            if (!empty($sugar_config['session_dir'])) 
+            if (!empty($sugar_config['session_dir']))
             {
                session_save_path($sugar_config['session_dir']);
             }
@@ -109,7 +109,7 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
 */
 
             // set root directory, defaults to webserver document root if not set
-            if ($base) { 
+            if ($base) {
                 $this->base = realpath($base); // TODO throw if not a directory
             } else if(!$this->base) {
                 $this->base = $_SERVER['DOCUMENT_ROOT'];
@@ -163,8 +163,8 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
             // select user by email
             if ( ! empty($query_arr['email']))
             {
-            	
-            
+
+
               // clean the string!
               $query_arr['email'] = clean_string($query_arr['email']);
               //get user info
@@ -198,7 +198,7 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
 //            {
                      $this->user_focus->loadPreferences();
 //            }
-                
+
             // let the base class do all the work
             parent::ServeRequest();
         }
@@ -212,9 +212,16 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
          * @param  string  Password
          * @return bool    true on successful authentication
          */
-        function check_auth($type, $user, $pass) 
+        function check_auth($type, $user, $pass)
         {
-            return true;
+            if(isset($_SESSION['authenticated_user_id'])) {
+                // allow logged in users access to freebusy info
+                return true;
+            }
+            if(!empty($this->publish_key) && !empty($this->user_focus) && $this->user_focus->getPreference('calendar_publish_key' ) == $this->publish_key) {
+                return true;
+            }
+            return false;
         }
 
 
@@ -237,7 +244,7 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
            if ($this->vcal_type == 'vfb')
            {
              $this->http_status("200 OK");
-             echo $this->vcal_focus->get_vcal_freebusy($this->user_focus); 
+             echo $this->vcal_focus->get_vcal_freebusy($this->user_focus);
            } else {
              $this->http_status("404 Not Found");
            }
@@ -329,22 +336,22 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
             }
 
             // DO AUTHORIZATION for publishing Free/busy to Sugar:
-            if ( $this->user_focus->getPreference('calendar_publish_key') && 
+            if ( empty($this->publish_key) ||
                 $this->publish_key != $this->user_focus->getPreference('calendar_publish_key' ))
             {
                     $this->http_status("401 not authorized");
                     return;
-                
+
             }
 
             // retrieve
             $arr = array('user_id'=>$this->user_focus->id,'type'=>'vfb','source'=>$this->source);
-            $this->vcal_focus->retrieve_by_string_fields($arr); 
+            $this->vcal_focus->retrieve_by_string_fields($arr);
 
             $isUpdate  = false;
 
-            if ( ! empty($this->vcal_focus->user_id ) && 
-                $this->vcal_focus->user_id != -1 ) 
+            if ( ! empty($this->vcal_focus->user_id ) &&
+                $this->vcal_focus->user_id != -1 )
             {
               $isUpdate  = true;
             }
@@ -354,7 +361,7 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
             $content = '';
 
             // read in input stream
-            while (!feof($options["stream"])) 
+            while (!feof($options["stream"]))
             {
                $content .= fread($options["stream"], 4096);
             }
@@ -377,11 +384,11 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
 
         /**
          * PUT method handler
-         * 
+         *
          * @param  array  parameter passing array
          * @return bool   true on success
          */
-        function PUT(&$options) 
+        function PUT(&$options)
         {
 
         }

@@ -100,21 +100,6 @@ class SugarWebServiceUtilv3_1 extends SugarWebServiceUtilv3
         return $enabled_modules;
     }
 
-    /**
-     * Examine the wireless_module_registry to determine which modules have been enabled for the mobile view.
-     *
-     * @param array $availModules An array of all the modules the user already has access to.
-     * @return array Modules enalbed for mobile view.
-     */
-    function get_visible_mobile_modules($availModules)
-    {
-        foreach ( array ( '','custom/') as $prefix)
-        {
-        	if(file_exists($prefix.'include/MVC/Controller/wireless_module_registry.php'))
-        		require $prefix.'include/MVC/Controller/wireless_module_registry.php' ;
-        }
-        return $this->getModulesFromList($wireless_module_registry, $availModules);
-    }
 
     /**
      * Examine the application to determine which modules have been enabled..
@@ -372,28 +357,6 @@ class SugarWebServiceUtilv3_1 extends SugarWebServiceUtilv3
         $results = array();
         $view = strtolower($view);
         switch (strtolower($type)){
-            case 'wireless':
-                if( $view == 'list'){
-                    require_once('include/SugarWireless/SugarWirelessListView.php');
-                    $GLOBALS['module'] = $module_name; //WirelessView keys off global variable not instance variable...
-                    $v = new SugarWirelessListView();
-                    $results = $v->getMetaDataFile();
-                }
-                elseif ($view == 'subpanel')
-                    $results = $this->get_subpanel_defs($module_name, $type);
-                else{
-                    require_once('include/SugarWireless/SugarWirelessView.php');
-                    $v = new SugarWirelessView();
-                    $v->module = $module_name;
-                    $fullView = ucfirst($view) . 'View';
-                    $meta = $v->getMetaDataFile('Wireless' . $fullView);
-                    $metadataFile = $meta['filename'];
-                    require($metadataFile);
-                    //Wireless detail metadata may actually be just edit metadata.
-                    $results = isset($viewdefs[$meta['module_name']][$fullView] ) ? $viewdefs[$meta['module_name']][$fullView] : $viewdefs[$meta['module_name']]['EditView'];
-                }
-
-                break;
             case 'default':
             default:
                 if ($view == 'subpanel')
@@ -454,7 +417,7 @@ class SugarWebServiceUtilv3_1 extends SugarWebServiceUtilv3
      * Add ACL values to metadata files.
      *
      * @param String $module_name
-     * @param String $view_type (wireless or detail)
+     * @param String $view_type
      * @param String $view  (list, detail,edit, etc)
      * @param array $metadata The metadata for the view type and view.
      * @return unknown
@@ -468,76 +431,7 @@ class SugarWebServiceUtilv3_1 extends SugarWebServiceUtilv3
 	       return $metadata;
 	}
 
-	/**
-	 * Parse wireless listview metadata and add ACL values.
-	 *
-	 * @param String $module_name
-	 * @param array $metadata
-	 * @return array Metadata with acls added
-	 */
-	function metdataAclParserWirelessList($module_name, $metadata)
-	{
-	    global  $beanList, $beanFiles;
-	    $class_name = $beanList[$module_name];
-	    require_once($beanFiles[$class_name]);
-	    $seed = new $class_name();
 
-	    $results = array();
-	    foreach ($metadata as $field_name => $entry)
-	    {
-	        if($seed->bean_implements('ACL'))
-	            $entry['acl'] = $this->getFieldLevelACLValue($seed->module_dir, strtolower($field_name));
-	        else
-	            $entry['acl'] = 99;
-
-	        $results[$field_name] = $entry;
-	    }
-
-	    return $results;
-	}
-
-	/**
-	 * Parse wireless detailview metadata and add ACL values.
-	 *
-	 * @param String $module_name
-	 * @param array $metadata
-	 * @return array Metadata with acls added
-	 */
-	function metdataAclParserWirelessEdit($module_name, $metadata)
-	{
-	    global  $beanList, $beanFiles;
-	    $class_name = $beanList[$module_name];
-	    require_once($beanFiles[$class_name]);
-	    $seed = new $class_name();
-
-	    $results = array();
-	    $results['templateMeta'] = $metadata['templateMeta'];
-	    $aclRows = array();
-	    //Wireless metadata only has a single panel definition.
-	    foreach ($metadata['panels'] as $row)
-	    {
-	        $aclRow = array();
-	        foreach ($row as $field)
-	        {
-	            $aclField = array();
-	            if( is_string($field) )
-	                $aclField['name'] = $field;
-	            else
-	                $aclField = $field;
-
-	            if($seed->bean_implements('ACL'))
-	                $aclField['acl'] = $this->getFieldLevelACLValue($seed->module_dir, $aclField['name']);
-	            else
-	                $aclField['acl'] = 99;
-
-	            $aclRow[] = $aclField;
-	        }
-	        $aclRows[] = $aclRow;
-	    }
-
-	    $results['panels'] = $aclRows;
-	    return $results;
-	}
 	/**
 	 * Return the field level acl raw value.  We cannot use the hasAccess call as we do not have a valid bean
 	 * record at the moment and therefore can not specify the is_owner flag.  We need the raw access value so we

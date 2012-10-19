@@ -254,13 +254,6 @@ class SugarWebServiceUtilv3 extends SoapHelperWebServices {
 	    $results = array();
 	    switch ($type)
 	    {
-	        case 'wireless':
-	            if (file_exists('custom/modules/'.$module.'/metadata/wireless.subpaneldefs.php'))
-	                 require_once('custom/modules/'.$module.'/metadata/wireless.subpaneldefs.php');
-	            else if (file_exists('modules/'.$module.'/metadata/wireless.subpaneldefs.php'))
-	                 require_once('modules/'.$module.'/metadata/wireless.subpaneldefs.php');
-	            break;
-
 	        case 'default':
 	        default:
 	            if (file_exists ('modules/'.$module.'/metadata/subpaneldefs.php' ))
@@ -291,28 +284,6 @@ class SugarWebServiceUtilv3 extends SoapHelperWebServices {
         $results = array();
         $view = strtolower($view);
         switch (strtolower($type)){
-            case 'wireless':
-                if( $view == 'list'){
-                    require_once('include/SugarWireless/SugarWirelessListView.php');
-                    $GLOBALS['module'] = $module_name; //WirelessView keys off global variable not instance variable...
-                    $v = new SugarWirelessListView();
-                    $results = $v->getMetaDataFile();
-                }
-                elseif ($view == 'subpanel')
-                    $results = $this->get_subpanel_defs($module_name, $type);
-                else{
-                    require_once('include/SugarWireless/SugarWirelessView.php');
-                    $v = new SugarWirelessView();
-                    $v->module = $module_name;
-                    $fullView = ucfirst($view) . 'View';
-                    $meta = $v->getMetaDataFile('Wireless' . $fullView);
-                    $metadataFile = $meta['filename'];
-                    require_once($metadataFile);
-                    //Wireless detail metadata may actually be just edit metadata.
-                    $results = isset($viewdefs[$meta['module_name']][$fullView] ) ? $viewdefs[$meta['module_name']][$fullView] : $viewdefs[$meta['module_name']]['EditView'];
-                }
-
-                break;
             case 'default':
             default:
                 if ($view == 'subpanel')
@@ -333,30 +304,6 @@ class SugarWebServiceUtilv3 extends SoapHelperWebServices {
         }
 
         return $results;
-    }
-
-    /**
-     * Examine the wireless_module_registry to determine which modules have been enabled for the mobile view.
-     *
-     * @param array $availModules An array of all the modules the user already has access to.
-     * @return array Modules enalbed for mobile view.
-     */
-    function get_visible_mobile_modules($availModules){
-        $enabled_modules = array();
-        $availModulesKey = array_flip($availModules);
-        foreach ( array ( '','custom/') as $prefix)
-        {
-        	if(file_exists($prefix.'include/MVC/Controller/wireless_module_registry.php'))
-        		require $prefix.'include/MVC/Controller/wireless_module_registry.php' ;
-        }
-
-        foreach ( $wireless_module_registry as $e => $def )
-        {
-        	if( isset($availModulesKey[$e]) )
-                $enabled_modules[] = $e;
-        }
-
-        return $enabled_modules;
     }
 
     /**

@@ -60,6 +60,13 @@
 			<div style="float: left; width: 300px;" >
 				{$mod.LBL_TOUR_FEATURES}
 				<p>{$mod.LBL_TOUR_VISIT} <a href="javascript:void window.open('http://support.sugarcrm.com/02_Documentation/01_Sugar_Editions/{$APP.documentation.$sugarFlavor}')">{$mod.LNK_TOUR_DOCUMENTATION}</a>.</p>
+
+                {if $view_calendar_url}
+                <div style="border-top: 1px solid #F5F5F5;padding-top: 3px;" >
+                    <p>{$view_calendar_url}</p>
+                </div>
+                {/if}
+
 			</div>
 		</div>
 	</div>

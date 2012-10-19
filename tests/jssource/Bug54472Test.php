@@ -53,9 +53,10 @@ class Bug54472Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        //lets create the needed directories and js grouping files in the appropriate extensions directory
-        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser(true, true);
-        $GLOBALS['current_user']->is_admin = true;
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('current_user', array(true, 1));
+        SugarTestHelper::setUp('mod_strings', array('ModuleBuilder'));
 
         //lets retrieve the original jsgroupings file to populate the js_grouping array to compare against later on
         include('jssource/JSGroupings.php');
@@ -128,7 +129,7 @@ $js_groupings [\'testEntryMod\'] = array("include/javascript/calendar.js" => "in
         //run repair so the extension files are reset back to original state
         $trac = new RepairAndClear();
         $trac->repairAndClearAll(array('rebuildExtensions'), array(), false, false);
-
+        SugarTestHelper::tearDown();
     }
 
     public function testGetJSGroupingCustomEntries() {

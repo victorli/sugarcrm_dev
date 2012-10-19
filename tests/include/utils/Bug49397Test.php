@@ -40,7 +40,7 @@
  * @author Collin Lee
  * 
  */
-class Bug49397est extends Sugar_PHPUnit_Framework_TestCase {
+class Bug49397Test extends Sugar_PHPUnit_Framework_TestCase {
 
     var $user;
     var $user2;

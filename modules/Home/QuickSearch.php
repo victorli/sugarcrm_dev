@@ -225,16 +225,19 @@ class quicksearchQuery
             }
         }
 
-        $whereClause = sprintf('(%s)', implode(" {$args['group']} ", $conditionArray));
+        $whereClauseArray = array();
+        if (!empty($conditionArray)) {
+            $whereClauseArray[] = sprintf('(%s)', implode(" {$args['group']} ", $conditionArray));
+        }
         if(!empty($this->extra_where)) {
-            $whereClause .= " AND ({$this->extra_where})";
+            $whereClauseArray[] = "({$this->extra_where})";
         }
 
         if ($table == 'users') {
-            $whereClause .= sprintf(" AND users.status='Active'");
+            $whereClauseArray[] = "users.status='Active'";
         }
 
-        return $whereClause;
+        return implode(' AND ', $whereClauseArray);
     }
 
     /**

@@ -441,12 +441,7 @@ class SugarView
             // get the last viewed records
             $tracker = new Tracker();
             $history = $tracker->get_recently_viewed($current_user->id);
-            foreach ( $history as $key => $row ) {
-                $history[$key]['item_summary_short'] = to_html(getTrackerSubstring($row['item_summary'])); //bug 56373 - need to re-HTML-encode
-                $history[$key]['image'] = SugarThemeRegistry::current()
-                    ->getImage($row['module_name'],'border="0" align="absmiddle"',null,null,'.gif',$row['item_summary']);
-            }
-            $ss->assign("recentRecords",$history);
+            $ss->assign("recentRecords",$this->processRecentRecords($history));
         }
 
         $bakModStrings = $mod_strings;
@@ -1619,6 +1614,22 @@ EOHTML;
     protected function fetchTemplate($file)
     {
         return $this->ss->fetch($file);
+    }
+
+    /**
+     * handles the tracker output, and adds a link and a shortened name.
+     * given html safe input, it will preserve html safety
+     *
+     * @param array $history - returned from the tracker
+     * @return array augmented history with image link and shortened name
+     */
+    protected function processRecentRecords($history) {
+        foreach ( $history as $key => $row ) {
+            $history[$key]['item_summary_short'] = to_html(getTrackerSubstring($row['item_summary'])); //bug 56373 - need to re-HTML-encode
+            $history[$key]['image'] = SugarThemeRegistry::current()
+                ->getImage($row['module_name'],'border="0" align="absmiddle"',null,null,'.gif',$row['item_summary']);
+        }
+        return $history;
     }
 
     /**

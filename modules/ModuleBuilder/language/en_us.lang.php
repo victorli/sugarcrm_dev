@@ -347,7 +347,7 @@ $mod_strings = array(
 'LBL_HOME' => 'Home',
 'LBL_NONE'=>'-None-',
 'LBL_DEPLOYE_COMPLETE'=>'Deploy complete',
-'LBL_DEPLOY_FAILED'   =>'An error has occured during deploy process, your package may not have installed correctly',
+'LBL_DEPLOY_FAILED'   =>'An error has occurred during deploy process, your package may not have installed correctly',
 'LBL_ADD_FIELDS'=>'Add Custom Fields',
 'LBL_AVAILABLE_SUBPANELS'=>'Available Subpanels',
 'LBL_ADVANCED'=>'Advanced',
@@ -561,7 +561,7 @@ $mod_strings = array(
 'ERROR_INVALID_KEY_VALUE'=> "Error: Invalid Key Value: [']",
 'ERROR_NO_HISTORY' => 'No history files found',
 'ERROR_MINIMUM_FIELDS' => 'The layout must contain at least one field',
-'ERROR_GENERIC_TITLE' => 'An error has occured',
+'ERROR_GENERIC_TITLE' => 'An error has occurred',
 'ERROR_REQUIRED_FIELDS' => 'Are you sure you wish to continue? The following required fields are missing from the layout:  ',
 'ERROR_ARE_YOU_SURE' => 'Are you sure you wish to continue?',
 

@@ -50,6 +50,8 @@ $mod_strings = array(
 'LBL_CREATED_USER'=>'Created by User',
 'LBL_MODIFIED_USER'=>'Modified by User',
 'LBL_LIST_NAME'=>'Name',
+'LBL_EDIT_BUTTON' => 'Edit',
+ 'LBL_REMOVE' => 'Remove',
 
 
 );

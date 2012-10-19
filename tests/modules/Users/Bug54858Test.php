@@ -34,44 +34,71 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
-require_once 'include/database/MysqlHelper.php';
-require_once 'include/database/MssqlHelper.php';
-require_once 'include/database/FreeTDSHelper.php';
 
-class Bug44291 extends Sugar_PHPUnit_Framework_TestCase
+/**
+ * @group 54858
+ *
+ */
+class Bug54858Test extends Sugar_PHPUnit_Framework_TestCase
 {
+
     public function setUp()
     {
+        $this->user = SugarTestUserUtilities::createAnonymousUser();
+        $this->user->email1 = $email = 'test'.uniqid().'@test.com';
+        $this->user->save();
+        $GLOBALS['current_user'] = $this->user;
+        $this->vcal_url =  "{$GLOBALS['sugar_config']['site_url']}/vcal_server.php/type=vfb&source=outlook&email=" . urlencode($email);
+        $GLOBALS['db']->commit();
     }
 
     public function tearDown()
     {
+    	unset($GLOBALS['current_user']);
+    	SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
     }
 
-    public function testGetColumnTypeMySql()
+    /**
+     * Test that new user gets ical key
+     */
+    public function testCreateNewUser()
     {
-        $_helper = new MysqlHelper();
-        $this->assertEquals("decimal(26,6)", $_helper->getColumnType("currency"));
-        $this->assertEquals("Unknown", $_helper->getColumnType("Unknown"));
-        unset($_helper);
+        $this->assertNotEmpty($this->user->getPreference('calendar_publish_key'), "Publish key is not set");
     }
 
-    public function testGetColumnTypeMSSql()
+	protected function callVcal($key)
+	{
+       $ch = curl_init($this->vcal_url."&key=" . urlencode($key));
+       curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
+	   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+       $return = curl_exec($ch);
+	   $info = curl_getinfo($ch);
+	   $info['return'] = $return;
+	   return $info;
+	}
+
+	// test vcal service
+    public function testPublishKey()
     {
-        $_helper = new MssqlHelper();
-        $this->assertEquals("decimal(26,6)", $_helper->getColumnType("currency"));
-        $this->assertEquals("Unknown", $_helper->getColumnType("Unknown"));
-        unset($_helper);
-    }
+        $res = $this->callVcal('');
+		$this->assertEquals('401', $res['http_code']);
 
-    public function testGetColumnTypeFreeTDS()
-    {
-        $_helper = new FreeTDSHelper();
-        $this->assertEquals("decimal(26,6)", $_helper->getColumnType("currency"));
-        $this->assertEquals("Unknown", $_helper->getColumnType("Unknown"));
-        unset($_helper);
-    }
+        $res = $this->callVcal('blah');
+		$this->assertEquals('401', $res['http_code']);
 
+		$key = $this->user->getPreference('calendar_publish_key');
+        $res = $this->callVcal($key);
+		$this->assertEquals('200', $res['http_code']);
+		$this->assertContains('BEGIN:VCALENDAR', $res['return']);
 
+		// now reset the key
+        $this->user->setPreference('calendar_publish_key', '');
+        $this->user->savePreferencesToDB();
+        $GLOBALS['db']->commit();
+
+        $res = $this->callVcal('');
+		$this->assertEquals('401', $res['http_code']);
+        $res = $this->callVcal($key);
+		$this->assertEquals('401', $res['http_code']);
+	}
 }

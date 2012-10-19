@@ -34,62 +34,16 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-require_once ('modules/DynamicFields/FieldCases.php') ;
 
-class Bug48826Test extends Sugar_PHPUnit_Framework_TestCase
+class Bug44291Test extends Sugar_PHPUnit_Framework_TestCase
 {
-	public function setUp()
-	{
-        $this->markTestSkipped('Skipping a broken unit test, dev will work on fixing this.');
-	}
-	
-	public function tearDown()
-	{
-	}
-    
-    public function provider()
+    public function testGetColumnType()
     {
-        $types = array(
-            'char','varchar','varchar2','text','textarea','double','float','decimal','int','date','bool','relate',
-            'enum','multienum','radioenum','email','url','iframe','html','phone','currency','parent','parent_type',
-            'currency_id','address','encrypt','id','datetimecombo','datetime','image','_other_'
-        );
-        $provider_array = array();
-        foreach ( $types as $type )
+        switch($GLOBALS['db']->dbType)
         {
-            $provider_array[] = array($type, array('name' => 'equal($dd1_c,&quot;Analyst&quot;)'), 'equal($dd1_c,&quot;Analyst&quot;)');
-            $provider_array[] = array($type, array('dependency' => 'equal($dd1_c,&quot;Analyst&quot;)'), 'equal($dd1_c,"Analyst")');
-            $provider_array[] = array($type, array('dependency' => 'equal($dd1_c,"Analyst")'), 'equal($dd1_c,"Analyst")');
-            $provider_array[] = array($type, array('formula' => 'equal($dd1_c,&quot;Analyst&quot;)'), 'equal($dd1_c,"Analyst")');
-            $provider_array[] = array($type, array('formula' => 'equal($dd1_c,"Analyst")'), 'equal($dd1_c,"Analyst")');
+            default :
+                $this->assertEquals("decimal(26,6)", $GLOBALS['db']->getColumnType("currency"));
         }
-        
-        return $provider_array;
-    }
-    
-    /**
-     * @dataProvider provider
-     */
-    public function testPopulateFromPost($type, $request_data, $expected)
-    {
-        $tested_key = null;
-        foreach ( $request_data as $_key => $_data )
-        {
-            $_REQUEST[$_key] = $_data;
-            $tested_key = $_key;
-        }
-        
-        $field = get_widget($type) ;
-        $field->populateFromPost();
-
-        if ( isset($field->$tested_key) )
-        {
-            $this->assertEquals($expected, $field->$tested_key);
-        } 
-        else 
-        {
-            $this->markTestSkipped();
-        }
+        $this->assertEquals("Unknown", $GLOBALS['db']->getColumnType("Unknown"));
     }
 }
-?>

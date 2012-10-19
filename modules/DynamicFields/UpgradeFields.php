@@ -61,6 +61,8 @@ require_once('modules/DynamicFields/DynamicField.php');
  }	
 
  foreach($modules as $the_module=>$fields){
+         if(isset($beanList[$the_module]))
+         {
  	$class_name = $beanList[$the_module];
  	echo "<br><br>Scanning $the_module <br>";
 		
@@ -115,6 +117,7 @@ require_once('modules/DynamicFields/DynamicField.php');
             		}
 				}
 			}
+         }
 	}
 	
 	

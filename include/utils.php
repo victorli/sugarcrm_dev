@@ -60,7 +60,7 @@ function make_sugar_config(&$sugar_config)
 	global $default_charset;
 	global $default_currency_name;
 	global $default_currency_symbol;
-	global $default_currency_iso4217;
+    global $default_currency_iso4217;
 	global $defaultDateFormat;
 	global $default_language;
 	global $default_module;
@@ -3071,7 +3071,7 @@ function display_stack_trace($textOnly=false){
 }
 
 function StackTraceErrorHandler($errno, $errstr, $errfile,$errline, $errcontext) {
-	$error_msg = " $errstr occured in <b>$errfile</b> on line $errline [" . date("Y-m-d H:i:s") . ']';
+	$error_msg = " $errstr occurred in <b>$errfile</b> on line $errline [" . date("Y-m-d H:i:s") . ']';
 	$halt_script = true;
 	switch($errno){
 		case 2048: return; //depricated we have lots of these ignore them
@@ -4862,4 +4862,38 @@ function clean_sensitive_data($defs, $data)
         }
     }
     return $data;
+}
+
+/**
+ * Return relations with labels for duplicates
+ */
+function getDuplicateRelationListWithTitle($def, $var_def, $module)
+{
+    global $current_language;
+    $select_array = array_unique($def);
+    if (count($select_array) < count($def))
+    {
+        $temp_module_strings = return_module_language($current_language, $module);
+        $temp_duplicate_array = array_diff_assoc($def, $select_array);
+        $temp_duplicate_array = array_merge($temp_duplicate_array, array_intersect($select_array, $temp_duplicate_array));
+        
+        foreach ($temp_duplicate_array as $temp_key => $temp_value)
+        {
+            // Don't add duplicate relationships
+            if (!empty($var_def[$temp_key]['relationship']) && array_key_exists($var_def[$temp_key]['relationship'], $select_array))
+            {
+                continue;
+            }
+            $select_array[$temp_key] = $temp_value;
+        }
+        
+        // Add the relationship name for easier recognition
+        foreach ($select_array as $key => $value)
+        {
+            $select_array[$key] .= ' (' . $key . ')';
+        }
+    }
+    
+    asort($select_array);
+    return $select_array;
 }
