@@ -1453,8 +1453,8 @@ SE.composeLayout = {
 
         }
 
-        var openTag = '<div><span>&nbsp;</span>';
-        var closeTag = '<span>&nbsp;</span></div>';
+        var openTag = '<br class="signature-begin" />';
+        var closeTag = '<br class="signature-end" />';
         var t = tinyMCE.getInstanceById('htmleditor' + idx);
         //IE 6 Hack
         if(typeof(t) != 'undefined')
@@ -1469,7 +1469,13 @@ SE.composeLayout = {
 
         var htmllow = html.toLowerCase();
         var start = htmllow.indexOf(openTag);
-        var end = htmllow.indexOf(closeTag) + closeTag.length;
+        var end = htmllow.indexOf(closeTag);
+        if (end >= 0) {
+            end += closeTag.length;
+        }
+        else {
+            end = htmllow.length;
+        }
 
         // selected "none" - remove signature from email
         if(signature == '') {

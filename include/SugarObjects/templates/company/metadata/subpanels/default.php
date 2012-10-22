@@ -68,11 +68,13 @@ $subpanel_layout = array(
 			'target_module' => 'Employees',
 		),
 		'edit_button'=>array(
+             'vname' => 'LBL_EDIT_BUTTON',
 			'widget_class' => 'SubPanelEditButton',
 		 	'module' => $module_name,
 	 		'width' => '4%',
 		),
 		'remove_button'=>array(
+            'vname' => 'LBL_REMOVE',
 			'widget_class' => 'SubPanelRemoveButton',
 		 	'module' => $module_name,
 			'width' => '5%',

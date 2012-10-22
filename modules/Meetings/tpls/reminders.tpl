@@ -66,7 +66,9 @@
             	{assign var="EMAIL_REMINDER_TIME_DISPLAY" value="inline"}
         {/if}
 
-	{if $view == "EditView" || $view == "QuickCreate" || $view == "QuickEdit" || $view == "wirelessedit"}
+
+{if $view == "EditView" || $view == "QuickCreate" || $view == "QuickEdit"}
+
 		<div>
 		    	   	
 		    	<input name="reminder_checked" type="hidden" value="0">

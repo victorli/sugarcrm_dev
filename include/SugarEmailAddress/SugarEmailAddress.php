@@ -190,12 +190,13 @@ class SugarEmailAddress extends SugarBean {
             foreach($this->addresses as $address) {
                 if(!empty($address['email_address'])) {
                     $guid = create_guid();
+                    $emailId = isset($address['email_address_id'])
+                        && isset($current_links[$address['email_address_id']])
+                        ? $address['email_address_id'] : null;
                     $emailId = $this->AddUpdateEmailAddress($address['email_address'],
                                                             $address['invalid_email'],
                                                             $address['opt_out'],
-                                                            isset($address['email_address_id']) ? 
-                                                                $address['email_address_id'] : 
-                                                                null);// this will save the email address if not found
+                                                            $emailId);// this will save the email address if not found
 
                     //verify linkage and flags.
                     $upd_eabr="";
@@ -667,7 +668,7 @@ class SugarEmailAddress extends SugarBean {
                 }
                 else
                 {
-                    $data = array();
+                    $data = $a;
                 }
 
                 $upd_q = 'UPDATE ' . $this->table_name . ' ' . 

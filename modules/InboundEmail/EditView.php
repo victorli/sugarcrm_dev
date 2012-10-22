@@ -356,6 +356,32 @@ $quicksearch_js = "";
 //$javascript = get_set_focus_js(). $javascript->getScript() . $quicksearch_js;
 $xtpl->assign('JAVASCRIPT', get_set_focus_js(). $javascript->getScript() . $quicksearch_js);
 
+require_once('include/Smarty/plugins/function.sugar_help.php');
+$tipsStrings = array(
+    'LBL_SSL_DESC',
+    'LBL_ASSIGN_TO_TEAM_DESC',
+    'LBL_ASSIGN_TO_GROUP_FOLDER_DESC',
+    'LBL_FROM_ADDR_DESC',
+    'LBL_CREATE_CASE_HELP',
+    'LBL_CREATE_CASE_REPLY_TEMPLATE_HELP',
+    'LBL_ALLOW_OUTBOUND_GROUP_USAGE_DESC',
+    'LBL_AUTOREPLY_HELP',
+    'LBL_FILTER_DOMAIN_DESC',
+    'LBL_MAX_AUTO_REPLIES_DESC',
+);
+$smarty = null;
+$tips = array();
+foreach ($tipsStrings as $string)
+{
+    if (!empty($mod_strings[$string]))
+    {
+        $tips[$string] = smarty_function_sugar_help(array(
+            'text' => $mod_strings[$string]
+        ), $smarty);
+    }
+}
+$xtpl->assign('TIPS', $tips);
+
 // WINDOWS work arounds
 //if(is_windows()) {
 //	$xtpl->assign('MAYBE', '<style> div.maybe { display:none; }</style>');

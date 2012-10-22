@@ -1185,7 +1185,7 @@ class Email extends SugarBean {
                 continue;
             }
             if(!empty($parts["name"])) {
-                $res[] = "{$parts["name"]} <{$parts["email"]}>";
+                $res[] = "{$parts['name']} <{$parts['email']}>";
             } else {
                 $res[] .= $parts["email"];
             }
@@ -1427,7 +1427,7 @@ class Email extends SugarBean {
 		if(empty($text)) {
 			return '';
 		}
-		$text = str_replace("\n", "\n<BR/>", $text);
+		$text = str_replace("\n", "<BR/>", $text);
 		$out = "<div style='border-left:1px solid #00c; padding:5px; margin-left:10px;'>{$text}</div>";
 
 		return $out;

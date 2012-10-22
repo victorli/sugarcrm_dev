@@ -37,7 +37,7 @@
 require_once 'include/SugarQueue/SugarJobQueue.php';
 require_once 'modules/Schedulers/Scheduler.php';
 
-class SchedulersTest extends Sugar_PHPUnit_Framework_TestCase
+class SchedulerTest extends Sugar_PHPUnit_Framework_TestCase
 {
 	static protected $old_timedate;
 
@@ -296,6 +296,7 @@ class SchedulersTest extends Sugar_PHPUnit_Framework_TestCase
         $this->scheduler->save();
 
         $job = new SchedulersJob();
+        $job->update_date_modified = false;
         $job->status = SchedulersJob::JOB_STATUS_RUNNING;
         $job->scheduler_id = $this->scheduler->id;
         $job->execute_time = $GLOBALS['timedate']->nowDb();

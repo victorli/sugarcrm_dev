@@ -168,4 +168,13 @@ YAHOO.util.Event.addListener('search_form_clear', 'click', {$id}_range_reset);
 {rdelim}
 
 {rdelim});
+
+YAHOO.util.Event.onDOMReady(function() {ldelim}
+ 	if(document.getElementById('search_form_clear_advanced'))
+ 	 {ldelim}
+ 	     YAHOO.util.Event.addListener('search_form_clear_advanced', 'click', {$id}_range_reset);
+ 	 {rdelim}
+
+{rdelim});
+
 </script>

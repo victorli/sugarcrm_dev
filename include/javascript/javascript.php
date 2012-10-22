@@ -97,15 +97,16 @@ class javascript{
 			if(isset($this->sugarbean->field_name_map[$field]['validation'])){
 				switch($this->sugarbean->field_name_map[$field]['validation']['type']){
 					case 'range':
-						$min = 0;
-						$max = 100;
+                        $min = false;
+                        $max = false;
 						if(isset($this->sugarbean->field_name_map[$field]['validation']['min'])){
-							$min = $this->sugarbean->field_name_map[$field]['validation']['min'];
+                            $min = filter_var($this->sugarbean->field_name_map[$field]['validation']['min'], FILTER_VALIDATE_INT);
 						}
 						if(isset($this->sugarbean->field_name_map[$field]['validation']['max'])){
-							$max = $this->sugarbean->field_name_map[$field]['validation']['max'];
+                            $max = filter_var($this->sugarbean->field_name_map[$field]['validation']['max'], FILTER_VALIDATE_INT);
 						}
-						if($min > $max){
+                        if ($min !== false && $max !== false && $min > $max)
+                        {
 							$max = $min;
 						}
 						if(!empty($displayField)){
@@ -193,8 +194,15 @@ class javascript{
     }
 
 	function addFieldRange($field, $type,$displayName, $required, $prefix='',$min, $max){
-		$this->script .= "addToValidateRange('".$this->formname."', '".$prefix.$field."', '".$type . "', {$this->getRequiredString($required)},'"
-                       . $this->stripEndColon(translate($displayName,$this->sugarbean->module_dir)) . "', $min, $max );\n";
+        $this->script .= "addToValidateRange("
+            . "'" . $this->formname . "', "
+            . "'" . $prefix . $field . "', '"
+            . $type . "', "
+            . $this->getRequiredString($required) . ", '"
+            . $this->stripEndColon(translate($displayName, $this->sugarbean->module_dir)) . "', "
+            . ($min === false ? 'false' : $min) . ", "
+            . ($max === false ? 'false' : $max)
+            . ");\n";
 	}
 
 	function addFieldIsValidDate($field, $type, $displayName, $msg, $required, $prefix='') {

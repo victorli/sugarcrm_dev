@@ -718,7 +718,7 @@ function seamless_login($session){
 	if(!self::$helperObject->validate_authenticated($session)){
 		return 0;
 	}
-	$_SESSION['seamless_login'] = true;
+
 	$GLOBALS['log']->info('End: SugarWebServiceImpl->seamless_login');
 	return 1;
 }

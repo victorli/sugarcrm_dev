@@ -131,6 +131,10 @@ $mod_strings = array (
 	'NTC_DELETE_CONFIRMATION' => 'Are you sure you want to delete this record?',
 	'NTC_REMOVE_ACCOUNT_CONFIRMATION' => 'Are you sure you want to remove this record?',
 	'NTC_REMOVE_MEMBER_ORG_CONFIRMATION' => 'Are you sure you want to remove this record as a member organization?',
+
+    'LBL_EDIT_BUTTON' => 'Edit  ',
+    'LBL_REMOVE' => 'Remove',
+
 );
 
 

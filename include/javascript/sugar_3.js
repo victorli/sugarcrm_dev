@@ -136,7 +136,11 @@ if(!myregexp.test(timeStr))
 return false
 return true;}
 function inRange(value,min,max){if(typeof num_grp_sep!='undefined'&&typeof dec_sep!='undefined')
-value=unformatNumberNoParse(value,num_grp_sep,dec_sep).toString();return value>=min&&value<=max;}
+value=unformatNumberNoParse(value,num_grp_sep,dec_sep).toString();var result=true;if(typeof min=='number'&&value<min)
+{result=false;}
+if(typeof max=='number'&&value>max)
+{result=false;}
+return result;}
 function bothExist(item1,item2){if(typeof item1=='undefined'){return false;}
 if(typeof item2=='undefined'){return false;}
 if((item1==''&&item2!='')||(item1!=''&&item2=='')){return false;}
@@ -197,7 +201,12 @@ break;case'error':isError=true;add_error_style(formname,validate[formname][i][na
 if(typeof validate[formname][i][jstypeIndex]!='undefined'){switch(validate[formname][i][jstypeIndex]){case'callback':if(typeof validate[formname][i][callbackIndex]=='function')
 {var result=validate[formname][i][callbackIndex](formname,validate[formname][i][nameIndex]);if(result==false)
 {isError=true;add_error_style(formname,validate[formname][i][nameIndex],requiredTxt+" "+validate[formname][i][msgIndex]);}}
-break;case'range':if(!inRange(trim(form[validate[formname][i][nameIndex]].value),validate[formname][i][minIndex],validate[formname][i][maxIndex])){isError=true;var lbl_validate_range=SUGAR.language.get('app_strings','LBL_VALIDATE_RANGE');add_error_style(formname,validate[formname][i][nameIndex],validate[formname][i][msgIndex]+" value "+form[validate[formname][i][nameIndex]].value+" "+lbl_validate_range+" ("+validate[formname][i][minIndex]+" - "+validate[formname][i][maxIndex]+") ");}
+break;case'range':if(!inRange(trim(form[validate[formname][i][nameIndex]].value),validate[formname][i][minIndex],validate[formname][i][maxIndex])){isError=true;var lbl_validate_range=SUGAR.language.get('app_strings','LBL_VALIDATE_RANGE');if(typeof validate[formname][i][minIndex]=='number'&&typeof validate[formname][i][maxIndex]=='number')
+{add_error_style(formname,validate[formname][i][nameIndex],validate[formname][i][msgIndex]+" value "+form[validate[formname][i][nameIndex]].value+" "+lbl_validate_range+" ("+validate[formname][i][minIndex]+" - "+validate[formname][i][maxIndex]+")");}
+else if(typeof validate[formname][i][minIndex]=='number')
+{add_error_style(formname,validate[formname][i][nameIndex],validate[formname][i][msgIndex]+" "+SUGAR.language.get('app_strings','MSG_SHOULD_BE')+' '+validate[formname][i][minIndex]+' '+SUGAR.language.get('app_strings','MSG_OR_GREATER'));}
+else if(typeof validate[formname][i][maxIndex]=='number')
+{add_error_style(formname,validate[formname][i][nameIndex],validate[formname][i][msgIndex]+" "+SUGAR.language.get('app_strings','MSG_IS_MORE_THAN')+' '+validate[formname][i][maxIndex]);}}
 break;case'isbefore':compareTo=form[validate[formname][i][compareToIndex]];if(typeof compareTo!='undefined'){if(trim(compareTo.value)!=''||(validate[formname][i][allowblank]!='true')){date2=trim(compareTo.value);date1=trim(form[validate[formname][i][nameIndex]].value);if(trim(date1).length!=0&&!isBefore(date1,date2)){isError=true;add_error_style(formname,validate[formname][i][nameIndex],validate[formname][i][msgIndex]+"("+date1+") "+SUGAR.language.get('app_strings','MSG_IS_NOT_BEFORE')+' '+date2);}}}
 break;case'less':value=unformatNumber(trim(form[validate[formname][i][nameIndex]].value),num_grp_sep,dec_sep);maximum=parseFloat(validate[formname][i][maxIndex]);if(typeof maximum!='undefined'){if(value>maximum){isError=true;add_error_style(formname,validate[formname][i][nameIndex],validate[formname][i][msgIndex]+" "+SUGAR.language.get('app_strings','MSG_IS_MORE_THAN')+' '+validate[formname][i][altMsgIndex]);}}
 break;case'more':value=unformatNumber(trim(form[validate[formname][i][nameIndex]].value),num_grp_sep,dec_sep);minimum=parseFloat(validate[formname][i][minIndex]);if(typeof minimum!='undefined'){if(value<minimum){isError=true;add_error_style(formname,validate[formname][i][nameIndex],validate[formname][i][msgIndex]+" "+SUGAR.language.get('app_strings','MSG_SHOULD_BE')+' '+minimum+' '+SUGAR.language.get('app_strings','MSG_OR_GREATER'));}}
@@ -447,13 +456,17 @@ return true;}};}();if(typeof YAHOO!='undefined')YAHOO.util.Event.addListener(win
 el=YAHOO.util.Dom.get(el);else if(typeof(el)=="string")
 el=document.getElementById(el);if(el&&el.parentNode)
 el.parentNode.removeChild(el);return el;},paramsToUrl:function(params){url="";for(i in params){url+=i+"="+params[i]+"&";}
-return url;},evalScript:function(text){if(isSafari){var waitUntilLoaded=function(){SUGAR.evalScript_waitCount--;if(SUGAR.evalScript_waitCount==0){var headElem=document.getElementsByTagName('head')[0];for(var i=0;i<SUGAR.evalScript_evalElem.length;i++){var tmpElem=document.createElement('script');tmpElem.type='text/javascript';tmpElem.text=SUGAR.evalScript_evalElem[i];headElem.appendChild(tmpElem);}}};var tmpElem=document.createElement('div');tmpElem.innerHTML=text;var results=tmpElem.getElementsByTagName('script');if(results==null){return;}
+return url;},globalEval:function(data){var rnotwhite=/\S/;if(data&&rnotwhite.test(data)){(window.execScript||function(data){window["eval"].call(window,data);})(data);}},evalScript:function(text){if(isSafari){var waitUntilLoaded=function(){SUGAR.evalScript_waitCount--;if(SUGAR.evalScript_waitCount==0){var headElem=document.getElementsByTagName('head')[0];for(var i=0;i<SUGAR.evalScript_evalElem.length;i++){var tmpElem=document.createElement('script');tmpElem.type='text/javascript';tmpElem.text=SUGAR.evalScript_evalElem[i];headElem.appendChild(tmpElem);}}};var tmpElem=document.createElement('div');tmpElem.innerHTML=text;var results=tmpElem.getElementsByTagName('script');if(results==null){return;}
 var headElem=document.getElementsByTagName('head')[0];var tmpElem=null;SUGAR.evalScript_waitCount=0;SUGAR.evalScript_evalElem=new Array();for(var i=0;i<results.length;i++){if(typeof(results[i])!='object'){continue;};tmpElem=document.createElement('script');tmpElem.type='text/javascript';if(results[i].src!=null&&results[i].src!=''){tmpElem.src=results[i].src;}else{SUGAR.evalScript_evalElem[SUGAR.evalScript_evalElem.length]=results[i].text;continue;}
 tmpElem.addEventListener('load',waitUntilLoaded);SUGAR.evalScript_waitCount++;headElem.appendChild(tmpElem);}
 SUGAR.evalScript_waitCount++;waitUntilLoaded();return;}
 var objRegex=/<\s*script([^>]*)>((.|\s|\v|\0)*?)<\s*\/script\s*>/igm;var lastIndex=-1;var result=objRegex.exec(text);while(result&&result.index>lastIndex){lastIndex=result.index
-try{var script=document.createElement('script');script.type='text/javascript';if(result[1].indexOf("src=")>-1){var srcRegex=/.*src=['"]([a-zA-Z0-9_\-\&\/\.\?=:-]*)['"].*/igm;var srcResult=result[1].replace(srcRegex,'$1');script.src=srcResult;}else{script.text=result[2];}
-document.body.appendChild(script);}
+try{if(result[1].indexOf("src=")>-1){var srcRegex=/.*src=['"]([a-zA-Z0-9_\-\&\/\.\?=:-]*)['"].*/igm;var srcResult=result[1].replace(srcRegex,'$1');var r1=/:\/\//igm;if(r1.test(srcResult)&&srcResult.indexOf(window.location.hostname)==-1)
+{YUI().use('get',function(Y)
+{var url=srcResult;Y.Get.script(srcResult,{autopurge:false,onSuccess:function(o){},onFailure:function(o){},onTimeout:function(o){}});});}
+else
+{YUI().use("io-base",function(Y){var cfg,response;cfg={method:'GET',sync:true,on:{success:function(transactionid,response,arguments)
+{SUGAR.util.globalEval(response.responseText);}}};response=Y.io(srcResult,cfg);});}}else{SUGAR.util.globalEval(result[2]);}}
 catch(e){if(typeof(console)!="undefined"&&typeof(console.log)=="function")
 {console.log("error adding script");console.log(e);console.log(result);}}
 result=objRegex.exec(text);}},getLeftColObj:function(){leftColObj=document.getElementById('leftCol');while(leftColObj.nodeName!='TABLE'){leftColObj=leftColObj.firstChild;}

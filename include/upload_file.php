@@ -291,16 +291,16 @@ class UploadFile
         $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
 
         //If no file extension is available and the mime is octet-stream try to determine the mime type.
-        $recheckMime = empty($file_ext) && ($_FILES_element['type']  == 'application/octet-stream');
+        $recheckMime = empty($file_ext) && !empty($_FILES_element['type']) && ($_FILES_element['type']  == 'application/octet-stream');
 
-		if( $_FILES_element['type'] && !$recheckMime) {
+		if (!empty($_FILES_element['type']) && !$recheckMime) {
 			$mime = $_FILES_element['type'];
 		} elseif( function_exists( 'mime_content_type' ) ) {
 			$mime = mime_content_type( $_FILES_element['tmp_name'] );
 		} elseif( function_exists( 'ext2mime' ) ) {
 			$mime = ext2mime( $_FILES_element['name'] );
 		} else {
-			$mime = ' application/octet-stream';
+			$mime = 'application/octet-stream';
 		}
 		return $mime;
 	}

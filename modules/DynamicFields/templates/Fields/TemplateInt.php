@@ -69,15 +69,19 @@ class TemplateInt extends TemplateRange
     function get_field_def(){
 		$vardef = parent::get_field_def();
 		$vardef['disable_num_format'] = isset($this->disable_num_format) ? $this->disable_num_format : $this->ext3;//40005
-		
-        $vardef['validation'] = array(
-            'type' => 'range',
-            'min' => null,
-            'max' => null);
 
-        $vardef['min'] = $vardef['validation']['min'] = isset($this->min) ? $this->min : $this->ext1;
-
-        $vardef['max'] = $vardef['validation']['max'] = isset($this->max) ? $this->max : $this->ext2;
+        $vardef['min'] = isset($this->min) ? $this->min : $this->ext1;
+        $vardef['max'] = isset($this->max) ? $this->max : $this->ext2;
+        $vardef['min'] = filter_var($vardef['min'], FILTER_VALIDATE_INT);
+        $vardef['max'] = filter_var($vardef['max'], FILTER_VALIDATE_INT);
+        if ($vardef['min'] !== false || $vardef['max'] !== false)
+        {
+            $vardef['validation'] = array(
+                'type' => 'range',
+                'min' => $vardef['min'],
+                'max' => $vardef['max']
+            );
+        }
 
         if(!empty($this->auto_increment))
 		{

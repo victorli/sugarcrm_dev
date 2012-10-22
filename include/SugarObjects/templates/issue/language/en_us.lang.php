@@ -64,6 +64,10 @@ $mod_strings = array (
   'LBL_SYSTEM_ID' =>'System Id:',
   'LBL_TYPE'=>'Type:',
   'LBL_SUBJECT' => 'Subject:',
+
+    'LBL_EDIT_BUTTON' => 'Edit',
+    'LBL_REMOVE' => 'Remove',
+
   
   );
 ?>

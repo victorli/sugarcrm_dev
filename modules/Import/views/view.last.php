@@ -78,17 +78,23 @@ class ImportViewLast extends ImportView
         $dupeCount    = 0;
         $createdCount = 0;
         $updatedCount = 0;
-        $fp = sugar_fopen(ImportCacheFiles::getStatusFileName(),'r');
-        while (( $row = fgetcsv($fp, 8192) ) !== FALSE)
+        $fp = sugar_fopen(ImportCacheFiles::getStatusFileName(), 'r');
+        
+        // Read the data if we successfully opened file 
+        if ($fp !== false)
         {
-            $count         += (int) $row[0];
-            $errorCount    += (int) $row[1];
-            $dupeCount     += (int) $row[2];
-            $createdCount  += (int) $row[3];
-            $updatedCount  += (int) $row[4];
+            // Read rows 1 by 1 and add the info
+            while ($row = fgetcsv($fp, 8192))
+            {
+                $count         += (int) $row[0];
+                $errorCount    += (int) $row[1];
+                $dupeCount     += (int) $row[2];
+                $createdCount  += (int) $row[3];
+                $updatedCount  += (int) $row[4];
+            }
+            fclose($fp);
         }
-        fclose($fp);
-
+        
         $this->ss->assign("showUndoButton",FALSE);
         if($createdCount > 0)
         {

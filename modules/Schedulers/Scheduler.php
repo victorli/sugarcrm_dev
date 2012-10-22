@@ -91,37 +91,43 @@ class Scheduler extends SugarBean {
     protected function getUser()
     {
         if(empty($this->user)) {
-            $this->initUser();
+            $this->user = Scheduler::initUser();
         }
         return $this->user;
     }
 
-    protected function initUser()
+    /**
+     * Function returns an Admin user for running Schedulers or false if no admin users are present in the system
+     * (which means the Scheduler Jobs which need admin rights will fail to execute)
+     */
+    public static function initUser()
     {
         $user = new User();
-        //check is default admin exists
-        $adminId = $this->db->getOne(
-            'SELECT id FROM users WHERE id='.$this->db->quoted('1').' AND is_admin=1 AND deleted=0 AND status='.$this->db->quoted('Active'),
+        $db = DBManagerFactory::getInstance();
+        
+        //Check is default admin exists
+        $adminId = $db->getOne(
+            'SELECT id FROM users WHERE id = ' . $db->quoted('1') . ' AND is_admin = 1 AND deleted = 0 AND status = ' . $db->quoted('Active'),
             true,
             'Error retrieving Admin account info'
         );
-        if (false === $adminId) {//retrive another admin
-            $adminId = $this->db->getOne(
-                'SELECT id FROM users WHERE is_admin=1 AND deleted=0 AND status='.$this->db->quoted('Active'),
+        
+        if ($adminId === false) {// Retrieve another admin if default admin doesn't exist
+            $adminId = $db->getOne(
+                'SELECT id FROM users WHERE is_admin = 1 AND deleted = 0 AND status = ' . $db->quoted('Active'),
                 true,
                 'Error retrieving Admin account info'
             );
-            if ($adminId) {
+            if ($adminId) {// Get admin user
                 $user->retrieve($adminId);
-            } else {
+            } else {// Return false and log error
                 $GLOBALS['log']->fatal('No Admin account found!');
                 return false;
             }
-
-        } else {
-            $user->retrieve('1'); // Scheduler jobs run as default Admin
+        } else {// Scheduler jobs run as default Admin
+            $user->retrieve('1'); 
         }
-        $this->user = $user;
+        return $user;
     }
 
 

@@ -99,5 +99,16 @@ class SugarTestEmailUtilities
         }
         return $email_ids;
     }
+
+    public static function setCreatedEmail($ids)
+    {
+        $ids = is_array($ids) ? $ids : array($ids);
+        foreach ( $ids as $id )
+        {
+            $email = new Email();
+            $email->id = $id;
+            self::$_createdEmails[] = $email;
+        }
+    }
 }
 ?>

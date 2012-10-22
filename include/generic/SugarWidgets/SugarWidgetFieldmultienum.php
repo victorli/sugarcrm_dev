@@ -39,23 +39,45 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 class SugarWidgetFieldMultiEnum extends SugarWidgetFieldEnum {
 	public function queryFilternot_one_of(&$layout_def) {
-        $col_name = $this->_get_column_select($layout_def) . " NOT LIKE " ;
-        $query = array();
-        foreach ($layout_def['input_name0'] as $val)
-        {
-            $query[] = $col_name . $this->reporter->db->quoted('%' . $this->encodeMultienumCustom($layout_def, $val) . '%');
-        }
-        return '('. implode(' AND ', $query) .')';
+		$arr = array ();
+		foreach ($layout_def['input_name0'] as $value) {
+			array_push($arr, "'".$GLOBALS['db']->quote($value)."'");
+		}
+	    $reporter = $this->layout_manager->getAttribute("reporter");
+
+    	$col_name = $this->_get_column_select($layout_def) . " NOT LIKE " ;
+    	$arr_count = count($arr);
+    	$query = "";
+    	foreach($arr as $key=>$val) {
+    		$query .= $col_name;
+			$value = preg_replace("/^'/", "'%", $val, 1);
+			$value = preg_replace("/'$/", "%'", $value, 1);
+			$query .= $value;
+			if ($key != ($arr_count - 1))
+    			$query.= " OR " ;	
+    	}
+		return '('.$query.')';        
 	}
         
     public function queryFilterone_of(&$layout_def) {
-        $col_name = $this->_get_column_select($layout_def) . " LIKE " ;
-        $query = array();
-        foreach ($layout_def['input_name0'] as $val)
-        {
-            $query[] = $col_name . $this->reporter->db->quoted('%' . $this->encodeMultienumCustom($layout_def, $val) . '%');
-        }
-        return '('. implode(' OR ', $query) .')';
+		$arr = array ();
+		foreach ($layout_def['input_name0'] as $value) {
+			array_push($arr, "'".$GLOBALS['db']->quote($value)."'");
+		}
+	    $reporter = $this->layout_manager->getAttribute("reporter");
+
+    	$col_name = $this->_get_column_select($layout_def) . " LIKE " ;
+    	$arr_count = count($arr);
+    	$query = "";
+    	foreach($arr as $key=>$val) {
+    		$query .= $col_name;
+			$value = preg_replace("/^'/", "'%", $val, 1);
+			$value = preg_replace("/'$/", "%'", $value, 1);
+			$query .= $value;
+			if ($key != ($arr_count - 1))
+    			$query.= " OR " ;	
+    	}
+		return '('.$query.')';        
 	}
 
 	public function queryFilteris($layout_def) {

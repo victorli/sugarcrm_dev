@@ -442,6 +442,17 @@ $dictionary['Call'] = array('table' => 'calls', 'comment' => 'A Call is an activ
     'reportable' => false,
     'studio' => false,
   ),
+  'add_parent_invitee' =>
+  array(
+	'name' => 'add_parent_invitee',
+	'vname' => 'LBL_ADD_PARENT_INVITEE',
+    'type' => 'varchar',
+	'source' => 'non-db',
+	'comment' => 'Helper field for Add To Parent link',
+	'massupdate' => false,
+	'reportable' => false,
+	'importable' => false,
+  ),
 ),
 'indices' => array (
 	array(

@@ -222,6 +222,7 @@ class CronTest extends Sugar_PHPUnit_Framework_TestCase
     {
         // job 1 - oldest, should be executed
         $job = new SchedulersJob();
+        $job->update_date_modified = false;
         $job->status = SchedulersJob::JOB_STATUS_RUNNING;
         $job->scheduler_id = 'unittest';
         $job->execute_time = TimeDate::getInstance()->nowDb();

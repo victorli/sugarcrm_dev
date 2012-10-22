@@ -41,7 +41,7 @@ require_once('include/SugarPHPMailer.php');
 /**
  * Test cases for Bug 30591
  */
-class handleBodyInHTMLformatTest extends Sugar_PHPUnit_Framework_TestCase
+class HandleBodyInHTMLformatTest extends Sugar_PHPUnit_Framework_TestCase
 {
 	private $sugarMailer;
 	private $email;
@@ -78,4 +78,3 @@ EOQ;
 		$this->assertEquals($this->sugarMailer->Body, $emailBodyInHtmlResult);
 	}
 }
-?>

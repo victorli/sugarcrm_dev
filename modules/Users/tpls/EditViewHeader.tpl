@@ -114,6 +114,16 @@ EditView_tabs.on('contentReady', function(e){
     }
 {/literal}
 {/if}
+
+{if $scroll_to_cal}
+    {literal}
+        //we are coming from the tour welcome page, so we need to simulate a click on the 4th tab
+        // and scroll to the calendar_options div after the tabs have rendered
+        document.getElementById('tab4').click();
+        document.getElementById('calendar_options').scrollIntoView();
+    {/literal}
+{/if}
+
 });
 </script>
 

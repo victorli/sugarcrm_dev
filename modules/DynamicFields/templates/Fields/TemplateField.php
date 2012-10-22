@@ -478,15 +478,13 @@ class TemplateField{
 			if(isset($_REQUEST[$vardef])){		    
                 $this->$vardef = $_REQUEST[$vardef];
 
-			    //  Bug #48826. Some fields are allowed to have special characters and must be decoded from the request
+                //  Bug #48826. Some fields are allowed to have special characters and must be decoded from the request
+                // Bug 49774, 49775: Strip html tags from 'formula' and 'dependency'.
                 if (is_string($this->$vardef) && in_array($vardef, $this->decode_from_request_fields_map))
-                  $this->$vardef = html_entity_decode($this->$vardef);
+                {
+                    $this->$vardef = html_entity_decode(strip_tags(from_html($this->$vardef)));
+                }
 
-				// Bug 49774, 49775: Strip html tags from 'formula' and 'dependency'.
-				// Add to the list below if we need to do the same for other fields.
-				if (!empty($this->$vardef) && in_array($vardef, array('formula', 'dependency'))){
-				    $this->$vardef = to_html(strip_tags(from_html($this->$vardef)));
-				}
 
                 //Remove potential xss code from help field
                 if($field == 'help' && !empty($this->$vardef))

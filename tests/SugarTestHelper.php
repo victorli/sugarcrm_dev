@@ -470,7 +470,7 @@ class SugarTestHelper
 
         // Restoring of theme
         SugarThemeRegistry::set(self::$systemVars['SugarThemeRegistry']->dirName);
-
+        SugarCache::$isCacheReset = false;
         return true;
     }
 

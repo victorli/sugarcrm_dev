@@ -35,6 +35,15 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
+
+// Bug 57062 ///////////////////////////////
+if((!empty($_REQUEST['spriteNamespace']) && substr_count($_REQUEST['spriteNamespace'], '..') > 0) || 
+	(!empty($_REQUEST['imageName']) && substr_count($_REQUEST['imageName'], '..') > 0)) {
+    die();
+}
+// End Bug 57062 ///////////////////////////////
+
+
 // try to use the user's theme if we can figure it out
 if ( isset($_REQUEST['themeName']) && SugarThemeRegistry::current()->name != $_REQUEST['themeName']) {
     SugarThemeRegistry::set($_REQUEST['themeName']);

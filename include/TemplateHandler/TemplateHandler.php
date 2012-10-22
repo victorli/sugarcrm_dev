@@ -288,6 +288,14 @@ class TemplateHandler {
      */
     function deleteTemplate($module, $view) {
         if(is_file($this->cacheDir . $this->templateDir . $module . '/' .$view . '.tpl')) {
+            // Bug #54634 : RTC 18144 : Cannot add more than 1 user to role but popup is multi-selectable
+            if ( !isset($this->ss) )
+            {
+                $this->loadSmarty();
+            }
+            $cache_file_name = $this->ss->_get_compile_path($this->cacheDir . $this->templateDir . $module . '/' .$view . '.tpl');
+            SugarCache::cleanFile($cache_file_name);
+
             return unlink($this->cacheDir . $this->templateDir . $module . '/' .$view . '.tpl');
         }
         return false;

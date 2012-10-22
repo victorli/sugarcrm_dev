@@ -40,7 +40,7 @@ require_once('modules/Emails/EmailUI.php');
 /**
  * Test cases for Bug 9755
  */
-class FindEmailFromBeanIdTest extends Sugar_PHPUnit_Framework_TestCase
+class FindEmailFromBeanIdsTest extends Sugar_PHPUnit_Framework_TestCase
 {
 	private $emailUI;
 	private $beanIds, $beanType, $whereArr;
@@ -77,5 +77,3 @@ EOQ;
 		$this->assertEquals($this->expectedQuery, $this->resultQuery);
 	}
 }
-
-?>

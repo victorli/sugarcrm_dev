@@ -9469,8 +9469,194 @@ $jit.ST.Plot = new Class({
           }
         }), animating);
         if(scale >= 0) node.drawn = true;
-    },   
-   
+    },
+
+    /**
+     * Return array with correct positions for each element
+     *
+     * @param {Array} dimArray
+     * @param {Number} fontHeight
+     * @return {Array}
+     */
+    positions: function(dimArray, fontHeight)
+    {
+        var group = [];
+        var isLastElem = false;
+        var i;
+        var newArray = [];
+        var position = 0;
+        var currentState;
+
+
+        for (i = 0; i < dimArray.length; i++)
+        {
+            currentState = {type: 'element', position: position, height: dimArray[i], font: fontHeight, filament: true};
+            if (dimArray[i] <= fontHeight)
+            {
+                if (isLastElem)
+                {
+                    group = [];
+                }
+                group.push(currentState);
+                isLastElem = false;
+            }
+            else
+            {
+                group.push(currentState);
+                newArray.push({type: 'group', val:group, groupHeight: 0, groupPosition: group[0].position});
+                group = [];
+                isLastElem = true;
+            }
+            position += dimArray[i];
+        }
+        if (group.length > 0)
+        {
+            newArray.push({type: 'group', val: group, groupHeight: 0, groupPosition: group[0].position});
+            group = [];
+        }
+        var figureHeight = position;
+
+        for (i = 0; i < newArray.length; i++)
+        {
+            newArray[i] = this.pipelineGetHeight(newArray[i]);
+        }
+
+        newArray = this.pipelineMoveBlocks(newArray, figureHeight, fontHeight);
+
+        var ret = [];
+        for (i = 0; i < newArray.length; i++)
+        {
+            group = newArray[i].val;
+            for (var k = 0; k < group.length; k++)
+            {
+                ret.push(group[k]);
+            }
+        }
+        return ret;
+    },
+
+    /**
+     * Return recalculation group height(groupHeight) and positions of elements
+     *
+     * @param {Array} group
+     * @return {Array}
+     */
+    pipelineGetHeight: function(group)
+    {
+        var position = 0;
+        var between = 3;
+        var count = group.val.length;
+        var fontHeight = group.val[0].font;
+        var positionStart = group.val[0].position;
+
+        if (count == 1)
+        {
+            group.groupHeight = group.val[0].font;
+            group.val[0].filament = false;
+            return group;
+        }
+
+        if (count == 2)
+        {
+            group.groupHeight = fontHeight * 2 + between;
+            group.val[1].position = positionStart + fontHeight + between;
+            group.val[0].filament = false;
+            group.val[1].filament = false;
+            return group;
+        }
+
+        var even = true;
+        for (var i = 0; i < group.val.length; i++)
+        {
+            group.val[i].position = positionStart + position;
+            even = i % 2;
+            position += between;
+            if (even)
+            {
+                group.val[i].filament = false;
+                position += fontHeight;
+            }
+            else
+            {
+                group.val[i].filament = true;
+            }
+        }
+        group.groupHeight = (group.val[group.val.length - 1].position - group.val[0].position) + fontHeight + between;
+        return group;
+    },
+
+    /**
+     * Return array with new group and elements positions relation figure layout border
+     *
+     * @param {Array} block
+     * @param {Number} figureheight
+     * @param {Number} fontHeight
+     * @return {Array}
+     */
+    pipelineMoveBlocks: function(block, figureheight, fontHeight)
+    {
+        var offset;
+        var rebuild;
+        if (block.length < 2)
+        {
+            return block;
+        }
+
+        var lastValue = block[block.length - 1];
+        var prelastValue;
+        if ((lastValue.groupPosition + lastValue.groupHeight) > figureheight)
+        {
+            offset = (figureheight - lastValue.groupHeight) - lastValue.groupPosition;
+            lastValue.groupPosition += offset;
+            for (var li = 0; li < lastValue.val.length; li++)
+            {
+                lastValue.val[li].position += offset;
+            }
+            prelastValue = block[block.length - 2];
+            if (prelastValue.groupPosition + fontHeight > lastValue.groupPosition)
+            {
+                block[block.length - 2] = this.pipelineMergeGroup(lastValue, prelastValue);
+                block.pop();
+                rebuild = true;
+            }
+            if (block.length < 3)
+            {
+                return block;
+            }
+        }
+        for (var i = 1; i < block.length; i++)
+        {
+            if ( (block[i - 1].groupPosition + block[i - 1].groupHeight) > block[i].groupPosition)
+            {
+                block[i - 1] = this.pipelineMergeGroup(block[i], block[i - 1]);
+                block.splice(i, 1);
+                rebuild = true;
+            }
+        }
+        if (rebuild)
+        {
+            block = this.pipelineMoveBlocks(block, figureheight, fontHeight);
+        }
+        return block;
+    },
+
+    /**
+     * Merge two groups
+     * 
+     * @param {Array} lastValue
+     * @param {Array} prelastValue
+     * @return {Array}
+     */
+    pipelineMergeGroup: function(lastValue, prelastValue)
+    {
+        var newGroup;
+        newGroup = prelastValue;
+        newGroup.val = newGroup.val.concat(lastValue.val);
+        newGroup = this.pipelineGetHeight(newGroup);
+        newGroup.groupPosition = prelastValue.groupPosition;
+        return newGroup;
+    },
+
     /*
         Method: getAlignedPos
         
@@ -13436,7 +13622,7 @@ $jit.ST.Plot.NodeTypes.implement({
           ratio = .65;
 
       if (colorArray && dimArray && stringArray) {
-      	
+          var newDimArray = this.positions(dimArray, label.size);
       	
       	// horizontal lines
       	for (var i=0, l=dimArray.length, acum=0, valAcum=0; i<l; i++) {
@@ -13449,26 +13635,38 @@ $jit.ST.Plot.NodeTypes.implement({
        		 var valueLabel = String(valuelabelArray[i]);
        	     var mV = ctx.measureText(stringValue);
              var mVL = ctx.measureText(valueLabel);
+           var next_mVL = 0;
+           var next_mV = 0;
+           if ((i + 1) < l)
+           {
+               next_mV = ctx.measureText(stringArray[i + 1]);
+               next_mVL = ctx.measureText(String(valuelabelArray[i + 1]));
+           }
+           else
+           {
+               next_mV = mV;
+               next_mVL = mVL;
+           }
           	 var previousElementHeight = (i > 0) ? dimArray[i - 1] : 100;
 		 	 var labelOffsetHeight = (previousElementHeight < label.size && i > 0) ? ((dimArray[i] > label.size) ? (dimArray[i]/2) - (label.size/2) : label.size) : 0;
 		  	 var topWidth = minWidth + ((acum + dimArray[i]) * ratio);
-          	 var bottomWidth = minWidth + ((acum) * ratio);  
-         	 var bottomWidthLabel = minWidth + ((acum + labelOffsetHeight) * ratio);  
-		 	 var labelOffsetRight = (previousElementHeight < label.size && i > 0) ? ((i%2!=0 && dimArray[i] < label.size) ? mV.width + 20 : 0) : 0;
-		 	 var labelOffsetLeft = (previousElementHeight < label.size && i > 0) ? ((i%2!=0 && dimArray[i] < label.size) ? mVL.width + 20 : 0) : 0;
+          	 var bottomWidth = minWidth + ((acum) * ratio);
+           var bottomWidthLabel = minWidth + (newDimArray[i].position * ratio);
+           var labelOffsetRight = (newDimArray[i].filament) ? (next_mV.width + 25) : 0;
+           var labelOffsetLeft = (newDimArray[i].filament) ? (next_mVL.width + 25) : 0;
 //             ctx.fillRect((-bottomWidth/2) - mVL.width - config.labelOffset , y - acum, bottomWidth + mVL.width + mV.width + (config.labelOffset*2), 1);
 
 			//right lines
 			ctx.beginPath();
 			ctx.moveTo(bottomWidth/2,y - acum); //
-			ctx.lineTo(bottomWidthLabel/2 + (labelOffset-10),y - acum - labelOffsetHeight);  // top right
-			ctx.lineTo(bottomWidthLabel/2 + (labelOffset) + labelOffsetRight + mV.width,y - acum - labelOffsetHeight);  // bottom right
+           ctx.lineTo(bottomWidthLabel / 2 + (labelOffset - 10), y - newDimArray[i].position);  // top right
+           ctx.lineTo(bottomWidthLabel / 2 + (labelOffset) + labelOffsetRight + mV.width, y - newDimArray[i].position);  // bottom right
 			ctx.stroke();
 			//left lines
 			ctx.beginPath();
 			ctx.moveTo(-bottomWidth/2,y - acum); //
-			ctx.lineTo(-bottomWidthLabel/2 - (labelOffset-10),y - acum - labelOffsetHeight);  // top right
-			ctx.lineTo(-bottomWidthLabel/2 - (labelOffset) - labelOffsetLeft -mVL.width,y - acum - labelOffsetHeight);  // bottom right
+           ctx.lineTo( - bottomWidthLabel / 2 - (labelOffset - 10), y - newDimArray[i].position);  // top right
+           ctx.lineTo( - bottomWidthLabel / 2 - (labelOffset) - labelOffsetLeft - mVL.width, y - newDimArray[i].position);  // bottom right
 			ctx.stroke();
        }
 	}
@@ -13494,14 +13692,24 @@ $jit.ST.Plot.NodeTypes.implement({
 		  	  	  var mV = 10;
 	              var mVL = 10;	
 		  	  }
+            if ((i + 1) < l)
+            {
+                next_mV = ctx.measureText(stringArray[i + 1]);
+                next_mVL = ctx.measureText(String(valuelabelArray[i + 1]));
+            }
+            else
+            {
+                next_mV = mV;
+                next_mVL = mVL;
+            }
 		      var previousElementHeight = (i > 0) ? dimArray[i - 1] : 100;
 		      var labelOffsetHeight = (previousElementHeight < label.size && i > 0) ? ((dimArray[i] > label.size) ? (dimArray[i]/2) - (label.size/2) : label.size) : 0;
-		      var labelOffsetRight = (previousElementHeight < label.size && i > 0) ? ((i%2!=0 && dimArray[i] < label.size) ? mV.width + 20 : 0) : 0;
-		      var labelOffsetLeft = (previousElementHeight < label.size && i > 0) ? ((i%2!=0 && dimArray[i] < label.size) ? mVL.width + 20 : 0) : 0;
+            var labelOffsetRight = (newDimArray[i].filament) ? (next_mV.width + 20) : 0;
+            var labelOffsetLeft = (newDimArray[i].filament) ? (next_mVL.width + 20) : 0;
 		      
           var topWidth = minWidth + ((acum + dimArray[i]) * ratio);
           var bottomWidth = minWidth + ((acum) * ratio);
-          var bottomWidthLabel = minWidth + ((acum + labelOffsetHeight) * ratio);
+            var bottomWidthLabel = minWidth + (newDimArray[i].position * ratio);
           
 
           if(gradient) {
@@ -13552,9 +13760,9 @@ $jit.ST.Plot.NodeTypes.implement({
 
 		      
               ctx.textAlign = 'left';
-              ctx.fillText(stringArray[i],(bottomWidthLabel/2) + labelOffset + labelOffsetRight, y - acum - labelOffsetHeight - label.size/2);
+              ctx.fillText(stringArray[i], (bottomWidthLabel / 2) + labelOffset + labelOffsetRight, y - newDimArray[i].position - label.size / 2);
               ctx.textAlign = 'right';
-              ctx.fillText(valuelabelArray[i],(-bottomWidthLabel/2) - labelOffset - labelOffsetLeft, y - acum - labelOffsetHeight - label.size/2);
+              ctx.fillText(valuelabelArray[i], (- bottomWidthLabel / 2) - labelOffset - labelOffsetLeft, y - newDimArray[i].position - label.size / 2);
 	      }
           ctx.restore();
         }

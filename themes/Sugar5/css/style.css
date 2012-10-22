@@ -233,7 +233,6 @@ th, td
     margin-bottom: 1px; 
     margin-left:2px; 
     cursor: pointer; 
-    cursor: hand;
 }
 #globalLinks ul li:hover ul,
 #globalLinks ul a:hover ul
@@ -318,8 +317,7 @@ cursor:pointer;
 {
     list-style-type: none;
     display: inline;
-    padding: 0px;
-    cursor: hand; 
+    padding: 0px; 
     cursor: pointer;
     margin: 0;
 }
@@ -363,7 +361,6 @@ div#content noLeftColumn
 {
     padding-top: 5px;
     cursor: pointer; 
-    cursor: hand;
 }
 #HideMenu
 {
@@ -388,7 +385,6 @@ div#content noLeftColumn
     margin-bottom: 4px;
     margin-top: 2px;
     max-width: 140px;
-    *width: expression(this.clientWidth > 140 ? '140px':true);
 }
 #newRecord form button,
 #newRecord form input[type=button],
@@ -496,7 +492,7 @@ background:transparent none repeat scroll 0% 0%;
 }
 
 #subModuleList li.subTabMore ul.cssmenu{
-visibility:none;
+visibility:hidden;
 }
 
 #subModuleList li.subTabMore:hover ul.cssmenu{
@@ -1100,7 +1096,7 @@ div.indent_right {
 }	
     
 #horizWrapper {position:relative; margin-left:60px;width:218px;float:left;}
-#horizBGDiv {position:relative; top:60px; background:url(../../../../index.php?entryPoint=getImage&imageName=horizBg.png) no-repeat; height:26px; width:218px;zindex:5 }	
+#horizBGDiv {position:relative; top:60px; background:url('../../../../index.php?entryPoint=getImage&imageName=horizBg.png') no-repeat; height:26px; width:218px;z-index:5 }	
 #horizHandleDiv { 
     position:absolute; 
     left: 100px; /* the default position is the center of the bg */
@@ -1123,7 +1119,7 @@ div.indent_right {
     width:99%;
     margin: 0 0 3px;
     padding-right:0 !important;
-    padding-left:10 !important;
+    padding-left:10px !important;
     padding-top:10px !important;
 }
 /* sitemap */
@@ -1569,8 +1565,8 @@ table.reportlistView{
     padding: 4px 5px 4px 5px;
     border-left: none;
     border-right: none;
-    border-top: 1px solid Blackccc;
-    border-bottom: 1px solid Blackccc;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
     background:Gainsboro;
 }
 
@@ -1831,8 +1827,7 @@ margin-bottom: 10px;
 }
 /* for subpanels */
 #MorePanelHandle
-{
-    cursor: hand; 
+{ 
     cursor: pointer; 
     display: inline; 
     margin-left: 2px; 
@@ -1861,7 +1856,6 @@ font-size:11px;
 padding: 2px 5px 2px 5px;
 margin: 0;
 cursor: pointer;
-cursor: hand;
 }
 
 .sqsSelectedSmartInputItem {
@@ -2095,7 +2089,6 @@ td.edit.view td[align=right]
 .login .login_more
 {
     text-align:right;
-    *padding-right: 18px !important; /* only needed in IE7 and earlier */
 }
 
 #lastviewicon, #newrecordicon, #shortcuts_img,#lastviewicon_1, #newrecordicon_1, #shortcuts_img_1 {
@@ -2160,7 +2153,6 @@ td.edit.view td[align=right]
 {
 	overflow:auto;
 	max-height:375px;
-	height:expression(this.scrollHeight>375?'375px':'auto');
 }
 
 .sugarFeedDashlet td.list th, .sugarFeedDashlet td.list td[scope=col]
@@ -2173,22 +2165,11 @@ td.edit.view td[align=right]
 	height:auto;
 }
 
-/* 
-Bug 33193 - Fixed several items in the sugarfeeds not correctly scrolling on IE7; 
-added the *position:static CSS property on the following two rules, which will only
-be used on IE7 and IE6
-*/
 .sugarFeedDashlet .byLineBox
 {
 	width:100%;
 	position:relative;
-	*position:static;
-	overflow: none;
-}
-
-.sugarFeedDashlet .yui-ac-input
-{
-    *position:static !important;
+	overflow: hidden;
 }
 
 .sugarFeedDashlet .byLineBox .byLineLeft
@@ -2213,7 +2194,7 @@ iframe.teamNoticeBox
 .loading-indicator
 {
 	font-size:11px;
-	background-image:url(../default/ext/resources/images/default/grid/loading.gif);
+	background-image:url('../default/ext/resources/images/default/grid/loading.gif');
 	background-repeat:no-repeat;
 	background-position:left;
 	padding-left:20px;
@@ -2357,7 +2338,7 @@ a:link, a:visited, a:hover
 }
 
 .buttonSlide.yui-module .yui-hd .toggle em { 
-	background-image: url(../../../../index.php?entryPoint=getImage&imageName=slider_button_more.png);
+	background-image: url('../../../../index.php?entryPoint=getImage&imageName=slider_button_more.png');
 	background-repeat: no-repeat;
 	display: inline; /* prevent IE margin doubling */
     overflow:hidden;
@@ -2370,7 +2351,7 @@ a:link, a:visited, a:hover
 }
 
 .buttonSlide.yui-module.yui-closed .yui-hd .toggle em { 
-	background-image: url(../../../../index.php?entryPoint=getImage&imageName=slider_button_less.png);
+	background-image: url('../../../../index.php?entryPoint=getImage&imageName=slider_button_less.png');
 }
 
 .buttonSlide .yui-bd { 
@@ -2772,7 +2753,7 @@ ul.subpanelTablist li a.current, ul.subpanelTablist li a.current:hover
     border-color: #c1c1c1;
     background-color: #f0f0f0;
     color: #000;
-    background-image: url(../../../../index.php?entryPoint=getImage&imageName=bgBtnGray.gif);
+    background-image: url('../../../../index.php?entryPoint=getImage&imageName=bgBtnGray.gif');
 }
 
 .pagination button [title="Return to List"]:hover{
@@ -3057,7 +3038,7 @@ h1, h2, h3
 }
 .h3Row 
 {
-	background-image: url(../../../../index.php?entryPoint=getImage&imageName=bg.gif);
+	background-image: url('../../../../index.php?entryPoint=getImage&imageName=bg.gif');
 }
 h4, h5
 {
@@ -3076,7 +3057,7 @@ button, input[type=submit], input[type=reset], input[type=button], .button
 	border-color: #abc3d7;
 	background-color: #ecf1f4;
 	color: #000;
-	background-image: url(../../../../index.php?entryPoint=getImage&imageName=bgBtn.gif);
+	background-image: url('../../../../index.php?entryPoint=getImage&imageName=bgBtn.gif');
 }
 button:hover, input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover,
 button:focus, input[type=submit]:focus, input[type=reset]:focus, input[type=button]:focus,
@@ -3090,7 +3071,7 @@ button[disabled], input[type=submit][disabled], input[type=reset][disabled], inp
 	border-color: #c1c1c1;
 	background-color: #f0f0f0;
 	color: #000;
-	background-image: url(../../../../index.php?entryPoint=getImage&imageName=bgBtnGray.gif);
+	background-image: url('../../../../index.php?entryPoint=getImage&imageName=bgBtnGray.gif');
 }
 input,select 
 {
@@ -3126,13 +3107,13 @@ textarea
 /* for the main screen navigation tabs */
 #moduleList 
 {
-    background-image : url(../../../../index.php?entryPoint=getImage&imageName=tabRowBg.gif);
+    background-image : url('../../../../index.php?entryPoint=getImage&imageName=tabRowBg.gif');
     background-repeat: repeat-x;
     border-bottom-color: #0046ad;
 }
 #moduleList > ul > li
 {
-    background-image:url(../../../../index.php?entryPoint=getImage&themeName=Sugar55&imageName=otherTab.gif);
+    background-image:url('../../../../index.php?entryPoint=getImage&themeName=Sugar55&imageName=otherTab.gif');
 }
 #moduleList ul li span.currentTab a:link, 
 #moduleList ul li span.currentTab a:visited, 
@@ -3153,7 +3134,7 @@ textarea
 #moduleList ul li span.currentTabRight, 
 #moduleList ul li span.currentTab 
 {
-    background-image : url(../../../../index.php?entryPoint=getImage&imageName=currentTab.gif);
+    background-image : url('../../../../index.php?entryPoint=getImage&imageName=currentTab.gif');
     background-repeat: no-repeat;
     border-bottom-color: #4e8ccf;
 }
@@ -3458,7 +3439,7 @@ h5.calSharedUser
     color: #444;
     background-color: #fff;
     border-color: #abc3d7;
-    background-image: url(../../../../index.php?entryPoint=getImage&imageName=bg.gif);
+    background-image: url('../../../../index.php?entryPoint=getImage&imageName=bg.gif');
 }
 
 /* for subpanel tabs */
@@ -3558,7 +3539,7 @@ ul.tablist li a.current:link, ul.tablist li a.current:visited, ul.tablist li a.c
 }
 
  .yui-layout .yui-layout-clip-right .collapse {
-    background: transparent url('../../../../index.php?entryPoint=getImage&themeName=Sugar55&imageName=sugar-yui-sprites.png') no-repeat -0 -110px;
+    background: transparent url('../../../../index.php?entryPoint=getImage&themeName=Sugar55&imageName=sugar-yui-sprites.png') no-repeat 0 -110px;
 }
 
  .yui-layout .yui-layout-unit-top div.yui-layout-hd .collapse {
@@ -3587,7 +3568,7 @@ ul.tablist li a.current:link, ul.tablist li a.current:visited, ul.tablist li a.c
 }
 
 .yuimenuitem-hassubmenu > a{
-    background-image: url(../../../../index.php?entryPoint=getImage&themeName=Sugar55&imageName=sugar-yui-sprites.png);
+    background-image: url('../../../../index.php?entryPoint=getImage&themeName=Sugar55&imageName=sugar-yui-sprites.png');
 }
 
  .yui-navset .yui-nav li a,.yui-navset-top .yui-nav li a, .yui-navset-bottom .yui-nav li a,
@@ -3620,8 +3601,6 @@ ul.tablist li a.current:link, ul.tablist li a.current:visited, ul.tablist li a.c
 	float:right;
 	zoom: 1;
 	display: inline;
-	*float: none;
-	*width: 18px;
 }
 .moduleTitle .star 
 {
@@ -3674,9 +3653,6 @@ ul.clickMenu {
 	padding: 0px 0px 0px 0px;
 	margin: 0 !important;
 	vertical-align: bottom;
-    background-color: #ECF1F4;
-    background-image: url("../../../../index.php?entryPoint=getImage&imageName=bgBtn.gif");
-    border: 1px solid #ABC3D7;
     color: #000000;
 	display: inline-block;
 }
@@ -3705,7 +3681,10 @@ ul.clickMenu:hover > li > span > a, ul.clickMenu:hover > li > a {
 ul.clickMenu li span.ab:hover {
 	background-position: 6px 0px;
 }
-ul.clickMenu li, ul.SugarActionMenuIESub li {
+ul.clickMenu>li, ul.SugarActionMenuIESub li {
+	background-color: #ECF1F4;
+	background-image: url('../../../../index.php?entryPoint=getImage&imageName=bgBtn.gif');
+	border: 1px solid #ABC3D7;
 	float: left;
 	margin: 0;	
 	padding: 0 0 0 0;
@@ -3739,7 +3718,7 @@ ul.clickMenu li span { /*--Drop down trigger styles--*/
 	width: 22px;
 	height: 16px;
 	float: left;
-	background: url(../../../../index.php?entryPoint=getImage&imageName=actionMenuArrow.png) no-repeat 6px -28px;
+	background: url('../../../../index.php?entryPoint=getImage&imageName=actionMenuArrow.png') no-repeat 6px -28px;
 	cursor: pointer;
 }
 
@@ -3933,7 +3912,7 @@ ul#globalLinks.clickMenu {
 
 ul#globalLinks.clickMenu li > span {
 	height: 43px;
-	background-image: url(../../../../index.php?entryPoint=getImage&imageName=tabDownArrowOff.png);
+	background-image: url('../../../../index.php?entryPoint=getImage&imageName=tabDownArrowOff.png');
 	background-position: right center;
 	width: auto;
 	margin-right: 10px;
@@ -3977,9 +3956,6 @@ ul#selectLink.clickMenu #massall{
 
 ul.clickMenu.show {
     display:inline-block;
-    /*css hack for IE*/
-    *display:inline;
-    *zoom:1;
 }
 
 ul#selectLink.clickMenu > li > a{
@@ -4017,7 +3993,7 @@ ul#detailViewActions.clickMenu {
 	width: 17px;
 	height: 17px;
 	float: left;
-	background: url(../../../../index.php?entryPoint=getImage&imageName=actionMenuArrow.png) no-repeat 6px -28px;
+	background: url('../../../../index.php?entryPoint=getImage&imageName=actionMenuArrow.png') no-repeat 6px -28px;
 	opacity: .5;
 	}
 
@@ -4056,7 +4032,7 @@ ul#detailViewActions.clickMenu {
 
 }
 #quickCreate ul.clickMenu li > span {
-	background: url(../../../../index.php?entryPoint=getImage&imageName=quick-create.png) no-repeat center center;
+	background: url('../../../../index.php?entryPoint=getImage&imageName=quick-create.png') no-repeat center center;
 	height: 43px;
 	width: 50px;
 }

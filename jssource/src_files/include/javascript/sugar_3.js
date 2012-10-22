@@ -630,7 +630,16 @@ function isTime(timeStr) {
 function inRange(value, min, max) {
     if (typeof num_grp_sep != 'undefined' && typeof dec_sep != 'undefined')
        value = unformatNumberNoParse(value, num_grp_sep, dec_sep).toString();
-	return value >= min && value <= max;
+    var result = true;
+    if (typeof min == 'number' && value < min)
+    {
+        result = false;
+    }
+    if (typeof max == 'number' && value > max)
+    {
+        result = false;
+    }
+    return result;
 }
 
 function bothExist(item1, item2) {
@@ -1005,7 +1014,18 @@ function validate_form(formname, startsWith){
 								if(!inRange(trim(form[validate[formname][i][nameIndex]].value), validate[formname][i][minIndex], validate[formname][i][maxIndex])){
 									isError = true;
                                     var lbl_validate_range = SUGAR.language.get('app_strings', 'LBL_VALIDATE_RANGE');
-                                    add_error_style(formname, validate[formname][i][nameIndex], validate[formname][i][msgIndex] + " value " + form[validate[formname][i][nameIndex]].value + " " + lbl_validate_range + " (" +validate[formname][i][minIndex] + " - " + validate[formname][i][maxIndex] +  ") ");
+                                    if (typeof validate[formname][i][minIndex] == 'number' && typeof validate[formname][i][maxIndex] == 'number')
+                                    {
+                                        add_error_style(formname, validate[formname][i][nameIndex], validate[formname][i][msgIndex] + " value " + form[validate[formname][i][nameIndex]].value + " " + lbl_validate_range + " (" +validate[formname][i][minIndex] + " - " + validate[formname][i][maxIndex] +  ")");
+                                    }
+                                    else if (typeof validate[formname][i][minIndex] == 'number')
+                                    {
+                                        add_error_style(formname, validate[formname][i][nameIndex], validate[formname][i][msgIndex] + " " + SUGAR.language.get('app_strings', 'MSG_SHOULD_BE') + ' ' + validate[formname][i][minIndex] + ' ' + SUGAR.language.get('app_strings', 'MSG_OR_GREATER'));
+                                    }
+                                    else if (typeof validate[formname][i][maxIndex] == 'number')
+                                    {
+                                        add_error_style(formname, validate[formname][i][nameIndex], validate[formname][i][msgIndex] + " " + SUGAR.language.get('app_strings', 'MSG_IS_MORE_THAN') + ' ' + validate[formname][i][maxIndex]);
+                                    }
 								}
 							break;
 							case 'isbefore':
@@ -2797,6 +2817,20 @@ SUGAR.util = function () {
 			}
 			return url;
 		},
+        // Evaluates a script in a global context
+        // Workarounds based on findings by Jim Driscoll
+        // http://weblogs.java.net/blog/driscoll/archive/2009/09/08/eval-javascript-global-context
+        globalEval: function( data ) {
+            var rnotwhite = /\S/;
+            if ( data && rnotwhite.test( data ) ) {
+                // We use execScript on Internet Explorer
+                // We use an anonymous function so that context is window
+                // rather than jQuery in Firefox
+                ( window.execScript || function( data ) {
+                    window[ "eval" ].call( window, data );
+                } )( data );
+            }
+        },
 	    evalScript:function(text){
 			if (isSafari) {
 				var waitUntilLoaded = function(){
@@ -2856,16 +2890,67 @@ SUGAR.util = function () {
             while(result && result.index > lastIndex){
             	lastIndex = result.index
 				try{
-					var script = document.createElement('script');
-                  	script.type= 'text/javascript';
+                    // Bug #49205 : Subpanels fail to load when selecting subpanel tab
+                    // Change approach to handle javascripts included to body of ajax response.
+                    // To load & run javascripts and inline javascript in correct order load them as synchronous requests
+                    // JQuery library uses this approach to eval scripts
                   	if(result[1].indexOf("src=") > -1){
 						var srcRegex = /.*src=['"]([a-zA-Z0-9_\-\&\/\.\?=:-]*)['"].*/igm;
 						var srcResult =  result[1].replace(srcRegex, '$1');
-						script.src = srcResult;
+
+                        // Check is ulr cross domain or not
+                        var r1 = /:\/\//igm;
+                        if ( r1.test(srcResult) && srcResult.indexOf(window.location.hostname) == -1 )
+                        {
+                            // if script is cross domain it cannot be loaded via ajax request
+                            // try load script asynchronous by creating script element in the body
+                            // YUI 3.3 doesn't allow load scrips synchronously
+                            // YUI 3.5 do it
+                            YUI().use('get', function (Y)
+                            {
+                                var url = srcResult;
+                                Y.Get.script(srcResult,
+                                {
+                                    autopurge: false,
+                                    onSuccess : function(o) {  },
+                                    onFailure: function(o) { },
+                                    onTimeout: function(o) { }
+                                });
+                            });
+                            // TODO: for YUI 3.5 - load scripts as script object synchronous
+                            /*
+                            YUI().use('get', function (Y) {
+                                var url = srcResult;
+                                Y.Get.js([{url: url, async: false}], function (err) {});
+                            });
+                            */
+                        }
+                        else
+                        {
+                            // Bug #49205 : Subpanels fail to load when selecting subpanel tab
+                            // Create a YUI instance using the io-base module.
+                            YUI().use("io-base", function(Y) {
+                                var cfg, response;
+                                cfg = {
+                                    method: 'GET',
+                                    sync: true,
+                                    on: {
+                                        success: function(transactionid, response, arguments)
+                                        {
+                                            SUGAR.util.globalEval(response.responseText);
+                                        }
+                                    }
+                                };
+                                // Call synchronous request to load javascript content
+                                // restonse will be processed in success function
+                                response = Y.io(srcResult, cfg);
+                            });
+                        }
                   	}else{
-                  		script.text = result[2];
+                        // Bug #49205 : Subpanels fail to load when selecting subpanel tab
+                        // execute script in global context
+                        SUGAR.util.globalEval(result[2]);
                   	}
-                  	document.body.appendChild(script);
 	              }
 	              catch(e) {
                       if(typeof(console) != "undefined" && typeof(console.log) == "function")

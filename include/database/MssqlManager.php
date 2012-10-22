@@ -403,18 +403,14 @@ class MssqlManager extends DBManager
             $unionOrderBy = ' order by ' . $unionOrderBy;
         }
 
-        //if start is 0, then just use a top query
-        if($start == 0) {
-            $limitUnionSQL = "SELECT TOP $count * FROM (" .$unionsql .") as top_count ".$unionOrderBy;
-        } else {
-            //if start is more than 0, then use top query in conjunction
-            //with rownumber() function to create limit query.
-            $limitUnionSQL = "SELECT TOP $count * FROM( select ROW_NUMBER() OVER ( order by "
-            .$rowNumOrderBy.") AS row_number, * FROM ("
-            .$unionsql .") As numbered) "
-            . "As top_count_limit WHERE row_number > $start "
-            .$unionOrderBy;
-        }
+        //Bug 56560 either start = 0 or > 0, use top query in conjunction
+        //with rownumber() function to create limit query.
+        //otherwise, it shows duplicates when paging on activities subpanel
+        $limitUnionSQL = "SELECT TOP $count * FROM( select ROW_NUMBER() OVER ( order by "
+        .$rowNumOrderBy.") AS row_number, * FROM ("
+        .$unionsql .") As numbered) "
+        . "As top_count_limit WHERE row_number > $start "
+        .$unionOrderBy;
 
         return $limitUnionSQL;
     }
@@ -442,25 +438,21 @@ class MssqlManager extends DBManager
                 if ($start == 0) {
                     $match_two = strtolower($matches[2]);
                     if (!strpos($match_two, "distinct")> 0 && strpos($match_two, "distinct") !==0) {
-                        if ($count > 20) {
-                            $orderByMatch = array();
-                            preg_match('/^(.*)(ORDER BY)(.*)$/is',$matches[3], $orderByMatch);
-                            if (!empty($orderByMatch[3])) {
-                                $newSQL = "SELECT TOP $count * FROM
-                                    (
-                                        " . $matches[1] . " ROW_NUMBER()
-                                        OVER (ORDER BY " . $this->returnOrderBy($sql, $orderByMatch[3]) . ") AS row_number,
-                                        " . $matches[2] . $orderByMatch[1]. "
-                                    ) AS a
-                                    WHERE row_number > $start";
-                            }
-                            else {
-                                $newSQL = $matches[1] . " TOP $count " . $matches[2] . $matches[3];
-                            }
+                        $orderByMatch = array();
+                        preg_match('/^(.*)(ORDER BY)(.*)$/is',$matches[3], $orderByMatch);
+                        if (!empty($orderByMatch[3])) {
+                            $selectPart = array();
+                            preg_match('/^(.*)(\bFROM .*)$/isU', $matches[2], $selectPart);
+                            $newSQL = "SELECT TOP $count * FROM
+                                (
+                                    " . $matches[1] . $selectPart[1] . ", ROW_NUMBER()
+                                    OVER (ORDER BY " . $this->returnOrderBy($sql, $orderByMatch[3]) . ") AS row_number
+                                    " . $selectPart[2] . $orderByMatch[1]. "
+                                ) AS a
+                                WHERE row_number > $start";
                         }
                         else {
-                          //proceed as normal
-                          $newSQL = $matches[1] . " TOP $count " . $matches[2] . $matches[3];
+                            $newSQL = $matches[1] . " TOP $count " . $matches[2] . $matches[3];
                         }
                     }
                     else {

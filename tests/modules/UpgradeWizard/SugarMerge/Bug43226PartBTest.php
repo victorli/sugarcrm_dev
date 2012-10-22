@@ -36,7 +36,7 @@
 
 require_once 'include/dir_inc.php';
 
-class Bug43226TestPartB extends Sugar_PHPUnit_Framework_TestCase  {
+class Bug43226PartBTest extends Sugar_PHPUnit_Framework_TestCase  {
 	
 var $merge;
 

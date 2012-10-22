@@ -265,7 +265,7 @@ function seamless_login($session){
 		if(!validate_authenticated($session)){
 			return 0;
 		}
-		$_SESSION['seamless_login'] = true;
+		
 		return 1;
 }
 

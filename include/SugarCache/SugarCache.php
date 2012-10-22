@@ -130,6 +130,18 @@ class SugarCache
             }
         }
     }
+
+    /**
+     * Try to reset file from caches
+     */
+    public static function cleanFile( $file )
+    {
+        // APC
+        if ( function_exists('apc_delete_file') && ini_get('apc.stat') == 0 )
+        {
+            apc_delete_file( $file );
+        }
+    }
 }
 
 /**

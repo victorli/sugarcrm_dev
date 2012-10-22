@@ -134,6 +134,7 @@ class ViewLayoutView extends ViewEdit
                     $parser->_viewdefs [ 'panels' ] = $editViewPanels;
                     $parser->_fielddefs = $parser2->_fielddefs;
                     $parser->setUseTabs($parser2->getUseTabs());
+                    $parser->setTabDefs($parser2->getTabDefs());
                 }
 		    }
 

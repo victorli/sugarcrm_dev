@@ -45,14 +45,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 require_once('modules/Users/Forms.php');
 require_once('modules/Configurator/Configurator.php');
 
-/**
- * ViewWireless_Login extends SugarWirelessView and is the login view.
- */
 class ViewWizard extends SugarView
 {
 	/**
-	 * Constructor for the view, it runs the constructor of SugarWirelessView and
-	 * sets the footer option to true (it is off in the SugarWirelessView constructor)
+	 * Constructor.
 	 */
 	public function __construct()
 	{

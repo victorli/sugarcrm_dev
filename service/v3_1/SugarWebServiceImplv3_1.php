@@ -379,18 +379,6 @@ class SugarWebServiceImplv3_1 extends SugarWebServiceImplv3 {
             $nameValueArray['mobile_max_list_entries'] = self::$helperObject->get_name_value('mobile_max_list_entries', $sugar_config['wl_list_max_entries_per_page'] );
             $nameValueArray['mobile_max_subpanel_entries'] = self::$helperObject->get_name_value('mobile_max_subpanel_entries', $sugar_config['wl_list_max_entries_per_subpanel'] );
 
-            if($application == 'mobile')
-            {
-                $modules = $availModuleNames = array();
-                $availModules = array_keys($_SESSION['avail_modules']); //ACL check already performed.
-                $modules = self::$helperObject->get_visible_mobile_modules($availModules);
-                $nameValueArray['available_modules'] = $modules;
-                //Get the vardefs md5
-                foreach($modules as $mod_def)
-                    $availModuleNames[] = $mod_def['module_key'];
-
-                $nameValueArray['vardefs_md5'] = self::get_module_fields_md5(session_id(), $availModuleNames);
-            }
 
             $currencyObject = new Currency();
             $currencyObject->retrieve($cur_id);
@@ -431,9 +419,6 @@ class SugarWebServiceImplv3_1 extends SugarWebServiceImplv3 {
     	    case 'default':
     	        $modules = self::$helperObject->get_visible_modules($availModules);
     	       break;
-    	    case 'mobile':
-    	        $modules = self::$helperObject->get_visible_mobile_modules($availModules);
-    	        break;
     	    case 'all':
     	    default:
     	        $modules = self::$helperObject->getModulesFromList(array_flip($availModules), $availModules);

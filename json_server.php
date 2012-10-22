@@ -297,7 +297,7 @@ function construct_where(&$query_obj, $table='',$module=null)
 ///////////////////////////////////////////////////////////////////////////////
 ////	JSON SERVER HANDLER LOGIC
 //ignore notices
-error_reporting(E_ALL & ~E_NOTICE);
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
 ob_start();
 insert_charset_header();
 global $sugar_config;

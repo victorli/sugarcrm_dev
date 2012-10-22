@@ -384,6 +384,7 @@ switch( $install_type ){
             default:
                 break;
         }
+        $current_user->incrementETag("mainMenuETag");
         break;
     case "full":
         // purposely flow into "case: patch"

@@ -88,6 +88,7 @@ $mod_strings = array (
     'LNK_NEW_APPOINTMENT' => 'Create Appointment',
 	'LBL_SCHEDULING_FORM_TITLE' => 'Scheduling',
     'LBL_ADD_INVITEE' => 'Add Invitees',
+	'LBL_ADD_PARENT_INVITEE' => 'Add Related person to invitees',
     'LBL_NAME' => 'Name',
     'LBL_FIRST_NAME' => 'First Name',
     'LBL_LAST_NAME' => 'Last Name',

@@ -37,7 +37,7 @@
 
 require_once 'PHPUnit/Extensions/OutputTestCase.php';
 
-class Bugs39819_39820 extends Sugar_PHPUnit_Framework_TestCase
+class Bugs39819_39820Test extends Sugar_PHPUnit_Framework_TestCase
 {
     /**
      * @ticket 39819

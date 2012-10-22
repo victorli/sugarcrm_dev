@@ -44,7 +44,6 @@ SUGAR.ajaxUI = {
         if (typeof window.onbeforeunload == "function")
             window.onbeforeunload = null;
         scroll(0,0);
-        SUGAR.ajaxUI.hideLoadingPanel();
         try{
             var r = YAHOO.lang.JSON.parse(o.responseText);
             cont = r.content;
@@ -63,8 +62,14 @@ SUGAR.ajaxUI = {
             }
 
             var c = document.getElementById("content");
+            // Bug #49205 : Subpanels fail to load when selecting subpanel tab
+            // hide content of placeholder before apply new one
+            // @see SUGAR.util.evalScript
+            c.style.visibility = 'hidden';
             c.innerHTML = cont;
             SUGAR.util.evalScript(cont);
+            // all javascripts have been processed - show content of placeholder
+            c.style.visibility = 'visible';
 
             if ( r.moduleList)
             {
@@ -82,7 +87,13 @@ SUGAR.ajaxUI = {
                 	$("#logo").attr("title", logoStats.replace(/[\d]+\.[\d]+/, r.responseTime)).tipTip({maxWidth: "auto", edgeOffset: 10});
                 }
             }
+            // Bug #49205 : Subpanels fail to load when selecting subpanel tab
+            // hide ajax loading message after all scripts are processed
+            SUGAR.ajaxUI.hideLoadingPanel();
         } catch (e){
+            // Bug #49205 : Subpanels fail to load when selecting subpanel tab
+            // hide ajax loading message after all scripts are processed
+            SUGAR.ajaxUI.hideLoadingPanel();
             SUGAR.ajaxUI.showErrorMessage(o.responseText);
         }
     },

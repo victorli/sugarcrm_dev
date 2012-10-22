@@ -480,12 +480,20 @@ class User extends Person {
 		}
 
 
+		// set some default preferences when creating a new user
+		$setNewUserPreferences = empty($this->id) || !empty($this->new_with_id);
 
 
 
 		parent::save($check_notify);
 
 
+		// set some default preferences when creating a new user
+		if ( $setNewUserPreferences ) {
+	        if(!$this->getPreference('calendar_publish_key')) {
+		        $this->setPreference('calendar_publish_key', create_guid());
+	        }
+		}
 
         $this->savePreferencesToDB();
         return $this->id;
@@ -1594,8 +1602,6 @@ EOQ;
         	return true;
         }
 	}
-
-
 
    function create_new_list_query($order_by, $where,$filter=array(),$params=array(), $show_deleted = 0,$join_type='', $return_array = false,$parentbean=null, $singleSelect = false)
    {	//call parent method, specifying for array to be returned

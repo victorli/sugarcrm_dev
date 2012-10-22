@@ -117,6 +117,10 @@ $mod_strings = array (
 	'LBL_TREE_TITLE' => 'Documents',
 	//sub-panel vardefs.
 	'LBL_LIST_DOCUMENT_NAME'=>'Document Name',
+
+    'LBL_EDIT_BUTTON' => 'Edit ',
+    'LBL_REMOVE' => 'Remove',
+
 );
 
 

@@ -214,6 +214,11 @@ EOD
         $action_button_footer = array_merge($action_button_footer, $this->ss->get_template_vars('BUTTONS_FOOTER'));
         $this->ss->assign('ACTION_BUTTON_FOOTER', $action_button_footer);
 
+        //if the request object has 'scrolltocal' set, then we are coming here from the tour window box and need to set flag to true
+        // so that footer.tpl fires off script to scroll to calendar section
+        if(!empty($_REQUEST['scrollToCal'])){
+            $this->ss->assign('scroll_to_cal', true);
+        }
         $this->ev->process($processSpecial,$processFormName);
 
 		echo $this->ev->display($this->showTitle);

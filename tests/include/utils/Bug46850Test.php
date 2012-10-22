@@ -37,7 +37,7 @@
 
 require_once('include/utils/LogicHook.php');
 
-class Bu46850Test extends Sugar_PHPUnit_Framework_TestCase
+class Bug46850Test extends Sugar_PHPUnit_Framework_TestCase
 {
     protected $renames = array();
     protected $deletes = array();

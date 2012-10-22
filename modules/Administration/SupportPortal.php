@@ -135,7 +135,6 @@ switch ($_REQUEST['view']) {
 													array('name' => 'Administration', 'action' => 'licensesettings', 'anchor' => '1910574'),
 													array('name' => 'Administration', 'action' => 'diagnostic', 'anchor' => '1111949'),
 													array('name' => 'Administration', 'action' => 'listviewofflineclient', 'anchor' => '1111949'),
-													array('name' => 'Administration', 'action' => 'enablewirelessmodules', 'anchor' => '1111949'),
 													array('name' => 'Administration', 'action' => 'backups', 'anchor' => '1111949'),
 													array('name' => 'Administration', 'action' => 'upgrade', 'anchor' => '1111949'),
 													array('name' => 'Administration', 'action' => 'locale', 'anchor' => '1111949'),

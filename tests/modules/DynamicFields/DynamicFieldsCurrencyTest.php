@@ -34,56 +34,63 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
+ 
+require_once('modules/DynamicFields/FieldCases.php');
 
-class Bug44515 extends Sugar_PHPUnit_Framework_TestCase
+/**
+ * @group DynamicFieldsCurrencyTests
+ */
+
+class DynamicFieldsCurrencyTest extends Sugar_PHPUnit_Framework_TestCase
 {
-   
-    /**
-     * @group Bug44515
-     */
-    var $customDir = "custom/modules/ProductTemplates/formulas";
-
+    private $_modulename = 'Accounts';
+    private $_originaldbType = '';
+    private $field;
+    
     public function setUp()
     {
+        // Set Original Global dbType
+        $this->_originaldbType = $GLOBALS['db']->dbType;
         
-        if (!is_dir($this->customDir))
-          mkdir($this->customDir, 0700, TRUE); // Creating nested directories at a glance
-
-        file_put_contents($this->customDir . "/customformula1.php", "<?php\nclass Customformula1 {\n}\n?>");
-        file_put_contents($this->customDir . "/customformula2.php", "<?php\nclass Customformula2 {\n}\n?>");
+    	$this->field = get_widget('currency');
+        $this->field->id = $this->_modulename.'foofighter_c';
+        $this->field->name = 'foofighter_c';
+        $this->field->vanme = 'LBL_Foo';
+        $this->field->comments = NULL;
+        $this->field->help = NULL;
+        $this->field->custom_module = $this->_modulename;
+        $this->field->type = 'currency';
+        $this->field->len = 18;
+        $this->field->precision = 6;
+        $this->field->required = 0;
+        $this->field->default_value = NULL;
+        $this->field->date_modified = '2010-12-22 01:01:01';
+        $this->field->deleted = 0;
+        $this->field->audited = 0;
+        $this->field->massupdate = 0;
+        $this->field->duplicate_merge = 0;
+        $this->field->reportable = 1;
+        $this->field->importable = 'true';
+        $this->field->ext1 = NULL;
+        $this->field->ext2 = NULL;
+        $this->field->ext3 = NULL;
+        $this->field->ext4 = NULL;
     }
-
-
+    
     public function tearDown()
     {
-        unset($GLOBALS['price_formulas']['Customformula1']);
-        unset($GLOBALS['price_formulas']['Customformula2']);
-        unlink($this->customDir . "/customformula1.php");
-        unlink($this->customDir . "/customformula2.php");
-        rmdir($this->customDir);
+        // Reset Original Global dbType
+        $GLOBALS['db']->dbType = $this->_originaldbType;
     }
-
-    public function testLoadCustomFormulas()
+    
+    public function testCurrencyDbType()
     {
-      require_once "modules/ProductTemplates/Formulas.php";
-
-      // At this point I expect to have 7 formulas (5 standard and 2 custom).
-      $expectedIndexes = 7;
-      $this->assertEquals($expectedIndexes, count($GLOBALS['price_formulas']));
-
-      // Check if standard formulas are still in the array
-      $this->assertArrayHasKey("Fixed", $GLOBALS['price_formulas']);
-      $this->assertArrayHasKey("ProfitMargin", $GLOBALS['price_formulas']);
-      $this->assertArrayHasKey("PercentageMarkup", $GLOBALS['price_formulas']);
-      $this->assertArrayHasKey("PercentageDiscount", $GLOBALS['price_formulas']);
-      $this->assertArrayHasKey("IsList", $GLOBALS['price_formulas']);
-      // Check if custom formulas are in the array
-      $this->assertArrayHasKey("Customformula1", $GLOBALS['price_formulas']);
-      $this->assertArrayHasKey("Customformula2", $GLOBALS['price_formulas']);
-
-      // Check if CustomFormula1 point to the right file (/custom/modules/ProductTemplates/formulas/customformula1.php)
-      $_customFormula1FileName = "custom/modules/ProductTemplates/formulas/customformula1.php";
-      $this->assertEquals($_customFormula1FileName, $GLOBALS['price_formulas']['Customformula1']);
+        $type = 'decimal';
+        $this->field->len = NULL;
+        $dbTypeString = $this->field->get_db_type();
+        $this->assertRegExp('/' . $type . ' *\(/', $dbTypeString);
+        $dbTypeString = $this->field->get_db_type();
+        $this->field->len = 20;
+        $this->assertRegExp('/' . $type . ' *\(/', $dbTypeString);
     }
 }
-

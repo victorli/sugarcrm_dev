@@ -576,9 +576,7 @@ class SugarApplication
 	    if(isset($_REQUEST['MSID'])) {
 			session_id($_REQUEST['MSID']);
 			session_start();
-			if(isset($_SESSION['user_id']) && isset($_SESSION['seamless_login'])){
-				unset ($_SESSION['seamless_login']);
-			}else{
+            if(!isset($_SESSION['user_id'])){
 				if(isset($_COOKIE['PHPSESSID'])){
 	       			self::setCookie('PHPSESSID', '', time()-42000, '/');
         		}

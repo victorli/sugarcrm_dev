@@ -38,7 +38,7 @@
 require_once('include/utils/LogicHook.php');
 require_once('include/MVC/View/SugarView.php');
 
-class Bu46122Test extends Sugar_PHPUnit_Framework_TestCase
+class Bug46122Test extends Sugar_PHPUnit_Framework_TestCase
 {
     var $hasCustomModulesLogicHookFile = false;
     var $hasCustomContactLogicHookFile = false;
@@ -93,7 +93,7 @@ class Bu46122Test extends Sugar_PHPUnit_Framework_TestCase
     {
         $GLOBALS['logic_hook'] = new LogicHookMock();
         $hooks = $GLOBALS['logic_hook']->getHooks('Contacts');
-        $sugarViewMock = new SugarViewMock();
+        $sugarViewMock = new Bug46122TestSugarViewMock();
         $sugarViewMock->module = 'Contacts';
         $sugarViewMock->process();
         $expectedHookCount = isset($hooks['after_ui_frame']) ? count($hooks['after_ui_frame']) : 0;
@@ -105,7 +105,7 @@ class Bu46122Test extends Sugar_PHPUnit_Framework_TestCase
     {
         $GLOBALS['logic_hook'] = new LogicHookMock();
         $hooks = $GLOBALS['logic_hook']->getHooks('');
-        $sugarViewMock = new SugarViewMock();
+        $sugarViewMock = new Bug46122TestSugarViewMock();
         $sugarViewMock->module = '';
         $sugarViewMock->process();
         $expectedHookCount = isset($hooks['after_ui_frame']) ? count($hooks['after_ui_frame']) : 0;
@@ -113,7 +113,7 @@ class Bu46122Test extends Sugar_PHPUnit_Framework_TestCase
     }
 }
 
-class SugarViewMock extends SugarView
+class Bug46122TestSugarViewMock extends SugarView
 {
     var $options = array();
     //no-opt methods we override

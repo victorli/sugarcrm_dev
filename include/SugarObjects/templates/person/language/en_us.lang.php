@@ -83,4 +83,8 @@ $mod_strings = array(
 'LBL_WORK_PHONE'=>'Work Phone',
 'LNK_IMPORT_VCARD' => 'Create From vCard',
 'LBL_ANY_EMAIL' => 'Any Email',
+
+'LBL_EDIT_BUTTON' => 'Edit',
+'LBL_REMOVE' => 'Remove',
+
 );

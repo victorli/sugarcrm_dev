@@ -56,7 +56,7 @@
 <link rel="stylesheet" type="text/css" href="{sugar_getjspath file='modules/Connectors/tpls/tabs.css'}"/>
 <form name="GlobalSearchSettings" method="POST">
 	<input type="hidden" name="module" value="Administration">
-	<input type="hidden" name="action" value="updateWirelessEnabledModules">
+	<input type="hidden" name="action" value="saveGlobalSearchSettings">
 	<input type="hidden" name="enabled_modules" value="">
 
 	<table border="0" cellspacing="1" cellpadding="1">
