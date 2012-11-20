@@ -74,47 +74,20 @@ class SugarWidgetFieldCurrency extends SugarWidgetFieldInt
 
     function & displayList($layout_def)
         {
-            static $currencies;
+            $symbol = '';
+            $currency_id = '-99';
             // If it's not grouped, or if it's grouped around a system currency column, look up the currency symbol so we can display it next to the amount
             if ( empty($layout_def['group_function']) || $this->isSystemCurrency($layout_def) ) {
-                if ( isset($layout_def['varname']) ) {
-                    $key = $layout_def['varname'];
-                } else {
-                    $key = $this->_get_column_alias($layout_def);
+                $c = $this->getCurrency($layout_def);
+                if(!empty($c['currency_id']) && !empty($c['currency_symbol']))
+                {
+                    $symbol = $c['currency_symbol'];
+                    $currency_id = $c['currency_id'];
                 }
-                $key = strtoupper($key);
-                
-                if ( $this->isSystemCurrency($layout_def) ) {
-                    $currency_id = '-99';
-                } else {
-                    if (isset($layout_def['fields'][$key.'_CURRENCY']))
-                        $currency_id = $layout_def['fields'][$key.'_CURRENCY'];
-                    else     
-                        $currency_id = $layout_def['fields'][$this->getTruncatedColumnAlias($this->_get_column_alias($layout_def)."_currency")];
-                }
-                if ( empty($currency_id) ) {
-                    $currency_id = '-99';
-                }
-                
-                if ( !isset($currencies[$currency_id]) ) {
-                    $currencies[$currency_id] = new Currency();
-                    $currencies[$currency_id]->retrieve($currency_id);
-                }
-                if(!empty($currencies[$currency_id]->symbol)){
-                    $symbol = $currencies[$currency_id]->symbol.' ';
-                } else {
-                    $symbol = '';
-                }
-            } else {
-                $symbol = '';
             }
-//                $global_currency_obj = get_currency();
-//                  $display = format_number($this->displayListPlain($layout_def), 2, 2, array('convert' => true, 'currency_symbol' => true));
-//                $display =  $global_currency_obj->symbol. round($global_currency_obj->convertFromDollar($this->displayListPlain($layout_def)),2);
-            $value = $this->displayListPlain($layout_def);
-            $display = $symbol.$value;
-            
-            
+            $layout_def['currency_symbol'] = $symbol;
+            $layout_def['currency_id'] = $currency_id;
+            $display = $this->displayListPlain($layout_def);
             
         if(!empty($layout_def['column_key'])){
             $field_def = $this->reporter->all_fields[$layout_def['column_key']];    
@@ -146,8 +119,8 @@ class SugarWidgetFieldCurrency extends SugarWidgetFieldInt
     }
                              
     function displayListPlain($layout_def) {
-//        $value = $this->_get_list_value($layout_def);
-        $value = format_number(parent::displayListPlain($layout_def), null, null, array('convert' => false, 'currency_symbol' => false));
+        $cs = $this->getCurrency($layout_def);
+        $value = format_number(parent::displayListPlain($layout_def), null, null, array_merge(array('convert' => false), $cs));
         return $value;
     }                                                          
  function queryFilterEquals(&$layout_def)
@@ -236,5 +209,45 @@ class SugarWidgetFieldCurrency extends SugarWidgetFieldInt
     return false;
  }
 
+    /**
+     * Return currency for layout_def
+     * @param $layout_def mixed
+     * @return array Array with currency symbol and currency ID
+     */
+    protected function getCurrency($layout_def)
+    {
+        $currency_id = false;
+        $currency_symbol = false;
+        if(isset($layout_def['currency_symbol']) && isset($layout_def['currency_id']))
+        {
+            $currency_symbol = $layout_def['currency_symbol'];
+            $currency_id = $layout_def['currency_id'];
+        }
+        else
+        {
+            $key = strtoupper(isset($layout_def['varname']) ? $layout_def['varname'] : $this->_get_column_alias($layout_def));
+            if ( $this->isSystemCurrency($layout_def) )
+            {
+                $currency_id = '-99';
+            }
+            elseif (isset($layout_def['fields'][$key.'_CURRENCY']))
+            {
+                $currency_id = $layout_def['fields'][$key.'_CURRENCY'];
+            }
+            elseif(isset($layout_def['fields'][$this->getTruncatedColumnAlias($this->_get_column_alias($layout_def)."_currency")]))
+            {
+                $currency_id = $layout_def['fields'][$this->getTruncatedColumnAlias($this->_get_column_alias($layout_def)."_currency")];
+            }
+            if($currency_id)
+            {
+                $currency = BeanFactory::getBean('Currencies', $currency_id);
+                if(!empty($currency ->symbol))
+                {
+                    $currency_symbol = $currency ->symbol;
+                }
+            }
+        }
+        return array('currency_symbol' => $currency_symbol, 'currency_id' => $currency_id);
+    }
 }
 ?>

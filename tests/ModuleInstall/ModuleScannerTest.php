@@ -133,10 +133,33 @@ EOQ;
 		$this->assertTrue(!empty($errors));
     }
 
+    /**
+     * @group bug58072
+     */
+	public function testLockConfig()
+    {
+
+    	$fileModContents = <<<EOQ
+<?PHP
+	\$GLOBALS['sugar_config']['moduleInstaller']['test'] = true;
+    	\$manifest = array();
+    	\$installdefs = array();
+?>
+EOQ;
+		file_put_contents($this->fileLoc, $fileModContents);
+		$ms = new MockModuleScanner();
+		$ms->config['test'] = false;
+		$ms->lockConfig();
+		MSLoadManifest($this->fileLoc);
+		$errors = $ms->checkConfig($this->fileLoc);
+		$this->assertTrue(!empty($errors), "Not detected config change");
+		$this->assertFalse($ms->config['test'], "config was changed");
+    }
 }
 
 class MockModuleScanner extends  ModuleScanner
 {
+    public $config;
     public function isPHPFile($contents) {
         return parent::isPHPFile($contents);
     }

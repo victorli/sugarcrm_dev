@@ -50,7 +50,7 @@ SUGAR.util.doWhen(function(){
 
 <table cellpadding="0" cellspacing="0" border="0" width="100%" id="">
 <tr>
-<td class="buttons" align="left" NOWRAP width="20%">
+<td class="buttons" align="left" NOWRAP width="80%">
 <div class="actionsContainer">
 {{if !isset($form.buttons)}}
     {{sugar_button module="$module" id="EDIT" view="$view" form_id="formDetailView" appendTo="detail_header_buttons"}}
@@ -100,7 +100,7 @@ SUGAR.util.doWhen(function(){
 </td>
 
 
-<td align="right" width="80%">{$ADMIN_EDIT}
+<td align="right" width="20%">{$ADMIN_EDIT}
 	{{if $panelCount == 0}}
 	    {{* Render tag for VCR control if SHOW_VCR_CONTROL is true *}}
 		{{if $SHOW_VCR_CONTROL}}

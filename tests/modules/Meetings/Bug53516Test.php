@@ -1,5 +1,4 @@
 <?php
- if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
@@ -36,12 +35,52 @@
  ********************************************************************************/
 
 
+/**
+ * Bug #53516
+ * Workflow on related module stops meetings from saving
+ *
+ * @author vromanenko@sugarcrm.com
+ * @ticket 53516
+ */
+class Bug53516Test extends Sugar_PHPUnit_Framework_TestCase
+{
+    /**
+     * @var Contact
+     */
+    public $contact;
 
+    protected function setUp()
+    {
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('current_user', array(true, 1));
+        $this->contact = SugarTestContactUtilities::createContact();
+    }
 
-$sugar_version      = '6.5.8';
-$sugar_db_version   = '6.5.8';
-$sugar_flavor       = 'CE';
-$sugar_build		= '8613';
-$sugar_timestamp    = '2012-11-19 10:26am';
+    protected function tearDown()
+    {
+        SugarTestContactUtilities::removeAllCreatedContacts();
+        SugarTestContactUtilities::removeCreatedContactsEmailAddresses();
+        SugarTestContactUtilities::removeCreatedContactsUsersRelationships();
+        SugarTestMeetingUtilities::removeAllCreatedMeetings();
+        SugarTestMeetingUtilities::removeMeetingContacts();
+        SugarTestMeetingUtilities::removeMeetingUsers();
+        SugarTestHelper::tearDown();
+    }
 
-?>
+    /**
+     * Ensure that saving relationship changes do not fail with fatal error and works fine
+     * when saving relation field with type id
+     *
+     * @group 53516
+     */
+    public function testSaveRelationOnRelateFieldWithIdType()
+    {
+        $meeting = SugarTestMeetingUtilities::createMeeting();
+        $meeting->in_workflow = true;
+        $meeting->not_use_rel_in_req = true;
+        $meeting->contact_id = $meeting->new_rel_id = $this->contact->id;
+        $meeting->new_rel_relname = 'contact_id';
+        $meeting->save_relationship_changes(false);
+    }
+}

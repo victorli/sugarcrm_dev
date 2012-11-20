@@ -115,12 +115,14 @@ abstract class SugarRelationship
 
     /**
      * @param  $link Link2 removes all the beans associated with this link from the relationship
-     * @return boolean      true if it was successful, false if it was not
+     * @return boolean     true if all beans were successfully removed or there
+     *                     were not related beans, false otherwise
      */
     public function removeAll($link)
     {
         $focus = $link->getFocus();
         $related = $link->getBeans();
+        $result = true;
         foreach($related as $relBean)
         {
             if (empty($relBean->id)) {
@@ -128,12 +130,18 @@ abstract class SugarRelationship
             }
 
             if ($link->getSide() == REL_LHS)
-                return $this->remove($focus, $relBean);
+            {
+                $sub_result = $this->remove($focus, $relBean);
+            }
             else
-                return $this->remove($relBean, $focus);
+            {
+                $sub_result = $this->remove($relBean, $focus);
+            }
+
+            $result = $result && $sub_result;
         }
 
-        return false;
+        return $result;
     }
 
     /**
@@ -433,6 +441,14 @@ abstract class SugarRelationship
                 if (empty($bean->deleted) && empty($bean->in_save))
                 {
                     $bean->save();
+                }
+                else
+                {
+                    // Bug 55942 save the in-save id which will be used to send workflow alert later
+                    if (isset($bean->id) && !empty($_SESSION['WORKFLOW_ALERTS']))
+                    {
+                        $_SESSION['WORKFLOW_ALERTS']['id'] = $bean->id;
+                    }
                 }
             }
         }

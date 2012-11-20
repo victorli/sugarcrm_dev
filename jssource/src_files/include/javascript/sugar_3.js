@@ -2949,7 +2949,17 @@ SUGAR.util = function () {
                   	}else{
                         // Bug #49205 : Subpanels fail to load when selecting subpanel tab
                         // execute script in global context
-                        SUGAR.util.globalEval(result[2]);
+                        // Bug #57288 : don't eval with html comment-out script; that causes syntax error in IE
+                        var srcRegex = /<!--([\s\S]*?)-->/;
+                        var srcResult = srcRegex.exec(result[2]);
+                        if (srcResult && srcResult.index > -1)
+                        {
+                            SUGAR.util.globalEval(srcResult[1]);
+                        }
+                        else
+                        {
+                            SUGAR.util.globalEval(result[2]);
+                        }
                   	}
 	              }
 	              catch(e) {

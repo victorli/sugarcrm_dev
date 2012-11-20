@@ -2330,7 +2330,7 @@ SE.composeLayout = {
 			   && ( this['ccHidden'+idx]  == false && this['bccHidden'+idx] == false) )
 			Dom.addClass("add_addr_options_tr"+idx, "yui-hidden");
 
-		// SE.composeLayout.resizeEditor(idx);
+		SE.composeLayout.resizeEditor(idx);
     },
     /**
     *  Hide the cc and bcc fields if they were shown.

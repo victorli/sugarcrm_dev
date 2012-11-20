@@ -637,7 +637,18 @@ class SugarEmailAddress extends SugarBean {
         }
     }
 
-    function AddUpdateEmailAddress($addr,$invalid=0,$opt_out=0,$id=null)
+    /**
+     * Creates or Updates an entry in the email_addresses table, depending
+     * on if the email address submitted matches a previous entry (case-insensitive)
+     * @param String $addr - email address
+     * @param int $invalid - is the email address marked as Invalid?
+     * @param int $opt_out - is the email address marked as Opt-Out?
+     * @param String $id - the GUID of the original SugarEmailAddress bean,
+     *        in case a "email has changed" WorkFlow has triggered - hack to allow workflow-induced changes
+     *        to propagate to the new SugarEmailAddress - see bug 39188
+     * @return String GUID of Email Address or '' if cleaned address was empty.
+     */
+    public function AddUpdateEmailAddress($addr,$invalid=0,$opt_out=0,$id=null)
     {
         // sanity checks to avoid SQL injection.
         $invalid = intval($invalid);
@@ -646,53 +657,71 @@ class SugarEmailAddress extends SugarBean {
         $address = $this->db->quote($this->_cleanAddress($addr));
         $addressCaps = strtoupper($address);
 
-        if ($id)
-        {
+        // determine if we have a matching email address
+        $q = "SELECT * FROM email_addresses WHERE email_address_caps = '{$addressCaps}' and deleted=0";
+        $r = $this->db->query($q);
+        $duplicate_email = $this->db->fetchByAssoc($r);
+
+        // check if we are changing an email address, where workflow might be in play
+        if ($id) {
             $r = $this->db->query("SELECT * FROM email_addresses WHERE id='".$this->db->quote($id)."'");
-            $a = $this->db->fetchByAssoc($r);
+            $current_email = $this->db->fetchByAssoc($r);
         }
-        else
-        {
-            $a = null;
+        else {
+            $current_email = null;
         }
 
-        if(!empty($a) && !empty($a['id'])) {
-            if ($a['invalid_email'] != $invalid ||
-                $a['opt_out']       != $opt_out ||
-                // bug #39378 - did not allow change of case of an email address
-                strnatcmp(trim($a['email_address']), trim($address)) != 0)
-            {
-                if (isset($this->stateBeforeWorkflow[$a['id']]))
-                {
-                    $data = $this->stateBeforeWorkflow[$a['id']];
-                }
-                else
-                {
-                    $data = $a;
-                }
+        // unless workflow made changes, assume parameters are what to use.
+        $new_opt_out = $opt_out;
+        $new_invalid = $invalid;
+        if (!empty($current_email['id']) && isset($this->stateBeforeWorkflow[$current_email['id']])) {
+            if ($current_email['invalid_email'] != $invalid ||
+                $current_email['opt_out'] != $opt_out) {
 
-                $upd_q = 'UPDATE ' . $this->table_name . ' ' . 
-                         'SET email_address=\'' . $address . '\', '. 
-                         (isset($data['invalid_email']) && $data['invalid_email'] == $a['invalid_email'] ? ('invalid_email=' . $invalid . ', ') : '') .
-                         (isset($data['opt_out']) && $data['opt_out'] == $a['opt_out'] ? ('opt_out=' . $opt_out . ', ') : '') .
-                         'date_modified=\'' . gmdate($GLOBALS['timedate']->get_db_date_time_format()) . '\' ' .
-                         'WHERE id=\'' . $this->db->quote($a['id']) . '\'';
+                // workflow could be in play
+                $before_email = $this->stateBeforeWorkflow[$current_email['id']];
+
+                // our logic is as follows: choose from parameter, unless workflow made a change to the value, then choose final value
+                if (intval($before_email['opt_out']) != intval($current_email['opt_out'])) {
+                    $new_opt_out = intval($current_email['opt_out']);
+                }
+                if (intval($before_email['invalid_email']) != intval($current_email['invalid_email'])) {
+                    $new_invalid = intval($current_email['invalid_email']);
+                }
+            }
+        }
+
+        // determine how we are going to put in this address - UPDATE or INSERT
+        if (!empty($duplicate_email['id'])) {
+
+            // address_caps matches - see if we're changing fields
+            if ($duplicate_email['invalid_email'] != $new_invalid ||
+                $duplicate_email['opt_out'] != $new_opt_out ||
+                (trim($duplicate_email['email_address']) != $address)) {
+                $upd_q = 'UPDATE ' . $this->table_name . ' ' .
+                    'SET email_address=\'' . $address . '\', ' .
+                    'invalid_email=' . $new_invalid . ', ' .
+                    'opt_out=' . $new_opt_out . ', ' .
+                    'date_modified=' . $this->db->now() . ' ' .
+                    'WHERE id=\'' . $this->db->quote($duplicate_email['id']) . '\'';
                 $upd_r = $this->db->query($upd_q);
             }
-            return $a['id'];
-        } else {
+            return $duplicate_email['id'];
+        }
+        else {
+            // no case-insensitive address match - it's new, or undeleted.
             $guid = '';
             if(!empty($address)){
                 $guid = create_guid();
                 $now = TimeDate::getInstance()->nowDb();
                 $qa = "INSERT INTO email_addresses (id, email_address, email_address_caps, date_created, date_modified, deleted, invalid_email, opt_out)
-                        VALUES('{$guid}', '{$address}', '{$addressCaps}', '$now', '$now', 0 , $invalid, $opt_out)";
+                        VALUES('{$guid}', '{$address}', '{$addressCaps}', '$now', '$now', 0 , $new_invalid, $new_opt_out)";
                 $this->db->query($qa);
             }
             return $guid;
         }
     }
-
+ 
     /**
      * Returns Primary or newest email address
      * @param object $focus Object in focus

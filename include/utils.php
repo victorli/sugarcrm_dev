@@ -4876,7 +4876,7 @@ function getDuplicateRelationListWithTitle($def, $var_def, $module)
         $temp_module_strings = return_module_language($current_language, $module);
         $temp_duplicate_array = array_diff_assoc($def, $select_array);
         $temp_duplicate_array = array_merge($temp_duplicate_array, array_intersect($select_array, $temp_duplicate_array));
-        
+
         foreach ($temp_duplicate_array as $temp_key => $temp_value)
         {
             // Don't add duplicate relationships
@@ -4893,7 +4893,6 @@ function getDuplicateRelationListWithTitle($def, $var_def, $module)
             $select_array[$key] .= ' (' . $key . ')';
         }
     }
-    
     asort($select_array);
     return $select_array;
 }

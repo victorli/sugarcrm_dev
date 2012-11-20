@@ -297,15 +297,18 @@ class Task extends SugarBean {
 		    $task_fields['SET_COMPLETE'] = $setCompleteUrl . SugarThemeRegistry::current()->getImage("close_inline","title=".translate('LBL_LIST_CLOSE','Tasks')." border='0'",null,null,'.gif',translate('LBL_LIST_CLOSE','Tasks'))."</a>";
 		}
 
-		//make sure we grab the localized version of the contact name, if a contact is provided
-		if (!empty($this->contact_id)) {
-            // Bug# 46125 - make first name, last name, salutation and title of Contacts respect field level ACLs
-            $contact = BeanFactory::getBean("Contacts", $this->contact_id);
-			if(isset($contact->id)) {
-			    $this->contact_name = $contact->full_name;
-                $this->contact_phone = $contact->phone_work;
-			}
-		}
+        // make sure we grab the localized version of the contact name, if a contact is provided
+        if (!empty($this->contact_id))
+        {
+            $contact_temp = BeanFactory::getBean("Contacts", $this->contact_id);
+            if (!empty($contact_temp))
+            {
+                // Make first name, last name, salutation and title of Contacts respect field level ACLs
+                $contact_temp->_create_proper_name_field();
+                $this->contact_name = $contact_temp->full_name;
+                $this->contact_phone = $contact_temp->phone_work;
+            }
+        }
 
 		$task_fields['CONTACT_NAME']= $this->contact_name;
 		$task_fields['CONTACT_PHONE']= $this->contact_phone;

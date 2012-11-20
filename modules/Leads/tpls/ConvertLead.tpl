@@ -36,6 +36,7 @@
 
 *}
 
+{{assign var="selectRelation" value=$selectFields[$module]}}
 <span class="color">{$ERROR}</span>
 {{foreach name=section from=$sectionPanels key=label item=panel}}
 {{counter name="panelCount" print=false}}
@@ -60,16 +61,18 @@ mod_array.push('{{$module}}');//Bug#50590 add all required modules to mod_array
 </script>
 {/if}
 {if !$def.required || !empty($def.select)}
-<input class="checkbox" type="checkbox" name="new{{$module}}" id="new{{$module}}" onclick="toggleDisplay('create{{$module}}');if (typeof(addRemoveDropdownElement) == 'function') addRemoveDropdownElement('{{$module}}');{{if !empty($def.select)}}toggle{{$module}}Select();{{/if}}">
+<input class="checkbox" type="checkbox" name="new{{$module}}" id="new{{$module}}" onclick="toggleDisplay('create{{$module}}');if (typeof(addRemoveDropdownElement) == 'function') addRemoveDropdownElement('{{$module}}');{if !empty($def.select)}toggle{{$module}}Select();{/if}">
 <script type="text/javascript">
- {{if !empty($def.select)}}
+{{if !empty($selectRelation)}}
+{if !empty($def.select)}
  toggle{{$module}}Select = function(){ldelim} 
     var inputs = document.getElementById('select{{$module}}').getElementsByTagName('input');
 	for(var i in inputs) {ldelim}inputs[i].disabled = !inputs[i].disabled;{rdelim}
 	var buttons = document.getElementById('select{{$module}}').getElementsByTagName('button');
     for(var i in buttons) {ldelim}buttons[i].disabled = !buttons[i].disabled;{rdelim}
  {rdelim}
- {{/if}}
+{/if}
+{{/if}}
  {if !empty($def.default_action) && $def.default_action == "create"}
      {if $lead_conv_activity_opt == 'move' || $lead_conv_activity_opt == 'copy' || $lead_conv_activity_opt == ''}
         YAHOO.util.Event.onContentReady('lead_conv_ac_op_sel', function(){ldelim}
@@ -80,9 +83,11 @@ mod_array.push('{{$module}}');//Bug#50590 add all required modules to mod_array
 		document.getElementById('new{{$module}}').checked = true;
                 if (typeof(addRemoveDropdownElement) == 'function')
                     addRemoveDropdownElement('{{$module}}');
-		{{if !empty($def.select)}}
+        {{if !empty($selectRelation)}}
+        {if !empty($def.select)}
 		toggle{{$module}}Select();
-		{{/if}}
+        {/if}
+        {{/if}}
 	{rdelim});
  {/if}
 {/if}
@@ -90,28 +95,30 @@ mod_array.push('{{$module}}');//Bug#50590 add all required modules to mod_array
 </td><td>
 {sugar_translate label='{{$label}}' module='Leads'}
 </td><td>
-{{if !empty($def.select)}}
+{{if !empty($selectRelation)}}
+{if !empty($def.select)}
     {sugar_translate label='LNK_SELECT_{{$module|strtoupper}}' module='Leads'}
     {if $def.required }
         <span class="required">{{$APP.LBL_REQUIRED_SYMBOL}}</span>
     {/if}
 </td><td id ="select{{$module}}">
-{{sugar_field parentFieldArray='contact_def' vardef=$contact_def[$def.select] displayType='EditView' displayParams=$displayParams formName=$form_name call_back_function='set_return_lead_conv'}}
+{{sugar_field parentFieldArray='contact_def' vardef=$contact_def[$selectRelation] displayType='EditView' displayParams=$displayParams formName=$form_name call_back_function='set_return_lead_conv'}}
 <script>
 if (typeof(sqs_objects) == "undefined") sqs_objects = [];
-sqs_objects['{{$form_name}}_{{$def.select}}'] = {ldelim}
+sqs_objects['{{$form_name}}_{$selectFields.{{$module}}}'] = {ldelim}
     form          : '{{$form_name}}',
     method        : 'query',
     modules       : ['{{$module}}'],
     group         : 'or',
     field_list    : ['name', 'id'],
-    populate_list : ['{{$def.select}}', '{{$contact_def[$def.select].id_name}}'],
+    populate_list : ['{$selectFields.{{$module}}}', '{$contact_def[$selectFields.{{$module}}].id_name}'],
     conditions    : [{ldelim}'name':'name','op':'like','end':'%','value':''{rdelim}],
-    required_list : ['{{$contact_def[$def.select].id_name}}'],
+    required_list : ['{$contact_def[$selectFields.{{$module}}].id_name}'],
     order         : 'name',
     limit         : '10'
 {rdelim}
 </script>
+{/if}
 {{/if}}
 </td></tr></table>
 </h4>

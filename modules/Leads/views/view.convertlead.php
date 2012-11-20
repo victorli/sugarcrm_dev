@@ -121,6 +121,27 @@ class ViewConvertLead extends SugarView
                 'initial_filter' => '&name_advanced=' . urlencode($this->focus->account_name))
             );
         }
+
+        $relatedFields = $this->contact->get_related_fields();
+        $selectFields = array();
+        foreach ($this->defs as $moduleName => $mDefs)
+        {
+            if (!empty($mDefs[$ev->view]['select']) && !empty($relatedFields[$mDefs[$ev->view]['select']]))
+            {
+                $selectFields[$moduleName] = $mDefs[$ev->view]['select'];
+                continue;
+            }
+            foreach ($relatedFields as $fDef)
+            {
+                if (!empty($fDef['link']) && !empty($fDef['module']) && $fDef['module'] == $moduleName)
+                {
+                    $selectFields[$moduleName] = $fDef['name'];
+                    break;
+                }
+            }
+        }
+        $smarty->assign('selectFields', $selectFields);
+
         $smarty->assign("contact_def", $this->contact->field_defs);
         $smarty->assign("form_name", "ConvertLead");
         $smarty->assign("form_id", "ConvertLead");

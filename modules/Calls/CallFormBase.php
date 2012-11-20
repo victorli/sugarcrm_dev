@@ -403,7 +403,12 @@ function handleSave($prefix,$redirect=true,$useRequired=false) {
 	    	$focus->contacts_arr = $contactInvitees;
 	        $focus->leads_arr = array();
 	    	$focus->leads_arr = $leadInvitees;
-
+	    	if(!empty($_POST['parent_id']) && $_POST['parent_type'] == 'Contacts') {
+	    		$focus->contacts_arr[] = $_POST['parent_id'];
+	    	}
+	        if(!empty($_POST['parent_id']) && $_POST['parent_type'] == 'Leads') {
+	    		$focus->leads_arr[] = $_POST['parent_id'];
+	    	}
 	    	// Call the Call module's save function to handle saving other fields besides
 	    	// the users and contacts relationships
             $focus->update_vcal = false;    // Bug #49195 : don't update vcal b/s related users aren't saved yet, create vcal cache below

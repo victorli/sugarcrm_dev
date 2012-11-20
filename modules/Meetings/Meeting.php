@@ -497,14 +497,17 @@ class Meeting extends SugarBean {
 		}
 		$this->fill_in_additional_detail_fields();
 
-		//make sure we grab the localized version of the contact name, if a contact is provided
-		if (!empty($this->contact_id)) {
-			global $locale;
-            // Bug# 46125 - make first name, last name, salutation and title of Contacts respect field level ACLs
-			$contact_temp = BeanFactory::getBean("Contacts", $this->contact_id);
-            $contact_temp->_create_proper_name_field();
-            $this->contact_name = $contact_temp->full_name;
-		}
+        // make sure we grab the localized version of the contact name, if a contact is provided
+        if (!empty($this->contact_id))
+        {
+            $contact_temp = BeanFactory::getBean("Contacts", $this->contact_id);
+            if (!empty($contact_temp))
+            {
+                // Make first name, last name, salutation and title of Contacts respect field level ACLs
+                $contact_temp->_create_proper_name_field();
+                $this->contact_name = $contact_temp->full_name;
+            }
+        }
 
         $meeting_fields['CONTACT_ID'] = $this->contact_id;
         $meeting_fields['CONTACT_NAME'] = $this->contact_name;

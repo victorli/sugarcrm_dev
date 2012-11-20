@@ -64,6 +64,8 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
         'rhs_subpanel' => "default",
     );
     private $packName = 'test_package';
+    private $df = null;
+    private $field = null;
 
     public function setUp()
     {
@@ -96,12 +98,50 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
         $this->relationContactAccount = $relationContactAccount->addFromPost();
         $relationContactAccount->save();
         $relationContactAccount->build();
+        SugarTestHelper::setUp('relation', array(
+            'Contacts',
+            'Accounts'
+        ));
+
+        //create a new field for accounts
+        $this->field = get_widget('varchar');
+        $this->field->id = 'Accountstest_45339333_c';
+        $this->field->name = 'test_45339333_c';
+        $this->field->vname = 'LBL_TEST_CUSTOM_C';
+        $this->field->help = NULL;
+        $this->field->custom_module = 'Accounts';
+        $this->field->type = 'varchar';
+        $this->field->label = 'LBL_TEST_CUSTOM_C';
+        $this->field->len = 255;
+        $this->field->required = 0;
+        $this->field->default_value = NULL;
+        $this->field->date_modified = '2012-10-31 02:23:23';
+        $this->field->deleted = 0;
+        $this->field->audited = 0;
+        $this->field->massupdate = 0;
+        $this->field->duplicate_merge = 0;
+        $this->field->reportable = 1;
+        $this->field->importable = 'true';
+        $this->field->ext1 = NULL;
+        $this->field->ext2 = NULL;
+        $this->field->ext3 = NULL;
+        $this->field->ext4 = NULL;
+
+        //add field to metadata
+        $this->df = new DynamicField('Accounts');
+        $this->df->setup(new Account());
+        $this->df->addFieldObject($this->field);
+        $this->df->buildCache('Accounts');
+        VardefManager::clearVardef();
+        VardefManager::refreshVardefs('Accounts', 'Account');
+
 
         $this->mbPackage = new Bug45339MBPackageMock($this->packName);
     }
 
     public function tearDown()
     {
+        $this->df->deleteField($this->field);
         $relationshipAccountContact = new DeployedRelationships($this->relationAccountContact->getLhsModule());
         $relationshipAccountContact->delete($this->relationAccountContact->getName());
         $relationshipAccountContact->save();
@@ -112,7 +152,7 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
 
         SugarRelationshipFactory::deleteCache();
 
-        unset($_REQUEST);
+        $_REQUEST = array();
 
         SugarTestHelper::tearDown();
     }
@@ -156,15 +196,15 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
         );
 
         /* @var $this->mbPackage MBPackage */
-        $accountsAllFiles = $this->mbPackage->getCustomRelationshipsMetaFilesByModuleNameTest('Accounts');
-        $accountsOnlyMetaFile = $this->mbPackage->getCustomRelationshipsMetaFilesByModuleNameTest('Accounts', true, true);
+        $accountsAllFiles = $this->mbPackage->getCustomRelationshipsMetaFilesByModuleNameTest('Accounts',false,false, array('Accounts','Contacts'));
+        $accountsOnlyMetaFile = $this->mbPackage->getCustomRelationshipsMetaFilesByModuleNameTest('Accounts', true, true, array('Accounts'));
         $wrongModuleName = $this->mbPackage->getCustomRelationshipsMetaFilesByModuleNameTest('Wrong_module_name');
 
         $this->assertContains($accountContactMetaPath, $accountsAllFiles);
         $this->assertContains($accountContactTablePath, $accountsAllFiles);
         $this->assertContains($contactAccountMetaPath, $accountsAllFiles);
 
-        $this->assertContains($accountContactMetaPath, $accountsOnlyMetaFile);
+        $this->assertNotContains($accountContactMetaPath, $accountsOnlyMetaFile);
         $this->assertNotContains($contactAccountMetaPath, $accountsOnlyMetaFile);
 
         $this->assertInternalType('array', $wrongModuleName);
@@ -174,7 +214,7 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
     /**
      * @group 45339
      */
-    public function testGetExtensionsList()
+   public function testGetExtensionsList()
     {
         // Create new relationship between Leads and Accounts
         $_REQUEST['view_module'] = "Leads";
@@ -188,6 +228,7 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
         $deployedRelation->save();
         $deployedRelation->build();
 
+        //create expected file paths from custom extensions
         $accountContactRelInAccountVardefExtensions = sprintf(
                 'custom%1$sExtension%1$smodules%1$sAccounts%1$sExt%1$sVardefs%1$s' . $this->relationAccountContact->getName() . '_Accounts.php',
                 DIRECTORY_SEPARATOR
@@ -200,11 +241,16 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
                 'custom%1$sExtension%1$smodules%1$sAccounts%1$sExt%1$sVardefs%1$s' . $relationLeadAccount->getName() . '_Accounts.php',
                 DIRECTORY_SEPARATOR
         );
+        $sugarfieldAccountVardefExtensions = sprintf(
+                'custom%1$sExtension%1$smodules%1$sAccounts%1$sExt%1$sVardefs%1$s' .'sugarfield_'. $this->field->name . '.php',
+                DIRECTORY_SEPARATOR
+        );
 
-        /* @var $this->mbPackage MBPackage */
-        $accountAllExtensions = $this->mbPackage->getExtensionsListTest('Accounts');
-        $accountExtContacts = $this->mbPackage->getExtensionsListTest('Accounts', array('Contacts'));
-        $accountExtWithWrongRelationship = $this->mbPackage->getExtensionsListTest('Accounts', array(''));
+        //call mbPackage to retrieve arrays of Files to be exported using different test parameters
+        $accountAllExtensions = $this->mbPackage->getExtensionsListTest('Accounts',array('Accounts','Contacts','Leads'));
+        $accountExtContacts = $this->mbPackage->getExtensionsListTest('Accounts',array('Accounts','Contacts'));
+        $accountExtOnly = $this->mbPackage->getExtensionsListTest('Accounts', array('Accounts'));
+        $contactExtWithWrongRelationship = $this->mbPackage->getExtensionsListTest('Contacts', array(''));
         $wrongModuleName = $this->mbPackage->getExtensionsListTest('Wrong_module_name');
 
         // Remove relationship
@@ -212,18 +258,27 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
         $deployedRelation->save();
         SugarRelationshipFactory::deleteCache();
 
-        $this->assertContains($accountContactRelInAccountVardefExtensions, $accountAllExtensions);
-        $this->assertContains($contactAccountRelInAccountVardefExtensions, $accountAllExtensions);
-        $this->assertContains($leadAccountRelInAccountVardefExtensions, $accountAllExtensions);
+        //assert that contact rels are exported when all rels were defined
+        $this->assertContains($accountContactRelInAccountVardefExtensions, $accountAllExtensions,'Contact Relationship should have been exported when accounts and contacts modules are exported');
 
-        $this->assertContains($accountContactRelInAccountVardefExtensions, $accountExtContacts);
-        $this->assertContains($contactAccountRelInAccountVardefExtensions, $accountExtContacts);
-        $this->assertNotContains($leadAccountRelInAccountVardefExtensions, $accountExtContacts);
+        //assert that contact rels are not exported when contact is not defined
+        $this->assertNotContains($accountContactRelInAccountVardefExtensions, $accountExtOnly,'Contact Relationship should NOT have been exported when exporting accounts only');
 
-        $this->assertEmpty($accountExtWithWrongRelationship);
+        //assert that non relationship change is exported when no related module is defined
+        $this->assertContains($sugarfieldAccountVardefExtensions, $accountExtOnly,'Sugarfield change should have been exported when exporting Accounts only');
 
-        $this->assertInternalType('array', $wrongModuleName);
-        $this->assertEmpty($wrongModuleName);
+        //assert only contact and Account modules are present when both contact and Accounts are defined
+        $this->assertContains($accountContactRelInAccountVardefExtensions, $accountExtContacts,'Accounts rels should be present when exporting Contacts and Accounts');
+        $this->assertContains($contactAccountRelInAccountVardefExtensions, $accountExtContacts,'Contacts rels should be present when exporting Contacts and Accounts');
+        $this->assertNotContains($leadAccountRelInAccountVardefExtensions, $accountExtContacts,'Leads rels should NOT be present when exporting Contacts and Accounts');
+
+        //assert that requesting a wrong relationship returns an empty array
+        $this->assertInternalType('array', $contactExtWithWrongRelationship,'array type should be returned when no relationships are exported, and no other changes exist');
+        $this->assertEmpty($contactExtWithWrongRelationship,'An empty array should be returned when no relationships are exported, and no other changes exist');
+
+        //assert that requesting a wrong module name returns an empty array
+        $this->assertInternalType('array', $wrongModuleName,'An array type should be returned when a bad module is requested for export');
+        $this->assertEmpty($wrongModuleName,'An empty array should be returned when a bad module is requested for export');
     }
 
     /**
@@ -291,14 +346,15 @@ class Bug45339MBPackageMock extends MBPackage
         return $this->getExtensionsList($module, $includeRelationships);
     }
 
-    public function getCustomRelationshipsMetaFilesByModuleNameTest($moduleName, $lhs = false, $metadataOnly = false)
+    public function getCustomRelationshipsMetaFilesByModuleNameTest($moduleName, $lhs = false, $metadataOnly = false,$exportModules=array())
     {
-        return $this->getCustomRelationshipsMetaFilesByModuleName($moduleName, $lhs, $metadataOnly);
+        return $this->getCustomRelationshipsMetaFilesByModuleName($moduleName, $lhs, $metadataOnly,$exportModules);
     }
 
     public function getCustomRelationshipsByModuleNameTest($moduleName, $lhs = false)
     {
         return $this->getCustomRelationshipsByModuleName($moduleName, $lhs);
     }
+
 
 }

@@ -1,5 +1,4 @@
 <?php
- if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
@@ -36,12 +35,62 @@
  ********************************************************************************/
 
 
+require_once 'modules/InboundEmail/InboundEmail.php';
+class AttachmentHeaderTest extends Sugar_PHPUnit_Framework_TestCase
+{
+    protected $ie = null;
 
+    public function setUp()
+    {
+        $this->ie = new InboundEmail();
+    }
 
-$sugar_version      = '6.5.8';
-$sugar_db_version   = '6.5.8';
-$sugar_flavor       = 'CE';
-$sugar_build		= '8613';
-$sugar_timestamp    = '2012-11-19 10:26am';
+    /**
+     * @param $param -> "dparameters" | "parameters"
+     * @param $a -> attribute
+     * @param $v -> value
+     * @return stdClass:  $obj->attribute = $a, $obj->value = $v
+     */
+    protected function _convertToObject($param,$a,$v)
+    {
+        $obj = new stdClass;
+        $obj->attribute = $a;
+        $obj->value = $v;
 
-?>
+        $outer = new stdClass;
+        $outer->parameters = ($param == 'parameters') ? array($obj) : array();
+        $outer->isparameters = !empty($outer->parameters);
+        $outer->dparameters = ($param == 'dparameters') ? array($obj) : array();
+        $outer->isdparameters = !empty($outer->dparameters);
+
+        return $outer;
+    }
+
+    public function contentParameterProvider()
+    {
+        return array(
+            // pretty standard dparameters
+            array(
+                $this->_convertToObject('dparameters','filename','test.txt'),
+                'test.txt'
+            ),
+
+            // how about a regular parameter set
+            array(
+                $this->_convertToObject('parameters','name','bonus.txt'),
+                'bonus.txt'
+            )
+        );
+    }
+
+    /**
+     * @group bug57309
+     * @dataProvider contentParameterProvider
+     * @param array $in - the part parameters -> will convert to object in test method
+     * @param string $expected - the name digested from the parameters
+     */
+    public function testRetrieveAttachmentNameFromStructure($in, $expected)
+    {
+        $this->assertEquals($expected, $this->ie->retrieveAttachmentNameFromStructure($in),  'We did not get the attachmentName');
+    }
+}

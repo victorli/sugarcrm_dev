@@ -343,7 +343,7 @@ switch( $mode ){
 
 
 ?>
-<input type=submit value="<?php echo $mod_strings['LBL_ML_COMMIT'];?>" class="button" />
+<input type=submit value="<?php echo $mod_strings['LBL_ML_COMMIT'];?>" class="button" id="submit_button" />
 <input type=button value="<?php echo $mod_strings['LBL_ML_CANCEL'];?>" class="button" onClick="location.href='index.php?module=Administration&action=UpgradeWizard&view=module';"/>
 
 <?php
@@ -497,6 +497,7 @@ echo '<script>' .
                 }
             }
         }
+        document.getElementById("submit_button").disabled = true;
         return true;
     }
     var keys = [ "license","readme"];

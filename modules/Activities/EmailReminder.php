@@ -144,10 +144,18 @@ class EmailReminder
         $mail = new SugarPHPMailer();
         $mail->setMailerForSystem();
         
-        $from_address = $user->emailAddress->getReplyToAddress($user);
-        $from_address = !empty($from_address) ? $from_address : $admin->settings['notify_fromaddress'];
+        if(empty($admin->settings['notify_send_from_assigning_user']))
+        {
+            $from_address = $admin->settings['notify_fromaddress'];
+            $from_name = $admin->settings['notify_fromname'] ? "" : $admin->settings['notify_fromname'];
+        }
+        else
+        {
+            $from_address = $user->emailAddress->getReplyToAddress($user);
+            $from_name = $user->full_name;
+        }
+
         $mail->From = $from_address;
-        $from_name = !empty($user->full_name) ? $user->full_name : $admin->settings['notify_fromname'];
         $mail->FromName = $from_name;
         
         $xtpl = new XTemplate(get_notify_template_file($current_language));

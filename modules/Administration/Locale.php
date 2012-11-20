@@ -35,12 +35,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description:
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc. All Rights
- * Reserved. Contributor(s): ______________________________________..
- * *******************************************************************************/
 global $current_user, $sugar_config;
 if (!is_admin($current_user)) sugar_die("Unauthorized access to administration.");
 
@@ -58,7 +52,7 @@ echo getClassicModuleTitle(
 
 $cfg			= new Configurator();
 $sugar_smarty	= new Sugar_Smarty();
-$errors			= '';
+$errors			= array();
 
 ///////////////////////////////////////////////////////////////////////////////
 ////	HANDLE CHANGES

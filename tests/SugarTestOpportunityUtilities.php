@@ -91,10 +91,15 @@ class SugarTestOpportunityUtilities
         return $opportunity;
     }
     
-    public static function createOpportunity($id = '')
+    public static function createOpportunity($id = '', Account $account = null)
     {
-        $time        = mt_rand();
-        $account     = self::_createAccount($time);
+        $time = mt_rand();
+
+        if ($account === null)
+        {
+            $account = self::_createAccount($time);
+        }
+
         $opportunity = self::_createOpportunity($id, $time, $account);
         
         return $opportunity;

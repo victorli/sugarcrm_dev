@@ -158,7 +158,11 @@ class SugarWidgetReportField extends SugarWidgetField
  {
 	if(!empty($this->reporter->all_fields[$layout_def['column_key']])) $field_def = $this->reporter->all_fields[$layout_def['column_key']];
 
-	if ( ! empty( $field_def['sort_on']))
+    if (!empty($layout_def['group_function']))
+    {
+        $order_by = $this->_get_column_alias($layout_def);
+    }
+    elseif (!empty($field_def['sort_on']))
 	{
 			$order_by = $layout_def['table_alias'].".".$field_def['sort_on'];
             if(!empty($field_def['sort_on2']))
@@ -263,7 +267,7 @@ class SugarWidgetReportField extends SugarWidgetField
      // this comment is being added to trigger the upgrade package
         if ( ! empty($layout_def['group_function']) && $layout_def['group_function']=='count')
         {
-                return 'count';
+                return $layout_def['table_alias'] . '__count';
         }
 
         if ( ! empty($layout_def['table_alias']))

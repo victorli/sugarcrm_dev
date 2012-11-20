@@ -364,6 +364,7 @@ function smarty_function_sugar_button($params, &$smarty)
 			case "DCMENUFULLFORM":
                 $output = '<input title="{$APP.LBL_FULL_FORM_BUTTON_TITLE}" accessKey="{$APP.LBL_FULL_FORM_BUTTON_KEY}" class="button" onclick="'.$js_form.' disableOnUnloadEditView(_form); _form.return_action.value=\'DetailView\'; _form.action.value=\'EditView\'; _form.return_module.value=\'' . $params['module'] . '\';_form.return_id.value=_form.record.value;if(typeof(_form.to_pdf)!=\'undefined\') _form.to_pdf.value=\'0\';SUGAR.ajaxUI.submitForm(_form,null,true);DCMenu.closeOverlay();" type="button" name="' . $params['module'] . '_subpanel_full_form_button" id="' . $params['module'] . '_subpanel_full_form_button" value="{$APP.LBL_FULL_FORM_BUTTON_LABEL}"> ';
                 $output .= '<input type="hidden" name="full_form" value="full_form">';
+                $output .= '<input type="hidden" name="is_admin" value="">';
             break;
 			case "POPUPSAVE":
 				$view = ($view == 'QuickCreate') ? "form_QuickCreate_{$module}" : $view;

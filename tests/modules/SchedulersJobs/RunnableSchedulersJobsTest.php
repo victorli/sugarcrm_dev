@@ -113,7 +113,7 @@ class TestRunnableJob implements RunnableSchedulerJob
     {
         $this->job->runnable_ran = true;
         $this->job->runnable_data = $data;
-        $this->job->succeedJob();
+        return $this->job->succeedJob();
     }
 
     public function setJob(SchedulersJob $job)

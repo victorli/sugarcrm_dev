@@ -34,7 +34,7 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 class SugarLoggerTest extends Sugar_PHPUnit_Framework_TestCase
 {
     public function tearDown()
@@ -44,7 +44,7 @@ class SugarLoggerTest extends Sugar_PHPUnit_Framework_TestCase
         if (!empty($level))
             $GLOBALS['log']->setLevel($level);
     }
-    
+
     public function providerWriteLogEntries()
     {
         return array(
@@ -57,7 +57,7 @@ class SugarLoggerTest extends Sugar_PHPUnit_Framework_TestCase
             array('fatal','warn','foo7',false,'[WARN] foo7'),
             );
     }
-    
+
     /**
      * @dataProvider providerWriteLogEntries
      */
@@ -67,15 +67,15 @@ class SugarLoggerTest extends Sugar_PHPUnit_Framework_TestCase
         $logMessage,
         $shouldMessageBeWritten,
         $messageWritten
-        ) 
+        )
     {
         $GLOBALS['log']->setLevel($currentLevel);
         $GLOBALS['log']->$logLevel($logMessage);
-        
+
         $config = SugarConfig::getInstance();
         $ext = $config->get('logger.file.ext');
         $logfile = $config->get('logger.file.name');
-        $log_dir = $config->get('log_dir'); 
+        $log_dir = $config->get('log_dir');
         $log_dir = $log_dir . (empty($log_dir)?'':'/');
         $file_suffix = $config->get('logger.file.suffix');
         $date_suffix = "";
@@ -87,23 +87,23 @@ class SugarLoggerTest extends Sugar_PHPUnit_Framework_TestCase
 
 
         $logFile = file_get_contents($log_dir . $logfile . $date_suffix . $ext);
-        
+
         if ( $shouldMessageBeWritten )
             $this->assertContains($messageWritten,$logFile);
         else
             $this->assertNotContains($messageWritten,$logFile);
     }
-    
+
     public function testAssertLogging()
     {
         $GLOBALS['log']->setLevel('debug');
         $GLOBALS['log']->assert('this was asserted true',true);
         $GLOBALS['log']->assert('this was asserted false',false);
-        
+
         $config = SugarConfig::getInstance();
         $ext = $config->get('logger.file.ext');
         $logfile = $config->get('logger.file.name');
-        $log_dir = $config->get('log_dir'); 
+        $log_dir = $config->get('log_dir');
         $log_dir = $log_dir . (empty($log_dir)?'':'/');
         $file_suffix = $config->get('logger.file.suffix');
         $date_suffix = "";
@@ -114,7 +114,7 @@ class SugarLoggerTest extends Sugar_PHPUnit_Framework_TestCase
         }
 
         $logFile = file_get_contents($log_dir . $logfile . $date_suffix . $ext);
-        
+
         $this->assertContains('[DEBUG] this was asserted false',$logFile);
         $this->assertNotContains('[DEBUG] this was asserted true',$logFile);
     }
@@ -203,5 +203,21 @@ class SugarLoggerTest extends Sugar_PHPUnit_Framework_TestCase
 
         //If the logger returns correct file format, the file must exist in the path.
         $this->assertFileExists($full_path, "SugarLogger generates invalid log file format");
+    }
+
+    /**
+     * @dataProvider providerWriteLogEntries
+     */
+    public function testWouldLog(
+        $currentLevel,
+        $logLevel,
+        $logMessage,
+        $shouldMessageBeWritten,
+        $messageWritten
+        )
+    {
+        $GLOBALS['log']->setLevel($currentLevel);
+        $this->assertEquals($shouldMessageBeWritten, $GLOBALS['log']->wouldLog($logLevel));
+
     }
 }

@@ -35,16 +35,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
-
- * Description: TODO:  To be written.
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
- * All Rights Reserved.
- * Contributor(s): ______________________________________..
- ********************************************************************************/
-
 require_once('include/SugarObjects/templates/person/Person.php');
-
 
 // User is used to store customer information.
 class User extends Person {
@@ -884,6 +875,9 @@ EOQ;
 	}
 
 	function fill_in_additional_detail_fields() {
+        // jmorais@dri Bug #56269
+        parent::fill_in_additional_detail_fields();
+        // ~jmorais@dri
 		global $locale;
 
 		$query = "SELECT u1.first_name, u1.last_name from users  u1, users  u2 where u1.id = u2.reports_to_id AND u2.id = '$this->id' and u1.deleted=0";
@@ -896,6 +890,7 @@ EOQ;
 		} else {
 			$this->reports_to_name = '';
 		}
+
 
 		$this->_create_proper_name_field();
 	}
@@ -1518,6 +1513,10 @@ EOQ;
      * @return bool
      */
     public function isDeveloperForAnyModule() {
+        if(empty($this->id)) {
+            // empty user is no developer
+            return false;
+        }
         if ($this->isAdmin()) {
             return true;
         }
@@ -1542,6 +1541,10 @@ EOQ;
      * @return bool
      */
     public function isDeveloperForModule($module) {
+        if(empty($this->id)) {
+            // empty user is no developer
+            return false;
+        }
         if ($this->isAdmin()) {
             return true;
         }
@@ -1574,6 +1577,10 @@ EOQ;
      * @return bool
      */
     public function isAdminForModule($module) {
+        if(empty($this->id)) {
+            // empty user is no admin
+            return false;
+        }
         if ($this->isAdmin()) {
             return true;
         }

@@ -182,6 +182,18 @@ class ImportDuplicateCheck
      */
     public function isADuplicateRecord( $indexlist )
     {
+        // Bug #51264 : Importing updates to rows prevented by duplicates check
+        if ( !empty($this->_focus) && ($this->_focus instanceof SugarBean) && !empty($this->_focus->id) )
+        {
+            $_focus = clone $this->_focus;
+            $_focus->id = null;
+            $_focus->retrieve($this->_focus->id);
+            if ( !empty($_focus->id) )
+            {
+                return false;
+            }
+            unset($_focus);
+        }
 
         //lets strip the indexes of the name field in the value and leave only the index name
         $origIndexList = $indexlist;

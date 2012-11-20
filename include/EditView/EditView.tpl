@@ -111,7 +111,7 @@ class="yui-navset"
   {{/if}}
 </h4>
  {{/if}}
-<table width="100%" border="0" cellspacing="1" cellpadding="0" {{if $label == 'DEFAULT'}} id='Default_{$module}_Subpanel' {{else}} id='{{$label}}' {{/if}} class="edit view panelContainer">
+<table width="100%" border="0" cellspacing="1" cellpadding="0" {{if $label == 'DEFAULT'}} id='Default_{$module}_Subpanel' {{else}} id='{{$label}}' {{/if}} class="yui3-skin-sam edit view panelContainer">
 
 
 {{assign var='rowCount' value=0}}

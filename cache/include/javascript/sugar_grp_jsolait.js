@@ -104,9 +104,7 @@ GLOBAL_REGISTRY.focus.fields.date_start=date_start;if(has_meridiem){GLOBAL_REGIS
 GLOBAL_REGISTRY.focus.fields.duration_hours=document.forms[form_name].duration_hours.value;GLOBAL_REGISTRY.focus.fields.duration_minutes=document.forms[form_name].duration_minutes.value;GLOBAL_REGISTRY.focus.fields.datetime_start=SugarDateTime.mysql2jsDateTime(GLOBAL_REGISTRY.focus.fields.date_start,GLOBAL_REGISTRY.focus.fields.time_start);GLOBAL_REGISTRY.scheduler_attendees_obj.init();GLOBAL_REGISTRY.scheduler_attendees_obj.display();}
 SugarWidgetScheduler.prototype.display=function(){this.parentNode.innerHTML='';var attendees=new SugarWidgetSchedulerAttendees();attendees.load(this.parentNode);var search=new SugarWidgetSchedulerSearch();search.load(this.parentNode);}
 SugarClass.inherit("SugarWidgetSchedulerAttendees","SugarClass");function SugarWidgetSchedulerAttendees(){this.init();}
-SugarWidgetSchedulerAttendees.prototype.init=function(){SugarWidgetSchedulerAttendees.allowedTypes=['Contact','Lead'];$(document).ready(function()
-{$('#add_parent_invitee_label').css('visibility','hidden');SugarWidgetSchedulerAttendees.setAddParentLinkVisibility();$('#parent_type').change(function()
-{SugarWidgetSchedulerAttendees.setAddParentLinkVisibility();});});var form_name;if(typeof document.EditView!='undefined')
+SugarWidgetSchedulerAttendees.prototype.init=function(){var form_name;if(typeof document.EditView!='undefined')
 form_name="EditView";else if(typeof document.CalendarEditView!='undefined')
 form_name="CalendarEditView";else
 return;GLOBAL_REGISTRY.scheduler_attendees_obj=this;var date_start=document.forms[form_name].date_start.value;var hour_start=parseInt(date_start.substring(11,13),10);var minute_start=parseInt(date_start.substring(14,16),10);var has_meridiem=/am|pm/i.test(date_start);if(has_meridiem){var meridiem=trim(date_start.substring(16));}
@@ -134,18 +132,6 @@ if(typeof GLOBAL_REGISTRY.focus.users_arr_hash=='undefined'){GLOBAL_REGISTRY.foc
 for(var i=0;i<GLOBAL_REGISTRY.focus.users_arr.length;i++){var row=new SugarWidgetScheduleRow(this.timeslots);row.focus_bean=GLOBAL_REGISTRY.focus.users_arr[i];GLOBAL_REGISTRY.focus.users_arr_hash[GLOBAL_REGISTRY.focus.users_arr[i]['fields']['id']]=GLOBAL_REGISTRY.focus.users_arr[i];row.load(thetable);}}
 SugarWidgetSchedulerAttendees.form_add_attendee=function(list_row){if(typeof(GLOBAL_REGISTRY.result_list[list_row])!='undefined'&&typeof(GLOBAL_REGISTRY.focus.users_arr_hash[GLOBAL_REGISTRY.result_list[list_row].fields.id])=='undefined'){GLOBAL_REGISTRY.focus.users_arr[GLOBAL_REGISTRY.focus.users_arr.length]=GLOBAL_REGISTRY.result_list[list_row];}
 GLOBAL_REGISTRY.scheduler_attendees_obj.display();}
-SugarWidgetSchedulerAttendees.setAddParentLinkVisibility=function()
-{parent_type=$('#parent_type option:selected').text();if($.inArray(parent_type,SugarWidgetSchedulerAttendees.allowedTypes)>-1)
-{$('#add_parent_invitee').parent().css('display','');}
-else
-{$('#add_parent_invitee').parent().css('display','none');}}
-SugarWidgetSchedulerAttendees.formAddParent=function()
-{parent_id=$("#parent_id").val();parent_name=$("#parent_name").val();parent_type=$("#parent_type option:selected").text();if(parent_id.length>0&&$.inArray(parent_type,SugarWidgetSchedulerAttendees.allowedTypes)>-1)
-{invitee={fields:{id:parent_id,full_name:parent_name},module:parent_type};contains=false;for(var i=0;i<GLOBAL_REGISTRY.focus.users_arr.length;i++)
-{if(GLOBAL_REGISTRY.focus.users_arr[i]['fields']['id']==invitee['fields']['id'])
-{contains=true;break;}}
-if(!contains)
-{GLOBAL_REGISTRY.focus.users_arr[GLOBAL_REGISTRY.focus.users_arr.length]=invitee;GLOBAL_REGISTRY.scheduler_attendees_obj.display();}}}
 SugarClass.inherit("SugarWidgetScheduleRow","SugarClass");function SugarWidgetScheduleRow(timeslots){this.init(timeslots);}
 SugarWidgetScheduleRow.prototype.init=function(timeslots){this.timeslots=timeslots;}
 SugarWidgetScheduleRow.prototype.load=function(thetableid){this.thetableid=thetableid;var self=this;vcalClient=new SugarVCalClient();if(typeof(GLOBAL_REGISTRY['freebusy_adjusted'])=='undefined'||typeof(GLOBAL_REGISTRY['freebusy_adjusted'][this.focus_bean.fields.id])=='undefined'){global_request_registry[req_count]=[this,'display'];vcalClient.load(this.focus_bean.fields.id,req_count);req_count++;}else{this.display();}}

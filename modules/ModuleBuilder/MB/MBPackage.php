@@ -397,7 +397,7 @@ function buildInstall($path){
                     $this->getCustomMetadataManifestForModule($value, $installdefs);
                 }//fi
             }//foreach
-            $relationshipsMetaFiles = $this->getCustomRelationshipsMetaFilesByModuleName($value, true, true);
+            $relationshipsMetaFiles = $this->getCustomRelationshipsMetaFilesByModuleName($value, true, true,$modules);
             if($relationshipsMetaFiles)
             {
                 foreach ($relationshipsMetaFiles as $file)
@@ -502,9 +502,18 @@ function buildInstall($path){
      */
     protected function getExtensionsManifestForPackage($path, &$installdefs)
     {
-        $installdefs['copy'] = array();
+        if(empty($installdefs['copy']))
+        {
+            $installdefs['copy']= array();
+        }
         $generalPath = DIRECTORY_SEPARATOR . 'Extension' . DIRECTORY_SEPARATOR . 'modules';
 
+        //do not process if path is not a valid directory, or recursiveIterator will break.
+        if(!is_dir($path.$generalPath))
+        {
+            return;
+        }
+        
         $recursiveIterator = new RecursiveIteratorIterator(
                 new RecursiveDirectoryIterator($path . $generalPath),
                 RecursiveIteratorIterator::SELF_FIRST
@@ -559,7 +568,7 @@ function buildInstall($path){
             }
 
             $extensions = $this->getExtensionsList($module, $modules);
-            $relMetaFiles = $this->getCustomRelationshipsMetaFilesByModuleName($module, true);
+            $relMetaFiles = $this->getCustomRelationshipsMetaFilesByModuleName($module, true,false,$modules);
             $extensions = array_merge($extensions, $relMetaFiles);
 
             foreach ($extensions as $file) {
@@ -742,6 +751,13 @@ function buildInstall($path){
         $includeMask = false;
         $extPath = sprintf('custom%1$sExtension%1$smodules%1$s' . $module . '%1$sExt', DIRECTORY_SEPARATOR);
 
+        //do not process if path is not a valid directory, or recursiveIterator will break.
+        if(!is_dir($extPath))
+        {
+            return $result;
+        }
+
+
         if (is_array($includeRelationships))
         {
             $includeMask = array();
@@ -772,25 +788,71 @@ function buildInstall($path){
 
             if ($fileInfo->isFile() && !in_array($fileInfo->getPathname(), $result))
             {
-                if ($includeMask === false)
+                //get the filename in lowercase for easier comparison
+                $fn = $fileInfo->getFilename();
+                if(!empty($fn))
                 {
+                    $fn = strtolower($fn);
+                }
+
+                if ($this->filterExportedRelationshipFile($fn,$module,$includeRelationships) ){
                     $result[] = $fileInfo->getPathname();
-                } 
-                else 
-                {
-                    foreach ($includeMask as $v)
-                    {
-                        if (strpos($fileInfo->getFilename(), $v) !== false)
-                        {
-                            $result[] = $fileInfo->getPathname();
-                            break;
-                        }
-                    }
                 }
             }
         }
 
         return $result;
+    }
+
+    /**
+     * Processes the name of the file and compares against the passed in module names to
+     * evaluate whether the file should be included for export.  Returns true or false
+     *
+     * @param $fn (file name that is being evaluated)
+     * @param $module (name of current module being evaluated)
+     * @param $includeRelationship (list of related modules that are also being exported, to be used as filters)
+     * @return boolean true or false
+     */
+    function filterExportedRelationshipFile($fn,$module,$includeRelationships)
+    {
+        $shouldExport = false;
+        if(empty($fn) || !is_array($includeRelationships) || empty($includeRelationships))
+        {
+            return $shouldExport;
+        }
+
+        //if file name does not contain the current module name then it is not a relationship file,
+        //or if the module has the current module name twice seperated with an underscore, then this is a relationship within itself
+        //in both cases set the shouldExport flag to true
+        $lc_mod = strtolower($module);
+        $fn = strtolower($fn);
+        if ((strpos($fn, $lc_mod) === false) || (strpos($fn, $lc_mod.'_'.$lc_mod) !== false))
+        {
+            $shouldExport = true;
+        }else{
+
+            //grab only rels that have both modules in the export list
+            foreach ($includeRelationships as $relatedModule)
+            {
+                //skip if the related module is empty
+                if(empty($relatedModule))
+                {
+                    continue;
+                }
+
+                //if the filename also has the related module name, then add the relationship file
+                //strip the current module,as we have already checked for existance of module name and dont want any false positives
+                $fn = str_replace($lc_mod,'',$fn);
+                if (strpos($fn, strtolower($relatedModule)) !== false)
+                {
+                    //both modules exist in the filename lets include in the results array
+                    $shouldExport = true;
+                    break;
+                }
+            }
+        }
+
+        return $shouldExport;
     }
 
     /**
@@ -870,6 +932,8 @@ function buildInstall($path){
     }
     
     /**
+     * This returns an UNFILTERED list of custom relationships by module name.  You will have to filter the relationships
+     * by the modules being exported after calling this method
      * @param string $moduleName
      * @param bool $lhs Return relationships where $moduleName - left module in join.
      * @return mixed Array or false when module name is wrong.
@@ -911,15 +975,23 @@ function buildInstall($path){
      * @param string $moduleName
      * @param bool $lhs Return relationships where $moduleName - left module in join.
      * @param bool $metadataOnly Return only relationships metadata file.
-     * @return array
+     * @param $includeRelationship (list of related modules that are also being exported)
+     * @return array (array of relationships filtered to only include relationships to modules being exported)
      */
-    protected function getCustomRelationshipsMetaFilesByModuleName($moduleName, $lhs = false, $metadataOnly = false)
+    protected function getCustomRelationshipsMetaFilesByModuleName($moduleName, $lhs = false, $metadataOnly = false,$exportedModulesFilter=array())
     {
         
         $path = $metadataOnly ?
                 'custom' . DIRECTORY_SEPARATOR . 'metadata' . DIRECTORY_SEPARATOR :
                 'custom' . DIRECTORY_SEPARATOR;
         $result = array();
+
+
+        //do not process if path is not a valid directory, or recursiveIterator will break.
+        if(!is_dir($path))
+        {
+            return $result;
+        }
 
         $relationships = $this->getCustomRelationshipsByModuleName($moduleName, $lhs);
         
@@ -944,9 +1016,11 @@ function buildInstall($path){
                 {
 
                     if (strpos($fileInfo->getFilename(), $k) !== false)
-                    {
-                        $result[] = $fileInfo->getPathname();
-                        break;
+                    {   //filter by modules being exported
+                        if ($this->filterExportedRelationshipFile($fileInfo->getFilename(),$moduleName,$exportedModulesFilter) ){
+                            $result[] = $fileInfo->getPathname();
+                            break;
+                        }
                     }
                 }
             }

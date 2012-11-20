@@ -108,6 +108,24 @@ class LoggerManager
  		}
  	}
 
+ 	/**
+ 	 * Check if this log level will be producing any logging
+ 	 * @param string $method
+ 	 * @return boolean
+ 	 */
+ 	public function wouldLog($method)
+ 	{
+ 	    if ( !isset(self::$_levelMapping[$method]) )
+ 	    	$method = $this->_level;
+ 	    if($method == $this->_level
+ 	    		//otherwise if we have a level mapping for the method and that level is less than or equal to the current level let's let it log
+ 	    		|| (!empty(self::$_levelMapping[$method])
+ 	    				&& self::$_levelMapping[$this->_level] >= self::$_levelMapping[$method]) ) {
+ 	        return true;
+ 	    }
+ 	    return false;
+ 	}
+
 	/**
      * Used for doing design-by-contract assertions in the code; when the condition fails we'll write
      * the message to the debug log

@@ -466,7 +466,10 @@ try{if(result[1].indexOf("src=")>-1){var srcRegex=/.*src=['"]([a-zA-Z0-9_\-\&\/\
 {var url=srcResult;Y.Get.script(srcResult,{autopurge:false,onSuccess:function(o){},onFailure:function(o){},onTimeout:function(o){}});});}
 else
 {YUI().use("io-base",function(Y){var cfg,response;cfg={method:'GET',sync:true,on:{success:function(transactionid,response,arguments)
-{SUGAR.util.globalEval(response.responseText);}}};response=Y.io(srcResult,cfg);});}}else{SUGAR.util.globalEval(result[2]);}}
+{SUGAR.util.globalEval(response.responseText);}}};response=Y.io(srcResult,cfg);});}}else{var srcRegex=/<!--([\s\S]*?)-->/;var srcResult=srcRegex.exec(result[2]);if(srcResult&&srcResult.index>-1)
+{SUGAR.util.globalEval(srcResult[1]);}
+else
+{SUGAR.util.globalEval(result[2]);}}}
 catch(e){if(typeof(console)!="undefined"&&typeof(console.log)=="function")
 {console.log("error adding script");console.log(e);console.log(result);}}
 result=objRegex.exec(text);}},getLeftColObj:function(){leftColObj=document.getElementById('leftCol');while(leftColObj.nodeName!='TABLE'){leftColObj=leftColObj.firstChild;}

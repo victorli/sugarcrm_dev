@@ -40,6 +40,7 @@
 <head>
 <link rel="SHORTCUT ICON" href="{$FAVICON_URL}">
 <meta http-equiv="Content-Type" content="text/html; charset={$APP.LBL_CHARSET}">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 <title>{$APP.LBL_BROWSER_TITLE}</title>
 {$SUGAR_CSS}
 {$SUGAR_JS}

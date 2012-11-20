@@ -242,4 +242,5 @@ function getDiffFiles($unzip_dir, $install_file, $is_install = true, $previous_v
 	}//fi
 	return $modified_files;
 }
+
 ?>

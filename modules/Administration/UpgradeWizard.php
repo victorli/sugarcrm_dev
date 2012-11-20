@@ -135,14 +135,20 @@ if( isset( $_REQUEST['run'] ) && ($_REQUEST['run'] != "") ){
 			{
     			//SCAN THE MANIFEST FILE TO MAKE SURE NO COPIES OR ANYTHING ARE HAPPENING IN IT
 	    		$ms = new ModuleScanner();
+	    		$ms->lockConfig();
 		    	$fileIssues = $ms->scanFile($manifest_file);
     			if(!empty($fileIssues)){
     				echo '<h2>' . $mod_strings['ML_MANIFEST_ISSUE'] . '</h2><br>';
     				$ms->displayIssues();
     				die();
     			}
-                require_once( $manifest_file );
-	    		validate_manifest( $manifest );
+    			list($manifest, $installdefs) = MSLoadManifest($manifest_file);
+    			if($ms->checkConfig($manifest_file)) {
+    				echo '<h2>' . $mod_strings['ML_MANIFEST_ISSUE'] . '</h2><br>';
+    				$ms->displayIssues();
+    				die();
+    			}
+    			validate_manifest( $manifest );
 
 			    $upgrade_zip_type = $manifest['type'];
 
