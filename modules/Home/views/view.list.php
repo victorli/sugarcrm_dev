@@ -45,6 +45,11 @@ class HomeViewList extends ViewList{
 
  	function display(){
  		global $mod_strings, $export_module, $current_language, $theme, $current_user, $dashletData, $sugar_flavor;
+         $this->processMaxPostErrors();
+ 		include('modules/Home/index.php');
+ 	}
+
+    function processMaxPostErrors() {
         if($this->checkPostMaxSizeError()){
             $this->errors[] = $GLOBALS['app_strings']['UPLOAD_ERROR_HOME_TEXT'];
             $contentLength = $_SERVER['CONTENT_LENGTH'];
@@ -62,13 +67,16 @@ class HomeViewList extends ViewList{
                 $maxUploadSize = (int) $maxUploadSize * pow(2, 20);
 
             $max_size = min($maxPostSize, $maxUploadSize);
+            if ($contentLength > $max_size) {
+                $errMessage = string_format($GLOBALS['app_strings']['UPLOAD_MAXIMUM_EXCEEDED'],array($contentLength,  $max_size));
+            } else {
+                $errMessage =$GLOBALS['app_strings']['UPLOAD_REQUEST_ERROR'];
+            }
 
-            $errMessage = string_format($GLOBALS['app_strings']['UPLOAD_MAXIMUM_EXCEEDED'],array($contentLength,  $max_size));
             $this->errors[] = '* '.$errMessage;
             $this->displayErrors();
         }
- 		include('modules/Home/index.php');
- 	}
+    }
 
 }
 ?>

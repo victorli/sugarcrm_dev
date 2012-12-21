@@ -46,6 +46,17 @@ class SugarBeanTest extends Sugar_PHPUnit_Framework_TestCase
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
 	}
 
+    public function setUp()
+    {
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
+    }
+
+    public function tearDown()
+    {
+        SugarTestHelper::tearDown();
+    }
+
 	public static function tearDownAfterClass()
 	{
 	    SugarTestUserUtilities::removeAllCreatedAnonymousUsers();

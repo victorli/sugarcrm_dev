@@ -1114,9 +1114,10 @@ class SugarThemeRegistry
         )
     {
         // make sure the we know the sugar version
-        if ( !isset($GLOBALS['sugar_version']) ) {
+        global $sugar_version;
+        if (empty($sugar_version))
+        {
             include('sugar_version.php');
-            $GLOBALS['sugar_version'] = $sugar_version;
         }
 
         // Assume theme is designed for 5.5.x if not specified otherwise

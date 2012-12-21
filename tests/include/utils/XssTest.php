@@ -49,6 +49,11 @@ class XssTest extends Sugar_PHPUnit_Framework_TestCase
             $this->email_xss = $sugar_config['email_xss'];
             $sugar_config['email_xss'] = '';
         }
+        if(isset($GLOBALS['sugar_config']['html_allow_objects'])) {
+            $this->allow_objects = $GLOBALS['sugar_config']['html_allow_objects'];
+        }
+        $GLOBALS['sugar_config']['html_allow_objects'] = true;
+        SugarCleaner::$instance = null;
     }
 
     public function tearDown()

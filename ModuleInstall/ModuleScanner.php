@@ -383,6 +383,7 @@ class ModuleScanner{
         'xml_set_start_namespace_decl_handler',
         'xml_set_unparsed_entity_decl_handler',
 );
+    private $methodsBlackList = array('setlevel');
 
 	public function printToWiki(){
 		echo "'''Default Extensions'''<br>";
@@ -541,14 +542,21 @@ class ModuleScanner{
                             if(!in_array($lastToken[1], $this->classBlackList))break;
                             if(in_array($lastToken[1], $this->classBlackListExempt))break;
                         } else {
-                            if(!in_array($token[1], $this->blackList))break;
-                            if(in_array($token[1], $this->blackListExempt))break;
-
+                            //if nothing else fit, lets check the last token to see if this is a possible method call
                             if ($lastToken !== false &&
                             ($lastToken[0] == T_OBJECT_OPERATOR ||  $lastToken[0] == T_DOUBLE_COLON))
                             {
+                                //this is a method call, check the black list
+                                if(in_array($token[1], $this->methodsBlackList)){
+                                    $issues[]= translate('ML_INVALID_METHOD') . ' ' .$token[1].  '()';
+                                }
                                 break;
                             }
+
+
+                            if(!in_array($token[1], $this->blackList))break;
+                            if(in_array($token[1], $this->blackListExempt))break;
+
                         }
 					case T_VARIABLE:
 						$checkFunction = true;

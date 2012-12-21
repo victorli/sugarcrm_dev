@@ -77,6 +77,8 @@ class Bug41523Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
+        unset($_SERVER['REQUEST_METHOD']);
+
         // Delete created campaings
         SugarTestCampaignUtilities::removeAllCreatedCampaigns();
 

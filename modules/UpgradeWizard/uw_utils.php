@@ -39,6 +39,46 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 /**
+ * Implodes some parts of version with specified delimiter, beta & rc parts are removed all time
+ *
+ * @example ('6.5.6') returns 656
+ * @example ('6.5.6beta2') returns 656
+ * @example ('6.5.6rc3') returns 656
+ * @example ('6.6.0.1') returns 6601
+ * @example ('6.5.6', 3, 'x') returns 65x
+ * @example ('6', 3, '', '.') returns 6.0.0
+ *
+ * @param string $version like 6, 6.2, 6.5.0beta1, 6.6.0rc1, 6.5.7 (separated by dot)
+ * @param int $size number of the first parts of version which are requested
+ * @param string $lastSymbol replace last part of version by some string
+ * @param string $delimiter delimiter for result
+ * @return string
+ */
+function implodeVersion($version, $size = 0, $lastSymbol = '', $delimiter = '')
+{
+    preg_match('/^\d+(\.\d+)*/', $version, $parsedVersion);
+    if (empty($parsedVersion)) {
+        return '';
+    }
+
+    $parsedVersion = $parsedVersion[0];
+    $parsedVersion = explode('.', $parsedVersion);
+
+    if ($size == 0) {
+        $size = count($parsedVersion);
+    }
+
+    $parsedVersion = array_pad($parsedVersion, $size, 0);
+    $parsedVersion = array_slice($parsedVersion, 0, $size);
+    if ($lastSymbol !== '') {
+        array_pop($parsedVersion);
+        array_push($parsedVersion, $lastSymbol);
+    }
+
+    return implode($delimiter, $parsedVersion);
+}
+
+/**
  * Helper function for upgrade - get path from upload:// name
  * @param string $path
  * return string
@@ -125,7 +165,7 @@ function commitCopyNewFiles($unzip_dir, $zip_from_dir, $path='') {
 	logThis('Starting file copy process...', $path);
 	global $sugar_version;
 	$backwardModules='';
-    if(substr($sugar_version,0,1) >= 5){
+
     	$modules = getAllModules();
 			$backwardModules = array();
 			foreach($modules as $mod){
@@ -138,7 +178,6 @@ function commitCopyNewFiles($unzip_dir, $zip_from_dir, $path='') {
 			    	}
 			   }
 			}
-       }
 
 	$newFiles = findAllFiles(clean_path($unzip_dir . '/' . $zip_from_dir), array());
 	$zipPath = clean_path($unzip_dir . '/' . $zip_from_dir);
@@ -713,9 +752,8 @@ function upgradeUWFiles($file) {
     if(file_exists("$from_dir/include/utils/sugar_file_utils.php")) {
         $allFiles[] = "$from_dir/include/utils/sugar_file_utils.php";
     }
-    // users
-    if(file_exists("$from_dir/modules/Users")) {
-        $allFiles[] = findAllFiles("$from_dir/modules/Users", $allFiles);
+    if(file_exists("$from_dir/include/utils/autoloader.php")) {
+        $allFiles[] = "$from_dir/include/utils/autoloader.php";
     }
 
     upgradeUWFilesCopy($allFiles, $from_dir);
@@ -1413,9 +1451,10 @@ function preLicenseCheck() {
 	global $mod_strings;
 	global $sugar_version;
 
-	if(!isset($sugar_version) || empty($sugar_version)) {
-		require_once('./sugar_version.php');
-	}
+    if (empty($sugar_version))
+    {
+        require('sugar_version.php');
+    }
 
 if(!isset($_SESSION['unzip_dir']) || empty($_SESSION['unzip_dir'])) {
 		logThis('unzipping files in upgrade archive...');
@@ -1557,9 +1596,10 @@ function preflightCheck() {
 	global $mod_strings;
 	global $sugar_version;
 
-	if(!isset($sugar_version) || empty($sugar_version)) {
-		require_once('./sugar_version.php');
-	}
+    if (empty($sugar_version))
+    {
+        require('sugar_version.php');
+    }
 
 	unset($_SESSION['rebuild_relationships']);
 	unset($_SESSION['rebuild_extensions']);
@@ -2155,8 +2195,6 @@ function resetUwSession() {
 		unset($_SESSION['alterCustomTableQueries']);
 	if(isset($_SESSION['skip_zip_upload']))
 		unset($_SESSION['skip_zip_upload']);
-	if(isset($_SESSION['sugar_version_file']))
-		unset($_SESSION['sugar_version_file']);
 	if(isset($_SESSION['install_file']))
 		unset($_SESSION['install_file']);
 	if(isset($_SESSION['unzip_dir']))
@@ -3909,7 +3947,7 @@ function merge_config_si_settings($write_to_upgrade_log=false, $config_location=
 	} else {
 	   if($write_to_upgrade_log)
 	   {
-	      logThis('config.php values are in sync with config_si.php values.  Skipped merging.');
+	      logThis('config.php values are in sync with config_si.php values.  Skipped merging.', $path);
 	   }
 	   return false;
 	}
@@ -4145,6 +4183,9 @@ function upgradeSugarCache($file)
 	if(file_exists("$from_dir/include/utils/sugar_file_utils.php")) {
 		$allFiles[] = "$from_dir/include/utils/sugar_file_utils.php";
 	}
+	if(file_exists("$from_dir/include/utils/autoloader.php")) {
+		$allFiles[] = "$from_dir/include/utils/autoloader.php";
+	}
 
 	foreach($allFiles as $k => $file) {
 		$destFile = str_replace($from_dir."/", "", $file);
@@ -4159,41 +4200,6 @@ function upgradeSugarCache($file)
         }
 	}
 }
-
-
-/**
- * upgradeDisplayedTabsAndSubpanels
- *
- * @param $version String value of current system version (pre upgrade)
- */
-function upgradeDisplayedTabsAndSubpanels($version)
-{
-	if($version < '620')
-	{
-		logThis('start upgrading system displayed tabs and subpanels');
-	    require_once('modules/MySettings/TabController.php');
-	    $tc = new TabController();
-
-	    //grab the existing system tabs
-	    $tabs = $tc->get_tabs_system();
-
-	    //add Calls, Meetings, Tasks, Notes, Prospects (Targets) and ProspectLists (Target Lists)
-	    //to displayed tabs unless explicitly set to hidden
-	    $modules_to_add = array('Calls', 'Meetings', 'Tasks', 'Notes', 'Prospects', 'ProspectLists');
-	    $added_tabs = array();
-
-	    foreach($modules_to_add as $module)
-	    {
-		       $tabs[0][$module] = $module;
-		       $added_tabs[] = $module;
-	    }
-
-	    logThis('calling set_system_tabs on TabController to add tabs: ' . var_export($added_tabs, true));
-	    $tc->set_system_tabs($tabs[0]);
-	    logThis('finish upgrading system displayed tabs and subpanels');
-	}
-}
-
 
 /**
  * unlinkUpgradeFiles
@@ -4229,26 +4235,26 @@ function unlinkUpgradeFiles($version)
        {
        		if(preg_match('/UpgradeRemoval(\d+)x\.php/', $script, $matches))
        		{
-       	   	   $checkVersion = $matches[1] + 1; //Increment by one to check everything equal or below the target version
        	   	   $upgradeClass = 'UpgradeRemoval' . $matches[1] . 'x';
        	   	   require_once($_SESSION['unzip_dir'].'/scripts/files_to_remove/' . $upgradeClass . '.php');
+               if (class_exists($upgradeClass) == false)
+               {
+                   continue;
+               }
 
-       	   	   //Check to make sure we should load and run this UpgradeRemoval instance
-       	   	   if($checkVersion <= $version && class_exists($upgradeClass))
-       	   	   {
-       	   	   	  $upgradeInstance = new $upgradeClass();
-       	   	   	  if($upgradeInstance instanceof UpgradeRemoval)
-       	   	   	  {
-       	   	   	  	  logThis('Running UpgradeRemoval instance ' . $upgradeClass);
-       	   	   	  	  logThis('Files will be backed up to custom/backup');
-	       	   	   	  $files = $upgradeInstance->getFilesToRemove($version);
-	       	   	   	  foreach($files as $file)
-	       	   	   	  {
-	       	   	   	  	 logThis($file);
-	       	   	   	  }
-	       	   	   	  $upgradeInstance->processFilesToRemove($files);
-       	   	   	  }
-       	   	   }
+                //Check to make sure we should load and run this UpgradeRemoval instance
+                $upgradeInstance = new $upgradeClass();
+                if ($upgradeInstance instanceof UpgradeRemoval && version_compare($upgradeInstance->version, $version, '<='))
+                {
+                    logThis('Running UpgradeRemoval instance ' . $upgradeClass);
+                    logThis('Files will be backed up to custom/backup');
+                    $files = $upgradeInstance->getFilesToRemove($version);
+                    foreach($files as $file)
+                    {
+                       logThis($file);
+                    }
+                    $upgradeInstance->processFilesToRemove($files);
+                }
        	    }
        }
     }

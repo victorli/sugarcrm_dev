@@ -2183,7 +2183,7 @@ $app_strings = array (
     'LBL_RELATED_CAMPAIGN' =>'Related campaign',
     'LBL_ADD_ALL_LEAD_FIELDS' => 'Add All Fields',
     'LBL_REMOVE_ALL_LEAD_FIELDS' => 'Remove All Fields',
-    'LBL_ONLY_IMAGE_ATTACHMENT' => 'Only image type attachment can be embedded',
+    'LBL_ONLY_IMAGE_ATTACHMENT' => 'Only the following supported image type attachments can be embedded: JPG, PNG.',
     'LBL_REMOVE' => 'Remove',
     'LBL_TRAINING' => 'Support',
     'ERR_DATABASE_CONN_DROPPED'=>'Error executing a query. Possibly, your database dropped the connection. Please refresh this page, you may need to restart you web server.',
@@ -2474,6 +2474,7 @@ $app_strings = array (
     'UPLOAD_ERROR_TEXT_SIZEINFO' => 'ERROR: There was an error during upload. Error code: {0} - {1}. The upload_maxsize is {2} ',
     'UPLOAD_ERROR_HOME_TEXT'     => 'ERROR: There was an error during your upload, please contact an administrator for help.',
     'UPLOAD_MAXIMUM_EXCEEDED'    => 'Size of Upload ({0} bytes) Exceeded Allowed Maximum: {1} bytes',
+    'UPLOAD_REQUEST_ERROR'    => 'An error has occured. Please refresh your page and try again.',
 
 
     //508 used Access Keys

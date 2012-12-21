@@ -288,13 +288,6 @@ if($upgradeStepFile == 'end'){
 			deleteCache();
 		}
 		ob_end_clean();
-       if(isset($_SESSION['current_db_version']) && substr($_SESSION['current_db_version'],0,1) == 4){
-		   //Remove footer from themes except default, love and link themes
-		    logThis('Start removing footer.php file from themes...');
-		    	$deleteNot =array('themes/default/footer.php','themes/Love/footer.php','themes/Links/footer.php');
-		    	removeFileFromPath('footer.php','themes', $deleteNot);
-		    logThis('End removing footer.php file from themes...');
-       }
     //}
 }
 
@@ -539,13 +532,7 @@ if(!empty($GLOBALS['top_message'])){
 	$smarty->assign('top_message', $GLOBALS['top_message']);
 }
 
-if ($sugar_config['sugar_version'] < '5.5') {
-	$smarty->assign('includeContainerCSS', true);
-} else {
-	$smarty->assign('includeContainerCSS', false);
-} // else
+$smarty->assign('includeContainerCSS', false);
 $smarty->display('modules/UpgradeWizard/uw_main.tpl');
 ////	END PAGE OUTPUT
 ///////////////////////////////////////////////////////////////////////////////
-
-?>

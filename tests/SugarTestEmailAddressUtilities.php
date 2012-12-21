@@ -34,63 +34,82 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
-require_once 'modules/Users/User.php';
 
-class SugarTestUserUtilities
+require_once 'modules/EmailAddresses/EmailAddress.php';
+
+class SugarTestEmailAddressUtilities
 {
-    private static $_createdUsers = array();
+    private static $createdAddresses = array();
 
     private function __construct() {}
-    
-    public function __destruct()
-    {
-        self::removeAllCreatedAnonymousUsers();
-    }
 
-    public static function createAnonymousUser($save = true, $is_admin=0)
+    public static function createEmailAddress($address = null)
     {
-        if (isset($_REQUEST['action'])) { 
-        unset($_REQUEST['action']);
-        }
-        
-        $time = mt_rand();
-    	$userId = 'SugarUser';
-    	$user = new User();
-        $user->user_name = $userId . $time;
-        $user->user_hash = md5($userId.$time);
-        $user->first_name = $userId;
-        $user->last_name = $time;
-        $user->status='Active';
-        if ($is_admin) {
-            $user->is_admin = 1;
-        }
-        if ( $save ) {
-            $user->save();
+        if (null === $address)
+        {
+            $address = 'address-' . mt_rand() . '@example.com';
         }
 
-        $user->fill_in_additional_detail_fields();
-        self::$_createdUsers[] = $user;
-        return $user;
+        $email_address = new EmailAddress();
+        $email_address->email_address = $address;
+        $email_address->save();
+
+        self::$createdAddresses[] = $email_address;
+        return $email_address;
     }
-    
-    public static function removeAllCreatedAnonymousUsers()
+
+    /**
+     * Add specified email address to the person
+     *
+     * @param Person $person
+     * @param string|EmailAddress $address
+     * @param array $additional_values
+     * @return boolean|EmailAddress
+     * @throws InvalidArgumentException
+     */
+    public static function addAddressToPerson(Person $person, $address, array $additional_values = array())
     {
-        $user_ids = self::getCreatedUserIds();
-        if ( count($user_ids) > 0 ) {
-            $GLOBALS['db']->query('DELETE FROM users WHERE id IN (\'' . implode("', '", $user_ids) . '\')');
-            $GLOBALS['db']->query('DELETE FROM user_preferences WHERE assigned_user_id IN (\'' . implode("', '", $user_ids) . '\')');
+        if (is_string($address))
+        {
+            $address = self::createEmailAddress($address);
         }
-        self::$_createdUsers = array();
+
+        if (!$address instanceof EmailAddress)
+        {
+            throw new InvalidArgumentException(
+                'Address must be a string or an instance of EmailAddress, '
+                    . gettype($address) . ' given'
+            );
+        }
+
+        if (!$person->load_relationship('email_addresses'))
+        {
+            return false;
+        }
+
+        // create relation between user and email address
+        $person->email_addresses->add(array($address), $additional_values);
+        $GLOBALS['db']->commit();
+        return $address;
     }
-    
-    public static function getCreatedUserIds() 
+
+    public static function removeAllCreatedAddresses()
     {
-        $user_ids = array();
-        foreach (self::$_createdUsers as $user)
-            if ( is_object($user) && $user instanceOf User )
-                $user_ids[] = $user->id;
-        
-        return $user_ids;
+        $ids = self::getCreatedEmailAddressIds();
+        if (count($ids) > 0)
+        {
+            $GLOBALS['db']->query('DELETE FROM email_addresses WHERE id IN (\'' . implode("', '", $ids) . '\')');
+        }
+        self::$createdAddresses = array();
+    }
+
+    public static function getCreatedEmailAddressIds()
+    {
+        $ids = array();
+        foreach (self::$createdAddresses as $address)
+        {
+            $ids[] = $address->id;
+        }
+        return $ids;
     }
 }

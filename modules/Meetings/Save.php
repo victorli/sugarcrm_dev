@@ -44,6 +44,13 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * Contributor(s): ______________________________________..
  ********************************************************************************/
 
+// prevent overriding of a newly specified parent_id by existing relate_id
+if (!empty($_REQUEST['relate_id']) && !empty($_REQUEST['parent_id'])
+    && $_REQUEST['relate_id'] != $_REQUEST['parent_id']
+) {
+    $_REQUEST['relate_id'] = false;
+}
+
 require_once('modules/Meetings/MeetingFormBase.php');
 $formBase = new MeetingFormBase();
 $formBase->handleSave('', true, false);

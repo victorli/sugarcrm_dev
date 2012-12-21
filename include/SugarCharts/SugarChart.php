@@ -652,8 +652,9 @@ class SugarChart {
 
         $filename = sugar_cached("xml/"). $current_user->id . '_' . $file_id . '.xml';
 
+        $filename_temp = "xml/". $current_user->id . '_' . $file_id . '.xml';
         if ( !is_dir(dirname($filename)) ) {
-            create_cache_directory("xml");
+            create_cache_directory($filename_temp);
         }
 
         return $filename;

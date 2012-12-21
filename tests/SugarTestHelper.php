@@ -102,6 +102,7 @@ require_once 'SugarTestObjectUtilities.php';
 require_once 'SugarTestProjectUtilities.php';
 require_once 'SugarTestProjectTaskUtilities.php';
 require_once 'SugarTestUserUtilities.php';
+require_once 'SugarTestEmailAddressUtilities.php';
 require_once 'SugarTestLangPackCreator.php';
 require_once 'SugarTestThemeUtilities.php';
 require_once 'SugarTestContactUtilities.php';

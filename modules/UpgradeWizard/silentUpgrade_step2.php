@@ -266,8 +266,8 @@ $errors = array();
 	$zip_from_dir	= substr($patchName, 0, strlen($patchName) - 4); // patch folder name (minus ".zip")
 	$path			= $argv[2]; // custom log file, if blank will use ./upgradeWizard.log
     $db				= &DBManagerFactory::getInstance();
-	$UWstrings		= return_module_language('en_us', 'UpgradeWizard');
-	$adminStrings	= return_module_language('en_us', 'Administration');
+	$UWstrings		= return_module_language('en_us', 'UpgradeWizard', true);
+	$adminStrings	= return_module_language('en_us', 'Administration', true);
     $app_list_strings = return_app_list_strings_language('en_us');
 	$mod_strings	= array_merge($adminStrings, $UWstrings);
 	$subdirs		= array('full', 'langpack', 'module', 'patch', 'theme', 'temp');
@@ -473,10 +473,11 @@ logThis('End rebuild relationships.', $path);
 
 include("$unzip_dir/manifest.php");
 $ce_to_pro_ent = isset($manifest['name']) && ($manifest['name'] == 'SugarCE to SugarPro' || $manifest['name'] == 'SugarCE to SugarEnt'  || $manifest['name'] == 'SugarCE to SugarCorp' || $manifest['name'] == 'SugarCE to SugarUlt');
-$origVersion = getSilentUpgradeVar('origVersion');
-if(!$origVersion){
+$sugar_version = getSilentUpgradeVar('origVersion');
+if (!$sugar_version)
+{
     global $silent_upgrade_vars_loaded;
-    logThis("Error retrieving silent upgrade var for origVersion: cache dir is {$GLOBALS['sugar_config']['cache_dir']} -- full cache for \$silent_upgrade_vars_loaded is ".var_export($silent_upgrade_vars_loaded, true), $path);
+    logThis("Error retrieving silent upgrade var for sugar_version: cache dir is {$GLOBALS['sugar_config']['cache_dir']} -- full cache for \$silent_upgrade_vars_loaded is ".var_export($silent_upgrade_vars_loaded, true), $path);
 }
 
 
@@ -510,10 +511,6 @@ if($ce_to_pro_ent) {
     }
 }
 
-
-/*
-*/
-
 //bug: 37214 - merge config_si.php settings if available
 logThis('Begin merge_config_si_settings', $path);
 merge_config_si_settings(true, '', '', $path);
@@ -524,37 +521,11 @@ logThis('Begin upgrade_connectors', $path);
 upgrade_connectors();
 logThis('End upgrade_connectors', $path);
 
-// Enable the InsideView connector by default
-if($origVersion < '621' && function_exists('upgradeEnableInsideViewConnector')) {
-    logThis("Looks like we need to enable the InsideView connector\n",$path);
-    upgradeEnableInsideViewConnector($path);
-}
-
-
-//bug: 36845 - ability to provide global search support for custom modules
-/*
-*/
-
-//Upgrade system displayed tabs and subpanels
-if(function_exists('upgradeDisplayedTabsAndSubpanels'))
-{
-	upgradeDisplayedTabsAndSubpanels($origVersion);
-}
-
-if ($origVersion < '650')
-{
-    // Bug 53650 - Workflow Type Templates not saving Type upon upgrade to 6.5.0, usable as Email Templates
-    $db->query("UPDATE email_templates SET type = 'workflow' WHERE
-        coalesce(" . $db->convert("base_module", "length") . ",0) > 0
-        AND
-        coalesce(" . $db->convert("type", "length") . ",0) = 0
-    ");
-}
 
 //Unlink files that have been removed
 if(function_exists('unlinkUpgradeFiles'))
 {
-	unlinkUpgradeFiles($origVersion);
+	unlinkUpgradeFiles($sugar_version);
 }
 
 if(function_exists('rebuildSprites') && function_exists('imagecreatetruecolor'))
@@ -563,7 +534,7 @@ if(function_exists('rebuildSprites') && function_exists('imagecreatetruecolor'))
 }
 
 //Run repairUpgradeHistoryTable
-if($origVersion < '650' && function_exists('repairUpgradeHistoryTable'))
+if (version_compare($sugar_version, '6.5.0', '<') && function_exists('repairUpgradeHistoryTable'))
 {
     repairUpgradeHistoryTable();
 }
@@ -603,6 +574,3 @@ if(count($errors) > 0) {
 	echo "******** Run Repair -> Rebuild Relationships  **********************\n";
 	echo "********************************************************************\n";
 }
-
-
-?>

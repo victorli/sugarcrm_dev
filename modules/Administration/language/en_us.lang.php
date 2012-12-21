@@ -1014,6 +1014,7 @@ $mod_strings = array (
 'ML_INVALID_ACTION_IN_MANIFEST'=>'Invalid action in your manifest:',
 'ML_NO_MANIFEST'=>'This package does not contain a manifest',
 'ML_INVALID_FUNCTION'=>'Invalid usage of a function ',
+'ML_INVALID_METHOD'=>'Invalid usage of a reserved method name ',
 'ML_INVALID_EXT'=>'Invalid file extension ',
 'ML_ISSUES'=>'Issues',
 'ML_MANIFEST_ISSUE'=>'Issue with the manifest',

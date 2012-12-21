@@ -2786,11 +2786,9 @@ protected function checkQuery($sql, $object_name = false)
 		$values['field_name']= $this->massageValue($changes['field_name'], $fieldDefs['field_name']);
 		$values['data_type'] = $this->massageValue($changes['data_type'], $fieldDefs['data_type']);
 		if ($changes['data_type']=='text') {
-			$bean->fetched_row[$changes['field_name']]=$changes['after'];;
 			$values['before_value_text'] = $this->massageValue($changes['before'], $fieldDefs['before_value_text']);
 			$values['after_value_text'] = $this->massageValue($changes['after'], $fieldDefs['after_value_text']);
 		} else {
-			$bean->fetched_row[$changes['field_name']]=$changes['after'];;
 			$values['before_value_string'] = $this->massageValue($changes['before'], $fieldDefs['before_value_string']);
 			$values['after_value_string'] = $this->massageValue($changes['after'], $fieldDefs['after_value_string']);
 		}
@@ -2816,17 +2814,17 @@ protected function checkQuery($sql, $object_name = false)
 	}
 
     /**
-     * Uses the audit enabled fields array to find fields whose value has changed.
+     * Finds fields whose value has changed.
      * The before and after values are stored in the bean.
      * Uses $bean->fetched_row && $bean->fetched_rel_row to compare
      *
      * @param SugarBean $bean Sugarbean instance that was changed
+     * @param array|null $field_filter Array of filter names to be inspected (NULL means all fields)
      * @return array
      */
-	public function getDataChanges(SugarBean &$bean)
+    public function getDataChanges(SugarBean &$bean, array $field_filter = null)
 	{
-		$changed_values=array();
-		$audit_fields=$bean->getAuditEnabledFieldDefinitions();
+        $changed_values=array();
 
         $fetched_row = array();
         if (is_array($bean->fetched_row)) 
@@ -2834,51 +2832,79 @@ protected function checkQuery($sql, $object_name = false)
             $fetched_row = array_merge($bean->fetched_row, $bean->fetched_rel_row);
         }
 
-		if ($fetched_row && is_array($audit_fields) and count($audit_fields) > 0) {
-			foreach ($audit_fields as $field=>$properties) {
-				if (array_key_exists($field, $fetched_row)) {
-					$before_value = $fetched_row[$field];
-					$after_value=$bean->$field;
-					if (isset($properties['type'])) {
-						$field_type=$properties['type'];
-					} else {
-						if (isset($properties['dbType']))
-							$field_type=$properties['dbType'];
-						else if(isset($properties['data_type']))
-							$field_type=$properties['data_type'];
-						else
-							$field_type=$properties['dbtype'];
-					}
+        if ($fetched_row) {
 
-					//Because of bug #25078(sqlserver haven't 'date' type, trim extra "00:00:00" when insert into *_cstm table).
-					// so when we read the audit datetime field from sqlserver, we have to replace the extra "00:00:00" again.
-					if(!empty($field_type) && $field_type == 'date'){
-						$before_value = $this->fromConvert($before_value , $field_type);
-					}
-					//if the type and values match, do nothing.
-					if (!($this->_emptyValue($before_value,$field_type) && $this->_emptyValue($after_value,$field_type))) {
-						if (trim($before_value) !== trim($after_value)) {
-                            // Bug #42475: Don't directly compare numeric values, instead do the subtract and see if the comparison comes out to be "close enough", it is necessary for floating point numbers.
-                            // Manual merge of fix 95727f2eed44852f1b6bce9a9eccbe065fe6249f from DBHelper
-                            // This fix also fixes Bug #44624 in a more generic way and therefore eliminates the need for fix 0a55125b281c4bee87eb347709af462715f33d2d in DBHelper
-							if (!($this->isNumericType($field_type) &&
-                                  abs(
-                                      2*((trim($before_value)+0)-(trim($after_value)+0))/((trim($before_value)+0)+(trim($after_value)+0)) // Using relative difference so that it also works for other numerical types besides currencies
-                                  )<0.0000000001)) {    // Smaller than 10E-10
-								if (!($this->isBooleanType($field_type) && ($this->_getBooleanValue($before_value)== $this->_getBooleanValue($after_value)))) {
-									$changed_values[$field]=array('field_name'=>$field,
-										'data_type'=>$field_type,
-										'before'=>$before_value,
-										'after'=>$after_value);
-								}
-							}
-						}
-					}
-				}
+            $field_defs = $bean->field_defs;
+
+            if (is_array($field_filter)) {
+                $field_defs = array_intersect_key($field_defs, array_flip($field_filter));
+            }
+
+            // remove fields which do not present in fetched row
+            $field_defs = array_intersect_key($field_defs, $fetched_row);
+
+            // remove fields which do not exist as bean property
+            $field_defs = array_intersect_key($field_defs, (array) $bean);
+
+            foreach ($field_defs as $field => $properties) {
+                $before_value = $fetched_row[$field];
+                $after_value=$bean->$field;
+                if (isset($properties['type'])) {
+                    $field_type=$properties['type'];
+                } else {
+                    if (isset($properties['dbType'])) {
+                        $field_type=$properties['dbType'];
+                    }
+                    else if(isset($properties['data_type'])) {
+                        $field_type=$properties['data_type'];
+                    }
+                    else {
+                        $field_type=$properties['dbtype'];
+                    }
+                }
+
+                //Because of bug #25078(sqlserver haven't 'date' type, trim extra "00:00:00" when insert into *_cstm table).
+                // so when we read the audit datetime field from sqlserver, we have to replace the extra "00:00:00" again.
+                if(!empty($field_type) && $field_type == 'date'){
+                    $before_value = $this->fromConvert($before_value , $field_type);
+                }
+                //if the type and values match, do nothing.
+                if (!($this->_emptyValue($before_value,$field_type) && $this->_emptyValue($after_value,$field_type))) {
+                    if (trim($before_value) !== trim($after_value)) {
+                        // Bug #42475: Don't directly compare numeric values, instead do the subtract and see if the comparison comes out to be "close enough", it is necessary for floating point numbers.
+                        // Manual merge of fix 95727f2eed44852f1b6bce9a9eccbe065fe6249f from DBHelper
+                        // This fix also fixes Bug #44624 in a more generic way and therefore eliminates the need for fix 0a55125b281c4bee87eb347709af462715f33d2d in DBHelper
+                        if (!($this->isNumericType($field_type) &&
+                              abs(
+                                  2*((trim($before_value)+0)-(trim($after_value)+0))/((trim($before_value)+0)+(trim($after_value)+0)) // Using relative difference so that it also works for other numerical types besides currencies
+                              )<0.0000000001)) {    // Smaller than 10E-10
+                            if (!($this->isBooleanType($field_type) && ($this->_getBooleanValue($before_value)== $this->_getBooleanValue($after_value)))) {
+                                $changed_values[$field]=array('field_name'=>$field,
+                                    'data_type'=>$field_type,
+                                    'before'=>$before_value,
+                                    'after'=>$after_value);
+                            }
+                        }
+                    }
+                }
 			}
 		}
 		return $changed_values;
 	}
+
+    /**
+     * Uses the audit enabled fields array to find fields whose value has changed.
+     * The before and after values are stored in the bean.
+     * Uses $bean->fetched_row && $bean->fetched_rel_row to compare
+     *
+     * @param SugarBean $bean Sugarbean instance that was changed
+     * @return array
+     */
+    public function getAuditDataChanges(SugarBean $bean)
+    {
+        $audit_fields = $bean->getAuditEnabledFieldDefinitions();
+        return $this->getDataChanges($bean, array_keys($audit_fields));
+    }
 
 	/**
 	 * Setup FT indexing

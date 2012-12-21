@@ -903,7 +903,7 @@ function add_create_account($seed)
 
 	    $arr = array();
 
-	    $query = "select id, deleted from {$focus->table_name} ";
+	    $query = "select {$focus->table_name}.id, {$focus->table_name}.deleted from {$focus->table_name} ";
 	    $query .= " WHERE name='".$seed->db->quote($account_name)."'";
 	    $query .=" ORDER BY deleted ASC";
 	    $result = $seed->db->query($query, true);

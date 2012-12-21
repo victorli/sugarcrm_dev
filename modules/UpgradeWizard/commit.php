@@ -321,7 +321,8 @@ eoq;
 
 	   require("sugar_version.php");
 
-       if($_SESSION['current_db_version'] != $_SESSION['target_db_version']){
+       if (version_compare($_SESSION['current_db_version'], $_SESSION['target_db_version'], '!='))
+       {
 			logThis('Performing UWrebuild()...');
 			UWrebuild();
 			logThis('UWrebuild() done.');
@@ -356,8 +357,8 @@ eoq;
 	///////////////////////////////////////////////////////////////////////////////
 
 logThis('check if current_db_version in $_SESSION equals target_db_version in $_SESSION');
-if($_SESSION['current_db_version'] == $_SESSION['target_db_version']){
-
+if (version_compare($_SESSION['current_db_version'], $_SESSION['target_db_version'], '='))
+{
 	logThis('current_db_version in $_SESSION and target_db_version in $_SESSION are equal');
 	$_SESSION['license_seats_needed'] = '';
 	//Clean modules from cache
@@ -464,10 +465,12 @@ $customized_mods_Desc = '';
 $old_schema= '';
 $old_schema_opt = '';
 $skipped_queries = '';
-if($_SESSION['current_db_version'] != $_SESSION['target_db_version']){
+if (version_compare($_SESSION['current_db_version'], $_SESSION['target_db_version'], '!='))
+{
     global $sugar_version;
-    $origVersion = substr(preg_replace("/[^0-9]/", "", $_SESSION['current_db_version']),0,3);
-	$destVersion = substr(preg_replace("/[^0-9]/", "", $_SESSION['target_db_version']),0,3);
+
+    $origVersion = implodeVersion($_SESSION['current_db_version']);
+    $destVersion = implodeVersion($_SESSION['target_db_version']);
 
 	//old schema to be dropped
 	$old_schema_contents = '';

@@ -407,8 +407,9 @@ function generateSearchWhere($module, $query) {//this function is similar with f
          //retrieve the export content
          $content = export($type, null, false, true);
 
-         //add details on removing the sample data
-         return $content . $app_strings['LBL_IMPORT_SAMPLE_FILE_TEXT'];
+         // Add a new row and add details on removing the sample data
+         // Our Importer will stop after he gets to the new row, ignoring the text below 
+         return $content . "\n" . $app_strings['LBL_IMPORT_SAMPLE_FILE_TEXT'];
 
      }
  //this function will take in the bean and field mapping and return a proper value

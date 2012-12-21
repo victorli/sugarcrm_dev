@@ -44,7 +44,12 @@ class Person extends Basic
      * @var bool controls whether or not to invoke the getLocalFormatttedName method with title and salutation
      */
     var $createLocaleFormattedName = true;
-    
+
+    /**
+     * @var Link2
+     */
+    public $email_addresses;
+
 	public function Person()
 	{
 		parent::Basic();

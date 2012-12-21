@@ -77,7 +77,7 @@ class Bug33036Test extends Sugar_PHPUnit_Framework_TestCase
         
         $this->obj->retrieve();
         $this->obj->account_name = $test_account_name;
-        $changes = $this->obj->db->getDataChanges($this->obj);
+        $changes = $this->obj->db->getAuditDataChanges($this->obj);
         
         $this->assertEquals($changes['account_name']['after'], $test_account_name);
         

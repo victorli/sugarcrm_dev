@@ -149,7 +149,7 @@ class EditView
                 die();
             }
 
-            require_once("modules/$this->module/metadata/editviewdefs.php");
+            require("modules/$this->module/metadata/editviewdefs.php");
         }
 
         $this->defs = $viewdefs[$this->module][$this->view];

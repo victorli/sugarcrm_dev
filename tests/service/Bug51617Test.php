@@ -45,15 +45,9 @@ class Bug51617Test extends SOAPTestCase
     {
         $this->_soapURL = $GLOBALS['sugar_config']['site_url'].'/service/v2/soap.php';
 
-        $beanList = array();
-        $beanFiles = array();
-        require('include/modules.php');
-        $GLOBALS['beanList'] = $beanList;
-        $GLOBALS['beanFiles'] = $beanFiles;
-        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-        $GLOBALS['current_user']->status = 'Active';
-        $GLOBALS['current_user']->is_admin = 1;
-        $GLOBALS['current_user']->save();
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('current_user', array(true, 1));
 
         $this->field = get_widget('varchar');
         $this->field->id = 'Accountstest_custom_c';
@@ -104,17 +98,14 @@ class Bug51617Test extends SOAPTestCase
 
         SugarTestAccountUtilities::removeAllCreatedAccounts();
 
-        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-        unset($GLOBALS['current_user']);
-
         parent::tearDown();
 
         global $soap_version_test_accountId, $soap_version_test_opportunityId, $soap_version_test_contactId;
         unset($soap_version_test_accountId);
         unset($soap_version_test_opportunityId);
         unset($soap_version_test_contactId);
-        unset($GLOBALS['beanFiles']);
-        unset($GLOBALS['beanList']);
+
+        SugarTestHelper::tearDown();
     }
 
     public function testGetEntryListWithCustomField()
@@ -124,7 +115,7 @@ class Bug51617Test extends SOAPTestCase
             array(
                  'session'=>$this->_sessionId,
                  "module_name" => 'Accounts',
-                 '',
+                 "accounts.id = '{$this->_account->id}'",
                  '',
                  0,
                  "select_fields" => array('id', 'name', 'test_custom_c'),

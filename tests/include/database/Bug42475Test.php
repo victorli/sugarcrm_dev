@@ -40,16 +40,32 @@
  */
 class Bug42475Test extends Sugar_PHPUnit_Framework_TestCase
 {
+    /** @var  Bug42475TestBean */
+    private $bean;
+
+    public function setUp()
+    {
+        $this->bean = new Bug42475TestBean();
+        $this->bean->field_defs['test_field'] = array(
+            'type' => 'currency',
+        );
+    }
+
+    public function tearDown()
+    {
+        unset($this->bean->field_defs['test_field']);
+    }
+
     public function testAuditingCurrency() {
         // getDataChanges
         $testBean = new Bug42475TestBean();
-        $dataChanges = $testBean->db->getDataChanges($testBean);
+        $dataChanges = $testBean->db->getAuditDataChanges($testBean);
 
         $this->assertEquals(0,count($dataChanges), "New test bean shouldn't have any changes");
 
         $testBean = new Bug42475TestBean();
         $testBean->test_field = 3829.83862;
-        $dataChanges = $testBean->db->getDataChanges($testBean);
+        $dataChanges = $testBean->db->getAuditDataChanges($testBean);
 
         $this->assertEquals(1,count($dataChanges), "Test bean should have 1 change since we added assigned new value to test_field");
 

@@ -42,6 +42,8 @@ class Bug49281Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('beanFiles');
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
 	}
 
@@ -50,6 +52,7 @@ class Bug49281Test extends Sugar_PHPUnit_Framework_TestCase
 	    SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset($GLOBALS['current_user']);
         SugarTestAccountUtilities::removeAllCreatedAccounts();
+        SugarTestHelper::tearDown();
 	}
     /**
      * @ticket 49281

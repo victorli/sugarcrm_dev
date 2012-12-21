@@ -76,6 +76,8 @@ class PopupSmarty extends ListViewSmarty{
 		$this->module = $module;
 		$this->searchForm = new SearchForm($this->seed, $this->module);
 		$this->th->deleteTemplate($module, $this->view);
+        $this->headerTpl = 'include/Popups/tpls/header.tpl';
+        $this->footerTpl = 'include/Popups/tpls/footer.tpl';
 
 	}
 
@@ -230,8 +232,8 @@ class PopupSmarty extends ListViewSmarty{
 		$json = getJSONobj();
 		$this->th->ss->assign('jsLang', $jsLang);
 		$this->th->ss->assign('lang', substr($GLOBALS['current_language'], 0, 2));
-		$this->th->ss->assign('headerTpl', 'include/Popups/tpls/header.tpl');
-        $this->th->ss->assign('footerTpl', 'include/Popups/tpls/footer.tpl');
+        $this->th->ss->assign('headerTpl', $this->headerTpl);
+        $this->th->ss->assign('footerTpl', $this->footerTpl);
         $this->th->ss->assign('ASSOCIATED_JAVASCRIPT_DATA', 'var associated_javascript_data = '.$json->encode($associated_row_data). '; var is_show_fullname = '.$is_show_fullname.';');
 		$this->th->ss->assign('module', $this->seed->module_dir);
 		$request_data = empty($_REQUEST['request_data']) ? '' : $_REQUEST['request_data'];

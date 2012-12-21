@@ -405,7 +405,7 @@ class SugarBean
      * Before calling this function, check whether audit has been enabled for the table/module or not.
      * You would set the audit flag in the implemting module's vardef file.
      *
-     * @return an array of
+     * @return array
      * @see is_AuditEnabled
      *
      * Internal function, do not override.
@@ -1123,6 +1123,19 @@ class SugarBean
                     }
                 }
                 else {
+
+                    //Expose the cooresponding id field of a relate field if it is only defined as a link so that users can relate records by id during import
+                    if( isset($value_array['type']) && ($value_array['type'] == 'relate') && isset($value_array['id_name']) )
+                    {
+                        $idField = $value_array['id_name'];
+                        if( isset($fieldDefs[$idField]) && isset($fieldDefs[$idField]['type'] ) && $fieldDefs[$idField]['type'] == 'link' )
+                        {
+                            $tmpFieldDefs = $fieldDefs[$idField];
+                            $tmpFieldDefs['vname'] = translate($value_array['vname'], $this->module_dir) . " " . $GLOBALS['app_strings']['LBL_ID'];
+                            $importableFields[$idField]=$tmpFieldDefs;
+                        }
+                    }
+
                     $importableFields[$key]=$value_array;
                 }
             }
@@ -1302,7 +1315,7 @@ class SugarBean
             if(isset($def['dbType']))
                 $type .= $def['dbType'];
 
-            if($def['type'] == 'html') {
+            if($def['type'] == 'html' || $def['type'] == 'longhtml') {
                 $this->$key = SugarCleaner::cleanHtml($this->$key, true);
             } elseif((strpos($type, 'char') !== false ||
                 strpos($type, 'text') !== false ||
@@ -1413,12 +1426,12 @@ class SugarBean
         $this->preprocess_fields_on_save();
 
         //construct the SQL to create the audit record if auditing is enabled.
-        $dataChanges=array();
+        $auditDataChanges=array();
         if ($this->is_AuditEnabled()) {
             if ($isUpdate && !isset($this->fetched_row)) {
                 $GLOBALS['log']->debug('Auditing: Retrieve was not called, audit record will not be created.');
             } else {
-                $dataChanges=$this->db->getDataChanges($this);
+                $auditDataChanges=$this->db->getAuditDataChanges($this);
             }
         }
 
@@ -1430,9 +1443,9 @@ class SugarBean
             $this->db->insert($this);
         }
 
-        if (!empty($dataChanges) && is_array($dataChanges))
+        if (!empty($auditDataChanges) && is_array($auditDataChanges))
         {
-            foreach ($dataChanges as $change)
+            foreach ($auditDataChanges as $change)
             {
                 $this->db->save_audit_records($this,$change);
             }
@@ -1441,6 +1454,11 @@ class SugarBean
 
         if (empty($GLOBALS['resavingRelatedBeans'])){
             SugarRelationship::resaveRelatedBeans();
+        }
+
+        // populate fetched row with current bean values
+        foreach ($auditDataChanges as $change) {
+            $this->fetched_row[$change['field_name']] = $change['after'];
         }
 
 

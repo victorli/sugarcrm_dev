@@ -192,10 +192,14 @@ class SugarWebServiceImplv3 extends SugarWebServiceImpl {
      */
     function get_server_info(){
     	$GLOBALS['log']->info('Begin: SugarWebServiceImpl->get_server_info');
-    	require_once('sugar_version.php');
+        global $sugar_flavor, $sugar_version;
+        if (empty($sugar_version))
+        {
+            require_once('sugar_version.php');
+        }
     	$GLOBALS['log']->info('End: SugarWebServiceImpl->get_server_info');
 
-    	return array('flavor' => $GLOBALS['sugar_flavor'], 'version' => $GLOBALS['sugar_version'], 'gmt_time' => TimeDate::getInstance()->nowDb());
+    	return array('flavor' => $sugar_flavor, 'version' => $sugar_version, 'gmt_time' => TimeDate::getInstance()->nowDb());
     } // fn
 
     /**

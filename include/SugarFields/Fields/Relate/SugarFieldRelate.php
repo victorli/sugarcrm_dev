@@ -158,7 +158,6 @@ class SugarFieldRelate extends SugarFieldBase {
     }
 
     function getPopupViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex){
-    	$displayParams['clearOnly'] = true;
     	return $this->getSearchViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex);
     }
 

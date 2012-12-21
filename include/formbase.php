@@ -127,10 +127,8 @@ function populateFromPost($prefix, &$focus, $skipRetrieve=false) {
 			$focus->$field = $value;
 		}
 	}
-
 	return $focus;
 }
-
 
 function add_hidden_elements($key, $value) {
 

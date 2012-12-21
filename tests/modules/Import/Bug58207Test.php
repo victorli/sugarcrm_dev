@@ -1,5 +1,4 @@
 <?php
- if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
@@ -36,12 +35,55 @@
  ********************************************************************************/
 
 
+require_once('modules/Import/sources/ImportFile.php');
 
+/**
+ * Test checks Import when not using UTF-8 encoding
+ * 
+ * @ticket 58207
+ * @author avucinic
+ *
+ */
+class Bug58207Test extends Sugar_PHPUnit_Framework_TestCase
+{
 
-$sugar_version      = '6.5.9';
-$sugar_db_version   = '6.5.9';
-$sugar_flavor       = 'CE';
-$sugar_build		= '8653';
-$sugar_timestamp    = '2012-12-19 09:22am';
+    private $_file;
+    private $_sugarConfig;
 
-?>
+    public function setUp()
+    {
+        // SJIS encoded Japanese CSV
+        $this->_file = 'tests/modules/Import/Bug58207Test.csv';
+        
+        global $sugar_config;
+        $this->_sugarConfig = $sugar_config; 
+        $sugar_config['default_export_charset'] = "SJIS";
+
+        SugarTestHelper::setUp('current_user');
+    }
+
+    public function tearDown()
+    {
+        SugarTestHelper::tearDown();
+        global $sugar_config;
+        $sugar_config = $this->_sugarConfig;
+    }
+
+    /**
+     * Import a SJIS encoded file, and check if getNextRow() properly
+     * converts all the data into UTF-8
+     */
+    public function testFileImportEncoding()
+    {
+        $importFile = new ImportFile($this->_file, ',', '"', FALSE, FALSE);
+
+        $row = $importFile->getNextRow();
+
+        // Hardcode some Japanese strings
+        $this->assertEquals('名前', $row[0]);
+        $this->assertEquals('請求先郵便番号', $row[10]);
+        $this->assertEquals('年間売上', $row[20]);
+        $this->assertEquals('チームID', $row[30]);
+    }
+
+}

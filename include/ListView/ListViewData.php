@@ -436,11 +436,14 @@ class ListViewData {
 				    $pageData['tag'][$dataIndex] = $pageData['tag'][$idIndex[$row[$id_field]][0]];
 				}
 				$data[$dataIndex] = $temp->get_list_view_data($filter_fields);
-			    $pageData['rowAccess'][$dataIndex] = array('view' => $temp->ACLAccess('DetailView'), 'edit' => $temp->ACLAccess('EditView'));
-			    $additionalDetailsAllow = $this->additionalDetails && $temp->ACLAccess('DetailView') && (file_exists('modules/' . $temp->module_dir . '/metadata/additionalDetails.php') || file_exists('custom/modules/' . $temp->module_dir . '/metadata/additionalDetails.php'));
-			    //if($additionalDetailsAllow) $pageData['additionalDetails'] = array();
-			    $additionalDetailsEdit = $temp->ACLAccess('EditView');
-				if($additionalDetailsAllow) {
+                $detailViewAccess = $temp->ACLAccess('DetailView');
+                $editViewAccess = $temp->ACLAccess('EditView');
+                $pageData['rowAccess'][$dataIndex] = array('view' => $detailViewAccess, 'edit' => $editViewAccess);
+                $additionalDetailsAllow = $this->additionalDetails && $detailViewAccess && (file_exists(
+                         'modules/' . $temp->module_dir . '/metadata/additionalDetails.php'
+                     ) || file_exists('custom/modules/' . $temp->module_dir . '/metadata/additionalDetails.php'));
+                $additionalDetailsEdit = $editViewAccess;
+                if($additionalDetailsAllow) {
                     if($this->additionalDetailsAjax) {
 					   $ar = $this->getAdditionalDetailsAjax($data[$dataIndex]['ID']);
                     }

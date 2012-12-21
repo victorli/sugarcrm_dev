@@ -104,6 +104,7 @@ EOQ;
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset($GLOBALS['app_list_strings']);
         unset($GLOBALS['current_user']);
+        unset($_SERVER['REQUEST_METHOD']);
     }
     
     /**
