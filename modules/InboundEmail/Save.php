@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -222,33 +222,41 @@ if( !empty($focus->groupfolder_id) )
     }
 }
 
-$_REQUEST['return_id'] = $focus->id;
+//check if we are in campaigns module
+if($_REQUEST['module'] == 'Campaigns'){
+    //this is coming from campaign wizard, Just set the error message if it exists and skip the redirect
+    if(!empty($error)){
+        $_REQUEST['error'] = true;
+    }
+}else{
+
+    //this is a normal Inbound Email save, so set up the url and reirect
+    $_REQUEST['return_id'] = $focus->id;
+
+    $edit='';
+    if(isset($_REQUEST['return_module']) && $_REQUEST['return_module'] != "") {
+        $return_module = $_REQUEST['return_module'];
+    } else {
+        $return_module = "InboundEmail";
+    }
+    if(isset($_REQUEST['return_action']) && $_REQUEST['return_action'] != "") {
+        $return_action = $_REQUEST['return_action'];
+    } else {
+        $return_action = "DetailView";
+    }
+    if(isset($_REQUEST['return_id']) && $_REQUEST['return_id'] != "") {
+        $return_id = $_REQUEST['return_id'];
+    }
+    if(!empty($_REQUEST['edit'])) {
+        $return_id='';
+        $edit='&edit=true';
+    }
+
+    $GLOBALS['log']->debug("Saved record with id of ".$return_id);
 
 
-$edit='';
-if(isset($_REQUEST['return_module']) && $_REQUEST['return_module'] != "") {
-	$return_module = $_REQUEST['return_module'];
-} else {
-	$return_module = "InboundEmail";
+    header("Location: index.php?module=$return_module&action=$return_action&record=$return_id$edit$error");
 }
-if(isset($_REQUEST['return_action']) && $_REQUEST['return_action'] != "") {
-	$return_action = $_REQUEST['return_action'];
-} else {
-	$return_action = "DetailView";
-}
-if(isset($_REQUEST['return_id']) && $_REQUEST['return_id'] != "") {
-	$return_id = $_REQUEST['return_id'];
-}
-if(!empty($_REQUEST['edit'])) {
-	$return_id='';
-	$edit='&edit=true';
-}
-
-$GLOBALS['log']->debug("Saved record with id of ".$return_id);
-
-
-header("Location: index.php?module=$return_module&action=$return_action&record=$return_id$edit$error");
-
 
 /**
  * Certain updates to the IE account need to be reflected in the related SugarFolder since they are

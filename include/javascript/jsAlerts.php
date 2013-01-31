@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -44,10 +44,8 @@ class jsAlerts{
 	function jsAlerts(){
 		global $app_strings;
 		$this->script .= <<<EOQ
-		if(window.addEventListener){
-			window.addEventListener("load", checkAlerts, false);
-		}else{
-			window.attachEvent("onload", checkAlerts);
+		if (!alertsTimeoutId) {
+		    checkAlerts();
 		}
 
 EOQ;
@@ -61,9 +59,10 @@ EOQ;
 		$this->script .= 'addAlert("' . addslashes($type) .'", "' . addslashes($name). '","' . addslashes($subtitle). '", "'. addslashes(str_replace(array("\r", "\n"), array('','<br>'),$description)) . '",' . $countdown . ',"'.addslashes($redirect).'")' . "\n";
 	}
 
-	function getScript(){
-		return "<script>" . $this->script . "</script>";
-	}
+    function getScript()
+    {
+        return "<script>secondsSinceLoad = 0; alertList = [];" . $this->script . "</script>";
+    }
 
 	function addActivities(){
 		global $app_list_strings, $timedate, $current_user, $app_strings;

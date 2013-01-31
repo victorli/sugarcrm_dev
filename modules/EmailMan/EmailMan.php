@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -937,18 +937,15 @@ class EmailMan extends SugarBean{
 
      }
 
-    function create_export_query(&$order_by, &$where) {
-        $custom_join = $this->custom_fields->getJOIN(true, true,$where);
+    function create_export_query(&$order_by, &$where)
+    {
+        $custom_join = $this->getCustomJoin(true, true, $where);
         $query = "SELECT emailman.*";
-        if($custom_join){
-            $query .= $custom_join['select'];
-        }
+        $query .= $custom_join['select'];
 
         $query .= " FROM emailman ";
 
-        if($custom_join){
-            $query .= $custom_join['join'];
-        }
+        $query .= $custom_join['join'];
 
         $where_auto = "( emailman.deleted IS NULL OR emailman.deleted=0 )";
 

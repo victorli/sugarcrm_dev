@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -92,6 +92,11 @@ class Bug40209Test extends Sugar_PHPUnit_Framework_OutputTestCase
         $_REQUEST['record'] = $this->lead->id;
         $_REQUEST['handle'] = 'save';
         $_REQUEST['selectedAccount'] = $this->account->id;
+        
+        // Create a Contact
+        $_REQUEST['convert_create_Contacts'] = 'true';
+        // $_POST value needed for Duplicate check
+        $_REQUEST['Contactslast_name'] = $_POST['Contactslast_name'] = 'Test 40209';
 
         //require view and call display class so that convert functionality is called
         require_once('modules/Leads/views/view.convertlead.php');

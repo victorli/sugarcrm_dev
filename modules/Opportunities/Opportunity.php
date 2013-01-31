@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -126,7 +126,7 @@ class Opportunity extends SugarBean {
 	function create_list_query($order_by, $where, $show_deleted = 0)
 	{
 
-$custom_join = $this->custom_fields->getJOIN();
+        $custom_join = $this->getCustomJoin();
                 $query = "SELECT ";
 
                 $query .= "
@@ -134,9 +134,7 @@ $custom_join = $this->custom_fields->getJOIN();
                             accounts.name as account_name,
                             accounts.assigned_user_id account_id_owner,
                             users.user_name as assigned_user_name ";
-                            if($custom_join){
-   								$query .= $custom_join['select'];
- 							}
+        $query .= $custom_join['select'];
                             $query .= " ,opportunities.*
                             FROM opportunities ";
 
@@ -147,9 +145,7 @@ $query .= 			"LEFT JOIN users
                             ON opportunities.id=$this->rel_account_table.opportunity_id
                             LEFT JOIN accounts
                             ON $this->rel_account_table.account_id=accounts.id ";
-			    if($custom_join){
-  					$query .= $custom_join['join'];
-				}
+        $query .= $custom_join['join'];
 		$where_auto = '1=1';
 		if($show_deleted == 0){
 			$where_auto = "
@@ -176,16 +172,13 @@ $query .= 			"LEFT JOIN users
 
     function create_export_query(&$order_by, &$where, $relate_link_join='')
     {
-        $custom_join = $this->custom_fields->getJOIN(true, true,$where);
-		if($custom_join)
-				$custom_join['join'] .= $relate_link_join;
+        $custom_join = $this->getCustomJoin(true, true, $where);
+        $custom_join['join'] .= $relate_link_join;
                                 $query = "SELECT
                                 opportunities.*,
                                 accounts.name as account_name,
                                 users.user_name as assigned_user_name ";
-								if($custom_join){
-   									$query .= $custom_join['select'];
- 								}
+        $query .= $custom_join['select'];
 	                            $query .= " FROM opportunities ";
 		$query .= 				"LEFT JOIN users
                                 ON opportunities.assigned_user_id=users.id";
@@ -193,9 +186,7 @@ $query .= 			"LEFT JOIN users
                                 ON opportunities.id=$this->rel_account_table.opportunity_id
                                 LEFT JOIN accounts
                                 ON $this->rel_account_table.account_id=accounts.id ";
-								if($custom_join){
-  									$query .= $custom_join['join'];
-								}
+        $query .= $custom_join['join'];
 		$where_auto = "
 			($this->rel_account_table.deleted is null OR $this->rel_account_table.deleted=0)
 			AND (accounts.deleted is null OR accounts.deleted=0)

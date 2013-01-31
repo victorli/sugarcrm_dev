@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -362,9 +362,7 @@ class SugarFieldRelate extends SugarFieldBase {
                         // add this as a new record in that bean, then relate
                         if ( isset($relatedFieldDef['db_concat_fields'])
                                 && is_array($relatedFieldDef['db_concat_fields']) ) {
-                            $relatedFieldParts = explode(' ',$value);
-                            foreach ($relatedFieldDef['db_concat_fields'] as $relatedField)
-                                $newbean->$relatedField = array_shift($relatedFieldParts);
+                            assignConcatenatedValue($newbean, $relatedFieldDef, $value);
                         }
                         else
                             $newbean->$vardef['rname'] = $value;

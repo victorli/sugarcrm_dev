@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -257,6 +257,11 @@ function handleSave($prefix,$redirect=true,$useRequired=false) {
 	   sugar_cleanup(true);
 	}
 
+        $newBean = true;
+        if (!empty($focus->id)) {
+            $newBean = false;
+        }
+
 	//add assigned user and current user if this is the first time bean is saved
   	if(empty($focus->id) && !empty($_REQUEST['return_module']) && $_REQUEST['return_module'] =='Calls' && !empty($_REQUEST['return_action']) && $_REQUEST['return_action'] =='DetailView'){
 		//if return action is set to detail view and return module to call, then this is from the long form, do not add the assigned user (only the current user)
@@ -488,7 +493,9 @@ function handleSave($prefix,$redirect=true,$useRequired=false) {
             
 	    	// CCL - Comment out call to set $current_user as invitee
 	    	//set organizer to auto-accept
-	    	//$focus->set_accept_status($current_user, 'accept');
+            if ($focus->assigned_user_id == $current_user->id && $newBean) {
+	    	$focus->set_accept_status($current_user, 'accept');
+            }
 
 	    	////	END REBUILD INVITEE RELATIONSHIPS
 	    	///////////////////////////////////////////////////////////////////////////

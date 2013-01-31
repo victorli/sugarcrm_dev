@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,23 +35,6 @@
  ********************************************************************************/
 
 $buttons = array('EDIT', 'DUPLICATE', 'DELETE', 'FIND_DUPLICATES');
-if(ACLController::checkAccess('KBDocuments', 'edit', true))
-{
-    array_push($buttons, array('customCode'=>'<input title="{$MOD.LBL_CREATE_KB_DOCUMENT}" accessKey="M" class="button" onclick="this.form.return_module.value=\'Cases\'; this.form.return_action.value=\'DetailView\';this.form.action.value=\'EditView\';this.form.module.value=\'KBDocuments\';" type="submit" name="button" value="{$MOD.LBL_CREATE_KB_DOCUMENT}">',
-        //Bug#51778: The custom code will be replaced with sugar_html. customCode will be deplicated.
-        'sugar_html' => array(
-            'type' => 'submit',
-            'value' => '{$MOD.LBL_CREATE_KB_DOCUMENT}',
-            'htmlOptions' => array(
-                'title' => '{$MOD.LBL_CREATE_KB_DOCUMENT}',
-                'accessKey' => 'M',
-                'class' => 'button',
-                'onclick' => 'this.form.return_module.value=\'Cases\'; this.form.return_action.value=\'DetailView\';this.form.action.value=\'EditView\';this.form.module.value=\'KBDocuments\';',
-                'name' => 'button',
-            ),
-        ),
-    ));
-}
 $viewdefs['Cases']['DetailView'] = array(
 
 'templateMeta' => array('form' => array('buttons' =>$buttons),

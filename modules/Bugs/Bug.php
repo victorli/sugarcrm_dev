@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -143,7 +143,7 @@ class Bug extends SugarBean {
 		// Fill in the assigned_user_name
 //		$this->assigned_user_name = get_assigned_user_name($this->assigned_user_id);
 
-		$custom_join = $this->custom_fields->getJOIN();
+        $custom_join = $this->getCustomJoin();
 		
                 $query = "SELECT ";
                 
@@ -151,9 +151,7 @@ class Bug extends SugarBean {
                                bugs.*
 
                                 ,users.user_name as assigned_user_name, releases.id release_id, releases.name release_name";
-                                 if($custom_join){
-                               		 $query .= $custom_join['select'];
-                                }
+        $query .= $custom_join['select'];
                                 $query .= " FROM bugs ";
                                
 
@@ -161,9 +159,7 @@ class Bug extends SugarBean {
 								LEFT JOIN users
                                 ON bugs.assigned_user_id=users.id";
                                 $query .= "  ";
-								if($custom_join){
-                               		 $query .= $custom_join['join'];
-                                }
+        $query .= $custom_join['join'];
             $where_auto = '1=1';
 			if($show_deleted == 0){
             	$where_auto = " $this->table_name.deleted=0 ";
@@ -188,25 +184,20 @@ class Bug extends SugarBean {
 
         function create_export_query(&$order_by, &$where, $relate_link_join='')
         {
-        	$custom_join = $this->custom_fields->getJOIN(true, true,$where);
-			if($custom_join)
-				$custom_join['join'] .= $relate_link_join;
+            $custom_join = $this->getCustomJoin(true, true, $where);
+            $custom_join['join'] .= $relate_link_join;
                 $query = "SELECT
                                 bugs.*,
                                 r1.name found_in_release_name,
                                 r2.name fixed_in_release_name,
                                 users.user_name assigned_user_name";
-                                 if($custom_join){
-									$query .=  $custom_join['select'];
-								}
+            $query .=  $custom_join['select'];
                                 $query .= " FROM bugs ";
 		$query .= "				LEFT JOIN releases r1 ON bugs.found_in_release = r1.id
 								LEFT JOIN releases r2 ON bugs.fixed_in_release = r2.id
 								LEFT JOIN users
                                 ON bugs.assigned_user_id=users.id";
-                                 if($custom_join){
-									$query .=  $custom_join['join'];
-								}
+            $query .=  $custom_join['join'];
                                 $query .= "";
                 $where_auto = "  bugs.deleted=0
                 ";

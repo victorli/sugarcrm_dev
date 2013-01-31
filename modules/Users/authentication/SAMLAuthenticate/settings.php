@@ -25,16 +25,16 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ********************************************************************************/
-  
+
 $settings                           = new SamlSettings();
-// when using Service Provider Initiated SSO (starting at index.php), this URL asks the IdP to authenticate the user. 
+// when using Service Provider Initiated SSO (starting at index.php), this URL asks the IdP to authenticate the user.
 $settings->idp_sso_target_url       = isset($GLOBALS['sugar_config']['SAML_loginurl']) ? $GLOBALS['sugar_config']['SAML_loginurl'] : '';
 
 // the certificate for the users account in the IdP
 $settings->x509certificate          = isset($GLOBALS['sugar_config']['SAML_X509Cert']) ? $GLOBALS['sugar_config']['SAML_X509Cert'] : '';
 
 // The URL where to the SAML Response/SAML Assertion will be posted
-$settings->assertion_consumer_service_url = $GLOBALS['sugar_config']['site_url']. "/index.php?module=Users&action=Authenticate";
+$settings->assertion_consumer_service_url = htmlspecialchars($GLOBALS['sugar_config']['site_url']. "/index.php?module=Users&action=Authenticate");
 
 // Name of this application
 $settings->issuer                         = "php-saml";

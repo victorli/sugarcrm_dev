@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -105,6 +105,8 @@ $mod_strings = array (
   'LBL_OAUTH_SAVE_NOTICE' => 'Click <b>Connect</b> to be directed to a page to provide your account information and to authorize access to the account by Sugar. After connecting, you will be directed back to Sugar.',
   'LBL_BASIC_SAVE_NOTICE' => 'Click <b>Connect</b> to connect this account to Sugar.',
   'LBL_ERR_FACEBOOK' => 'Facebook returned an error, and the feed cannot be displayed.',
+    'LBL_ERR_OAUTH_FACEBOOK_1' => 'Facebook session is expired. To get stream, please',
+    'LBL_ERR_OAUTH_FACEBOOK_2' => 'login to Facebook again',
   'LBL_ERR_NO_RESPONSE' => 'An error occurred when trying to connect to this account.',
   'LBL_ERR_TWITTER' => 'Twitter returned an error, and the feed cannot be displayed.',
   'LBL_ERR_POPUPS_DISABLED' => 'Please enable browser popup windows or add an exception for website "{0}" to the exceptions list in order to connect.'

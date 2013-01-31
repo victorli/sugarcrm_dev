@@ -1,6 +1,6 @@
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -74,7 +74,7 @@ var query_string=query_array.join('&');request_map[request_id]=passthru_data['ch
 if(refresh_page==1){document.location.reload(true);}}
 function got_data(args,inline)
 {var list_subpanel=document.getElementById('list_subpanel_'+request_map[args.request_id].toLowerCase());if(list_subpanel!=null){var subpanel=document.getElementById('subpanel_'+request_map[args.request_id].toLowerCase());var child_field=request_map[args.request_id].toLowerCase();if(inline){child_field_loaded[child_field]=2;list_subpanel.innerHTML='';list_subpanel.innerHTML=args.responseText;}else{child_field_loaded[child_field]=1;subpanel.innerHTML='';subpanel.innerHTML=args.responseText;var inlineTable=subpanel.getElementsByTagName('table');inlineTable=inlineTable[1];inlineTable=subpanel.removeChild(inlineTable);var listDiv=document.createElement('div');listDiv.id='list_subpanel_'+request_map[args.request_id].toLowerCase();subpanel.appendChild(listDiv);listDiv.appendChild(inlineTable);}
-subpanel.style.display='';set_div_cookie(subpanel.cookie_name,'');if(current_child_field!=''&&child_field!=current_child_field)
+SUGAR.util.evalScript(args.responseText);subpanel.style.display='';set_div_cookie(subpanel.cookie_name,'');if(current_child_field!=''&&child_field!=current_child_field)
 {}
 current_child_field=child_field;$("ul.clickMenu").each(function(index,node){$(node).sugarActionMenu();});}}
 function showSubPanel(child_field,url,force_load,layout_def_key)

@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -98,6 +98,11 @@ class Bug44522Test extends Sugar_PHPUnit_Framework_OutputTestCase
         $_REQUEST['record'] = $this->lead->id;
         $_REQUEST['handle'] = 'save';
         $_REQUEST['selectedAccount'] = $this->account->id;
+        
+        // Create a Contact
+        $_REQUEST['convert_create_Contacts'] = 'true';
+        // $_POST value needed for Duplicate check
+        $_REQUEST['Contactslast_name'] = $_POST['Contactslast_name'] = 'Test 44522';
 
         //require view and call display class so that convert functionality is called
         require_once('modules/Leads/views/view.convertlead.php');
@@ -109,12 +114,17 @@ class Bug44522Test extends Sugar_PHPUnit_Framework_OutputTestCase
 
         //retrieve the new contact id from the conversion
         $contact_id = $this->lead->contact_id;
-
+        
         //throw error if contact id was not retrieved and exit test
         $this->assertTrue(!empty($contact_id), "contact id was not created during conversion process.  An error has ocurred, aborting rest of test.");
         if (empty($contact_id)){
             return;
         }
+        
+        //make sure the new contact has the account related and that it matches the lead account
+        $this->contact->retrieve($contact_id);
+        $this->assertEquals($this->lead->account_id, $this->contact->account_id, "Account id from converted lead does not match the new contact account id, there was an error during conversion.");
+        
         //make sure the new contact has the account related and that it matches the lead account
         $query = "SELECT target_id FROM campaign_log WHERE campaign_id= '{$this->campaign->id}'";
         $result = $GLOBALS['db']->query($query);

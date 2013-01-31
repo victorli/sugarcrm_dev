@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -753,6 +753,10 @@ class TimeDateTest extends Sugar_PHPUnit_Framework_TestCase
 			array("date" => "11:42", "mer" => "pm", "tf" => "h:iA", "display" => "11:42pm"),
 			array("date" => "03", "mer" => "AM", "tf" => "ha", "display" => "03AM"),
 			array("date" => "15", "mer" => "AM", "tf" => "H", "display" => "15"),
+            // bug 58924 - what if we have spaces in our time format?
+            array("date" => "11.13", "mer" => "AM", "tf" => "h.i A", "display" => "11.13 AM"),
+            array("date" => "11.14", "mer" => "PM", "tf" => "h.i A", "display" => "11.14 PM"),
+            array("date" => "10.15", "mer" => "am", "tf" => "h.i a", "display" => "10.15 am"),
 		);
 	}
 

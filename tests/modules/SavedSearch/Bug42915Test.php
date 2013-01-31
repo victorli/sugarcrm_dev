@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -59,6 +59,11 @@ class Bug42915Test extends Sugar_PHPUnit_Framework_TestCase
     
     public function tearDown() 
     {
+        $GLOBALS['current_user']->setPreference('num_grp_sep', null, 0, 'global');
+        $GLOBALS['current_user']->setPreference('dec_sep', null, 0, 'global');
+        $GLOBALS['current_user']->save();
+        get_number_seperators(true);
+
         $GLOBALS['db']->query("DELETE FROM saved_search where id = '{$this->saved_search_id}'"); 
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         global $current_user;

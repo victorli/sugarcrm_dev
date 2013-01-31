@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -48,6 +48,7 @@ class Bug46276Test extends Sugar_PHPUnit_Framework_TestCase
         // in case someone wipes out these globals.
         SugarTestHelper::setUp('beanList');
         SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('app_list_strings');
 
 		global $current_user, $timedate;
 		// Create Anon User setted on GMT+1 TimeZone
@@ -74,6 +75,7 @@ class Bug46276Test extends Sugar_PHPUnit_Framework_TestCase
 		$GLOBALS['db']->query('DELETE FROM opportunities WHERE id = \'' . $this->opportunities->id . '\' ');
 		unset($this->opportunities);
 		SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        SugarTestHelper::tearDown();
 	}
 
 	//testing handleMassUpdate() for date fields when time zone of the current user is GMT+

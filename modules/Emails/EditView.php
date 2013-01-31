@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -180,9 +180,10 @@ if($email_type == 'archived') {
 		$return_id = $_REQUEST['return_module'];
 	}
 	$replyType = "reply";
-	if ($_REQUEST['type'] == 'forward') {
-		$replyType = 'forward';
-	} // if
+    if ($_REQUEST['type'] == 'forward' || $_REQUEST['type'] == 'replyAll') {
+        $replyType = $_REQUEST['type'];
+    }
+
 	header("Location: index.php?module=Emails&action=Compose&record=$focus->id&replyForward=true&reply=$replyType");
 	return;
 }

@@ -249,6 +249,13 @@ class SMTP {
    * @return bool
    */
   public function Authenticate($username, $password) {
+    // Check if the resource is valid
+    if(!is_resource($this->smtp_conn))
+    {
+      $GLOBALS['log']->fatal("SMTP -> ERROR:Not a valid SMTP resource supplied");
+      return false;
+    }
+
     // Start authentication
     fputs($this->smtp_conn,"AUTH LOGIN" . $this->CRLF);
 

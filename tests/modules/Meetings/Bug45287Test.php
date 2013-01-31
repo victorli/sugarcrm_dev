@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -49,6 +49,7 @@ class Bug45287Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function setup()
     {
+        SugarTestHelper::setUp('app_strings');
         global $current_user;
         // Create Anon User setted on GMT+2 TimeZone
         $current_user = SugarTestUserUtilities::createAnonymousUser();
@@ -121,6 +122,7 @@ class Bug45287Test extends Sugar_PHPUnit_Framework_TestCase
         unset($this->timedate);
 
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        SugarTestHelper::tearDown();
     }
 
 

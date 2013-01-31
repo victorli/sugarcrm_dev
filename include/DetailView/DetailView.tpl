@@ -1,7 +1,7 @@
 {*
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -68,6 +68,12 @@ class="yui-navset detailview_tabs"
     {{if $tabCount != 0}}</div>{{/if}}
     <div id='tabcontent{{$tabCount}}'>
   {{/if}}
+
+    {{if ( isset($tabDefs[$label_upper].panelDefault) && $tabDefs[$label_upper].panelDefault == "collapsed" && isset($tabDefs[$label_upper].newTab) && $tabDefs[$label_upper].newTab == false) }}
+        {{assign var='panelState' value=$tabDefs[$label_upper].panelDefault}}
+    {{else}}
+        {{assign var='panelState' value="expanded"}}
+    {{/if}}
 <div id='detailpanel_{{$smarty.foreach.section.iteration}}' class='detail view  detail508 {{$panelState}}'>
 {counter name="panelFieldCount" start=0 print=false assign="panelFieldCount"}
 {{* Print out the panel title if one exists*}}
@@ -85,11 +91,6 @@ class="yui-navset detailview_tabs"
       <a href="javascript:void(0)" class="expandLink" onclick="expandPanel({{$smarty.foreach.section.iteration}});">
       <img border="0" id="detailpanel_{{$smarty.foreach.section.iteration}}_img_show" src="{sugar_getimagepath file="advanced_search.gif"}"></a>
       {sugar_translate label='{{$label}}' module='{{$module}}'}
-    {{if ( isset($tabDefs[$label_upper].panelDefault) && $tabDefs[$label_upper].panelDefault == "collapsed" && isset($tabDefs[$label_upper].newTab) && $tabDefs[$label_upper].newTab == false) }}
-      {{assign var='panelState' value=$tabDefs[$label_upper].panelDefault}}
-    {{else}}
-      {{assign var='panelState' value="expanded"}}
-    {{/if}}
     {{if isset($panelState) && $panelState == 'collapsed'}}
     <script>
       document.getElementById('detailpanel_{{$smarty.foreach.section.iteration}}').className += ' collapsed';

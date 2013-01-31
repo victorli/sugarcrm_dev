@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -184,7 +184,7 @@ class JitReports extends Jit {
 
             $data .= $this->tab('<subgroups>', 3);
 			
-			if ((isset($dataset[$total]) && $total != $dataset[$total]['numerical_value']) || !array_key_exists($key, $dataset)){
+			if (count($this->group_by) > 1){
 					$data .= $this->processReportData($dataset, 4, $first);
 			}
 			else if(count($this->data_set) == 1 && $first){

@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -138,6 +138,16 @@ class Bug51568Test extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testFieldCurrencyPlainWithSystemCurrencyField()
     {
+        format_number(0, 0, 0, array(
+            'currency_id' => $this->currency_51568->id,
+            'currency_symbol' => $this->currency_51568->symbol
+        ));
+
+        format_number(0, 0, 0, array(
+            'currency_id' => -99,
+            'currency_symbol' => $this->currency_51568->getDefaultCurrencySymbol()
+        ));
+
         $data = array(
             'name' => 'some_field_usdoll',
             'column_key' => 'self::some_field_usdoll',
@@ -200,6 +210,17 @@ class Bug51568Test extends Sugar_PHPUnit_Framework_TestCase
         $this->currency_system->symbol = $this->backupSymbol;
         $this->currency_system->save(false);
         $sugar_config['default_currency_symbol'] = $this->backupSymbol;
+
+        format_number(0, 0, 0, array(
+            'currency_id' => $this->currency_51568->id,
+            'currency_symbol' => $this->currency_51568->symbol
+        ));
+
+        format_number(0, 0, 0, array(
+            'currency_id' => -99,
+            'currency_symbol' => $this->currency_51568->getDefaultCurrencySymbol()
+        ));
+
         $this->currency_51568->mark_deleted($this->currency_51568->id);
         SugarTestHelper::tearDown();
         get_number_seperators(true);

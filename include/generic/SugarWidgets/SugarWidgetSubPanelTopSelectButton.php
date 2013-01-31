@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -148,9 +148,16 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 			),
 		);
 
-		if (is_array($this->button_properties) && !empty($this->button_properties['add_to_passthru_data'])) {
-			$popup_request_data['passthru_data']= array_merge($popup_request_data['passthru_data'],$this->button_properties['add_to_passthru_data']);
-		}
+                // bugfix #57850 add marketing_id to the request data to allow filtering based on it
+                if (!empty($_REQUEST['mkt_id']))
+                {
+                    $popup_request_data['passthru_data']['marketing_id'] = $_REQUEST['mkt_id'];
+                }
+
+                if (is_array($this->button_properties) && !empty($this->button_properties['add_to_passthru_data'])) 
+                {
+                    $popup_request_data['passthru_data']= array_merge($popup_request_data['passthru_data'],$this->button_properties['add_to_passthru_data']);
+                }
 
 		if (is_array($this->button_properties) && !empty($this->button_properties['add_to_passthru_data']['return_type'])) {
 

@@ -2,7 +2,7 @@
 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -52,11 +52,11 @@
 {/if}
 <tr><td class='mbLBL'>{sugar_translate module="DynamicFields" label="COLUMN_TITLE_DEFAULT_VALUE"}:</td><td>
 {if $hideLevel < 5}
-<input type='text' id='default' name='default' value='{sugar_currency_format var=$vardef.default}'>
+<input type='text' id='default' name='default' value='{sugar_currency_format var=$vardef.default currency_symbol=false}'>
 <script>
 addToValidate('popup_form', 'default', 'float', false,'{sugar_translate module="DynamicFields" label="COLUMN_TITLE_DEFAULT_VALUE"}' );
 </script>
 {else}
-<input type='hidden' name='default' value='{sugar_currency_format var=$vardef.default}'>{sugar_currency_format var=$vardef.default}
+<input type='hidden' name='default' value='{sugar_currency_format var=$vardef.default currency_symbol=false}'>{sugar_currency_format var=$vardef.default}
 {/if}
 </td></tr>{include file="modules/DynamicFields/templates/Fields/Forms/coreBottom.tpl"}

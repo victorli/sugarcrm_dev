@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -155,6 +155,8 @@ class campaign_charts {
 
 			}
 
+            // Since this isn't a standard report chart (with report defs), set the group_by manually so the chart bars show properly
+            $sugarChart->group_by = array('activity_type', 'target_type');
 
 			if($camp_data)
 			$sugarChart->setData($camp_data);

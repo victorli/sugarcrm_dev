@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -43,13 +43,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * All Rights Reserved.
  * Contributor(s): ______________________________________..
  ********************************************************************************/
-
-// prevent overriding of a newly specified parent_id by existing relate_id
-if (!empty($_REQUEST['relate_id']) && !empty($_REQUEST['parent_id'])
-    && $_REQUEST['relate_id'] != $_REQUEST['parent_id']
-) {
-    $_REQUEST['relate_id'] = false;
-}
 
 require_once('modules/Meetings/MeetingFormBase.php');
 $formBase = new MeetingFormBase();

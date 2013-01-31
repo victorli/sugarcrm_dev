@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -65,17 +65,23 @@ class CalendarActivity {
 		$this->sugar_bean = $sugar_bean;
 
 
-		if ($sugar_bean->object_name == 'Task'){
-			$this->start_time = $timedate->fromUser($this->sugar_bean->date_due);
-			if ( empty($this->start_time)){
-				return null;
-			}
-			$this->end_time = $timedate->fromUser($this->sugar_bean->date_due);
-		}else{
-			$this->start_time = $timedate->fromUser($this->sugar_bean->date_start);
-			if ( empty($this->start_time)){
-			    return null;
-			}
+        if ($sugar_bean->object_name == 'Task'){
+            if (!empty($this->sugar_bean->date_start))
+            {
+                $this->start_time = $timedate->fromUser($this->sugar_bean->date_start);
+            }
+            else {
+                $this->start_time = $timedate->fromUser($this->sugar_bean->date_due);
+            }
+            if ( empty($this->start_time)){
+                return;
+            }
+            $this->end_time = $timedate->fromUser($this->sugar_bean->date_due);
+        }else{
+            $this->start_time = $timedate->fromUser($this->sugar_bean->date_start);
+            if ( empty($this->start_time)){
+                return;
+            }
 			$hours = $this->sugar_bean->duration_hours;
 			if(empty($hours)){
 			    $hours = 0;

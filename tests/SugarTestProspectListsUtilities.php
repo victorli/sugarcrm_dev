@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,9 +35,14 @@
  ********************************************************************************/
 
 
+require_once('modules/ProspectLists/ProspectList.php');
 
 class SugarTestProspectListsUtilities
 {
+
+    private static $_aCreatedProspectLists = array();
+    private static $_aCreatedProspectListsIds = array();
+
     /**
      * @static
      * @param mixed $prospect_list_id
@@ -64,4 +69,42 @@ class SugarTestProspectListsUtilities
         $GLOBALS['db']->query("DELETE FROM prospect_lists_prospects WHERE prospect_list_id='{$prospect_list_id}' AND related_id='{$prospect_id}'");
     }
 
+
+    public static function createProspectList($id = '', $aParams = array())
+    {
+        $time = mt_rand();
+        $oProspectList = new ProspectList();
+        $oProspectList->name = 'ProspectList' . $time;
+        if (!empty($id))
+        {
+            $oProspectList->id = $id;
+        }
+        if (!empty($aParams))
+        {
+            foreach ($aParams as $key => $val)
+            {
+                $oProspectList->$key = $val;
+            }
+        }
+        $oProspectList->save();
+        self::$_aCreatedProspectLists[] = $oProspectList;
+        self::$_aCreatedProspectListsIds[] = $oProspectList->id;
+        return $oProspectList;
+    }
+
+    /**
+     * @static
+     * @param mixed $prospect_list_id
+     */
+    public static function removeCreatedProspectLists($id = '')
+    {
+        if (!empty($id))
+        {
+            $GLOBALS['db']->query("DELETE FROM prospect_lists WHERE id = '{$id}'");
+        }
+        elseif (!empty(self::$_aCreatedProspectLists))
+        {
+            $GLOBALS['db']->query("DELETE FROM prospect_lists WHERE id IN ('" . implode("','", self::$_aCreatedProspectListsIds) . "')");
+        }
+    }
 }

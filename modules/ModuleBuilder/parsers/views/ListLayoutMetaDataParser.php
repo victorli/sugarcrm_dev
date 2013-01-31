@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -325,6 +325,16 @@ class ListLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
 	                {
 	                    $newViewdefs [ $fieldname ] [ 'currency_format' ] = true;
 	                }
+
+                    if ($this->_fielddefs[$fieldname]['type'] == 'parent') {
+                        $newViewdefs[$fieldname]['link'] = true;
+                        $newViewdefs[$fieldname]['sortable'] = false;
+                        $newViewdefs[$fieldname]['ACLTag' ] = 'PARENT';
+                        $newViewdefs[$fieldname]['dynamic_module'] = strtoupper($this->_fielddefs[$fieldname]['type_name']);
+                        $newViewdefs[$fieldname]['id'] = strtoupper($this->_fielddefs[$fieldname]['id_name']);
+                        $newViewdefs[$fieldname]['related_fields'] = array('parent_id', 'parent_type');
+                    }
+
                 }
                 if (isset($newViewdefs [ $fieldname ]['enabled']))
                 		$newViewdefs [ $fieldname ]['enabled'] = true;

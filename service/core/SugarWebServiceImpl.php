@@ -2,7 +2,7 @@
 if(!defined('sugarEntry'))define('sugarEntry', true);
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -1135,11 +1135,8 @@ function get_entries_count($session, $module_name, $query, $deleted) {
 	$sql = 'SELECT COUNT(*) result_count FROM ' . $seed->table_name . ' ';
 
 
-    if (isset($seed->custom_fields))
-    {
-        $customJoin = $seed->custom_fields->getJOIN();
-        $sql .= $customJoin ? $customJoin['join'] : '';
-    }
+    $customJoin = $seed->getCustomJoin();
+    $sql .= $customJoin['join'];
 
 	// build WHERE clauses, if any
 	$where_clauses = array();

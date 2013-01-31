@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -1723,7 +1723,7 @@ class TimeDate
             return $date;
         }
         $fakeMerFormat = str_replace(array('a', 'A'), array('@~@', '@~@'), $format);
-        $noMerFormat = str_replace(array('a', 'A'), array('', ''), $format);
+        $noMerFormat = trim(str_replace(array('a', 'A'), array('', ''), $format));
         $newDate = $this->swap_formats($date, $noMerFormat, $fakeMerFormat);
         return str_replace('@~@', $mer, $newDate);
     }

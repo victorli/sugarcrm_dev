@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -57,8 +57,8 @@ class SugarWidgetFieldRelate extends SugarWidgetReportField
         }
         $html = '<select name="' . $layout_def['name'] . '[]" multiple="true">';
 
-        $sql = 'SELECT id, ' . $layout_def['rname'] . ' title FROM ' . $layout_def['table'] . ' WHERE deleted = 0 ORDER BY title ASC';
-        $result = $this->reporter->db->query($sql);
+        $query = $this->displayInputQuery($layout_def);
+        $result = $this->reporter->db->query($query);
         while ($row = $this->reporter->db->fetchByAssoc($result))
         {
             $html .= '<option value="' . $row['id'] . '"';
@@ -71,6 +71,28 @@ class SugarWidgetFieldRelate extends SugarWidgetReportField
 
         $html .= '</select>';
         return $html;
+    }
+
+    /**
+     * Method returns database query for generation HTML of input on configure dashlet page
+     *
+     * @param array $layout_def definition of a field
+     * @return string database query HTML of select for edit page
+     */
+    private function displayInputQuery($layout_def)
+    {
+        $title = $layout_def['rname'];
+        if (isset($layout_def['db_concat_fields'])) {
+            $title = $this->reporter->db->concat($layout_def['table'], $layout_def['db_concat_fields']);
+        }
+
+        $query = "SELECT
+                id,
+                $title title
+            FROM {$layout_def['table']}
+            WHERE deleted = 0
+            ORDER BY title ASC";
+        return $query;
     }
 
     /**

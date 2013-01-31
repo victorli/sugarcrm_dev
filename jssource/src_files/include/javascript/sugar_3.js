@@ -1,6 +1,6 @@
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -130,6 +130,7 @@ var maxHours = 24;
 var requiredTxt = 'Missing Required Field:';
 var invalidTxt = 'Invalid Value:';
 var secondsSinceLoad = 0;
+var alertsTimeoutId;
 var inputsWithErrors = new Array();
 var tabsWithErrors = new Array();
 var lastSubmitTime = 0;
@@ -159,6 +160,70 @@ function isSupportedIE() {
 			return false;
 		}
 	}
+}
+
+function checkMinSupported(c, s) {
+    var current = c.split(".");
+    var supported = s.split(".");
+    for (var i in supported) {
+        if (current[i] && parseInt(current[i]) > parseInt(supported[i])) return true;
+        else if (current[i] && parseInt(current[i]) < parseInt(supported[i])) return false;
+    }
+    return true;
+}
+
+function checkMaxSupported(c, s) {
+    var current = c.split(".");
+    var supported = s.split(".");
+    for (var i in supported) {
+        if (current[i] && parseInt(current[i]) > parseInt(supported[i])) return false;
+        else if (current[i] && parseInt(current[i]) < parseInt(supported[i])) return true;
+    }
+    return true;
+}
+
+SUGAR.isSupportedBrowser = function(){
+    var supportedBrowsers = {
+        msie : {min:8, max:10}, // IE 8, 9, 10
+        safari : {min:534}, // Safari 5.1
+        mozilla : {min:17}, // Firefox 17
+        chrome : {min:537.13} // Chrome 24
+    };
+    var current = String($.browser.version);
+    var supported;
+    if ($.browser.msie){ // Internet Explorer
+        supported = supportedBrowsers['msie'];
+    }
+    else if ($.browser.mozilla) { // Firefox
+        supported = supportedBrowsers['mozilla'];
+    }
+    else {
+        $.browser.chrome = /chrome/.test(navigator.userAgent.toLowerCase());
+        if($.browser.chrome){ // Chrome
+            supported = supportedBrowsers['chrome'];
+        }
+        else if($.browser.safari){ // Safari
+            supported = supportedBrowsers['safari'];
+        }
+    }
+    if (current && supported)
+        return checkMinSupported(current, String(supported.min)) && (!supported.max || checkMaxSupported(current, String(supported.max)));
+    else
+        return false;
+}
+
+SUGAR.isIECompatibilityMode = function(){
+    var agentStr = navigator.userAgent;
+    var mode = false;
+    if (agentStr.indexOf("MSIE 7.0") > -1 &&
+        (agentStr.indexOf("Trident/5.0") > -1 || // IE9 Compatibility View
+         agentStr.indexOf("Trident/4.0") > -1    // IE8 Compatibility View
+        )
+    )
+    {
+        mode = true;
+    }
+    return mode;
 }
 
 SUGAR.isIE = isSupportedIE();
@@ -203,7 +268,7 @@ function checkAlerts() {
 		}
 	}
 
-	setTimeout("checkAlerts()", 1000);
+    alertsTimeoutId = setTimeout("checkAlerts()", 1000);
 }
 
 function toggleDisplay(id) {
@@ -613,16 +678,17 @@ function isDBName(str) {
 }
 var time_reg_format = "[0-9]{1,2}\:[0-9]{2}";
 function isTime(timeStr) {
-    var time_reg_format = "[0-9]{1,2}\:[0-9]{2}";
-	time_reg_format = time_reg_format.replace('([ap]m)', '');
-	time_reg_format = time_reg_format.replace('([AP]M)', '');
+    var timeRegex = time_reg_format;
+    // eliminate the am/pm from the external time_reg_format
+	timeRegex = timeRegex.replace(/[ ]*\([^)]*m\)/i, '');
 	if(timeStr.length== 0){
 		return true;
 	}
 	//we now support multiple time formats
-	myregexp = new RegExp(time_reg_format)
-	if(!myregexp.test(timeStr))
-		return false
+	myregexp = new RegExp(timeRegex);
+	if(!myregexp.test(timeStr)) {
+        return false;
+    }
 
 	return true;
 }
@@ -2810,13 +2876,17 @@ SUGAR.util = function () {
 
 			return el;
 		},
-		paramsToUrl : function (params) {
-			url = "";
-			for (i in params) {
-				url += i + "=" + params[i] + "&";
-			}
-			return url;
-		},
+        paramsToUrl : function (params) {
+            var parts = [];
+            for (var i in params)
+            {
+                if (params.hasOwnProperty(i))
+                {
+                    parts.push(encodeURIComponent(i) + '=' + encodeURIComponent(params[i]));
+                }
+            }
+            return parts.join("&")+"&";
+        },
         // Evaluates a script in a global context
         // Workarounds based on findings by Jim Driscoll
         // http://weblogs.java.net/blog/driscoll/archive/2009/09/08/eval-javascript-global-context
@@ -2929,22 +2999,25 @@ SUGAR.util = function () {
                         {
                             // Bug #49205 : Subpanels fail to load when selecting subpanel tab
                             // Create a YUI instance using the io-base module.
-                            YUI().use("io-base", function(Y) {
-                                var cfg, response;
-                                cfg = {
-                                    method: 'GET',
-                                    sync: true,
-                                    on: {
-                                        success: function(transactionid, response, arguments)
-                                        {
-                                            SUGAR.util.globalEval(response.responseText);
+                            (function (srcResult) {
+                                YUI().use("io-base",function(Y)
+                                {
+                                    var cfg,response;
+                                    cfg={
+                                        method:'GET',
+                                        sync:true,
+                                        on:{
+                                            success:function(transactionid,response,arguments)
+                                            {
+                                                SUGAR.util.globalEval(response.responseText);
+                                            }
                                         }
-                                    }
-                                };
-                                // Call synchronous request to load javascript content
-                                // restonse will be processed in success function
-                                response = Y.io(srcResult, cfg);
-                            });
+                                    };
+                                    // Call synchronous request to load javascript content
+                                    // restonse will be processed in success function
+                                    response=Y.io(srcResult,cfg);
+                                });
+                            })(srcResult);
                         }
                   	}else{
                         // Bug #49205 : Subpanels fail to load when selecting subpanel tab
@@ -3441,14 +3514,15 @@ SUGAR.util = function () {
                     if(isIE){
                         //IE on a Mac? Not possible, but let's assign alt anyways for completions sake
                         controlKey = 'Alt+';
-                    }else if(isWK){
+                    }else if(isWK || isFF){
                         //Chrome or safari on a mac
+                        //firefox moved to webkit standard starting with FF14
                         controlKey = 'Ctrl+Opt+';
                     }else if(isOP){
                         //Opera on a mac
                         controlKey = 'Shift+Esc: ';
                     }else{
-                        //default FF and everything else on a mac
+                        //default for everything else on a mac
                         controlKey = 'Ctrl+';
                     }
                 }else{

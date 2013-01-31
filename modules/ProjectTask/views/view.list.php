@@ -3,7 +3,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -137,16 +137,7 @@ class ProjectTaskViewList extends ViewList{
 		    }
 		}
 
-		global $current_user;
-
-		if (!is_admin($current_user)){
-			$params = array( 'massupdate' => false );
-			$lv->export = false;
-            $lv->multiSelect = false;
-		}
-		else{
-			$params = array( 'massupdate' => true, 'export' => true);
-		}
+        $params = array( 'massupdate' => true, 'export' => true);
 
 		if(!empty($_REQUEST['orderBy'])) {
 		    $params['orderBy'] = $_REQUEST['orderBy'];
@@ -206,9 +197,9 @@ class ProjectTaskViewList extends ViewList{
 
 
 			if(!empty($metafiles[$this->module]['searchfields']))
-				require_once($metafiles[$this->module]['searchfields']);
+                require($metafiles[$this->module]['searchfields']);
 			elseif(file_exists('modules/'.$this->module.'/metadata/SearchFields.php'))
-				require_once('modules/'.$this->module.'/metadata/SearchFields.php');
+                require('modules/'.$this->module.'/metadata/SearchFields.php');
 
 
 			$searchForm = new SearchForm($this->seed, $this->module, $this->action);
@@ -254,15 +245,22 @@ class ProjectTaskViewList extends ViewList{
 		}
 		if(!$headers)
 			return;
+         /*
+         * Bug 50575 - related search columns not inluded in query in a proper way
+         */
+         $lv->searchColumns = $searchForm->searchColumns;
 
 		if(empty($_REQUEST['search_form_only']) || $_REQUEST['search_form_only'] == false){
-			if (!is_admin($current_user)){
-				$lv->setup($seed, 'include/ListView/ListViewNoMassUpdate.tpl', $where, $params);
-			}
-			else {
-				$lv->setup($seed, 'include/ListView/ListViewGeneric.tpl', $where, $params);
-			}
-			$savedSearchName = empty($_REQUEST['saved_search_select_name']) ? '' : (' - ' . $_REQUEST['saved_search_select_name']);
+            //Bug 58841 - mass update form was not displayed for non-admin users that should have access
+            if(ACLController::checkAccess($module, 'massupdate') || ACLController::checkAccess($module, 'export'))
+            {
+                $lv->setup($seed, 'include/ListView/ListViewGeneric.tpl', $where, $params);
+            }
+            else
+            {
+                $lv->setup($seed, 'include/ListView/ListViewNoMassUpdate.tpl', $where, $params);
+            }
+
 			echo $lv->display();
 		}
  	}

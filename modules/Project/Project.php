@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -243,20 +243,15 @@ class Project extends SugarBean {
 
     function create_export_query(&$order_by, &$where, $relate_link_join='')
     {
-        $custom_join = $this->custom_fields->getJOIN(true, true,$where);
-		if($custom_join)
-				$custom_join['join'] .= $relate_link_join;
+        $custom_join = $this->getCustomJoin(true, true, $where);
+        $custom_join['join'] .= $relate_link_join;
 		$query = "SELECT
 				project.*,
                 users.user_name as assigned_user_name ";
-        if($custom_join){
-			$query .=  $custom_join['select'];
-		}
+        $query .=  $custom_join['select'];
         $query .= " FROM project ";
 
-		if($custom_join){
-			$query .=  $custom_join['join'];
-		}
+        $query .=  $custom_join['join'];
         $query .= " LEFT JOIN users
                    	ON project.assigned_user_id=users.id ";
 

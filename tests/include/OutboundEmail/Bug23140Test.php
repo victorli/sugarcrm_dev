@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -105,7 +105,7 @@ class Bug23140Test extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEquals($newSystemPort, $obRetrieved->mail_smtpport, "Could not update users port system-override accounts after system save.");
         $this->assertEquals($newSystemServer, $obRetrieved->mail_smtpserver, "Could not update users server system-override accounts after system save.");
         $this->assertEquals($newSystemUsername, $obRetrieved->mail_smtpuser, "Could not update users username system-override accounts after system save.");
-        $this->assertEquals($newSystemPassword, $obRetrieved->mail_smtppass, "Could not update users password system-override accounts after system save.");
+        $this->assertEquals($newSystemPassword, blowfishDecode(blowfishGetKey('OutBoundEmail'),$obRetrieved->mail_smtppass), "Could not update users password system-override accounts after system save.");
 
     }
 

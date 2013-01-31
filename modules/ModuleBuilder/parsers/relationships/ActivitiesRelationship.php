@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -96,29 +96,16 @@ class ActivitiesRelationship extends OneToManyRelationship
         if (!$this->relationship_only )
         {
             if (!isset(ActivitiesRelationship::$labelsAdded[$this->lhs_module])) {
-	        	$labelDefinitions [] = array (
-	            	'module' => 'application' ,
-	            	'system_label' => 'parent_type_display',
-	            	'display_label' => array(
-                        $this->lhs_module => $this->lhs_label ? $this->lhs_label : ucfirst($this->lhs_module)
-                    )
-	            ) ;
-
-	            $labelDefinitions [] = array (
-	            	'module' => 'application' ,
-	            	'system_label' => 'record_type_display',
-	            	'display_label' => array(
-                        $this->lhs_module => $this->lhs_label ? $this->lhs_label : ucfirst($this->lhs_module)
-                    )
-	            ) ;
-
-	            $labelDefinitions [] = array (
-	            	'module' => 'application' ,
-	            	'system_label' => 'record_type_display_notes',
-	            	'display_label' => array(
-                        $this->lhs_module => $this->lhs_label ? $this->lhs_label : ucfirst($this->lhs_module)
-                    )
-	            ) ;
+                foreach(getTypeDisplayList() as $typeDisplay)
+                {
+                    $labelDefinitions [] = array (
+                        'module' => 'application',
+                        'system_label' => $typeDisplay,
+                        'display_label' => array(
+                            $this->lhs_module => $this->lhs_label ? $this->lhs_label : ucfirst($this->lhs_module)
+                        ),
+                    );
+                }
             }
             
             $labelDefinitions [] = array ( 

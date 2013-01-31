@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -141,6 +141,20 @@ class SugarView
             $GLOBALS['logic_hook']->call_custom_logic($this->module, 'after_ui_frame');
         } else {
             $GLOBALS['logic_hook']->call_custom_logic('', 'after_ui_frame');
+        }
+
+        // We have to update jsAlerts as soon as possible
+        if (
+            !isset($_SESSION['isMobile'])
+            &&
+            (
+                $this instanceof ViewList
+                || $this instanceof ViewDetail
+                || $this instanceof ViewEdit
+            )
+        ) {
+            $jsAlerts = new jsAlerts();
+            echo $jsAlerts->getScript();
         }
 
         if ($this->_getOption('show_subpanels') && !empty($_REQUEST['record'])) $this->_displaySubPanels();
@@ -864,11 +878,6 @@ EOHTML;
             $showThemePicker = $sugar_config['showThemePicker'];
         }
 
-        echo "<!-- crmprint -->";
-        $jsalerts = new jsAlerts();
-        if ( !isset($_SESSION['isMobile']) )
-            echo $jsalerts->getScript();
-
         $ss = new Sugar_Smarty();
         $ss->assign("AUTHENTICATED",isset($_SESSION["authenticated_user_id"]));
         $ss->assign('MOD',return_module_language($GLOBALS['current_language'], 'Users'));
@@ -904,7 +913,7 @@ EOHTML;
         // the code and end-user application.
 
 
-        $copyright = '&copy; 2004-2012 SugarCRM Inc. The Program is provided AS IS, without warranty.  Licensed under <a href="LICENSE.txt" target="_blank" class="copyRightLink">AGPLv3</a>.<br>This program is free software; you can redistribute it and/or modify it under the terms of the <br><a href="LICENSE.txt" target="_blank" class="copyRightLink"> GNU Affero General Public License version 3</a> as published by the Free Software Foundation, including the additional permission set forth in the source code header.<br>';
+        $copyright = '&copy; 2004-2013 SugarCRM Inc. The Program is provided AS IS, without warranty.  Licensed under <a href="LICENSE.txt" target="_blank" class="copyRightLink">AGPLv3</a>.<br>This program is free software; you can redistribute it and/or modify it under the terms of the <br><a href="LICENSE.txt" target="_blank" class="copyRightLink"> GNU Affero General Public License version 3</a> as published by the Free Software Foundation, including the additional permission set forth in the source code header.<br>';
 
 
 

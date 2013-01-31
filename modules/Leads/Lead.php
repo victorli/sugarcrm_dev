@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -202,23 +202,19 @@ class Lead extends Person {
 
 	function create_list_query($order_by, $where, $show_deleted=0)
 	{
-		$custom_join = $this->custom_fields->getJOIN();
+        $custom_join = $this->getCustomJoin();
                 $query = "SELECT ";
 
 
 			$query .= "$this->table_name.*, users.user_name assigned_user_name";
-			if($custom_join){
-   				$query .= $custom_join['select'];
- 			}
+        $query .= $custom_join['select'];
             $query .= " FROM leads ";
 
 			$query .= "			LEFT JOIN users
                                 ON leads.assigned_user_id=users.id ";
 			$query .= "LEFT JOIN email_addr_bean_rel eabl  ON eabl.bean_id = leads.id AND eabl.bean_module = 'Leads' and eabl.primary_address = 1 and eabl.deleted=0 ";
         	$query .= "LEFT JOIN email_addresses ea ON (ea.id = eabl.email_address_id) ";
-			if($custom_join){
-  				$query .= $custom_join['join'];
-			}
+        $query .= $custom_join['join'];
 			$where_auto = '1=1';
 			if($show_deleted == 0){
 				$where_auto = " leads.deleted=0 ";
@@ -249,15 +245,12 @@ class Lead extends Person {
 	
     function create_export_query(&$order_by, &$where, $relate_link_join='')
     {
-        $custom_join = $this->custom_fields->getJOIN(true, true,$where);
-		if($custom_join)
-				$custom_join['join'] .= $relate_link_join;
+        $custom_join = $this->getCustomJoin(true, true, $where);
+        $custom_join['join'] .= $relate_link_join;
                          $query = "SELECT
                                 leads.*, email_addresses.email_address email_address,
                                 users.user_name assigned_user_name";
-                         if($custom_join){
-   							$query .= $custom_join['select'];
- 						}
+        $query .= $custom_join['select'];
                          $query .= " FROM leads ";
 			$query .= "			LEFT JOIN users
                                 ON leads.assigned_user_id=users.id ";
@@ -267,9 +260,7 @@ class Lead extends Person {
 				$query .=  ' LEFT JOIN email_addresses on email_addresses.id = email_addr_bean_rel.email_address_id ' ;
 						
             
-            	if($custom_join){
-  					$query .= $custom_join['join'];
-				}
+        $query .= $custom_join['join'];
 
                         $where_auto = " leads.deleted=0 ";
 

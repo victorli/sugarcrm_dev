@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -72,6 +72,18 @@ class SugarTestCallUtilities
             $call_ids[] = $call->id;
         }
         return $call_ids;
+    }
+
+    public static function addCallUserRelation($call_id, $user_id) {
+        $id = create_guid();
+        $GLOBALS['db']->query("INSERT INTO calls_users (id, call_id, user_id) values ('{$id}', '{$call_id}', '{$user_id}')");
+        return $id;
+    }
+
+    public static function removeCallUsers()
+    {
+        $call_ids = self::getCreatedCallIds();
+        $GLOBALS['db']->query(sprintf("DELETE FROM calls_users WHERE call_id IN ('%s')", implode("', '", $call_ids)));
     }
 }
 ?>

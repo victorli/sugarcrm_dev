@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -162,9 +162,8 @@ else {
 	            $where_clauses = '('. implode(' ) AND ( ', $where_clauses_arr) . ')';
 	        }
         }
-
-		$ret_array = create_export_query_relate_link_patch($module, $searchFields, $where_clauses);
-		$query = $seed->create_export_query($order_by, $ret_array['where'], $ret_array['join']);
+        
+        $query = $seed->create_new_list_query($order_by, $where_clauses);
 		$result = $GLOBALS['db']->query($query,true);
 		$uids = array();
 		while($val = $GLOBALS['db']->fetchByAssoc($result,false))

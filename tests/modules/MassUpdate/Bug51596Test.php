@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -63,9 +63,8 @@ class Bug51596Test extends Sugar_PHPUnit_Framework_TestCase
     */
     public function setUp()
     {
-        $this->markTestIncomplete("Disabling broken test on CI. Working with Sergei to get it fixed");
-
-        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser(true, true);
+        SugarTestHelper::setUp('mod_strings', array('Administration'));
+        SugarTestHelper::setUp('current_user', array(true, true));
 
         // add an extra relationship that will be used for search
         self::registerExtension('Contacts', 'bug51596test.php', array(
@@ -88,6 +87,7 @@ class Bug51596Test extends Sugar_PHPUnit_Framework_TestCase
 
         // this is needed for newly created extension to be loaded for new beans
         $_SESSION['developerMode'] = true;
+        $GLOBALS['reload_vardefs'] = true;
 
         // create a set of contacts and related accounts
         $this->contact1 = new Contact();
@@ -156,7 +156,8 @@ class Bug51596Test extends Sugar_PHPUnit_Framework_TestCase
         self::unregisterExtension('Contacts', 'bug51596test.php');
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
 
-        unset($_SESSION['developerMode']);
+        unset($GLOBALS['reload_vardefs'], $_SESSION['developerMode']);
+        SugarTestHelper::tearDown();
     }
 
     /**

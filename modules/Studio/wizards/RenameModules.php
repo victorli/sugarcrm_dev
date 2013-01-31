@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -815,21 +815,20 @@ class RenameModules
         $newParams['use_push'] = true;
         DropDownHelper::saveDropDown($this->createModuleListSingularPackage($newParams, $this->changedModules));
 
-        //Save changes to the parent_type_display app_list_strings entry
+        //Save changes to the "*type_display*" app_list_strings entry.
         global $app_list_strings;
-        $cur_app_list_strings = $app_list_strings;
-        foreach ($this->changedModules as $moduleName => $package) {
-            $found = false;
-            // only change if it exists
-            foreach ($cur_app_list_strings['parent_type_display'] as $moduleName2 => $parentDispName) {
-                if ($moduleName == $moduleName2) {
-                    $found = true;
-                    break;
-                }
-            }
-            if ($found) {
-                $newParams['dropdown_name'] = 'parent_type_display';
-                DropDownHelper::saveDropDown($this->createModuleListSingularPackage($newParams, array($moduleName => $this->changedModules[$moduleName])));
+        
+        $typeDisplayList = getTypeDisplayList();
+        
+        foreach (array_keys($this->changedModules)as $moduleName) 
+        {
+            foreach($typeDisplayList as $typeDisplay)
+            {
+                if(isset($app_list_strings[$typeDisplay]) && isset($app_list_strings[$typeDisplay][$moduleName]))
+                {
+                    $newParams['dropdown_name'] = $typeDisplay;
+                    DropDownHelper::saveDropDown($this->createModuleListSingularPackage($newParams, array($moduleName => $this->changedModules[$moduleName])));
+                 }
             }
         }
         return $this;

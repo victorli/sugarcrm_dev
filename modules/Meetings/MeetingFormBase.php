@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -225,6 +225,22 @@ function handleSave($prefix,$redirect=true, $useRequired=false) {
 	   sugar_cleanup(true);
 	}
 
+    // if dates changed
+    if (!empty($focus->id)) {
+        $oldBean = new Meeting();
+        $oldBean->retrieve($focus->id);
+        if (($focus->date_start != $oldBean->date_start) || ($focus->date_end != $oldBean->date_end)) {
+            $focus->date_changed = true;
+        } else {
+            $focus->date_changed = false;
+        }
+    }
+
+    $newBean = true;
+    if (!empty($focus->id)) {
+        $newBean = false;
+    }
+
 	//add assigned user and current user if this is the first time bean is saved
   	if(empty($focus->id) && !empty($_REQUEST['return_module']) && $_REQUEST['return_module'] =='Meetings' && !empty($_REQUEST['return_action']) && $_REQUEST['return_action'] =='DetailView'){
 		//if return action is set to detail view and return module to meeting, then this is from the long form, do not add the assigned user (only the current user)
@@ -405,7 +421,7 @@ function handleSave($prefix,$redirect=true, $useRequired=false) {
 
 	    		if(!isset($acceptStatusUsers[$user_id])) {
 	    			$focus->users->add($user_id);
-	    		} else {
+	    		} else if (!$focus->date_changed) {
 	    			// update query to preserve accept_status
 	    			$qU  = 'UPDATE meetings_users SET deleted = 0, accept_status = \''.$acceptStatusUsers[$user_id].'\' ';
 	    			$qU .= 'WHERE meeting_id = \''.$focus->id.'\' ';
@@ -427,7 +443,7 @@ function handleSave($prefix,$redirect=true, $useRequired=false) {
 
 	    		if(!isset($acceptStatusContacts[$contact_id])) {
 	    		    $focus->contacts->add($contact_id);
-	    		} else {
+	    		} else if (!$focus->date_changed) {
 	    			// update query to preserve accept_status
 	    			$qU  = 'UPDATE meetings_contacts SET deleted = 0, accept_status = \''.$acceptStatusContacts[$contact_id].'\' ';
 	    			$qU .= 'WHERE meeting_id = \''.$focus->id.'\' ';
@@ -448,7 +464,7 @@ function handleSave($prefix,$redirect=true, $useRequired=false) {
 
 	    		if(!isset($acceptStatusLeads[$lead_id])) {
 	    		    $focus->leads->add($lead_id);
-	    		} else {
+	    		} else if (!$focus->date_changed) {
 	    			// update query to preserve accept_status
 	    			$qU  = 'UPDATE meetings_leads SET deleted = 0, accept_status = \''.$acceptStatusLeads[$lead_id].'\' ';
 	    			$qU .= 'WHERE meeting_id = \''.$focus->id.'\' ';
@@ -462,7 +478,9 @@ function handleSave($prefix,$redirect=true, $useRequired=false) {
             
 	    	// CCL - Comment out call to set $current_user as invitee
 	    	// set organizer to auto-accept
-	    	//$focus->set_accept_status($current_user, 'accept');
+            if ($focus->assigned_user_id == $current_user->id && $newBean) {
+	    	$focus->set_accept_status($current_user, 'accept');
+            }
 
 	    	////	END REBUILD INVITEE RELATIONSHIPS
 	    	///////////////////////////////////////////////////////////////////////////

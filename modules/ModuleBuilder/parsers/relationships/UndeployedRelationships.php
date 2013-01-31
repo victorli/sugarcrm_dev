@@ -3,7 +3,7 @@ if (! defined ( 'sugarEntry' ) || ! sugarEntry)
     die ( 'Not A Valid Entry Point' ) ;
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -260,21 +260,26 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
         if ($this->activitiesToAdd)
         {
             $appStrings = $module->getAppListStrings () ;
-            $appStrings [ 'parent_type_display' ] [ $module->key_name ] = $module->getlabel ( 'en_us', 'LBL_MODULE_TITLE' ) ;
-            $appStrings [ 'record_type_display' ] [ $module->key_name ] = $module->getlabel ( 'en_us', 'LBL_MODULE_TITLE' ) ;
-            $appStrings [ 'record_type_display_notes' ] [ $module->key_name ] = $module->getlabel ( 'en_us', 'LBL_MODULE_TITLE' ) ;
+            foreach(getTypeDisplayList() as $typeDisplay)
+            {
+                $appStrings[$typeDisplay][$module->key_name] = $module->getlabel ( 'en_us', 'LBL_MODULE_TITLE' ) ;
+            }
             $module->setAppListStrings ( 'en_us', $appStrings ) ;
             $module->save () ;
 
         }
-		else
-		{
-			//Bug42170================================
-			$appStrings = $module->getAppListStrings () ;
-            unset($appStrings [ 'parent_type_display' ] [ $module->key_name ]); 
-			unset($appStrings [ 'record_type_display' ] [ $module->key_name ]);
-			unset($appStrings [ 'record_type_display_notes' ] [ $module->key_name ]);
-		    $module->setAppListStrings ( 'en_us', $appStrings ) ;
+        else
+        {
+            //Bug42170================================
+            $appStrings = $module->getAppListStrings () ;
+            foreach(getTypeDisplayList() as $typeDisplay)
+            {
+                if(isset($appStrings[$typeDisplay][$module->key_name]))
+                {
+                    unset($appStrings[$typeDisplay][$module->key_name]);
+                }
+            }
+            $module->setAppListStrings ( 'en_us', $appStrings ) ;
             $module->save () ;
 			//Bug42170================================
 		}
@@ -323,7 +328,7 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
             $mb = new ModuleBuilder ( ) ;
             $module = $mb->getPackageModule ( $_REQUEST [ 'view_package' ], $_REQUEST [ 'view_module' ] ) ;
             $appStrings = $module->getAppListStrings () ;
-            foreach(array('parent_type_display', 'record_type_display', 'record_type_display_notes') as $key)
+            foreach(getTypeDisplayList() as $key)
             {
                 if (isset($appStrings[$key][ $module->key_name ]))
                     unset($appStrings[$key][ $module->key_name ]);

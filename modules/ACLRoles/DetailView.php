@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -56,21 +56,9 @@ $role = new ACLRole();
 $role->retrieve($_REQUEST['record']);
 $categories = ACLRole::getRoleActions($_REQUEST['record']);
 $names = ACLAction::setupCategoriesMatrix($categories);
-
-$categories2 = array();
-$categories2=$categories;
-$hidden_categories = array(
-"KBDocuments", "Campaigns","Forecasts","ForecastSchedule",
-"Emails","EmailTemplates","EmailMarketing","Reports");
-foreach($hidden_categories as $v){
-	if (isset($categories2[$v])) {
-	   unset($categories2[$v]);
-	}
-}
 if(!empty($names))$tdwidth = 100 / sizeof($names);
 $sugar_smarty->assign('ROLE', $role->toArray());
 $sugar_smarty->assign('CATEGORIES', $categories);
-$sugar_smarty->assign('CATEGORIES2', $categories2);
 $sugar_smarty->assign('TDWIDTH', $tdwidth);
 $sugar_smarty->assign('ACTION_NAMES', $names);
 

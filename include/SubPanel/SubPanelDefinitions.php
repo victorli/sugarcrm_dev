@@ -3,7 +3,7 @@ if (! defined ( 'sugarEntry' ) || ! sugarEntry)
 	die ( 'Not A Valid Entry Point' ) ;
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -127,14 +127,16 @@ class aSubPanel
                 $this->canDisplay = false;
 			}
 
-			// check that the loaded subpanel definition includes a $subpanel_layout section - some, such as projecttasks/default do not...
-			$this->panel_definition = array () ;
-			if (isset($subpanel_layout))
-			{
-				$this->panel_definition = $subpanel_layout ;
+            // load module info from the module's bean file
+            $this->load_module_info();
+
+            // check that the loaded subpanel definition includes a $subpanel_layout section - some, such as
+            // projecttasks/default do not...
+            $this->panel_definition = array();
+            if (isset($subpanel_layout) && is_array($subpanel_layout)) {
+                $this->set_panel_definition($subpanel_layout);
 
 			}
-			$this->load_module_info () ; //load module info from the module's bean file.
 		}
 
 	}
@@ -538,6 +540,17 @@ class aSubPanel
 	{
 		return array ( '_instance_properties' => $this->_instance_properties , 'db_fields' => $this->db_fields , 'mod_strings' => $this->mod_strings , 'name' => $this->name , 'panel_definition' => $this->panel_definition , 'parent_bean' => get_class ( $this->parent_bean ) , 'sub_subpanels' => $this->sub_subpanels , 'table_name' => $this->table_name , 'template_instance' => get_class ( $this->template_instance ) ) ;
 	}
+
+    /**
+     * Sets definition of the subpanel
+     *
+     * @param array $definition
+     */
+    protected function set_panel_definition(array $definition)
+    {
+        $this->panel_definition = $definition;
+    }
+
 }
 ;
 

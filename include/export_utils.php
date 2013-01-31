@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -66,6 +66,7 @@ function getDelimiter() {
  * @return string delimited string for export
  */
 function export($type, $records = null, $members = false, $sample=false) {
+    global $locale;
     global $beanList;
     global $beanFiles;
     global $current_user;
@@ -144,7 +145,6 @@ function export($type, $records = null, $members = false, $sample=false) {
     //Array of fields that should not be exported, and are only used for logic
     $remove_from_members = array("ea_deleted", "ear_deleted", "primary_address");
     $focus = 0;
-    $content = '';
 
     $bean = $beanList[$type];
     require_once($beanFiles[$bean]);
@@ -228,8 +228,21 @@ function export($type, $records = null, $members = false, $sample=false) {
         $field_labels[$key] = translateForExport($dbname,$focus);
     }
 
+    $user_agent = $_SERVER['HTTP_USER_AGENT'];
+    if ($locale->getExportCharset() == 'UTF-8' &&
+        ! preg_match('/macintosh|mac os x|mac_powerpc/i', $user_agent)) // Bug 60377 - Mac Excel doesn't support UTF-8
+    {
+        //Bug 55520 - add BOM to the exporting CSV so any symbols are displayed correctly in Excel
+        $BOM = "\xEF\xBB\xBF";
+        $content = $BOM;
+    }
+    else
+    {
+        $content = '';
+    }
+
     // setup the "header" line with proper delimiters
-    $content = "\"".implode("\"".getDelimiter()."\"", array_values($field_labels))."\"\r\n";
+    $content .= "\"".implode("\"".getDelimiter()."\"", array_values($field_labels))."\"\r\n";
     $pre_id = '';
 
     if($populate){

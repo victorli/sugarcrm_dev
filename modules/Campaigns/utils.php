@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -404,7 +404,7 @@ function get_subscription_lists($focus, $descriptions = false) {
                 	if(!array_search($temp,$unsubs_arr)){
                         $subs_arr[$news_list['name']] = "prospect_list@".$news_list['prospect_list_id']."@campaign@".$news_list['campaign_id'];
                         $match = 'true';
-                        //unset($unsubs_arr[$news_list['name']]);
+                        unset($unsubs_arr[$news_list['name']]);
                     }
                 }
             }else{
@@ -413,7 +413,8 @@ function get_subscription_lists($focus, $descriptions = false) {
         }
          //if this newsletter id never matched a user subscription..
          //..then add to available(unsubscribed) NewsLetters if list is not of type exempt
-         if(($match == 'false') && (strpos($news_list['list_type'],  'exempt') === false)){
+        if (($match == 'false') && (strpos($news_list['list_type'], 'exempt') === false) && (!array_key_exists($news_list['name'], $subs_arr)))
+        {
             $unsubs_arr[$news_list['name']] = "prospect_list@".$news_list['prospect_list_id']."@campaign@".$news_list['campaign_id'];
         }
 

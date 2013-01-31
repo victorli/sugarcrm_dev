@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -211,7 +211,8 @@ $dictionary['Email'] = array(
 		'name' => array (
 			'name' => 'name',
 			'vname' => 'LBL_SUBJECT',
-			'type' => 'varchar',
+			'type' => 'name',
+			'dbType' => 'varchar',
 			'required' => false,
 			'len' => '255',
 			'comment' => 'The subject of the email',
@@ -477,7 +478,48 @@ $dictionary['Email'] = array(
 			'rhs_key'			=> 'parent_id',
 			'relationship_type'	=> 'one-to-many',
 		),
-
+        'emails_contacts_rel' => array(
+            'lhs_module'                        => 'Emails',
+            'lhs_table'                         => 'emails',
+            'lhs_key'                           => 'id',
+            'rhs_module'                        => 'Contacts',
+            'rhs_table'                         => 'contacts',
+            'rhs_key'                           => 'id',
+            'relationship_type'                 => 'many-to-many',
+            'join_table'                        => 'emails_beans',
+            'join_key_lhs'                      => 'email_id',
+            'join_key_rhs'                      => 'bean_id',
+            'relationship_role_column'          => 'bean_module',
+            'relationship_role_column_value'    => 'Contacts',
+        ),
+        'emails_accounts_rel' => array(
+            'lhs_module'                        => 'Emails',
+            'lhs_table'                         => 'emails',
+            'lhs_key'                           => 'id',
+            'rhs_module'                        => 'Accounts',
+            'rhs_table'                         => 'accounts',
+            'rhs_key'                           => 'id',
+            'relationship_type'                 => 'many-to-many',
+            'join_table'                        => 'emails_beans',
+            'join_key_lhs'                      => 'email_id',
+            'join_key_rhs'                      => 'bean_id',
+            'relationship_role_column'          => 'bean_module',
+            'relationship_role_column_value'    => 'Accounts',
+        ),
+        'emails_leads_rel' => array(
+            'lhs_module'                        => 'Emails',
+            'lhs_table'                         => 'emails',
+            'lhs_key'                           => 'id',
+            'rhs_module'                        => 'Leads',
+            'rhs_table'                         => 'leads',
+            'rhs_key'                           => 'id',
+            'relationship_type'                 => 'many-to-many',
+            'join_table'                        => 'emails_beans',
+            'join_key_lhs'                      => 'email_id',
+            'join_key_rhs'                      => 'bean_id',
+            'relationship_role_column'          => 'bean_module',
+            'relationship_role_column_value'    => 'Leads',
+        ),
 		// SNIP
 		'emails_meetings_rel' => array(
 			'lhs_module'    		 => 'Emails',

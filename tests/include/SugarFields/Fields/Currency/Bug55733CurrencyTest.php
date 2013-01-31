@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -53,7 +53,13 @@ class Bug55733CurrencyTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        global $locale;
+        global $locale, $current_user;
+        SugarTestHelper::setUp('current_user', array(true));
+        $current_user->setPreference('dec_sep', '.');
+        $current_user->setPreference('num_grp_sep', ',');
+        $current_user->setPreference('default_currency_significant_digits', 2);
+        get_number_seperators(true);
+        parent::setUp();
         //if locale is not defined, create new global locale object.
         if(empty($locale))
         {
@@ -73,5 +79,11 @@ class Bug55733CurrencyTest extends Sugar_PHPUnit_Framework_TestCase
         $testVal2 = $this->sfr->formatField($this->value2, $this->vardef);
         $this->assertSame($this->expectedValue, $testVal1,' The currency precision was not formatted correctly.');
         $this->assertSame($this->expectedValue, $testVal2,' The currency precision was not formatted correctly.');
+    }
+
+    public function tearDown()
+    {
+        SugarTestHelper::tearDown();
+        get_number_seperators(true);
     }
 }

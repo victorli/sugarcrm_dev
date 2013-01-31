@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -40,6 +40,7 @@ require_once("modules/ModuleBuilder/views/view.dropdown.php");
 class Bug47010Test extends Sugar_PHPUnit_Framework_TestCase {
 
     public function setUp() {
+        SugarTestHelper::setUp('mod_strings', array('ModuleBuilder'));
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
         $_SESSION['authenticated_user_language'] = 'en_us';
 
@@ -50,6 +51,7 @@ class Bug47010Test extends Sugar_PHPUnit_Framework_TestCase {
         unset($_REQUEST['dropdown_name']);
         unset($_SESSION['authenticated_user_language']);
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        SugarTestHelper::tearDown();
     }
 
     public function testModuleNameMissingDoesNotThrowExceptionWhenGenereatingSmarty() {

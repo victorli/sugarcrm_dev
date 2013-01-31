@@ -2,7 +2,7 @@
 
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -57,27 +57,23 @@ public function setUp()
     global $current_user;
     $current_user = SugarTestUserUtilities::createAnonymousUser();
 
-    $this->normalUser = SugarTestUserUtilities::createAnonymousUser();
+    $this->normalUser = SugarTestUserUtilities::createAnonymousUser(false);
+    $this->normalUser->id = create_guid();
     $this->normalUser->user_type = 'RegularUser';
-    $this->normalUser->save();
 
 
-    $this->groupUser = SugarTestUserUtilities::createAnonymousUser();
+    $this->groupUser = SugarTestUserUtilities::createAnonymousUser(false);
+    $this->groupUser->id = create_guid();
     $this->groupUser->is_group = 1;
     $this->groupUser->user_type = 'GROUP';
-    $this->groupUser->save();
 
     $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
     $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
-
 }
 
 public function tearDown()
 {
     SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-    unset($this->normalUser);
-    unset($this->groupUser);
-    unset($this->portalUser);
 }
 
 public function testSetupUserTypeDropdownNormalUser()

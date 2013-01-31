@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -102,24 +102,20 @@ class ProspectList extends SugarBean {
 
 	function create_list_query($order_by, $where, $show_deleted = 0)
 	{
-		$custom_join = $this->custom_fields->getJOIN();
+        $custom_join = $this->getCustomJoin();
 		
 		$query = "SELECT ";
 		$query .= "users.user_name as assigned_user_name, ";
 		$query .= "prospect_lists.*";
 
-		if($custom_join){
-			$query .= $custom_join['select'];
-		}	    
+        $query .= $custom_join['select'];
 		$query .= " FROM prospect_lists ";
 
 		$query .= "LEFT JOIN users
 					ON prospect_lists.assigned_user_id=users.id ";
 
-		if($custom_join){
-			$query .= $custom_join['join'];
-		}
-		
+        $query .= $custom_join['join'];
+
 			$where_auto = '1=1';
 				if($show_deleted == 0){
                 	$where_auto = "$this->table_name.deleted=0";
@@ -340,6 +336,12 @@ FROM prospect_lists_prospects plp
 		return parent::save($check_notify);
 
 	}
+
+    function mark_deleted($id){
+        $query = "UPDATE prospect_lists_prospects SET deleted = 1 WHERE prospect_list_id = '{$id}' ";
+        $this->db->query($query);
+        return parent::mark_deleted($id);
+    }
 	
 	 function bean_implements($interface){
 		switch($interface){

@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -49,6 +49,7 @@ class UploadFile
 {
 	var $field_name;
 	var $stored_file_name;
+	var $uploaded_file_name;
 	var $original_file_name;
 	var $temp_file_location;
 	var $use_soap = false;
@@ -122,7 +123,7 @@ class UploadFile
 	    }
 	    return "index.php?entryPoint=download&type=$type&id={$document->id}";
 	}
-
+	
 	/**
 	 * Try renaming a file to bean_id name
 	 * @param string $filename
@@ -257,6 +258,7 @@ class UploadFile
 		$this->mime_type = $this->getMime($_FILES[$this->field_name]);
 		$this->stored_file_name = $this->create_stored_filename();
 		$this->temp_file_location = $_FILES[$this->field_name]['tmp_name'];
+		$this->uploaded_file_name = $_FILES[$this->field_name]['name'];
 
 		return true;
 	}
@@ -313,6 +315,40 @@ class UploadFile
 	{
 		return $this->stored_file_name;
 	}
+	
+	function get_temp_file_location()
+	{
+	    return $this->temp_file_location;
+	}
+	
+	function get_uploaded_file_name()
+	{
+	    return $this->uploaded_file_name;
+	}
+	
+	function get_mime_type()
+	{
+	    return $this->mime_type;
+	}
+	
+	/**
+	 * Returns the contents of the uploaded file
+	 */
+	public function get_file_contents() {
+	    
+	    // Need to call
+	    if ( !isset($this->temp_file_location) ) {
+	        $this->confirm_upload();
+	    }
+	    
+	    if (($data = @file_get_contents($this->temp_file_location)) === false) {
+	        return false;
+        }
+           
+        return $data;
+	}
+
+	
 
 	/**
 	 * creates a file's name for preparation for saving

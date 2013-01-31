@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -74,8 +74,10 @@ class SugarWidgetFieldCurrency extends SugarWidgetFieldInt
 
     function & displayList($layout_def)
         {
-            $symbol = '';
-            $currency_id = '-99';
+            global $locale;
+            $symbol = $locale->getPrecedentPreference('default_currency_symbol');
+            $currency_id = $locale->getPrecedentPreference('currency');
+
             // If it's not grouped, or if it's grouped around a system currency column, look up the currency symbol so we can display it next to the amount
             if ( empty($layout_def['group_function']) || $this->isSystemCurrency($layout_def) ) {
                 $c = $this->getCurrency($layout_def);
@@ -119,8 +121,15 @@ class SugarWidgetFieldCurrency extends SugarWidgetFieldInt
     }
                              
     function displayListPlain($layout_def) {
-        $cs = $this->getCurrency($layout_def);
-        $value = format_number(parent::displayListPlain($layout_def), null, null, array_merge(array('convert' => false), $cs));
+        $value = currency_format_number(
+            parent::displayListPlain($layout_def),
+            array_merge(
+                array(
+                    'convert' => false,
+                ),
+                $this->getCurrency($layout_def)
+            )
+        );
         return $value;
     }                                                          
  function queryFilterEquals(&$layout_def)

@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -237,6 +237,11 @@ function generateComposeDataPackage($data,$forFullCompose = TRUE, $bean = null)
 		'email_id'		 => $email_id,
 		'fromAccounts'   => $return['fromAccounts'],
 		);
+
+        // If it's a 'Reply All' action, append the CC addresses
+        if ($data['reply'] == 'replyAll') {
+            $ret['cc_addrs'] = from_html($ie->email->to_addrs);
+        }
 
 	} else {
 		$ret = array(

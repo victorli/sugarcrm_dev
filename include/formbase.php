@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -403,6 +403,13 @@ function add_to_prospect_list($query_panel,$parent_module,$parent_type,$parent_i
     if(empty($thisPanel)) {
         return false;
     }
+
+    // bugfix #57850  filter prospect list based on marketing_id (if it's present)
+    if (isset($_REQUEST['marketing_id']) && $_REQUEST['marketing_id'] != 'all')
+    {
+        $thisPanel->_instance_properties['function_parameters']['EMAIL_MARKETING_ID_VALUE'] = $_REQUEST['marketing_id'];
+    }
+
     $result = SugarBean::get_union_related_list($parent, '', '', '', 0, -99,-99,'', $thisPanel);
 
     if(!empty($result['list'])) {

@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -403,7 +403,23 @@ class PopupSmarty extends ListViewSmarty{
             }
             
         }
-        
+        else if ( isset($_REQUEST['request_data']) )
+        {
+            $request_data = get_object_vars( json_decode( htmlspecialchars_decode( $_REQUEST['request_data'] )));
+            $request_data['field_to_name'] = get_object_vars( $request_data['field_to_name_array'] );
+            if (isset($request_data['field_to_name']) && is_array($request_data['field_to_name']))
+            {
+                foreach ( $request_data['field_to_name'] as $add_field )
+                {
+                    $add_field = strtolower($add_field);
+                    if ( $add_field != 'id' && !isset($this->filter_fields[$add_field]) && isset($this->seed->field_defs[$add_field]) )
+                    {
+                        $this->filter_fields[$add_field] = true;
+                    }
+                }
+            }
+        }
+
 
 		if (!empty($_REQUEST['query']) || (!empty($GLOBALS['sugar_config']['save_query']) && $GLOBALS['sugar_config']['save_query'] != 'populate_only')) {
 			$data = $this->lvd->getListViewData($this->seed, $searchWhere, 0, -1, $this->filter_fields, $params, 'id');

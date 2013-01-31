@@ -2,7 +2,7 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -237,7 +237,7 @@ class Call extends SugarBean {
 
 	function create_list_query($order_by, $where, $show_deleted=0)
 	{
-		$custom_join = $this->custom_fields->getJOIN();
+        $custom_join = $this->getCustomJoin();
                 $query = "SELECT ";
 		$query .= "
 			calls.*,";
@@ -249,9 +249,7 @@ class Call extends SugarBean {
 
 			$query .= "
 			users.user_name as assigned_user_name";
-			if($custom_join){
-   				$query .= $custom_join['select'];
- 			}
+        $query .= $custom_join['select'];
 
 			// this line will help generate a GMT-metric to compare to a locale's timezone
 
@@ -275,9 +273,7 @@ class Call extends SugarBean {
 			$query .= "
 			LEFT JOIN users
 			ON calls.assigned_user_id=users.id ";
-			if($custom_join){
-  				$query .= $custom_join['join'];
-			}
+        $query .= $custom_join['join'];
 			$where_auto = '1=1';
        		 if($show_deleted == 0){
             	$where_auto = " $this->table_name.deleted=0  ";
@@ -301,25 +297,20 @@ class Call extends SugarBean {
 
         function create_export_query(&$order_by, &$where, $relate_link_join='')
         {
-        	$custom_join = $this->custom_fields->getJOIN(true, true,$where);
-			if($custom_join)
-				$custom_join['join'] .= $relate_link_join;
+            $custom_join = $this->getCustomJoin(true, true, $where);
+            $custom_join['join'] .= $relate_link_join;
 			$contact_required = stristr($where, "contacts");
             if($contact_required)
             {
                     $query = "SELECT calls.*, contacts.first_name, contacts.last_name, users.user_name as assigned_user_name ";
-                    if($custom_join){
-   						$query .= $custom_join['select'];
- 					}
+                    $query .= $custom_join['select'];
                     $query .= " FROM contacts, calls, calls_contacts ";
                     $where_auto = "calls_contacts.contact_id = contacts.id AND calls_contacts.call_id = calls.id AND calls.deleted=0 AND contacts.deleted=0";
             }
             else
             {
                     $query = 'SELECT calls.*, users.user_name as assigned_user_name ';
-                   	if($custom_join){
-   						$query .= $custom_join['select'];
- 					}
+                    $query .= $custom_join['select'];
                     $query .= ' FROM calls ';
                     $where_auto = "calls.deleted=0";
             }
@@ -327,9 +318,7 @@ class Call extends SugarBean {
 
 			$query .= "  LEFT JOIN users ON calls.assigned_user_id=users.id ";
 
-			if($custom_join){
-  				$query .= $custom_join['join'];
-			}
+            $query .= $custom_join['join'];
 
 			if($where != "")
                     $query .= "where $where AND ".$where_auto;

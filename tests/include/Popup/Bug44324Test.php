@@ -1,7 +1,7 @@
 <?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2012 SugarCRM Inc.
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,11 +41,13 @@ class Bug44324Test extends Sugar_PHPUnit_Framework_OutputTestCase
 
 	public function setUp()
 	{
-        $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
-        $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
-        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-        $GLOBALS['app_list_strings'] = return_app_list_strings_language('en_us');
-        $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('app_strings');
+        SugarTestHelper::setUp('app_list_strings');
+        SugarTestHelper::setUp('mod_strings', array('Contacts'));
+        SugarTestHelper::setUp('current_user');
+
         $this->contact = SugarTestContactUtilities::createContact();	
         $this->contact->salutation = 'Ms.';
         $this->contact->first_name = 'Lady';
@@ -56,9 +58,8 @@ class Bug44324Test extends Sugar_PHPUnit_Framework_OutputTestCase
 	
 	public function tearDown()
 	{
-	    SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-        unset($GLOBALS['current_user']);
-        SugarTestContactUtilities::removeAllCreatedContacts();		
+        SugarTestContactUtilities::removeAllCreatedContacts();
+        SugarTestHelper::tearDown();
 	}
 	
     public function testSearchNamePopulatedCorrectly()
