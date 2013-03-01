@@ -4707,8 +4707,10 @@ eoq;
 			imap_close($this->conn);
 			return $msg;
 		} elseif(!is_resource($this->conn)) {
+            $GLOBALS['log']->info('Couldn\'t connect to mail server id: ' . $this->id);
 			return "false";
 		} else {
+            $GLOBALS['log']->info('Connected to mail server id: ' . $this->id);
 			return "true";
 		}
 	}
@@ -6322,6 +6324,82 @@ eoq;
         return $result;
     }
 
+    /**
+     * Import new messages from given account.
+     */
+    public function importMessages()
+    {
+        $protocol = $this->isPop3Protocol() ? 'pop3' : 'imap';
+        switch ($protocol) {
+            case 'pop3':
+                $this->importMailboxMessages($protocol);
+                break;
+            case 'imap':
+                $mailboxes = $this->getMailboxes(true);
+                foreach ($mailboxes as $mailbox) {
+                    $this->importMailboxMessages($protocol, $mailbox);
+                }
+                imap_expunge($this->conn);
+                imap_close($this->conn);
+                break;
+        }
+    }
+
+    /**
+     * Import messages from specified mailbox
+     *
+     * @param string      $protocol Mailing protocol
+     * @param string|null $mailbox  Mailbox (if applied to protocol)
+     */
+    protected function importMailboxMessages($protocol, $mailbox = null)
+    {
+        switch ($protocol) {
+            case 'pop3':
+                $msgNumbers = $this->getPop3NewMessagesToDownload();
+                break;
+            case 'imap':
+                $this->mailbox = $mailbox;
+                $this->connectMailserver();
+                $msgNumbers = $this->getNewMessageIds();
+                if (!$msgNumbers) {
+                    $msgNumbers = array();
+                }
+                break;
+            default:
+                $msgNumbers = array();
+                break;
+        }
+
+        foreach ($msgNumbers as $msgNumber) {
+            $uid = $this->getMessageUID($msgNumber, $protocol);
+            $GLOBALS['log']->info('Importing message no: ' . $msgNumber);
+            $this->importOneEmail($msgNumber, $uid, false, false);
+        }
+    }
+
+    /**
+     * Retrieves message UID by it's number
+     *
+     * @param int     $msgNumber Number of the message in current sequence
+     * @param string  $protocol  Mailing protocol
+     * @return string
+     */
+    protected function getMessageUID($msgNumber, $protocol)
+    {
+        switch ($protocol) {
+            case 'pop3':
+                $uid = $this->getUIDLForMessage($msgNumber);
+                break;
+            case 'imap':
+                $uid = imap_uid($this->conn, $msgNumber);
+                break;
+            default:
+                $uid = null;
+                break;
+        }
+
+        return $uid;
+    }
 } // end class definition
 
 

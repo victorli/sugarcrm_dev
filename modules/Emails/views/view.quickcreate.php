@@ -74,7 +74,8 @@ class EmailsViewQuickcreate extends ViewQuickcreate
         }
         else {
             $emailAddress = '';
-            if(!empty($this->bean->id) && !in_array($this->bean->object_name,array('EmailMan')) ) {
+            if(!empty($this->bean->id) && !in_array($this->bean->object_name,array('EmailMan'))
+                && !is_null($this->bean->emailAddress) ) {
                 $emailAddress = $this->bean->emailAddress->getPrimaryAddress($this->bean);
             }
             echo "<script>document.location.href='mailto:$emailAddress';lastLoadedMenu=undefined;DCMenu.closeOverlay();</script>";

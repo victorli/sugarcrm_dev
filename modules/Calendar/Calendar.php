@@ -53,6 +53,7 @@ class Calendar {
 	
 	public $show_tasks = true;
 	public $show_calls = true;
+	public $show_completed = true;
 	public $enable_repeat = true;	
 
 	public $time_step = 60; // time step of each slot in minutes
@@ -131,14 +132,22 @@ class Calendar {
 		
 		$current_date_db = $date_arr['year']."-".str_pad($date_arr['month'],2,"0",STR_PAD_LEFT)."-".str_pad($date_arr['day'],2,"0",STR_PAD_LEFT);
 		$this->date_time = $GLOBALS['timedate']->fromString($current_date_db);	
-				
+        
 		$this->show_tasks = $current_user->getPreference('show_tasks');
 		if(is_null($this->show_tasks))
-			$this->show_tasks = SugarConfig::getInstance()->get('calendar.show_tasks_by_default',true);		
+			$this->show_tasks = SugarConfig::getInstance()->get('calendar.show_tasks_by_default',true);
+        
 		$this->show_calls = $current_user->getPreference('show_calls');
 		if(is_null($this->show_calls))
 			$this->show_calls = SugarConfig::getInstance()->get('calendar.show_calls_by_default',true);
-			
+        
+		// Show completed Meetings, Calls, Tasks
+        $this->show_completed = $current_user->getPreference('show_completed');
+        if(is_null($this->show_completed))
+        {
+            $this->show_completed = SugarConfig::getInstance()->get('calendar.show_completed_by_default', true);
+        }
+        
 		$this->enable_repeat = SugarConfig::getInstance()->get('calendar.enable_repeat',true);	
 
 		if(in_array($this->view,array('month','year'))){
@@ -228,7 +237,11 @@ class Calendar {
 
                     if (!empty($act->sugar_bean->parent_type) && !empty($act->sugar_bean->parent_id)) {
                         $focus = BeanFactory::getBean($act->sugar_bean->parent_type, $act->sugar_bean->parent_id);
-                        $item['related_to'] = $focus->name;
+                        // If the bean wasn't loaded, e.g. insufficient permissions
+                        if (!empty($focus))
+                        {
+                            $item['related_to'] = $focus->name;
+                        }
                     }
 
 					if(!isset($item['duration_hours']) || empty($item['duration_hours']))
@@ -312,10 +325,13 @@ class Calendar {
 		$start_date_time = $start_date_time->get("-5 days"); // 5 days step back to fetch multi-day activities that
 
 		$acts_arr = array();
-	    	if($type == 'vfb'){
+	    	if($type == 'vfb')
+	    	{
 				$acts_arr = CalendarActivity::get_freebusy_activities($user, $start_date_time, $end_date_time);
-	    	}else{
-				$acts_arr = CalendarActivity::get_activities($user->id, $this->show_tasks, $start_date_time, $end_date_time, $this->view,$this->show_calls);
+	    	}
+	    	else
+	    	{
+				$acts_arr = CalendarActivity::get_activities($user->id, $this->show_tasks, $start_date_time, $end_date_time, $this->view, $this->show_calls, $this->show_completed);
 	    	}
 	    	
 	    	$this->acts_arr[$user->id] = $acts_arr;	 

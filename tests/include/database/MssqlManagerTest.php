@@ -38,6 +38,11 @@ require_once 'include/database/MssqlManager.php';
 
 class MssqlManagerTest extends Sugar_PHPUnit_Framework_TestCase
 {
+    /**
+     * @var MssqlManager
+     */
+    private $_db = null;
+
     static public function setupBeforeClass()
     {
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
@@ -227,4 +232,343 @@ class MssqlManagerTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertTrue($this->_db->connect($configOptions));
     }
 
+    public function providerFullTextQuery()
+    {
+        return array(
+            array(array('word1'), array(), array(),
+                "CONTAINS(unittest, '(\"word1\")')"),
+            array(array("'word1'"), array(), array(),
+                "CONTAINS(unittest, '(\"''word1''\")')"),
+            array(array("\"word1\""), array(), array(),
+                "CONTAINS(unittest, '(\"word1\")')"),
+            array(array('word1', 'word2'), array(), array(),
+                "CONTAINS(unittest, '(\"word1\" | \"word2\")')"),
+            array(array('word1', 'word2'), array('mustword'), array(),
+                "CONTAINS(unittest, '\"mustword\" AND (\"word1\" | \"word2\")')"),
+            array(array('word1', 'word2'), array('mustword', 'mustword2'), array(),
+                "CONTAINS(unittest, '\"mustword\" AND \"mustword2\" AND (\"word1\" | \"word2\")')"),
+            array(array(), array('mustword', 'mustword2'), array(),
+                "CONTAINS(unittest, '\"mustword\" AND \"mustword2\"')"),
+            array(array('word1'), array(), array('notword'),
+                "CONTAINS(unittest, '(\"word1\") AND  NOT \"notword\"')"),
+            array(array('word1'), array(), array('notword', 'notword2'),
+                "CONTAINS(unittest, '(\"word1\") AND  NOT \"notword\" AND  NOT \"notword2\"')"),
+            array(array('word1', 'word2'), array('mustword', 'mustword2'), array('notword', 'notword2'),
+                "CONTAINS(unittest, '\"mustword\" AND \"mustword2\" AND (\"word1\" | \"word2\") AND  NOT \"notword\" AND  NOT \"notword2\"')"),
+        );
+    }
+
+    /**
+     * @ticket 37435
+     * @dataProvider providerFullTextQuery
+     * @param array $terms
+     * @param string $result
+     */
+    public function testFullTextQuery($terms, $must_terms, $exclude_terms, $result)
+    {
+        $this->assertEquals($result,
+        		$this->_db->getFulltextQuery('unittest', $terms, $must_terms, $exclude_terms));
+    }
+
+    /**
+     * Test checks order by string in different queries
+     *
+     * @group 54990
+     * @dataProvider getQueriesForReturnOrderBy
+     */
+    public function testReturnOrderBy($query, $start, $count, $expected)
+    {
+        $actual = $this->_db->limitQuery($query, $start, $count, false, '', false);
+        $this->assertContains($expected, $actual, 'Order By is incorrect');
+    }
+
+    /**
+     * Data provider for testReturnOrderBy
+     * Returns queries with different functions, offsets & aliases
+     *
+     * @return array
+     */
+    static public function getQueriesForReturnOrderBy()
+    {
+        return array(
+            array(
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a1 ASC",
+                0,
+                1,
+                "(ORDER BY t1.f1 ASC)"
+            ),
+            array(
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a2 ASC",
+                0,
+                1,
+                "(ORDER BY t1.f2 ASC)"
+            ),
+            array(
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f1 ASC",
+                0,
+                1,
+                "(ORDER BY t1.f1 ASC)"
+            ),
+            array(
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f2 ASC",
+                0,
+                1,
+                "(ORDER BY t1.f2 ASC)"
+            ),
+
+            array(
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a1 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f1 ASC)"
+            ),
+            array(
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a2 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f2 ASC)"
+            ),
+            array(
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f1 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f1 ASC)"
+            ),
+            array(
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f2 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f2 ASC)"
+            ),
+
+            array(
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a1 ASC",
+                0,
+                1,
+                "ORDER BY a1 ASC"
+            ),
+            array(
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a2 ASC",
+                0,
+                1,
+                "ORDER BY a2 ASC"
+            ),
+            array(
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f1 ASC",
+                0,
+                1,
+                "ORDER BY t1.f1 ASC"
+            ),
+            array(
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f2 ASC",
+                0,
+                1,
+                "ORDER BY t1.f2 ASC"
+            ),
+
+            array(
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a1 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f1 ASC)"
+            ),
+            array(
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a2 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f2 ASC)"
+            ),
+            array(
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f1 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f1 ASC)"
+            ),
+            array(
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f2 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f2 ASC)"
+            ),
+
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL( t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a1 ASC",
+                0,
+                1,
+                "(ORDER BY isnull( t1.f1, '' ) ASC)"
+            ),
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL( t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a2 ASC",
+                0,
+                1,
+                "(ORDER BY isnull( t1.f2, '' ) ASC)"
+            ),
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL( t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f1 ASC",
+                0,
+                1,
+                "(ORDER BY t1.f1 ASC)"
+            ),
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL( t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f2 ASC",
+                0,
+                1,
+                "(ORDER BY t1.f2 ASC)"
+            ),
+
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL(  t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a1 ASC",
+                1,
+                1,
+                "(ORDER BY isnull( t1.f1, '' ) ASC)"
+            ),
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL( t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a2 ASC",
+                1,
+                1,
+                "(ORDER BY isnull( t1.f2, '' ) ASC)"
+            ),
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL( t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f1 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f1 ASC)"
+            ),
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL( t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f2 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f2 ASC)"
+            ),
+
+            array(
+                "SELECT
+                    ISNULL(accounts.id,'') primaryid,
+                    ISNULL(accounts.name,'') accounts_name,
+                    ISNULL(l2.id,'') l2_id,
+                    l2.email_address l2_email_address
+                FROM
+                    accounts
+                INNER JOIN
+                    accounts_contacts l1_1
+                ON
+                    accounts.id=l1_1.account_id
+                    AND l1_1.deleted=0
+                INNER JOIN
+                    contacts l1
+                ON
+                    l1.id=l1_1.contact_id
+                    AND l1.deleted=0
+                    AND l1.team_set_id IN (
+                        SELECT
+                            tst.team_set_id
+                        from
+                            team_sets_teams tst
+                        INNER JOIN
+                            team_memberships team_memberships
+                        ON
+                            tst.team_id = team_memberships.team_id
+                            AND team_memberships.user_id = '5a409dc7-1cdb-278b-2222-511e6952dac8'
+                            AND team_memberships.deleted=0
+                    )
+                INNER JOIN
+                    email_addr_bean_rel l2_1
+                ON
+                    l1.id=l2_1.bean_id
+                    AND l2_1.deleted=0
+                    AND l2_1.primary_address = '1'
+                INNER JOIN
+                    email_addresses l2
+                ON
+                    l2.id=l2_1.email_address_id
+                    AND l2.deleted=0
+                WHERE
+                    ((1=1)
+                    AND accounts.team_set_id IN (
+                        SELECT
+                            tst.team_set_id
+                        FROM
+                            team_sets_teams tst
+                        INNER JOIN
+                            team_memberships team_memberships
+                        ON
+                            tst.team_id = team_memberships.team_id
+                            AND team_memberships.user_id = '5a409dc7-1cdb-278b-2222-511e6952dac8'
+                            AND team_memberships.deleted=0
+                    ))
+                    AND accounts.deleted=0
+                ORDER BY
+                    l2_email_address ASC
+                ",
+                1,
+                1,
+                "(ORDER BY l2.email_address ASC)"
+            ),
+
+            array(
+                "SELECT
+                    ISNULL(accounts.id,'') primaryid,
+                    ISNULL(accounts.name,'') accounts_name,
+                    ISNULL(l2.id,'') l2_id,
+                    l2.email_address l2_email_address
+                FROM
+                    accounts
+                INNER JOIN
+                    accounts_contacts l1_1
+                ON
+                    accounts.id=l1_1.account_id
+                    AND l1_1.deleted=0
+                INNER JOIN
+                    contacts l1
+                ON
+                    l1.id=l1_1.contact_id
+                    AND l1.deleted=0
+                    AND l1.team_set_id IN (
+                        SELECT
+                            tst.team_set_id
+                        from
+                            team_sets_teams tst
+                        INNER JOIN
+                            team_memberships team_memberships
+                        ON
+                            tst.team_id = team_memberships.team_id
+                            AND team_memberships.user_id = 'c71f4b54-2058-5d8b-1d17-511e6b730b27'
+                            AND team_memberships.deleted=0
+                    )
+                INNER JOIN
+                    email_addr_bean_rel l2_1
+                ON
+                    l1.id=l2_1.bean_id
+                    AND l2_1.deleted=0
+                    AND l2_1.primary_address = '1'
+                INNER JOIN
+                    email_addresses l2
+                ON
+                    l2.id=l2_1.email_address_id
+                    AND l2.deleted=0
+                WHERE
+                    ((1=1)
+                    AND accounts.team_set_id IN (
+                        SELECT
+                            tst.team_set_id
+                        FROM
+                            team_sets_teams tst
+                        INNER JOIN
+                            team_memberships team_memberships
+                        ON
+                            tst.team_id = team_memberships.team_id
+                            AND team_memberships.user_id = 'c71f4b54-2058-5d8b-1d17-511e6b730b27'
+                            AND team_memberships.deleted=0
+                    ))
+                    AND  accounts.deleted=0
+                ORDER BY
+                    accounts_name ASC
+                ",
+                1,
+                1,
+                "(ORDER BY isnull(accounts.name,'') ASC)"
+            ),
+
+        );
+    }
 }

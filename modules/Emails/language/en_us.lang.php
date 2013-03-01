@@ -327,6 +327,7 @@ $mod_strings = array (
     'LBL_EMAIL_SETTINGS_OUTBOUND' => 'Outgoing Email',
     'LBL_ADD_CC' => 'Add Cc',
     'LBL_ADD_BCC' => 'Add Bcc',
+    'LBL_MOVE_TO_BCC' => 'Move To Bcc',
     'LBL_ADD_TO_ADDR' => 'Add To',
     'LBL_SELECTED_ADDR' => 'Selected',
     'LBL_ADD_CC_BCC_SEP' => '|',

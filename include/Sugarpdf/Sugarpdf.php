@@ -453,6 +453,7 @@ class Sugarpdf extends TCPDF
         foreach ($item as $k=>$v){
             $even = !$even;
             $line="";
+
             if($even){
                 if (isset($options['evencolor']))
                 {

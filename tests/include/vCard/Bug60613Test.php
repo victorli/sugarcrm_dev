@@ -34,51 +34,98 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
- 
+
 require_once 'include/vCard.php';
 
-class vCardBug40629Test extends Sugar_PHPUnit_Framework_TestCase
+/**
+ * Test vCard import with/without all required fields
+ * Should not allow import when all required fields are present
+ *
+ * @author avucinic
+ */
+class Bug60613Test extends Sugar_PHPUnit_Framework_TestCase
 {
-    protected $account;
-    
+    // Since we are creating Beans using vCard Import, must save IDs for cleaning
+    private $createdContacts = array();
+    private $filename;
+
     public function setUp()
     {
         SugarTestHelper::setUp('beanList');
         SugarTestHelper::setUp('beanFiles');
         SugarTestHelper::setUp('current_user', array(true, 1));
 
-        $this->account = SugarTestAccountUtilities::createAccount();
-        $this->account->name = "SDizzle Inc";
-        $this->account->save();
+        $this->filename = $GLOBALS['sugar_config']['upload_dir'] . 'test.vcf';
     }
-    
+
     public function tearDown()
     {
+        // Clean the Contacts created using vCard Import
+        foreach ($this->createdContacts as $contactId)
+        {
+            $GLOBALS['db']->query("DELETE FROM contacts WHERE id = '{$contactId}'");
+        }
+        unlink($this->filename);
         SugarTestHelper::tearDown();
-        SugarTestAccountUtilities::removeAllCreatedAccounts();
     }
-    
+
     /**
-     * @group bug40629
+     * @dataProvider dataProvider
+     * @group bug60613
      */
-	public function testImportedVcardAccountLink()
+    public function testImportVCard($contents, $module, $allRequiredPresent)
     {
-        $filename  = dirname(__FILE__)."/SimpleVCard.vcf";
-        
+        file_put_contents($this->filename, $contents);
+
         $vcard = new vCard();
-        $contact_id = $vcard->importVCard($filename,'Contacts');
-        $contact_record = new Contact();
-        $contact_record->retrieve($contact_id);
-        
-        $this->assertFalse(empty($contact_record->account_id), "Contact should have an account record associated");
-        $GLOBALS['db']->query("delete from contacts where id = '{$contact_id}'");
-        
-        $vcard = new vCard();
-        $lead_id = $vcard->importVCard($filename,'Leads');
-        $lead_record = new Lead();
-        $lead_record->retrieve($lead_id);
-        
-        $this->assertTrue(empty($lead_record->account_id), "Lead should not have an account record associated");
-        $GLOBALS['db']->query("delete from leads where id = '{$lead_id}'");
+        $beanId = $vcard->importVCard($this->filename, $module);
+
+        if ($allRequiredPresent)
+        {
+            $this->createdContacts[] = $beanId;
+            $this->assertNotEmpty($beanId);
+        }
+        else
+        {
+            $this->assertEmpty($beanId);
+        }
+    }
+
+    public function dataProvider()
+    {
+        return array(
+            array(
+                'BEGIN:VCARD
+                N:person;test;
+                FN: person lead
+                BDAY:
+                TEL;FAX:
+                TEL;HOME:
+                TEL;CELL:
+                TEL;WORK:
+                EMAIL;INTERNET:
+                ADR;WORK:;;;;;;
+                TITLE:
+                END:VCARD', // vCard with all required fields
+                'Contacts',
+                true),
+            array(
+                'BEGIN:VCARD
+                BDAY:
+                TEL;FAX:
+                TEL;HOME:
+                TEL;CELL:
+                TEL;WORK:
+                EMAIL;INTERNET:
+                ADR;WORK:;;;;;;
+                TITLE:
+                END:VCARD', // vCard without last_name
+                'Contacts',
+                false),
+            array(
+                '', // Empty vCard
+                'Contacts',
+                false),
+        );
     }
 }

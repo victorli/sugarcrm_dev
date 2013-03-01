@@ -86,12 +86,13 @@ SUGAR.email2.templates['compose'] = '<div id="composeLayout{idx}" class="ylayout
 '						</tr>' +
 '						<tr>' +
 '							<td class="emailUILabel" NOWRAP>' +
-'								<button class="button" type="button" onclick="SUGAR.email2.addressBook.selectContactsDialogue(\'addressTO{idx}\')">' + 
+'								<br /><button class="button" type="button" onclick="SUGAR.email2.addressBook.selectContactsDialogue(\'addressTO{idx}\')">' +
 '                                   {app_strings.LBL_EMAIL_TO}:' +
 '                               </button>' + 
 '							</td>' +
 '							<td class="emailUIField" NOWRAP>' +
 '								<div class="ac_autocomplete">' +
+'                                   <span id="move_to_bcc_span{idx}" style="padding-left:9px"><a href="#" onclick="SE.composeLayout.moveToBCC(\'move_to_bcc\',\'{idx}\');">{mod_strings.LBL_MOVE_TO_BCC}</a></span><br />'+
 '									&nbsp;&nbsp;<input class="ac_input" type="text" size="96" id="addressTO{idx}" title="{app_strings.LBL_EMAIL_TO}" name="addressTO{idx}" onkeyup="SE.composeLayout.showAddressDetails(this);">' +
 '									<span class="rolloverEmail"> <a id="MoreaddressTO{idx}" href="#" style="display: none;">+<span id="DetailaddressTO{idx}">&nbsp;</span></a> </span>' +
 '									<div class="ac_container" id="addressToAC{idx}"></div>' +

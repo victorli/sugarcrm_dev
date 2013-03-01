@@ -151,14 +151,25 @@ class CalendarActivity {
 	 * @param SugarDateTime $view_end_time end date
 	 * @param string $view view; not used for now, left for compatibility
 	 * @param boolean $show_calls
+	 * @param boolean $show_completed use to allow filtering completed events 
 	 * @return array
 	 */
- 	function get_activities($user_id, $show_tasks, $view_start_time, $view_end_time, $view, $show_calls = true){
+ 	function get_activities($user_id, $show_tasks, $view_start_time, $view_end_time, $view, $show_calls = true, $show_completed = true)
+ 	{
 		global $current_user;
 		$act_list = array();
 		$seen_ids = array();
-
-
+		
+		$completedCalls = '';
+		$completedMeetings = '';
+		$completedTasks = '';
+		if (!$show_completed)
+		{
+		    $completedCalls = " AND calls.status = 'Planned' ";
+		    $completedMeetings = " AND meetings.status = 'Planned' ";
+		    $completedTasks = " AND tasks.status != 'Completed' ";
+		}
+		
 		// get all upcoming meetings, tasks due, and calls for a user
 		if(ACLController::checkAccess('Meetings', 'list', $current_user->id == $user_id)) {
 			$meeting = new Meeting();
@@ -168,7 +179,8 @@ class CalendarActivity {
 			}
 
 			$where = CalendarActivity::get_occurs_within_where_clause($meeting->table_name, $meeting->rel_users_table, $view_start_time, $view_end_time, 'date_start', $view);
-			$focus_meetings_list = build_related_list_by_user_id($meeting,$user_id,$where);
+			$where .= $completedMeetings;
+			$focus_meetings_list = build_related_list_by_user_id($meeting, $user_id, $where);
 			foreach($focus_meetings_list as $meeting) {
 				if(isset($seen_ids[$meeting->id])) {
 					continue;
@@ -192,7 +204,8 @@ class CalendarActivity {
 				}
 
 				$where = CalendarActivity::get_occurs_within_where_clause($call->table_name, $call->rel_users_table, $view_start_time, $view_end_time, 'date_start', $view);
-				$focus_calls_list = build_related_list_by_user_id($call,$user_id,$where);
+				$where .= $completedCalls;
+				$focus_calls_list = build_related_list_by_user_id($call, $user_id, $where);
 
 				foreach($focus_calls_list as $call) {
 					if(isset($seen_ids[$call->id])) {
@@ -215,8 +228,9 @@ class CalendarActivity {
 
 				$where = CalendarActivity::get_occurs_within_where_clause('tasks', '', $view_start_time, $view_end_time, 'date_due', $view);
 				$where .= " AND tasks.assigned_user_id='$user_id' ";
+				$where .= $completedTasks;
 
-				$focus_tasks_list = $task->get_full_list("", $where,true);
+				$focus_tasks_list = $task->get_full_list("", $where, true);
 
 				if(!isset($focus_tasks_list)) {
 					$focus_tasks_list = array();

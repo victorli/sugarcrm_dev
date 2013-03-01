@@ -659,6 +659,12 @@ class SugarDateTime extends DateTime
      */
     public function modify($modify)
     {
+        // We can't user PHP_VERSION_ID here because problem with yesterday and tomorrow appears in defferent versions
+        // In that case we just set time to midnight for yesterday & tomorrow
+        // To leave time as it is we can use -+1 day instead of yesterday & tomorrow
+        if (strpos($modify, 'yesterday') !== false || strpos($modify, 'tomorrow') !== false) {
+            $this->setTime(0, 0);
+        }
         if(PHP_VERSION_ID >= 50300 || $modify != 'first day of next month') {
             parent::modify($modify);
         } else {

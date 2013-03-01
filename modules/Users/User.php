@@ -983,6 +983,22 @@ EOQ;
         return $result;
     }
 
+    /**
+     * getActiveUsers
+     *
+     * Returns all active users
+     * @return Array of active users in the system
+     */
+
+    public static function getActiveUsers()
+    {
+        $active_users = get_user_array(FALSE);
+        asort($active_users);
+        return $active_users;
+    }
+
+
+
 	function create_export_query($order_by, $where) {
 		include('modules/Users/field_arrays.php');
 

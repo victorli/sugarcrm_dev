@@ -2827,7 +2827,7 @@ protected function checkQuery($sql, $object_name = false)
         $changed_values=array();
 
         $fetched_row = array();
-        if (is_array($bean->fetched_row)) 
+        if (is_array($bean->fetched_row))
         {
             $fetched_row = array_merge($bean->fetched_row, $bean->fetched_rel_row);
         }

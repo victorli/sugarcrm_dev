@@ -1760,6 +1760,7 @@ $app_strings = array (
     'LBL_FILTER_MENU_BY' => 'Filter Menu By',
     'LBL_VCARD' => 'vCard',
     'LBL_EMPTY_VCARD' => 'Please select a vCard file',
+    'LBL_EMPTY_REQUIRED_VCARD' => 'vCard does not have all the required fields for this module. Please refer to sugarcrm.log for details.',
     'LBL_IMPORT_VCARD' => 'Import vCard:',
     'LBL_IMPORT_VCARD_BUTTON_KEY' => 'I',
     'LBL_IMPORT_VCARD_BUTTON_LABEL' => 'Import vCard',

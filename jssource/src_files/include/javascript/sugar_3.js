@@ -3835,19 +3835,31 @@ SUGAR.searchForm = function() {
                     elem.selected = false;
                 }
                 else if ( elemType == 'hidden' ) {
-                    // We only want to reset the hidden values that link to the select boxes.
-                    // _c custom field kludge added to fix Bug 41384
-                    if ( ( elem.name.length > 3 && elem.name.substring(elem.name.length-3) == '_id' )
-                         || ((elem.name.length > 9) && (elem.name.substring(elem.name.length - 9) == '_id_basic'))
-                         || ( elem.name.length > 12 && elem.name.substring(elem.name.length-12) == '_id_advanced' )
-                         || ( elem.name.length > 2 && elem.name.substring(elem.name.length-2) == '_c' )
-                         || ((elem.name.length > 8) && (elem.name.substring(elem.name.length - 8) == '_c_basic'))
-                         || ( elem.name.length > 11 && elem.name.substring(elem.name.length-11) == '_c_advanced' ) )
+                    if (
+                        // For bean selection
+                        elem.name.indexOf("_id") != -1
+                        // For custom fields
+                        || elem.name.indexOf("_c") != -1
+                        // For advanced fields, like team collection, or datetime fields
+                        || elem.name.indexOf("_advanced") != -1
+                        )
                     {
                         elem.value = '';
                     }
                 }
             }
+
+            // If there are any collections
+            if (typeof(collection) !== 'undefined')
+            {
+                // Loop through all the collections on the page and run clean_up()
+                for (key in collection)
+                {
+                    // Clean up only removes blank fields, if any
+                    collection[key].clean_up();
+                }
+            }
+
 			SUGAR.savedViews.clearColumns = true;
 		}
 	};

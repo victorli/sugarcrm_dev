@@ -62,6 +62,10 @@ class ViewImportvcard extends SugarView
         global $mod_strings, $app_strings, $app_list_strings;
 
         $this->ss->assign("ERROR_TEXT", $app_strings['LBL_EMPTY_VCARD']);
+        if (isset($_REQUEST['error']))
+        {
+            $this->ss->assign("ERROR_REQUIRED", $app_strings['LBL_EMPTY_REQUIRED_VCARD']);
+        }
         $this->ss->assign("HEADER", $app_strings['LBL_IMPORT_VCARD']);
         $this->ss->assign("MODULE", $_REQUEST['module']);
         $params = array();

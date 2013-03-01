@@ -407,7 +407,7 @@ class MssqlManager extends DBManager
         //to create limit query when paging is needed. Otherwise,
         //it shows duplicates when paging on activities subpanel.
         //If not for paging, no need to use rownumber() function
-        if ($count == 1)
+        if ($count == 1 && $start == 0)
         {
             $limitUnionSQL = "SELECT TOP $count * FROM (" .$unionsql .") as top_count ".$unionOrderBy;
         }
@@ -441,16 +441,16 @@ class MssqlManager extends DBManager
             $GLOBALS['log']->debug(print_r(func_get_args(),true));
             $this->lastsql = $sql;
             $matches = array();
-            preg_match('/^(.*SELECT )(.*?FROM.*WHERE)(.*)$/isU',$sql, $matches);
+            preg_match('/^(.*SELECT\b)(.*?\bFROM\b.*\bWHERE\b)(.*)$/isU',$sql, $matches);
             if (!empty($matches[3])) {
                 if ($start == 0) {
                     $match_two = strtolower($matches[2]);
                     if (!strpos($match_two, "distinct")> 0 && strpos($match_two, "distinct") !==0) {
                         $orderByMatch = array();
-                        preg_match('/^(.*)(ORDER BY)(.*)$/is',$matches[3], $orderByMatch);
+                        preg_match('/^(.*)(\bORDER BY\b)(.*)$/is',$matches[3], $orderByMatch);
                         if (!empty($orderByMatch[3])) {
                             $selectPart = array();
-                            preg_match('/^(.*)(\bFROM .*)$/isU', $matches[2], $selectPart);
+                            preg_match('/^(.*)(\bFROM\b.*)$/isU', $matches[2], $selectPart);
                             $newSQL = "SELECT TOP $count * FROM
                                 (
                                     " . $matches[1] . $selectPart[1] . ", ROW_NUMBER()
@@ -491,7 +491,7 @@ class MssqlManager extends DBManager
                     }
                 } else {
                     $orderByMatch = array();
-                    preg_match('/^(.*)(ORDER BY)(.*)$/is',$matches[3], $orderByMatch);
+                    preg_match('/^(.*)(\bORDER BY\b)(.*)$/is',$matches[3], $orderByMatch);
 
                     //if there is a distinct clause, parse sql string as we will have to insert the rownumber
                     //for paging, AFTER the distinct clause
@@ -563,7 +563,7 @@ class MssqlManager extends DBManager
                             $newSQL = "SELECT TOP $count * FROM
                                         (
                                             SELECT ROW_NUMBER()
-                                                OVER (ORDER BY ".$this->returnOrderBy($sql, $orderByMatch[3]).") AS row_number,
+                                                OVER (ORDER BY " . preg_replace('/^' . ltrim($dist_str) . '/', '', $this->returnOrderBy($sql, $orderByMatch[3])) . ") AS row_number,
                                                 count(*) counter, " . $distinctSQLARRAY[0] . "
                                                 " . $distinctSQLARRAY[1] . "
                                                 group by " . $grpByStr . "
@@ -592,11 +592,16 @@ class MssqlManager extends DBManager
                             // needs to be removed
                             $tablename = $this->getTableNameFromModuleName($_REQUEST['module'],$sql);
                         }
+                        $orderBy = $tablename;
+                        if (preg_match("/from\s+".$tablename."\s+([^\s]+)\s+(where|inner|left|join|outer|right)\s+/i", $sql, $table_alias))
+                        {
+                            $orderBy = $table_alias[1];
+                        }
                         //if there is a distinct clause, form query with rownumber after distinct
                         if ($hasDistinct) {
                              $newSQL = "SELECT TOP $count * FROM
                                             (
-                            SELECT ROW_NUMBER() OVER (ORDER BY ".$tablename.".id) AS row_number, count(*) counter, " . $distinctSQLARRAY[0] . "
+                            SELECT ROW_NUMBER() OVER (ORDER BY ".$orderBy.".id) AS row_number, count(*) counter, " . $distinctSQLARRAY[0] . "
                                                         " . $distinctSQLARRAY[1] . "
                                                     group by " . $grpByStr . "
                                             )
@@ -606,7 +611,7 @@ class MssqlManager extends DBManager
                         else {
                              $newSQL = "SELECT TOP $count * FROM
                                            (
-                                  " . $matches[1] . " ROW_NUMBER() OVER (ORDER BY ".$tablename.".id) AS row_number, " . $matches[2] . $matches[3]. "
+                                  " . $matches[1] . " ROW_NUMBER() OVER (ORDER BY ".$orderBy.".id) AS row_number, " . $matches[2] . $matches[3]. "
                                            )
                                            AS a
                                            WHERE row_number > $start";
@@ -696,7 +701,7 @@ class MssqlManager extends DBManager
         $pattern_array = array_reverse($pattern_array);
 
         foreach ($pattern_array as $key => $replace) {
-            $token = str_replace( "##".$key."##", $replace,$token);
+            $token = str_replace( " ##".$key."## ", $replace,$token);
         }
 
         return $token;
@@ -813,13 +818,13 @@ class MssqlManager extends DBManager
         if (strpos($orig_order_match, " ") === false) {
         	$orig_order_match .= " ASC";
         }
-            
+
         //grab first space in order by
         $firstSpace = strpos($orig_order_match, " ");
 
         //split order by into column name and ascending/descending
         $orderMatch = " " . strtolower(substr($orig_order_match, 0, $firstSpace));
-        $asc_desc =  substr($orig_order_match,$firstSpace);
+        $asc_desc = trim(substr($orig_order_match,$firstSpace));
 
         //look for column name as an alias in sql string
         $found_in_sql = $this->findColumnByAlias($sql, $orderMatch);
@@ -860,7 +865,8 @@ class MssqlManager extends DBManager
                 $psql = trim(substr($sql, 0, $found_in_sql));
 
             //grab the last comma before the alias
-            $comma_pos = strrpos($psql, " ");
+            preg_match('/\s+' . trim($orderMatch). '/', $psql, $match, PREG_OFFSET_CAPTURE);
+            $comma_pos = $match[0][1];
             //substring between the comma and the alias to find the joined_table alias and column name
             $col_name = substr($psql,0, $comma_pos);
 
@@ -1956,7 +1962,7 @@ EOQ;
     protected function quoteTerm($term)
     {
         $term = str_replace("%", "*", $term); // Mssql wildcard is *
-        return '"'.$term.'"';
+        return '"'.str_replace('"', '', $term).'"';
     }
 
     /**

@@ -130,6 +130,17 @@ $(function() {
 						</select>
 					</td>
 				</tr>
+				<tr>
+					<td scope="row" valign="top">
+						{$MOD.LBL_SETTINGS_COMPLETED_SHOW}
+					</td>
+					<td>	
+						<select size="1" name="show_completed" tabindex="102">
+							<option value='' {if !$show_completed}selected{/if}>{$MOD.LBL_NO}</option>
+							<option value='true' {if $show_completed}selected{/if}>{$MOD.LBL_YES}</option>								
+						</select>
+					</td>
+				</tr>
 		</table>
 	</form>
 	

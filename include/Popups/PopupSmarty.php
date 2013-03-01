@@ -289,6 +289,7 @@ class PopupSmarty extends ListViewSmarty{
 		$params = array();
 		if(!empty($this->_popupMeta['orderBy'])){
 			$params['orderBy'] = $this->_popupMeta['orderBy'];
+			$params['overrideOrder'] = true;
 		}
 
 		if(file_exists('custom/modules/'.$this->module.'/metadata/metafiles.php')){
@@ -403,18 +404,22 @@ class PopupSmarty extends ListViewSmarty{
             }
             
         }
-        else if ( isset($_REQUEST['request_data']) )
+        else if (!empty($_REQUEST['request_data']))
         {
-            $request_data = get_object_vars( json_decode( htmlspecialchars_decode( $_REQUEST['request_data'] )));
-            $request_data['field_to_name'] = get_object_vars( $request_data['field_to_name_array'] );
-            if (isset($request_data['field_to_name']) && is_array($request_data['field_to_name']))
+            $request_data = get_object_vars(json_decode(htmlspecialchars_decode($_REQUEST['request_data'])));
+
+            if (!empty($request_data['field_to_name_array']))
             {
-                foreach ( $request_data['field_to_name'] as $add_field )
+                $request_data['field_to_name'] = get_object_vars($request_data['field_to_name_array']);
+                if (is_array($request_data['field_to_name']))
                 {
-                    $add_field = strtolower($add_field);
-                    if ( $add_field != 'id' && !isset($this->filter_fields[$add_field]) && isset($this->seed->field_defs[$add_field]) )
+                    foreach ($request_data['field_to_name'] as $add_field)
                     {
-                        $this->filter_fields[$add_field] = true;
+                        $add_field = strtolower($add_field);
+                        if ($add_field != 'id' && !isset($this->filter_fields[$add_field]) && isset($this->seed->field_defs[$add_field]))
+                        {
+                            $this->filter_fields[$add_field] = true;
+                        }
                     }
                 }
             }

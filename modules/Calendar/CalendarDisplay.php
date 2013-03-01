@@ -286,6 +286,7 @@ class CalendarDisplay {
 		$ss->assign('display_timeslots', $displayTimeslots);
 		$ss->assign('show_calls',$this->cal->show_calls);
 		$ss->assign('show_tasks',$this->cal->show_tasks);
+		$ss->assign('show_completed', $this->cal->show_completed);
 		$ss->assign('TIME_START_HOUR_OPTIONS',$TIME_START_HOUR_OPTIONS);
 		$ss->assign('TIME_START_MINUTES_OPTIONS',$TIME_START_MINUTES_OPTIONS);
 		$ss->assign('TIME_START_MERIDIEM',$TIME_START_MERIDIEM);

@@ -42,13 +42,14 @@ class GetNamePlusEmailAddressesForComposeTest extends Sugar_PHPUnit_Framework_Te
 {
 	public function setUp()
     {
-        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+        SugarTestHelper::setUp('current_user');
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
 	}
 
     public function tearDown()
     {
-        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-        unset($GLOBALS['current_user']);
+        SugarTestHelper::tearDown();
     }
     
     public function testGetNamePlusEmailAddressesForCompose()

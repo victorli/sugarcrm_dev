@@ -75,7 +75,7 @@ class SugarWidgetSubPanelTopCreateTaskButton extends SugarWidgetSubPanelTopButto
 			$defines['child_module_name'] = $defines['module'];
 		}
 
-		if(!empty($this->subpanelDiv))
+		if(empty($defines['subpanelDiv']))
 		{
 			$defines['subpanelDiv'] = $this->subpanelDiv;
 		}

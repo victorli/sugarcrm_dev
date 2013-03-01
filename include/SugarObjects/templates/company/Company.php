@@ -54,14 +54,13 @@ class Company extends Basic
  	{
  	    if(!empty($GLOBALS['resavingRelatedBeans']))
  	    {
- 	        parent::save($check_notify);
- 	        return $this;
+ 	        return parent::save($check_notify);
  	    } 	    
 		$this->add_address_streets('billing_address_street');
 		$this->add_address_streets('shipping_address_street');
-        $ori_in_workflow = empty($this->in_workflow) ? false : true;
+    	$ori_in_workflow = empty($this->in_workflow) ? false : true;
 		$this->emailAddress->handleLegacySave($this, $this->module_dir);
-        parent::save($check_notify);
+    	$record_id = parent::save($check_notify);
         $override_email = array();
         if(!empty($this->email1_set_in_workflow)) {
             $override_email['emailAddress0'] = $this->email1_set_in_workflow;
@@ -75,7 +74,7 @@ class Company extends Basic
         if($ori_in_workflow === false || !empty($override_email)){
             $this->emailAddress->save($this->id, $this->module_dir, $override_email,'','','','',$this->in_workflow);
         }
-		return $this;
+		return $record_id;
 	}
 	
  	/**

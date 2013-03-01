@@ -51,6 +51,10 @@
    for(i=0; i<=mod_array.length-1; i++){
      if(mod_array[i] != 'Contacts'){
        var dropdown = document.getElementById('lead_conv_ac_op_sel');
+       //if dropdown does not exist, then return and exit function
+       if (!dropdown) {
+          return;
+       }
        var opt = document.createElement("option");
        opt.text = SUGAR.language.get('app_list_strings', "moduleListSingular")[mod_array[i]];
        opt.value = mod_array[i];

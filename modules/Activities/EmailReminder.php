@@ -134,7 +134,7 @@ class EmailReminder
         }else if ( !empty($bean->assigned_user_id) ) {
             $user_id = $bean->assigned_user_id;
         }else {
-            $user_id = $GLOBLAS['current_user']->id;
+            $user_id = $GLOBALS['current_user']->id;
         }
         $user = new User();
         $user->retrieve($bean->created_by);

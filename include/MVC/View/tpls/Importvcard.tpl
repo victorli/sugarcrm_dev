@@ -66,4 +66,4 @@ function validate_vcard()
 <input class='button' type="button" onclick='validate_vcard()' value="{$APP.LBL_IMPORT_VCARD_BUTTON_LABEL}" 
     title="{$APP.LBL_IMPORT_VCARD_BUTTON_TITLE}" />
 </form>
-
+<div class="error">{$ERROR_REQUIRED}</div>

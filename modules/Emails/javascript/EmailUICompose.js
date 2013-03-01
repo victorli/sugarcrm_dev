@@ -2354,6 +2354,28 @@ SE.composeLayout = {
     },
 
     /**
+     * Move email addresses from To field to BCC field
+     */
+    moveToBCC : function (addrType,idx) {
+
+        var toVal = $.trim($("#addressTO"+idx).val());
+        var BCCVal =$.trim($("#addressBCC"+idx).val());
+
+        if (toVal.length != 0)
+        {
+            // get rid of first comma in BCC field and last comma in TO field
+            // so we don't end up with double commas in BCC field
+            BCCVal = BCCVal.replace(/^,/, '');
+            toVal = toVal.replace(/\,$/, '');
+
+            $("#addressBCC"+idx).val(toVal +","+BCCVal);
+            $("#addressTO"+idx).val("");     // empty out the to field
+        }
+        // show the BCC field
+        SE.composeLayout.showHiddenAddress('bcc', SE.composeLayout.currentInstanceId);
+    },
+
+    /**
     *  Show the hidden cc or bcc fields
     */
     showHiddenAddress: function(addrType,idx){

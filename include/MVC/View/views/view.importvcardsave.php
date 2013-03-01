@@ -46,25 +46,32 @@ require_once('include/vCard.php');
 
 class ViewImportvcardsave extends SugarView
 {
-	var $type = 'save';
+    var $type = 'save';
 
     public function __construct()
     {
- 		parent::SugarView();
- 	}
- 	
+        parent::SugarView();
+    }
+
     /**
      * @see SugarView::display()
      */
-	public function display()
+    public function display()
     {
-        if ( isset($_FILES['vcard']['tmp_name']) && isset($_FILES['vcard']['size']) > 0 ) {
+        if (isset($_FILES['vcard']['tmp_name']) && isset($_FILES['vcard']['size']) > 0)
+        {
             $vcard = new vCard();
-            $record = $vcard->importVCard($_FILES['vcard']['tmp_name'],$_REQUEST['module']);
+            $record = $vcard->importVCard($_FILES['vcard']['tmp_name'], $_REQUEST['module']);
+            if (empty($record))
+            {
+                SugarApplication::redirect("index.php?action=Importvcard&module={$_REQUEST['module']}&error");
+            }
             SugarApplication::redirect("index.php?action=DetailView&module={$_REQUEST['module']}&record=$record");
         }
         else
+        {
             SugarApplication::redirect("index.php?action=Importvcard&module={$_REQUEST['module']}");
- 	}
+        }
+    }
 }
 ?>

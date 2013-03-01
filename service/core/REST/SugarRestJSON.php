@@ -53,6 +53,7 @@ class SugarRestJSON extends SugarRestSerialize{
 	function generateResponse($input){
 		$json = getJSONObj();
 		ob_clean();
+		header('Content-Type: application/json; charset=UTF-8');
 		if (isset($this->faultObject)) {
 			$this->generateFaultResponse($this->faultObject);
 		} else {

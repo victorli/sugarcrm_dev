@@ -107,6 +107,8 @@ if(!isset($_POST['fromuser']) && !isset($_GET['execute'])){
 <select name="fromuser" id='fromuser'>
 <?php
 $all_users = User::getAllUsers();
+//Bug 48697 - We need to display only active users as possible reassign targets
+$active_users = User::getActiveUsers();
 echo get_select_options_with_id($all_users, isset($_SESSION['reassignRecords']['fromuser']) ? $_SESSION['reassignRecords']['fromuser'] : '');
 ?>
 </select>
@@ -121,7 +123,7 @@ if(isset($_SESSION['reassignRecords']['fromuser']) && isset($all_users[$_SESSION
 	unset($all_users[$_SESSION['reassignRecords']['fromuser']]);
 }
 
-echo get_select_options_with_id($all_users, isset($_SESSION['reassignRecords']['touser']) ? $_SESSION['reassignRecords']['touser'] : '');
+echo get_select_options_with_id($active_users, isset($_SESSION['reassignRecords']['touser']) ? $_SESSION['reassignRecords']['touser'] : '');
 ?>
 </select>
 <?php

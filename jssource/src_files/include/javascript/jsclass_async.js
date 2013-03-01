@@ -83,7 +83,7 @@ SugarVCalClient.prototype.load = function(user_id, request_id) {
     this.user_id = user_id;
 
     // Bug 44239: Removed reliance on jsolait
-    YAHOO.util.Connect.asyncRequest('GET', './vcal_server.php?type=vfb&source=outlook&user_id=' + user_id, {
+    YAHOO.util.Connect.asyncRequest('GET', './vcal_server.php?type=vfb&source=outlook&noAuth=noAuth&user_id=' + user_id, {
         success: function (result) {
             if (typeof GLOBAL_REGISTRY.freebusy == 'undefined') {
                 GLOBAL_REGISTRY.freebusy = new Object();

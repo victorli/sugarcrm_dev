@@ -726,7 +726,10 @@ AjaxObject.detailView = {
 		var editForm = document.getElementById('form_EmailQCView_' + ret.module);
 		if (editForm) {
 		  editForm.module.value = 'Emails';
-		  var count = SUGAR.EmailAddressWidget.count[ret.module] ? SUGAR.EmailAddressWidget.count[ret.module] : 0;
+		  var count = 0;
+          if (SUGAR.EmailAddressWidget.count[ret.module]) {
+              count = SUGAR.EmailAddressWidget.count[ret.module] - 1;
+          }
           var tableId = YAHOO.util.Dom.getElementsByClassName('emailaddresses', 'table', editForm)[0];
           tableId = tableId ? tableId.id : tableId;
 		  var instId = ret.module + count;
@@ -734,7 +737,7 @@ AjaxObject.detailView = {
 		  SED.quickCreateEmailCallback = function(instId, tableId) {
               //try to fill up the email address if and only if emailwidget is existed in the form
               if(tableId) {
-                  var eaw = new SUGAR.EmailAddressWidget.instances[instId];
+                  var eaw = SUGAR.EmailAddressWidget.instances[instId];
                   if (eaw) {
                       eaw.prefillEmailAddresses(tableId, SUGAR.email2.detailView.quickCreateEmailsToAdd);
                   } else {

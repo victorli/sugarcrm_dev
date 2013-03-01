@@ -462,7 +462,6 @@ class SchedulersJob extends Basic
      */
     public function runJob()
     {
-        require_once('modules/Schedulers/_AddJobsHere.php');
         $this->errors = "";
         $exJob = explode('::', $this->target, 2);
         if($exJob[0] == 'function') {
@@ -480,6 +479,7 @@ class SchedulersJob extends Basic
                 $this->resolveJob(self::JOB_FAILURE, translate('ERR_NOUSER', 'SchedulersJobs'));
                 return;
             }
+    		require_once('modules/Schedulers/_AddJobsHere.php');
     		$func = $exJob[1];
 			$GLOBALS['log']->debug("----->SchedulersJob calling function: $func");
             set_error_handler(array($this, "errorHandler"), E_ALL & ~E_NOTICE & ~E_STRICT);
@@ -533,14 +533,7 @@ class SchedulersJob extends Basic
             if($tmpJob instanceof RunnableSchedulerJob)
             {
                 $tmpJob->setJob($this);
-                $return_status = $tmpJob->run($this->data);
-				if($return_status) {
-					$this->resolveJob(self::JOB_SUCCESS);
-					return true;
-				} else {
-					$this->resolveJob(self::JOB_FAILURE);
-					return false;
-				}
+                return $tmpJob->run($this->data);
             }
             else {
                 $this->resolveJob(self::JOB_FAILURE, sprintf(translate('ERR_JOBTYPE', 'SchedulersJobs'), strip_tags($this->target)));

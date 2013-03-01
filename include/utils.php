@@ -354,6 +354,7 @@ function get_sugar_config_defaults() {
 	  'default_view' => 'week',
 	  'show_calls_by_default' => true,
 	  'show_tasks_by_default' => true,
+	  'show_completed_by_default' => true,
 	  'editview_width' => 990,
 	  'editview_height' => 485,
 	  'day_timestep' => 15,

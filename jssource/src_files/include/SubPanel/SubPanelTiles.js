@@ -482,7 +482,7 @@ SUGAR.subpanelUtils = function() {
                 if (form)
                 {
                     // discover cancelCreate function parameters needed
-                    var moduleName = form.id.replace(/.*?_([^_]+)$/, "$1");
+                    var moduleName = YAHOO.util.Selector.query('input[name=module]', form, true).value;
                     var buttonName = moduleName + "_subpanel_cancel_button";
                     var cancelled  = false;
 

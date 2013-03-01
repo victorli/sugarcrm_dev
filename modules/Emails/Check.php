@@ -44,28 +44,9 @@ if(isset($_REQUEST['type']) && $_REQUEST['type'] == 'personal') {
 		$ie = new InboundEmail();
 		$beans = $ie->retrieveByGroupId($current_user->id);
 		if(!empty($beans)) {
+            /** @var InboundEmail $bean */
 			foreach($beans as $bean) {
-				$bean->connectMailserver();
-				$newMsgs = array();
-				if ($bean->isPop3Protocol()) {
-					$newMsgs = $bean->getPop3NewMessagesToDownload();
-				} else {
-					$newMsgs = $bean->getNewMessageIds();
-				}
-				//$newMsgs = $bean->getNewMessageIds();
-				if(is_array($newMsgs)) {
-					foreach($newMsgs as $k => $msgNo) {
-						$uid = $msgNo;
-						if ($bean->isPop3Protocol()) {
-							$uid = $bean->getUIDLForMessage($msgNo);
-						} else {
-							$uid = imap_uid($bean->conn, $msgNo);
-						} // else					
-						$bean->importOneEmail($msgNo, $uid);
-					}
-				}
-				imap_expunge($bean->conn);
-				imap_close($bean->conn);
+                $bean->importMessages();
 			}	
 		}
 	}
@@ -78,34 +59,10 @@ if(isset($_REQUEST['type']) && $_REQUEST['type'] == 'personal') {
 	while($a = $ie->db->fetchByAssoc($r)) {
 		$ieX = new InboundEmail();
 		$ieX->retrieve($a['id']);
-		$ieX->connectMailserver();
-		//$newMsgs = $ieX->getNewMessageIds();
-		$newMsgs = array();
-		if ($ieX->isPop3Protocol()) {
-			$newMsgs = $ieX->getPop3NewMessagesToDownload();
-		} else {
-			$newMsgs = $ieX->getNewMessageIds();
-		}
-
-		if(is_array($newMsgs)) {
-			foreach($newMsgs as $k => $msgNo) {
-				$uid = $msgNo;
-				if ($ieX->isPop3Protocol()) {
-					$uid = $ieX->getUIDLForMessage($msgNo);
-				} else {
-					$uid = imap_uid($ieX->conn, $msgNo);
-				} // else					
-				$ieX->importOneEmail($msgNo, $uid);
-			}
-		}
-		imap_expunge($ieX->conn);
-		imap_close($ieX->conn);
+        $ieX->importMessages();
 	}
 	
 	header('Location: index.php?module=Emails&action=ListViewGroup');
 } else { // fail gracefully
 	header('Location: index.php?module=Emails&action=index');
 }
-
-
-?>

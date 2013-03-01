@@ -221,4 +221,40 @@ class MysqlManagerTest extends Sugar_PHPUnit_Framework_TestCase
              $this->_db->fromConvert($parameters[0],$parameters[1]),
              $result);
     }
+
+    public function providerFullTextQuery()
+    {
+        return array(
+            array(array('word1'), array(), array(),
+                "MATCH(unittest) AGAINST('word1' IN BOOLEAN MODE)"),
+            array(array("'word1'"), array(), array(),
+                "MATCH(unittest) AGAINST('\'word1\'' IN BOOLEAN MODE)"),
+            array(array('word1', 'word2'), array(), array(),
+                "MATCH(unittest) AGAINST('word1 word2' IN BOOLEAN MODE)"),
+            array(array('word1', 'word2'), array('mustword'), array(),
+                "MATCH(unittest) AGAINST('word1 word2 +mustword' IN BOOLEAN MODE)"),
+            array(array('word1', 'word2'), array('mustword', 'mustword2'), array(),
+                "MATCH(unittest) AGAINST('word1 word2 +mustword +mustword2' IN BOOLEAN MODE)"),
+            array(array(), array('mustword', 'mustword2'), array(),
+                "MATCH(unittest) AGAINST('+mustword +mustword2' IN BOOLEAN MODE)"),
+            array(array('word1'), array(), array('notword'),
+                "MATCH(unittest) AGAINST('word1 -notword' IN BOOLEAN MODE)"),
+            array(array('word1'), array(), array('notword', 'notword2'),
+                "MATCH(unittest) AGAINST('word1 -notword -notword2' IN BOOLEAN MODE)"),
+            array(array('word1', 'word2'), array('mustword', 'mustword2'), array('notword', 'notword2'),
+                "MATCH(unittest) AGAINST('word1 word2 +mustword +mustword2 -notword -notword2' IN BOOLEAN MODE)"),
+        );
+    }
+
+    /**
+     * @ticket 37435
+     * @dataProvider providerFullTextQuery
+     * @param array $terms
+     * @param string $result
+     */
+    public function testFullTextQuery($terms, $must_terms, $exclude_terms, $result)
+    {
+        $this->assertEquals($result,
+        		$this->_db->getFulltextQuery('unittest', $terms, $must_terms, $exclude_terms));
+    }
 }

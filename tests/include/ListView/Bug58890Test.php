@@ -69,6 +69,10 @@ class Bug58890Test extends Sugar_PHPUnit_Framework_TestCase
         $bean = new SugarBean58890();
         $listViewData = new ListViewData();
         $listViewData->listviewName = $bean->module_name;
+        $listViewData->setVariableName($bean->object_name, '', $listViewData->listviewName);
+        if (!empty($listViewData->var_order_by) && !empty($_SESSION[$listViewData->var_order_by])) {
+            unset($_SESSION[$listViewData->var_order_by]);
+        }
 
         $listViewData->getListViewData($bean, '', -1, -1, array('name' => array()));
         $this->assertEquals('date_entered DESC', $bean->orderByString58890, 'Order by date_entered DESC should be used');

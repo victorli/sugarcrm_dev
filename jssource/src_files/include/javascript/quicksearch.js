@@ -284,7 +284,7 @@ function enableQS(noReload){
                     
                     
                     if ( typeof(SUGAR.config.quicksearch_querydelay) != 'undefined' ) {
-                        search.queryDelay = SUGAR.config.quicksearch_querydelay;
+                        search.queryDelay = Number(SUGAR.config.quicksearch_querydelay);
                     }
                     
                     //fill in the data fields on selection

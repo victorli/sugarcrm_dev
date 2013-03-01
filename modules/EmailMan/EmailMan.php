@@ -354,8 +354,10 @@ class EmailMan extends SugarBean{
                     $this->ref_email->parent_type = '';
                     $this->ref_email->parent_id =  '';
                 }
-                $this->ref_email->date_start = $timedate->nowDate();
-                $this->ref_email->time_start = $timedate->asUserTime($timedate->getNow(true));
+               	
+       			// Bug 59726 - Campaigns' Emails are sometime freezed
+				$this->ref_email->date_start = $timedate->nowDbDate();
+				$this->ref_email->time_start = $timedate->asDbTime($timedate->getNow());
 
                 $this->ref_email->status='sent';
                 $retId = $this->ref_email->save();
@@ -422,8 +424,11 @@ class EmailMan extends SugarBean{
                     break;
             }
 
+            //serialize data to be passed into Link2->add() function
+            $campaignData = serialize($macro_nv);
+
             //required for one email per campaign per marketing message.
-            $this->ref_email->$rel_name->add($this->related_id,array('campaign_data'=>serialize($macro_nv)));
+            $this->ref_email->$rel_name->add($this->related_id,array('campaign_data'=>$this->db->quote($campaignData)));
        }
        return $this->ref_email->id;
     }
@@ -637,7 +642,7 @@ class EmailMan extends SugarBean{
 			}
 
 			//test for duplicate email address by marketing id.
-            $dup_query="select id from campaign_log where more_information='".$module->email1."' and marketing_id='".$this->marketing_id."'";
+            $dup_query="select id from campaign_log where more_information='".$this->db->quote($module->email1)."' and marketing_id='".$this->marketing_id."'";
 			$dup=$this->db->query($dup_query);
 			$dup_row=$this->db->fetchByAssoc($dup);
 			if (!empty($dup_row)) {

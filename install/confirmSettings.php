@@ -353,7 +353,10 @@ if( $memory_limit == "" ){          // memory_limit disabled at compile time, no
     $memory_limit_int = intval($num);
     $SUGARCRM_MIN_MEM = (int) constant('SUGARCRM_MIN_MEM');
     if( $memory_limit_int < constant('SUGARCRM_MIN_MEM') ){
-        $memory_msg = "<span class='stop'><b>$memory_limit{$mod_strings['ERR_CHECKSYS_MEM_LIMIT_1']}" . constant('SUGARCRM_MIN_MEM') . "{$mod_strings['ERR_CHECKSYS_MEM_LIMIT_2']}</b></span>";
+        // Bug59667: The string ERR_CHECKSYS_MEM_LIMIT_2 already has 'M' in it,
+        // so we divide the constant by 1024*1024.
+        $min_mem_in_megs = constant('SUGARCRM_MIN_MEM')/(1024*1024);
+        $memory_msg = "<span class='stop'><b>$memory_limit{$mod_strings['ERR_CHECKSYS_MEM_LIMIT_1']}" . $min_mem_in_megs . "{$mod_strings['ERR_CHECKSYS_MEM_LIMIT_2']}</b></span>";
         $memory_msg = str_replace('$memory_limit', $mem_display, $memory_msg);
     } else {
         $memory_msg = "{$mod_strings['LBL_CHECKSYS_OK']} ({$memory_limit})";

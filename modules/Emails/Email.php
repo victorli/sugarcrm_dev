@@ -932,64 +932,70 @@ class Email extends SugarBean {
 		return true;
 	} // end email2send
 
-	/**
-	 * Generates a config-specified separated name and addresses to be used in compose email screen for
-	 * contacts or leads from listview
-     * By default, use comma, but allow for non-standard delimeters as specified in email_address_separator
-	 *
-	 * @param $module string module name
-	 * @param $idsArray array of record ids to get the email address for
-	 * @return string (config-specified) delimited list of email addresses
-	 */
-	public function getNamePlusEmailAddressesForCompose($module, $idsArray)
-	{
-		global $locale;
-		global $db;
-		$table = SugarModule::get($module)->loadBean()->table_name;
-		$returndata = array();
-		$idsString = "";
-		foreach($idsArray as $id) {
-			if ($idsString != "") {
-				$idsString = $idsString . ",";
-			} // if
-			$idsString = $idsString . "'" . $id . "'";
-		} // foreach
-		$where = "({$table}.deleted = 0 AND {$table}.id in ({$idsString}))";
+    /**
+     * Generates a config-specified separated name and addresses to be used in compose email screen for
+     * contacts or leads from listview
+     * By default, use comma, but allow for non-standard delimiters as specified in email_address_separator
+     *
+     * @param $module string module name
+     * @param $idsArray array of record ids to get the email address for
+     * @return string (config-specified) delimited list of email addresses
+     */
+    public function getNamePlusEmailAddressesForCompose($module, $idsArray)
+    {
+        global $locale;
+        $result = array();
 
-		if ($module == 'Users' || $module == 'Employees') {
-			$selectColumn = "{$table}.first_name, {$table}.last_name, {$table}.title";
-		}
-		elseif (SugarModule::get($module)->moduleImplements('Person')) {
-			$selectColumn = "{$table}.first_name, {$table}.last_name, {$table}.salutation, {$table}.title";
-		}
-		else {
-		    $selectColumn = "{$table}.name";
-		}
-		$query = "SELECT {$table}.id, {$selectColumn}, eabr.primary_address, ea.email_address";
-		$query .= " FROM {$table} ";
-		$query .= "JOIN email_addr_bean_rel eabr ON ({$table}.id = eabr.bean_id and eabr.deleted=0) ";
-		$query .= "JOIN email_addresses ea ON (eabr.email_address_id = ea.id) ";
-		$query .= " WHERE ({$where}) ORDER BY eabr.primary_address DESC";
-		$r = $this->db->query($query);
+        foreach ($idsArray as $id)
+        {
+            // Load bean
+            $bean = BeanFactory::getBean($module, $id);
 
-		while($a = $this->db->fetchByAssoc($r)) {
-			if (!isset($returndata[$a['id']])) {
-				if ($module == 'Users' || $module == 'Employees') {
-				    $full_name = from_html($locale->getLocaleFormattedName($a['first_name'], $a['last_name'], '', $a['title']));
-					$returndata[$a['id']] = "{$full_name} <".from_html($a['email_address']).">";
-				}
-				elseif (SugarModule::get($module)->moduleImplements('Person')) {
-					$full_name = from_html($locale->getLocaleFormattedName($a['first_name'], $a['last_name'], $a['salutation'], $a['title']));
-					$returndata[$a['id']] = "{$full_name} <".from_html($a['email_address']).">";
-				}
-				else {
-					$returndata[$a['id']] = from_html($a['name']) . " <".from_html($a['email_address']).">";
-				} // else
-			}
-		}
+            // Got a bean
+            if (!empty($bean))
+            {
+                // For CE, just get primary e-mail address
+                $emailAddress = $bean->email1;
 
-        // broken out of method to facilitate unit testing
-        return $this->_arrayToDelimitedString($returndata);
+
+                // If we have an e-mail address loaded
+                if (!empty($emailAddress))
+                {
+                    // Use bean name by default
+                    $fullName = $bean->name;
+
+                    // Depending on module, format the name
+                    if (in_array($module, array('Users', 'Employees')))
+                    {
+                        $fullName = from_html(
+                            $locale->getLocaleFormattedName(
+                                $bean->first_name,
+                                $bean->last_name,
+                                '',
+                                $bean->title
+                            )
+                        );
+                    }
+                    else if (SugarModule::get($module)->moduleImplements('Person'))
+                    {
+                        $fullName = from_html(
+                            $locale->getLocaleFormattedName(
+                                $bean->first_name,
+                                $bean->last_name,
+                                $bean->salutation,
+                                $bean->title
+                            )
+                        );
+                    }
+
+                    // Make e-mail address in format "Name <@email>"
+                    $result[$bean->id] = $fullName . " <" . from_html($emailAddress) . ">";
+                }
+            }
+        }
+
+        // Broken out of method to facilitate unit testing
+        return $this->_arrayToDelimitedString($result);
     }
 
     /**
@@ -1045,6 +1051,13 @@ class Email extends SugarBean {
                  if (!empty($date_sent_obj) && ($date_sent_obj instanceof SugarDateTime)) {
  				    $this->date_sent = $date_sent_obj->asDb();
                  }
+			} else {
+				//set date_entered to date_sent if this is a new email being archived
+				//that way emails archived to sugar by plugins like opacus mail will
+				//have the correct ordering according to email incoming date.
+				if ($this->new_with_id) {
+					$this->date_entered = $this->date_sent;
+				}
 			}
 
 			parent::save($check_notify);

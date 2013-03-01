@@ -560,8 +560,11 @@ elemType=elem.type.toLowerCase();if(elemType=='text'||elemType=='textarea'||elem
 else if(elemType=='select'||elemType=='select-one'||elemType=='select-multiple'){var optionList=elem.options;if(optionList.length>0){optionList[0].selected="selected";}
 for(var ii=0;ii<optionList.length;ii++){optionList[ii].selected=false;}}
 else if(elemType=='radio'||elemType=='checkbox'){elem.checked=false;elem.selected=false;}
-else if(elemType=='hidden'){if((elem.name.length>3&&elem.name.substring(elem.name.length-3)=='_id')||((elem.name.length>9)&&(elem.name.substring(elem.name.length-9)=='_id_basic'))||(elem.name.length>12&&elem.name.substring(elem.name.length-12)=='_id_advanced')||(elem.name.length>2&&elem.name.substring(elem.name.length-2)=='_c')||((elem.name.length>8)&&(elem.name.substring(elem.name.length-8)=='_c_basic'))||(elem.name.length>11&&elem.name.substring(elem.name.length-11)=='_c_advanced'))
+else if(elemType=='hidden'){if(elem.name.indexOf("_id")!=-1||elem.name.indexOf("_c")!=-1||elem.name.indexOf("_advanced")!=-1)
 {elem.value='';}}}
+if(typeof(collection)!=='undefined')
+{for(key in collection)
+{collection[key].clean_up();}}
 SUGAR.savedViews.clearColumns=true;}};}();SUGAR.tabChooser=function(){var object_refs=new Array();return{frozenOptions:[],movementCallback:function(left_side,right_side){},orderCallback:function(left_side,right_side){},freezeOptions:function(left_name,right_name,target){if(!SUGAR.tabChooser.frozenOptions){SUGAR.tabChooser.frozenOptions=[];}
 if(!SUGAR.tabChooser.frozenOptions[left_name]){SUGAR.tabChooser.frozenOptions[left_name]=[];}
 if(!SUGAR.tabChooser.frozenOptions[left_name][right_name]){SUGAR.tabChooser.frozenOptions[left_name][right_name]=[];}

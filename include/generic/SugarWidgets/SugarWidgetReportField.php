@@ -213,7 +213,7 @@ class SugarWidgetReportField extends SugarWidgetField
                 $sort_by ='';
                 if ( ! empty($layout_def['table_key']) && ! empty($layout_def['name']) ) {
                 	if (! empty($layout_def['group_function']) && $layout_def['group_function'] == 'count') {
-                    	$sort_by = 'count';
+                        $sort_by = $layout_def['table_key'].":".'count';
                 	} else {
                     	$sort_by = $layout_def['table_key'].":".$layout_def['name'];
                         if ( ! empty($layout_def['column_function'])) {

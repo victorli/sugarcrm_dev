@@ -229,6 +229,10 @@ $subpanel = new SubPanelTiles($focus, 'Campaigns');
     if(empty($latest_marketing_id) || $latest_marketing_id === 'all'){
         //do nothing, no filtering is needed
     }else{
+
+        // assign selected marketing ID back to request in order to let ListView use it as a part of subpanel base URL
+        $_GET['mkt_id'] = $latest_marketing_id;
+
         //get array of layout defs
         $layoutDefsArr= $subpanel->subpanel_definitions->layout_defs;
 
