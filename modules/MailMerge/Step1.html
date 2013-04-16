@@ -112,13 +112,13 @@ function browserCheck()
 	{
 		button = document.getElementById("btnNext");
 		button.disabled = true;
-		alert("This requires IE 6.0 or greater for Windows.");
+        alert(SUGAR.language.get('MailMerge', 'LBL_BROWSER_REQUIREMENT'));
 	}
 	else if(document.layers || (!document.all && document.getElementById))
 	{
 		button = document.getElementById("btnNext");
 		button.disabled = true;
-		alert("This requires IE 6.0 or greater for Windows.");
+        alert(SUGAR.language.get('MailMerge', 'LBL_BROWSER_REQUIREMENT'));
 	}	
 }
 function clearSpan()
@@ -141,7 +141,7 @@ function validateForm()
 			}
 		}
 	}
-	alert("Please select a template.");
+	alert(SUGAR.language.get('MailMerge', 'LBL_FORM_SELECT_TEMPLATE'));
 	return false;	
 }
 

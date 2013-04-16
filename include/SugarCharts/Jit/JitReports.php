@@ -184,7 +184,7 @@ class JitReports extends Jit {
 
             $data .= $this->tab('<subgroups>', 3);
 			
-			if (count($this->group_by) > 1){
+			if ((isset($dataset[$total]) && $total != $dataset[$total]['numerical_value']) || !array_key_exists($key, $dataset)){
 					$data .= $this->processReportData($dataset, 4, $first);
 			}
 			else if(count($this->data_set) == 1 && $first){

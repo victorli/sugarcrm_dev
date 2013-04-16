@@ -160,20 +160,16 @@ class Employee extends Person {
 
 	function get_list_view_data(){
 
-        global $current_user;
-		$this->_create_proper_name_field(); // create proper NAME (by combining first + last)
-		$user_fields = $this->get_list_view_array();
+        $user_fields = parent::get_list_view_data();
+
 		// Copy over the reports_to_name
 		if ( isset($GLOBALS['app_list_strings']['messenger_type_dom'][$this->messenger_type]) )
             $user_fields['MESSENGER_TYPE'] = $GLOBALS['app_list_strings']['messenger_type_dom'][$this->messenger_type];
 		if ( isset($GLOBALS['app_list_strings']['employee_status_dom'][$this->employee_status]) )
             $user_fields['EMPLOYEE_STATUS'] = $GLOBALS['app_list_strings']['employee_status_dom'][$this->employee_status];
 		$user_fields['REPORTS_TO_NAME'] = $this->reports_to_name;
-		$user_fields['NAME'] = empty($this->name) ? '' : $this->name;
-		$user_fields['EMAIL1'] = $this->emailAddress->getPrimaryAddress($this,$this->id,'Users');
-		$this->email1 = $user_fields['EMAIL1'];
-        $user_fields['EMAIL1_LINK'] = $current_user->getEmailLink('email1', $this, '', '', 'ListView');
-		return $user_fields;
+
+        return $user_fields;
 	}
 
 	function list_view_parse_additional_sections(&$list_form, $xTemplateSection){

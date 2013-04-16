@@ -89,17 +89,18 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 
 		// MRF - Bug #18578 - punctuation was being passed as HTML entities, i.e. &amp;
 		$bind_password = html_entity_decode($password,ENT_QUOTES);
-		$GLOBALS['log']->info("ldapauth: Binding user " . $bind_user);
 
+		$GLOBALS['log']->info("ldapauth: Binding user " . $bind_user);
 		$bind = ldap_bind($ldapconn, $bind_user, $bind_password);
-		 $error = ldap_errno($ldapconn);
-        if($this->loginError($error)){
-        		$GLOBALS['log']->fatal('[LDAP] ATTEMPTING BIND USING BASE DN PARAMS');
-				$bind = ldap_bind($ldapconn, $GLOBALS['ldap_config']->settings['ldap_bind_attr'] . "=" . $bind_user . "," . $GLOBALS['ldap_config']->settings['ldap_base_dn'], $bind_password);
-				$error = ldap_errno($ldapconn);
-				if($this->loginError($error)){
-        			return '';
-				}
+		$error = ldap_errno($ldapconn);
+		if($this->loginError($error)){
+			$full_user = $GLOBALS['ldap_config']->settings['ldap_bind_attr'] . "=" . $bind_user . "," . $GLOBALS['ldap_config']->settings['ldap_base_dn'];
+			$GLOBALS['log']->info("ldapauth: Binding user " . $full_user);
+			$bind = ldap_bind($ldapconn, $full_user, $bind_password);
+			$error = ldap_errno($ldapconn);
+			if($this->loginError($error)){
+				return '';
+			}
 		}
 
 		$GLOBALS['log']->info("ldapauth: Bind attempt complete.");
@@ -117,7 +118,7 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 				}
 			}
 
-			$GLOBALS['log']->debug("ldapauth: Fetching user info from Directory.");
+			$GLOBALS['log']->debug("ldapauth: Fetching user info from Directory using base dn: " . $base_dn . ", name_filter: " . $name_filter . ", attrs: " . var_export($attrs));
 			$result = @ldap_search($ldapconn, $base_dn, $name_filter, $attrs);
 			$error = ldap_errno($ldapconn);
 			 if($this->loginError($error)){
@@ -157,8 +158,21 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 				}else{
 					$user_uid = $info[0][$group_user_attr];
 				}
-				//user is not a member of the group if the count is zero get the logs and return no id so it fails login
-				if(!isset($user_uid[0]) || ldap_count_entries($ldapconn, ldap_search($ldapconn,$GLOBALS['ldap_config']->settings['ldap_group_name'] . ",". $GLOBALS['ldap_config']->settings['ldap_group_dn']  ,"($group_attr=" . $user_uid[0] . ")")) ==  0){
+
+				// build search query and determine if we are searching for a bare id or the full dn path
+				$group_name = $GLOBALS['ldap_config']->settings['ldap_group_name'] . "," . $GLOBALS['ldap_config']->settings['ldap_group_dn'];
+				$GLOBALS['log']->debug("ldapauth: Searching for group name: " . $group_name);
+				$user_search = "";
+				if(!empty($GLOBALS['ldap_config']->settings['ldap_group_attr_req_dn']) && $GLOBALS['ldap_config']->settings['ldap_group_attr_req_dn'] == 1) {
+					$GLOBALS['log']->debug("ldapauth: Checking for group membership using full user dn");
+					$user_search = "($group_attr=" . $group_user_attr . "=" . $user_uid[0] . "," . $base_dn . ")";
+				} else {
+					$user_search = "($group_attr=" . $user_uid[0] . ")";
+				}
+				$GLOBALS['log']->debug("ldapauth: Searching for user: " . $user_search);
+
+				//user is not a member of the group if the count is zero get the logs and return no id so it fails login        
+				if(!isset($user_uid[0]) || ldap_count_entries($ldapconn, ldap_search($ldapconn,$group_name, $user_search)) ==  0){
 					$GLOBALS['log']->fatal("ldapauth: User ($name) is not a member of the LDAP group");
 					$user_id = var_export($user_uid, true);
 					$GLOBALS['log']->debug("ldapauth: Group DN:{$GLOBALS['ldap_config']->settings['ldap_group_dn']} Group Name: " . $GLOBALS['ldap_config']->settings['ldap_group_name']  . " Group Attribute: $group_attr  User Attribute: $group_user_attr :(" . $user_uid[0] . ")");

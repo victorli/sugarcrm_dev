@@ -316,22 +316,11 @@ class Lead extends Person {
 	}
 
 	function get_list_view_data(){
-		/*global $app_list_strings;
-		global $current_user;
 
-		$temp_array = $this->get_list_view_array();
-		$temp_array['STATUS'] = (empty($temp_array['STATUS'])) ? '' : $temp_array['STATUS'];
-		$temp_array['ENCODED_NAME']=$this->name;
-		$temp_array['NAME']=$this->name;
-		$temp_array['EMAIL1'] = $this->emailAddress->getPrimaryAddress($this);
-		$this->email1 = $temp_array['EMAIL1'];
-		$temp_array['EMAIL1_LINK'] = $current_user->getEmailLink('email1', $this, '', '', 'ListView');
-    	$temp_array['ACC_NAME_FROM_ACCOUNTS'] = empty($temp_array['ACC_NAME_FROM_ACCOUNTS']) ? ($temp_array['ACCOUNT_NAME']) : ($temp_array['ACC_NAME_FROM_ACCOUNTS']);
-		return $temp_array;
-		*/
-		$this->_create_proper_name_field();
 		$temp_array = parent::get_list_view_data();
+
 		$temp_array['ACC_NAME_FROM_ACCOUNTS'] = empty($temp_array['ACC_NAME_FROM_ACCOUNTS']) ? ($temp_array['ACCOUNT_NAME']) : ($temp_array['ACC_NAME_FROM_ACCOUNTS']);
+
 		return $temp_array;		
 	}
 	

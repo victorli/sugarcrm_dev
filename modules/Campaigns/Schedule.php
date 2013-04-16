@@ -87,7 +87,10 @@ if (!empty($campaign_id)) {
 
 if ($campaign_id && isset($campaign) && $campaign->status == 'Inactive') {
 	$ss = new Sugar_Smarty();
-	$ss->assign('campaignName', $campaign->name);
+
+    $data = array($campaign->name);
+    $ss->assign('campaignInactive', string_format(translate('LBL_CAMPAIGN_INACTIVE_SCHEDULE', 'Campaigns'), $data));
+
 	$ss->display('modules/Campaigns/tpls/campaign-inactive.tpl');
 } else {
 	$focus = new EmailMarketing();
@@ -130,7 +133,7 @@ if ($campaign_id && isset($campaign) && $campaign->status == 'Inactive') {
 	$ListView->xTemplateAssign("RETURN_ACTION",$_POST['return_action']);
 	$ListView->xTemplateAssign("RETURN_ID",$_POST['record']);
 	$ListView->setHeaderTitle($current_module_strings['LBL_LIST_FORM_TITLE']);
-	$ListView->setQuery($where, "", "name", "EMAILMARKETING");
+	$ListView->setQuery($where, "", "date_modified desc", "EMAILMARKETING", false);
 
 	if ($test) {
 			$ListView->xTemplateAssign("MODE",$_POST['mode']);

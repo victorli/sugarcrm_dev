@@ -391,6 +391,8 @@ $mod_strings = array (
 	'LBL_LDAP_GROUP_USER_ATTR_DESC'=>'The unique identifier of the person that will be used to check if they are a member of the group Example: <em>uid</em>',
 	'LBL_LDAP_GROUP_ATTR_DESC'=>'The attribute of the Group that will be used to filter against the User Attribute Example: <em>memberUid</em>',
 	'LBL_LDAP_GROUP_ATTR'=>'Group Attribute:',
+	'LBL_LDAP_GROUP_ATTR_REQ_DN' => 'With User DN:',
+	'LBL_LDAP_GROUP_ATTR_REQ_DN_DESC' => 'Include the User DN with the User Attribute when checking group membership',
 	'LBL_LDAP_USER_FILTER_DESC'=>'Any additional filter params to apply when authenticating users e.g.\nis_sugar_user=1 or (is_sugar_user=1)(is_sales=1)',
     'LBL_LDAP_LOGIN_ATTRIBUTE'=>'Login Attribute:',
     'LBL_LDAP_BIND_ATTRIBUTE'=>'Bind Attribute:',

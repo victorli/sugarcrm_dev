@@ -82,7 +82,7 @@ class Calendar {
 	 * @param array $time_arr 
 	 */	
 	function __construct($view = "day", $time_arr = array()){
-		global $current_user, $timedate;	
+		global $current_user, $timedate, $current_language;
 		
 		$this->view = $view;		
 
@@ -104,8 +104,8 @@ class Calendar {
 
 		if (!empty($_REQUEST['year'])){
 			if ($_REQUEST['year'] > 2037 || $_REQUEST['year'] < 1970){
-				print("Sorry, calendar cannot handle the year you requested");
-				print("<br>Year must be between 1970 and 2037");
+                $calendarStrings = return_module_language($current_language, 'Calendar');
+                print($calendarStrings['ERR_YEAR_BETWEEN']);
 				exit;
 			}
 			$date_arr['year'] = $_REQUEST['year'];
@@ -358,7 +358,8 @@ class Calendar {
 		}else if($this->view == 'year'){
             		$day = $this->date_time->get($sign."1 year")->get_day_begin();
 		}else{
-			return "get_neighbor_date_str: notdefined for this view";
+            $calendarStrings = return_module_language($GLOBALS['current_language'], 'Calendar');
+            return $calendarStrings['ERR_NEIGHBOR_DATE'];
 		}
 		return $day->get_date_str();
 	}

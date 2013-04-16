@@ -220,12 +220,12 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function testRetrieveView()
     {
-        // TODO: Write this test
+        $this->markTestIncomplete('Write this test');
     }
 
     public function testCreateTable()
     {
-        // TODO: Write this test
+        $this->markTestIncomplete('Write this test');
     }
 
     public function testCreateTableParams()
@@ -254,7 +254,7 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function testRepairTable()
     {
-        // TODO: Write this test
+        $this->markTestIncomplete('Write this test');
     }
 
     public function testRepairTableNoChanges()
@@ -726,431 +726,467 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
         $this->dropTableName($tablename2);
     }
 
-//    public function testCompareIndexInTables()
-//    {
-//        $tablename1 = 'test9_' . mt_rand();
-//        $this->_db->createTableParams($tablename1,
-//            array(
-//                'foo' => array (
-//                    'name' => 'foo',
-//                    'type' => 'varchar',
-//                    'len' => '255',
-//                    ),
-//                ),
-//            array(
-//                array(
-//                    'name'   => 'idx_'. $tablename1,
-//                    'type'   => 'index',
-//                    'fields' => array('foo'),
-//                    )
-//                )
-//            );
-//        $tablename2 = 'test10_' . mt_rand();
-//        $this->_db->createTableParams($tablename2,
-//            array(
-//                'foo' => array (
-//                    'name' => 'foo',
-//                    'type' => 'varchar',
-//                    'len' => '255',
-//                    ),
-//                ),
-//            array(
-//                array(
-//                    'name'   => 'idx_'. $tablename2,
-//                    'type'   => 'index',
-//                    'fields' => array('foo'),
-//                    )
-//                )
-//            );
-//
-//        $res = $this->_db->compareIndexInTables(
-//            'idx_foo', $tablename1, $tablename2);
-//
-//        $this->assertEquals($res['msg'],'match');
-//
-//        $this->_db->dropTableName($tablename1);
-//        $this->_db->dropTableName($tablename2);
-//    }
-//
-//    public function testCompareIndexInTablesNotInTable1()
-//    {
-//        $tablename1 = 'test11_' . mt_rand();
-//        $this->_db->createTableParams($tablename1,
-//            array(
-//                'foo' => array (
-//                    'name' => 'foo',
-//                    'type' => 'varchar',
-//                    'len' => '255',
-//                    ),
-//                ),
-//            array(
-//                array(
-//                    'name'   => 'idx_'. $tablename1,
-//                    'type'   => 'index',
-//                    'fields' => array('foo'),
-//                    )
-//                )
-//            );
-//        $tablename2 = 'test12_' . mt_rand();
-//        $this->_db->createTableParams($tablename2,
-//            array(
-//                'foo' => array (
-//                    'name' => 'foo',
-//                    'type' => 'varchar',
-//                    'len' => '255',
-//                    ),
-//                ),
-//            array(
-//                array(
-//                    'name'   => 'idx_'. $tablename2,
-//                    'type'   => 'index',
-//                    'fields' => array('foo'),
-//                    )
-//                )
-//            );
-//
-//        $res = $this->_db->compareIndexInTables(
-//            'idx_foo', $tablename1, $tablename2);
-//
-//        $this->assertEquals($res['msg'],'not_exists_table1');
-//
-//        $this->_db->dropTableName($tablename1);
-//        $this->_db->dropTableName($tablename2);
-//    }
-//
-//    public function testCompareIndexInTablesNotInTable2()
-//    {
-//        $tablename1 = 'test13_' . mt_rand();
-//        $this->_db->createTableParams($tablename1,
-//            array(
-//                'foo' => array (
-//                    'name' => 'foo',
-//                    'type' => 'varchar',
-//                    'len' => '255',
-//                    ),
-//                ),
-//            array(
-//                array(
-//                    'name'   => 'idx_'. $tablename1,
-//                    'type'   => 'index',
-//                    'fields' => array('foo'),
-//                    )
-//                )
-//            );
-//        $tablename2 = 'test14_' . mt_rand();
-//        $this->_db->createTableParams($tablename2,
-//            array(
-//                'foo' => array (
-//                    'name' => 'foo',
-//                    'type' => 'varchar',
-//                    'len' => '255',
-//                    ),
-//                ),
-//            array(
-//                array(
-//                    'name'   => 'idx_'. $tablename2,
-//                    'type'   => 'index',
-//                    'fields' => array('foo'),
-//                    )
-//                )
-//            );
-//
-//        $res = $this->_db->compareIndexInTables(
-//            'idx_foo', $tablename1, $tablename2);
-//
-//        $this->assertEquals($res['msg'],'not_exists_table2');
-//
-//        $this->_db->dropTableName($tablename1);
-//        $this->_db->dropTableName($tablename2);
-//    }
-//
-//    public function testCompareIndexInTablesIndexesDoNotMatch()
-//    {
-//        $tablename1 = 'test15_' . mt_rand();
-//        $this->_db->createTableParams($tablename1,
-//            array(
-//                'foo' => array (
-//                    'name' => 'foo',
-//                    'type' => 'varchar',
-//                    'len' => '255',
-//                    ),
-//                ),
-//            array(
-//                array(
-//                    'name'   => 'idx_foo',
-//                    'type'   => 'index',
-//                    'fields' => array('foo'),
-//                    )
-//                )
-//            );
-//        $tablename2 = 'test16_' . mt_rand();
-//        $this->_db->createTableParams($tablename2,
-//            array(
-//                'foo' => array (
-//                    'name' => 'foobar',
-//                    'type' => 'varchar',
-//                    'len' => '255',
-//                    ),
-//                ),
-//            array(
-//                array(
-//                    'name'   => 'idx_foo',
-//                    'type'   => 'index',
-//                    'fields' => array('foobar'),
-//                    )
-//                )
-//            );
-//
-//        $res = $this->_db->compareIndexInTables(
-//            'idx_foo', $tablename1, $tablename2);
-//
-//        $this->assertEquals($res['msg'],'no_match');
-//
-//        $this->_db->dropTableName($tablename1);
-//        $this->_db->dropTableName($tablename2);
-//    }
-
-    public function testCreateIndex()
-    {
-        // TODO: Write this test
-    }
-
     public function testAddIndexes()
     {
-        //TODO Fix test with normal index inspection
-        $this->markTestIncomplete(
-              'TODO Reimplement test not using compareIndexInTables.'
-            );
-        $tablename1 = 'test17_' . mt_rand();
-        $this->createTableParams($tablename1,
-            array(
-                'foo' => array (
-                    'name' => 'foo',
-                    'type' => 'varchar',
-                    'len' => '255',
-                    ),
-                ),
-            array(
-                array(
-                    'name'   => 'idx_foo',
-                    'type'   => 'index',
-                    'fields' => array('foo'),
-                    )
-                )
-            );
-        $tablename2 = 'test18_' . mt_rand();
-        $this->createTableParams($tablename2,
-            array(
-                'foo' => array (
-                    'name' => 'foo',
-                    'type' => 'varchar',
-                    'len' => '255',
-                    ),
-                ),
-            array()
-            );
+        $tableName = 'test17_' . mt_rand();
+        $fields = array(
+            'foo' => array (
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '255',
+            )
+        );
+        $indexes = array(
+            'idx_foo' => array(
+                'name'   => 'idx_foo',
+                'type'   => 'index',
+                'fields' => array('foo'),
+            )
+        );
+        $this->createTableParams($tableName, $fields, $indexes);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->dropTableName($tableName);
+        $this->assertEquals($indexes, $indexesDB, 'Indexes are incorrect');
+
+        $tableName = 'test18_' . mt_rand();
+        $fields = array(
+            'foo' => array (
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '255',
+            )
+        );
+        $indexes = array();
+        $this->createTableParams($tableName, $fields, $indexes);
+        $indexes = array(
+            'idx_foo' => array(
+                'name'   => 'idx_foo',
+                'type'   => 'index',
+                'fields' => array('foo'),
+            )
+        );
 
         // first test not executing the statement
-        $this->_db->addIndexes(
-            $tablename2,
-            array(array(
-                'name'   => 'idx_foo',
-                'type'   => 'index',
-                'fields' => array('foo'),
-                )),
-            false);
-
-        $res = $this->_db->compareIndexInTables(
-            'idx_foo', $tablename1, $tablename2);
-
-        $this->assertEquals($res['msg'],'not_exists_table2');
+        $this->_db->addIndexes($tableName, $indexes, false);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEmpty($indexesDB, 'Indexes were created');
 
         // now, execute the statement
-        $this->_db->addIndexes(
-            $tablename2,
-            array(array(
-                'name'   => 'idx_foo',
-                'type'   => 'index',
-                'fields' => array('foo'),
-                ))
-            );
-        $res = $this->_db->compareIndexInTables(
-            'idx_foo', $tablename1, $tablename2);
-
-        $this->assertEquals($res['msg'],'match');
-
-        $this->dropTableName($tablename1);
-        $this->dropTableName($tablename2);
+        $this->_db->addIndexes($tableName, $indexes);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexes, $indexesDB, 'Indexes are incorrect');
     }
 
     public function testDropIndexes()
     {
-        //TODO Fix test with normal index inspection
-        $this->markTestIncomplete(
-              'TODO Reimplement test not using compareIndexInTables.'
-            );
-
-        $tablename1 = 'test19_' . mt_rand();
-        $this->createTableParams($tablename1,
-            array(
-                'foo' => array (
-                    'name' => 'foo',
-                    'type' => 'varchar',
-                    'len' => '255',
-                    ),
-                ),
-            array(
-                array(
-                    'name'   => 'idx_foo',
-                    'type'   => 'index',
-                    'fields' => array('foo'),
-                    )
-                )
-            );
-        $tablename2 = 'test20_' . mt_rand();
-        $this->createTableParams($tablename2,
-            array(
-                'foo' => array (
-                    'name' => 'foo',
-                    'type' => 'varchar',
-                    'len' => '255',
-                    ),
-                ),
-            array(
-                array(
-                    'name'   => 'idx_foo',
-                    'type'   => 'index',
-                    'fields' => array('foo'),
-                    )
-                )
-            );
-
-        $res = $this->_db->compareIndexInTables(
-            'idx_foo', $tablename1, $tablename2);
-
-        $this->assertEquals('match', $res['msg']);
+        $tableName = 'test19_' . mt_rand();
+        $fields = array(
+            'foo' => array (
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '255',
+            )
+        );
+        $indexes = array(
+            'idx_foo' => array(
+                'name'   => 'idx_foo',
+                'type'   => 'index',
+                'fields' => array('foo'),
+            )
+        );
+        $this->createTableParams($tableName, $fields, $indexes);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexes, $indexesDB, 'Indexes are incorrect');
 
         // first test not executing the statement
-        $this->_db->dropIndexes(
-            $tablename2,
-            array(array(
-                'name'   => 'idx_foo',
-                'type'   => 'index',
-                'fields' => array('foo'),
-                )),
-            false);
-
-        $res = $this->_db->compareIndexInTables(
-            'idx_foo', $tablename1, $tablename2);
-
-        $this->assertEquals('match', $res['msg']);
+        $this->_db->dropIndexes($tableName, $indexes, false);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexes, $indexesDB, 'Indexes are missed');
 
         // now, execute the statement
-        $sql = $this->_db->dropIndexes(
-            $tablename2,
-            array(array(
-                'name'   => 'idx_foo',
-                'type'   => 'index',
-                'fields' => array('foo'),
-                )),
-            true
-            );
-
-        $res = $this->_db->compareIndexInTables(
-            'idx_foo', $tablename1, $tablename2);
-
-        $this->assertEquals('not_exists_table2', $res['msg']);
-
-        $this->dropTableName($tablename1);
-        $this->dropTableName($tablename2);
+        $this->_db->dropIndexes($tableName, $indexes);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEmpty($indexesDB, 'Indexes were not dropped');
     }
 
     public function testModifyIndexes()
     {
-        //TODO Fix test with normal index inspection
-        $this->markTestIncomplete(
-              'TODO Reimplement test not using compareIndexInTables.'
-            );
-        $tablename1 = 'test21_' . mt_rand();
-        $this->createTableParams($tablename1,
-            array(
-                'foo' => array (
-                    'name' => 'foo',
-                    'type' => 'varchar',
-                    'len' => '255',
-                    ),
-                'foobar' => array (
-                    'name' => 'foobar',
-                    'type' => 'varchar',
-                    'len' => '255',
-                    ),
-                ),
-            array(
-                array(
-                    'name'   => 'idx_'. $tablename1,
-                    'type'   => 'index',
-                    'fields' => array('foo'),
-                    )
-                )
-            );
-        $tablename2 = 'test22_' . mt_rand();
-        $this->createTableParams($tablename2,
-            array(
-                'foo' => array (
-                    'name' => 'foo',
-                    'type' => 'varchar',
-                    'len' => '255',
-                    ),
-                'foobar' => array (
-                    'name' => 'foobar',
-                    'type' => 'varchar',
-                    'len' => '255',
-                    ),
-                ),
-            array(
-                array(
-                    'name'   => 'idx_'. $tablename2,
-                    'type'   => 'index',
-                    'fields' => array('foobar'),
-                    )
-                )
-            );
-
-        $res = $this->_db->compareIndexInTables(
-            'idx_foo', $tablename1, $tablename2);
-
-        $this->assertEquals($res['msg'],'no_match');
-
-        $this->_db->modifyIndexes(
-            $tablename2,
-            array(array(
+        $tableName = 'test21_' . mt_rand();
+        $fields = array(
+            'foo' => array (
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+            'foobar' => array (
+                'name' => 'foobar',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+        );
+        $indexes = array(
+            'idx_foo' => array(
                 'name'   => 'idx_foo',
                 'type'   => 'index',
                 'fields' => array('foo'),
-                )),
-            false);
+            )
+        );
+        $this->createTableParams($tableName, $fields, $indexes);
 
-        $res = $this->_db->compareIndexInTables(
-            'idx_foo', $tablename1, $tablename2);
+        $indexesNew = $indexes;
+        $indexesNew['idx_foo']['fields'] = array('foobar');
+        $this->_db->modifyIndexes($tableName, $indexesNew, false);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexes, $indexesDB, 'Indexes are incorrect');
 
-        $this->assertEquals($res['msg'],'no_match');
+        $this->_db->modifyIndexes($tableName, $indexesNew);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexesNew, $indexesDB, 'Indexes are incorrect');
+    }
 
-        $this->_db->modifyIndexes(
-            $tablename2,
-            array(array(
+    public function testAddIndexByMultiQuery()
+    {
+        $tableName = 'test22_' . mt_rand();
+        $this->created[$tableName] = true;
+        $fields = array(
+            'foo' => array (
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '255',
+            )
+        );
+        $indexes = array();
+
+        $queries = array();
+        $queries[] = $this->_db->createTableSQLParams($tableName, $fields, $indexes);
+
+        $indexes = array(
+            'idx_foo' => array(
                 'name'   => 'idx_foo',
                 'type'   => 'index',
                 'fields' => array('foo'),
-                ))
-            );
+            )
+        );
+        $tQueries = $this->_db->addIndexes($tableName, $indexes, false);
+        $queries = array_merge($queries, explode(";\n", rtrim($tQueries, ";\n")));
+        $this->_db->query($queries, true);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexes, $indexesDB, 'Indexes are incorrect');
+    }
 
-        $res = $this->_db->compareIndexInTables(
-            'idx_foo', $tablename1, $tablename2);
+    public function testDropIndexByMultiQuery()
+    {
+        $tableName = 'test23_' . mt_rand();
+        $this->created[$tableName] = true;
+        $fields = array(
+            'foo' => array (
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '255',
+            )
+        );
+        $indexes = array();
 
-        $this->assertEquals($res['msg'],'match');
+        $queries = array();
+        $queries[] = $this->_db->createTableSQLParams($tableName, $fields, $indexes);
 
-        $this->dropTableName($tablename1);
-        $this->dropTableName($tablename2);
+        $indexes = array(
+            'idx_foo' => array(
+                'name'   => 'idx_foo',
+                'type'   => 'index',
+                'fields' => array('foo'),
+            )
+        );
+        $tQueries = $this->_db->addIndexes($tableName, $indexes, false);
+        $queries = array_merge($queries, explode(";\n", rtrim($tQueries, ";\n")));
+        $tQueries = $this->_db->dropIndexes($tableName, $indexes, false);
+        $queries = array_merge($queries, explode(";\n", rtrim($tQueries, ";\n")));
+        $this->_db->query($queries, true);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEmpty($indexesDB, 'Indexes were not dropped');
+    }
+
+    public function testModifyIndexByMultiQuery()
+    {
+        $tableName = 'test24_' . mt_rand();
+        $this->created[$tableName] = true;
+        $fields = array(
+            'foo' => array (
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+            'foobar' => array (
+                'name' => 'foobar',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+        );
+        $indexes = array();
+
+        $queries = array();
+        $queries[] = $this->_db->createTableSQLParams($tableName, $fields, $indexes);
+
+        $indexes = array(
+            'idx_foo' => array(
+                'name'   => 'idx_foo',
+                'type'   => 'index',
+                'fields' => array('foo'),
+            )
+        );
+        $tQueries = $this->_db->addIndexes($tableName, $indexes, false);
+        $queries = array_merge($queries, explode(";\n", rtrim($tQueries, ";\n")));
+
+        $indexesNew = $indexes;
+        $indexesNew['idx_foo']['fields'] = array('foobar');
+        $tQueries = $this->_db->modifyIndexes($tableName, $indexesNew, false);
+        $queries = array_merge($queries, explode(";\n", rtrim($tQueries, ";\n")));
+        $this->_db->query($queries);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexesNew, $indexesDB, 'Indexes are incorrect');
+    }
+
+    public function testAddMultiIndexes()
+    {
+
+        $tableName = 'test17_' . mt_rand();
+        $fields = array(
+            'foo' => array(
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+            'bar' => array(
+                'name' => 'bar',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+        );
+        $indexes = array();
+        $this->createTableParams($tableName, $fields, $indexes);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEmpty($indexesDB, 'Indexes are incorrect');
+
+        $indexes = array(
+            'idx_foo' => array(
+                'name'   => 'idx_foo',
+                'type'   => 'index',
+                'fields' => array('foo'),
+            ),
+            'idx_bar' => array(
+                'name'   => 'idx_bar',
+                'type'   => 'index',
+                'fields' => array('bar'),
+            ),
+        );
+        $this->_db->addIndexes($tableName, $indexes, false);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEmpty($indexesDB);
+
+        $this->_db->addIndexes($tableName, $indexes);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexes, $indexesDB, 'Indexes are incorrect');
+    }
+
+    public function testDropMultiIndexes()
+    {
+        $tableName = 'test17_' . mt_rand();
+        $fields = array(
+            'foo' => array(
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+            'bar' => array(
+                'name' => 'bar',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+        );
+        $indexes = array(
+            'idx_foo' => array(
+                'name'   => 'idx_foo',
+                'type'   => 'index',
+                'fields' => array('foo'),
+            ),
+            'idx_bar' => array(
+                'name'   => 'idx_bar',
+                'type'   => 'index',
+                'fields' => array('bar'),
+            ),
+        );
+        $this->createTableParams($tableName, $fields, $indexes);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexes, $indexesDB, 'Indexes are incorrect');
+
+        $this->_db->dropIndexes($tableName, $indexes, false);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexes, $indexesDB);
+
+        $this->_db->dropIndexes($tableName, $indexes);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEmpty($indexesDB, 'Indexes are incorrect');
+    }
+
+    public function testModifyMultiIndexes()
+    {
+        $tableName = 'test17_' . mt_rand();
+        $fields = array(
+            'foo' => array(
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+            'bar' => array(
+                'name' => 'bar',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+        );
+        $indexes = array(
+            'idx_foo' => array(
+                'name'   => 'idx_foo',
+                'type'   => 'index',
+                'fields' => array('foo'),
+            ),
+            'idx_bar' => array(
+                'name'   => 'idx_bar',
+                'type'   => 'index',
+                'fields' => array('bar'),
+            ),
+        );
+        $this->createTableParams($tableName, $fields, $indexes);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexes, $indexesDB, 'Indexes are incorrect');
+
+        $indexesNew = $indexes;
+        $indexesNew['idx_foo']['fields'] = array('bar');
+        $indexesNew['idx_bar']['fields'] = array('foo');
+        $this->_db->modifyIndexes($tableName, $indexesNew, false);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexes, $indexesDB, 'Indexes are incorrect');
+
+        $this->_db->modifyIndexes($tableName, $indexesNew);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexesNew, $indexesDB, 'Indexes are incorrect');
+    }
+
+    public function testAddMultiIndexesByMultiQuery()
+    {
+        $tableName = 'test17_' . mt_rand();
+        $fields = array(
+            'foo' => array(
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+            'bar' => array(
+                'name' => 'bar',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+        );
+        $indexes = array();
+        $this->createTableParams($tableName, $fields, $indexes);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEmpty($indexesDB, 'Indexes are incorrect');
+
+        $indexes = array(
+            'idx_foo' => array(
+                'name'   => 'idx_foo',
+                'type'   => 'index',
+                'fields' => array('foo'),
+            ),
+            'idx_bar' => array(
+                'name'   => 'idx_bar',
+                'type'   => 'index',
+                'fields' => array('bar'),
+            ),
+        );
+        $queries = $this->_db->addIndexes($tableName, $indexes, false);
+        $queries = explode(";\n", rtrim(trim($queries), ';'));
+        $this->_db->query($queries);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexes, $indexesDB, 'Indexes are incorrect');
+    }
+
+    public function testDropMultiIndexesByMultiQuery()
+    {
+        $tableName = 'test17_' . mt_rand();
+        $fields = array(
+            'foo' => array(
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+            'bar' => array(
+                'name' => 'bar',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+        );
+        $indexes = array(
+            'idx_foo' => array(
+                'name'   => 'idx_foo',
+                'type'   => 'index',
+                'fields' => array('foo'),
+            ),
+            'idx_bar' => array(
+                'name'   => 'idx_bar',
+                'type'   => 'index',
+                'fields' => array('bar'),
+            ),
+        );
+        $this->createTableParams($tableName, $fields, $indexes);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexes, $indexesDB, 'Indexes are incorrect');
+
+        $queries = $this->_db->dropIndexes($tableName, $indexes, false);
+        $queries = explode(";\n", rtrim(trim($queries), ';'));
+        $this->_db->query($queries);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEmpty($indexesDB, 'Indexes are incorrect');
+    }
+
+    public function testModifyMultiIndexesByMultiQuery()
+    {
+        $tableName = 'test17_' . mt_rand();
+        $fields = array(
+            'foo' => array(
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+            'bar' => array(
+                'name' => 'bar',
+                'type' => 'varchar',
+                'len' => '255',
+            ),
+        );
+        $indexes = array(
+            'idx_foo' => array(
+                'name'   => 'idx_foo',
+                'type'   => 'index',
+                'fields' => array('foo'),
+            ),
+            'idx_bar' => array(
+                'name'   => 'idx_bar',
+                'type'   => 'index',
+                'fields' => array('bar'),
+            ),
+        );
+        $this->createTableParams($tableName, $fields, $indexes);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexes, $indexesDB, 'Indexes are incorrect');
+
+        $indexesNew = $indexes;
+        $indexesNew['idx_foo']['fields'] = array('bar');
+        $indexesNew['idx_bar']['fields'] = array('foo');
+        $queries = $this->_db->modifyIndexes($tableName, $indexesNew, false);
+        $queries = explode(";\n", rtrim(trim($queries), ';'));
+        $this->_db->query($queries);
+        $indexesDB = $this->_db->get_indices($tableName);
+        $this->assertEquals($indexesNew, $indexesDB, 'Indexes are incorrect');
     }
 
     public function testAddColumn()
@@ -1292,7 +1328,7 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function testDropTable()
     {
-        // TODO: Write this test
+        $this->markTestIncomplete('Write this test');
     }
 
     public function testDropTableName()
@@ -1317,7 +1353,7 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function testDeleteColumn()
     {
-        // TODO: Write this test
+        $this->markTestIncomplete('Write this test');
     }
 
     public function testDisconnectAll()
@@ -1418,7 +1454,7 @@ class DBManagerTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function testConnect()
     {
-        // TODO: Write this test
+        $this->markTestIncomplete('Write this test');
     }
 
     public function testDisconnect()

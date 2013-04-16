@@ -569,6 +569,88 @@ class MssqlManagerTest extends Sugar_PHPUnit_Framework_TestCase
                 "(ORDER BY isnull(accounts.name,'') ASC)"
             ),
 
+            array(
+                "SELECT DISTINCT meetings.id,
+                    LTRIM(RTRIM(ISNULL(jt0.first_name,'')+' '+ISNULL(jt0.last_name,''))) assigned_user_name,
+                    'Users' assigned_user_name_mod,
+                    meetings.date_entered
+                FROM meetings
+                LEFT JOIN
+                    users jt0
+                ON
+                    meetings.assigned_user_id=jt0.id
+                    AND jt0.deleted=0
+                    AND jt0.deleted=0
+                LEFT JOIN
+                    sugarfavorites sfav
+                ON
+                    sfav.module ='Meetings'
+                    AND sfav.record_id=meetings.id
+                    AND sfav.created_by='1'
+                    AND sfav.deleted=0
+                where (
+                        (meetings.status IN ('Planned'))
+                        AND (meetings.assigned_user_id IN ('1','seed_chris_id','seed_jim_id'))
+                    ) AND meetings.deleted=0
+                ORDER BY
+                    meetings.date_entered DESC
+                ",
+                1,
+                1,
+                "group by meetings.id, LTRIM(RTRIM(ISNULL(jt0.first_name,'')+' '+ISNULL(jt0.last_name,''))), meetings.date_entered"
+            ),
+
+            array(
+                "SELECT DISTINCT m1.id,
+                    m1.name,
+                    m1.date_start,
+                    m1.date_end,
+                    m1.assigned_user_id
+                FROM
+                    meetings_users rt
+                inner join
+                    meetings m1
+                on
+                    rt.meeting_id = m1.id
+                inner join
+                    users m2
+                on
+                    rt.user_id = m2.id
+                    AND m2.id = '1'
+                WHERE
+                    (m1.deleted = 0)
+                    AND m2.id = '1'
+                ",
+                1,
+                1,
+                "(ORDER BY m1.id, m1.name, m1.date_start, m1.date_end, m1.assigned_user_id)"
+            ),
+
+            array(
+                "SELECT DISTINCT rt.id,
+                    m1.name,
+                    m1.date_start,
+                    m1.date_end,
+                    m1.assigned_user_id
+                FROM
+                    meetings_users rt
+                inner join
+                    meetings m1
+                on
+                    rt.meeting_id = m1.id
+                inner join
+                    users m2
+                on
+                    rt.user_id = m2.id
+                    AND m2.id = '1'
+                WHERE
+                    (m1.deleted = 0)
+                    AND m2.id = '1'
+                ",
+                1,
+                1,
+                "(ORDER BY rt.id, m1.name, m1.date_start, m1.date_end, m1.assigned_user_id)"
+            ),
         );
     }
 }

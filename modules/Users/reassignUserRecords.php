@@ -255,7 +255,7 @@ else if(!isset($_GET['execute'])){
 	$tousername = $_POST['touser'];
 
 	$query = "select user_name, id from users where id in ('{$_POST['fromuser']}', '{$_POST['touser']}')";
-	$res = $GLOBALS['db']->query($query);
+	$res = $GLOBALS['db']->query($query, true);
 	while($row = $GLOBALS['db']->fetchByAssoc($res)){
 		if($row['id'] == $_POST['fromuser'])
 			$fromusername = $row['user_name'];
@@ -354,7 +354,7 @@ else if(!isset($_GET['execute'])){
 		$_SESSION['reassignRecords']['modules'][$module]['query'] = $query;
 		$_SESSION['reassignRecords']['modules'][$module]['update'] = $updatequery;
 
-		$res = $GLOBALS['db']->query($countquery);
+		$res = $GLOBALS['db']->query($countquery, true);
 		$row = $GLOBALS['db']->fetchByAssoc($res);
 
 		echo "{$row['count']} {$mod_strings_users['LBL_REASS_RECORDS_FROM']} {$app_list_strings['moduleList'][$p_module]} {$mod_strings_users['LBL_REASS_WILL_BE_UPDATED']}\n<BR>\n";

@@ -213,7 +213,7 @@ $vardefs =array(
 			'group'=>'email1',
             'merge_filter' => 'enabled',
 		    'studio' => array('editview' => true, 'editField' => true, 'searchview' => false, 'popupsearch' => false), // bug 46859 
-		    'full_text_search' => array('boost' => 3, 'index' => 'not_analyzed'), //bug 54567
+		    'full_text_search' => array('boost' => 3, 'index' => 'whitespace'), //bug 54567
 		),
 	'email2' => 
 		array(

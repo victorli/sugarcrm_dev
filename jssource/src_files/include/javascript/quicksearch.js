@@ -151,8 +151,10 @@ function enableQS(noReload){
                     	inputElement: qsFields[qsField],
                     	//YUI requires the data, even POST, to be URL encoded
                     	generateRequest : function(sQuery) {
+                            sQuery = decodeURIComponent(sQuery);
                             //preprocess values
                             var item_id = this.inputElement.form_id + '_' + this.inputElement.name;
+                            this.sqs = updateSqsFromQSFieldsArray(item_id, this.sqs);
                             if (QSCallbacksArray[item_id]) {
                                 QSCallbacksArray[item_id](this.sqs);
                             }
@@ -161,7 +163,7 @@ function enableQS(noReload){
 	                            module: 'Home',
 	                            action: 'quicksearchQuery',
 	                            data: YAHOO.lang.JSON.stringify(this.sqs),
-	                            query: sQuery
+	                            query: decodeURIComponent(sQuery)
 	                    	});
 	                    	return out;
 	                    },
@@ -357,4 +359,16 @@ if(typeof QSFieldsArray == 'undefined') {
    QSFieldsArray = new Array();
    QSProcessedFieldsArray = new Array();
    QSCallbacksArray = new Array();
+}
+// Updates this.sqs of the Autocomplete instance with actual value from QSFieldsArray
+function updateSqsFromQSFieldsArray(sqsId, sqsToUpdate)
+{
+    if (typeof(QSFieldsArray[sqsId]) != 'undefined' && sqsToUpdate != QSFieldsArray[sqsId].sqs)
+    {
+        return QSFieldsArray[sqsId].sqs;
+    }
+    else
+    {
+        return sqsToUpdate;
+    }
 }

@@ -432,6 +432,9 @@ $mod_strings = array(
 'LBL_SYNC_TO_DETAILVIEW_NOTICE' => 'This DetailView is sync\'d with the corresponding EditView.<br> Fields and field placement in this DetailView reflect the fields and field placement in the EditView.<br> Changes to the DetailView cannot be saved or deployed within this page. Make changes or un-sync the layouts in the EditView. ',
 'LBL_COPY_FROM_EDITVIEW' => 'Copy from EditView',
 'LBL_DROPDOWN_BLANK_WARNING' => 'Values are required for both the Item Name and the Display Label. To add a blank item, click Add without entering any values for the Item Name and the Display Label.',
+'LBL_DROPDOWN_KEY_EXISTS' => 'Key already exists in list',
+'LBL_NO_SAVE_ACTION' => 'Could not find the save action for this view.',
+'LBL_BADLY_FORMED_DOCUMENT' => 'Studio2:establishLocation: badly formed document',
 
 
 

@@ -184,6 +184,9 @@ class SubPanel
 
 		$ListView->is_dynamic = true;
 		$ListView->records_per_page = $sugar_config['list_max_entries_per_subpanel'] + 0;
+		if (isset($this->subpanel_defs->_instance_properties['records_per_page'])) {
+		    $ListView->records_per_page = $this->subpanel_defs->_instance_properties['records_per_page'] + 0;
+		}
 		$ListView->start_link_wrapper = "javascript:showSubPanel('".$this->subpanel_id."','";
 		$ListView->subpanel_id = $this->subpanel_id;
 		$ListView->end_link_wrapper = "',true);";

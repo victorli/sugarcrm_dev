@@ -374,7 +374,7 @@ class Document extends SugarBean {
 		if (empty($doc_id)) return null;
 
 		$db = DBManagerFactory::getInstance();
-		$query="select document_name from documents where id='$doc_id'";
+		$query="select document_name from documents where id='$doc_id'  and deleted=0";
 		$result=$db->query($query);
 		if (!empty($result)) {
 			$row=$db->fetchByAssoc($result);

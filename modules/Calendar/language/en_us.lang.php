@@ -150,8 +150,10 @@ $mod_strings = array (
 	
 	'LBL_EDIT_ALL_RECURRENCES' => 'Edit All Recurrences',
 	'LBL_REMOVE_ALL_RECURRENCES' => 'Delete All Recurrences',
-	
+
 	'LBL_DATE_END_ERROR' => 'End date is before start date',
+	'ERR_YEAR_BETWEEN' => 'Sorry, calendar cannot handle the year you requested<br>Year must be between 1970 and 2037',
+	'ERR_NEIGHBOR_DATE' => 'get_neighbor_date_str: not defined for this view',
 
 );
 

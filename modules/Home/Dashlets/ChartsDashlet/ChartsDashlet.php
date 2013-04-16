@@ -176,7 +176,7 @@ class ChartsDashlet extends Dashlet {
     	$additionalTitle = '';
         if($this->isRefreshable)
             $additionalTitle .= '<a href="#" onclick="SUGAR.mySugar.retrieveDashlet(\'' 
-                                . $this->id . '\', \'chart\'); return false;"><!--not_in_theme!--><img border="0"  title="' . translate('LBL_DASHLET_REFRESH', 'Home') . '" alt="' . translate('LBL_DASHLET_REFRESH', 'Home') . '" src="'
+                                . $this->id . '\', \'chart\'); return false;"><!--not_in_theme!--><img border="0"  align="absmiddle"  title="' . translate('LBL_DASHLET_REFRESH', 'Home') . '" alt="' . translate('LBL_DASHLET_REFRESH', 'Home') . '" src="'
 
                                 . SugarThemeRegistry::current()->getImageURL('dashlet-header-refresh.png') .'" /></a>';	
         return $additionalTitle;

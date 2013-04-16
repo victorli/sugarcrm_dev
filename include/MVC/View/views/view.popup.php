@@ -51,13 +51,17 @@ class ViewPopup extends SugarView{
 
 		if(isset($_REQUEST['metadata']) && strpos($_REQUEST['metadata'], "..") !== false)
 			die("Directory navigation attack denied.");
-		if(!empty($_REQUEST['metadata']) && $_REQUEST['metadata'] != 'undefined'
-			&& file_exists('modules/' . $this->module . '/metadata/' . $_REQUEST['metadata'] . '.php')) // if custom metadata is requested
-			require_once('modules/' . $this->module . '/metadata/' . $_REQUEST['metadata'] . '.php');
-		elseif(file_exists('custom/modules/' . $this->module . '/metadata/popupdefs.php'))
-	    	require_once('custom/modules/' . $this->module . '/metadata/popupdefs.php');
-	    elseif(file_exists('modules/' . $this->module . '/metadata/popupdefs.php'))
-	    	require_once('modules/' . $this->module . '/metadata/popupdefs.php');
+        if (!empty($_REQUEST['metadata']) && $_REQUEST['metadata'] != 'undefined'
+            && file_exists('custom/modules/' . $this->module . '/metadata/' . $_REQUEST['metadata'] . '.php')) {
+            require 'custom/modules/' . $this->module . '/metadata/' . $_REQUEST['metadata'] . '.php';
+        } elseif (!empty($_REQUEST['metadata']) && $_REQUEST['metadata'] != 'undefined'
+            && file_exists('modules/' . $this->module . '/metadata/' . $_REQUEST['metadata'] . '.php')) {
+            require 'modules/' . $this->module . '/metadata/' . $_REQUEST['metadata'] . '.php';
+        } elseif (file_exists('custom/modules/' . $this->module . '/metadata/popupdefs.php')) {
+            require 'custom/modules/' . $this->module . '/metadata/popupdefs.php';
+        } elseif (file_exists('modules/' . $this->module . '/metadata/popupdefs.php')) {
+            require 'modules/' . $this->module . '/metadata/popupdefs.php';
+        }
 
 	    if(!empty($popupMeta) && !empty($popupMeta['listviewdefs'])){
 	    	if(is_array($popupMeta['listviewdefs'])){

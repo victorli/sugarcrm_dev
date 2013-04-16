@@ -407,7 +407,7 @@ class TemplateHandler {
                     }
                     else {
                         if (!empty($field['id_name']))
-                            $field['id_name'] = $field['name'] . "_" . $field['id_name'];
+                            $field['id_name'] = $module.$field['id_name'];
                     }
                 }
 				$name = $qsd->form_name . '_' . $field['name'];

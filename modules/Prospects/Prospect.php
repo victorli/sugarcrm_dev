@@ -153,19 +153,6 @@ class Prospect extends Person {
 		$this->_create_proper_name_field();
    	}
 
-	function get_list_view_data() {
-		global $current_user;
-		$this->_create_proper_name_field();
-		$temp_array = $this->get_list_view_array();
-		$temp_array["ENCODED_NAME"] = $this->full_name;
-		$temp_array["FULL_NAME"] = $this->full_name;
-		$temp_array["EMAIL1"] = $this->emailAddress->getPrimaryAddress($this);
-		$this->email1 = $temp_array['EMAIL1'];
-		$temp_array["EMAIL1_LINK"] = $current_user->getEmailLink('email1', $this, '', '', 'ListView');
-
-    	return $temp_array;
-	}
-
 	/**
 		builds a generic search based on the query string using or
 		do not include any $this-> because this is called on without having the class instantiated

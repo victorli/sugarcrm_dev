@@ -18,7 +18,7 @@
 			paste_strip_class_attributes : "mso",
 			paste_remove_spans : false,
 			paste_remove_styles : false,
-			paste_remove_styles_if_webkit : true,
+			paste_remove_styles_if_webkit : false,
 			paste_convert_middot_lists : true,
 			paste_convert_headers_to_strong : false,
 			paste_dialog_width : "450",

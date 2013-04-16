@@ -93,7 +93,7 @@ if(typeof(SimpleList) == 'undefined'){
         var items = ul1.getElementsByTagName("li");
         for (i=0;i<items.length;i=i+1) {
             if((SimpleList.isBlank(items[i].id) && SimpleList.isBlank(escape(drop_name.value))) || items[i].id == escape(drop_name.value)){
-                alert("Key already exists in list");
+                alert(SUGAR.language.get('ModuleBuilder', 'LBL_DROPDOWN_KEY_EXISTS'));
                 return;
             }
             if((!SimpleList.isBlank(escape(drop_name.value)) && SimpleList.isBlank(escape(drop_value.value))) || (SimpleList.isBlank(escape(drop_name.value)) && !SimpleList.isBlank(escape(drop_value.value)))){

@@ -379,7 +379,17 @@ function process_dynamic_listview($source_module, $sugarbean,$subpanel_def)
             $list_field['linked_field_set']=$linked_field_set;
 
             $usage = empty($list_field['usage']) ? '' : $list_field['usage'];
-            if($usage != 'query_only')
+            if($usage == 'query_only' && !empty($list_field['force_query_only_display'])){
+                //if you are here you have column that is query only but needs to be displayed as blank.  This is helpful
+                //for collections such as Activities where you have a field in only one object and wish to show it in the subpanel list
+                $count++;
+                $widget_contents = '&nbsp;';
+                $this->xTemplate->assign('CLASS', "");
+                $this->xTemplate->assign('CELL_COUNT', $count);
+                $this->xTemplate->assign('CELL', $widget_contents);
+                $this->xTemplate->parse($xtemplateSection.".row.cell");
+
+            }else if($usage != 'query_only')
             {
                 $list_field['name']=$field_name;
 
@@ -1044,7 +1054,7 @@ function getUserVariable($localVarName, $varName) {
             $response =& $this->response;
             echo 'cached';
         }else{
-            $response = SugarBean::get_union_related_list($sugarbean,$this->sortby, $this->sort_order, $this->query_where, $current_offset, -1,-1,$this->query_limit,$subpanel_def);
+            $response = SugarBean::get_union_related_list($sugarbean,$this->sortby, $this->sort_order, $this->query_where, $current_offset, -1, $this->records_per_page,$this->query_limit,$subpanel_def);
             $this->response =& $response;
         }
         $list = $response['list'];
@@ -1398,7 +1408,7 @@ $close_inline_img = SugarThemeRegistry::current()->getImage('close_inline', 'bor
                     if(!empty($this->response)){
                         $response =& $this->response;
                     }else{
-                        $response = SugarBean::get_union_related_list($sugarbean,$this->sortby, $this->sort_order, $this->query_where, $current_offset, -1,-1,$this->query_limit,$subpanel_def);
+                        $response = SugarBean::get_union_related_list($sugarbean,$this->sortby, $this->sort_order, $this->query_where, $current_offset, -1, $this->records_per_page,$this->query_limit,$subpanel_def);
                         $this->response = $response;
                     }
                     //if query is present, then pass it in as parameter
@@ -1703,7 +1713,7 @@ $close_inline_img = SugarThemeRegistry::current()->getImage('close_inline', 'bor
         foreach($subpanel_def->get_list_fields() as $column_name=>$widget_args)
         {
             $usage = empty($widget_args['usage']) ? '' : $widget_args['usage'];
-            if($usage != 'query_only')
+            if($usage != 'query_only' || !empty($widget_args['force_query_only_display']))
             {
                 $imgArrow = '';
 

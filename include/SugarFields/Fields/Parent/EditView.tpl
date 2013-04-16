@@ -68,20 +68,9 @@ function changeParentQS(field) {
 	field = YAHOO.util.Dom.get(field);
     var form = field.form;
     var sqsId = form.id + "_" + field.id;
-    if(sqs_objects[sqsId] == undefined){
-    	return;
-    }
     var typeField =  form.elements.parent_type;
     var new_module = typeField.value;
-    if(typeof(disabledModules) != 'undefined' && typeof(disabledModules[new_module]) != 'undefined') {
-		sqs_objects[sqsId]["disable"] = true;
-		field.readOnly = true;
-	} else {
-		sqs_objects[sqsId]["disable"] = false;
-		field.readOnly = false;
-    }
-	//Update the SQS globals to reflect the new module choice
-    sqs_objects[sqsId]["modules"] = new Array(new_module);
+    //Update the SQS globals to reflect the new module choice
     if (typeof(QSFieldsArray[sqsId]) != 'undefined')
     {
         QSFieldsArray[sqsId].sqs.modules = new Array(new_module);
@@ -89,6 +78,17 @@ function changeParentQS(field) {
 	if(typeof QSProcessedFieldsArray != 'undefined')
     {
 	   QSProcessedFieldsArray[sqsId] = false;
+    }
+    if(sqs_objects[sqsId] == undefined){
+    	return;
+    }
+    sqs_objects[sqsId]["modules"] = new Array(new_module);
+    if(typeof(disabledModules) != 'undefined' && typeof(disabledModules[new_module]) != 'undefined') {
+		sqs_objects[sqsId]["disable"] = true;
+		field.readOnly = true;
+	} else {
+		sqs_objects[sqsId]["disable"] = false;
+		field.readOnly = false;
     }
     enableQS(false);
 }}

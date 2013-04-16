@@ -272,7 +272,7 @@ class DocumentRevision extends SugarBean {
 		if (empty($doc_revision_id)) return null;
 		
 		$db = DBManagerFactory::getInstance();				
-		$query="select revision from document_revisions where id='$doc_revision_id'";
+		$query="select revision from document_revisions where id='$doc_revision_id' AND deleted=0";
 		$result=$db->query($query);
 		if (!empty($result)) {
 			$row=$db->fetchByAssoc($result);

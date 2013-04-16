@@ -78,6 +78,7 @@ $mod_strings = array (
   'LNK_TASK_LIST' => 'View Tasks',
   'LNK_NOTE_LIST' => 'View Notes',
   'LNK_EMAIL_LIST' => 'View Emails',
+  'LBL_DELETE_ACTIVITY' => 'Are you sure you want to delete this activity?',
   'ERR_DELETE_RECORD' => 'You must specify a record number to delete the account.',
   'NTC_REMOVE_INVITEE' => 'Are you sure you want to remove this invitee from the meeting?',
   'LBL_INVITEE' => 'Invitees',

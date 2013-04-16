@@ -65,6 +65,8 @@ class Bug51596Test extends Sugar_PHPUnit_Framework_TestCase
     {
         SugarTestHelper::setUp('mod_strings', array('Administration'));
         SugarTestHelper::setUp('current_user', array(true, true));
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
 
         // add an extra relationship that will be used for search
         self::registerExtension('Contacts', 'bug51596test.php', array(

@@ -1044,7 +1044,7 @@ class MysqlManager extends DBManager
 			}
 		}
 		if (!empty($sql)) {
-			$sql = "ALTER TABLE $tablename ".join(",", $sql);
+            $sql = "ALTER TABLE $tablename " . join(",", $sql) . ";";
 			if($execute)
 				$this->query($sql);
 		} else {

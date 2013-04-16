@@ -975,7 +975,12 @@ EOQ;
 			   }
 			   $options = $new_options;
 			}
-			$options = get_select_options_with_id_separate_key($options, $options, '', true);;
+            $options = get_select_options_with_id_separate_key(
+                $options,
+                $options,
+                '__SugarMassUpdateClearField__',
+                true
+            );
 			$html .= '<select id="mass_'.$varname.'" name="'.$varname.'">'.$options.'</select>';
 		}else{
 			$html .= $options;

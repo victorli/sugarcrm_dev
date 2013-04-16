@@ -39,7 +39,7 @@ function checkMinSupported(c,s){var current=c.split(".");var supported=s.split("
 return true;}
 function checkMaxSupported(c,s){var current=c.split(".");var supported=s.split(".");for(var i in supported){if(current[i]&&parseInt(current[i])>parseInt(supported[i]))return false;else if(current[i]&&parseInt(current[i])<parseInt(supported[i]))return true;}
 return true;}
-SUGAR.isSupportedBrowser=function(){var supportedBrowsers={msie:{min:8,max:10},safari:{min:534},mozilla:{min:17},chrome:{min:537.13}};var current=String($.browser.version);var supported;if($.browser.msie){supported=supportedBrowsers['msie'];}
+SUGAR.isSupportedBrowser=function(){var supportedBrowsers={msie:{min:8,max:10},safari:{min:534},mozilla:{min:19},chrome:{min:537.22}};var current=String($.browser.version);var supported;if($.browser.msie){supported=supportedBrowsers['msie'];}
 else if($.browser.mozilla){supported=supportedBrowsers['mozilla'];}
 else{$.browser.chrome=/chrome/.test(navigator.userAgent.toLowerCase());if($.browser.chrome){supported=supportedBrowsers['chrome'];}
 else if($.browser.safari){supported=supportedBrowsers['safari'];}}
@@ -492,7 +492,7 @@ leftColTable=leftColObj;leftColTd=leftColTable.getElementsByTagName('td')[0];lef
 catch(e){return;}}
 var success=function(data){if(typeof theDiv!='undefined'&&theDiv!=null)
 {try{if(typeof appendMode!='undefined'&&appendMode)
-{theDiv.innerHTML+=data.responseText;}
+{theDiv.insertAdjacentHTML('beforeend',data.responseText);}
 else
 {theDiv.innerHTML=data.responseText;}}
 catch(e){return;}}
@@ -556,9 +556,8 @@ url+='&displayColumns='+SUGAR.savedViews.displayColumns+'&hideTabs='+SUGAR.saved
 else{handleDisplay();}},copyElement:function(inputName,copyFromElement){switch(copyFromElement.type){case'select-one':case'text':document.search_form[inputName].value=copyFromElement.value;break;}},clear_form:function(form,skipElementNames){var elemList=form.elements;var elem;var elemType;for(var i=0;i<elemList.length;i++){elem=elemList[i];if(typeof(elem.type)=='undefined'){continue;}
 if(typeof(elem.type)!='undefined'&&typeof(skipElementNames)!='undefined'&&SUGAR.util.arrayIndexOf(skipElementNames,elem.name)!=-1)
 {continue;}
-elemType=elem.type.toLowerCase();if(elemType=='text'||elemType=='textarea'||elemType=='password'){elem.value='';}
-else if(elemType=='select'||elemType=='select-one'||elemType=='select-multiple'){var optionList=elem.options;if(optionList.length>0){optionList[0].selected="selected";}
-for(var ii=0;ii<optionList.length;ii++){optionList[ii].selected=false;}}
+elemType=elem.type.toLowerCase();if(elemType=='text'||elemType=='textarea'||elemType=='password'){elem.value='';}else if(elemType=='select-one'){var optionList=elem.options,selectedIndex=0;for(var ii=0;ii<optionList.length;ii++){if(optionList[ii].value==''){selectedIndex=ii;break;}}
+if(optionList.length>0){optionList[selectedIndex].selected="selected";}}else if(elemType=='select-multiple'){var optionList=elem.options;for(var ii=0;ii<optionList.length;ii++){optionList[ii].selected=false;}}
 else if(elemType=='radio'||elemType=='checkbox'){elem.checked=false;elem.selected=false;}
 else if(elemType=='hidden'){if(elem.name.indexOf("_id")!=-1||elem.name.indexOf("_c")!=-1||elem.name.indexOf("_advanced")!=-1)
 {elem.value='';}}}
@@ -707,3 +706,8 @@ SUGAR.MultiEnumAutoComplete.getMultiSelectValuesFromKeys=function(options_index,
 var selected_values=val_string.split("^,^");if(selected_values.length>0&&selected_values.indexOf('')==selected_values.length-1){selected_values.pop();}
 var final_arr=new Array();for(idx in selected_values){for(o_idx in opts){if(selected_values[idx]==o_idx){final_arr.push(opts[o_idx]);}}}
 return final_arr;}
+function convertReportDateTimeToDB(dateValue,timeValue)
+{var date_match=dateValue.match(date_reg_format);var time_match=timeValue.match(/([0-9]{1,2})\:([0-9]{1,2})([ap]m)/);if(date_match!=null&&time_match!=null){time_match[1]=parseInt(time_match[1]);if(time_match[3]=='pm'){time_match[1]=time_match[1]+12;if(time_match[1]>=24){time_match[1]=time_match[1]-24;}}else if(time_match[3]=='am'&&time_match[1]==12){time_match[1]=0;}
+if(time_match[1]<10){time_match[1]='0'+time_match[1];}
+return date_match[date_reg_positions['Y']]+"-"+date_match[date_reg_positions['m']]+"-"+date_match[date_reg_positions['d']]+' '+time_match[1]+':'+time_match[2]+':00';}
+return'';}

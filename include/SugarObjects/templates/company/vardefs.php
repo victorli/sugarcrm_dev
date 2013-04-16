@@ -322,7 +322,7 @@ $vardefs= array (
     ),
 	'source'	=> 'non-db',
     'studio' => array('editField' => true, 'searchview' => false),
-    'full_text_search' => array('boost' => 3, 'index' => 'not_analyzed'), //bug 54567
+    'full_text_search' => array('boost' => 3, 'index' => 'whitespace'), //bug 54567
 ), 
   
   'email_addresses_primary' => 

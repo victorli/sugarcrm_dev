@@ -80,7 +80,7 @@
 	
 		<table border="0" cellspacing="0" cellpadding="0">
 			<tr>
-				<td scope="row">Available
+				<td scope="row">{MOD.LBL_AVAILABLE}
 					<table>
 						<tr>
 							<td><slot><select id="display_objs" name="display_objs[]" size="10" multiple="multiple" ></select></slot></td>
@@ -99,7 +99,7 @@
 	
 		<table border="0" cellspacing="0" cellpadding="0">
 			<tr>
-				<td scope="row">Selected
+				<td scope="row">{MOD.LBL_SELECTED}
 					<table>
 						<tr>
 							<td><slot><select id="selected_objs" name="selected_objs[]" size="10" multiple="multiple" >{MAILMERGE_PRESELECTED_OBJECTS}</select></slot></td>
@@ -396,7 +396,7 @@ function validateForm()
 	}
 	else
 	{
-		alert("Please select at least one item.");
+        alert(SUGAR.language.get('MailMerge', 'LBL_SELECT_ONE'));
 		return false;
 	}	
 }

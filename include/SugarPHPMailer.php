@@ -320,7 +320,9 @@ eoq;
 			} else {
 			    $mime_type = "image/".strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 			}
-		    $this->AddEmbeddedImage($file_location, $cid, $filename, 'base64', $mime_type);
+		    if (!$this->embeddedAttachmentExists($cid)) {
+		    	$this->AddEmbeddedImage($file_location, $cid, $filename, 'base64', $mime_type);
+		    }
 		    $i++;
         }
 		//replace references to cache with cid tag
@@ -328,7 +330,7 @@ eoq;
 		// remove bad img line from outbound email
 		$this->Body = preg_replace('#<img[^>]+src[^=]*=\"\/([^>]*?[^>]*)>#sim', '', $this->Body);
 	}
-
+	
 	/**
 	 * @param notes	array of note beans
 	 */
@@ -410,6 +412,27 @@ eoq;
             $this->Body = " ";
         }
         return parent::PreSend();
+    }
+
+    /**
+     * Checks if the embedded file is already attached.
+     * @access protected
+     * @param string $filename Name of the file to check.
+     * @return boolean
+     */
+    protected function embeddedAttachmentExists($filename)
+    {
+        $result = false;
+        for ($i = 0; $i < count($this->attachment); $i++)
+        {
+            if ($this->attachment[$i][1] == $filename)
+            {
+                $result = true;
+                break;
+            }
+        }
+
+        return $result;
     }
 
 } // end class definition

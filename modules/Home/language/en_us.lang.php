@@ -234,6 +234,11 @@ $mod_strings = array (
   'LBL_SOURCE_PHPSQL' => 'PHP SQL Parser',
   'LBL_SOURCE_HTMLPURIFIER' => 'HTML Purifier - A standards-compliant HTML filtering library.',
   'LBL_SOURCE_XHPROF' => 'XHProf - A function-level hierarchical profiler for PHP.',
+  'LBL_SOURCE_ELASTICA' => 'Elastica - PHP client for the distributed search engine elasticsearch ',
+  'LBL_SOURCE_FACEBOOK' => 'FacebookLib - Provides access to the Facebook Platform.',
+  'LBL_SOURCE_JQUERY' => 'jQuery - jQuery is a fast, small, and feature-rich JavaScript library.',
+  'LBL_SOURCE_JQUERY_UI' => 'jQuery UI - jQuery UI is a curated set of user interface interactions, effects, widgets, and themes built on top of the jQuery JavaScript Library.',
+  'LBL_SOURCE_OVERLIB' => 'OverlibMWS - The overlibmws library uses javascript for DHTML popups that serve as informational and navigational aids for websites.',
 
   'LBL_DASHLET_TITLE' => 'My Sites',
   'LBL_DASHLET_OPT_TITLE' => 'Title',

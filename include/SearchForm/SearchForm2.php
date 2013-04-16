@@ -405,7 +405,10 @@ require_once('include/EditView/EditView2.php');
                     //53131 - add blank option for SearchField options with def 'options_add_blank' set to true
                     if ($this->fieldDefs[$fvName]['type'] == "parent_type" || $this->fieldDefs[$fvName]['type'] == "parent" || (isset($this->searchFields[$name]['options_add_blank']) && $this->searchFields[$name]['options_add_blank']) )
                     {
-                        $this->fieldDefs[$fvName]['options'] = array_merge(array(""=>""), $this->fieldDefs[$fvName]['options']);
+                        if (!array_key_exists('', $this->fieldDefs[$fvName]['options'])) {
+                            $this->fieldDefs[$fvName]['options'] =
+                                array('' => '') + $this->fieldDefs[$fvName]['options'];
+                        }
                     }
 	            }
 

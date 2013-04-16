@@ -95,9 +95,15 @@ class Company extends Basic
 	{	
 		global $system_config;
 		global $current_user;
+
 		$temp_array = $this->get_list_view_array();
+
 		$temp_array['EMAIL1'] = $this->emailAddress->getPrimaryAddress($this);
+
+            $this->email1 = $temp_array['EMAIL1'];
+
 		$temp_array['EMAIL1_LINK'] = $current_user->getEmailLink('email1', $this, '', '', 'ListView');
+
 		return $temp_array;
 	}
 }

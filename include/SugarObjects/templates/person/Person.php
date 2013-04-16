@@ -178,12 +178,19 @@ class Person extends Basic
 	{
 		global $system_config;
 		global $current_user;
+
 		$this->_create_proper_name_field();
 		$temp_array = $this->get_list_view_array();
-		$temp_array['NAME'] = $this->name;
-		$temp_array['EMAIL1'] = $this->emailAddress->getPrimaryAddress($this);
-		$this->email1 = $temp_array['EMAIL1'];
-		$temp_array['EMAIL1_LINK'] = $current_user->getEmailLink('email1', $this, '', '', 'ListView');
+
+        $temp_array['NAME'] = $this->name;
+        $temp_array["ENCODED_NAME"] = $this->full_name;
+        $temp_array["FULL_NAME"] = $this->full_name;
+
+        $temp_array['EMAIL1'] = $this->emailAddress->getPrimaryAddress($this);
+
+            $this->email1 = $temp_array['EMAIL1'];
+        $temp_array['EMAIL1_LINK'] = $current_user->getEmailLink('email1', $this, '', '', 'ListView');
+
 		return $temp_array;
 	}
 

@@ -389,7 +389,7 @@ class Localization {
 	 */
 	function translateCharsetMIME($string, $fromCharset, $toCharset='UTF-8', $encoding="Q") {
 		$previousEncoding = mb_internal_encoding();
-	    mb_internal_encoding($toCharset);
+		mb_internal_encoding($fromCharset);
 		$result = mb_encode_mimeheader($string, $toCharset, $encoding);
 		mb_internal_encoding($previousEncoding);
 		return $result;

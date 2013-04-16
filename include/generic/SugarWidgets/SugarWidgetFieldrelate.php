@@ -82,6 +82,13 @@ class SugarWidgetFieldRelate extends SugarWidgetReportField
     private function displayInputQuery($layout_def)
     {
         $title = $layout_def['rname'];
+        if (isset($layout_def['custom_module']) || isset($layout_def['ext2'])) {
+            $bean = BeanFactory::getBean($layout_def['module']);
+            $layout_def['table'] = $bean->table_name;
+            if (isset($bean->field_defs[$title]['db_concat_fields'])){
+                $layout_def['db_concat_fields'] = $bean->field_defs[$title]['db_concat_fields'];
+            }
+        }
         if (isset($layout_def['db_concat_fields'])) {
             $title = $this->reporter->db->concat($layout_def['table'], $layout_def['db_concat_fields']);
         }
@@ -135,23 +142,25 @@ class SugarWidgetFieldRelate extends SugarWidgetReportField
     public function queryFilterone_of($layout_def, $rename_columns = true)
     {
         $ids = array();
-
-        $relation = new Relationship();
-        $relation->retrieve_by_name($layout_def['link']);
-
-        global $beanList;
-        $beanClass = $beanList[$relation->lhs_module];
-        $seed = new $beanClass();
+        if (isset($layout_def['link'])) {
+            $relation = new Relationship();
+            $relation->retrieve_by_name($layout_def['link']);
+        }
+        $module = isset($layout_def['custom_module']) ? $layout_def['custom_module'] : $layout_def['module'];
+        $seed = BeanFactory::getBean($module);
 
         foreach($layout_def['input_name0'] as $beanId)
         {
-            $seed->retrieve($beanId);
-
-            $link = new Link2($layout_def['link'], $seed);
-            $sql = $link->getQuery();
+            if (!empty($relation->lhs_module) && !empty($relation->rhs_module)
+                && $relation->lhs_module == $relation->rhs_module) {
+                    $filter = array('id');
+            } else {
+                $filter = array('id', $layout_def['name']);
+            }
+            $where = $layout_def['id_name']."='$beanId' ";
+            $sql = $seed->create_new_list_query('', $where, $filter, array(), 0, '', false, $seed, true);
             $result = $this->reporter->db->query($sql);
-            while ($row = $this->reporter->db->fetchByAssoc($result))
-            {
+            while ($row = $this->reporter->db->fetchByAssoc($result)) {
                 $ids[] = $row['id'];
             }
         }

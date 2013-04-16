@@ -376,6 +376,10 @@ function get_name_value_list($value, $returnDomValue = false){
 				}elseif(strcmp($type, 'enum') == 0 && !empty($var['options']) && $returnDomValue){
 					$val = $app_list_strings[$var['options']][$val];
 				}
+				elseif(strcmp($type, 'currency') == 0){
+					$params = array( 'currency_symbol' => false );
+					$val = currency_format_number($val, $params);
+				}
 
 				$list[$var['name']] = get_name_value($var['name'], $val);
 			}

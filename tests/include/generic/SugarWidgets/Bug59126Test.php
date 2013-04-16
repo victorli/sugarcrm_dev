@@ -72,6 +72,24 @@ class Bug59126Test extends Sugar_PHPUnit_Framework_TestCase
         $this->assertRegExp($regExpPattern, $html);
     }
 
+    public function testCustomField()
+    {
+        $layoutDef = array(
+            'table' => $this->contact->table_name,
+            'module' => $this->contact->module_name,
+            'custom_module' => 'Contacts',
+            'input_name0' => array(),
+            'name' => 'customField',
+            'rname' => 'name',
+        );
+        $html = $this->getSugarWidgetFieldRelate()->displayInput($layoutDef);
+        $regExpPattern = $this->getAssertRegExp(
+            $this->contact->id,
+            "{$this->contact->first_name}\s+{$this->contact->last_name}"
+        );
+        $this->assertRegExp($regExpPattern, $html);
+    }
+
     private function  getAssertRegExp($value, $text)
     {
         $pattern = '/\<option.+value="' . $value . '".*\>' . $text . '\<\/option\>/i';

@@ -5112,8 +5112,12 @@ class SugarBean
             return true;
         }
         //if there is an assigned_user that is the owner
-        if(isset($this->assigned_user_id))
-        {
+        if (!empty($this->fetched_row['assigned_user_id'])) {
+            if ($this->fetched_row['assigned_user_id'] == $user_id) {
+                return true;
+            }
+            return false;
+        } elseif (isset($this->assigned_user_id)) {
             if($this->assigned_user_id == $user_id) return true;
             return false;
         }

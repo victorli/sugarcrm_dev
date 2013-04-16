@@ -528,7 +528,7 @@ function adjustEmailSettings(){
             addToValidate("AdminWizard", 'mail_smtpuser', 'email', false, 
               SUGAR.language.get('Configurator','LBL_GMAIL_SMTPUSER'));
         }
-        else if (server.value == "plus.smtp.mail.yahoo.com" && !isValidEmail(user.value)) {
+        else if (server.value == "smtp.mail.yahoo.com" && !isValidEmail(user.value)) {
             addToValidate("AdminWizard", 'mail_smtpuser', 'email', false, 
               SUGAR.language.get('Configurator','LBL_YAHOOMAIL_SMTPUSER'));
         }
@@ -559,7 +559,7 @@ function changeEmailScreenDisplay(smtptype)
     
     switch (smtptype) {
     case "yahoomail":
-        document.getElementById("mail_smtpserver").value = 'plus.smtp.mail.yahoo.com';
+        document.getElementById("mail_smtpserver").value = 'smtp.mail.yahoo.com';
         document.getElementById("mail_smtpport").value = '465';
         document.getElementById("mail_smtpauth_req").checked = true;
         var ssl = document.getElementById("mail_smtpssl");
@@ -575,7 +575,7 @@ function changeEmailScreenDisplay(smtptype)
         document.getElementById("mail_smtpuser_label").innerHTML = '{/literal}{$MOD.LBL_YAHOOMAIL_SMTPUSER}{literal}';
         break;
     case "gmail":
-        if(document.getElementById("mail_smtpserver").value == "" || document.getElementById("mail_smtpserver").value == 'plus.smtp.mail.yahoo.com') {    
+        if(document.getElementById("mail_smtpserver").value == "" || document.getElementById("mail_smtpserver").value == 'smtp.mail.yahoo.com') {
             document.getElementById("mail_smtpserver").value = 'smtp.gmail.com';
             document.getElementById("mail_smtpport").value = '587';
             document.getElementById("mail_smtpauth_req").checked = true;

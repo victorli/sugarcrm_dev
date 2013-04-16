@@ -402,22 +402,14 @@ class Contact extends Person {
 	}
 
 	function get_list_view_data($filter_fields = array()) {
-		global $system_config;
-		global $current_user;
 
-		$this->_create_proper_name_field();
-		$temp_array = $this->get_list_view_array();
-		$temp_array['NAME'] = $this->name;
-		$temp_array['ENCODED_NAME'] = $this->name;
+        $temp_array = parent::get_list_view_data();
 
 		if($filter_fields && !empty($filter_fields['sync_contact'])){
 			$this->load_contacts_users_relationship();
 			$temp_array['SYNC_CONTACT'] = !empty($this->contacts_users_id) ? 1 : 0;
 		}
-		$temp_array['EMAIL1'] = $this->emailAddress->getPrimaryAddress($this);
-		$this->email1 = $temp_array['EMAIL1'];
-		$temp_array['EMAIL1_LINK'] = $current_user->getEmailLink('email1', $this, '', '', 'ListView');
-		$temp_array['EMAIL_AND_NAME1'] = "{$this->full_name} &lt;".$temp_array['EMAIL1']."&gt;";
+
 		return $temp_array;
 	}
 

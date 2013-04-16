@@ -632,6 +632,12 @@ class Call extends SugarBean {
 			$GLOBALS['log']->info("Notifications: recipient is $notify_user->new_assigned_user_name");
 			$list[$notify_user->id] = $notify_user;
 		}
+		global $sugar_config;
+		if(isset($sugar_config['disable_notify_current_user']) && $sugar_config['disable_notify_current_user']) {
+			global $current_user;
+			if(isset($list[$current_user->id]))
+				unset($list[$current_user->id]);
+		}
 //		$GLOBALS['log']->debug('Call.php->get_notification_recipients():'.print_r($list,true));
 		return $list;
 	}

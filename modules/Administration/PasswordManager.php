@@ -105,6 +105,10 @@ if(!empty($_POST['saveConfig'])){
             $_POST['authenticationClass'] = '';
         }
 
+        if (isset($_REQUEST['ldap_group_attr_req_dn']) && $_REQUEST['ldap_group_attr_req_dn'] == 'on')
+            $_POST['ldap_group_attr_req_dn'] = 1;
+        else
+            $_POST['ldap_group_attr_req_dn'] = 0;
 
 		if (isset($_REQUEST['ldap_group_checkbox']) && $_REQUEST['ldap_group_checkbox'] == 'on') 
 			$_POST['ldap_group'] = 1;

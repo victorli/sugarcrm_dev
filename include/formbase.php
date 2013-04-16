@@ -439,10 +439,8 @@ function save_from_report($report_id,$parent_id, $module_name, $relationship_att
     $GLOBALS['log']->debug("Save2:Module Name=".$module_name);
     $GLOBALS['log']->debug("Save2:Relationship Attribute Name=".$relationship_attr_name);
 
-    $bean_name = $beanList[$module_name];
-    $GLOBALS['log']->debug("Save2:Bean Name=".$bean_name);
-    require_once($beanFiles[$bean_name]);
-    $focus = new $bean_name();
+    $GLOBALS['log']->debug("Save2:Bean Name=" . $module_name);
+    $focus = BeanFactory::newBean($module_name);
 
     $focus->retrieve($parent_id);
     $focus->load_relationship($relationship_attr_name);
@@ -465,9 +463,12 @@ function save_from_report($report_id,$parent_id, $module_name, $relationship_att
     $sql = $report->query_list[0];
     $GLOBALS['log']->debug("Save2:Report Query=".$sql);
     $result = $report->db->query($sql);
+
+    $reportBean = BeanFactory::newBean($saved->module);
     while($row = $report->db->fetchByAssoc($result))
     {
-        $focus->$relationship_attr_name->add($row['primaryid']);
+        $reportBean->id = $row['primaryid'];
+        $focus->$relationship_attr_name->add($reportBean);
     }
 }
 

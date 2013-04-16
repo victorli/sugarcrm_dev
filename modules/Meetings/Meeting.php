@@ -723,6 +723,12 @@ class Meeting extends SugarBean {
 			$list[$notify_user->id] = $notify_user;
 		}
 
+		global $sugar_config;
+		if(isset($sugar_config['disable_notify_current_user']) && $sugar_config['disable_notify_current_user']) {
+			global $current_user;
+			if(isset($list[$current_user->id]))
+				unset($list[$current_user->id]);
+		}
 		return $list;
 	}
 

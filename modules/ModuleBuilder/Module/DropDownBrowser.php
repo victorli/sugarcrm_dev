@@ -43,6 +43,7 @@ class DropDownBrowser
         'eapm_list_documents',
         'eapm_list_import',
         'extapi_meeting_password',
+        'Elastic_boost_options',
         // 'moduleList', // We may want to put this in at a later date
         // 'moduleListSingular', // Same with this
     );
