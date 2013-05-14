@@ -45,7 +45,7 @@ class LoggerManager
 	private $_level = 'fatal';
 
 	//this is a list of different loggers that have been loaded
-	private static $_loggers = array();
+	protected static $_loggers = array();
 
 	//this is the instance of the LoggerManager
 	private static $_instance = NULL;

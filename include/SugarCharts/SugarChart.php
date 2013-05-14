@@ -644,20 +644,11 @@ class SugarChart {
      *
      * @param string $file_id - unique id to make part of the file name
      */
-    public static function getXMLFileName(
-         $file_id
-         )
+    public static function getXMLFileName($file_id)
     {
-        global $sugar_config, $current_user;
+        create_cache_directory("xml/".$GLOBALS['current_user']->getUserPrivGuid() . "_{$file_id}.xml");
 
-        $filename = sugar_cached("xml/"). $current_user->id . '_' . $file_id . '.xml';
-
-        $filename_temp = "xml/". $current_user->id . '_' . $file_id . '.xml';
-        if ( !is_dir(dirname($filename)) ) {
-            create_cache_directory($filename_temp);
-        }
-
-        return $filename;
+        return sugar_cached("xml/"). $GLOBALS['current_user']->getUserPrivGuid() . "_" . $file_id . ".xml";
     }
 
     public function processXmlData(){
@@ -719,7 +710,7 @@ class SugarChart {
         {
             sugar_mkdir($dir, null, true);
         }
-        
+
 		// open file
 		if (!$fh = sugar_fopen($xmlFilename, 'w')) {
 			$GLOBALS['log']->debug("Cannot open file ($xmlFilename)");

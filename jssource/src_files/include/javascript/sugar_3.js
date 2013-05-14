@@ -186,8 +186,8 @@ SUGAR.isSupportedBrowser = function(){
     var supportedBrowsers = {
         msie : {min:8, max:10}, // IE 8, 9, 10
         safari : {min:534}, // Safari 5.1
-        mozilla : {min:19}, // Firefox 19
-        chrome : {min:537.22} // Chrome 25
+        mozilla : {min:20.0}, // Firefox 20.0
+        chrome : {min:537.31} // Chrome 26
     };
     var current = String($.browser.version);
     var supported;

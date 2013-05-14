@@ -1,5 +1,4 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
@@ -36,74 +35,54 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
+require_once('include/Sugar_Smarty.php');
+require_once('include/Smarty/plugins/function.sugar_replace_vars.php');
 
 /**
- * This file is used to control the authentication process. 
- * It will call on the user authenticate and controll redirection 
- * based on the users validation
- *
+ * Bug #54203
+ * @ticket 54203
  */
+class Bug54203Test extends Sugar_PHPUnit_Framework_TestCase
+{
 
-
-require_once('modules/Users/authentication/SugarAuthenticate/SugarAuthenticate.php');
-require_once('modules/Users/authentication/SAMLAuthenticate/lib/onelogin/saml.php');
-class SAMLAuthenticate extends SugarAuthenticate {
-	var $userAuthenticateClass = 'SAMLAuthenticateUser';
-	var $authenticationDir = 'SAMLAuthenticate';
-	/**
-	 * Constructs SAMLAuthenticate
-	 * This will load the user authentication class
-	 *
-	 * @return SAMLAuthenticate
-	 */
-	function SAMLAuthenticate(){
-		parent::SugarAuthenticate();
-	}
-
-    /**
-     * pre_login
-     * 
-     * Override the pre_login function from SugarAuthenticate so that user is
-     * redirected to SAML entry point if other is not specified
-     */
-    function pre_login()
+    public function setUp()
     {
-        parent::pre_login();
-
-        $this->redirectToLogin($GLOBALS['app']);
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('app_strings');
+        SugarTestHelper::setUp('app_list_strings');
     }
 
-    /**
-     * Called when a user requests to logout
-     *
-     * Override default behavior. Redirect user to special "Logged Out" page in
-     * order to prevent automatic logging in.
-     */
-    public function logout() {
-        session_destroy();
-        ob_clean();
-        header('Location: index.php?module=Users&action=LoggedOut');
-        sugar_cleanup(true);
-    }
-
-    /**
-     * Redirect to login page
-     * 
-     * @param SugarApplication $app
-     */
-    public function redirectToLogin(SugarApplication $app)
+    public function tearDown()
     {
-        require(get_custom_file_if_exists('modules/Users/authentication/SAMLAuthenticate/settings.php'));
-
-        $loginVars = $app->createLoginVars();
-
-        // $settings - variable from modules/Users/authentication/SAMLAuthenticate/settings.php
-        $settings->assertion_consumer_service_url .= htmlspecialchars($loginVars); 
-        
-        $authRequest = new SamlAuthRequest($settings);
-        $url = $authRequest->create();
-
-        $app->redirect($url);
+        SugarTestHelper::tearDown();
     }
+
+    public function testVarReplace()
+    {
+        $params = array(
+            'subject'   => 'http://example.com/[email1]',
+            'use_curly' => false,
+            'fields'    => array(
+                'email1' => array(
+                    'function' => array(
+                        'name'    => 'getEmailAddressWidget',
+                        'returns' => 'html',
+                    ),
+                    'value' => '<!-- html -->',
+                ),
+            ),
+        );
+
+        $bean = new Account();
+        $bean->email1 = 'sugar.test54203@example.com';
+
+        $smarty = new Sugar_Smarty();
+        $smarty->assign('bean', $bean);
+
+        $output = smarty_function_sugar_replace_vars($params, $smarty);
+
+        $this->assertContains($bean->email1, $output, 'Rendered string contains html markup.');
+    }
+
 }

@@ -77,7 +77,7 @@ if(isset( $_POST['Users0emailAddress0'])){
         if ($username != '' && $useremail != ''){
             $usr_id=$usr->retrieve_user_id($username);
             $usr->retrieve($usr_id);
-            if ($usr->email1 !=  $useremail){
+            if (!$usr->isPrimaryEmail($useremail)) {
                 echo $mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL'];
                 return;
             }

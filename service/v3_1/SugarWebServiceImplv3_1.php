@@ -289,7 +289,7 @@ class SugarWebServiceImplv3_1 extends SugarWebServiceImplv3 {
         //rrs
         $system_config = new Administration();
         $system_config->retrieveSettings('system');
-        $authController = new AuthenticationController((!empty($sugar_config['authenticationClass'])? $sugar_config['authenticationClass'] : 'SugarAuthenticate'));
+        $authController = new AuthenticationController();
         //rrs
         if(!empty($user_auth['encryption']) && $user_auth['encryption'] === 'PLAIN' && $authController->authController->userAuthenticateClass != "LDAPAuthenticateUser")
         {
@@ -737,6 +737,7 @@ class SugarWebServiceImplv3_1 extends SugarWebServiceImplv3 {
     				} // if
     			}
 
+    			$selectOnlyQueryFields = array();
     			if ($beanName != "User"
     			    && $beanName != "ProjectTask"
     			    ) {
@@ -776,7 +777,6 @@ class SugarWebServiceImplv3_1 extends SugarWebServiceImplv3 {
     				}
 
     				//Pull in any db fields used for the unified search query so the correct joins will be added
-    				$selectOnlyQueryFields = array();
     				foreach ($unifiedSearchFields[$name] as $field => $def){
     				    if( isset($def['db_field']) && !in_array($field,$filterFields) ){
     				        $filterFields[] = $field;
@@ -806,7 +806,7 @@ class SugarWebServiceImplv3_1 extends SugarWebServiceImplv3 {
     				if ($beanName == "User") {
     					$filterFields = array('id', 'user_name', 'first_name', 'last_name', 'email_address');
     					$main_query = "select users.id, ea.email_address, users.user_name, first_name, last_name from users ";
-    					$main_query = $main_query . " LEFT JOIN email_addr_bean_rel eabl ON eabl.bean_module = '{$seed->module_dir}'
+    					$main_query = $main_query . " LEFT JOIN email_addr_bean_rel eabl ON (users.id = eabl.bean_id and eabl.bean_module = '{$seed->module_dir}')
     LEFT JOIN email_addresses ea ON (ea.id = eabl.email_address_id) ";
     					$main_query = $main_query . "where ((users.first_name like '{$search_string}') or (users.last_name like '{$search_string}') or (users.user_name like '{$search_string}') or (ea.email_address like '{$search_string}')) and users.deleted = 0 and users.is_group = 0 and users.employee_status = 'Active'";
     				} // if

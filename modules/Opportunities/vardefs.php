@@ -120,6 +120,7 @@ $dictionary['Opportunity'] = array('table' => 'opportunities','audited'=>true, '
 		'table' => 'campaigns',
 		'module'=>'Campaigns',
 		'source' => 'non-db',
+        'additionalFields' => array('id' => 'campaign_id')
 	),
   'campaign_opportunities' =>
 		array (

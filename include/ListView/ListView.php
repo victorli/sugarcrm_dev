@@ -473,6 +473,10 @@ function process_dynamic_listview($source_module, $sugarbean,$subpanel_def)
                             $button_contents[] = $_content;
                             unset($_content);
                         }
+                        else
+                        {
+                            $button_contents[] = '';
+                        }
                 	} else {
                			$count++;
                			$this->xTemplate->assign('CLASS', "");
@@ -490,23 +494,32 @@ function process_dynamic_listview($source_module, $sugarbean,$subpanel_def)
 
         // Make sure we have at least one button before rendering a column for
         // the action buttons in a list view. Relevant bugs: #51647 and #51640.
-        if(isset($button_contents[0])) {
+        if(!empty($button_contents))
+        {
+            $button_contents = array_filter($button_contents);
+            if (!empty($button_contents))
+            {
             // this is for inline buttons on listviews
             // bug#51275: smarty widget to help provide the action menu functionality as it is currently sprinkled throughout the app with html
-            require_once('include/Smarty/plugins/function.sugar_action_menu.php');
-            $tempid = create_guid();
-            $button_contents[0] = "<div style='display: inline' id='$tempid'>".$button_contents[0]."</div>";
-            $action_button = smarty_function_sugar_action_menu(array(
-                'id' => $tempid,
-                'buttons' => $button_contents,
-                'class' => 'clickMenu subpanel records fancymenu button',
-                'flat' => false //assign flat value as false to display dropdown menu at any other preferences.
-            ), $this->xTemplate);
+                require_once('include/Smarty/plugins/function.sugar_action_menu.php');
+                $tempid = create_guid();
+                array_unshift($button_contents, "<div style='display: inline' id='$tempid'>" . array_shift($button_contents) . "</div>");
+                $action_button = smarty_function_sugar_action_menu(array(
+                    'id' => $tempid,
+                    'buttons' => $button_contents,
+                    'class' => 'clickMenu subpanel records fancymenu button',
+                    'flat' => false //assign flat value as false to display dropdown menu at any other preferences.
+                ), $this->xTemplate);
+            }
+            else
+            {
+                $action_button = '';
+            }
             $this->xTemplate->assign('CLASS', "inlineButtons");
             $this->xTemplate->assign('CELL_COUNT', ++$count);
             //Bug#51275 for beta3 pre_script is not required any more
             $this->xTemplate->assign('CELL', $action_button);
-            $this->xTemplate->parse($xtemplateSection.".row.cell");
+            $this->xTemplate->parse($xtemplateSection . ".row.cell");
         }
 
 

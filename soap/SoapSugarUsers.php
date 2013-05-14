@@ -94,7 +94,7 @@ function login($user_auth, $application){
 	//rrs
 		$system_config = new Administration();
 	$system_config->retrieveSettings('system');
-	$authController = new AuthenticationController((!empty($sugar_config['authenticationClass'])? $sugar_config['authenticationClass'] : 'SugarAuthenticate'));
+	$authController = new AuthenticationController();
 	//rrs
 	$isLoginSuccess = $authController->login($user_auth['user_name'], $user_auth['password'], array('passwordEncrypted' => true));
 	$usr_id=$user->retrieve_user_id($user_auth['user_name']);
@@ -123,7 +123,7 @@ function login($user_auth, $application){
 			return array('id'=>-1, 'error'=>$error);
 	} else if(function_exists('mcrypt_cbc')){
 		$password = decrypt_string($user_auth['password']);
-		$authController = new AuthenticationController((!empty($sugar_config['authenticationClass'])? $sugar_config['authenticationClass'] : 'SugarAuthenticate'));
+		$authController = new AuthenticationController();
 		if($authController->login($user_auth['user_name'], $password) && isset($_SESSION['authenticated_user_id'])){
 			$success = true;
 		} // if
@@ -1509,6 +1509,18 @@ function search_by_module($user_name, $password, $search_string, $modules, $offs
 							'Opportunities'=>array('where'=>array('Opportunities' => array(0 => "opportunities.name like '{0}%'")), 'fields'=>"opportunities.id, opportunities.name"),
 							'Users'=>array('where'=>array('EmailAddresses' => array(0 => "ea.email_address like '{0}%'")),'fields'=>"users.id, users.user_name, users.first_name, ea.email_address"),
 						);
+
+	$more_query_array = array();
+	foreach($modules as $module) {
+	    if (!array_key_exists($module, $query_array)) {
+	        $lc_module = strtolower($module);
+	        $more_query_array[$module] = array('where'=>array($module => array(0 => "$lc_module.name like '{0}%'")), 'fields'=>"$lc_module.id, $lc_module.name");
+	    }
+	}
+
+	if (!empty($more_query_array)) {
+	    $query_array = array_merge($query_array, $more_query_array);
+	}
 
 	if(!empty($search_string) && isset($search_string)){
 		foreach($modules as $module_name){

@@ -214,7 +214,7 @@ function validate_user($user_name, $password){
 	$user->user_name = $user_name;
 	$system_config = new Administration();
 	$system_config->retrieveSettings('system');
-	$authController = new AuthenticationController((!empty($sugar_config['authenticationClass'])? $sugar_config['authenticationClass'] : 'SugarAuthenticate'));
+	$authController = new AuthenticationController();
 	// Check to see if the user name and password are consistent.
 	if($user->authenticate_user($password)){
 		// we also need to set the current_user.

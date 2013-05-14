@@ -1,5 +1,4 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
@@ -36,74 +35,46 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
-
 /**
- * This file is used to control the authentication process. 
- * It will call on the user authenticate and controll redirection 
- * based on the users validation
+ * Bug #59095 : Quick Search field not returning defined limit results.
  *
+ * @ticket 59095
+ * @author myarotsky@sugarcrm.com
  */
-
-
-require_once('modules/Users/authentication/SugarAuthenticate/SugarAuthenticate.php');
-require_once('modules/Users/authentication/SAMLAuthenticate/lib/onelogin/saml.php');
-class SAMLAuthenticate extends SugarAuthenticate {
-	var $userAuthenticateClass = 'SAMLAuthenticateUser';
-	var $authenticationDir = 'SAMLAuthenticate';
-	/**
-	 * Constructs SAMLAuthenticate
-	 * This will load the user authentication class
-	 *
-	 * @return SAMLAuthenticate
-	 */
-	function SAMLAuthenticate(){
-		parent::SugarAuthenticate();
-	}
-
-    /**
-     * pre_login
-     * 
-     * Override the pre_login function from SugarAuthenticate so that user is
-     * redirected to SAML entry point if other is not specified
-     */
-    function pre_login()
+class Bug59095Test extends Sugar_PHPUnit_Framework_TestCase
+{
+    public $query;
+    public function setUp()
     {
-        parent::pre_login();
+        global $sugar_config;
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('current_user', array(true, 1));
+        SugarTestHelper::setUp('app_list_strings');
+        SugarTestHelper::setUp('app_strings');
+        $sugar_config['disable_count_query'] = true;
+        for ($i = 0; $i < 3; $i++)
+        {
+            SugarTestAccountUtilities::createAccount();
+        }
+        $this->query = "SELECT accounts.*  FROM accounts WHERE 1=1";
+    }
 
-        $this->redirectToLogin($GLOBALS['app']);
+    public function tearDown()
+    {
+        global $sugar_config;
+        unset($sugar_config['disable_count_query']);
+        SugarTestAccountUtilities::removeAllCreatedAccounts();
     }
 
     /**
-     * Called when a user requests to logout
-     *
-     * Override default behavior. Redirect user to special "Logged Out" page in
-     * order to prevent automatic logging in.
+     * Quick Search field not returning defined limit results.
+     * @group 59095
      */
-    public function logout() {
-        session_destroy();
-        ob_clean();
-        header('Location: index.php?module=Users&action=LoggedOut');
-        sugar_cleanup(true);
-    }
-
-    /**
-     * Redirect to login page
-     * 
-     * @param SugarApplication $app
-     */
-    public function redirectToLogin(SugarApplication $app)
+    public function testShouldReturnDefinedLimit()
     {
-        require(get_custom_file_if_exists('modules/Users/authentication/SAMLAuthenticate/settings.php'));
-
-        $loginVars = $app->createLoginVars();
-
-        // $settings - variable from modules/Users/authentication/SAMLAuthenticate/settings.php
-        $settings->assertion_consumer_service_url .= htmlspecialchars($loginVars); 
-        
-        $authRequest = new SamlAuthRequest($settings);
-        $url = $authRequest->create();
-
-        $app->redirect($url);
+        $sb = BeanFactory::getBean('Accounts');
+        $res = $sb->process_list_query($this->query, 0, 2);
+        $this->assertEquals(2, count($res['list']));
     }
 }

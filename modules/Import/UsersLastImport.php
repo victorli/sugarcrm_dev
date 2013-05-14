@@ -172,6 +172,8 @@ class UsersLastImport extends SugarBean
             $focus = new $module;
         }
 
+        $focus->mark_relationships_deleted($bean_id);
+
         $result = $this->db->query(
             "DELETE FROM {$focus->table_name}
                 WHERE id = '{$bean_id}'"

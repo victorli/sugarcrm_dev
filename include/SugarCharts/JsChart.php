@@ -134,7 +134,7 @@ class JsChart extends SugarChart {
 		global $sugar_config, $current_user, $current_language;
 		$this->id = $id;
 		$this->chartId = $id;
-		$this->xmlFile = (!$xmlFile) ? sugar_cached("xml/{$current_user->id}_{$this->id}.xml") : $xmlFile;
+		$this->xmlFile = (!$xmlFile) ? sugar_cached("xml/".$current_user->getUserPrivGuid()."_{$this->id}.xml") : $xmlFile;
 
 
 		$style = array();
@@ -150,7 +150,7 @@ class JsChart extends SugarChart {
 		foreach($this->getChartConfigParams($xmlStr) as $key => $value) {
 			$chartConfig[$key] = $value;
 		}
-		
+
 		$chartConfig['imageExportType'] = $this->image_export_type;
 		$this->ss->assign("config", $chartConfig);
 
@@ -685,11 +685,11 @@ class JsChart extends SugarChart {
 		}
 		return $props;
 	}
-	
+
 	function processSpecialChars($str) {
 		return addslashes(html_entity_decode($str,ENT_QUOTES));
 	}
-	
+
 	function processXML($xmlFile) {
 
 		if(!file_exists($xmlFile)) {

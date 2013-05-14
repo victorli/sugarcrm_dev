@@ -142,6 +142,7 @@ class UsersLastImportTest extends Sugar_PHPUnit_Framework_TestCase
         
         $focus = new Account();
         $focus->id = "Account_".$unid;
+        $focus->save();
         
         $last_import = new UsersLastImport();
         $last_import->assigned_user_id = $GLOBALS['current_user']->id;

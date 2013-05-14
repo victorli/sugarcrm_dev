@@ -289,7 +289,6 @@ class PopupSmarty extends ListViewSmarty{
 		$params = array();
 		if(!empty($this->_popupMeta['orderBy'])){
 			$params['orderBy'] = $this->_popupMeta['orderBy'];
-			$params['overrideOrder'] = true;
 		}
 
 		if(file_exists('custom/modules/'.$this->module.'/metadata/metafiles.php')){

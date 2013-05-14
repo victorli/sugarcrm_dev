@@ -55,8 +55,9 @@ EOQ;
 			$this->addAlert($app_strings['ERROR_JS_ALERT_SYSTEM_CLASS'], $app_strings['ERROR_JS_ALERT_TIMEOUT_TITLE'],'', $app_strings['ERROR_JS_ALERT_TIMEOUT_MSG_2'], (session_cache_expire()) * 60 , 'index.php');
 		}
 	}
-	function addAlert($type, $name, $subtitle, $description, $countdown, $redirect=''){
-		$this->script .= 'addAlert("' . addslashes($type) .'", "' . addslashes($name). '","' . addslashes($subtitle). '", "'. addslashes(str_replace(array("\r", "\n"), array('','<br>'),$description)) . '",' . $countdown . ',"'.addslashes($redirect).'")' . "\n";
+	function addAlert($type, $name, $subtitle, $description, $countdown, $redirect='')
+    {
+        $this->script .= 'addAlert(' . json_encode($type) .',' . json_encode($name). ',' . json_encode($subtitle). ','. json_encode(str_replace(array("\r", "\n"), array('','<br>'),$description)) . ',' . $countdown . ','.json_encode($redirect).')' . "\n";
 	}
 
     function getScript()
@@ -145,21 +146,9 @@ EOQ;
 			////	END MEETING INTEGRATION
 			///////////////////////////////////////////////////////////////////
 
-			// sanitize topic
-			$meetingName = '';
-			if(!empty($row['name'])) {
-				$meetingName = from_html($row['name']);
-				// addAlert() uses double-quotes to pass to popup - escape double-quotes
-				//$meetingName = str_replace('"', '\"', $meetingName);
-			}
-
-			// sanitize agenda
-			$desc1 = '';
-			if(!empty($row['description'])) {
-				$desc1 = from_html($row['description']);
-				// addAlert() uses double-quotes to pass to popup - escape double-quotes
-				//$desc = str_replace('"', '\"', $desc);
-			}
+			$meetingName = from_html($row['name']);
+			$desc1 = from_html($row['description']);
+			$location = from_html($row['location']);
 
             $relatedToMeeting = $this->getRelatedName($row['parent_type'], $row['parent_id']);
 
@@ -170,7 +159,7 @@ EOQ;
 			// standard functionality
 			$this->addAlert($app_strings['MSG_JS_ALERT_MTG_REMINDER_MEETING'], $meetingName,
 				$app_strings['MSG_JS_ALERT_MTG_REMINDER_TIME'].$timedate->to_display_date_time($db->fromConvert($row['date_start'], 'datetime')),
-				$app_strings['MSG_JS_ALERT_MTG_REMINDER_LOC'].$row['location'].
+				$app_strings['MSG_JS_ALERT_MTG_REMINDER_LOC'].$location.
 				$description.
 				$instructions,
 				$timeStart - strtotime($alertDateTimeNow),

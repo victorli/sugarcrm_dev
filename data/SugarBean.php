@@ -1697,6 +1697,8 @@ class SugarBean
 
         $this->handle_remaining_relate_fields($exclude);
 
+        $this->update_parent_relationships($exclude);
+
         $this->handle_request_relate($new_rel_id, $new_rel_link);
     }
 
@@ -1869,6 +1871,83 @@ class SugarBean
         }
 
         return $modified_relationships;
+    }
+
+
+    /**
+     * Updates relationships based on changes to fields of type 'parent' which
+     * may or may not have links associated with them
+     *
+     * @param array $exclude
+     */
+    protected function update_parent_relationships($exclude = array())
+    {
+        foreach ($this->field_defs as $def)
+        {
+            if (!empty($def['type']) && $def['type'] == "parent")
+            {
+                if (empty($def['type_name']) || empty($def['id_name']))
+                    continue;
+                $typeField = $def['type_name'];
+                $idField = $def['id_name'];
+                if (in_array($idField, $exclude))
+                    continue;
+                //Determine if the parent field has changed.
+                if (
+                    //First check if the fetched row parent existed and now we no longer have one
+                    (!empty($this->fetched_row[$typeField]) && !empty($this->fetched_row[$idField])
+                        && (empty($this->$typeField) || empty($this->$idField))
+                    ) ||
+                    //Next check if we have one now that doesn't match the fetch row
+                    (!empty($this->$typeField) && !empty($this->$idField) &&
+                        (empty($this->fetched_row[$typeField]) || empty($this->fetched_row[$idField])
+                        || $this->fetched_row[$idField] != $this->$idField)
+                    ) ||
+                    // Check if we are deleting the bean, should remove the bean from any relationships
+                    $this->deleted == 1
+                ) {
+                    $parentLinks = array();
+                    //Correlate links to parent field module types
+                    foreach ($this->field_defs as $ldef)
+                    {
+                        if (!empty($ldef['type']) && $ldef['type'] == "link" && !empty($ldef['relationship']))
+                        {
+                            $relDef = SugarRelationshipFactory::getInstance()->getRelationshipDef($ldef['relationship']);
+                            if (!empty($relDef['relationship_role_column']) && $relDef['relationship_role_column'] == $typeField)
+                            {
+                                $parentLinks[$relDef['lhs_module']] = $ldef;
+                            }
+                        }
+                    }
+
+                    //If we used to have a parent, call remove on that relationship
+                    if (!empty($this->fetched_row[$typeField]) && !empty($this->fetched_row[$idField])
+                        && !empty($parentLinks[$this->fetched_row[$typeField]])
+                        && ($this->fetched_row[$idField] != $this->$idField))
+                    {
+                        $oldParentLink = $parentLinks[$this->fetched_row[$typeField]]['name'];
+                        //Load the relationship
+                        if ($this->load_relationship($oldParentLink))
+                        {
+                            $this->$oldParentLink->delete($this->fetched_row[$idField]);
+                            // Should resave the old parent
+                            SugarRelationship::addToResaveList(BeanFactory::getBean($this->fetched_row[$typeField], $this->fetched_row[$idField]));
+                        }
+                    }
+
+                    // If both parent type and parent id are set, save it unless the bean is being deleted
+                    if (!empty($this->$typeField) && !empty($this->$idField) && !empty($parentLinks[$this->$typeField]['name']) && $this->deleted != 1)
+                    {
+                        //Now add the new parent
+                        $parentLink = $parentLinks[$this->$typeField]['name'];
+                        if ($this->load_relationship($parentLink))
+                        {
+                            $this->$parentLink->add($this->$idField);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -2209,6 +2288,10 @@ class SugarBean
         $row = $this->convertRow($row);
         $this->fetched_row=$row;
         $this->populateFromRow($row);
+
+        // fix defect #52438. implement the same logic as sugar_currency_format
+        // Smarty modifier does.
+        $this->populateCurrencyFields();
 
         global $module, $action;
         //Just to get optimistic locking working for this release
@@ -3295,6 +3378,9 @@ class SugarBean
                         }
                         if(isset($data['additionalFields'])){
                             foreach($data['additionalFields'] as $k=>$v){
+                                if (!empty($data['id_name']) && $data['id_name'] == $v && !empty($fields[$data['id_name']])) {
+                                    continue;
+                                }
                                 $ret_array['select'] .= ' , ' . $params['join_table_alias'] . '.' . $k . ' ' . $v;
                             }
                         }
@@ -3589,6 +3675,7 @@ class SugarBean
                 //instantiate a new class each time. This is because php5 passes
                 //by reference by default so if we continually update $this, we will
                 //at the end have a list of all the same objects
+                /** @var SugarBean $temp */
                 $temp = new $class();
 
                 foreach($this->field_defs as $field=>$value)
@@ -3620,29 +3707,7 @@ class SugarBean
 
                 // fix defect #44206. implement the same logic as sugar_currency_format
                 // Smarty modifier does.
-                if (property_exists($temp, 'currency_id') && -99 == $temp->currency_id)
-                {
-                    // manually retrieve default currency object as long as it's
-                    // not stored in database and thus cannot be joined in query
-                    require_once 'modules/Currencies/Currency.php';
-                    $currency = new Currency();
-                    $currency->retrieve($temp->currency_id);
-
-                    // walk through all currency-related fields
-                    foreach ($temp->field_defs as $temp_field)
-                    {
-                        if (isset($temp_field['type']) && 'relate' == $temp_field['type']
-                            && isset($temp_field['module'])  && 'Currencies' == $temp_field['module']
-                            && isset($temp_field['id_name']) && 'currency_id' == $temp_field['id_name'])
-                        {
-                            // populate related properties manually
-                            $temp_property     = $temp_field['name'];
-                            $currency_property = $temp_field['rname'];
-                            $temp->$temp_property = $currency->$currency_property;
-                        }
-                    }
-                }
-
+                $temp->populateCurrencyFields();
                 $list[] = $temp;
 
                 $index++;
@@ -3652,7 +3717,6 @@ class SugarBean
 
             $rows_found = $row_offset + count($list);
 
-            unset($list[$limit - 1]);
             if(!$toEnd)
             {
                 $next_offset--;
@@ -5597,5 +5661,32 @@ class SugarBean
             $result = $this->custom_fields->getJOIN($expandedList, $includeRelates, $where);
         }
         return $result;
+    }
+
+    /**
+     * Populates currency fields in case of currency is default and it's
+     * attributes are not retrieved from database (bugs ##44206, 52438)
+     */
+    protected function populateCurrencyFields()
+    {
+        if (property_exists($this, 'currency_id') && $this->currency_id == -99) {
+            // manually retrieve default currency object as long as it's
+            // not stored in database and thus cannot be joined in query
+            $currency = BeanFactory::getBean('Currencies', $this->currency_id);
+
+            if ($currency) {
+                // walk through all currency-related fields
+                foreach ($this->field_defs as $this_field) {
+                    if (isset($this_field['type']) && $this_field['type'] == 'relate'
+                        && isset($this_field['module'])  && $this_field['module'] == 'Currencies'
+                        && isset($this_field['id_name']) && $this_field['id_name'] == 'currency_id') {
+                        // populate related properties manually
+                        $this_property = $this_field['name'];
+                        $currency_property = $this_field['rname'];
+                        $this->$this_property = $currency->$currency_property;
+                    }
+                }
+            }
+        }
     }
 }

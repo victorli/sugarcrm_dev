@@ -253,19 +253,35 @@ class Dashlet
         $autoRefreshSS->assign('dashletOffset', $dashletOffset);
         $autoRefreshSS->assign('dashletId', $this->id);
         $autoRefreshSS->assign('strippedDashletId', str_replace("-","",$this->id)); //javascript doesn't like "-" in function names
-        if ( empty($this->autoRefresh) ) {
-            $this->autoRefresh = 0;
-        }
-        elseif ( !empty($sugar_config['dashlet_auto_refresh_min']) && $sugar_config['dashlet_auto_refresh_min'] > $this->autoRefresh ) {
-            $this->autoRefresh = $sugar_config['dashlet_auto_refresh_min'];
-        }
-        $autoRefreshSS->assign('dashletRefreshInterval', $this->autoRefresh * 1000);
+        $autoRefreshSS->assign('dashletRefreshInterval', $this->getAutoRefresh());
         $tpl = 'include/Dashlets/DashletGenericAutoRefresh.tpl';
         if ( $_REQUEST['action'] == "DynamicAction" ) {
             $tpl = 'include/Dashlets/DashletGenericAutoRefreshDynamic.tpl';
         }
 
         return $autoRefreshSS->fetch($tpl);
+    }
+
+    protected function getAutoRefresh()
+    {
+        global $sugar_config;
+
+        if (empty($this->autoRefresh) || $this->autoRefresh == -1)
+        {
+            $autoRefresh = 0;
+        }
+        elseif (!empty($sugar_config['dashlet_auto_refresh_min'])
+                && $this->autoRefresh > 0
+                && $sugar_config['dashlet_auto_refresh_min'] > $this->autoRefresh)
+        {
+            $autoRefresh = $sugar_config['dashlet_auto_refresh_min'];
+        }
+        else
+        {
+            $autoRefresh = $this->autoRefresh;
+        }
+
+        return $autoRefresh * 1000;
     }
 
     /**

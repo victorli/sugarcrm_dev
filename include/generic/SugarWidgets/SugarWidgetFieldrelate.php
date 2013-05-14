@@ -82,21 +82,23 @@ class SugarWidgetFieldRelate extends SugarWidgetReportField
     private function displayInputQuery($layout_def)
     {
         $title = $layout_def['rname'];
-        if (isset($layout_def['custom_module']) || isset($layout_def['ext2'])) {
-            $bean = BeanFactory::getBean($layout_def['module']);
-            $layout_def['table'] = $bean->table_name;
-            if (isset($bean->field_defs[$title]['db_concat_fields'])){
-                $layout_def['db_concat_fields'] = $bean->field_defs[$title]['db_concat_fields'];
-            }
+        $bean = isset($layout_def['module']) ? BeanFactory::getBean($layout_def['module']) : NULL;
+        $table = empty($bean) ? $layout_def['table'] : $bean->table_name;
+        $concat_fields = isset($layout_def['db_concat_fields']) ? $layout_def['db_concat_fields'] : '';
+
+        if (empty($concat_fields) && !empty($bean) && isset($bean->field_defs[$title]['db_concat_fields']))
+        {
+            $concat_fields = $bean->field_defs[$title]['db_concat_fields'];
         }
-        if (isset($layout_def['db_concat_fields'])) {
-            $title = $this->reporter->db->concat($layout_def['table'], $layout_def['db_concat_fields']);
+        if (!empty($concat_fields))
+        {
+            $title = $this->reporter->db->concat($table, $concat_fields);
         }
 
         $query = "SELECT
                 id,
                 $title title
-            FROM {$layout_def['table']}
+            FROM $table
             WHERE deleted = 0
             ORDER BY title ASC";
         return $query;

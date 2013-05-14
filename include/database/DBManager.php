@@ -968,10 +968,25 @@ protected function checkQuery($sql, $object_name = false)
 	public function compareVarDefs($fielddef1, $fielddef2, $ignoreName = false)
 	{
 		foreach ( $fielddef1 as $key => $value ) {
-			if ( $key == 'name' && ( strtolower($fielddef1[$key]) == strtolower($fielddef2[$key]) || $ignoreName) )
+			if ($key == 'name' && $ignoreName)
 				continue;
-			if ( isset($fielddef2[$key]) && $fielddef1[$key] == $fielddef2[$key] )
-				continue;
+            if (isset($fielddef2[$key]))
+            {
+                if (!is_array($fielddef1[$key]) && !is_array($fielddef2[$key]))
+                {
+                    if (strtolower($fielddef1[$key]) == strtolower($fielddef2[$key]))
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (array_map('strtolower', $fielddef1[$key]) == array_map('strtolower',$fielddef2[$key]))
+                    {
+                        continue;
+                    }
+                }
+            }
 			//Ignore len if its not set in the vardef
 			if ($key == 'len' && empty($fielddef2[$key]))
 				continue;

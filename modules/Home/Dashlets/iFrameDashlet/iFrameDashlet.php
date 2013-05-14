@@ -50,24 +50,23 @@ class iFrameDashlet extends Dashlet {
         parent::Dashlet($id);
         $this->isConfigurable = true;
 
-        if(!empty($options['titleLabel'])) {
-        	$this->title = translate($options['titleLabel'], 'Home');
-        } else {
-	        if(empty($options['title'])) {
-	            $this->title = translate('LBL_DASHLET_TITLE', 'Home');
-	            $this->title = translate('LBL_DASHLET_DISCOVER_SUGAR_PRO', 'Home');
-	        } else {
-	            $this->title = $options['title'];
-	        }
+        if (empty($this->title)) {
+            $this->title = translate('LBL_DASHLET_TITLE', 'Home');
+            $this->title = translate('LBL_DASHLET_DISCOVER_SUGAR_PRO', 'Home');
         }
+
+        if (!empty($options['titleLabel'])) {
+            $this->title = translate($options['titleLabel'], 'Home');
+        } elseif (!empty($options['title'])) {
+            $this->title = $options['title'];
+        }
+
         if(empty($options['url'])) {
             $this->url = $this->defaultURL;
             $this->url = 'http://apps.sugarcrm.com/dashlet/go-pro.html?lang=@@LANG@@&edition=@@EDITION@@&ver=@@VER@@';
         } else {
             $this->url = $options['url'];
         }
-
-        $this->checkURL();
 
         if(empty($options['height']) || (int)$options['height'] < 1 ) {
             $this->height = 315;
@@ -83,7 +82,9 @@ class iFrameDashlet extends Dashlet {
         $scheme = parse_url($this->url, PHP_URL_SCHEME);
         if(!in_array($scheme, $this->allowed_schemes)) {
             $this->url = 'about:blank';
+            return false;
         }
+        return true;
     }
 
     function displayOptions() {
@@ -104,8 +105,8 @@ class iFrameDashlet extends Dashlet {
 			$ss->assign('autoRefreshOptions', $this->getAutoRefreshOptions());
 			$ss->assign('autoRefreshSelect', $this->autoRefresh);
 		}
-        
-        return  $ss->fetch('modules/Home/Dashlets/iFrameDashlet/configure.tpl');        
+
+        return  $ss->fetch($this->configureTpl);
     }
 
     function saveOptions($req) {
@@ -138,6 +139,13 @@ class iFrameDashlet extends Dashlet {
         if(empty($title)){
             $title = 'empty';
         }
-        return parent::display() . "<iframe class='teamNoticeBox' title='{$title}' src='{$out_url}' height='{$this->height}px'></iframe>";
+
+        $result = parent::display();
+        if ($this->checkURL()) {
+            $result .= "<iframe class='teamNoticeBox' title='{$title}' src='{$out_url}' height='{$this->height}px'></iframe>";
+        } else {
+            $result .= '<table cellpadding="0" cellspacing="0" width="100%" border="0" class="list view"><tr height="20"><td colspan="11"><em>' . translate('LBL_DASHLET_INCORRECT_URL', 'Home') . '</em></td></tr></table>';
+        }
+        return $result;
     }
 }

@@ -63,8 +63,15 @@ function smarty_function_sugar_replace_vars($params, &$smarty)
 
         $value = isset($fields[$match]) ? $fields[$match] : null;
         if (!is_null($value)) {
-			if (is_array($value) && isset($value['value']))
+            if (isset($value['function']['returns']) && $value['function']['returns'] == 'html')
+            {
+                $bean  = $smarty->get_template_vars('bean');
+                $value = $bean->$match;
+            }
+            else if (is_array($value) && isset($value['value']))
+            {
                 $value = $value['value'];
+            }
 
             if (isset($fields[$match]['type']) && $fields[$match]['type']=='enum'
 				&& isset($fields[$match]['options']) && isset($fields[$match]['options'][$value]))

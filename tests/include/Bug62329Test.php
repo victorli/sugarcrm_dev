@@ -1,4 +1,4 @@
-{*
+<?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
@@ -34,9 +34,26 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-*}
-{if $AUTHENTICATED}
-<div id="welcome">
-    {$APP.NTC_WELCOME}, <strong><a id="welcome_link" href='index.php?module=Users&action=EditView&record={$CURRENT_USER_ID}'>{$CURRENT_USER}</a></strong>{if !empty($LOGOUT_LINK) && !empty($LOGOUT_LABEL)} [ <a id="logout_link" href='{$LOGOUT_LINK}' class='utilsLink'>{$LOGOUT_LABEL}</a> ]{/if}
-</div>
-{/if}
+
+require_once('include/php-sql-parser.php');
+
+class Bug62329Test extends Sugar_PHPUnit_Framework_TestCase
+{
+
+    public function testEmptyProcessSelectExpr()
+    {
+
+        $parser = new PHPSQLParser();
+
+        //the key part of the sql string is the parenthesis.  This use case is more prone to fail in mssql environments
+        //this will eventually result in PHPSQLParser::process_select_expr() processing an empty string, which is the
+        //error we are testing for.
+
+        $sql = '(SELECT  contacts.*  FROM contacts  ) ORDER  BY  contacts.phone_work asc';
+        $sqlARR = $parser->parse($sql);
+
+        // assert an array was returned.  If an error occurred a php fatal error will bubble up and nothing will be returned
+        $this->assertInternalType('array', $sqlARR, "there was an error while parsing the sql string: ".$sql);
+
+    }
+}

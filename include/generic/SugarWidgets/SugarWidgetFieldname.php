@@ -42,6 +42,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 class SugarWidgetFieldName extends SugarWidgetFieldVarchar
 {
+    protected static $moduleSavePermissions = array();
 
     function SugarWidgetFieldName(&$layout_manager) {
         parent::SugarWidgetFieldVarchar($layout_manager);

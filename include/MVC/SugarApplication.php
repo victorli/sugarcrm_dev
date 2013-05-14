@@ -100,6 +100,8 @@ class SugarApplication
 		$server_unique_key = (isset($sugar_config['unique_key'])) ? $sugar_config['unique_key'] : '';
 		$allowed_actions = (!empty($this->controller->allowed_actions)) ? $this->controller->allowed_actions : $allowed_actions = array('Authenticate', 'Login', 'LoggedOut');
 
+        $authController = new AuthenticationController();
+        
 		if(($user_unique_key != $server_unique_key) && (!in_array($this->controller->action, $allowed_actions)) &&
 		   (!isset($_SESSION['login_error'])))
 		   {
@@ -118,13 +120,16 @@ class SugarApplication
 			        $this->controller->action = 'index';
 			    elseif($this->isModifyAction())
 			        $this->controller->action = 'index';
+                elseif ($this->controller->action == $this->default_action 
+                    && $this->controller->module == $this->default_module) {
+                    $this->controller->action = '';
+                    $this->controller->module = '';
+                }
 			}
 
-			header('Location: index.php?action=Login&module=Users'.$this->createLoginVars());
-			exit ();
+            $authController->authController->redirectToLogin($this);
 		}
 
-		$authController = new AuthenticationController((!empty($GLOBALS['sugar_config']['authenticationClass'])? $GLOBALS['sugar_config']['authenticationClass'] : 'SugarAuthenticate'));
 		$GLOBALS['current_user'] = new User();
 		if(isset($_SESSION['authenticated_user_id'])){
 			// set in modules/Users/Authenticate.php

@@ -39,7 +39,7 @@ function checkMinSupported(c,s){var current=c.split(".");var supported=s.split("
 return true;}
 function checkMaxSupported(c,s){var current=c.split(".");var supported=s.split(".");for(var i in supported){if(current[i]&&parseInt(current[i])>parseInt(supported[i]))return false;else if(current[i]&&parseInt(current[i])<parseInt(supported[i]))return true;}
 return true;}
-SUGAR.isSupportedBrowser=function(){var supportedBrowsers={msie:{min:8,max:10},safari:{min:534},mozilla:{min:19},chrome:{min:537.22}};var current=String($.browser.version);var supported;if($.browser.msie){supported=supportedBrowsers['msie'];}
+SUGAR.isSupportedBrowser=function(){var supportedBrowsers={msie:{min:8,max:10},safari:{min:534},mozilla:{min:20.0},chrome:{min:537.31}};var current=String($.browser.version);var supported;if($.browser.msie){supported=supportedBrowsers['msie'];}
 else if($.browser.mozilla){supported=supportedBrowsers['mozilla'];}
 else{$.browser.chrome=/chrome/.test(navigator.userAgent.toLowerCase());if($.browser.chrome){supported=supportedBrowsers['chrome'];}
 else if($.browser.safari){supported=supportedBrowsers['safari'];}}

@@ -240,7 +240,44 @@ function generateComposeDataPackage($data,$forFullCompose = TRUE, $bean = null)
 
         // If it's a 'Reply All' action, append the CC addresses
         if ($data['reply'] == 'replyAll') {
-            $ret['cc_addrs'] = from_html($ie->email->to_addrs);
+            global $current_user;
+
+            $ccEmails = $ie->email->to_addrs;
+
+            if (!empty($ie->email->cc_addrs))
+            {
+                $ccEmails .= ", " . $ie->email->cc_addrs;
+            }
+
+            $myEmailAddresses = array();
+            foreach ($current_user->emailAddress->addresses as $p)
+            {
+                array_push($myEmailAddresses, $p['email_address']);
+            }
+
+            //remove current user's email address (if contained in To/CC)
+            $ccEmailsArr = explode(", ", $ccEmails);
+
+            foreach ($ccEmailsArr as $p=>$q)
+            {
+                preg_match('/<(.*?)>/', $q, $email);
+                if (isset($email[1]))
+                {
+                    $checkemail = $email[1];
+                }
+                else
+                {
+                    $checkemail = $q;
+                }
+                if (in_array($checkemail, $myEmailAddresses))
+                {
+                    unset($ccEmailsArr[$p]);
+                }
+            }
+
+            $ccEmails = implode(", ", $ccEmailsArr);
+
+            $ret['cc_addrs'] = from_html($ccEmails);
         }
 
 	} else {

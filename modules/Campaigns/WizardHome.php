@@ -105,9 +105,9 @@ global $currentModule;
     
     $ss->assign("CAMPAIGN_TBL", create_campaign_summary ($focus));
     $ss->assign("TARGETS_TBL", create_target_summary ($focus));
-    $ss->assign("TRACKERS_TBL", create_tracker_summary ($focus));
     if($focus->campaign_type =='NewsLetter' || $focus->campaign_type =='Email'){
         $ss->assign("MARKETING_TBL", create_marketing_summary ($focus));
+        $ss->assign("TRACKERS_TBL", create_tracker_summary ($focus));
     }
     
     $camp_url = "index.php?action=WizardNewsletter&module=Campaigns&return_module=Campaigns&return_action=WizardHome";
@@ -461,7 +461,12 @@ function create_wiz_menu_items($type,$mrkt_string,$camp_url,$summ_url){
     
     $steps[$mod_strings['LBL_NAVIGATION_MENU_GEN1']]          = file_exists('custom/modules/Campaigns/tpls/WizardCampaignHeader.tpl') ? 'custom/modules/Campaigns/tpls/WizardCampaignHeader.tpl' : 'modules/Campaigns/tpls/WizardCampaignHeader.tpl';
     $steps[$mod_strings['LBL_NAVIGATION_MENU_GEN2']]          = file_exists('custom/modules/Campaigns/tpls/WizardCampaignBudget.tpl') ? 'custom/modules/Campaigns/tpls/WizardCampaignBudget.tpl' : 'modules/Campaigns/tpls/WizardCampaignBudget.tpl';
-    $steps[$mod_strings['LBL_NAVIGATION_MENU_TRACKERS']]      = file_exists('custom/modules/Campaigns/tpls/WizardCampaignTracker.tpl') ? 'custom/modules/Campaigns/tpls/WizardCampaignTracker.tpl' : 'modules/Campaigns/tpls/WizardCampaignTracker.tpl';
+
+    //do not show tracker step for general campaigns (only for newsletter/email)
+    if($type != 'general'){
+        $steps[$mod_strings['LBL_NAVIGATION_MENU_TRACKERS']]      = file_exists('custom/modules/Campaigns/tpls/WizardCampaignTracker.tpl') ? 'custom/modules/Campaigns/tpls/WizardCampaignTracker.tpl' : 'modules/Campaigns/tpls/WizardCampaignTracker.tpl';
+    }
+
     if($type == 'newsletter'){
         $steps[$mod_strings['LBL_NAVIGATION_MENU_SUBSCRIPTIONS']] = file_exists('custom/modules/Campaigns/tpls/WizardCampaignTargetList.tpl') ? 'custom/modules/Campaigns/tpls/WizardCampaignTargetList.tpl' : 'modules/Campaigns/tpls/WizardCampaignTargetList.tpl';
     }else{

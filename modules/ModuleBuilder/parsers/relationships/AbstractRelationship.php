@@ -333,6 +333,8 @@ class AbstractRelationship
         $vardef [ 'type' ] = 'link' ;
         $vardef [ 'relationship' ] = $relationshipName ;
         $vardef [ 'source' ] = 'non-db' ;
+        $vardef [ 'module' ] = $sourceModule ;
+        $vardef [ 'bean_name' ] = BeanFactory::getObjectName($sourceModule) ;
         if ($right_side)
         	$vardef [ 'side' ] = 'right' ;
         if (!empty($vname))

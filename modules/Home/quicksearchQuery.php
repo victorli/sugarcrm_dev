@@ -54,7 +54,7 @@ if(isset($_REQUEST['query']) && !empty($_REQUEST['query'])){
     foreach($data['conditions'] as $k=>$v){
         if (empty($data['conditions'][$k]['value']) && ($data['conditions'][$k]['op'] != quicksearchQuery::CONDITION_EQUAL)) 
         {
-            $data['conditions'][$k]['value']=$_REQUEST['query'];
+            $data['conditions'][$k]['value']=urldecode($_REQUEST['query']);
         }
     }
 }

@@ -186,7 +186,7 @@ echo $theProductName."&#8482; ".$mod_strings['LBL_AND']." Sugar&#8482; ".$mod_st
 <LI><?php echo $mod_strings['LBL_SOURCE_HTMLPURIFIER']; ?> (<a href="http://htmlpurifier.org/" target="_blank">http://htmlpurifier.org/</a>)</LI>
 <LI><?php echo $mod_strings['LBL_SOURCE_XHPROF']; ?> (<a href="https://github.com/facebook/xhprof" target="_blank">https://github.com/facebook/xhprof</a>)</LI>
 <LI><?php echo $mod_strings['LBL_SOURCE_ELASTICA']; ?> (<a href="https://github.com/ruflin/Elastica" target="_blank">https://github.com/ruflin/Elastica</a>)</LI>
-<LI><?php echo $mod_strings['LBL_SOURCE_FACEBOOK']; ?> (<a href="https://developers.facebook.com/web/" target="_blank">https://developers.facebook.com/web/</a>)</LI>
+<LI><?php echo $mod_strings['LBL_SOURCE_FACEBOOKSDK']; ?> (<a href="https://github.com/facebook/facebook-php-sdk" target="_blank">https://github.com/facebook/facebook-php-sdk</a>)</LI>
 <LI><?php echo $mod_strings['LBL_SOURCE_JQUERY']; ?> (<a href="http://jquery.com/" target="_blank">http://jquery.com</a>)</LI>
 <LI><?php echo $mod_strings['LBL_SOURCE_JQUERY_UI']; ?> (<a href="http://jqueryui.com/" target="_blank">http://jqueryui.com</a>)</LI>
 <LI><?php echo $mod_strings['LBL_SOURCE_OVERLIB']; ?> (<a href="http://www.macridesweb.com/oltest/" target="_blank">http://www.macridesweb.com/oltest</a>)</LI>

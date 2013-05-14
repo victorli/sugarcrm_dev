@@ -139,5 +139,12 @@ class UserTest extends Sugar_PHPUnit_Framework_TestCase
             $GLOBALS['db']->getOne("SELECT category FROM user_preferences WHERE assigned_user_id = '{$this->_user->id}' AND category = 'cat2'")
             );
     }
+
+    public function testPrimaryEmailShouldBeCaseInsensitive()
+    {
+        $this->_user->email1 = 'example@example.com';
+        $this->assertTrue($this->_user->isPrimaryEmail('EXAMPLE@example.com'));
+    }
+
 }
 

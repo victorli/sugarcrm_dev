@@ -461,7 +461,15 @@ class User extends Person {
 		$query = "SELECT count(id) as total from users WHERE ".self::getLicensedUsersWhere();
 
 
-		// wp: do not save user_preferences in this table, see user_preferences module
+        // is_group & portal should be set to 0 by default
+        if (!isset($this->is_group)) {
+            $this->is_group = 0;
+        }
+        if (!isset($this->portal_only)) {
+            $this->portal_only = 0;
+        }
+
+        // wp: do not save user_preferences in this table, see user_preferences module
 		$this->user_preferences = '';
 
 		// if this is an admin user, do not allow is_group or portal_only flag to be set.
@@ -1828,6 +1836,21 @@ EOQ;
             $result = ob_get_clean();
             $_POST = $backUpPost;
             return $result == true;
+        }
+    }
+
+    /**
+     * Checks if the passed email is primary.
+     * 
+     * @param string $email
+     * @return bool Returns TRUE if the passed email is primary.
+     */
+    public function isPrimaryEmail($email)
+    {
+        if (!empty($this->email1) && !empty($email) && strcasecmp($this->email1, $email) == 0) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

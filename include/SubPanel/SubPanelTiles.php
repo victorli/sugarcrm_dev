@@ -262,6 +262,10 @@ if(document.DetailView != null &&
 	        $rel->load_relationship_meta();
         }
 
+        // this array will store names of sub-panels that can contain items
+        // of each module
+        $module_sub_panels = array();
+
         foreach ($tabs as $tab)
 		{
 			//load meta definition of the sub-panel.
@@ -290,6 +294,23 @@ if(document.DetailView != null &&
 					}
 				}
 			}
+
+            if ($thisPanel->isCollection()) {
+                // collect names of sub-panels that may contain items of each module
+                $collection_list = $thisPanel->get_inst_prop_value('collection_list');
+                if (is_array($collection_list)) {
+                    foreach ($collection_list as $data) {
+                        if (!empty($data['module'])) {
+                            $module_sub_panels[$data['module']][$tab] = true;
+                        }
+                    }
+                }
+            } else {
+                $module = $thisPanel->get_module_name();
+                if (!empty($module)) {
+                    $module_sub_panels[$module][$tab] = true;
+                }
+            }
 
 			echo '<li class="noBullet" id="whole_subpanel_' . $tab . '">';
 
@@ -419,6 +440,14 @@ EOQ;
 EOQ;
         }
 
+        $module_sub_panels = array_map('array_keys', $module_sub_panels);
+        $module_sub_panels = json_encode($module_sub_panels);
+        echo <<<EOQ
+<script>
+var ModuleSubPanels = $module_sub_panels;
+</script>
+EOQ;
+
 		$ob_contents = ob_get_contents();
 		ob_end_clean();
 		return $ob_contents;
@@ -458,7 +487,10 @@ EOQ;
 			}
 			else
 			{
-				$buttons[] = $layout_manager->widgetDisplay($widget_data);
+                $button = $layout_manager->widgetDisplay($widget_data);
+                if ($button) {
+                    $buttons[] = $button;
+                }
 			}
 
         }

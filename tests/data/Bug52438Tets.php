@@ -1,5 +1,4 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
@@ -36,74 +35,61 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
-
 /**
- * This file is used to control the authentication process. 
- * It will call on the user authenticate and controll redirection 
- * based on the users validation
- *
+ * @ticket 52438
  */
-
-
-require_once('modules/Users/authentication/SugarAuthenticate/SugarAuthenticate.php');
-require_once('modules/Users/authentication/SAMLAuthenticate/lib/onelogin/saml.php');
-class SAMLAuthenticate extends SugarAuthenticate {
-	var $userAuthenticateClass = 'SAMLAuthenticateUser';
-	var $authenticationDir = 'SAMLAuthenticate';
-	/**
-	 * Constructs SAMLAuthenticate
-	 * This will load the user authentication class
-	 *
-	 * @return SAMLAuthenticate
-	 */
-	function SAMLAuthenticate(){
-		parent::SugarAuthenticate();
-	}
-
+class Bug52438Test extends Sugar_PHPUnit_Framework_TestCase
+{
     /**
-     * pre_login
-     * 
-     * Override the pre_login function from SugarAuthenticate so that user is
-     * redirected to SAML entry point if other is not specified
-     */
-    function pre_login()
-    {
-        parent::pre_login();
-
-        $this->redirectToLogin($GLOBALS['app']);
-    }
-
-    /**
-     * Called when a user requests to logout
+     * Temporary opportunity
      *
-     * Override default behavior. Redirect user to special "Logged Out" page in
-     * order to prevent automatic logging in.
+     * @var Opportunity
      */
-    public function logout() {
-        session_destroy();
-        ob_clean();
-        header('Location: index.php?module=Users&action=LoggedOut');
-        sugar_cleanup(true);
+    protected $opportunity;
+
+    /**
+     * Sets up the fixture, for example, open a network connection.
+     * This method is called before a test is executed.
+     *
+     * Creates a temporary opportunity
+     */
+    public function setUp()
+    {
+        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+
+        $this->opportunity = new Opportunity();
+        $this->opportunity->currency_id = -99;
+        $this->opportunity->save();
     }
 
     /**
-     * Redirect to login page
-     * 
-     * @param SugarApplication $app
+     * Tears down the fixture, for example, close a network connection.
+     * This method is called after a test is executed.
+     *
+     * Removes temporary opportunity
      */
-    public function redirectToLogin(SugarApplication $app)
+    public function tearDown()
     {
-        require(get_custom_file_if_exists('modules/Users/authentication/SAMLAuthenticate/settings.php'));
+        if (!empty($this->opportunity)) {
+            $this->opportunity->mark_deleted($this->opportunity->id);
+        }
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        unset($GLOBALS['current_user']);
+    }
 
-        $loginVars = $app->createLoginVars();
+    /**
+     * Tests that currency-related properties are filled in at model layer
+     * even when opportunity currency is the default one.
+     */
+    public function testDefaultCurrencyFieldsArePopulated()
+    {
+        $opportunity = new Opportunity();
 
-        // $settings - variable from modules/Users/authentication/SAMLAuthenticate/settings.php
-        $settings->assertion_consumer_service_url .= htmlspecialchars($loginVars); 
-        
-        $authRequest = new SamlAuthRequest($settings);
-        $url = $authRequest->create();
+        // disable row level security just to simplify the test
+        $opportunity->disable_row_level_security = true;
+        $opportunity->retrieve($this->opportunity->id);
 
-        $app->redirect($url);
+        $this->assertNotEmpty($opportunity->currency_name);
+        $this->assertNotEmpty($opportunity->currency_symbol);
     }
 }

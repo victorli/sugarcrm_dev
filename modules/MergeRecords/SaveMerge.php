@@ -101,8 +101,11 @@ $exclude = explode(',', $_REQUEST['merged_links']);
 if (is_array($_POST['merged_ids'])) {
     foreach ($_POST['merged_ids'] as $id) {
         require_once ($focus->merge_bean_file_path);
-        $mergesource = new $focus->merge_bean_class();
-        $mergesource->retrieve($id);        
+        $mergesource = new $focus->merge_bean_class();      
+        if (!$mergesource->retrieve($id))
+        {
+            continue;
+        }		
         //kbrill Bug #13826
         foreach ($linked_fields as $name => $properties) {
         	if ($properties['name']=='modified_user_link' || in_array($properties['name'], $exclude))
@@ -146,8 +149,10 @@ if (is_array($_POST['merged_ids'])) {
 }
 $GLOBALS['log']->debug("Merged record with id of ".$return_id);
 
-header("Location: index.php?action=$return_action&module=$return_module&record=$return_id");
-
+//do not redirect if noRedirect flag is set.  This is mostly used by Unit tests
+if(empty($_REQUEST['noRedirect'])){
+    header("Location: index.php?action=$return_action&module=$return_module&record=$return_id");
+}
 
 //This function will compare the email addresses to be merged and only add the email id's
 //of the email addresses that are not duplicates.

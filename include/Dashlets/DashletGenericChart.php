@@ -348,13 +348,7 @@ abstract class DashletGenericChart extends Dashlet
         $autoRefreshSS->assign('dashletOffset', $dashletOffset);
         $autoRefreshSS->assign('dashletId', $this->id);
         $autoRefreshSS->assign('strippedDashletId', str_replace("-","",$this->id)); //javascript doesn't like "-" in function names
-        if ( empty($this->autoRefresh) ) {
-            $this->autoRefresh = 0;
-        }
-        elseif ( !empty($sugar_config['dashlet_auto_refresh_min']) && $sugar_config['dashlet_auto_refresh_min'] > $this->autoRefresh ) {
-            $this->autoRefresh = $sugar_config['dashlet_auto_refresh_min'];
-        }
-        $autoRefreshSS->assign('dashletRefreshInterval', $this->autoRefresh * 1000);
+        $autoRefreshSS->assign('dashletRefreshInterval', $this->getAutoRefresh());
         $autoRefreshSS->assign('url', "predefined_chart");
         $tpl = 'include/Dashlets/DashletGenericAutoRefresh.tpl';
         if ( $_REQUEST['action'] == "DynamicAction" ) {

@@ -496,6 +496,7 @@ class DynamicField {
     function fieldExists($name = '', $type = ''){
         // must get the vardefs from the GLOBAL array as $bean->field_defs does not contain the values from the cache at this point
         // TODO: fix this - saveToVardefs() updates GLOBAL['dictionary'] correctly, obtaining its information directly from the fields_meta_data table via buildCache()...
+        $name = $this->getDBName($name);
         $vardefs = $GLOBALS['dictionary'][$this->bean->object_name]['fields'];
         if(!empty($vardefs)){
             if(empty($type) && empty($name))
