@@ -34,17 +34,14 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-class Bug30709_Part_2_Test extends  Sugar_PHPUnit_Framework_TestCase {
 
-function setUp() {
-    //Create the language files with bad name
-    if(file_exists('custom/include/language/en_us.lang.php')) {
-       copy('custom/include/language/en_us.lang.php', 'custom/include/language/en_us.lang.php.backup');
-    }
-	
-    if( $fh = @fopen('custom/include/language/en_us.lang.php', 'w+') )
+class Bug30709_Part_2_Test extends Sugar_PHPUnit_Framework_TestCase
+{
+    protected function setUp()
     {
-$string = <<<EOQ
+        sugar_mkdir('custom/include/language', 0777, true);
+
+        $string = <<<EOQ
 <?php
 \$GLOBALS['app_list_strings'] = array (
   'test'=>array(
@@ -135,51 +132,32 @@ $string = <<<EOQ
     'Library' => 'Library',
     'EmailAddresses' => 'Email Address',
     'KBDocuments' => 'Knowledge Base',
-    'my_personal_module' => 'My Personal Module',    
+    'my_personal_module' => 'My Personal Module',
   ),
 );
 
 \$GLOBALS['app_strings']['LBL_TEST'] = 'This is a test';
 EOQ;
-       fputs( $fh, $string);
-       fclose( $fh );
+
+        file_put_contents('custom/include/language/en_us.lang.php', $string);
+    }
+
+    protected function tearDown()
+    {
+        unlink('custom/include/language/en_us.lang.php');
+    }
+
+    public function testDropdownFixed()
+    {
+        require_once('modules/UpgradeWizard/uw_utils.php');
+        fix_dropdown_list();
+
+        unset($GLOBALS['app_list_strings']);
+        require('custom/include/language/en_us.lang.php');
+        $this->assertEquals(count($GLOBALS['app_list_strings']), 2);
+        $this->assertArrayHasKey('my_personal_module', $GLOBALS['app_list_strings']['moduleList']);
+        $this->assertEquals($GLOBALS['app_list_strings']['moduleList']['Accounts'], 'Accounts Module');
+        $this->assertEquals(count($GLOBALS['app_strings']), 1);
+        $this->assertEquals($GLOBALS['app_strings']['LBL_TEST'], 'This is a test');
     }
 }
-
-function tearDown() {
-    if(file_exists('custom/include/language/en_us.lang.php.backup')) {
-       copy('custom/include/language/en_us.lang.php.backup', 'custom/include/language/en_us.lang.php');
-       unlink('custom/include/language/en_us.lang.php.backup');  
-    } else {
-       unlink('custom/include/language/en_us.lang.php');
-    }
-    
-    if(file_exists('custom/include/language/en_us.lang.php.bak')) {
-       unlink('custom/include/language/en_us.lang.php.bak');
-    }   
-
-    $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
-    $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
-}
-
-function test_dropdown_fixed() {	
-    require_once('modules/UpgradeWizard/uw_utils.php');
-    fix_dropdown_list();
-        
-    //Check to make sure we don't have the buggy format where '$GLOBALS["app_list_strings"] = array (...' was declared
-    $contents = file_get_contents('custom/include/language/en_us.lang.php');
-    //$this->assertFalse(preg_match('/\$GLOBALS\[\s*[\"|\']app_list_strings[\"|\']\s*\]\s+=\s+array\s+\(/', $contents));
-
-    unset($GLOBALS['app_list_strings']);
-    require('custom/include/language/en_us.lang.php');
-    $this->assertEquals(count($GLOBALS['app_list_strings']),2);
-    $this->assertTrue(isset($GLOBALS['app_list_strings']['moduleList']['my_personal_module']));
-    $this->assertEquals($GLOBALS['app_list_strings']['moduleList']['Accounts'],'Accounts Module');
-    $this->assertEquals(count($GLOBALS['app_strings']),1);
-    $this->assertEquals($GLOBALS['app_strings']['LBL_TEST'],'This is a test');
-}
-
-
-}
-
-?>

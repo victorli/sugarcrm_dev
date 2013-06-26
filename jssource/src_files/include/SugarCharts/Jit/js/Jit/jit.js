@@ -13200,8 +13200,11 @@ $jit.BarChart = new Class({
       var titleArray = $.splat(values[i].titles);
       var barTotalValue = valArray.sum();
       var acum = 0;
+      if (typeof val.id == 'undefined') {
+        val.id = val.label;
+      }
       ch.push({
-        'id': prefix + val.label,
+        'id': prefix + val.id,
         'name': val.label,
         
         'data': {

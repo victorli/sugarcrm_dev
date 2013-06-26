@@ -669,7 +669,7 @@ class Email extends SugarBean {
 				$file = str_replace("\\", "", $file);
 				if(!empty($file)) {
 					//$fileLocation = $this->et->userCacheDir."/{$file}";
-					$fileGUID = substr($file, 0, 36);
+					$fileGUID = preg_replace('/[^a-z0-9\-]/', "", substr($file, 0, 36));
 					$fileLocation = $this->et->userCacheDir."/{$fileGUID}";
 					$filename = substr($file, 36, strlen($file)); // strip GUID	for PHPMailer class to name outbound file
 
@@ -710,7 +710,8 @@ class Email extends SugarBean {
 					$docRev->retrieve($doc->document_revision_id);
 
 					$filename = $docRev->filename;
-					$fileLocation = "upload://{$docRev->id}";
+					$docGUID = preg_replace('/[^a-z0-9\-]/', "", $docRev->id);
+					$fileLocation = "upload://{$docGUID}";
 					$mime_type = $docRev->file_mime_type;
 					$mail->AddAttachment($fileLocation,$locale->translateCharsetMIME(trim($filename), 'UTF-8', $OBCharset), 'base64', $mime_type);
 
@@ -746,7 +747,8 @@ class Email extends SugarBean {
 					$note->retrieve($noteId);
 					if (!empty($note->id)) {
 						$filename = $note->filename;
-						$fileLocation = "upload://{$note->id}";
+						$noteGUID = preg_replace('/[^a-z0-9\-]/', "", $note->id);
+						$fileLocation = "upload://{$noteGUID}";
 						$mime_type = $note->file_mime_type;
 						if (!$note->embed_flag) {
 							$mail->AddAttachment($fileLocation,$filename, 'base64', $mime_type);
@@ -760,7 +762,7 @@ class Email extends SugarBean {
 						} // if
 					} else {
 						//$fileLocation = $this->et->userCacheDir."/{$file}";
-						$fileGUID = substr($noteId, 0, 36);
+						$fileGUID = preg_replace('/[^a-z0-9\-]/', "", substr($noteId, 0, 36));
 						$fileLocation = $this->et->userCacheDir."/{$fileGUID}";
 						//$fileLocation = $this->et->userCacheDir."/{$noteId}";
 						$filename = substr($noteId, 36, strlen($noteId)); // strip GUID	for PHPMailer class to name outbound file

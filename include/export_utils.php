@@ -217,6 +217,8 @@ function export($type, $records = null, $members = false, $sample=false) {
     //set up the order on the header row
     $fields_array = get_field_order_mapping($focus->module_dir, $fields_array);
 
+
+
     //set up labels to be used for the header row
     $field_labels = array();
     foreach($fields_array as $key=>$dbname){
@@ -249,6 +251,8 @@ function export($type, $records = null, $members = false, $sample=false) {
         //this is a sample request with no data, so create fake datarows
          $content .= returnFakeDataRow($focus,$fields_array,$sampleRecordNum);
     }else{
+        $records = array();
+
         //process retrieved record
     	while($val = $db->fetchByAssoc($result, false)) {
 
@@ -315,19 +319,66 @@ function export($type, $records = null, $members = false, $sample=false) {
                 }
             }
 
-        array_push($new_arr, preg_replace("/\"/","\"\"", $value));
+
+            // Keep as $key => $value for post-processing
+            $new_arr[$key] = preg_replace("/\"/","\"\"", $value);
         }
-        $line = implode("\"".getDelimiter()."\"", $new_arr);
-        $line = "\"" .$line;
-        $line .= "\"\r\n";
-        $content .= $line;
+
+        // Use Bean ID as key for records
+        $records[$pre_id] = $new_arr;
     }
 
+        // Check if we're going to export non-primary emails
+        if ($focus->hasEmails() && in_array('email_addresses_non_primary', $fields_array))
+        {
+            // $records keys are bean ids
+            $keys = array_keys($records);
+
+            // Split the ids array into chunks of size 100
+            $chunks = array_chunk($keys, 100);
+
+            foreach ($chunks as $chunk)
+            {
+                // Pick all the non-primary mails for the chunk
+                $query =
+                    "
+                      SELECT eabr.bean_id, ea.email_address
+                      FROM email_addr_bean_rel eabr
+                      LEFT JOIN email_addresses ea ON ea.id = eabr.email_address_id
+                      WHERE eabr.bean_module = '{$focus->module_dir}'
+                      AND eabr.primary_address = '0'
+                      AND eabr.bean_id IN ('" . implode("', '", $chunk) . "')
+                      AND eabr.deleted != '1'
+                      ORDER BY eabr.bean_id, eabr.reply_to_address, eabr.primary_address DESC
+                    ";
+
+                $result = $db->query($query, true, $app_strings['ERR_EXPORT_TYPE'] . $type . ": <BR>." . $query);
+
+                while ($val = $db->fetchByAssoc($result, false)) {
+                    if (empty($records[$val['bean_id']]['email_addresses_non_primary'])) {
+                        $records[$val['bean_id']]['email_addresses_non_primary'] = $val['email_address'];
+                    } else {
+                        // No custom non-primary mail delimeter yet, use semi-colon
+                        $records[$val['bean_id']]['email_addresses_non_primary'] .= ';' . $val['email_address'];
+                    }
+                }
+            }
+        }
+
+        foreach($records as $record)
+        {
+            $line = implode("\"" . getDelimiter() . "\"", $record);
+            $line = "\"" . $line;
+            $line .= "\"\r\n";
+            $content .= $line;
+        }
 
     }
+
 	return $content;
 
 }
+
 
 function generateSearchWhere($module, $query) {//this function is similar with function prepareSearchForm() in view.list.php
     $seed = loadBean($module);
@@ -717,9 +768,9 @@ function get_field_order_mapping($name='',$reorderArr = '', $exclude = true){
 
     //define the ordering of fields, note that the key value is what is important, and should be the db field name
     $field_order_array = array();
-    $field_order_array['accounts'] = array( 'name'=>'Name', 'id'=>'ID', 'website'=>'Website', 'email_address' =>'Email Address', 'phone_office' =>'Office Phone', 'phone_alternate' => 'Alternate Phone', 'phone_fax' => 'Fax', 'billing_address_street' => 'Billing Street', 'billing_address_city' => 'Billing City', 'billing_address_state' => 'Billing State', 'billing_address_postalcode' => 'Billing Postal Code', 'billing_address_country' => 'Billing Country', 'shipping_address_street' => 'Shipping Street', 'shipping_address_city' => 'Shipping City', 'shipping_address_state' => 'Shipping State', 'shipping_address_postalcode' => 'Shipping Postal Code', 'shipping_address_country' => 'Shipping Country', 'description' => 'Description', 'account_type' => 'Type', 'industry' =>'Industry', 'annual_revenue' => 'Annual Revenue', 'employees' => 'Employees', 'sic_code' => 'SIC Code', 'ticker_symbol' => 'Ticker Symbol', 'parent_id' => 'Parent Account ID', 'ownership' =>'Ownership', 'campaign_id' =>'Campaign ID', 'rating' =>'Rating', 'assigned_user_name' =>'Assigned to',  'assigned_user_id' =>'Assigned User ID', 'team_id' =>'Team Id', 'team_name' =>'Teams', 'team_set_id' =>'Team Set ID', 'date_entered' =>'Date Created', 'date_modified' =>'Date Modified', 'modified_user_id' =>'Modified By', 'created_by' =>'Created By', 'deleted' =>'Deleted');
-    $field_order_array['contacts'] = array( 'first_name' => 'First Name', 'last_name' => 'Last Name', 'id'=>'ID', 'salutation' => 'Salutation', 'title' => 'Title', 'department' => 'Department', 'account_name' => 'Account Name', 'email_address' => 'Email Address', 'phone_mobile' => 'Phone Mobile','phone_work' => 'Phone Work', 'phone_home' => 'Phone Home',  'phone_other' => 'Phone Other','phone_fax' => 'Phone Fax', 'primary_address_street' => 'Primary Address Street', 'primary_address_city' => 'Primary Address City', 'primary_address_state' => 'Primary Address State', 'primary_address_postalcode' => 'Primary Address Postal Code', 'primary_address_country' => 'Primary Address Country', 'alt_address_street' => 'Alternate Address Street', 'alt_address_city' => 'Alternate Address City', 'alt_address_state' => 'Alternate Address State', 'alt_address_postalcode' => 'Alternate Address Postal Code', 'alt_address_country' => 'Alternate Address Country', 'description' => 'Description', 'birthdate' => 'Birthdate', 'lead_source' => 'Lead Source', 'campaign_id' => 'campaign_id', 'do_not_call' => 'Do Not Call', 'portal_name' => 'Portal Name', 'portal_active' => 'Portal Active', 'portal_password' => 'Portal Password', 'portal_app' => 'Portal Application', 'reports_to_id' => 'Reports to ID', 'assistant' => 'Assistant', 'assistant_phone' => 'Assistant Phone', 'picture' => 'Picture', 'assigned_user_name' => 'Assigned User Name', 'assigned_user_id' => 'Assigned User ID', 'team_name' => 'Teams', 'team_id' => 'Team id', 'team_set_id' => 'Team Set ID', 'date_entered' =>'Date Created', 'date_modified' =>'Date Modified', 'modified_user_id' =>'Modified By', 'created_by' =>'Created By', 'deleted' =>'Deleted');
-    $field_order_array['leads']    = array( 'first_name' => 'First Name', 'last_name' => 'Last Name', 'id'=>'ID', 'salutation' => 'Salutation', 'title' => 'Title', 'department' => 'Department', 'account_name' => 'Account Name', 'account_description' =>  'Account Description', 'website' =>  'Website', 'email_address' =>  'Email Address', 'phone_mobile' =>  'Phone Mobile', 'phone_work' =>  'Phone Work', 'phone_home' =>  'Phone Home', 'phone_other' =>  'Phone Other', 'phone_fax' =>  'Phone Fax', 'primary_address_street' =>  'Primary Address Street', 'primary_address_city' =>  'Primary Address City', 'primary_address_state' =>  'Primary Address State', 'primary_address_postalcode' =>  'Primary Address Postal Code', 'primary_address_country' =>  'Primary Address Country', 'alt_address_street' =>  'Alt Address Street', 'alt_address_city' =>  'Alt Address City', 'alt_address_state' =>  'Alt Address State', 'alt_address_postalcode' =>  'Alt Address Postalcode', 'alt_address_country' =>  'Alt Address Country', 'status' =>  'Status', 'status_description' =>  'Status Description', 'lead_source' =>  'Lead Source', 'lead_source_description' =>  'Lead Source Description', 'description'=>'Description', 'converted' =>  'Converted', 'opportunity_name' =>  'Opportunity Name', 'opportunity_amount' =>  'Opportunity Amount', 'refered_by' =>  'Referred By', 'campaign_id' =>  'campaign_id', 'do_not_call' =>  'Do Not Call', 'portal_name' =>  'Portal Name', 'portal_app' =>  'Portal Application', 'reports_to_id' =>  'Reports To ID', 'assistant' =>  'Assistant', 'assistant_phone' =>  'Assistant Phone', 'birthdate'=>'Birthdate', 'contact_id' =>  'Contact ID', 'account_id' =>  'Account ID', 'opportunity_id' =>  'Opportunity ID',  'assigned_user_name' =>  'Assigned User Name', 'assigned_user_id' =>  'Assigned User ID', 'team_name' =>  'Teams', 'team_id' =>  'Team id', 'team_set_id' =>  'Team Set ID', 'date_entered' =>  'Date Created', 'date_modified' =>  'Date Modified', 'created_by' =>  'Created By ID', 'modified_user_id' =>  'Modified By ID', 'deleted' =>  'Deleted');
+    $field_order_array['accounts'] = array( 'name'=>'Name', 'id'=>'ID', 'website'=>'Website', 'email_address' =>'Email Address', 'email_addresses_non_primary' => 'Non Primary E-mails', 'phone_office' =>'Office Phone', 'phone_alternate' => 'Alternate Phone', 'phone_fax' => 'Fax', 'billing_address_street' => 'Billing Street', 'billing_address_city' => 'Billing City', 'billing_address_state' => 'Billing State', 'billing_address_postalcode' => 'Billing Postal Code', 'billing_address_country' => 'Billing Country', 'shipping_address_street' => 'Shipping Street', 'shipping_address_city' => 'Shipping City', 'shipping_address_state' => 'Shipping State', 'shipping_address_postalcode' => 'Shipping Postal Code', 'shipping_address_country' => 'Shipping Country', 'description' => 'Description', 'account_type' => 'Type', 'industry' =>'Industry', 'annual_revenue' => 'Annual Revenue', 'employees' => 'Employees', 'sic_code' => 'SIC Code', 'ticker_symbol' => 'Ticker Symbol', 'parent_id' => 'Parent Account ID', 'ownership' =>'Ownership', 'campaign_id' =>'Campaign ID', 'rating' =>'Rating', 'assigned_user_name' =>'Assigned to',  'assigned_user_id' =>'Assigned User ID', 'team_id' =>'Team Id', 'team_name' =>'Teams', 'team_set_id' =>'Team Set ID', 'date_entered' =>'Date Created', 'date_modified' =>'Date Modified', 'modified_user_id' =>'Modified By', 'created_by' =>'Created By', 'deleted' =>'Deleted');
+    $field_order_array['contacts'] = array( 'first_name' => 'First Name', 'last_name' => 'Last Name', 'id'=>'ID', 'salutation' => 'Salutation', 'title' => 'Title', 'department' => 'Department', 'account_name' => 'Account Name', 'email_address' => 'Email Address', 'email_addresses_non_primary' => 'Non Primary E-mails for Import', 'phone_mobile' => 'Phone Mobile','phone_work' => 'Phone Work', 'phone_home' => 'Phone Home',  'phone_other' => 'Phone Other','phone_fax' => 'Phone Fax', 'primary_address_street' => 'Primary Address Street', 'primary_address_city' => 'Primary Address City', 'primary_address_state' => 'Primary Address State', 'primary_address_postalcode' => 'Primary Address Postal Code', 'primary_address_country' => 'Primary Address Country', 'alt_address_street' => 'Alternate Address Street', 'alt_address_city' => 'Alternate Address City', 'alt_address_state' => 'Alternate Address State', 'alt_address_postalcode' => 'Alternate Address Postal Code', 'alt_address_country' => 'Alternate Address Country', 'description' => 'Description', 'birthdate' => 'Birthdate', 'lead_source' => 'Lead Source', 'campaign_id' => 'campaign_id', 'do_not_call' => 'Do Not Call', 'portal_name' => 'Portal Name', 'portal_active' => 'Portal Active', 'portal_password' => 'Portal Password', 'portal_app' => 'Portal Application', 'reports_to_id' => 'Reports to ID', 'assistant' => 'Assistant', 'assistant_phone' => 'Assistant Phone', 'picture' => 'Picture', 'assigned_user_name' => 'Assigned User Name', 'assigned_user_id' => 'Assigned User ID', 'team_name' => 'Teams', 'team_id' => 'Team id', 'team_set_id' => 'Team Set ID', 'date_entered' =>'Date Created', 'date_modified' =>'Date Modified', 'modified_user_id' =>'Modified By', 'created_by' =>'Created By', 'deleted' =>'Deleted');
+    $field_order_array['leads']    = array( 'first_name' => 'First Name', 'last_name' => 'Last Name', 'id'=>'ID', 'salutation' => 'Salutation', 'title' => 'Title', 'department' => 'Department', 'account_name' => 'Account Name', 'account_description' =>  'Account Description', 'website' =>  'Website', 'email_address' =>  'Email Address', 'email_addresses_non_primary' => 'Non Primary E-mails for Import', 'phone_mobile' =>  'Phone Mobile', 'phone_work' =>  'Phone Work', 'phone_home' =>  'Phone Home', 'phone_other' =>  'Phone Other', 'phone_fax' =>  'Phone Fax', 'primary_address_street' =>  'Primary Address Street', 'primary_address_city' =>  'Primary Address City', 'primary_address_state' =>  'Primary Address State', 'primary_address_postalcode' =>  'Primary Address Postal Code', 'primary_address_country' =>  'Primary Address Country', 'alt_address_street' =>  'Alt Address Street', 'alt_address_city' =>  'Alt Address City', 'alt_address_state' =>  'Alt Address State', 'alt_address_postalcode' =>  'Alt Address Postalcode', 'alt_address_country' =>  'Alt Address Country', 'status' =>  'Status', 'status_description' =>  'Status Description', 'lead_source' =>  'Lead Source', 'lead_source_description' =>  'Lead Source Description', 'description'=>'Description', 'converted' =>  'Converted', 'opportunity_name' =>  'Opportunity Name', 'opportunity_amount' =>  'Opportunity Amount', 'refered_by' =>  'Referred By', 'campaign_id' =>  'campaign_id', 'do_not_call' =>  'Do Not Call', 'portal_name' =>  'Portal Name', 'portal_app' =>  'Portal Application', 'reports_to_id' =>  'Reports To ID', 'assistant' =>  'Assistant', 'assistant_phone' =>  'Assistant Phone', 'birthdate'=>'Birthdate', 'contact_id' =>  'Contact ID', 'account_id' =>  'Account ID', 'opportunity_id' =>  'Opportunity ID',  'assigned_user_name' =>  'Assigned User Name', 'assigned_user_id' =>  'Assigned User ID', 'team_name' =>  'Teams', 'team_id' =>  'Team id', 'team_set_id' =>  'Team Set ID', 'date_entered' =>  'Date Created', 'date_modified' =>  'Date Modified', 'created_by' =>  'Created By ID', 'modified_user_id' =>  'Modified By ID', 'deleted' =>  'Deleted');
     $field_order_array['opportunities'] = array( 'name' => 'Opportunity Name', 'id'=>'ID', 'amount' => 'Opportunity Amount', 'currency_id' => 'Currency', 'date_closed' => 'Expected Close Date', 'sales_stage' => 'Sales Stage', 'probability' => 'Probability (%)', 'next_step' => 'Next Step', 'opportunity_type' => 'Opportunity Type', 'account_name' => 'Account Name', 'description' => 'Description', 'amount_usdollar' => 'Amount', 'lead_source' => 'Lead Source', 'campaign_id' => 'campaign_id', 'assigned_user_name' => 'Assigned User Name', 'assigned_user_id' => 'Assigned User ID', 'team_name' => 'Teams', 'team_id' => 'Team id', 'team_set_id' => 'Team Set ID', 'date_entered' => 'Date Created', 'date_modified' => 'Date Modified', 'created_by' => 'Created By ID', 'modified_user_id' => 'Modified By ID', 'deleted' => 'Deleted');
     $field_order_array['notes'] =         array( 'name' => 'Name', 'id'=>'ID', 'description' => 'Description', 'filename' => 'Attachment', 'parent_type' => 'Parent Type', 'parent_id' => 'Parent ID', 'contact_id' => 'Contact ID', 'portal_flag' => 'Display in Portal?', 'assigned_user_name' =>'Assigned to', 'assigned_user_id' => 'assigned_user_id', 'team_id' => 'Team id', 'team_set_id' => 'Team Set ID', 'date_entered' => 'Date Created', 'date_modified' => 'Date Modified',  'created_by' => 'Created By ID', 'modified_user_id' => 'Modified By ID', 'deleted' => 'Deleted' );
     $field_order_array['bugs'] =   array('bug_number' => 'Bug Number', 'id'=>'ID', 'name' => 'Subject', 'description' => 'Description', 'status' => 'Status', 'type' => 'Type', 'priority' => 'Priority', 'resolution' => 'Resolution', 'work_log' => 'Work Log', 'found_in_release' => 'Found In Release', 'fixed_in_release' => 'Fixed In Release', 'found_in_release_name' => 'Found In Release Name', 'fixed_in_release_name' => 'Fixed In Release', 'product_category' => 'Category', 'source' => 'Source', 'portal_viewable' => 'Portal Viewable', 'system_id' => 'System ID', 'assigned_user_id' => 'Assigned User ID', 'assigned_user_name' => 'Assigned User Name', 'team_name'=>'Teams', 'team_id' => 'Team id', 'team_set_id' => 'Team Set ID', 'date_entered' =>'Date Created', 'date_modified' =>'Date Modified', 'modified_user_id' =>'Modified By', 'created_by' =>'Created By', 'deleted' =>'Deleted');
@@ -727,7 +778,7 @@ function get_field_order_mapping($name='',$reorderArr = '', $exclude = true){
     $field_order_array['calls'] =   array( 'name'=>'Subject', 'id'=>'ID', 'description'=>'Description', 'status'=>'Status', 'direction'=>'Direction', 'date_start'=>'Date', 'date_end'=>'Date End', 'duration_hours'=>'Duration Hours', 'duration_minutes'=>'Duration Minutes', 'reminder_time'=>'Reminder Time', 'parent_type'=>'Parent Type', 'parent_id'=>'Parent ID', 'outlook_id'=>'Outlook ID', 'assigned_user_name' =>'Assigned to', 'assigned_user_id'=>'Assigned User ID', 'team_name'=>'Teams', 'team_id'=>'Team id', 'team_set_id'=>'Team Set ID', 'date_entered'=>'Date Created', 'date_modified'=>'Date Modified', 'created_by'=>'Created By ID', 'modified_user_id'=>'Modified By ID', 'deleted'=>'Deleted');
     $field_order_array['meetings'] =array( 'name'=>'Subject', 'id'=>'ID', 'description'=>'Description', 'status'=>'Status', 'location'=>'Location', 'date_start'=>'Date', 'date_end'=>'Date End', 'duration_hours'=>'Duration Hours', 'duration_minutes'=>'Duration Minutes', 'reminder_time'=>'Reminder Time', 'type'=>'Meeting Type', 'external_id'=>'External ID', 'password'=>'Meeting Password', 'join_url'=>'Join Url', 'host_url'=>'Host Url', 'displayed_url'=>'Displayed Url', 'creator'=>'Meeting Creator', 'parent_type'=>'Related to', 'parent_id'=>'Related to', 'outlook_id'=>'Outlook ID','assigned_user_name' =>'Assigned to','assigned_user_id' => 'Assigned User ID', 'team_name' => 'Teams', 'team_id' => 'Team id', 'team_set_id' => 'Team Set ID', 'date_entered' => 'Date Created', 'date_modified' => 'Date Modified', 'created_by' => 'Created By ID', 'modified_user_id' => 'Modified By ID', 'deleted' => 'Deleted');
     $field_order_array['cases'] =array( 'case_number'=>'Case Number', 'id'=>'ID', 'name'=>'Subject', 'description'=>'Description', 'status'=>'Status', 'type'=>'Type', 'priority'=>'Priority', 'resolution'=>'Resolution', 'work_log'=>'Work Log', 'portal_viewable'=>'Portal Viewable', 'account_name'=>'Account Name', 'account_id'=>'Account ID', 'assigned_user_id'=>'Assigned User ID', 'team_name'=>'Teams', 'team_id'=>'Team id', 'team_set_id'=>'Team Set ID', 'date_entered'=>'Date Created', 'date_modified'=>'Date Modified', 'created_by'=>'Created By ID', 'modified_user_id'=>'Modified By ID', 'deleted'=>'Deleted');
-    $field_order_array['prospects'] =array( 'first_name'=>'First Name', 'last_name'=>'Last Name', 'id'=>'ID', 'salutation'=>'Salutation', 'title'=>'Title', 'department'=>'Department', 'account_name'=>'Account Name', 'email_address'=>'Email Address', 'phone_mobile' => 'Phone Mobile', 'phone_work' => 'Phone Work', 'phone_home' => 'Phone Home', 'phone_other' => 'Phone Other', 'phone_fax' => 'Phone Fax',  'primary_address_street' => 'Primary Address Street', 'primary_address_city' => 'Primary Address City', 'primary_address_state' => 'Primary Address State', 'primary_address_postalcode' => 'Primary Address Postal Code', 'primary_address_country' => 'Primary Address Country', 'alt_address_street' => 'Alternate Address Street', 'alt_address_city' => 'Alternate Address City', 'alt_address_state' => 'Alternate Address State', 'alt_address_postalcode' => 'Alternate Address Postal Code', 'alt_address_country' => 'Alternate Address Country', 'description' => 'Description', 'birthdate' => 'Birthdate', 'assistant'=>'Assistant', 'assistant_phone'=>'Assistant Phone', 'campaign_id'=>'campaign_id', 'tracker_key'=>'Tracker Key', 'do_not_call'=>'Do Not Call', 'lead_id'=>'Lead Id', 'assigned_user_name'=>'Assigned User Name', 'assigned_user_id'=>'Assigned User ID', 'team_id' =>'Team Id', 'team_name' =>'Teams', 'team_set_id' =>'Team Set ID', 'date_entered' =>'Date Created', 'date_modified' =>'Date Modified', 'modified_user_id' =>'Modified By', 'created_by' =>'Created By', 'deleted' =>'Deleted');
+    $field_order_array['prospects'] =array( 'first_name'=>'First Name', 'last_name'=>'Last Name', 'id'=>'ID', 'salutation'=>'Salutation', 'title'=>'Title', 'department'=>'Department', 'account_name'=>'Account Name', 'email_address'=>'Email Address', 'email_addresses_non_primary' => 'Non Primary E-mails for Import', 'phone_mobile' => 'Phone Mobile', 'phone_work' => 'Phone Work', 'phone_home' => 'Phone Home', 'phone_other' => 'Phone Other', 'phone_fax' => 'Phone Fax',  'primary_address_street' => 'Primary Address Street', 'primary_address_city' => 'Primary Address City', 'primary_address_state' => 'Primary Address State', 'primary_address_postalcode' => 'Primary Address Postal Code', 'primary_address_country' => 'Primary Address Country', 'alt_address_street' => 'Alternate Address Street', 'alt_address_city' => 'Alternate Address City', 'alt_address_state' => 'Alternate Address State', 'alt_address_postalcode' => 'Alternate Address Postal Code', 'alt_address_country' => 'Alternate Address Country', 'description' => 'Description', 'birthdate' => 'Birthdate', 'assistant'=>'Assistant', 'assistant_phone'=>'Assistant Phone', 'campaign_id'=>'campaign_id', 'tracker_key'=>'Tracker Key', 'do_not_call'=>'Do Not Call', 'lead_id'=>'Lead Id', 'assigned_user_name'=>'Assigned User Name', 'assigned_user_id'=>'Assigned User ID', 'team_id' =>'Team Id', 'team_name' =>'Teams', 'team_set_id' =>'Team Set ID', 'date_entered' =>'Date Created', 'date_modified' =>'Date Modified', 'modified_user_id' =>'Modified By', 'created_by' =>'Created By', 'deleted' =>'Deleted');
 
     $fields_to_exclude = array();
     $fields_to_exclude['accounts'] = array('account_name');

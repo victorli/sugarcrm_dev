@@ -241,38 +241,7 @@ class Lead extends Person {
     	if ( !$return_array )
             return  $ret_array['select'] . $ret_array['from'] . $ret_array['where']. $ret_array['order_by'];
         return $ret_array;
-	}	
-	
-    function create_export_query(&$order_by, &$where, $relate_link_join='')
-    {
-        $custom_join = $this->getCustomJoin(true, true, $where);
-        $custom_join['join'] .= $relate_link_join;
-                         $query = "SELECT
-                                leads.*, email_addresses.email_address email_address,
-                                users.user_name assigned_user_name";
-        $query .= $custom_join['select'];
-                         $query .= " FROM leads ";
-			$query .= "			LEFT JOIN users
-                                ON leads.assigned_user_id=users.id ";
-
-				//join email address table too.
-				$query .=  ' LEFT JOIN  email_addr_bean_rel on leads.id = email_addr_bean_rel.bean_id and email_addr_bean_rel.bean_module=\'Leads\' and email_addr_bean_rel.deleted=0 and email_addr_bean_rel.primary_address=1 ';
-				$query .=  ' LEFT JOIN email_addresses on email_addresses.id = email_addr_bean_rel.email_address_id ' ;
-						
-            
-        $query .= $custom_join['join'];
-
-                        $where_auto = " leads.deleted=0 ";
-
-                if($where != "")
-                        $query .= "where ($where) AND ".$where_auto;
-                else
-                        $query .= "where ".$where_auto;
-
-                if(!empty($order_by))
-                        $query .= " ORDER BY $order_by";
-                return $query;
-        }
+	}
 
     function converted_lead($leadid, $contactid, $accountid, $opportunityid){
     	$query = "UPDATE leads set converted='1', contact_id=$contactid, account_id=$accountid, opportunity_id=$opportunityid where  id=$leadid and deleted=0";

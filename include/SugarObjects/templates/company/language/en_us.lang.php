@@ -46,6 +46,7 @@ $mod_strings = array (
 	'LBL_ANNUAL_REVENUE' => 'Annual Revenue:',
 	'LBL_ANY_ADDRESS' => 'Any Address:',
 	'LBL_ANY_EMAIL' => 'Any Email:',
+    'LBL_EMAIL_NON_PRIMARY' => 'Non Primary E-mails',
 	'LBL_ANY_PHONE' => 'Any Phone:',
 	'LBL_ASSIGNED_TO_NAME' => 'User:',
 	'LBL_RATING' => 'Rating',

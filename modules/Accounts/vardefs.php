@@ -454,7 +454,8 @@ $dictionary['Account'] = array('table' => 'accounts', 'audited'=>true, 'unified_
   
   'account_campaign_log' => array('lhs_module' => 'Accounts', 'lhs_table'=> 'accounts', 'lhs_key'=> 'id',
   'rhs_module'=> 'CampaignLog','rhs_table'=>'campaign_log', 'rhs_key'=> 'target_id',
-  'relationship_type'	=>'one-to-many'),
+  'relationship_type'	=>'one-to-many',
+  'relationship_role_column' => 'target_type', 'relationship_role_column_value'=>'Accounts'),
   
   ),
   //This enables optimistic locking for Saves From EditView

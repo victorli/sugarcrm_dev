@@ -42,12 +42,10 @@ require_once 'tests/SugarTestAccountUtilities.php';
 class RunnableSchedulersJobsTest extends Sugar_PHPUnit_Framework_TestCase
 {
     public $jobs = array();
-    private $jobRan = FALSE;
 
     public function setUp()
     {
         $this->db = DBManagerFactory::getInstance();
-        $this->jobRan = FALSE;
     }
 
     public function tearDown()
@@ -90,6 +88,7 @@ class RunnableSchedulersJobsTest extends Sugar_PHPUnit_Framework_TestCase
 
         $this->assertEquals(SchedulersJob::JOB_SUCCESS, $job->resolution, "Wrong resolution");
         $this->assertEquals(SchedulersJob::JOB_STATUS_DONE, $job->status, "Wrong status");
+        $this->assertEquals($GLOBALS['current_user']->id, $job->user->id, "Wrong user");
 
         // function with args
         $job = $this->createJob(array("name" => "Test Func 2", "status" => SchedulersJob::JOB_STATUS_RUNNING,
@@ -101,6 +100,7 @@ class RunnableSchedulersJobsTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEquals($job->runnable_data, "function data", "Argument 2 doesn't match");
         $this->assertEquals(SchedulersJob::JOB_SUCCESS, $job->resolution, "Wrong resolution");
         $this->assertEquals(SchedulersJob::JOB_STATUS_DONE, $job->status, "Wrong status");
+        $this->assertEquals($GLOBALS['current_user']->id, $job->user->id, "Wrong user");
     }
 }
 
@@ -113,6 +113,7 @@ class TestRunnableJob implements RunnableSchedulerJob
     {
         $this->job->runnable_ran = true;
         $this->job->runnable_data = $data;
+        $this->job->user = $GLOBALS['current_user'];
         return $this->job->succeedJob();
     }
 

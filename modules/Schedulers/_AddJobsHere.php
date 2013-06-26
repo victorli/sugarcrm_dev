@@ -65,6 +65,7 @@ $job_strings = array (
 	/*4 => 'securityAudit()',*/
     12 => 'sendEmailReminders',
     14 => 'cleanJobQueue',
+    15 => 'removeDocumentsFromFS',
 
 );
 
@@ -415,6 +416,63 @@ function sendEmailReminders(){
 	return $reminder->process();
 }
 
+function removeDocumentsFromFS()
+{
+    $GLOBALS['log']->info('Starting removal of documents if they are not present in DB');
+
+    /**
+     * @var DBManager $db
+     * @var SugarBean $bean
+     */
+    global $db;
+
+    // temp table to store id of files without memory leak
+    $tableName = 'cron_remove_documents';
+
+    $resource = $db->limitQuery("SELECT * FROM cron_remove_documents WHERE 1=1 ORDER BY date_modified ASC", 0, 100);
+    $return = true;
+    while ($row = $db->fetchByAssoc($resource)) {
+        $bean = BeanFactory::getBean($row['module']);
+        $bean->retrieve($row['bean_id'], true, false);
+        if (empty($bean->id)) {
+            $isSuccess = true;
+            $bean->id = $row['bean_id'];
+            $directory = $bean->deleteFileDirectory();
+            if (!empty($directory) && is_dir('upload://deleted/' . $directory)) {
+                if ($isSuccess = rmdir_recursive('upload://deleted/' . $directory)) {
+                    $directory = explode('/', $directory);
+                    while (!empty($directory)) {
+                        $path = 'upload://deleted/' . implode('/', $directory);
+                        if (is_dir($path)) {
+                            $directoryIterator = new DirectoryIterator($path);
+                            $empty = true;
+                            foreach ($directoryIterator as $item) {
+                                if ($item->getFilename() == '.' || $item->getFilename() == '..') {
+                                    continue;
+                                }
+                                $empty = false;
+                                break;
+                            }
+                            if ($empty) {
+                                rmdir($path);
+                            }
+                        }
+                        array_pop($directory);
+                    }
+                }
+            }
+            if ($isSuccess) {
+                $db->query('DELETE FROM ' . $tableName . ' WHERE id=' . $db->quoted($row['id']));
+            } else {
+                $return = false;
+            }
+        } else {
+            $db->query('UPDATE ' . $tableName . ' SET date_modified=' . $db->convert($db->quoted(TimeDate::getInstance()->nowDb()), 'datetime') . ' WHERE id=' . $db->quoted($row['id']));
+        }
+    }
+
+    return $return;
+}
 
 
 function cleanJobQueue($job)

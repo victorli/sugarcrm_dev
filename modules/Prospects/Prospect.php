@@ -108,38 +108,6 @@ class Prospect extends Person {
 		parent::Person();
 	}
 
-    function create_export_query(&$order_by, &$where, $relate_link_join='')
-    {
-        $custom_join = $this->getCustomJoin(true, true, $where);
-        $custom_join['join'] .= $relate_link_join;
-                         $query = "SELECT
-                                prospects.*,email_addresses.email_address email_address,
-                                users.user_name as assigned_user_name ";
-        $query .= $custom_join['select'];
-						 $query .= " FROM prospects ";
-                         $query .= "LEFT JOIN users
-	                                ON prospects.assigned_user_id=users.id ";
-
-						//join email address table too.
-						$query .=  ' LEFT JOIN  email_addr_bean_rel on prospects.id = email_addr_bean_rel.bean_id and email_addr_bean_rel.bean_module=\'Prospects\' and email_addr_bean_rel.primary_address=1 and email_addr_bean_rel.deleted=0';
-						$query .=  ' LEFT JOIN email_addresses on email_addresses.id = email_addr_bean_rel.email_address_id ' ;
-
-        $query .= $custom_join['join'];
-
-		$where_auto = " prospects.deleted=0 ";
-
-                if($where != "")
-                        $query .= "where ($where) AND ".$where_auto;
-                else
-                        $query .= "where ".$where_auto;
-
-                if(!empty($order_by))
-                        $query .= " ORDER BY $order_by";
-
-                return $query;
-        }
-
-
 	function fill_in_additional_list_fields()
 	{
 		parent::fill_in_additional_list_fields();

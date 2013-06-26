@@ -298,6 +298,10 @@ class JsChart extends SugarChart {
 			$groupcontent .= $this->tab("\"label\": \"".$this->processSpecialChars($group->title)."\",\n",2);
 			$groupcontent .= $this->tab("\"gvalue\": \"{$group->value}\",\n",2);
 			$groupcontent .= $this->tab("\"gvaluelabel\": \"{$group->label}\",\n",2);
+			if (!empty($group->id))
+			{
+				$groupcontent .= $this->tab("\"id\": \"{$group->id}\",\n",2);
+			}
 			$subgroupValues = array();
 			$subgroupValueLabels = array();
 			$subgroupLinks = array();
@@ -333,6 +337,10 @@ class JsChart extends SugarChart {
 			$groupcontent .= $this->tab("\"label\": \"".$this->processSpecialChars($group->title)."\",\n",2);
 			$groupcontent .= $this->tab("\"gvalue\": \"{$group->value}\",\n",2);
 			$groupcontent .= $this->tab("\"gvaluelabel\": \"{$group->label}\",\n",2);
+			if (!empty($group->id))
+			{
+				$groupcontent .= $this->tab("\"id\": \"{$group->id}\",\n",2);
+			}
 			$subgroupValues = array();
 			$subgroupValueLabels = array();
 			$subgroupLinks = array();
@@ -379,6 +387,10 @@ class JsChart extends SugarChart {
 		$groupcontent .= $this->tab("\"values\": [\n",2);
 		$groupcontent .= $this->tab(($group->value == "NULL") ? 0 : $group->value."\n",3);
 		$groupcontent .= $this->tab("],\n",2);
+		if (!empty($group->id))
+		{
+			$groupcontent .= $this->tab("\"id\": \"{$group->id}\",\n",2);
+		}
 		if($group->label) {
 			$groupcontent .= $this->tab("\"valuelabels\": [\n",2);
 			$groupcontent .= $this->tab("\"{$group->label}\"\n",3);

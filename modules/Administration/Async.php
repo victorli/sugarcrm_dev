@@ -44,6 +44,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 require_once("include/entryPoint.php");
 
+if (!is_admin($GLOBALS['current_user'])) {
+    sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);
+}
+
 $json = getJSONObj();
 $out = "";
 
@@ -52,9 +56,12 @@ switch($_REQUEST['adminAction']) {
 	////	REPAIRXSS
 	case "refreshEstimate":
 		include("include/modules.php"); // provide $moduleList
-		$target = $_REQUEST['bean'];
-		
-		$count = 0;
+        $target = '';
+        if (!empty($_REQUEST['bean'])) {
+            $target = $_REQUEST['bean'];
+        }
+
+        $count = 0;
 		$toRepair = array();
 		
 		if($target == 'all') {

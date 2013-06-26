@@ -36,7 +36,7 @@
  ********************************************************************************/
 
 
-require_once('data/SugarBean.php');
+require_once('include/SugarObjects/templates/file/File.php');
 
 class SugarBeanTest extends Sugar_PHPUnit_Framework_TestCase
 {
@@ -200,6 +200,142 @@ class SugarBeanTest extends Sugar_PHPUnit_Framework_TestCase
                     ),
                 ), 'my_field', true,
             ),
+        );
+    }
+
+    /**
+     * Test asserts behavior of haveFiles method
+     *
+     * @group 58955
+     * @dataProvider getHaveFiles
+     */
+    public function testHaveFiles($class, $expected)
+    {
+        /**
+         * @var SugarBean $bean
+         */
+        $bean = new $class();
+        $this->assertEquals($expected, $bean->haveFiles(), 'Result is incorrect');
+    }
+
+    /**
+     * Test asserts behavior of getFiles method
+     *
+     * @group 58955
+     */
+    public function testGetFiles()
+    {
+        $bean = new SugarBean58955Extends();
+        $this->assertEmpty($bean->getFiles(), 'Incorrect result');
+
+        $bean->id = 'test';
+        $this->assertEquals(array('test'), $bean->getFiles(), 'Incorrect result');
+
+        $bean = new SugarBean58955Implements();
+        $this->assertEmpty($bean->getFiles(), 'Incorrect result');
+
+        $bean->id = 'test';
+        $this->assertEquals(array('test'), $bean->getFiles(), 'Incorrect result');
+
+        $bean = new SugarBean58955Image();
+        $bean->id = 'test';
+        $this->assertEmpty($bean->getFiles(), 'Incorrect result');
+
+        $bean->image = 'test';
+        $this->assertEquals(array('test'), $bean->getFiles(), 'Incorrect result');
+    }
+
+    /**
+     * Data provider for testHaveFiles
+     * @return array
+     */
+    public function getHaveFiles()
+    {
+        return array(
+            array('SugarBean58955Extends', true),
+            array('SugarBean58955Implements', true),
+            array('SugarBean58955Image', true),
+            array('SugarBean', false),
+        );
+    }
+
+    /**
+     * Test asserts behavior of getFilesFields method
+     *
+     * @group 58955
+     */
+    public function testGetFilesFields()
+    {
+        $bean = new SugarBean58955Extends();
+        $this->assertEquals(array('id'), $bean->getFilesFields(), 'Incorrect result');
+
+        $bean = new SugarBean58955Implements();
+        $this->assertEquals(array('id'), $bean->getFilesFields(), 'Incorrect result');
+
+        $bean = new SugarBean58955Image();
+        $this->assertEquals(array('image'), $bean->getFilesFields(), 'Incorrect result');
+    }
+}
+
+/**
+ * Class SugarBean58955Extends
+ * Mock for testHaveFiles & testGetFiles tests
+ */
+class SugarBean58955Extends extends File
+{
+    /**
+     * @var string
+     */
+    public $module_name = 'SugarBean58955Extends';
+
+    public function __construct()
+    {
+        $this->field_defs = array();
+    }
+}
+
+/**
+ * Class SugarBean58955Implements
+ * Mock for testHaveFiles & testGetFiles tests
+ */
+class SugarBean58955Implements extends SugarBean
+{
+    /**
+     * @var string
+     */
+    public $module_name = 'SugarBean58955Implements';
+
+    public function __construct()
+    {
+        $this->field_defs = array();
+    }
+
+    public function bean_implements($interface)
+    {
+        if ($interface == 'FILE') {
+            return true;
+        }
+        return parent::bean_implements($interface);
+    }
+}
+
+/**
+ * Class SugarBean58955Image
+ * Mock for testHaveFiles & testGetFiles tests
+ */
+class SugarBean58955Image extends SugarBean
+{
+    /**
+     * @var string
+     */
+    public $module_name = 'SugarBean58955Image';
+
+    public function __construct()
+    {
+        $this->field_defs = array(
+            'image' => array(
+                'type' => 'image'
+            )
         );
     }
 }

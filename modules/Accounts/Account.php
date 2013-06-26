@@ -280,8 +280,10 @@ class Account extends Company {
             $custom_join = $this->getCustomJoin(true, true, $where);
             $custom_join['join'] .= $relate_link_join;
                          $query = "SELECT
-                                accounts.*,email_addresses.email_address email_address,
-                                accounts.name as account_name,
+                                accounts.*,
+                                email_addresses.email_address email_address,
+                                '' email_addresses_non_primary, " . // email_addresses_non_primary needed for get_field_order_mapping()
+                                "accounts.name as account_name,
                                 users.user_name as assigned_user_name ";
             $query .= $custom_join['select'];
 						 $query .= " FROM accounts ";

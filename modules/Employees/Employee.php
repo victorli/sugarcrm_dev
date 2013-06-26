@@ -84,6 +84,7 @@ class Employee extends Person {
 	var $messenger_type;
 	var $employee_status;
 	var $error_string;
+    public $person_id;
 
 	var $module_dir = "Employees";
 

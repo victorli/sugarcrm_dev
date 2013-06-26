@@ -151,7 +151,6 @@ function enableQS(noReload){
                     	inputElement: qsFields[qsField],
                     	//YUI requires the data, even POST, to be URL encoded
                     	generateRequest : function(sQuery) {
-                            sQuery = decodeURIComponent(sQuery);
                             //preprocess values
                             var item_id = this.inputElement.form_id + '_' + this.inputElement.name;
                             this.sqs = updateSqsFromQSFieldsArray(item_id, this.sqs);

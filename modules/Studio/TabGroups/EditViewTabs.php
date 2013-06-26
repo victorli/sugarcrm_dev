@@ -47,7 +47,7 @@ $tabGroupSelected_lang = (!empty($_GET['lang'])?$_GET['lang']:$_SESSION['authent
 $tg = new TabGroupHelper();
 $smarty = new Sugar_Smarty();
 if(empty($GLOBALS['tabStructure'])){
-	require_once('include/tabConfig.php');
+    require 'include/tabConfig.php';
 }
 $title=getClassicModuleTitle($mod_strings['LBL_MODULE_NAME'], array($mod_strings['LBL_CONFIGURE_GROUP_TABS']), false);
 

@@ -722,6 +722,6 @@ $mod_strings = array(
                                  "to apply a U.S. format to the phone number when the record<br>" .
                                  "is saved. The following format will be applied: (xxx) xxx-xxxx.",
 'LBL_ALL_MODULES'=>'All Modules',
-
+'LBL_RELATED_FIELD_ID_NAME_LABEL' => '{0} (related {1} ID)',
 );
 

@@ -54,6 +54,7 @@ class SugarChart {
 	var $colors_list = array();
 	var $base_url = array();
 	var $url_params = array();
+	var $display_labels = array();
 
 	var $currency_symbol;
 	var $thousands_symbol;
@@ -431,12 +432,21 @@ class SugarChart {
 
 	function xmlDataForGroupByChart(){
 		$data = '';
+		$idcounter = 0;
 		foreach ($this->data_set as $key => $value){
 			$amount = $this->is_currency ? $this->convertCurrency($this->calculateGroupByTotal($value)) : $this->calculateGroupByTotal($value);
             $label = $this->is_currency ? ($this->currency_symbol . $this->formatNumber($amount)) : $amount;
 
 			$data .= $this->tab('<group>',2);
-			$data .= $this->tabValue('title',$key,3);
+			if (!empty($this->display_labels[$key]))
+			{
+				$data .= $this->tabValue('title', $this->display_labels[$key],3);
+				$data .= $this->tabValue('id', ++$idcounter,3);
+			}
+			else
+			{
+				$data .= $this->tabValue('title', $key,3);
+			}
 			$data .= $this->tabValue('value',$amount,3);
 			$data .= $this->tabValue('label',$label,3);
 			$data .= $this->tab('<link></link>',3);

@@ -36,6 +36,7 @@ class Bug61734Test extends Sugar_PHPUnit_Framework_OutputTestCase
         SugarTestHelper::setUp('beanFiles');
         SugarTestHelper::setUp('current_user', array(true, 1));
         SugarTestHelper::setUp('app_list_strings');
+        SugarTestHelper::setUp('mod_strings', array('Administration'));
         SugarTestHelper::setUp('dictionary');
         parent::setUp();
         $this->createCustom();

@@ -37,6 +37,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
  
 require_once('modules/DynamicFields/templates/Fields/TemplateField.php');
+require_once 'modules/ModuleBuilder/parsers/parser.label.php';
+require_once 'modules/ModuleBuilder/MB/ModuleBuilder.php';
+
 class TemplateRelatedTextField extends TemplateText{
     var $type = 'relate';
     //ext1 is the name field
@@ -202,14 +205,52 @@ class TemplateRelatedTextField extends TemplateText{
         return $def;    
     }
     
-    function delete($df){
+    /**
+     * Delete field
+     *
+     * @param DynamicField $df
+     */
+    public function delete($df)
+    {
+        if ($df instanceof DynamicField) {
+            $fieldId = $df->getFieldWidget($df->module, $this->id_name);
+        } elseif ($df instanceof MBModule) {
+            $fieldId = $df->getField($this->id_name);
+        } else {
+            $GLOBALS['log']->fatal('Unsupported DynamicField type');
+        }
+
+        $this->deleteIdLabel($fieldId, $df);
+        $fieldId->delete($df);
         parent::delete($df);
-        
-        $id = new TemplateId();
-        $id->name = $this->ext3;
-        $id->delete($df);
     }
+        
+    /**
+     * Delete label of id field
+     * @param TemplateField $fieldId
+     * @param $df
+     */
+    protected function deleteIdLabel(TemplateField $fieldId, $df)
+    {
+        if ($df instanceof DynamicField) {
+            require_once 'modules/ModuleBuilder/parsers/parser.label.php';
+            foreach (array_keys($GLOBALS['sugar_config']['languages']) AS $language) {
+                foreach (ModuleBuilder::getModuleAliases($df->module) AS $module) {
+                    $mod_strings = return_module_language($language, $module);
+                    if (isset($mod_strings[$fieldId->vname])) {
+                        ParserLabel::removeLabel($language, $fieldId->vname, $mod_strings[$fieldId->vname], $module);
+                    }
+                }
+            }
     
+        } elseif ($df instanceof MBModule) {
+            foreach (array_keys($GLOBALS['sugar_config']['languages']) AS $language) {
+                $df->deleteLabel($language, $fieldId->vname);
+                $df->save();
+            }
+        }
+    }
+
     function save($df){
         // create the new ID field associated with this relate field - this will hold the id of the related record
         // this field must have a unique name as the name is used when constructing quicksearches and when saving the field
@@ -218,7 +259,10 @@ class TemplateRelatedTextField extends TemplateText{
         if (!$df->fieldExists($this->name)) {
 	    	$id = new TemplateId();
 	        $id->len = 36;
-	        $id->label = 'LBL_LIST_RELATED_TO';
+            $id->label = strtoupper("LBL_{$this->name}_".BeanFactory::getBeanName($this->ext2)."_ID");
+            $id->vname = $id->label;
+            $this->saveIdLabel($id->label, $df);
+
 	        $count = 0;
 	        $basename = strtolower(get_singular_bean_name($this->ext2)).'_id' ;
 	        $idName = $basename.'_c' ;
@@ -233,9 +277,48 @@ class TemplateRelatedTextField extends TemplateText{
 	        
 	        // record the id field's name, and save
 	        $this->ext3 = $id->name;
+            $this->id_name = $id->name;
         }
         
         parent::save($df);
+    }
+
+    /**
+     * Save label for id field
+     *
+     * @param string $idLabelName
+     * @param DynamicField $df
+     */
+    protected function saveIdLabel($idLabelName, $df)
+    {
+        if ($df instanceof DynamicField) {
+            $module = $df->module;
+        } elseif ($df instanceof MBModule) {
+            $module = $df->name;
+        }else{
+            $GLOBALS['log']->fatal('Unsupported DynamicField type');
+        }
+        $viewPackage = isset($df->package)?$df->package:null;
+
+        $idLabelValue = string_format(
+            $GLOBALS['mod_strings']['LBL_RELATED_FIELD_ID_NAME_LABEL'],
+            array($this->label_value, $GLOBALS['app_list_strings']['moduleListSingular'][$this->ext2])
+        );
+
+        $idFieldLabelArr = array(
+            "label_{$idLabelName}" => $idLabelValue
+        );
+
+        foreach(ModuleBuilder::getModuleAliases($module) AS  $moduleName) {
+            if ($df instanceof DynamicField) {
+                $parser = new ParserLabel($moduleName, $viewPackage);
+                $parser->handleSave($idFieldLabelArr, $GLOBALS['current_language']);
+            } elseif ($df instanceof MBModule) {
+                $df->setLabel($GLOBALS ['current_language'], $idLabelName, $idLabelValue);
+                $df->save();
+            }
+        }
+
     }
     
     function get_db_add_alter_table($table){

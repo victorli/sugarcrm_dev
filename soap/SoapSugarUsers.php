@@ -1033,6 +1033,29 @@ function get_user_team_id($session){
 }
 
 $server->register(
+    'get_user_team_set_id',
+    array('session'=>'xsd:string'),
+    array('return'=>'xsd:string'),
+    $NAMESPACE);
+
+/**
+ * Return the Team Set ID for the user that is logged into the current session.
+ *
+ * @param String $session -- Session ID returned by a previous call to login.
+ * @return String -- the Team Set ID of the current user
+ *                  1 for Community Edition
+ *                  -1 on error.
+ */
+function get_user_team_set_id($session){
+    if(validate_authenticated($session))
+    {
+         return 1;
+    }else{
+        return '-1';
+    }
+}
+
+$server->register(
     'get_server_time',
     array(),
     array('return'=>'xsd:string'),

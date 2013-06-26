@@ -399,27 +399,40 @@ class ModuleScanner{
 
 	}
 
-	public function __construct(){
-	    if(!empty($GLOBALS['sugar_config']['moduleInstaller'])) {
-	        $this->config = $GLOBALS['sugar_config']['moduleInstaller'];
-	    }
+    public function __construct()
+    {
+        $params = array(
+            'blackListExempt'      => 'MODULE_INSTALLER_PACKAGE_SCAN_BLACK_LIST_EXEMPT',
+            'blackList'            => 'MODULE_INSTALLER_PACKAGE_SCAN_BLACK_LIST',
+            'classBlackListExempt' => 'MODULE_INSTALLER_PACKAGE_SCAN_CLASS_BLACK_LIST_EXEMPT',
+            'classBlackList'       => 'MODULE_INSTALLER_PACKAGE_SCAN_CLASS_BLACK_LIST',
+            'validExt'             => 'MODULE_INSTALLER_PACKAGE_SCAN_VALID_EXT',
+        );
 
-		if(!empty($this->config['blackListExempt'])){
-			$this->blackListExempt = array_merge($this->blackListExempt, $this->config['blackListExempt']);
-		}
-		if(!empty($this->config['blackList'])){
-			$this->blackList = array_merge($this->blackList, $this->config['blackList']);
-		}
-        if(!empty($this->config['classBlackListExempt'])){
-            $this->classBlackListExempt = array_merge($this->classBlackListExempt, $this->config['classBlackListExempt']);
-        }
-        if(!empty($this->config['classBlackList'])){
-            $this->classBlackList = array_merge($this->classBlackList, $this->config['classBlackList']);
-        }
-	  if(!empty($this->config['validExt'])){
-			$this->validExt = array_merge($this->validExt, $this->config['validExt']);
-		}
+        $disableConfigOverride = defined('MODULE_INSTALLER_DISABLE_CONFIG_OVERRIDE')
+            && MODULE_INSTALLER_DISABLE_CONFIG_OVERRIDE;
 
+        $disableDefineOverride = defined('MODULE_INSTALLER_DISABLE_DEFINE_OVERRIDE')
+            && MODULE_INSTALLER_DISABLE_DEFINE_OVERRIDE;
+
+        if (!$disableConfigOverride && !empty($GLOBALS['sugar_config']['moduleInstaller'])) {
+            $this->config = $GLOBALS['sugar_config']['moduleInstaller'];
+        }
+
+        foreach ($params as $param => $constName) {
+
+            if (!$disableConfigOverride && isset($this->config[$param]) && is_array($this->config[$param])) {
+                $this->{$param} = array_merge($this->{$param}, $this->config[$param]);
+            }
+
+            if (!$disableDefineOverride && defined($constName)) {
+                $value = constant($constName);
+                $value = explode(',', $value);
+                $value = array_map('trim', $value);
+                $value = array_filter($value, 'strlen');
+                $this->{$param} = array_merge($this->{$param}, $value);
+            }
+        }
 	}
 
 	private $issues = array();

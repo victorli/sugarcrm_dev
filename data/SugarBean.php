@@ -291,6 +291,13 @@ class SugarBean
     static protected $field_key;
 
     /**
+     * Cache of fields which can contain files
+     *
+     * @var array
+     */
+    static protected $fileFields = array();
+
+    /**
      * Constructor for the bean, it performs following tasks:
      *
      * 1. Initalized a database connections
@@ -1415,6 +1422,17 @@ class SugarBean
 
         $this->call_custom_logic("before_save", $custom_logic_arguments);
         unset($custom_logic_arguments);
+
+        // If we're importing back semi-colon separated non-primary emails
+        if ($this->hasEmails() && !empty($this->email_addresses_non_primary) && is_array($this->email_addresses_non_primary))
+        {
+            // Add each mail to the account
+            foreach ($this->email_addresses_non_primary as $mail)
+            {
+                $this->emailAddress->addAddress($mail);
+            }
+            $this->emailAddress->save($this->id, $this->module_dir);
+        }
 
         if(isset($this->custom_fields))
         {
@@ -2889,7 +2907,7 @@ class SugarBean
                 {
                     if (!isset($subquery['query_fields'][$field]))
                     {
-                        $subquery['select'] .= " ' ' $field,";
+                        $subquery['select'] .= " NULL $field,";
                     }
                     else
                     {
@@ -4404,6 +4422,8 @@ class SugarBean
             $tracker->makeInvisibleForAll($id);
 
 
+            $this->deleteFiles();
+
             // call the custom business logic
             $this->call_custom_logic("after_delete", $custom_logic_arguments);
         }
@@ -4424,6 +4444,8 @@ class SugarBean
 		$query = "UPDATE $this->table_name set deleted=0 , date_modified = '$date_modified' where id='$id'";
 		$this->db->query($query, true,"Error marking record undeleted: ");
 
+        $this->restoreFiles();
+
         // call the custom business logic
         $this->call_custom_logic("after_restore", $custom_logic_arguments);
     }
@@ -4439,6 +4461,183 @@ class SugarBean
    {
     $this->delete_linked($id);
    }
+
+    /**
+     * Returns path for files of bean or false on error
+     *
+     * @return bool|string
+     */
+    public function deleteFileDirectory()
+    {
+        if (empty($this->id)) {
+            return false;
+        }
+        return preg_replace('/^(..)(..)(..)/', '$1/$2/$3/', $this->id);
+    }
+
+    /**
+     * Moves file to deleted folder
+     *
+     * @return bool success of movement
+     */
+    protected function deleteFiles()
+    {
+        if (!$this->id) {
+            return true;
+        }
+        if (!$this->haveFiles()) {
+            return true;
+        }
+        $files = $this->getFiles();
+        if (empty($files)) {
+            return true;
+        }
+
+        $directory = $this->deleteFileDirectory();
+
+        $isCreated = sugar_is_dir('upload://deleted/' . $directory);
+        if (!$isCreated) {
+            sugar_mkdir('upload://deleted/' . $directory, 0777, true);
+            $isCreated = sugar_is_dir('upload://deleted/' . $directory);
+        }
+        if (!$isCreated) {
+            return false;
+        }
+
+        foreach ($files as $file) {
+            if (file_exists('upload://' . $file)) {
+                if (!sugar_rename('upload://' . $file, 'upload://deleted/' . $directory . '/' . $file)) {
+                    $GLOBALS['log']->error('Could not move file ' . $file . ' to deleted directory');
+                }
+            }
+        }
+
+        /**
+         * @var DBManager $db
+         */
+        global $db;
+        $record = array(
+            'bean_id' => $db->quoted($this->id),
+            'module' => $db->quoted($this->module_name),
+            'date_modified' => $db->convert($db->quoted(date('Y-m-d H:i:s')), 'datetime')
+        );
+        $recordDB = $db->fetchOne("SELECT id FROM cron_remove_documents WHERE module={$record['module']} AND bean_id={$record['bean_id']}");
+        if (!empty($recordDB)) {
+            $record['id'] = $db->quoted($recordDB['id']);
+        }
+        if (empty($record['id'])) {
+            $record['id'] = $db->quoted(create_guid());
+            $db->query('INSERT INTO cron_remove_documents (' . implode(', ', array_keys($record)) . ') VALUES(' . implode(', ', $record) . ')');
+        } else {
+            $db->query("UPDATE cron_remove_documents SET date_modified={$record['date_modified']} WHERE id={$record['id']}");
+        }
+
+        return true;
+    }
+
+    /**
+     * Restores files from deleted folder
+     *
+     * @return bool success of operation
+     */
+    protected function restoreFiles()
+    {
+        if (!$this->id) {
+            return true;
+        }
+        if (!$this->haveFiles()) {
+            return true;
+        }
+        $files = $this->getFiles();
+        if (empty($files)) {
+            return true;
+        }
+
+        $directory = $this->deleteFileDirectory();
+
+        foreach ($files as $file) {
+            if (sugar_is_file('upload://deleted/' . $directory . '/' . $file)) {
+                if (!sugar_rename('upload://deleted/' . $directory . '/' . $file, 'upload://' . $file)) {
+                    $GLOBALS['log']->error('Could not move file ' . $directory . '/' . $file . ' from deleted directory');
+                }
+            }
+        }
+
+        /**
+         * @var DBManager $db
+         */
+        global $db;
+        $db->query('DELETE FROM cron_remove_documents WHERE bean_id=' . $db->quoted($this->id));
+
+        return true;
+    }
+
+    /**
+     * Method returns true if bean has files
+     *
+     * @return bool
+     */
+    public function haveFiles()
+    {
+        $return = false;
+        if ($this->bean_implements('FILE')) {
+            $return = true;
+        } elseif ($this instanceof File) {
+            $return = true;
+        } elseif (!empty(self::$fileFields[$this->module_name])) {
+            $return = true;
+        } elseif (!empty($this->field_defs)) {
+            foreach ($this->field_defs as $fieldDef) {
+                if ($fieldDef['type'] != 'image') {
+                    continue;
+                }
+                $return = true;
+                break;
+            }
+        }
+        return $return;
+    }
+
+    /**
+     * Method returns array of names of files for current bean
+     *
+     * @return array
+     */
+    public  function getFiles() {
+        $files = array();
+        foreach ($this->getFilesFields() as $field) {
+            if (!empty($this->$field)) {
+                $files[] = $this->$field;
+            }
+        }
+        return $files;
+    }
+
+    /**
+     * Method returns array of name of fields which contain names of files
+     *
+     * @param bool $resetCache do not use cache
+     * @return array
+     */
+    public function getFilesFields($resetCache = false)
+    {
+        if (isset(self::$fileFields[$this->module_name]) && $resetCache == false) {
+            return self::$fileFields[$this->module_name];
+        }
+
+        self::$fileFields = array();
+        if ($this->bean_implements('FILE') || $this instanceof File) {
+            self::$fileFields[$this->module_name][] = 'id';
+        }
+        foreach ($this->field_defs as $fieldName => $fieldDef) {
+            if ($fieldDef['type'] != 'image') {
+                continue;
+            }
+            self::$fileFields[$this->module_name][] = $fieldName;
+        }
+
+        return self::$fileFields[$this->module_name];
+    }
 
     /**
     * This function is used to execute the query and create an array template objects
@@ -5687,6 +5886,24 @@ class SugarBean
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Checks if Bean has email defs
+     *
+     * @return boolean
+     */
+    public function hasEmails()
+    {
+        if (!empty($this->field_defs['email_addresses']) && $this->field_defs['email_addresses']['type'] == 'link' &&
+            !empty($this->field_defs['email_addresses_non_primary']) && $this->field_defs['email_addresses_non_primary']['type'] == 'email')
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 }

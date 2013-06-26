@@ -149,5 +149,25 @@ class ModuleBuilder
         return $nodes ;
     }
 
+    /**
+     * Function return module name and this aliases
+     *
+     * @param string $module
+     * @return array $aliases
+     */
+    static public function getModuleAliases($module)
+    {
+        $aliases = array($module);
+        $relate_arr = array(
+            'Users' => 'Employees',
+            'Employees' => 'Users'
+        );
+
+        if (isset($relate_arr[$module])){
+            $aliases[] = $relate_arr[$module];
+        }
+
+        return $aliases;
+    }
+
 }
-?>

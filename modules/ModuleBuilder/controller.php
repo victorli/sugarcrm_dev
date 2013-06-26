@@ -356,17 +356,8 @@ class ModuleBuilderController extends SugarController
             $_REQUEST [ "label_" . $_REQUEST [ 'label' ] ] = $_REQUEST [ 'labelValue' ] ;
             require_once 'modules/ModuleBuilder/parsers/parser.label.php' ;
 
-            $modules = array();
-            $relate_arr = array('Users' => 'Employees',
-                                'Employees' => 'Users');
-            $module = $_REQUEST['view_module'];
-            array_push($modules, $module);
-            if ( array_key_exists($module, $relate_arr))
-            {
-                array_push($modules, $relate_arr[$module]);
-            }
             $req = $_REQUEST;
-            foreach ($modules as $key)
+            foreach (ModuleBuilder::getModuleAliases($_REQUEST['view_module']) as $key)
             {
                 $req['view_module'] = $key;
                 $parser = new ParserLabel($req['view_module'], isset($req['view_package']) ? $req['view_package'] : null);
@@ -662,6 +653,7 @@ class ModuleBuilderController extends SugarController
         {
             $mb = new ModuleBuilder ( ) ;
             $module = & $mb->getPackageModule ( $_REQUEST [ 'view_package' ], $_REQUEST [ 'view_module' ] ) ;
+            $field = $module->getField($field->name);
             $field->delete ( $module ) ;
             $mb->save () ;
         }

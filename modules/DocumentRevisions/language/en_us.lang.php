@@ -76,6 +76,7 @@ $mod_strings = array (
 
 	'LBL_CURRENT_DOC_VERSION'=> 'Latest Revision:',
 	'LBL_SEARCH_FORM_TITLE'=> 'Document Search',
+    'LBL_REVISIONS' => 'Revisions',
 
 	//error messages
 	'ERR_FILENAME'=> 'File Name',

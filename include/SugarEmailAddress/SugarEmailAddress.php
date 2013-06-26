@@ -732,6 +732,8 @@ class SugarEmailAddress extends SugarBean {
     function getPrimaryAddress($focus,$parent_id=null,$parent_type=null) {
 
         $parent_type=empty($parent_type) ? $focus->module_dir : $parent_type;
+        // Bug63174: Email address is not shown in the list view for employees
+        $parent_type = $this->getCorrectedModule($parent_type);
         $parent_id=empty($parent_id) ? $focus->id : $parent_id;
 
         $q = "SELECT ea.email_address FROM email_addresses ea

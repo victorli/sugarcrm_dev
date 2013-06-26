@@ -81,7 +81,8 @@ class ModuleInstaller{
     */
 	function install($base_dir, $is_upgrade = false, $previous_version = ''){
 		if(defined('TEMPLATE_URL'))SugarTemplateUtilities::disableCache();
-		if(!empty($GLOBALS['sugar_config']['moduleInstaller']['packageScan'])){
+        if ((defined('MODULE_INSTALLER_PACKAGE_SCAN') && MODULE_INSTALLER_PACKAGE_SCAN)
+            || !empty($GLOBALS['sugar_config']['moduleInstaller']['packageScan'])) {
 			$this->ms->scanPackage($base_dir);
 			if($this->ms->hasIssues()){
 				$this->ms->displayIssues();

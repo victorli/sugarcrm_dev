@@ -855,8 +855,33 @@ class MBModule
                 }
             }
         }
-
+        
         return $field_defs;
+    }
+
+    /**
+     * Returns a TemplateField object by name
+     * Returns a TemplateField object by name or null if field not exists. If type not set use text type as default
+     *
+     * @param string $name
+     * @return TemplateField|null
+     *
+     */
+    public function getField($name)
+    {
+        $field = null;
+        $varDefs = $this->getVardefs();
+        if (isset($varDefs['fields'][$name])){
+            $fieldVarDefs = $varDefs['fields'][$name];
+            if (!isset($fieldVarDefs['type'])){
+                $fieldVarDefs['type'] = 'varchar';
+            }
+            $field = get_widget($fieldVarDefs['type']);
+            foreach($fieldVarDefs AS $key => $opt){
+                $field->$key = $opt;
+            }
+        }
+        return $field;
     }
 
 }

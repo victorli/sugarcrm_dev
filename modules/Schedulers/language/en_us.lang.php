@@ -56,6 +56,7 @@ $mod_strings = array (
 'LBL_UPDATE_TRACKER_SESSIONS' => 'Update tracker_sessions Table',
 'LBL_OOTB_SEND_EMAIL_REMINDERS'	=> 'Run Email Reminder Notifications',
 'LBL_OOTB_CLEANUP_QUEUE' => 'Clean Jobs Queue',
+'LBL_OOTB_REMOVE_DOCUMENTS_FROM_FS' => 'Removal of documents from filesystem',
 
 // List Labels
 'LBL_LIST_JOB_INTERVAL' => 'Interval:',
@@ -160,5 +161,6 @@ $mod_strings = array (
 'LBL_TRIMTRACKER' => 'Prune Tracker Tables',
 'LBL_SENDEMAILREMINDERS'=> 'Run Email Reminders Sending',
 'LBL_CLEANJOBQUEUE' => 'Cleanup Job Queue',
+'LBL_REMOVEDOCUMENTSFROMFS' => 'Removal of documents from filesystem',
 );
 ?>

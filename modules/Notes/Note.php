@@ -310,6 +310,7 @@ class Note extends SugarBean {
 	function bean_implements($interface) {
 		switch($interface) {
 			case 'ACL':return true;
+            case 'FILE' : return true;
 		}
 		return false;
 	}

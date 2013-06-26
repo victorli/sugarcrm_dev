@@ -230,7 +230,9 @@ $dictionary['Prospect'] = array(
 						  			'rhs_module'		=>	'CampaignLog',
 									'rhs_table'			=>	'campaign_log',
 									'rhs_key' 			=> 	'target_id',
-						  			'relationship_type'	=>'one-to-many'
+						  			'relationship_type'	=>'one-to-many',
+						   			'relationship_role_column' => 'target_type',
+						   			'relationship_role_column_value' => 'Prospects'
 						  		),
 
 	)

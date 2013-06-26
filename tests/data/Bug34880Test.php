@@ -1,5 +1,5 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
+
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
@@ -35,42 +35,37 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-
-/*if($_SERVER['SERVER_ADDR'] != $_SERVER['REMOTE_ADDR']) { // make sure this script only gets executed locally
-	header('Location: index.php?action=Login&module=Users');
-	return;
-} else
-*/
-if(!empty($_REQUEST['job_id'])) {
-	
-	
-	$job_id = $_REQUEST['job_id'];
-
-	if(empty($GLOBALS['log'])) { // setup logging
-		
-		$GLOBALS['log'] = LoggerManager::getLogger('SugarCRM'); 	
-	}
-	ob_implicit_flush();
-	ignore_user_abort(true);// keep processing if browser is closed
-	set_time_limit(0);// no time out
-	$GLOBALS['log']->debug('Job [ '.$job_id.' ] is about to FIRE. Updating Job status in DB');
-	$qLastRun = "UPDATE schedulers SET last_run = '".$runTime."' WHERE id = '".$job_id."'";
-	$this->db->query($qStatusUpdate);
-	$this->db->query($qLastRun);
-	
-	$job = new Job();
-	$job->runtime = TimeDate::getInstance()->nowDb();
-	if($job->startJob($job_id)) {
-		$GLOBALS['log']->info('----->Job [ '.$job_id.' ] was fired successfully');
-	} else {
-		$GLOBALS['log']->fatal('----->Job FAILURE job [ '.$job_id.' ] could not complete successfully.');
-	}
-	
-	$GLOBALS['log']->debug('Job [ '.$a['job'].' ] has been fired - dropped from schedulers_times queue and last_run updated');
-	$this->finishJob($job_id);
-	return true;
-} else {
-	$GLOBALS['log']->fatal('JOB FAILURE JobThread.php called with no job_id.  Suiciding this thread.');
-	die();
+/**
+ * Bug #34880 : Non-reportable fields unavailable to workflow
+ *
+ * @author myarotsky@sugarcrm.com
+ * @ticket 34880
+ */
+require_once('include/VarDefHandler/VarDefHandler.php');
+class Bug34880Test extends Sugar_PHPUnit_Framework_TestCase
+{
+    public static function provider()
+    {
+        return array(
+            array('standard_display'),
+            array('normal_trigger'),
+            array('normal_date_trigger'),
+            array('action_filter'),
+            array('template_filter'),
+            array('alert_trigger')
+        );
+    }
+    /**
+     * Reportable fields must be available in workflow
+     * @dataProvider provider
+     * @group 34880
+     */
+    public function testReportableFieldsMustBeAvailableInWorkflow($action)
+    {
+        $def = array(
+            'reportable' => ''
+        );
+        $obj = new VarDefHandler('', $action);
+        $this->assertTrue($obj->compare_type($def), "reportable fields should be available in workflow");
+    }
 }
-?>

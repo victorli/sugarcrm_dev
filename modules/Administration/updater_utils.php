@@ -135,6 +135,7 @@ function getBaseSystemInfo($send_usage_info=true){
 function check_now($send_usage_info=true, $get_request_data=false, $response_data = false, $from_install=false ) {
 	global $sugar_config, $timedate;
 	global $db, $license;
+    include('sugar_version.php');
 
 
 	$return_array=array();
@@ -154,18 +155,16 @@ function check_now($send_usage_info=true, $get_request_data=false, $response_dat
 		$GLOBALS['log']->debug('USING HTTPS TO CONNECT TO HEARTBEAT');
 		$sclient = new nusoapclient('https://updates.sugarcrm.com/heartbeat/soap.php', false, false, false, false, false, 15, 15);
 		$ping = $sclient->call('sugarPing', array());
-		if(empty($ping) || $sclient->getError()){
-			$sclient = '';
-		}
-
-		if(empty($sclient)){
-			$GLOBALS['log']->debug('USING HTTP TO CONNECT TO HEARTBEAT');
-			$sclient = new nusoapclient('http://updates.sugarcrm.com/heartbeat/soap.php', false, false, false, false, false, 15, 15);
-		}
-
-
-
-
+        if (empty($ping) || $sclient->getError()) {
+            if (!$get_request_data) {
+                return array(
+                    array(
+                        'version' => $sugar_version,
+                        'description' => "You have the latest version."
+                    )
+                );
+            }
+        }
 
 
 			$key = '4829482749329';
@@ -244,11 +243,6 @@ function check_now($send_usage_info=true, $get_request_data=false, $response_dat
 		$resultData['versions'] = array();
 		$license->saveSetting('license', 'latest_versions','')	;
 	}
-
-
-
-
-	include('sugar_version.php');
 
 	if(sizeof($resultData) == 1 && !empty($resultData['versions'][0]['version'])
         && compareVersions($sugar_version, $resultData['versions'][0]['version']))

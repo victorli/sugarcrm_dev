@@ -298,6 +298,13 @@ class DocumentRevision extends SugarBean {
 		}
 		return $return_array;
 	}	
+
+    public function bean_implements($interface) {
+        switch($interface) {
+            case 'FILE' : return true;
+        }
+        return parent::bean_implements($interface);
+    }
 }
 
 require_once('modules/Documents/DocumentExternalApiDropDown.php');

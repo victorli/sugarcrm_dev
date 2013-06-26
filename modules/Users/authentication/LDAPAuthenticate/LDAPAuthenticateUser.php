@@ -90,18 +90,20 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 		// MRF - Bug #18578 - punctuation was being passed as HTML entities, i.e. &amp;
 		$bind_password = html_entity_decode($password,ENT_QUOTES);
 
-		$GLOBALS['log']->info("ldapauth: Binding user " . $bind_user);
-		$bind = ldap_bind($ldapconn, $bind_user, $bind_password);
-		$error = ldap_errno($ldapconn);
-		if($this->loginError($error)){
-			$full_user = $GLOBALS['ldap_config']->settings['ldap_bind_attr'] . "=" . $bind_user . "," . $GLOBALS['ldap_config']->settings['ldap_base_dn'];
-			$GLOBALS['log']->info("ldapauth: Binding user " . $full_user);
-			$bind = ldap_bind($ldapconn, $full_user, $bind_password);
-			$error = ldap_errno($ldapconn);
-			if($this->loginError($error)){
-				return '';
-			}
-		}
+        $GLOBALS['log']->info("ldapauth: Binding user " . $bind_user);
+        $bind = ldap_bind($ldapconn, $bind_user, $bind_password);
+        $error = ldap_errno($ldapconn);
+        if ($this->loginError($error)) {
+            $full_user = $GLOBALS['ldap_config']->settings['ldap_bind_attr'] . "=" . $bind_user
+                . "," . $GLOBALS['ldap_config']->settings['ldap_base_dn'];
+
+            $GLOBALS['log']->info("ldapauth: Binding user " . $full_user);
+            $bind = ldap_bind($ldapconn, $full_user, $bind_password);
+            $error = ldap_errno($ldapconn);
+            if ($this->loginError($error)) {
+                return '';
+            }
+        }
 
 		$GLOBALS['log']->info("ldapauth: Bind attempt complete.");
 
@@ -112,25 +114,32 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 			$name_filter = $this->getUserNameFilter($name);
 
 			//add the group user attribute that we will compare to the group attribute for membership validation if group membership is turned on
-			if(!empty($GLOBALS['ldap_config']->settings['ldap_group']) && !empty($GLOBALS['ldap_config']->settings['ldap_group_user_attr']) && !empty($GLOBALS['ldap_config']->settings['ldap_group_attr'])){
-				if(!in_array($attrs, $GLOBALS['ldap_config']->settings['ldap_group_user_attr'])){
-					$attrs[] = $GLOBALS['ldap_config']->settings['ldap_group_user_attr'];
-				}
-			}
+            if (!empty($GLOBALS['ldap_config']->settings['ldap_group'])
+                && !empty($GLOBALS['ldap_config']->settings['ldap_group_user_attr'])
+                && !empty($GLOBALS['ldap_config']->settings['ldap_group_attr'])) {
 
-			$GLOBALS['log']->debug("ldapauth: Fetching user info from Directory using base dn: " . $base_dn . ", name_filter: " . $name_filter . ", attrs: " . var_export($attrs));
+                if (!in_array($attrs, $GLOBALS['ldap_config']->settings['ldap_group_user_attr'])) {
+                    $attrs[] = $GLOBALS['ldap_config']->settings['ldap_group_user_attr'];
+                }
+            }
+
+            $GLOBALS['log']->debug(
+                "ldapauth: Fetching user info from Directory using base dn: "
+                . $base_dn . ", name_filter: " . $name_filter . ", attrs: " . var_export($attrs, true)
+            );
+
 			$result = @ldap_search($ldapconn, $base_dn, $name_filter, $attrs);
 			$error = ldap_errno($ldapconn);
-			 if($this->loginError($error)){
+            if ($this->loginError($error)) {
         		return '';
 			}
 			$GLOBALS['log']->debug("ldapauth: ldap_search complete.");
 
-			$info = @ldap_get_entries($ldapconn, $result);
-			 $error = ldap_errno($ldapconn);
-       		if($this->loginError($error)){
-        		return '';
-			}
+            $info = @ldap_get_entries($ldapconn, $result);
+            $error = ldap_errno($ldapconn);
+            if ($this->loginError($error)) {
+                return '';
+            }
 
 
 
@@ -160,10 +169,13 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 				}
 
 				// build search query and determine if we are searching for a bare id or the full dn path
-				$group_name = $GLOBALS['ldap_config']->settings['ldap_group_name'] . "," . $GLOBALS['ldap_config']->settings['ldap_group_dn'];
+                $group_name = $GLOBALS['ldap_config']->settings['ldap_group_name'] . ","
+                    . $GLOBALS['ldap_config']->settings['ldap_group_dn'];
 				$GLOBALS['log']->debug("ldapauth: Searching for group name: " . $group_name);
 				$user_search = "";
-				if(!empty($GLOBALS['ldap_config']->settings['ldap_group_attr_req_dn']) && $GLOBALS['ldap_config']->settings['ldap_group_attr_req_dn'] == 1) {
+                if (!empty($GLOBALS['ldap_config']->settings['ldap_group_attr_req_dn'])
+                    && $GLOBALS['ldap_config']->settings['ldap_group_attr_req_dn'] == 1) {
+
 					$GLOBALS['log']->debug("ldapauth: Checking for group membership using full user dn");
 					$user_search = "($group_attr=" . $group_user_attr . "=" . $user_uid[0] . "," . $base_dn . ")";
 				} else {
@@ -172,15 +184,20 @@ class LDAPAuthenticateUser extends SugarAuthenticateUser{
 				$GLOBALS['log']->debug("ldapauth: Searching for user: " . $user_search);
 
 				//user is not a member of the group if the count is zero get the logs and return no id so it fails login        
-				if(!isset($user_uid[0]) || ldap_count_entries($ldapconn, ldap_search($ldapconn,$group_name, $user_search)) ==  0){
+                if (!isset($user_uid[0])
+                    || ldap_count_entries($ldapconn, ldap_search($ldapconn, $group_name, $user_search)) ==  0) {
+
 					$GLOBALS['log']->fatal("ldapauth: User ($name) is not a member of the LDAP group");
 					$user_id = var_export($user_uid, true);
-					$GLOBALS['log']->debug("ldapauth: Group DN:{$GLOBALS['ldap_config']->settings['ldap_group_dn']} Group Name: " . $GLOBALS['ldap_config']->settings['ldap_group_name']  . " Group Attribute: $group_attr  User Attribute: $group_user_attr :(" . $user_uid[0] . ")");
+                    $GLOBALS['log']->debug(
+                        "ldapauth: Group DN:{$GLOBALS['ldap_config']->settings['ldap_group_dn']}"
+                        . " Group Name: " . $GLOBALS['ldap_config']->settings['ldap_group_name']
+                        . " Group Attribute: $group_attr  User Attribute: $group_user_attr :(" . $user_uid[0] . ")"
+                    );
+
 					ldap_close($ldapconn);
 					return '';
 				}
-
-
 			}
 
 

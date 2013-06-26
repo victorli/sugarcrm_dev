@@ -186,8 +186,8 @@ SUGAR.isSupportedBrowser = function(){
     var supportedBrowsers = {
         msie : {min:8, max:10}, // IE 8, 9, 10
         safari : {min:534}, // Safari 5.1
-        mozilla : {min:20.0}, // Firefox 20.0
-        chrome : {min:537.31} // Chrome 26
+        mozilla : {min:21.0}, // Firefox 21.0
+        chrome : {min:537.36} // Chrome 27
     };
     var current = String($.browser.version);
     var supported;
@@ -919,6 +919,7 @@ function validate_form(formname, startsWith){
 			if(validate[formname][i][nameIndex].indexOf(startsWith) == 0){
 				if(typeof form[validate[formname][i][nameIndex]]  != 'undefined' && typeof form[validate[formname][i][nameIndex]].value != 'undefined'){
 					var bail = false;
+
 
                     //If a field is not required and it is blank or is binarydependant, skip validation.
                     //Example of binary dependant fields would be the hour/min/meridian dropdowns in a date time combo widget, which require further processing than a blank check

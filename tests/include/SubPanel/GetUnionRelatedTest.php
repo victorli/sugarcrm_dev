@@ -98,7 +98,7 @@ class GetUnionRelatedTest extends Sugar_PHPUnit_Framework_TestCase
         $subpanel_def = new aSubPanel("testpanel", $subpanel, $this->bean);
         $query = $this->bean->get_union_related_list($this->bean, "", '', "", 0, 5, -1, 0, $subpanel_def);
         $result = $this->bean->db->query($query["query"]);
-        $this->assertTrue($result != false, "Bad query: {$query["query"]}");
+        $this->assertNotEmpty($result, "Bad query: {$query["query"]}");
     }
 }
 

@@ -423,6 +423,17 @@ $vardefs =array(
             'unified_search' => true,
             'rel_fields' => array('primary_address' => array('type'=>'bool')),
         ),
+    // Used for non-primary mail import
+    'email_addresses_non_primary'=>
+        array(
+            'name' => 'email_addresses_non_primary',
+            'type' => 'email',
+            'source' => 'non-db',
+            'vname' =>'LBL_EMAIL_NON_PRIMARY',
+            'studio' => false,
+            'reportable'=>false,
+            'massupdate' => false,
+        ),
 ), 
 'relationships'=>array(
     strtolower($module).'_email_addresses' => 

@@ -275,8 +275,10 @@ class Contact extends Person {
             $custom_join = $this->getCustomJoin(true, true, $where);
             $custom_join['join'] .= $relate_link_join;
                          $query = "SELECT
-                                contacts.*,email_addresses.email_address email_address,
-                                accounts.name as account_name,
+                                contacts.*,
+                                email_addresses.email_address email_address,
+                                '' email_addresses_non_primary, " . // email_addresses_non_primary needed for get_field_order_mapping()
+                                "accounts.name as account_name,
                                 users.user_name as assigned_user_name ";
             $query .= $custom_join['select'];
 						 $query .= " FROM contacts ";
@@ -409,6 +411,8 @@ class Contact extends Person {
 			$this->load_contacts_users_relationship();
 			$temp_array['SYNC_CONTACT'] = !empty($this->contacts_users_id) ? 1 : 0;
 		}
+
+        $temp_array['EMAIL_AND_NAME1'] = "{$this->full_name} &lt;".$temp_array['EMAIL1']."&gt;";
 
 		return $temp_array;
 	}
