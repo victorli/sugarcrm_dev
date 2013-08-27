@@ -64,7 +64,19 @@ class ViewImportvcard extends SugarView
         $this->ss->assign("ERROR_TEXT", $app_strings['LBL_EMPTY_VCARD']);
         if (isset($_REQUEST['error']))
         {
-            $this->ss->assign("ERROR_REQUIRED", $app_strings['LBL_EMPTY_REQUIRED_VCARD']);
+            switch ($_REQUEST['error'])
+            {
+                case 'vcardErrorFilesize':
+                    $error = 'LBL_VCARD_ERROR_FILESIZE';
+                    break;
+                case 'vcardErrorRequired':
+                    $error = 'LBL_EMPTY_REQUIRED_VCARD';
+                    break;
+                default:
+                    $error = 'LBL_VCARD_ERROR_DEFAULT';
+                    break;
+            }
+            $this->ss->assign("ERROR", $app_strings[$error]);
         }
         $this->ss->assign("HEADER", $app_strings['LBL_IMPORT_VCARD']);
         $this->ss->assign("MODULE", $_REQUEST['module']);

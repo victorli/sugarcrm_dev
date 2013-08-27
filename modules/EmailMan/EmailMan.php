@@ -112,13 +112,13 @@ class EmailMan extends SugarBean{
 			$query['where'] = "WHERE ".$where_auto;
 
     	if(isset($params['group_by'])) {
-			$query['order_by'] .= " GROUP BY {$params['group_by']}";
+            $query['group_by'] .= " GROUP BY {$params['group_by']}";
 		}
 
-		if($order_by != "")
-		{
-			$query['order_by'] = ' ORDER BY ' . $this->process_order_by($order_by, null);
-		}
+        $order_by = $this->process_order_by($order_by);
+        if (!empty($order_by)) {
+            $query['order_by'] = ' ORDER BY ' . $order_by;
+        }
 
 		if ($return_array) {
 			return $query;
@@ -171,11 +171,10 @@ class EmailMan extends SugarBean{
 		else
 			$query .= "WHERE ".$where_auto;
 
-
-		if($order_by != "")
-		{
-			$query .= ' ORDER BY ' . $this->process_order_by($order_by, null);
-		}
+        $order_by = $this->process_order_by($order_by);
+        if (!empty($order_by)) {
+            $query .= ' ORDER BY ' . $order_by;
+        }
 
 		return $query;
 
@@ -211,10 +210,11 @@ class EmailMan extends SugarBean{
 		else
 			$query .= "where ".$where_auto;
 
-		if($order_by != "")
-		{
-			$query .= ' ORDER BY ' . $this->process_order_by($order_by, null);
-		}
+        $order_by = $this->process_order_by($order_by);
+        if (!empty($order_by)) {
+            $query .= ' ORDER BY ' . $order_by;
+        }
+
 		return $query;
 	}
 
@@ -961,9 +961,9 @@ class EmailMan extends SugarBean{
         else
             $query .= "where ".$where_auto;
 
-        if(!empty($order_by))
-        {
-            $query .=  ' ORDER BY '. $this->process_order_by($order_by, null);
+        $order_by = $this->process_order_by($order_by);
+        if (!empty($order_by)) {
+            $query .= ' ORDER BY ' . $order_by;
         }
 
         return $query;

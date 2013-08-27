@@ -126,6 +126,7 @@ $app_list_strings = array (
     'Leads' => 'Lead',
     'Activities' => 'Activity',
     'Bugs' => 'Bug Tracker',
+    'KBDocuments' => 'KBDocument',
     'Feeds' => 'RSS',
     'iFrames'=>'My Sites',
     'TimePeriods'=>'Time Period',
@@ -1761,6 +1762,8 @@ $app_strings = array (
     'LBL_VCARD' => 'vCard',
     'LBL_EMPTY_VCARD' => 'Please select a vCard file',
     'LBL_EMPTY_REQUIRED_VCARD' => 'vCard does not have all the required fields for this module. Please refer to sugarcrm.log for details.',
+    'LBL_VCARD_ERROR_FILESIZE' => 'The uploaded file exceeds the 30000 bytes size limit which was specified in the HTML form.',
+    'LBL_VCARD_ERROR_DEFAULT' => 'There was an error uploading the vCard file. Please refer to sugarcrm.log for details.',
     'LBL_IMPORT_VCARD' => 'Import vCard:',
     'LBL_IMPORT_VCARD_BUTTON_KEY' => 'I',
     'LBL_IMPORT_VCARD_BUTTON_LABEL' => 'Import vCard',
@@ -2109,7 +2112,7 @@ $app_strings = array (
     'ERROR_FULLY_EXPIRED'=> "Your company's license for SugarCRM has expired for more than 7 days and needs to be brought up to date. Only admins may login.",
     'ERROR_LICENSE_EXPIRED'=> "Your company's license for SugarCRM needs to be updated. Only admins may login",
     'ERROR_LICENSE_VALIDATION'=> "Your company's license for SugarCRM needs to be validated. Only admins may login",
-    'WARN_BROWSER_VERSION_WARNING' => "<b>Warning:</b> Your browser version is no longer supported or you are using an unsupported browser.<p></p>The following browser versions are recommended:<p></p><ul><li>Internet Explorer 8 (compatibility view not supported)<li>Firefox 21.0<li>Safari 5.1<li>Chrome 27</ul>",
+    'WARN_BROWSER_VERSION_WARNING' => "<b>Warning:</b> Your browser version is no longer supported or you are using an unsupported browser.<p></p>The following browser versions are recommended:<p></p><ul><li>Internet Explorer 9 (compatibility view not supported)<li>Firefox 23.0<li>Safari 5.1<li>Chrome 28</ul>",
     'WARN_BROWSER_IE_COMPATIBILITY_MODE_WARNING' => "<b>Warning:</b> Your browser is in IE compatibility view which is not supported.",
     'WARN_LICENSE_SEATS'=>  "Warning: The number of active users is already the maximum number of licenses allowed.",
     'WARN_LICENSE_SEATS_MAXED'=>  "Warning: The number of active users exceeds the maximum number of licenses allowed.",
@@ -2316,6 +2319,7 @@ $app_strings = array (
     'LBL_MASSUPDATE_DATE' => 'Select Date',
 
     'LBL_VALIDATE_RANGE' => 'is not within the valid range',
+    'LBL_CHOOSE_START_AND_END_DATES' => 'Please choose both a starting and ending date range',
 
     //jchi #  20776
     'LBL_DROPDOWN_LIST_ALL' => 'All',

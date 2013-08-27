@@ -187,6 +187,7 @@ class SugarMerge {
 		    //Create a log entry of the custom file before it is merged
 		    if($logHistory && $save)
 		          $this->createHistoryLog($module, "{$custom_path}{$file}",$file);
+            $this->mergeMapping[$file]->sugarMerge = $this;
 		    return $this->mergeMapping[$file]->merge($module, "{$path}{$file}", "{$new_path}{$file}", "{$custom_path}{$file}", $save);
 		}
 		return false;

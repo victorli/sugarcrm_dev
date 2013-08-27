@@ -47,43 +47,97 @@ class Bug56573Test extends Sugar_PHPUnit_Framework_TestCase
 
         $job = new SchedulersJob();
         $job->name = "Bug56573Test Alert Job - '{$name}'";
-        $job->data = $data;
         $job->target = "class::Bug56573TestJob";
+        $job->data = $data;
         $job->assigned_user_id = $GLOBALS['current_user']->id;
+
+        // Add the Job the the job Queue
         $jq = new SugarJobQueue();
         $jq->submitJob($job);
-        $this->id = $job->id;
+        // Run the job
         $job->runJob();
+
+        // Save id for cleaning
+        $this->id = $job->id;
+
         return $job;
     }
 
     public static function provider()
     {
         return array(
-            array('Success', true, SchedulersJob::JOB_SUCCESS),
-            array('Failure', false, SchedulersJob::JOB_FAILURE)
+            array(
+                'Success',
+                implode(
+                    ',',
+                    array(
+                        'status' =>  SchedulersJob::JOB_STATUS_RUNNING,
+                        'resolution' => SchedulersJob::JOB_SUCCESS,
+                        'return' => true
+                    )
+                ),
+                SchedulersJob::JOB_STATUS_DONE,
+                SchedulersJob::JOB_SUCCESS
+            ),
+            array(
+                'Failure',
+                implode(
+                    ',',
+                    array(
+                        'status' => SchedulersJob::JOB_STATUS_RUNNING,
+                        'resolution' => SchedulersJob::JOB_FAILURE,
+                        'return' => false
+                    )
+                ),
+                SchedulersJob::JOB_STATUS_DONE,
+                SchedulersJob::JOB_FAILURE
+
+            ),
+            array(
+                'Queue',
+                implode(
+                    ',',
+                    array(
+                        'status' => SchedulersJob::JOB_STATUS_QUEUED,
+                        'resolution' => SchedulersJob::JOB_PARTIAL,
+                        'return' => false
+                    )
+                ),
+                SchedulersJob::JOB_STATUS_QUEUED,
+                SchedulersJob::JOB_PARTIAL
+            ),
         );
     }
 
     /**
-     * Job executed or failed
+     * Test if runJob() sets proper values of status/resolution
+     *
      * @dataProvider provider
      * @group 56537
      */
-    public function testJob($name, $result, $resolution)
+    public function testJob($name, $data, $status, $resolution)
     {
-        $job = $this->execJob($name, $result);
+        $job = $this->execJob($name, $data);
         $this->assertEquals($resolution, $job->resolution, "Wrong resolution");
-        $this->assertEquals(SchedulersJob::JOB_STATUS_DONE, $job->status, "Wrong status");
+        $this->assertEquals($status, $job->status, "Wrong status");
     }
 }
 
+/**
+ * Job Class for testing SchedulersJob
+ */
 class Bug56573TestJob implements RunnableSchedulerJob
 {
-
     public function run($data)
     {
-        return $data;
+        // Pull all the test data
+        $data = explode(',', $data);
+
+        // Set status and resolution
+        $this->job->status = $data[0];
+        $this->job->resolution = $data[1];
+
+        return $data[2];
     }
 
     public function setJob(SchedulersJob $job)

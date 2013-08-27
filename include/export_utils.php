@@ -50,6 +50,10 @@ function getDelimiter() {
     global $sugar_config;
     global $current_user;
 
+    if (!empty($sugar_config['export_excel_compatible'])) {
+        return "\t";
+    }
+
     $delimiter = ','; // default to "comma"
     $userDelimiter = $current_user->getPreference('export_delimiter');
     $delimiter = empty($sugar_config['export_delimiter']) ? $delimiter : $sugar_config['export_delimiter'];

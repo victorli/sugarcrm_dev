@@ -153,7 +153,7 @@ function isSupportedIE() {
 
 	// IE Check supports ActiveX controls
 	if (userAgent.indexOf("msie") != -1 && userAgent.indexOf("mac") == -1 && userAgent.indexOf("opera") == -1) {
-		var version = navigator.appVersion.match(/MSIE (.\..)/)[1] ;
+		var version = navigator.appVersion.match(/MSIE (\d+\.\d+)/)[1] ;
 		if(version >= 5.5 && version < 10) {
 			return true;
 		} else {
@@ -186,8 +186,8 @@ SUGAR.isSupportedBrowser = function(){
     var supportedBrowsers = {
         msie : {min:8, max:10}, // IE 8, 9, 10
         safari : {min:534}, // Safari 5.1
-        mozilla : {min:21.0}, // Firefox 21.0
-        chrome : {min:537.36} // Chrome 27
+        mozilla : {min:22.0}, // Firefox 23.0
+        chrome : {min:28} // Chrome 28
     };
     var current = String($.browser.version);
     var supported;
@@ -200,6 +200,7 @@ SUGAR.isSupportedBrowser = function(){
     else {
         $.browser.chrome = /chrome/.test(navigator.userAgent.toLowerCase());
         if($.browser.chrome){ // Chrome
+            current = navigator.userAgent.match(/Chrome\/(.*?) /)[1];
             supported = supportedBrowsers['chrome'];
         }
         else if($.browser.safari){ // Safari
@@ -1437,7 +1438,7 @@ function getXMLHTTPinstance() {
 
 	// IE Check supports ActiveX controls
 	if (userAgent.indexOf("msie") != -1 && userAgent.indexOf("mac") == -1 && userAgent.indexOf("opera") == -1) {
-		var version = navigator.appVersion.match(/MSIE (.\..)/)[1] ;
+		var version = navigator.appVersion.match(/MSIE (\d+\.\d+)/)[1] ;
 		if(version >= 5.5 ) {
 			try {
 				xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
@@ -3676,8 +3677,17 @@ SUGAR.savedViews = function() {
 			SUGAR.tabChooser.movementCallback(document.getElementById('display_tabs_td').getElementsByTagName('select')[0]);
 
 			// This check is needed for the Activities module (Calls/Meetings/Tasks).
-			if (document.search_form.orderBy)
-				document.search_form.orderBy.options.value = SUGAR.savedViews.selectedOrderBy;
+            if (document.search_form.orderBy)
+            {
+                if (document.search_form.orderBy.length > 1 && document.search_form.orderBy[1].type == 'select-one')
+                {
+                    document.search_form.orderBy[1].options.value = SUGAR.savedViews.selectedOrderBy;
+                }
+                else
+                {
+                    document.search_form.orderBy.options.value = SUGAR.savedViews.selectedOrderBy;
+                }
+            }
 
 			// handle direction
 			if(SUGAR.savedViews.selectedSortOrder == 'DESC') document.getElementById('sort_order_desc_radio').checked = true;
@@ -3748,6 +3758,11 @@ SUGAR.searchForm = function() {
                          }
                      }
                  }
+                // Remove the previously selected div, so that only data from current div to be sent as form data to the server-side
+                if (document.getElementById(module + thepreviousView + '_search' + 'SearchForm'))
+                {
+                    document.getElementById(module + thepreviousView + '_search' + 'SearchForm').innerHTML = '';
+                }
 			}
 
 			// if tab is not cached
@@ -3867,8 +3882,21 @@ SUGAR.searchForm = function() {
                 }
             }
 
+            SUGAR.searchForm.clearBasicSearchOrderToDefault(form);
 			SUGAR.savedViews.clearColumns = true;
-		}
+		},
+        // This function sets sorting to default Sugar values after BasicSearch Clear button is pressed
+        clearBasicSearchOrderToDefault: function(form)
+        {
+            if(form.elements['searchFormTab']){
+                var formType = form.elements['searchFormTab'].value;
+                if (formType == 'basic_search')
+                {
+                    form.elements['orderBy'].value = 'DATE_ENTERED';
+                    form.elements['sortOrder'].value = 'DESC';
+                }
+            }
+        }
 	};
 }();
 // Code for the column/tab chooser used on homepage and in admin section
@@ -4876,11 +4904,13 @@ setEmailPasswordDisplay: function(id, exists, formName) {
 	pwd = document.getElementById(id);
 	if(!pwd || !link) return;
 	if(exists) {
+            pwd.disabled = true;
     	pwd.style.display = 'none';
     	link.style.display = '';
         if(typeof(formName) != 'undefined')
             removeFromValidate(formName, id);
 	} else {
+            pwd.disabled = false;
     	pwd.style.display = '';
     	link.style.display = 'none';
 	}
@@ -4890,6 +4920,7 @@ setEmailPasswordEdit: function(id) {
 	link = document.getElementById(id+'_link');
 	pwd = document.getElementById(id);
 	if(!pwd || !link) return;
+        pwd.disabled = false;
 	pwd.style.display = '';
 	link.style.display = 'none';
 },

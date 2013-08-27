@@ -40,25 +40,47 @@ require_once('include/SugarFields/Fields/Float/SugarFieldFloat.php');
 
 class SugarFieldCurrency extends SugarFieldFloat 
 {
-    function getListViewSmarty($parentFieldArray, $vardef, $displayParams, $col) {
+
+    public function getListViewSmarty($parentFieldArray, $vardef, $displayParams, $col)
+    {
+        global $locale, $current_user;
         $tabindex = 1;
-    	$this->setup($parentFieldArray, $vardef, $displayParams, $tabindex, false);
+        $this->setup($parentFieldArray, $vardef, $displayParams, $tabindex, false);
+
+        $currencyUSD = '-99';
+
+        $amount = $parentFieldArray[strtoupper($vardef['name'])];
+        $currencyId = isset($parentFieldArray['CURRENCY_ID']) ? $parentFieldArray['CURRENCY_ID'] : "";
+        $currencySymbol = isset($parentFieldArray['CURRENCY_SYMBOL']) ? $parentFieldArray['CURRENCY_SYMBOL'] : "";
+
+        if (empty($currencyId)) {
+            $currencyId = $locale->getPrecedentPreference('currency');
+        }
+
+        if (empty($currencySymbol)) {
+            $currencySymbol = $locale->getPrecedentPreference('default_currency_symbol');
+        }
         
-        $this->ss->left_delimiter = '{';
-        $this->ss->right_delimiter = '}';
-        $this->ss->assign('col',strtoupper($vardef['name']));        
-	    if(is_object($parentFieldArray) ){
-            if(!empty($parentFieldArray->currency_id)) {
-                $this->ss->assign('currency_id',$parentFieldArray->currency_id);
+        if (stripos($vardef['name'], '_USD')) {
+            $userCurrencyId = $current_user->getPreference('currency');
+            if (!empty($userCurrencyId) && $currencyUSD !== $userCurrencyId) {
+                $userCurrency = BeanFactory::getBean('Currencies', $userCurrencyId);
+                $currencyId = $userCurrency->id;
+                $currencySymbol = $userCurrency->symbol;
+                $amount = $userCurrency->convertFromDollar($amount, 6);
+            } else {
+                $currencyId = $currencyUSD;
+                $currencySymbol = $locale->getPrecedentPreference('default_currency_symbol');
             }
-	    } else if (!empty($parentFieldArray['CURRENCY_ID'])) {
-	    	$this->ss->assign('currency_id',$parentFieldArray['CURRENCY_ID']);
-	    } else if (!empty($parentFieldArray['currency_id'])) {
-	    	$this->ss->assign('currency_id',$parentFieldArray['currency_id']);
-	    }
+        }
+
+        $this->ss->assign('currency_id', $currencyId);
+        $this->ss->assign('currency_symbol', $currencySymbol);
+        $this->ss->assign('amount', $amount);
+
         return $this->fetch($this->findTemplate('ListView'));
     }
-    
+
     /**
      * @see SugarFieldBase::importSanitize()
      */
@@ -75,20 +97,21 @@ class SugarFieldCurrency extends SugarFieldFloat
     }
 
     /**
-	 * format the currency field based on system locale values for currency
+     * format the currency field based on system locale values for currency
      * Note that this may be different from the precision specified in the vardefs.
-	 * @param string $rawfield value of the field
+     * @param string $rawfield value of the field
      * @param string $somewhere vardef for the field being processed
-	 * @return number formatted according to currency settings
-	 */
-    public function formatField($rawField, $vardef){
+     * @return number formatted according to currency settings
+     */
+    public function formatField($rawField, $vardef)
+    {
         // for currency fields, use the user or system precision, not the precision in the vardef
         //this is achived by passing in $precision as null
         $precision = null;
-
         if ( $rawField === '' || $rawField === NULL ) {
             return '';
         }
-        return format_number($rawField,$precision,$precision);
+        return format_number($rawField, $precision, $precision);
     }
 }
+

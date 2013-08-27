@@ -134,7 +134,11 @@ class SugarWidgetReportField extends SugarWidgetField
 				return $alias;
     	}
 
-        $alias = $this->reporter->db->convert($alias, 'IFNULL', array(0));
+        // Use IFNULL only if it's not AVG aggregate
+        // because it adds NULL rows to the count when it should not, thus getting wrong result
+        if ($layout_def['group_function'] != 'avg') {
+            $alias = $this->reporter->db->convert($alias, 'IFNULL', array(0));
+        }
 
         // for a field with type='currency' conversion of values into a user-preferred currency
         if ($layout_def['type'] == 'currency' && strpos($layout_def['name'], '_usdoll') === false) {
@@ -142,9 +146,20 @@ class SugarWidgetReportField extends SugarWidgetField
             $currency_alias = isset($layout_def['currency_alias'])
                 ? $layout_def['currency_alias'] : $currency->table_name;
             $query = $this->reporter->db->convert($currency_alias.".conversion_rate", "IFNULL", array(1));
-            $alias = "{$layout_def['group_function']}($alias/{$query})*{$currency->conversion_rate}";
+            // We need to use convert() for AVG because of Oracle
+            if ($layout_def['group_function'] != 'avg') {
+                $alias = "{$layout_def['group_function']}($alias/{$query})*{$currency->conversion_rate}";
+            } else {
+                $alias = $this->reporter->db->convert("$alias/$query", "AVG") . " * {$currency->conversion_rate}";
+            }
         } else {
-            $alias = "{$layout_def['group_function']}($alias)";
+            // We need to use convert() for AVG because of Oracle
+            if ($layout_def['group_function'] != 'avg') {
+                $alias = "{$layout_def['group_function']}($alias)";
+            } else {
+                $alias = $this->reporter->db->convert($alias, "AVG");
+            }
+
         }
 	}
 
@@ -335,8 +350,10 @@ class SugarWidgetReportField extends SugarWidgetField
 
  function queryFilterNot_Empty($layout_def)
  {
+     /** @var $db DBManager */
+     $db = $this->reporter->db;
      $column = $this->_get_column_select($layout_def);
-     return "($column IS NOT NULL AND $column <> ".$this->reporter->db->emptyValue($layout_def['type']).")";
+     return "(coalesce(" . $db->convert($column, "length") . ",0) > 0)\n";
  }
 
 }

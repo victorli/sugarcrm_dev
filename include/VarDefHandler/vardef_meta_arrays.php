@@ -249,6 +249,7 @@ $vardef_meta_array = array (
 
 		'inc_override' => array(
 			'name' => array('assigned_user_id', 'assigned_user_name', 'modified_user_id', 'modified_by_name', 'created_by', 'created_by_name', 'full_name', 'email1', 'email2', 'team_name', 'shipper_name'),
+            'type' => array('relate'),
 		//end inc_override
 		),
 		'ex_override' => array(

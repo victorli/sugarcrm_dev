@@ -177,4 +177,32 @@ YAHOO.util.Event.onDOMReady(function() {ldelim}
 
 {rdelim});
 
+YAHOO.util.Event.onDOMReady(function() {ldelim}
+   if(document.getElementById('search_form_submit_advanced'))
+    {ldelim}
+        YAHOO.util.Event.addListener('search_form_submit_advanced', 'click',{$id}_range_validate);
+    {rdelim}
+
+{rdelim});
+
+// this function is specific to range date searches and will check that both start and end date ranges have been
+// filled prior to submitting search form.  It is called from the listener added above.
+function {$id}_range_validate(e){ldelim}
+    if (
+            (document.getElementById("start_range_{$id}").value.length >0 && document.getElementById("end_range_{$id}").value.length == 0)
+          ||(document.getElementById("end_range_{$id}").value.length >0 && document.getElementById("start_range_{$id}").value.length == 0)
+       )
+    {ldelim}
+        e.preventDefault();
+        alert('{$APP.LBL_CHOOSE_START_AND_END_DATES}');
+        if (document.getElementById("start_range_{$id}").value.length == 0) {ldelim}
+            document.getElementById("start_range_{$id}").focus();
+        {rdelim}
+        else {ldelim}
+            document.getElementById("end_range_{$id}").focus();
+        {rdelim}
+    {rdelim}
+
+{rdelim}
+
 </script>

@@ -347,6 +347,34 @@ if (!class_exists("ZipArchive"))
 }
 
 
+// check PCRE version
+if (defined('PCRE_VERSION'))
+{
+    if (version_compare(PCRE_VERSION, '7.0') < 0) {
+        installLog("ERROR: PCRE Version is less than 7.0.");
+        $error_found = true;
+        $pcreStatus = "<span class='stop'><b>{$mod_strings['ERR_CHECKSYS_PCRE_VER']}</b></span>";
+        $error_txt .= '
+          <tr>
+            <td><strong>'.$mod_strings['LBL_CHECKSYS_PCRE'].'</strong></td>
+            <td  align="right" class="error">'.$pcreStatus.'</td>
+          </tr>';
+    }
+    else {
+        installLog("PCRE version check passed");
+    }
+}
+else {
+    installLog("ERROR: PCRE not found.");
+    $error_found = true;
+    $pcreStatus = "<span class='stop'><b>{$mod_strings['ERR_CHECKSYS_PCRE']}</b></span>";
+    $error_txt .= '
+      <tr>
+        <td><strong>'.$mod_strings['LBL_CHECKSYS_PCRE'].'</strong></td>
+        <td  align="right" class="error">'.$pcreStatus.'</td>
+      </tr>';
+}
+
 
 $customSystemChecks = installerHook('additionalCustomSystemChecks');
 if($customSystemChecks != 'undefined'){

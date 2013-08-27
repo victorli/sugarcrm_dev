@@ -83,7 +83,9 @@
 		//this javascript runs and populates values in savedSearchForm.tpl
 		x = document.getElementById('saved_search_select');
 		if ((typeof(x) != 'undefined' && x != null) && x.selectedIndex !=0) {
-			document.getElementById('curr_search_name').innerHTML = '"'+x.options[x.selectedIndex].text+'"';
+            curr_search_name = document.getElementById('curr_search_name');
+            curr_search_name.innerHTML = '';
+            curr_search_name.appendChild(document.createTextNode('"'+x.options[x.selectedIndex].text+'"'));
 			document.getElementById('ss_update').disabled = false;
 			document.getElementById('ss_delete').disabled = false;
 		}else{

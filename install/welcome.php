@@ -121,9 +121,9 @@ $out = <<<EOQ
 </body>
 </html>
 EOQ;
-if (version_compare(phpversion(),'5.2.0') < 0) {
+if (version_compare(phpversion(),'5.2.2') < 0) {
 	if(empty($mod_strings['LBL_MINIMUM_PHP_VERSION'])){
-		$mod_strings['LBL_MINIMUM_PHP_VERSION'] = 'Minimum Php version required is 5.2.1.';
+		$mod_strings['LBL_MINIMUM_PHP_VERSION'] = 'Minimum Php version required is 5.2.2.';
 	}
 
 $php_verison_warning =<<<eoq

@@ -396,7 +396,23 @@ if( $memory_limit == "" ){          // memory_limit disabled at compile time, no
             <td  >'.$zipStatus.'</td>
           </tr>';
 
-
+    // PCRE
+    if(defined('PCRE_VERSION')) {
+        if (version_compare(PCRE_VERSION, '7.0') < 0) {
+            $pcreStatus = "<span class='stop'><b>{$mod_strings['ERR_CHECKSYS_PCRE_VER']}</b></span>";
+        }
+        else {
+            $pcreStatus = "{$mod_strings['LBL_CHECKSYS_OK']}";
+        }
+    } else {
+        $pcreStatus = "<span class='stop'><b>{$mod_strings['ERR_CHECKSYS_PCRE']}</b></span>";
+    }
+            $envString .='
+          <tr>
+            <td></td>
+            <td><strong>'.$mod_strings['LBL_CHECKSYS_PCRE'].'</strong></td>
+            <td  >'.$pcreStatus.'</td>
+          </tr>';
 
     // imap
     if(function_exists('imap_open')) {

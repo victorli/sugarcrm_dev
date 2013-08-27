@@ -149,6 +149,8 @@ class Email extends SugarBean {
      */
     public $modifiedFieldDefs = array();
 
+    public $attachment_image;
+
 	/**
 	 * sole constructor
 	 */
@@ -1053,13 +1055,6 @@ class Email extends SugarBean {
                  if (!empty($date_sent_obj) && ($date_sent_obj instanceof SugarDateTime)) {
  				    $this->date_sent = $date_sent_obj->asDb();
                  }
-			} else {
-				//set date_entered to date_sent if this is a new email being archived
-				//that way emails archived to sugar by plugins like opacus mail will
-				//have the correct ordering according to email incoming date.
-				if ($this->new_with_id) {
-					$this->date_entered = $this->date_sent;
-				}
 			}
 
 			parent::save($check_notify);
@@ -2294,11 +2289,19 @@ class Email extends SugarBean {
 		$result =$this->db->query($query,true," Error filling in additional list fields: ");
 
 		$row = $this->db->fetchByAssoc($result);
-        $this->attachment_image = ($row !=null) ? SugarThemeRegistry::current()->getImage('attachment',"","","") : "";
 
-		if ($row !=null) {
-			$this->attachment_image = SugarThemeRegistry::current()->getImage('attachment',"","","",'.gif',translate('LBL_ATTACHMENT', 'Emails'));
-		}
+        if ($row) {
+            $this->attachment_image = SugarThemeRegistry::current()->getImage(
+                'attachment',
+                '',
+                null,
+                null,
+                '.gif',
+                translate('LBL_ATTACHMENT', 'Emails')
+            );
+        } else {
+            $this->attachment_image = '';
+        }
 
 		///////////////////////////////////////////////////////////////////////
 		if(empty($this->contact_id) && !empty($this->parent_id) && !empty($this->parent_type) && $this->parent_type === 'Contacts' && !empty($this->parent_name) ){

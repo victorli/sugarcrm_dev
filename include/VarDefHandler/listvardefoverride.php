@@ -79,24 +79,6 @@ if (isset($this->field_defs['created_by']))
 
 if (isset($this->field_defs['modified_user_id']))
 {
-    if (!isset($this->field_defs['modified_user_name']))
-    {
-        $this->field_defs['modified_user_name'] = array();
-    }
-
-    $this->field_defs['modified_user_name'] = array_merge(
-        $this->field_defs['modified_user_name'],
-        array(
-            'name' => 'modified_user_name',
-            'rname' => 'user_name',
-            'vname' => 'LBL_MODIFIED',
-            'type' => 'relate',
-            'reportable' => false,
-            'source' => 'non-db',
-            'link' => 'modified_user_link'
-        )
-    );
-
     if (!isset($this->field_defs['modified_by_name']))
     {
         $this->field_defs['modified_by_name'] = array();

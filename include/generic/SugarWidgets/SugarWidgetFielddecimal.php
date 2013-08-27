@@ -37,22 +37,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 
-class SugarWidgetFieldDecimal extends SugarWidgetFieldInt
+class SugarWidgetFieldDecimal extends SugarWidgetFieldFloat
 {
- function displayListPlain($layout_def)
- {
- 	
-     //Bug40995
-	if($layout_def['precision']!='')
-	 {
-		return format_number(parent::displayListPlain($layout_def), $layout_def['precision'], $layout_def['precision']);
-	 }
-	 //Bug40995
-	 else
-	 {
-		return format_number(parent::displayListPlain($layout_def), 2, 2);
-	 }
- }
 }
-
-?>

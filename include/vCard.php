@@ -168,7 +168,6 @@ class vCard
         $start = false;
 
         $bean = BeanFactory::getBean($module);
-        $bean->title = 'imported';
         $bean->assigned_user_id = $current_user->id;
         $email_suffix = 1;
 
@@ -410,9 +409,9 @@ class vCard
 
         foreach ($bean->get_import_required_fields() as $key => $value)
         {
-            $GLOBALS['log']->error("Cannot import vCard, required field is not set: $key");
             if (empty($bean->$key))
             {
+                $GLOBALS['log']->error("Cannot import vCard, required field is not set: $key");
                 return;
             }
         }

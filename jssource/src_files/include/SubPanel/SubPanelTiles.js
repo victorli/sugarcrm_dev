@@ -116,7 +116,7 @@ function sub_p_del(sp,submod,subrec, rp){
 	remove_url = "index.php?module="+ submod
 			+ "&action=delete"
 			+ "&record="+ subrec
-			+ "&return_url=" + escape(escape(return_url))
+			+ "&return_url=" + escape(return_url)
 			+ "&refresh_page=" + rp;//$refresh_page"
 	showSubPanel(sp,remove_url,true);
 }

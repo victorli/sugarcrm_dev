@@ -58,19 +58,30 @@ class ViewImportvcardsave extends SugarView
      */
     public function display()
     {
-        if (isset($_FILES['vcard']['tmp_name']) && isset($_FILES['vcard']['size']) > 0)
-        {
+        $redirect = "index.php?action=Importvcard&module={$_REQUEST['module']}";
+
+        if (!empty($_FILES['vcard']) && $_FILES['vcard']['error'] == 0) {
             $vcard = new vCard();
             $record = $vcard->importVCard($_FILES['vcard']['tmp_name'], $_REQUEST['module']);
-            if (empty($record))
-            {
-                SugarApplication::redirect("index.php?action=Importvcard&module={$_REQUEST['module']}&error");
+
+            if (empty($record)) {
+                SugarApplication::redirect($redirect . '&error=vcardErrorRequired');
             }
+
             SugarApplication::redirect("index.php?action=DetailView&module={$_REQUEST['module']}&record=$record");
-        }
-        else
-        {
-            SugarApplication::redirect("index.php?action=Importvcard&module={$_REQUEST['module']}");
+        } else {
+            switch ($_FILES['vcard']['error'])
+            {
+                case UPLOAD_ERR_FORM_SIZE:
+                    $redirect .= "&error=vcardErrorFilesize";
+                break;
+                default:
+                    $redirect .= "&error=vcardErrorDefault";
+                    $GLOBALS['log']->error('Upload error code: ' . $_FILES['vcard']['error'] . '. Please refer to the error codes http://php.net/manual/en/features.file-upload.errors.php');
+                break;
+            }
+
+            SugarApplication::redirect($redirect);
         }
     }
 }

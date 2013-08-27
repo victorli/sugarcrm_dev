@@ -205,6 +205,7 @@ $uh_status      = "";
 $rest_dir = remove_file_extension($install_file)."-restore";
 
 $files_to_handle  = array();
+register_shutdown_function("rmdir_recursive", $unzip_dir);
 
 if (((defined('MODULE_INSTALLER_PACKAGE_SCAN') && MODULE_INSTALLER_PACKAGE_SCAN)
     || !empty($GLOBALS['sugar_config']['moduleInstaller']['packageScan'])) && $install_type != 'patch') {

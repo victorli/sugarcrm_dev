@@ -1341,7 +1341,7 @@ YAHOO.util.Connect =
 		// properties via createElement().  A different iframe creation
 		// pattern is required for IE.
 		var frameId = 'yuiIO' + this._transaction_id,
-			ie9 = (dM === 9) ? true : false,
+			ie9 = (dM >= 9) ? true : false,
 			io;
 
 		if(YAHOO.env.ua.ie && !ie9){

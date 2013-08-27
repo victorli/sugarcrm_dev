@@ -127,6 +127,11 @@ input,select {
 	font-size: 11px;
 	background-color: #ffffff;
 	}
+
+input[type="radio"] {
+	border: none;
+	background-color: transparent;
+	}
 	
 textarea {
 	border: 1px solid #888888;

@@ -208,10 +208,11 @@ class Note extends SugarBean {
         else
 			$query .= "where ".$where_auto;
 
-        if($order_by != "")
-			$query .=  " ORDER BY ". $this->process_order_by($order_by, null);
-        else
-			$query .= " ORDER BY notes.name";
+        $order_by = $this->process_order_by($order_by);
+        if (empty($order_by)) {
+            $order_by = 'notes.name';
+        }
+        $query .= ' ORDER BY ' . $order_by;
 
 		return $query;
 	}

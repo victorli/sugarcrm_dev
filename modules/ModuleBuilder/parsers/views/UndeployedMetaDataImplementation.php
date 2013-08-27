@@ -104,7 +104,7 @@ class UndeployedMetaDataImplementation extends AbstractMetaDataImplementation im
         }
 
         $loaded = null ;
-        foreach ( array ( MB_WORKINGMETADATALOCATION , MB_HISTORYMETADATALOCATION ) as $type )
+        foreach ( array ( MB_BASEMETADATALOCATION , MB_HISTORYMETADATALOCATION ) as $type )
     	{
 			$this->_sourceFilename = $this->getFileName ( $view, $moduleName, $packageName , $type ) ;
 			if($view == MB_POPUPSEARCH || $view == MB_POPUPLIST){
@@ -126,7 +126,7 @@ class UndeployedMetaDataImplementation extends AbstractMetaDataImplementation im
         }
 
         $this->_viewdefs = $loaded ;
-        $sourceFilename = $this->getFileName ( $view, $moduleName, $packageName, MB_WORKINGMETADATALOCATION );
+        $sourceFilename = $this->getFileName ( $view, $moduleName, $packageName, MB_BASEMETADATALOCATION );
         if($view == MB_POPUPSEARCH || $view == MB_POPUPLIST){
 			$layout = $this->_loadFromPopupFile ( $sourceFilename , null, $view);
 		}else{
@@ -150,12 +150,12 @@ class UndeployedMetaDataImplementation extends AbstractMetaDataImplementation im
     {
         //If we are pulling from the History Location, that means we did a restore, and we need to save the history for the previous file.
     	if ($this->_sourceFilename == $this->getFileName ( $this->_view, $this->_moduleName, $this->_packageName, MB_HISTORYMETADATALOCATION )
-    	&& file_exists($this->getFileName ( $this->_view, $this->_moduleName, $this->_packageName, MB_WORKINGMETADATALOCATION ))) {
-        	$this->_history->append ( $this->getFileName ( $this->_view, $this->_moduleName, $this->_packageName, MB_WORKINGMETADATALOCATION )) ;
+    	&& file_exists($this->getFileName ( $this->_view, $this->_moduleName, $this->_packageName, MB_BASEMETADATALOCATION ))) {
+        	$this->_history->append ( $this->getFileName ( $this->_view, $this->_moduleName, $this->_packageName, MB_BASEMETADATALOCATION )) ;
         } else {
     		$this->_history->append ( $this->_sourceFilename ) ;
         }
-        $filename = $this->getFileName ( $this->_view, $this->_moduleName, $this->_packageName, MB_WORKINGMETADATALOCATION ) ;
+        $filename = $this->getFileName ( $this->_view, $this->_moduleName, $this->_packageName, MB_BASEMETADATALOCATION ) ;
         $GLOBALS [ 'log' ]->debug ( get_class ( $this ) . "->deploy(): writing to " . $filename ) ;
         $this->_saveToFile ( $filename, $defs ) ;
     }

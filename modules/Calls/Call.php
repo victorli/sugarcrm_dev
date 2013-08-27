@@ -288,10 +288,12 @@ class Call extends SugarBean {
 		else
 			$query .= "where ".$where_auto;
 
-		if($order_by != "")
-		$query .=  " ORDER BY ". $this->process_order_by($order_by, null);
-		else
-			$query .= " ORDER BY calls.name";
+        $order_by = $this->process_order_by($order_by);
+        if (empty($order_by)) {
+            $order_by = 'calls.name';
+        }
+        $query .= ' ORDER BY ' . $order_by;
+
 		return $query;
 	}
 
@@ -325,10 +327,11 @@ class Call extends SugarBean {
             else
                     $query .= "where ".$where_auto;
 
-            if($order_by != "")
-                    $query .=  " ORDER BY ". $this->process_order_by($order_by, null);
-            else
-                    $query .= " ORDER BY calls.name";
+        $order_by = $this->process_order_by($order_by);
+        if (empty($order_by)) {
+            $order_by = 'calls.name';
+        }
+        $query .= ' ORDER BY ' . $order_by;
 
             return $query;
         }

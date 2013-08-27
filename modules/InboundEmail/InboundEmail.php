@@ -636,8 +636,15 @@ class InboundEmail extends SugarBean {
 		}
 
 		$sort = (empty($sort)) ? $this->defaultSort : $sort;
-		$direction = (empty($direction)) ? $this->defaultDirection : $direction;
-		$order = " ORDER BY {$this->hrSortLocal[$sort]} {$direction}";
+        if (!in_array(strtolower($direction), array('asc', 'desc'))) {
+            $direction = $this->defaultDirection;
+        }
+
+        if (!empty($this->hrSortLocal[$sort])) {
+            $order = " ORDER BY {$this->hrSortLocal[$sort]} {$direction}";
+        } else {
+            $order = "";
+        }
 
 		$q = "SELECT * FROM email_cache WHERE ie_id = '{$this->id}' AND mbox = '{$mbox}' {$order}";
 
@@ -2427,7 +2434,14 @@ class InboundEmail extends SugarBean {
             $this->conn = $this->getImapConnection($serviceTest, $login, $passw);
 
 			if(($errors = imap_last_error()) || ($alerts = imap_alerts())) {
-				if($errors == 'Too many login failures' || $errors == '[CLOSED] IMAP connection broken (server response)') { // login failure means don't bother trying the rest
+                // login failure means don't bother trying the rest
+                if ($errors == 'Too many login failures'
+                    || $errors == '[CLOSED] IMAP connection broken (server response)'
+                    // @link http://tools.ietf.org/html/rfc5530#section-3
+                    || strpos($errors, '[AUTHENTICATIONFAILED]') !== false
+                    // MS Exchange 2010
+                    || (strpos($errors, 'AUTHENTICATE') !== false && strpos($errors, 'failed') !== false)
+                ) {
 					$GLOBALS['log']->debug($l.': I-E failed using ['.$serviceTest.']');
 					$retArray['err'][$k] = $mod_strings['ERR_BAD_LOGIN_PASSWORD'];
 					$retArray['bad'][$k] = $serviceTest;
@@ -2788,6 +2802,15 @@ class InboundEmail extends SugarBean {
 			} // if
 			if($contactIds = $this->getRelatedId($contactAddr, 'contacts')) {
 				if(!empty($contactIds) && $c->load_relationship('contacts')) {
+                    if (!$accountIds && count($contactIds) == 1) {
+                        $contact = BeanFactory::getBean('Contacts', $contactIds[0]);
+                        if ($contact->load_relationship('accounts')) {
+                            $acct = $contact->accounts->get();
+                            if ($c->load_relationship('accounts') && !empty($acct[0])) {
+                                $c->accounts->add($acct[0]);
+                            }
+                        }
+                    }
 					$c->contacts->add($contactIds);
 				} // if
 			} // if

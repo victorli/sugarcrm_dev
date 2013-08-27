@@ -381,6 +381,11 @@
         {sugar_getimage name="sqsWait" ext=".gif" alt=$mod_strings.LBL_LOADING other_attributes='id="loading_img_company" style="display:none" '}
     </form>
 </div>
+{if $error.company_logo}
+<script type='text/javascript'>
+{literal}$(function(){alert('{/literal}{$error.company_logo}{literal}');});{/literal}
+</script>
+{/if}
 {literal}
 <script type='text/javascript'>
 function init_logo(){

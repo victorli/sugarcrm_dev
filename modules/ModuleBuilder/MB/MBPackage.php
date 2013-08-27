@@ -66,9 +66,9 @@ class MBPackage{
      * Will override currently loaded string to reflect undeployed label changes.
      * $app_list_strings
      * @return 
-     * @param $languge String language identifyer
+     * @param $language String language identifier
      */
-    function loadModuleTitles($languge = '') 
+    function loadModuleTitles($language = '')
     {
         if (empty($language))
         {

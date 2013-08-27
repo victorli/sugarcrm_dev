@@ -311,13 +311,11 @@ class Meeting extends SugarBean {
 		else
 			$query .= " where ".$where_auto;
 
-		if($order_by != "") {
-			$query .= " ORDER BY $order_by";
-		} else {
-			$alternate_order_by =	$this->process_order_by($order_by, null);
-			if($alternate_order_by != "")
-				$query .=	" ORDER BY ". $alternate_order_by;
-		}
+        $order_by = $this->process_order_by($order_by);
+        if (!empty($order_by)) {
+            $query .= ' ORDER BY ' . $order_by;
+        }
+
 		return $query;
 	}
 

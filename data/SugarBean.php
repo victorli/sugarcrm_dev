@@ -1938,6 +1938,9 @@ class SugarBean
                         }
                     }
 
+                    // Save $this->$idField, because it can be resetted in case of link->delete() call
+                    $idFieldVal = $this->$idField;
+
                     //If we used to have a parent, call remove on that relationship
                     if (!empty($this->fetched_row[$typeField]) && !empty($this->fetched_row[$idField])
                         && !empty($parentLinks[$this->fetched_row[$typeField]])
@@ -1954,13 +1957,16 @@ class SugarBean
                     }
 
                     // If both parent type and parent id are set, save it unless the bean is being deleted
-                    if (!empty($this->$typeField) && !empty($this->$idField) && !empty($parentLinks[$this->$typeField]['name']) && $this->deleted != 1)
-                    {
+                    if (!empty($this->$typeField)
+                       && !empty($idFieldVal)
+                       && !empty($parentLinks[$this->$typeField]['name'])
+                       && $this->deleted != 1
+                    ) {
                         //Now add the new parent
                         $parentLink = $parentLinks[$this->$typeField]['name'];
                         if ($this->load_relationship($parentLink))
                         {
-                            $this->$parentLink->add($this->$idField);
+                            $this->$parentLink->add($idFieldVal);
                         }
                     }
                 }
@@ -2504,7 +2510,6 @@ class SugarBean
         {
             $show_deleted = 1;
         }
-        $order_by=$this->process_order_by($order_by);
 
         if($this->bean_implements('ACL') && ACLController::requireOwner($this->module_dir, 'list') )
         {
@@ -2531,11 +2536,12 @@ class SugarBean
     *
     * @param string $order_by  Order by clause to be processed
     * @param SugarBean $submodule name of the module this order by clause is for
+    * @param boolean $suppress_table_name Whether table name should be suppressed
     * @return string Processed order by clause
     *
     * Internal function, do not override.
     */
-    function process_order_by ($order_by, $submodule = null)
+    public function process_order_by($order_by, $submodule = null, $suppress_table_name = false)
     {
         if (empty($order_by))
             return $order_by;
@@ -2549,40 +2555,59 @@ class SugarBean
             //submodule is set, so this is for subpanel, use submodule
             $bean_queried = $submodule;
         }
-        $elements = explode(',',$order_by);
-        foreach ($elements as $key=>$value)
-        {
-            if (strchr($value,'.') === false)
-            {
-                //value might have ascending and descending decorations
-                $list_column = explode(' ',trim($value));
-                if (isset($list_column[0]))
-                {
-                    $list_column_name=trim($list_column[0]);
-                    if (isset($bean_queried->field_defs[$list_column_name]))
-                    {
-                        $source=isset($bean_queried->field_defs[$list_column_name]['source']) ? $bean_queried->field_defs[$list_column_name]['source']:'db';
-                        if (empty($bean_queried->field_defs[$list_column_name]['table']) && $source=='db')
-                        {
-                            $list_column[0] = $bean_queried->table_name .".".$list_column[0] ;
-                        }
-                        if (empty($bean_queried->field_defs[$list_column_name]['table']) && $source=='custom_fields')
-                        {
-                            $list_column[0] = $bean_queried->table_name ."_cstm.".$list_column[0] ;
-                        }
-                        // Bug 38803 - Use CONVERT() function when doing an order by on ntext, text, and image fields
-                        if ($source != 'non-db' && $this->db->isTextType($this->db->getFieldType($bean_queried->field_defs[$list_column_name]))) {
-                            $list_column[0] = $this->db->convert($list_column[0], "text2char");
-                        }
-                        $value = implode(' ',$list_column);
-                    } else {
-                        $GLOBALS['log']->debug("process_order_by: ($list_column[0]) does not have a vardef entry.");
+
+        $raw_elements = explode(',', $order_by);
+        $valid_elements = array();
+        foreach ($raw_elements as $key => $value) {
+
+            $is_valid = false;
+
+            //value might have ascending and descending decorations
+            $list_column = preg_split('/\s/', trim($value), 2);
+            $list_column = array_map('trim', $list_column);
+
+            $list_column_name = $list_column[0];
+            if (isset($bean_queried->field_defs[$list_column_name])) {
+                $field_defs = $bean_queried->field_defs[$list_column_name];
+                $source = isset($field_defs['source']) ? $field_defs['source'] : 'db';
+
+                if (empty($field_defs['table']) && !$suppress_table_name) {
+                    if ($source == 'db') {
+                        $list_column[0] = $bean_queried->table_name . '.' . $list_column[0] ;
+                    } elseif ($source == 'custom_fields') {
+                        $list_column[0] = $bean_queried->table_name . '_cstm.' . $list_column[0] ;
                     }
                 }
+
+                // Bug 38803 - Use CONVERT() function when doing an order by on ntext, text, and image fields
+                if ($source != 'non-db'
+                    && $this->db->isTextType($this->db->getFieldType($bean_queried->field_defs[$list_column_name]))) {
+                    $list_column[0] = $this->db->convert($list_column[0], "text2char");
+                }
+
+                $is_valid = true;
+
+                if (isset($list_column[1])) {
+                    switch (strtolower($list_column[1])) {
+                        case 'asc':
+                        case 'desc':
+                            break;
+                        default:
+                            $GLOBALS['log']->debug("process_order_by: ($list_column[1]) is not a valid order.");
+                            unset($list_column[1]);
+                            break;
+                    }
+                }
+            } else {
+                $GLOBALS['log']->debug("process_order_by: ($list_column[0]) does not have a vardef entry.");
             }
-            $elements[$key]=$value;
+
+            if ($is_valid) {
+                $valid_elements[$key] = implode(' ', $list_column);
+            }
         }
-        return implode(',', $elements);
+
+        return implode(', ', $valid_elements);
 
     }
 
@@ -2809,7 +2834,7 @@ class SugarBean
     }
 
     /**
-    * Constructs a query to fetch data for supanels and list views
+     * Constructs a query to fetch data for supanels and list views
      *
      * It constructs union queries for activities subpanel.
      *
@@ -2817,9 +2842,16 @@ class SugarBean
      * @param string $order_by Optional, order by clause
      * @param string $sort_order Optional, sort order
      * @param string $where Optional, additional where clause
+     * @param int $row_offset
+     * @param int $limit
+     * @param int $max
+     * @param int $show_deleted
+     * @param aSubPanel $subpanel_def
+     *
+     * @return array
      *
      * Internal Function, do not overide.
-    */
+     */
     function get_union_related_list($parentbean, $order_by = "", $sort_order='', $where = "",
     $row_offset = 0, $limit=-1, $max=-1, $show_deleted = 0, $subpanel_def)
     {
@@ -2965,25 +2997,24 @@ class SugarBean
 
         if(!empty($order_by))
         {
-            $submodule = false;
-            if(!$subpanel_def->isCollection())
-            {
-                $submodulename = $subpanel_def->_instance_properties['module'];
-                $submoduleclass = $beanList[$submodulename];
-                $submodule = new $submoduleclass();
+            $isCollection = $subpanel_def->isCollection();
+            if ($isCollection) {
+                /** @var aSubPanel $header */
+                $header = $subpanel_def->get_header_panel_def();
+                $submodule = $header->template_instance;
+                $suppress_table_name = true;
+            } else {
+                $submodule = $subpanel_def->template_instance;
+                $suppress_table_name = false;
             }
-            if(!empty($submodule) && !empty($submodule->table_name))
-            {
-                $final_query .= " ORDER BY " .$parentbean->process_order_by($order_by, $submodule);
 
+            if (!empty($sort_order)) {
+                $order_by .= ' ' . $sort_order;
             }
-            else
-            {
-                $final_query .= " ORDER BY ". $order_by . ' ';
-            }
-            if(!empty($sort_order))
-            {
-                $final_query .= ' ' .$sort_order;
+
+            $order_by = $parentbean->process_order_by($order_by, $submodule, $suppress_table_name);
+            if (!empty($order_by)) {
+                $final_query .= ' ORDER BY ' . $order_by;
             }
         }
 
@@ -3220,7 +3251,7 @@ class SugarBean
             //Custom relate field or relate fields built in module builder which have no link field associated.
             if ($data['type'] == 'relate' && (isset($data['custom_module']) || isset($data['ext2']))) {
                 $joinTableAlias = 'jt' . $jtcount;
-                $relateJoinInfo = $this->custom_fields->getRelateJoin($data, $joinTableAlias);
+                $relateJoinInfo = $this->custom_fields->getRelateJoin($data, $joinTableAlias, false);
                 $ret_array['select'] .= $relateJoinInfo['select'];
                 $ret_array['from'] .= $relateJoinInfo['from'];
                 //Replace any references to the relationship in the where clause with the new alias
@@ -3501,10 +3532,11 @@ class SugarBean
             $ret_array['where'] = " where ($where) AND $where_auto";
         else
             $ret_array['where'] = " where $where_auto";
-        if(!empty($order_by))
-        {
-            //make call to process the order by clause
-            $ret_array['order_by'] = " ORDER BY ". $this->process_order_by($order_by);
+
+        //make call to process the order by clause
+        $order_by = $this->process_order_by($order_by);
+        if (!empty($order_by)) {
+            $ret_array['order_by'] = " ORDER BY " . $order_by;
         }
         if($singleSelect)
         {
@@ -4480,7 +4512,7 @@ class SugarBean
      *
      * @return bool success of movement
      */
-    protected function deleteFiles()
+    public function deleteFiles()
     {
         if (!$this->id) {
             return true;
@@ -5291,7 +5323,7 @@ class SugarBean
     function ACLAccess($view,$is_owner='not_set')
     {
         global $current_user;
-        if($current_user->isAdminForModule($this->getACLCategory())) {
+        if($current_user->isAdmin()) {
             return true;
         }
         $not_set = false;

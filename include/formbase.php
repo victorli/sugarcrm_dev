@@ -61,7 +61,17 @@ function checkRequired($prefix, $required)
 	return true;
 }
 
-function populateFromPost($prefix, &$focus, $skipRetrieve=false) {
+/**
+ * Populating bean from $_POST
+ *
+ * @param string $prefix of name of fields
+ * @param SugarBean $focus bean
+ * @param bool $skipRetrieve do not retrieve data of bean
+ * @param bool $checkACL do not update fields if they are forbidden for current user
+ * @return SugarBean
+ */
+function populateFromPost($prefix, &$focus, $skipRetrieve = false, $checkACL = false)
+{
 	global $current_user;
 
 	if(!empty($_REQUEST[$prefix.'record']) && !$skipRetrieve)
@@ -75,11 +85,28 @@ function populateFromPost($prefix, &$focus, $skipRetrieve=false) {
     require_once('include/SugarFields/SugarFieldHandler.php');
     $sfh = new SugarFieldHandler();
    
+    $isOwner = $focus->isOwner($current_user->id);
+    $relatedFields = array();
+    foreach ($focus->field_defs as $field => $def) {
+        if (empty($def['type']) || $def['type'] != 'relate') {
+            continue;
+        }
+        if (empty($def['source']) || $def['source'] != 'non-db') {
+            continue;
+        }
+        if (empty($def['id_name']) || $def['id_name'] == $field) {
+            continue;
+        }
+        $relatedFields[$def['id_name']] = $field;
+    }
+
 	foreach($focus->field_defs as $field=>$def) {
         if ( $field == 'id' && !empty($focus->id) ) {
             // Don't try and overwrite the ID
             continue;
         }
+
+
 	    $type = !empty($def['custom_type']) ? $def['custom_type'] : $def['type'];
 		$sf = $sfh->getSugarField($type);
         if($sf != null){

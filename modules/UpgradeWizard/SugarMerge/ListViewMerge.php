@@ -142,7 +142,19 @@ class ListViewMerge extends EditViewMerge{
 	 *
 	 */
 	protected function mergeFields() {
+        if ($this->sugarMerge instanceof SugarMerge && is_file($this->sugarMerge->getNewPath() . 'modules/ModuleBuilder/parsers/views/ListLayoutMetaDataParser.php')) {
+            require_once($this->sugarMerge->getNewPath() . 'modules/ModuleBuilder/parsers/views/ListLayoutMetaDataParser.php');
+        } else {
+            require_once('modules/ModuleBuilder/parsers/views/ListLayoutMetaDataParser.php');
+        }
+        $objectName = BeanFactory::getBeanName($this->module);
+        VardefManager::loadVardef($this->module, $objectName);
+
 		foreach($this->customFields as $field=>$data){
+            $fieldName = strtolower($data['loc']['row']);
+            if (!empty($GLOBALS['dictionary'][$objectName]['fields'][$fieldName])) {
+                $data['data'] = array_merge(ListLayoutMetaDataParser::createViewDefsByFieldDefs($GLOBALS['dictionary'][$objectName]['fields'][$fieldName]), $data['data']);
+            }
 			//if we have this field in both the new fields and the original fields - it has existed since the last install/upgrade
 			if(isset($this->newFields[$field]) && isset($this->originalFields[$field])){
 				//if both the custom field and the original match then we take the location of the custom field since it hasn't moved

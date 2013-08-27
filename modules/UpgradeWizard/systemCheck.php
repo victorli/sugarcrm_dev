@@ -168,6 +168,7 @@ $checks = array(
 	'memory_msg'				=> $mod_strings['LBL_UW_COMPLIANCE_MEMORY'],
     'stream_msg'                => $mod_strings['LBL_UW_COMPLIANCE_STREAM'],
     'ZipStatus'			        => $mod_strings['LBL_UW_COMPLIANCE_ZIPARCHIVE'],
+    'pcreVersion'			    => $mod_strings['LBL_UW_COMPLIANCE_PCRE_VERSION'],
 	//commenting mbstring overload.
 	//'mbstring.func_overload'	=> $mod_strings['LBL_UW_COMPLIANCE_MBSTRING_FUNC_OVERLOAD'],
 );

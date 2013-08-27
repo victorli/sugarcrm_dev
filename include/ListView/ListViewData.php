@@ -504,12 +504,12 @@ class ListViewData {
                 $field_name .= "_basic";
                 if( isset($_REQUEST[$field_name])  && ( !is_array($basicSearchField) || !isset($basicSearchField['type']) || $basicSearchField['type'] == 'text' || $basicSearchField['type'] == 'name') )
                 {
-                    $queryString = htmlentities($_REQUEST[$field_name]);
+                    // Ensure the encoding is UTF-8
+                    $queryString = htmlentities($_REQUEST[$field_name], null, 'UTF-8');
                     break;
                 }
             }
         }
-
 
 		return array('data'=>$data , 'pageData'=>$pageData, 'query' => $queryString);
 	}

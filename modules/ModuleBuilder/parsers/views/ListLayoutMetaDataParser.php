@@ -260,7 +260,6 @@ class ListLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
         $GLOBALS [ 'log' ]->debug ( get_class ( $this ) . "->populateFromRequest() - fielddefs = ".print_r($this->_fielddefs, true));
         // Transfer across any reserved fields, that is, any where studio !== true, which are not editable but must be preserved
         $newViewdefs = array ( ) ;
-        $rejectTypes = array ( 'html'=>'html', 'text'=>'text', 'encrypt'=>'encrypt' ) ;
 
         $originalViewDefs = $this->getOriginalViewDefs();
 
@@ -304,37 +303,7 @@ class ListLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
 					if ( ! isset ( $this->_fielddefs [ $fieldname ] ) )
 						continue ;
 
-	                $newViewdefs [ $fieldname ] = $this->_trimFieldDefs($this->_fielddefs [ $fieldname ]) ;
-                    
-                    // fixing bug #25640: Value of "Relate" custom field is not displayed as a link in list view
-                    // we should set additional params such as 'link' and 'id' to be stored in custom listviewdefs.php
-                    if (isset($this->_fielddefs[$fieldname]['type']) && $this->_fielddefs[$fieldname]['type'] == 'relate')
-                    {
-                        $newViewdefs[$fieldname]['id'] = strtoupper($this->_fielddefs[$fieldname]['id_name']);
-                        $newViewdefs[$fieldname]['link'] = true;
-                    }
-                    // sorting fields of certain types will cause a database engine problems
-	                if ( isset($this->_fielddefs[$fieldname]['type']) &&
-	                		isset ( $rejectTypes [ $this->_fielddefs [ $fieldname ] [ 'type' ] ] ))
-	                {
-	                    $newViewdefs [ $fieldname ] [ 'sortable' ] = false ;
-	                }
-
-	                // Bug 23728 - Make adding a currency type field default to setting the 'currency_format' to true
-	                if (isset ( $this->_fielddefs [ $fieldname ] [ 'type' ]) && $this->_fielddefs [ $fieldname ] [ 'type' ] == 'currency')
-	                {
-	                    $newViewdefs [ $fieldname ] [ 'currency_format' ] = true;
-	                }
-
-                    if ($this->_fielddefs[$fieldname]['type'] == 'parent') {
-                        $newViewdefs[$fieldname]['link'] = true;
-                        $newViewdefs[$fieldname]['sortable'] = false;
-                        $newViewdefs[$fieldname]['ACLTag' ] = 'PARENT';
-                        $newViewdefs[$fieldname]['dynamic_module'] = strtoupper($this->_fielddefs[$fieldname]['type_name']);
-                        $newViewdefs[$fieldname]['id'] = strtoupper($this->_fielddefs[$fieldname]['id_name']);
-                        $newViewdefs[$fieldname]['related_fields'] = array('parent_id', 'parent_type');
-                    }
-
+                    $newViewdefs[$fieldname] = self::createViewDefsByFieldDefs($this->_fielddefs[$fieldname], get_class($this));
                 }
                 if (isset($newViewdefs [ $fieldname ]['enabled']))
                 		$newViewdefs [ $fieldname ]['enabled'] = true;
@@ -364,6 +333,53 @@ class ListLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
         }
         $this->_viewdefs = $newViewdefs ;
 
+    }
+
+    /**
+     * Method returns viewDefs by fieldDefs
+     *
+     * @param array $fieldDefs
+     * @return array
+     */
+    public static function createViewDefsByFieldDefs(array $fieldDefs, $class = __CLASS__)
+    {
+        $rejectTypes = array(
+            'html'=>'html',
+            'text'=>'text',
+            'encrypt'=>'encrypt'
+        );
+        $viewDefs = call_user_func(array(
+                $class,
+                '_trimFieldDefs'
+            ), $fieldDefs);
+
+        // fixing bug #25640: Value of "Relate" custom field is not displayed as a link in list view
+        // we should set additional params such as 'link' and 'id' to be stored in custom listviewdefs.php
+        if (isset($fieldDefs['type']) && $fieldDefs['type'] == 'relate') {
+            $viewDefs['id'] = strtoupper($fieldDefs['id_name']);
+            $viewDefs['link'] = true;
+        }
+
+        // sorting fields of certain types will cause a database engine problems
+        if (isset($fieldDefs['type']) && isset($rejectTypes[$fieldDefs['type']])) {
+            $viewDefs['sortable'] = false;
+        }
+
+        // Bug 23728 - Make adding a currency type field default to setting the 'currency_format' to true
+        if (isset($fieldDefs['type']) && $fieldDefs['type'] == 'currency') {
+            $viewDefs['currency_format'] = true;
+        }
+
+        if ($fieldDefs['type'] == 'parent') {
+            $viewDefs['link'] = true;
+            $viewDefs['sortable'] = false;
+            $viewDefs['ACLTag' ] = 'PARENT';
+            $viewDefs['dynamic_module'] = strtoupper($fieldDefs['type_name']);
+            $viewDefs['id'] = strtoupper($fieldDefs['id_name']);
+            $viewDefs['related_fields'] = array('parent_id', 'parent_type');
+        }
+
+        return $viewDefs;
     }
 
     /*

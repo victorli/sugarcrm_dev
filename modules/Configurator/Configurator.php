@@ -47,6 +47,7 @@ class Configurator {
 	var $logger = NULL;
 	var $previous_sugar_override_config_array = array();
 	var $useAuthenticationClass = false;
+    protected $error = null;
 
 	function Configurator() {
 		$this->loadConfig();
@@ -156,7 +157,11 @@ class Configurator {
 	}
 
 	function saveConfig() {
-		$this->saveImages();
+        if($this->saveImages() === false)
+        {
+            return false;
+        }
+
 		$this->populateFromPost();
 		$this->handleOverride();
 		$this->clearCache();
@@ -215,18 +220,30 @@ class Configurator {
 
 	function saveImages() {
 		if (!empty ($_POST['company_logo'])) {
-			$this->saveCompanyLogo("upload://".$_POST['company_logo']);
+            if($this->saveCompanyLogo("upload://".$_POST['company_logo']) === false)
+            {
+                return false;
+            }
 		}
 	}
 
 	function checkTempImage($path)
 	{
-	    if(!verify_uploaded_image($path)) {
+        if(!verify_uploaded_image($path)) {
+            $error = translate('LBL_ALERT_TYPE_IMAGE');
         	$GLOBALS['log']->fatal("A user ({$GLOBALS['current_user']->id}) attempted to use an invalid file for the logo - {$path}");
-        	sugar_die('Invalid File Type');
+            $this->error = $error;
+            return false;
 		}
 		return $path;
 	}
+
+    public function getError()
+    {
+        $e = $this->error;
+        $this->error = null;
+        return $e;
+    }
     /**
      * Saves the company logo to the custom directory for the default theme, so all themes can use it
      *
@@ -235,6 +252,11 @@ class Configurator {
 	function saveCompanyLogo($path)
     {
     	$path = $this->checkTempImage($path);
+        if($path === false)
+        {
+            return false;
+        }
+
         mkdir_recursive('custom/'.SugarThemeRegistry::current()->getDefaultImagePath(), true);
         copy($path,'custom/'. SugarThemeRegistry::current()->getDefaultImagePath(). '/company_logo.png');
         sugar_cache_clear('company_logo_attributes');

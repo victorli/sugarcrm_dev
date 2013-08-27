@@ -162,7 +162,10 @@ class DeployedRelationships extends AbstractRelationships implements Relationshi
     	require_once ('modules/Administration/QuickRepairAndRebuild.php') ;
     	$mi = new ModuleInstaller();
     	$mi->silent = true;
+        $mi->id_name = 'custom' . $rel_name; // provide the moduleinstaller with a unique name for this relationship - normally this value is set to the package key...
     	$mi->uninstall_relationship("custom/metadata/{$rel_name}MetaData.php");
+        $mi->uninstallLabels('custom/Extension/modules/relationships/language/',$rel->buildLabels());
+        $mi->uninstallExtLabels($rel->buildLabels());
     	
     	// now clear all caches so that our changes are visible
     	Relationship::delete_cache();

@@ -168,7 +168,14 @@ class ConfiguratorController extends SugarController
             sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']); 
         }
         $configurator = new Configurator();
-        $configurator->saveConfig();
+        if ($configurator->saveConfig() === false)
+        {
+            $this->errors = array(
+                'company_logo' => $configurator->getError(),
+            );
+            $this->view = 'edit';
+            return;
+        }
 
         $focus = new Administration();
         $focus->saveConfig();
@@ -187,5 +194,76 @@ class ConfiguratorController extends SugarController
             sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']); 
         }
         $this->view = 'edit';
+    }
+
+    /**
+     * Define correct view for action
+     */
+    function action_historyContactsEmails()
+    {
+        $this->view = 'historyContactsEmails';
+    }
+
+    /**
+     * Generates custom field_defs for selected fields
+     */
+    function action_historyContactsEmailsSave()
+    {
+        if (!empty($_POST['modules']) && is_array($_POST['modules'])) {
+            require_once('include/SubPanel/SubPanelDefinitions.php');
+
+            $modules = array();
+            foreach ($_POST['modules'] as $moduleName => $enabled) {
+                $bean = BeanFactory::getBean($moduleName);
+
+                if (!($bean instanceof SugarBean)) {
+                    continue;
+                }
+                if (empty($bean->field_defs)) {
+                    continue;
+                }
+
+                $subPanel = new SubPanelDefinitions($bean);
+                if (empty($subPanel->layout_defs)) {
+                    continue;
+                }
+                if (empty($subPanel->layout_defs['subpanel_setup'])) {
+                    continue;
+                }
+
+                $isValid = false;
+                foreach ($subPanel->layout_defs['subpanel_setup'] as $subPanelDef) {
+                    if (empty($subPanelDef['module']) || $subPanelDef['module'] != 'History') {
+                        continue;
+                    }
+                    if (empty($subPanelDef['collection_list'])) {
+                        continue;
+                    }
+                    foreach ($subPanelDef['collection_list'] as $v) {
+                        if (!empty($v['get_subpanel_data']) && $v['get_subpanel_data'] == 'function:get_emails_by_assign_or_link') {
+                            $isValid = true;
+                            break 2;
+                        }
+                    }
+                }
+                if (!$isValid) {
+                    continue;
+                }
+
+                $bean->load_relationships();
+                foreach ($bean->get_linked_fields() as $fieldName => $fieldDef) {
+                    if ($bean->$fieldName->getRelatedModuleName() == 'Contacts') {
+                        $modules[$moduleName] = !$enabled;
+                        break;
+                    }
+                }
+            }
+
+            $configurator = new Configurator();
+            $configurator->config['hide_history_contacts_emails'] = $modules;
+            $configurator->handleOverride();
+        }
+
+        SugarApplication::redirect('index.php?module=Administration&action=index');
     }
 }

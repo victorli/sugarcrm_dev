@@ -351,10 +351,28 @@ class PackageManager{
         return $xml;
     }
 
+    private $cleanUpDirs = array();
+
+    private function addToCleanup($dir)
+    {
+        if(empty($this->cleanUpDirs)) {
+            register_shutdown_function(array($this, "cleanUpTempDir"));
+        }
+        $this->cleanUpDirs[] = $dir;
+    }
+
+    public function cleanUpTempDir()
+    {
+        foreach($this->cleanUpDirs as $dir) {
+            rmdir_recursive($dir);
+        }
+    }
+
     //////////////////////////////////////////////////////////////////////
     /////////// INSTALL SECTION
     function extractFile( $zip_file, $file_in_zip, $base_tmp_upgrade_dir){
         $my_zip_dir = mk_temp_dir( $base_tmp_upgrade_dir );
+        $this->addToCleanup($my_zip_dir);
         unzip_file( $zip_file, $file_in_zip, $my_zip_dir );
         return( "$my_zip_dir/$file_in_zip" );
     }
@@ -525,6 +543,7 @@ class PackageManager{
             include($target_manifest);
             $GLOBALS['log']->debug("2: ".$file);
             $unzip_dir = mk_temp_dir( $base_tmp_upgrade_dir );
+            $this->addToCleanup($unzip_dir);
             unzip($file, $unzip_dir );
             $GLOBALS['log']->debug("3: ".$unzip_dir);
             $id_name = $installdefs['id'];
@@ -672,7 +691,7 @@ class PackageManager{
                 $target_manifest = remove_file_extension( $upgrade_content ) . '-manifest.php';
                 if(file_exists($target_manifest)) {
 	                require_once($target_manifest);
-	
+
 	                $name = empty($manifest['name']) ? $upgrade_content : $manifest['name'];
 	                $version = empty($manifest['version']) ? '' : $manifest['version'];
 	                $published_date = empty($manifest['published_date']) ? '' : $manifest['published_date'];

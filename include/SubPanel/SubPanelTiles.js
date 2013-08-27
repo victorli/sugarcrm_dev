@@ -51,7 +51,7 @@ function sp_rem_conf(){return confirm(SUGAR.language.get('app_strings','NTC_REMO
 function sub_p_del(sp,submod,subrec,rp){return_url="index.php?module="+get_module_name()+"&action=SubPanelViewer&subpanel="+sp+"&record="+get_record_id()+"&sugar_body_only=1&inline=1";remove_url="index.php?module="+submod
 +"&action=delete"
 +"&record="+subrec
-+"&return_url="+escape(escape(return_url))
++"&return_url="+escape(return_url)
 +"&refresh_page="+rp;showSubPanel(sp,remove_url,true);}
 function sp_del_conf(){return confirm(SUGAR.language.get('app_strings','NTC_DELETE_CONFIRMATION'))}
 function get_record_id()

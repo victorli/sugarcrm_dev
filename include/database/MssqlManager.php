@@ -1209,6 +1209,8 @@ class MssqlManager extends DBManager
                 $getUserUTCOffset = $GLOBALS['timedate']->getUserUTCOffset();
                 $operation = $getUserUTCOffset < 0 ? '-' : '+';
                 return 'DATEADD(minute, ' . $operation . abs($getUserUTCOffset) . ', ' . $string. ')';
+            case 'avg':
+                return "avg($string)";
         }
 
         return "$string";

@@ -270,7 +270,7 @@ function handleSave($prefix,$redirect=true, $useRequired=false, $do_save=true, $
 				foreach($focus->field_defs as $name=>$field) {
 					if (!empty($field['source']) && $field['source'] == 'custom_fields')
 					{
-						$get .= "&Leads$name=".urlencode($focus->$name);
+						$get .= "&Leads$name=". (!empty($focus->$name) ? urlencode($focus->$name) : '');
 					}
 				}
 			}

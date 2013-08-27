@@ -641,7 +641,7 @@ class Importer
         //merge with mappingVals array
         if(!empty($advMapping) && is_array($advMapping))
         {
-            $mappingValsArr = array_merge($mappingValsArr,$advMapping);
+            $mappingValsArr = $advMapping + $mappingValsArr;
         }
 
         //set mapping

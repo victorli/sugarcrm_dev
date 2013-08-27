@@ -118,6 +118,7 @@ require_once 'SugarTestImportUtilities.php';
 require_once 'SugarTestMergeUtilities.php';
 require_once 'SugarTestTaskUtilities.php';
 require_once 'SugarTestOpportunityUtilities.php';
+require_once 'SugarTestCurrencyUtilities.php';
 require_once 'SugarTestRelationshipUtilities.php';
 require_once 'SugarTestSugarEmailAddressUtilities.php';
 

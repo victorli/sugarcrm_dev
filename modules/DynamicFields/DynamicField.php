@@ -303,7 +303,7 @@ class DynamicField {
 
     }
 
-   function getRelateJoin($field_def, $joinTableAlias) {
+   function getRelateJoin($field_def, $joinTableAlias, $withIdName = true) {
         if (empty($field_def['type']) || $field_def['type'] != "relate") {
             return false;
         }
@@ -337,7 +337,7 @@ class DynamicField {
         $relID = $field_def['id_name'];
         $ret_array['rel_table'] = $rel_table;
         $ret_array['name_field'] = $name_field;
-        $ret_array['select'] = ", {$tableName}.{$relID}, {$name_field} {$field_def['name']} ";
+        $ret_array['select'] = ($withIdName ? ", {$tableName}.{$relID}" : "") . ", {$name_field} {$field_def['name']} ";
         $ret_array['from'] = " LEFT JOIN $rel_table $joinTableAlias ON $tableName.$relID = $joinTableAlias.id"
                             . " AND $joinTableAlias.deleted=0 ";
         return $ret_array;

@@ -41,7 +41,7 @@ class CheckPHPVersionTest extends Sugar_PHPUnit_Framework_TestCase
     {
         return array(
             array('4.2.1',-1,'Invalid version below min check failed.'),
-            array('5.2.1',1,'Minimum valid version check failed.'),
+            array('5.2.2',1,'Minimum valid version check failed.'),
             array('5.2.7',-1,'Unsupported version check failed.'),
             array('5.2.0-rh',1,'Unsupported custom version check failed as invalid'),
             array('5.2.0-gentoo',-1,'Unsupported custom version check failed as invalid'),

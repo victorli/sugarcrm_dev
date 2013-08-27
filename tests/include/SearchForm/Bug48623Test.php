@@ -42,14 +42,16 @@ class Bug48623Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('app_strings');
+        SugarTestHelper::setUp('current_user');
         $GLOBALS['current_user']->setPreference('timezone', 'EDT');
     }
 
     public function tearDown()
     {
-        unset($GLOBALS['current_user']);
-        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        SugarTestHelper::tearDown();
     }
 
     /**

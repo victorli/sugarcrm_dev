@@ -193,7 +193,12 @@ class EditViewMerge{
  			'ProspectLists' => array('created_by_name'=>'date_entered', 'modified_by_name'=>'date_modified'),
             'Prospects' => array('created_by_name'=>'date_entered', 'modified_by_name'=>'date_modified'),
 	);
-	
+
+    /**
+     * @var SugarMerge
+     */
+    public $sugarMerge = null;
+
 	/**
 	 * Clears out the values of the arrays so that the same object can be utilized
 	 *

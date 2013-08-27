@@ -125,7 +125,8 @@ $mod_strings = array(
 	'LBL_UW_COMPLIANCE_TITLE'					=> 'Server Settings Check',
 	'LBL_UW_COMPLIANCE_TITLE2'					=> 'Detected Settings',
 	'LBL_UW_COMPLIANCE_XML'						=> 'XML Parsing',
-    'LBL_UW_COMPLIANCE_ZIPARCHIVE'				=> 'Zip Support',
+	'LBL_UW_COMPLIANCE_ZIPARCHIVE'				=> 'Zip Support',
+	'LBL_UW_COMPLIANCE_PCRE_VERSION'			=> 'PCRE Version',
 
 	'LBL_UW_COPIED_FILES_TITLE'					=> 'Files Copied Successfully',
 	'LBL_UW_CUSTOM_TABLE_SCHEMA_CHANGE'			=> 'Custom Table Schema Changes',
@@ -286,7 +287,7 @@ $mod_strings = array(
 	//adding the string used in tracker. copying from homepage
 	'LBL_HOME_PAGE_4_NAME' => 'Tracker',
 	'LBL_CURRENT_PHP_VERSION' => '(Your current php version is ',
-	'LBL_RECOMMENDED_PHP_VERSION' => '. Recommended php version is 5.2.1 or above)',
+	'LBL_RECOMMENDED_PHP_VERSION' => '. Recommended php version is 5.2.2 or above)',
 	'LBL_MODULE_NAME' => 'UpgradeWizard',
 	'LBL_UPLOAD_SUCCESS' => 'Upgrade package successfully uploaded. Click Next to perform a final check.',
 	'LBL_UW_TITLE_LAYOUTS' => 'Confirm Layouts',

@@ -411,6 +411,7 @@ class MBModule
 
     function build ($basepath)
     {
+        global $app_list_strings;
         $path = $basepath . '/modules/' . $this->key_name ;
         if (mkdir_recursive ( $path ))
         {
@@ -421,6 +422,7 @@ class MBModule
             $this->copyMetaRecursive ( $this->path . '/metadata/', $path . '/metadata/', true ) ;
             $this->copyMetaRecursive ( $this->path . '/Dashlets/' . $this->key_name . 'Dashlet/',
             						   $path . '/Dashlets/' . $this->key_name . 'Dashlet/', true ) ;
+            $app_list_strings['moduleList'][$this->key_name] = $this->mblanguage->label;
             $this->relationships->build ( $basepath ) ;
             $this->mblanguage->build ( $path ) ;
         }

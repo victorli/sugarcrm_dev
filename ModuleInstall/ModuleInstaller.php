@@ -61,7 +61,7 @@ class ModuleInstaller{
 	var $base_dir  = '';
 	var $modulesInPackage = array();
 	public $disabled_path = DISABLED_PATH;
-
+    public $id_name;
 	function ModuleInstaller(){
 		$this->ms = new ModuleScanner();
 		$this->modules = get_module_dir_list();
@@ -923,20 +923,33 @@ class ModuleInstaller{
                 $languages[$packs['language']] = $packs['language'];
 				$packs['from'] = str_replace('<basepath>', $this->base_dir, $packs['from']);
 				$GLOBALS['log']->debug("Installing Language Pack ..." . $packs['from']  .  " for " .$packs['to_module']);
-			    $path = 'custom/Extension/modules/' . $packs['to_module']. '/Ext/Language';
-				if($packs['to_module'] == 'application'){
-				    $path ='custom/Extension/' . $packs['to_module']. '/Ext/Language';
-				}
-
-				if(!file_exists($path)){
-				    mkdir_recursive($path, true);
+                $path = $this->getInstallLanguagesPath($packs);
+                if (!file_exists(dirname($path))) {
+                    mkdir_recursive(dirname($path), true);
                 }
-				copy_recursive($packs['from'] , $path.'/'.$packs['language'].'.'. $this->id_name . '.php');
+                copy_recursive($packs['from'], $path);
+
 			}
 			$this->rebuild_languages($languages, $modules);
 
 		}
 	}
+
+    /**
+     * Function return path to file where store label
+     * 
+     * @param $packs
+     * @return string
+     */
+    protected function getInstallLanguagesPath($packs)
+    {
+        $path = 'custom/Extension/modules/' . $packs['to_module']. '/Ext/Language';
+        if($packs['to_module'] == 'application'){
+            $path ='custom/Extension/' . $packs['to_module']. '/Ext/Language';
+        }
+        $path .= '/'.$packs['language'].'.'. $this->id_name . '.php';
+        return $path;
+    }
 
     // Non-standard, needs special rebuild
 	function uninstall_languages(){
@@ -1076,6 +1089,119 @@ class ModuleInstaller{
         foreach($this->installdefs['logic_hooks'] as $hook ) {
             remove_logic_hook($hook['module'], $hook['hook'], array($hook['order'], $hook['description'],  $hook['file'], $hook['class'], $hook['function']));
         }
+    }
+
+    /**
+     * Check labels inside label files and remove them
+     * 
+     * @param $basePath - path to files with labels
+     * @param array $labelDefinitions - format like output from AbstractRelationship buildLabels()
+     */
+    public function uninstallLabels($basePath, $labelDefinitions)
+    {
+
+        foreach ($labelDefinitions as $definition) {
+
+            $filename = $basePath . "{$definition['module']}.php";
+
+            if (!file_exists($filename)) {
+                continue;
+            }
+
+            $uninstalLabes = $this->getLabelsToUninstall($labelDefinitions);
+            $this->uninstallLabel($uninstalLabes, $definition, $filename);
+        }
+
+    }
+
+    /**
+     * Check labels inside label file and remove them
+     * 
+     * @param $uninstalLabes
+     * @param $definition
+     * @param $filename
+     */
+    protected function uninstallLabel($uninstalLabes, $definition, $filename)
+    {
+        $app_list_strings = array();
+        $mod_strings = array();
+        $stringsName = $definition['module'] == 'application' ? 'app_list_strings' : 'mod_strings';
+
+        include($filename);
+        if ('app_list_strings' == $stringsName) {
+            $strings = $app_list_strings;
+        } else {
+            $strings = $mod_strings;
+        }
+
+        foreach ($uninstalLabes AS $label) {
+            if (isset($strings[$label])) {
+                unset($strings[$label]);
+            }
+        }
+
+        if (count($strings)) {
+            $this->saveContentToFile($filename, $stringsName, $strings);
+        } else {
+            unlink($filename);
+        }
+    }
+
+    /**
+     * Save labels that not need be uninstalled at this case
+     * 
+     * @param $filename
+     * @param $stringsName
+     * @param $strings
+     */
+    protected function saveContentToFile($filename, $stringsName, $strings)
+    {
+        $fileContent = "<?php\n//THIS FILE IS AUTO GENERATED, DO NOT MODIFY\n";
+        foreach ($strings as $key => $val) {
+            $fileContent .= override_value_to_string_recursive2($stringsName, $key, $val);
+        }
+        sugar_file_put_contents($filename, $fileContent);
+    }
+
+    /**
+     * Uninstall extend labels
+     * 
+     * @param $labelDefinitions
+     */
+    public function uninstallExtLabels($labelDefinitions)
+    {
+        foreach ($labelDefinitions as $definition) {
+            if (!isset($GLOBALS['sugar_config']['languages']) || !is_array($GLOBALS['sugar_config']['languages'])) {
+                continue;
+            }
+            
+            foreach (array_keys($GLOBALS['sugar_config']['languages']) AS $language) {
+                $pathDef = array(
+                    'language' => $language,
+                    'to_module' => $definition['module']
+                );
+                $path = $this->getInstallLanguagesPath($pathDef);
+                if (file_exists($path)) {
+                    unlink($path);
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Returns the names of the label(key 'system_label') from a multi-dimensional array $labelDefinitions
+     * 
+     * @param $labelDefinitions
+     * @return array of labels
+     */
+    protected function getLabelsToUninstall($labelDefinitions)
+    {
+        $labels = array();
+        foreach($labelDefinitions AS $definition){
+            $labels[] = $definition['system_label'];
+        }
+        return $labels;
     }
 
 /* BEGIN - RESTORE POINT - by MR. MILK August 31, 2005 02:22:18 PM */
@@ -1354,8 +1480,28 @@ class ModuleInstaller{
 					{
 						rmdir_recursive( $path );
 					}
+                    $path = $basepath . "WirelessLayoutdefs/$fn";
+                    if (file_exists($path)) {
+                        rmdir_recursive($path);
+                    }
 				}
-			}
+                $relationships_path = 'custom/Extension/modules/relationships/';
+
+                $relationships_dirs = array(
+                    'layoutdefs',
+                    'vardefs',
+                    'wirelesslayoutdefs'
+                );
+                foreach ($relationships_dirs as $relationship_dir) {
+                    $realtionship_file_path = $relationships_path . $relationship_dir . "/{$rel_name}_{$mod}.php";
+                    if (file_exists($realtionship_file_path)) {
+                        rmdir_recursive($realtionship_file_path);
+                    }
+                }
+                if (file_exists($relationships_path . "relationships/{$rel_name}MetaData.php")) {
+                    rmdir_recursive($relationships_path . "relationships/{$rel_name}MetaData.php");
+                }
+            }
 
 			foreach (array($filename , "custom" . $filename, $rel_name ."_". $mod. ".php") as $fn) {
 				// remove the table dictionary extension

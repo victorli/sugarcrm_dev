@@ -232,6 +232,27 @@ class vCal extends SugarBean {
         }
 
 	/**
+	 * escape iCal chars as per RFC 5545: http://tools.ietf.org/html/rfc5545#section-3.3.11
+	 */
+	public static function escape_ical_chars($string)
+	{
+		$iCalEscape = array(
+			"\\" => "\\\\",
+			"\r" => "",
+			"\n" => "\\n",
+			";" => "\\;",
+			"," => "\\,",
+		);
+
+		foreach ($iCalEscape as $p => $q)
+		{
+			$string = str_replace($p, $q, $string);
+		}
+
+		return $string;
+	}
+
+	/**
 	 * get ics file content for meeting invite email
 	 */
 	public static function get_ical_event(SugarBean $bean, User $user){
@@ -242,12 +263,14 @@ class vCal extends SugarBean {
 		$str .= "PRODID:-//SugarCRM//SugarCRM Calendar//EN\n";
 		$str .= "BEGIN:VEVENT\n";
 		$str .= "UID:".$bean->id."\n";
-		$str .= "ORGANIZER;CN=".$user->full_name.":".$user->email1."\n";
+		$str .= "ORGANIZER;CN=".vCal::escape_ical_chars($user->full_name.":".$user->email1)."\n";
 		$str .= "DTSTART:".SugarDateTime::createFromFormat($GLOBALS['timedate']->get_db_date_time_format(),$bean->date_start)->format(self::UTC_FORMAT)."\n";
 		$str .= "DTEND:".SugarDateTime::createFromFormat($GLOBALS['timedate']->get_db_date_time_format(),$bean->date_end)->format(self::UTC_FORMAT)."\n";
 		$str .= "DTSTAMP:". $GLOBALS['timedate']->getNow(false)->format(self::UTC_FORMAT) ."\n";
-		$str .= "SUMMARY:" . $bean->name . "\n";
-		$str .= "DESCRIPTION:" . $bean->description . "\n";
+		$str .= "SUMMARY:" . vCal::escape_ical_chars($bean->name) . "\n";
+		$str .= "LOCATION:" . vCal::escape_ical_chars($bean->location) . "\n";
+		$descPrepend = empty($bean->join_url) ? "" : $bean->join_url . "\n\n";
+		$str .= "DESCRIPTION:" . vCal::escape_ical_chars($descPrepend . $bean->description) . "\n";
 		$str .= "END:VEVENT\n";
 		$str .= "END:VCALENDAR\n";
 

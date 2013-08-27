@@ -105,6 +105,7 @@ YAHOO.util.Event.onDOMReady(function()
 	Calendar.setup ({ldelim}
 	onClose : update_{{$idname}},
 	inputField : "{{$idname}}_date",
+    form : "{{$displayParams.formName}}",
 	ifFormat : "{$CALENDAR_FORMAT}",
 	daFormat : "{$CALENDAR_FORMAT}",
 	button : "{{$idname}}_trigger",

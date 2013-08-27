@@ -333,8 +333,15 @@ ENDQ;
 		$start = ($page - 1) * $pageSize;
 
 		$sort = (empty($sort)) ? $this->defaultSort : $sort;
-        $direction = (empty($direction)) ? $this->defaultDirection : $direction;
-        $order = " ORDER BY {$this->hrSortLocal[$sort]} {$direction}";
+        if (!in_array(strtolower($direction), array('asc', 'desc'))) {
+            $direction = $this->defaultDirection;
+        }
+
+        if (!empty($this->hrSortLocal[$sort])) {
+            $order = " ORDER BY {$this->hrSortLocal[$sort]} {$direction}";
+        } else {
+            $order = "";
+        }
 
 		if($this->is_dynamic) {
 			$r = $this->db->limitQuery(from_html($this->generateSugarsDynamicFolderQuery() . $order), $start, $pageSize);

@@ -1132,7 +1132,19 @@ function checkSystemCompliance() {
         $ret['ZipStatus'] = "<b><span class=go>{$installer_mod_strings['LBL_CHECKSYS_OK']}</span></b>";
     }
 
-
+    // PCRE
+    if(defined('PCRE_VERSION')) {
+        if (version_compare(PCRE_VERSION, '7.0') < 0) {
+            $ret['pcreVersion'] = "<b><span class='stop'>{$installer_mod_strings['ERR_CHECKSYS_PCRE_VER']}</span></b>";
+            $ret['error_found'] = true;
+        }
+        else {
+            $ret['pcreVersion'] = "<b><span class='go'>{$installer_mod_strings['LBL_CHECKSYS_OK']}</span></b>";
+        }
+    } else {
+        $ret['pcreVersion'] = "<b><span class='stop'><b>{$installer_mod_strings['ERR_CHECKSYS_PCRE']}</span></b>";
+        $ret['error_found'] = true;
+    }
 
     // Suhosin allow to use upload://
     $ret['stream_msg'] = '';

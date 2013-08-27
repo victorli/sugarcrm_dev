@@ -416,7 +416,7 @@ class OutboundEmail {
 		foreach($this->field_defs as $def) {
 			if(isset($_POST[$def])) {
 				$this->$def = $_POST[$def];
-			} else {
+			} else if ($def != 'mail_smtppass') {
 				$this->$def = "";
 			}
 		}
@@ -427,9 +427,10 @@ class OutboundEmail {
 	 * @param array $keys
 	 * @return array
 	 */
-	protected function getValues($keys)
+	protected function getValues(&$keys)
 	{
 	    $values = array();
+            $validKeys = array();
 
 	    foreach($keys as $def) {
 	    	if ($def == 'mail_smtppass' && !empty($this->$def)) {
@@ -440,10 +441,13 @@ class OutboundEmail {
 	    			$this->$def = 0;
 	    		}
 	    		$values[] = intval($this->$def);
-	    	} else {
+                        $validKeys[] = $def;
+	    	} else if (isset($this->$def)) {
 	    		$values[] = $this->db->quoted($this->$def);
+                        $validKeys[] = $def;
 	    	}
 	    }
+            $keys = $validKeys;
 	    return $values;
 	}
 

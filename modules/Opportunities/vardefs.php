@@ -278,6 +278,7 @@ $dictionary['Opportunity'] = array('table' => 'opportunities','audited'=>true, '
     'bean_name'=>'Contact',
     'rel_fields'=>array('contact_role'=>array('type'=>'enum', 'options'=>'opportunity_relationship_type_dom')),
 	'vname'=>'LBL_CONTACTS',
+    'hide_history_contacts_emails' => true,
   ),
   'tasks' =>
   array (

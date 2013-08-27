@@ -83,6 +83,11 @@ class ModuleScanner{
         'reflector',
         'reflectionexception',
         'lua',
+	    'ziparchive',
+	    'splfileinfo',
+	    'splfileobject',
+	    'pclzip',
+
     );
 	private $blackList = array(
     'popen',
@@ -97,6 +102,7 @@ class ModuleScanner{
     'disk_free_space',
     'disk_total_space',
     'diskfreespace',
+	'dir',
     'fclose',
     'feof',
     'fflush',
@@ -126,6 +132,7 @@ class ModuleScanner{
     'is_link',
     'is_readable',
     'is_uploaded_file',
+	'opendir',
     'parse_ini_string',
     'pathinfo',
     'pclose',
@@ -135,10 +142,12 @@ class ModuleScanner{
     'realpath_cache_size',
     'realpath',
     'rewind',
+	'readdir',
     'set_file_buffer',
     'tmpfile',
     'umask',
     'ini_set',
+    'set_time_limit',
 	'eval',
 	'exec',
 	'system',
@@ -382,8 +391,12 @@ class ModuleScanner{
         'xml_set_processing_instruction_handler',
         'xml_set_start_namespace_decl_handler',
         'xml_set_unparsed_entity_decl_handler',
+
+	    // unzip
+	    'unzip',
+	    'unzip_file',
 );
-    private $methodsBlackList = array('setlevel');
+    private $methodsBlackList = array('setlevel', 'put' => array('sugarautoloader'), 'unlink' => array('sugarautoloader'));
 
 	public function printToWiki(){
 		echo "'''Default Extensions'''<br>";
@@ -407,6 +420,7 @@ class ModuleScanner{
             'classBlackListExempt' => 'MODULE_INSTALLER_PACKAGE_SCAN_CLASS_BLACK_LIST_EXEMPT',
             'classBlackList'       => 'MODULE_INSTALLER_PACKAGE_SCAN_CLASS_BLACK_LIST',
             'validExt'             => 'MODULE_INSTALLER_PACKAGE_SCAN_VALID_EXT',
+            'methodsBlackList'     => 'MODULE_INSTALLER_PACKAGE_SCAN_METHOD_LIST',
         );
 
         $disableConfigOverride = defined('MODULE_INSTALLER_DISABLE_CONFIG_OVERRIDE')
@@ -559,6 +573,21 @@ class ModuleScanner{
                             if ($lastToken !== false &&
                             ($lastToken[0] == T_OBJECT_OPERATOR ||  $lastToken[0] == T_DOUBLE_COLON))
                             {
+                                // check static blacklist for methods
+                                if(!empty($this->methodsBlackList[$token[1]])) {
+                                    if($this->methodsBlackList[$token[1]] == '*') {
+                                        $issues[]= translate('ML_INVALID_METHOD') . ' ' .$token[1].  '()';
+                                        break;
+                                    } else {
+                                        if($lastToken[0] == T_DOUBLE_COLON && $index > 2 && $tokens[$index-2][0] == T_STRING) {
+                                            $classname = strtolower($tokens[$index-2][1]);
+                                            if(in_array($classname, $this->methodsBlackList[$token[1]])) {
+                                                $issues[]= translate('ML_INVALID_METHOD') . ' ' .$classname . '::' . $token[1]. '()';
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
                                 //this is a method call, check the black list
                                 if(in_array($token[1], $this->methodsBlackList)){
                                     $issues[]= translate('ML_INVALID_METHOD') . ' ' .$token[1].  '()';

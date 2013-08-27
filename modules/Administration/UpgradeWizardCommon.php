@@ -77,12 +77,14 @@ $script_files = array(
 );
 
 
+
 function extractFile( $zip_file, $file_in_zip ){
     global $base_tmp_upgrade_dir;
 	if(empty($base_tmp_upgrade_dir)){
     	$base_tmp_upgrade_dir   = sugar_cached("upgrades/temp");
     }
     $my_zip_dir = mk_temp_dir( $base_tmp_upgrade_dir );
+    register_shutdown_function('rmdir_recursive', $my_zip_dir);
     unzip_file( $zip_file, $file_in_zip, $my_zip_dir );
     return( "$my_zip_dir/$file_in_zip" );
 }

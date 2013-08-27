@@ -55,10 +55,10 @@ $mod_strings = return_module_language($curr_lang, 'UpgradeWizard',true);
 
 function check_php($sys_php_version = '')
 {
-    $min_considered_php_version = '5.2.1';
+    $min_considered_php_version = '5.2.2';
 
     $supported_php_versions = array (
-    '5.2.1', '5.2.2', '5.2.3', '5.2.4', '5.2.5', '5.2.6', '5.2.8', '5.3.0'
+    '5.2.2', '5.2.3', '5.2.4', '5.2.5', '5.2.6', '5.2.8', '5.3.0'
     );
     //Find out what Database the system is using.
     global $sugar_config;
@@ -364,10 +364,10 @@ $diffs ='';
 	logThis('schema preflight done.');
 ////	END SCHEMA SCRIPT HANDLING
 ///////////////////////////////////////////////////////////////////////////////
-//php 521 suggestion
-	$php_521 = '';
-	if(version_compare(phpversion(),'5.2.1') < 0){
-		$php_521=$mod_strings['LBL_CURRENT_PHP_VERSION'].phpversion().$mod_strings['LBL_RECOMMENDED_PHP_VERSION'];
+//php version suggestion
+    $php_suggested_ver = '';
+	if(version_compare(phpversion(),'5.2.2') < 0){
+		$php_suggested_ver=$mod_strings['LBL_CURRENT_PHP_VERSION'].phpversion().$mod_strings['LBL_RECOMMENDED_PHP_VERSION'];
 	}
 	if(empty($mod_strings['LBL_UPGRADE_TAKES_TIME_HAVE_PATIENCE'])){
 		$mod_strings['LBL_UPGRADE_TAKES_TIME_HAVE_PATIENCE'] = 'Upgrade may take some time';
@@ -443,7 +443,7 @@ eoq5;
 else{
 	$stop = true;
 	if(empty($mod_strings['LBL_INCOMPATIBLE_PHP_VERSION'])){
-		$mod_strings['LBL_INCOMPATIBLE_PHP_VERSION'] = 'Php version 5.2.1 or above is required.';
+		$mod_strings['LBL_INCOMPATIBLE_PHP_VERSION'] = 'Php version 5.2.2 or above is required.';
 	}
 
 $php_verison_warning =<<<eoq

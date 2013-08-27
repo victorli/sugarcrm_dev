@@ -1899,6 +1899,11 @@ function get_mailmerge_document2($session, $file_name, $fields)
                             $html .= "<td>$encoded_output</td>";
 
                         }
+                    } else if ($seed1->field_name_map[$master_field]['type'] == 'currency') {
+                        $amount_field = $seed1->$master_field;
+                        $params = array( 'currency_symbol' => false );
+                        $amount_field = currency_format_number($amount_field, $params);
+                        $html .='<td>'.$amount_field.'</td>';
                     } else {
                        $html .='<td>'.$seed1->$master_field.'</td>';
                     }
@@ -1915,6 +1920,11 @@ function get_mailmerge_document2($session, $file_name, $fields)
                         if($seed2->field_name_map[$related_field]['type'] == 'enum'){
                             //pull in the translated dom
                             $html .='<td>'.$app_list_strings[$seed2->field_name_map[$related_field]['options']][$seed2->$related_field].'</td>';
+                        } else if ($seed2->field_name_map[$related_field]['type'] == 'currency') {
+                            $amount_field = $seed2->$related_field;
+                            $params = array( 'currency_symbol' => false );
+                            $amount_field = currency_format_number($amount_field, $params);
+                            $html .='<td>'.$amount_field.'</td>';
                         }else{
                             $html .= '<td>'.$seed2->$related_field.'</td>';
                         }
@@ -2262,27 +2272,54 @@ function handle_set_entries($module_name, $name_value_lists, $select_fields = FA
 			//we are going to check if we have a meeting in the system
 			//with the same outlook_id. If we do find one then we will grab that
 			//id and save it
-			if( $seed->ACLAccess('Save') && ($seed->deleted != 1 || $seed->ACLAccess('Delete'))){
-				if(empty($seed->id) && !isset($seed->id)){
-					if(!empty($seed->outlook_id) && isset($seed->outlook_id)){
-						//at this point we have an object that does not have
-						//the id set, but does have the outlook_id set
-						//so we need to query the db to find if we already
-						//have an object with this outlook_id, if we do
-						//then we can set the id, otherwise this is a new object
-						$order_by = "";
-						$query = $seed->table_name.".outlook_id = '".$seed->outlook_id."'";
-						$response = $seed->get_list($order_by, $query, 0,-1,-1,0);
-						$list = $response['list'];
-						if(count($list) > 0){
-							foreach($list as $value)
-							{
-								$seed->id = $value->id;
-								break;
-							}
-						}//fi
-					}//fi
-				}//fi
+            if ($seed->ACLAccess('Save') && ($seed->deleted != 1 || $seed->ACLAccess('Delete'))) {
+                // Check if we're updating an old record, or creating a new
+                if (empty($seed->id)) {
+                    // If it's a new one, and we have outlook_id set
+                    // which means we're syncing from OPI check if it already exists
+                    if (!empty($seed->outlook_id)) {
+                        $GLOBALS['log']->debug(
+                            'Looking for ' . $module_name . ' with outlook_id ' . $seed->outlook_id
+                        );
+
+                        $fields = array(
+                            'outlook_id' => $seed->outlook_id
+                        );
+                        // Try to fetch a bean with this outlook_id
+                        $temp = BeanFactory::getBean($module_name);
+                        $temp = $temp->retrieve_by_string_fields($fields);
+
+                        // If we fetched one, just copy the ID to the one we're syncing
+                        if (!empty($temp)) {
+                            $seed->id = $temp->id;
+                        } else {
+                            $GLOBALS['log']->debug(
+                                'Looking for ' . $module_name .
+                                ' with name/date_start/duration_hours/duration_minutes ' .
+                                $seed->name . '/' . $seed->date_start . '/' .
+                                $seed->duration_hours . '/' . $seed->duration_minutes
+                            );
+
+                            // If we didn't, try to find the meeting by comparing the passed
+                            // Subject, start date and duration
+                            $fields = array(
+                                'name' => $seed->name,
+                                'date_start' => $seed->date_start,
+                                'duration_hours' => $seed->duration_hours,
+                                'duration_minutes' => $seed->duration_minutes
+                            );
+                            $temp = BeanFactory::getBean($module_name);
+                            $temp = $temp->retrieve_by_string_fields($fields);
+
+                            if (!empty($temp)) {
+                                $seed->id = $temp->id;
+                            }
+                        }
+                        $GLOBALS['log']->debug(
+                            $module_name . ' found: ' . !empty($seed->id)
+                        );
+                    }
+                }
 				if (empty($seed->reminder_time)) {
                     $seed->reminder_time = -1;
                 }

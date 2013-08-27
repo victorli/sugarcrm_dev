@@ -49,16 +49,19 @@ function EAPMChange() {
         var apiOpts = SUGAR.eapm[apiName];
 
         var urlObj = new SUGAR.forms.VisibilityAction('url',(apiOpts.needsUrl?'true':'false'), EAPMFormName);
+        urlObj.setContext(new SUGAR.forms.FormExpressionContext(this.form));
         if ( EAPMFormName == 'EditView' ) {
             EAPMSetFieldRequired('url',(apiOpts.needsUrl == true));
         }
 
         var userObj = new SUGAR.forms.VisibilityAction('name',((apiOpts.authMethod=='password')?'true':'false'), EAPMFormName);
+        userObj.setContext(new SUGAR.forms.FormExpressionContext(this.form));
         if ( EAPMFormName == 'EditView' ) {
             EAPMSetFieldRequired('name',(apiOpts.authMethod == 'password'));
         }
 
         var passObj = new SUGAR.forms.VisibilityAction('password',((apiOpts.authMethod=='password')?'true':'false'), EAPMFormName);
+        passObj.setContext(new SUGAR.forms.FormExpressionContext(this.form));
         if ( EAPMFormName == 'EditView' ) {
             EAPMSetFieldRequired('password',(apiOpts.authMethod == 'password'));
         }
