@@ -30,7 +30,7 @@ e:function(){
          * IE8 in some cases generate excaption b/s CallFunction returns invalud response
          * if returned value is invalid don't eval it and return false
          */
-        if ( ret != 'undefined' ) { return eval(this.B.CallFunction(ret)); } else { return; }
+        if ( ret != 'undefined' ) { return eval(ret); } else { return; }
     }
 }
 ,I:function(a,b){this.e();this.D();if(a>0)this.B.width=a;if(b>0)this.B.height=b;this.a.push(e.resize,a,b)}};t.prototype={addColorStop:function(a,b){if(isNaN(a)||a<0||a>1)i(1);this.G.a.push(e.addColorStop,this.id,a,b)}};D.prototype=Error();var T={1:"INDEX_SIZE_ERR",9:"NOT_SUPPORTED_ERR",11:"INVALID_STATE_ERR",

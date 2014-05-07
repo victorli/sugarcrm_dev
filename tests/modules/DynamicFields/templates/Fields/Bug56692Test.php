@@ -1,5 +1,4 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
@@ -35,25 +34,29 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-$dictionary['ext_rest_linkedin'] = array(
 
-  'comment' => 'vardefs for linkedin connector',
-  'fields' => array (
-    'id' =>
-	  array (
-	    'name' => 'id',
-	    'vname' => 'LBL_ID',
-	    'type' => 'id',
-	    'comment' => 'Unique identifier',
-	  	'hidden' => true,
-	),
-    'name'=> array(
-	    'name' => 'name',
-	    'vname' => 'LBL_NAME',
-	    'type' => 'varchar',
-		'hover' => true,
-	    'comment' => 'The name of the company',
-    ),
-  )
-);
+/**
+ * Bug #56692
+ *
+ * Module Builder  | Editing Stock Fields Causes SQL Errors When Deploying Custom Modules
+ * @ticket 56692
+ */
+require_once('modules/DynamicFields/FieldCases.php');
+
+class Bug56692Test extends Sugar_PHPUnit_Framework_TestCase
+{
+    /**
+     * Test that field with type 'link' has source 'non-db', but not 'custom_fields'
+     *
+     * @group 56692
+     * @return void
+     */
+    public function testDisplayFields()
+    {
+        $field = get_widget('link');
+        $vardefs = $field->get_field_def() ;
+
+        $this->assertEquals('non-db', $vardefs['source']) ;
+    }
+}
 ?>

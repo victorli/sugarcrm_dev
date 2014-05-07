@@ -68,11 +68,4 @@ public function testMailMergeAvailability()
     $this->expectOutputNotRegex('/system_mailmerge_on/');
 }
 
-
-public function testImportMapLinkedInPHPFileExists()
-{
-
-    $this->assertFalse(file_exists('modules/Import/maps/ImportMapLinkedin.php'), 'Assert that ImportMapLinkedin.php file does not exist for com flavor');
-}
-
 }

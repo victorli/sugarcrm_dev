@@ -47,13 +47,18 @@ class SugarTinyMCETest extends Sugar_PHPUnit_Framework_TestCase{
 	
 	static $customConfigFile = 'custom/include/tinyButtonConfig.php';
 	static $customDefaultConfigFile = 'custom/include/tinyMCEDefaultConfig.php';
-	static $MCE;
+    static $directory = 'custom/include';
+    static $MCE;
 	
 	/*
 	 * Setup: Backup old custom files and create new ones for the test
 	 */
 	public static function setUpBeforeClass(){
-		
+
+        if (!file_exists(self::$directory)) {
+            sugar_mkdir(self::$directory, 0777, true);
+        }
+
 		if(file_exists(self::$customConfigFile)){
 			rename(self::$customConfigFile, self::$customConfigFile . ".bak");
 		}

@@ -49,11 +49,6 @@ class Bug28321Test extends Sugar_PHPUnit_Framework_TestCase
 					(
 						'enableConnectors' => '1',
 						'module' => 'Accounts',
-						'connectors' => array
-							(
-								'0' => 'ext_rest_linkedin'
-							)
-
 					),
 
 				'customCodeRenderField' => '1',
@@ -72,11 +67,6 @@ class Bug28321Test extends Sugar_PHPUnit_Framework_TestCase
 							(
 								'enableConnectors' => '1',
 								'module' => 'Accounts',
-								'connectors' => array
-									(
-										'0' => 'ext_rest_linkedin'
-									)
-
 							),
 
 						'customCodeRenderField' => '1',
@@ -89,8 +79,6 @@ class Bug28321Test extends Sugar_PHPUnit_Framework_TestCase
 
     	require_once('include/Sugar_Smarty.php');
     	$ss = new Sugar_Smarty();
-    	include('modules/Connectors/connectors/sources/ext/rest/linkedin/config.php');
-    	$ss->assign('config', $config);
     	$ss->left_delimiter = '{{';
     	$ss->right_delimiter = '}}';
     	require_once 'include/Smarty/plugins/function.sugar_evalcolumn.php';

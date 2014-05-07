@@ -55,6 +55,24 @@ class SugarWidgetFieldparent_type extends SugarWidgetFieldEnum
         }
         return $value;
     }    
+
+    /**
+     * Return value of a field from layout_def
+     * @param mixed $layout_def
+     * @return string
+     */
+    function _get_list_value(&$layout_def)
+    {
+        $value = parent::_get_list_value($layout_def);
+        if (
+            !empty($value)
+            && isset($this->reporter->all_fields[$layout_def['column_key']]['options'])
+        ) {
+            $app_list_strings = return_app_list_strings_language($GLOBALS['current_language']);
+            $value = $app_list_strings[$this->reporter->all_fields[$layout_def['column_key']]['options']][$value];
+        }
+        return $value;
+    }
 }
 
 ?>

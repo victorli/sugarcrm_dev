@@ -62,7 +62,7 @@ class SugarLogger implements LoggerTemplate
 	protected $filesuffix = "";
     protected $date_suffix = "";
 	protected $log_dir = '.';
-
+    protected $full_log_file;
 
 	/**
 	 * used for config screen
@@ -217,24 +217,46 @@ class SugarLogger implements LoggerTemplate
         }
 		//check if our log file is greater than that or if we are forcing the log to roll if and only if roll size assigned the value correctly
 		if ( $force || ($rollAt && filesize ( $this->full_log_file ) >= $rollAt) ) {
-			//now lets move the logs starting at the oldest and going to the newest
-			for($i = $this->maxLogs - 2; $i > 0; $i --) {
-                if (file_exists ( $this->log_dir . $this->logfile . $this->date_suffix . '_'. $i . $this->ext )) {
-					$to = $i + 1;
-                    $old_name = $this->log_dir . $this->logfile . $this->date_suffix . '_'. $i . $this->ext;
-                    $new_name = $this->log_dir . $this->logfile . $this->date_suffix . '_'. $to . $this->ext;
-					//nsingh- Bug 22548  Win systems fail if new file name already exists. The fix below checks for that.
-					//if/else branch is necessary as suggested by someone on php-doc ( see rename function ).
-					sugar_rename($old_name, $new_name);
+            $temp = tempnam($this->log_dir, 'rot');
+            if ($temp) {
+                // warning here is expected in case if log file is opened by another process on Windows
+                // or rotation has been already started by another process
+                if (@rename($this->full_log_file, $temp)) {
 
-					//rename ( $this->logfile . $i . $this->ext, $this->logfile . $to . $this->ext );
-				}
-			}
-			//now lets move the current .log file
-            sugar_rename ($this->full_log_file, $this->log_dir . $this->logfile . $this->date_suffix . '_1' . $this->ext);
+                    // manually remove the obsolete part. Otherwise, rename() may fail on Windows (bug #22548)
+                    $obsolete_part = $this->getLogPartPath($this->maxLogs - 1);
+                    if (file_exists($obsolete_part)) {
+                        unlink($obsolete_part);
+                    }
 
+                    // now lets move the logs starting at the oldest and going to the newest
+                    for ($old = $this->maxLogs - 2; $old > 0; $old--) {
+                        $old_name = $this->getLogPartPath($old);
+                        if (file_exists($old_name)) {
+                            $new_name = $this->getLogPartPath($old + 1);
+                            rename($old_name, $new_name);
+                        }
+                    }
+
+                    $part1 = $this->getLogPartPath(1);
+                    rename($temp, $part1);
+                } else {
+                    unlink($temp);
+                }
+            }
 		}
 	}
+
+    /**
+     * Returns path for the given log part
+     *
+     * @param int $i
+     * @return string
+     */
+    protected function getLogPartPath($i)
+    {
+        return $this->log_dir . $this->logfile . $this->date_suffix . '_' . $i . $this->ext;
+    }
 
     /**
 	 * This is needed to prevent unserialize vulnerability

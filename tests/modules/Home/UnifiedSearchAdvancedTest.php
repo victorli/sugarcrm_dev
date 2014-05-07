@@ -50,6 +50,10 @@ class UnifiedSearchAdvancedTest extends Sugar_PHPUnit_Framework_OutputTestCase
 
     public function setUp()
     {
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('app_strings');
+        SugarTestHelper::setUp('app_list_strings');
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
         $unid = uniqid();
         $contact = new Contact();
@@ -79,6 +83,8 @@ class UnifiedSearchAdvancedTest extends Sugar_PHPUnit_Framework_OutputTestCase
 
 	public function tearDown()
 	{
+        SugarTestHelper::tearDown();
+
         $GLOBALS['db']->query("DELETE FROM contacts WHERE id= '{$this->_contact->id}'");
         unset($this->_contact);
 

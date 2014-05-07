@@ -84,14 +84,18 @@ class SugarFieldAddress extends SugarFieldBase {
     }
     
     function getEditViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex) {
-        $this->setup($parentFieldArray, $vardef, $displayParams, $tabindex);        
         global $app_strings;
+
         if(!isset($displayParams['key'])) {
            $GLOBALS['log']->debug($app_strings['ERR_ADDRESS_KEY_NOT_SPECIFIED']);	
            $this->ss->trigger_error($app_strings['ERR_ADDRESS_KEY_NOT_SPECIFIED']);
            return;
         }
-        
+
+        $displayParams['fields'] = $this->getDisplayParamsForFields($displayParams['key'], $displayParams['module']);
+
+        $this->setup($parentFieldArray, $vardef, $displayParams, $tabindex);
+
         //Allow for overrides.  You can specify a Smarty template file location in the language file.
         if(isset($app_strings['SMARTY_ADDRESS_EDITVIEW'])) {
            $tplCode = $app_strings['SMARTY_ADDRESS_EDITVIEW'];
@@ -100,6 +104,21 @@ class SugarFieldAddress extends SugarFieldBase {
 
         return $this->fetch($this->findTemplate('EditView'));      
     }
-    
+
+    /**
+     * @param $key - Address group field key (primary, billing, shipping, ...)
+     * @return array - array of fields included in Address group and their vardefs
+     */
+    private function getDisplayParamsForFields($key, $module)
+    {
+        $bean = BeanFactory::getBean($module);
+
+        return array(
+            'street' => $bean->field_defs[$key . '_address_street'],
+            'city' => $bean->field_defs[$key . '_address_city'],
+            'state' => $bean->field_defs[$key . '_address_state'],
+            'postalcode' => $bean->field_defs[$key . '_address_postalcode'],
+            'country' => $bean->field_defs[$key . '_address_country'],
+        );
+    }
 }
-?>

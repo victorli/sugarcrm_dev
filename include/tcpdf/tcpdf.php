@@ -3782,6 +3782,7 @@ if (!class_exists('TCPDF', false)) {
 					} elseif ($page == $endpage) {
 						$this->y = $this->tMargin; // put cursor at the beginning of last page
 						$h = $currentY - $this->tMargin;
+                                                $this->currentY = $currentY;
 						$cborder = $this->getBorderMode($border, $position='end');
 					} else {
 						$this->y = $this->tMargin; // put cursor at the beginning of the current page

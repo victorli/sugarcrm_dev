@@ -42,7 +42,11 @@ class AjaxCompose{
 		if($name == 'center'){
 			$crumb = $this->getBreadCrumb();
 		}
-		$this->sections[$name] = array('title'=>$title,'crumb'=>$crumb, 'content'=>$content, 'action'=>$action);
+                if (is_array($content)) {
+                    $this->sections[$name] = array('title'=>$title,'crumb'=>$crumb, 'content'=>$content, 'action'=>$action);
+                } else {
+                    $this->sections[$name] = array('title'=>$title,'crumb'=>$crumb, 'content'=>mb_detect_encoding($content, mb_detect_order(), true) == "UTF-8" ? $content : utf8_encode($content), 'action'=>$action);
+                }
 	}
 	
 	function getJavascript(){

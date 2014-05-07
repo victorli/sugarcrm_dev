@@ -65,7 +65,8 @@ function email2init() {
          strict_loading_mode : true,
 		 force_br_newlines : true,
          forced_root_block : '',
-         directionality : (typeof(rtl) == "undefined") ? "ltr" : "rtl"
+         directionality : (typeof(rtl) == "undefined") ? "ltr" : "rtl",
+         gecko_spellcheck : tinyConfig.gecko_spellcheck
      });
     }
 

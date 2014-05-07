@@ -39,7 +39,7 @@ function checkMinSupported(c,s){var current=c.split(".");var supported=s.split("
 return true;}
 function checkMaxSupported(c,s){var current=c.split(".");var supported=s.split(".");for(var i in supported){if(current[i]&&parseInt(current[i])>parseInt(supported[i]))return false;else if(current[i]&&parseInt(current[i])<parseInt(supported[i]))return true;}
 return true;}
-SUGAR.isSupportedBrowser=function(){var supportedBrowsers={msie:{min:8,max:10},safari:{min:534},mozilla:{min:22.0},chrome:{min:28}};var current=String($.browser.version);var supported;if($.browser.msie){supported=supportedBrowsers['msie'];}
+SUGAR.isSupportedBrowser=function(){var supportedBrowsers={msie:{min:9,max:10},safari:{min:534},mozilla:{min:23.0},chrome:{min:29}};var current=String($.browser.version);var supported;if($.browser.msie){supported=supportedBrowsers['msie'];}
 else if($.browser.mozilla){supported=supportedBrowsers['mozilla'];}
 else{$.browser.chrome=/chrome/.test(navigator.userAgent.toLowerCase());if($.browser.chrome){current=navigator.userAgent.match(/Chrome\/(.*?) /)[1];supported=supportedBrowsers['chrome'];}
 else if($.browser.safari){supported=supportedBrowsers['safari'];}}
@@ -119,9 +119,10 @@ return false;return true;}
 function getDateObject(dtStr){if(dtStr.length==0){return true;}
 myregexp=new RegExp(date_reg_format)
 if(myregexp.exec(dtStr))var dt=myregexp.exec(dtStr)
-else return false;var yr=dt[date_reg_positions['Y']];var mh=dt[date_reg_positions['m']];var dy=dt[date_reg_positions['d']];var dtar=dtStr.split(' ');if(typeof(dtar[1])!='undefined'&&isTime(dtar[1])){var t1=dtar[1].replace(/am/i,' AM');var t1=t1.replace(/pm/i,' PM');t1=t1.replace(/\./,':');date1=new Date(Date.parse(mh+'/'+dy+'/'+yr+' '+t1));}
+else return false;var yr=dt[date_reg_positions['Y']];var mh=dt[date_reg_positions['m']];var dy=dt[date_reg_positions['d']];var dtar=dtStr.split(' ');var date1;if(typeof(dtar[1])!='undefined'&&isTime(dtar[1])){var t1=dtar[1].replace(/am/i,' AM');var t1=t1.replace(/pm/i,' PM');t1=t1.replace(/\./,':');date1=new Date(mh+'/'+dy+'/'+yr+' '+t1);}
 else
-{var date1=new Date();date1.setFullYear(yr);date1.setMonth(mh-1);date1.setDate(dy);}
+{date1=new Date(mh+'/'+dy+'/'+yr);}
+if(isNaN(date1.valueOf())){return null;}
 return date1;}
 function isBefore(value1,value2){var d1=getDateObject(value1);var d2=getDateObject(value2);if(typeof(d2)=='boolean'){return true;}
 return d2>=d1;}

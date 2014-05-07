@@ -1,5 +1,4 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
@@ -35,26 +34,47 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-require_once('include/connectors/formatters/default/formatter.php');
 
-class ext_rest_linkedin_formatter extends default_formatter {
-	
-public function getDetailViewFormat() { 
-   $mapping = $this->getSourceMapping();
-   $mapping_name = !empty($mapping['beans'][$this->_module]['name']) ? $mapping['beans'][$this->_module]['name'] : '';
+require_once('include/SugarFields/Fields/Float/SugarFieldFloat.php');
+require_once('include/SugarFields/Fields/Int/SugarFieldInt.php');
 
-   if(!empty($mapping_name)) {
-	   $this->_ss->assign('mapping_name', $mapping_name);
-	   return $this->fetchSmarty();
-   }
+class Bug60141Test extends Sugar_PHPUnit_Framework_TestCase
+{
+    public static function providerFloat()
+    {
+        return array(
+            array(null, null),
+            array('', null),
+            array(1, 1.0),
+        );
+    }
 
-   $GLOBALS['log']->error($GLOBALS['app_strings']['ERR_MISSING_MAPPING_ENTRY_FORM_MODULE']);
-   return '';
-}	
+    public static function providerInt()
+    {
+        return array(
+            array(null, null),
+            array('', null),
+            array(1, 1),
+        );
+    }
 
-public function getIconFilePath() {
-   return 'modules/Connectors/connectors/formatters/ext/rest/linkedin/tpls/linkedin.gif';
-}   
+    /**
+     * @dataProvider providerFloat
+     * @group 60141
+     */
+    public function testUnformatFieldFloat($valueToPass, $expectedResult)
+    {
+        $floatField = new SugarFieldFloat('float');
+        $this->assertSame($expectedResult, $floatField->unformatField($valueToPass, array()));
+    }
 
+    /**
+     * @dataProvider providerInt
+     * @group 60141
+     */
+    public function testUnformatFieldInt($valueToPass, $expectedResult)
+    {
+        $intField = new SugarFieldInt('int');
+        $this->assertSame($expectedResult, $intField->unformatField($valueToPass, array()));
+    }
 }
-?>

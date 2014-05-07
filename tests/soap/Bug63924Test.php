@@ -1,5 +1,4 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
@@ -35,29 +34,67 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
+
+require_once('SugarTestProspectUtilities.php');
+require_once('tests/service/SOAPTestCase.php');
+
 /**
- * Use this script to fetch linkedin js code.
+ * Mock missing validate_user function
+ * @return bool authentication always true
  */
-
-$url = '';
-$type = !empty($_GET['type']) ? $_GET['type'] : '';
-switch ($type)
+function validate_user($user, $pass)
 {
-    case 'linkedin' :
-        require_once('include/connectors/formatters/FormatterFactory.php');
-        $formatter = FormatterFactory::getInstance('ext_rest_linkedin');
-        $url = $formatter->getComponent()->getSource()->getConfig();
-        $url = $url['properties']['company_url'];
-        break;
+    return true;
 }
 
-if ($url == '')
+/**
+ * Bug #63924
+ * "search_by_module" SOAP API (v1) not returning any results for "Person" type custom modules..
+ *
+ * @author bsitnikovski@sugarcrm.com
+ * @ticket 63924
+ */
+class Bug63924Test extends Sugar_PHPUnit_Framework_TestCase
 {
-    return;
-}
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_TIMEOUT, '30');
-curl_exec($ch);
-curl_close($ch);
+    public function tearDown()
+    {
+        SugarTestProspectUtilities::removeAllCreatedProspects();
+        parent::tearDown();
+    }
+
+    /**
+     * Test the function create_ical_array_from_string()
+     *
+     * @dataProvider prospectProvider
+     */
+    public function testSearchByModule(array $args, $query)
+    {
+        if (!function_exists('search_by_module')) {
+
+            // Mock $server and $server->wsdl
+            $server = $this->getMock('soap_server', array('register'));
+            $server->wsdl = $this->getMock('wsdl', array('addComplexType'));
+            // Need name space to be set
+            $NAMESPACE = '';
+            require_once('soap/SoapSugarUsers.php');
+            require_once('soap/SoapError.php');
+        }
+
+        $prospect = SugarTestProspectUtilities::createProspect('', $args);
+        $actual = search_by_module('', '', $query, array('Prospects'), 0, 30);
+        $this->assertEquals($prospect->id, $actual['entry_list'][0]['id']);
+    }
+
+    public function prospectProvider()
+    {
+        $firstname = array(array('first_name' => 'Bug63924TestFirstName', 'last_name' => ''), 'Bug63924TestFirstName');
+        $lastname = array(array('first_name' => '', 'last_name' => 'Bug63924TestLastName'), 'Bug63924TestLastName');
+        $fullname = array(
+            array('first_name' => 'Bug63924TestFirstName', 'last_name' => 'Bug63924TestLastName'),
+            'Bug63924TestFirstName Bug63924TestLastName'
+        );
+        return array($firstname, $lastname, $fullname);
+    }
+
+}

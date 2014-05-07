@@ -1,4 +1,4 @@
-{*
+<?php
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
@@ -34,46 +34,72 @@
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-*}
-<script src="{if $smarty.server.HTTPS === 'on'}index.php?entryPoint=get_url&type=linkedin{else}{{$config.properties.company_url}}{/if}" type="text/javascript"></script>
-<script type="text/javascript" src="{sugar_getjspath file='include/connectors/formatters/default/company_detail.js'}"></script>
-{literal}
-<style type="text/css">
-.yui-panel .hd {
-	background-color:#3D77CB;
-	border-color:#FFFFFF #FFFFFF #000000;
-	border-style:solid;
-	border-width:1px;
-	color:#000000;
-	font-size:100%;
-	font-weight:bold;
-	line-height:100%;
-	padding:4px;
-	white-space:nowrap;
-}
-</style>
-{/literal}
-<script type="text/javascript">
-function show_ext_rest_linkedin(event)
-{literal} 
+
+/**
+ * @ticket 63989
+ */
+class Bug63989Test extends Sugar_PHPUnit_Framework_TestCase
 {
+    /**
+     * @var aCase
+     */
+    private $case;
 
-var xCoordinate = event.clientX;
-var yCoordinate = event.clientY;
-var isIE = document.all?true:false;
-      
-if(isIE) {
-    xCoordinate = xCoordinate + document.body.scrollLeft;
-    yCoordinate = yCoordinate + document.body.scrollTop;
+    public function setUp()
+    {
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('current_user');
+        $this->case = BeanFactory::getBean('Cases');
+    }
+
+    public function tearDown()
+    {
+        /** @var DBManager */
+        global $db;
+        if ($this->case && $this->case->id) {
+            $query = 'DELETE FROM cases where id = ' . $db->quoted($this->case->id);
+            $db->query($query);
+        }
+        SugarTestHelper::tearDown();
+    }
+
+    public function testGetCaseIdFromCaseNumber()
+    {
+        $this->case->save();
+        $id = $this->case->id;
+
+        $this->case->disable_row_level_security = true;
+        $this->case->retrieve($id);
+        $number = $this->case->case_number;
+
+        $ie = new InboundEmail();
+        $subject = '[CASE:' . $number . ']';
+        $actual_id = $ie->getCaseIdFromCaseNumber($subject, $this->case);
+
+        $this->assertEquals($id, $actual_id);
+    }
+
+    /**
+     * @param $emailName
+     * @dataProvider shouldNotQueryProvider
+     */
+    public function testShouldNotQuery($emailName)
+    {
+        $db = $this->getMockForAbstractClass('DBManager');
+        $db->expects($this->never())
+            ->method('query');
+
+        $ie = new InboundEmail();
+        $ie->db = $db;
+        $ie->getCaseIdFromCaseNumber($emailName, $this->case);
+    }
+
+    public function shouldNotQueryProvider()
+    {
+        return array(
+            array('An arbitrary subject'),
+            array('[CASE:THE-CASE-NUMBER]'),
+        );
+    }
 }
-
-{/literal}
-
-cd = new CompanyDetailsDialog("linkedin_popup_div", '<div id="linkedin_div"></div>', xCoordinate, yCoordinate);
-cd.setHeader("{$fields.{{$mapping_name}}.value}");
-cd.display();
-linked_in_popup = new LinkedIn.CompanyInsiderBox("linkedin_div", "{$fields.{{$mapping_name}}.value}");
-{literal}
-} 
-{/literal}
-</script>

@@ -1,5 +1,4 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
@@ -35,20 +34,47 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-$mapping = array(
-	'beans' => array (
-		'Accounts' => array (
-		    'name'=>'name',
-		),
-		'Contacts' => array (
-		    'name'=>'account_name',
-		),
-		'Leads' => array (
-		    'name'=>'account_name',
-		),
-		'Prospects' => array(
-		    'name'=>'account_name',
-		)
-	),
-);
-?>
+
+require_once ('modules/Calendar/CalendarActivity.php');
+/**
+ * Bug #63403
+ * Meetings longer then one week only appear in the first week
+ * @ticket 63403
+ */
+class Bug63403Test extends Sugar_PHPUnit_Framework_TestCase
+{
+    public function setUp()
+    {
+        SugarTestHelper::setUp('current_user');
+    }
+
+    /**
+     * @group 63403
+     */
+    public function testBug63403()
+    {
+        $meeting = SugarTestMeetingUtilities::createMeeting();
+        SugarTestMeetingUtilities::addMeetingUserRelation($meeting->id, $GLOBALS['current_user']->id);
+        $meeting->date_start = $GLOBALS['timedate']->getNow()->asDb();
+        $meeting->date_end = $GLOBALS['timedate']->getNow()->modify("+25 days")->asDb();
+        $meeting->duration_hours = 720;
+        $meeting->save();
+        $calendar = new CalendarActivity($meeting);
+        $start_date_time = $GLOBALS['timedate']->fromString($GLOBALS['timedate']->nowDb());
+        $result = $calendar->get_activities(
+            $GLOBALS['current_user']->id,
+            false,
+            $start_date_time->get("+7 days"),
+            $start_date_time->get("+14 days"),
+            false
+        );
+        $this->assertNotEmpty($result);
+        $this->assertEquals($meeting->id, $result[0]->sugar_bean->id, 'We should get current test Meeting');
+    }
+
+    public function tearDown()
+    {
+        SugarTestMeetingUtilities::removeAllCreatedMeetings();
+        SugarTestHelper::tearDown();
+    }
+}

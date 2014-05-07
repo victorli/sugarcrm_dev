@@ -103,7 +103,7 @@ class Bug30709_Part_2_Test extends Sugar_PHPUnit_Framework_TestCase
     'Quotas' => 'Quotas',
     'Teams' => 'Teams',
     'Activities' => 'Activities',
-    'Bugs' => 'Bug Tracker',
+    'Bugs' => 'Bugs',
     'Feeds' => 'RSS',
     'iFrames' => 'My Portal',
     'TimePeriods' => 'Time Periods',

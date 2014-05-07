@@ -107,6 +107,11 @@ $layout_defs['Contacts'] = array(
                     'subpanel_name' => 'ForHistory',
                     'get_subpanel_data' => 'tasks_parent',
                 ),
+                'notes_parent' => array(
+                    'module' => 'Notes',
+                    'subpanel_name' => 'ForHistory',
+                    'get_subpanel_data' => 'notes_parent',
+                ),
 				'meetings' => array(
 					'module' => 'Meetings',
 					'subpanel_name' => 'ForHistory',

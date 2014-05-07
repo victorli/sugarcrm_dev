@@ -605,6 +605,7 @@ function get_user_name($id) {
  *
  * This is a helper function to return an Array of users depending on the parameters passed into the function.
  * This function uses the get_register_value function by default to use a caching layer where supported.
+ * This function has been updated return the array sorted by user preference of name display (bug 62712)
  *
  * @param bool $add_blank Boolean value to add a blank entry to the array results, true by default
  * @param string $status String value indicating the status to filter users by, "Active" by default
@@ -616,8 +617,7 @@ function get_user_name($id) {
  * @return array Array of users matching the filter criteria that may be from cache (if similar search was previously run)
  */
 function get_user_array($add_blank=true, $status="Active", $user_id='', $use_real_name=false, $user_name_filter='', $portal_filter=' AND portal_only=0 ', $from_cache = true) {
-	global $locale;
-	global $sugar_config;
+	global $locale, $sugar_config, $current_user;
 
 	if(empty($locale)) {
 		$locale = new Localization();
@@ -646,7 +646,28 @@ function get_user_array($add_blank=true, $status="Active", $user_id='', $use_rea
 		if (!empty($user_id)) {
 			$query .= " OR id='{$user_id}'";
 		}
-		$query = $query.' ORDER BY user_name ASC';
+
+        //get the user preference for name formatting, to be used in order by
+        $order_by_string =' user_name ASC ';
+        if(!empty($current_user) && !empty($current_user->id))
+        {
+            $formatString = $current_user->getPreference('default_locale_name_format');
+
+            //create the order by string based on position of first and last name in format string
+            $order_by_string =' user_name ASC ';
+            $firstNamePos = strpos( $formatString, 'f');
+            $lastNamePos = strpos( $formatString, 'l');
+            if($firstNamePos !== false || $lastNamePos !== false){
+                //its possible for first name to be skipped, check for this
+                if($firstNamePos===false){
+                    $order_by_string =  'last_name ASC';
+                }else{
+                    $order_by_string =  ($lastNamePos < $firstNamePos) ? "last_name, first_name ASC" : "first_name, last_name ASC";
+                }
+            }
+        }
+
+		$query = $query.' ORDER BY '.$order_by_string;
 		$GLOBALS['log']->debug("get_user_array query: $query");
 		$result = $db->query($query, true, "Error filling in user array: ");
 

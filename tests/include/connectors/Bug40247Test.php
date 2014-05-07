@@ -77,10 +77,6 @@ class Bug40247Test extends Sugar_PHPUnit_Framework_TestCase
         if(file_exists('custom/modules/Connectors/metadata/mergeviewdefs.php')) {
            unlink('custom/modules/Connectors/metadata/mergeviewdefs.php');
         }
-        
-        if(file_exists('custom/modules/Connectors/connectors/sources/ext/rest/linkedin/mapping.php')) {
-           unlink('custom/modules/Connectors/connectors/sources/ext/rest/linkedin/mapping.php');
-        }
     }
     
     function tearDown() {
@@ -123,7 +119,6 @@ class Bug40247Test extends Sugar_PHPUnit_Framework_TestCase
         $this->assertFalse(in_array('CONNECTOR', $viewdefs['Accounts']['DetailView']['templateMeta']['form']['buttons']), "Assert that the Get Data button is not added to Accounts detailviewdefs.php file.");
         
         $twitter_hover_link_set = false;
-        $linkedin_hover_link_set = false;
         
         foreach($viewdefs['Accounts']['DetailView']['panels'] as $panels) {
         	foreach($panels as $panel) {
@@ -132,10 +127,7 @@ class Bug40247Test extends Sugar_PHPUnit_Framework_TestCase
         		       if(isset($col['displayParams']) && isset($col['displayParams']['connectors'])) {
                        	  foreach($col['displayParams']['connectors'] as $entry)
                        	  {
-                       	  	   if($entry == 'ext_rest_linkedin')
-                       	  	   {
-                       	  	   	 $linkedin_hover_link_set = true;
-                       	  	   } else if($entry == 'ext_rest_twitter') {
+                       	  	   if($entry == 'ext_rest_twitter') {
                        	  	   	 $twitter_hover_link_set = true;
                        	  	   }
                        	  }
@@ -146,7 +138,6 @@ class Bug40247Test extends Sugar_PHPUnit_Framework_TestCase
         }
         
         $this->assertFalse($twitter_hover_link_set, "Assert that the Twitter hover link is not set for Accounts.");
-        $this->assertTrue($linkedin_hover_link_set, "Assert that the LinkedIn hover link is set for Accounts.");
     	
     }
     

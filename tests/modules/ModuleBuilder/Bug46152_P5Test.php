@@ -144,6 +144,7 @@ class Bug46152_P5Test extends Sugar_PHPUnit_Framework_TestCase
         $_REQUEST['key'] = self::$packageName;
         $_REQUEST['description'] = '';
         $_REQUEST['author'] = '';
+        $_REQUEST['readme'] = '';
 
         $package->populateFromPost();
         $package->loadModules();

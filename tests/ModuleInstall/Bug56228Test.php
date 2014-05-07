@@ -53,7 +53,7 @@ class Bug56228Test extends Sugar_PHPUnit_Framework_TestCase
                 . "\$mod_strings['LBL_OPPORTUNITIES_BUGS_1_FROM_OPPORTUNITIES_TITLE'] = 'Opportunities';\n",
             'custom/Extension/modules/relationships/language/Opportunities.php' => "<?php\n//THIS FILE IS AUTO GENERATED, DO NOT MODIFY\n"
                 . "\$mod_strings['LBL_OPPORTUNITIES_BUGS_1_FROM_OPPORTUNITIES_TITLE'] = 'Opportunities';\n"
-                . "\$mod_strings['LBL_OPPORTUNITIES_BUGS_1_FROM_BUGS_TITLE'] ='Bug Tracker';",
+                . "\$mod_strings['LBL_OPPORTUNITIES_BUGS_1_FROM_BUGS_TITLE'] ='Bugs';",
         );
 
         $labelDefinitions = array(
@@ -65,7 +65,7 @@ class Bug56228Test extends Sugar_PHPUnit_Framework_TestCase
             array(
                 'module' => 'Opportunities',
                 'system_label' => 'LBL_OPPORTUNITIES_BUGS_1_FROM_BUGS_TITLE',
-                'display_label' => 'Bug Tracker',
+                'display_label' => 'Bugs',
             ),
         );
 
@@ -94,7 +94,7 @@ class Bug56228Test extends Sugar_PHPUnit_Framework_TestCase
                 . "\$mod_strings['LBL_OTHER_LABEL'] = 'Other label';\n",
             'custom/Extension/modules/relationships/language/Opportunities.php' => "<?php\n//THIS FILE IS AUTO GENERATED, DO NOT MODIFY\n"
                 . "\$mod_strings['LBL_OPPORTUNITIES_BUGS_1_FROM_OPPORTUNITIES_TITLE'] = 'Opportunities';\n"
-                . "\$mod_strings['LBL_OPPORTUNITIES_BUGS_1_FROM_BUGS_TITLE'] ='Bug Tracker';",
+                . "\$mod_strings['LBL_OPPORTUNITIES_BUGS_1_FROM_BUGS_TITLE'] ='Bugs';",
         );
 
         $labelDefinitions = array(
@@ -106,7 +106,7 @@ class Bug56228Test extends Sugar_PHPUnit_Framework_TestCase
             array(
                 'module' => 'Opportunities',
                 'system_label' => 'LBL_OPPORTUNITIES_BUGS_1_FROM_BUGS_TITLE',
-                'display_label' => 'Bug Tracker',
+                'display_label' => 'Bugs',
             ),
         );
 
@@ -132,7 +132,7 @@ class Bug56228Test extends Sugar_PHPUnit_Framework_TestCase
             'custom/Extension/modules/relationships/language/application.php' => "<?php\n//THIS FILE IS AUTO GENERATED, DO NOT MODIFY\n"
                 . "\$app_list_strings['LBL_OTHER_LABEL'] = 'Other label';\n"
                 . "\$app_list_strings['LBL_OPPORTUNITIES_BUGS_1_FROM_OPPORTUNITIES_TITLE'] = 'Opportunities';\n"
-                . "\$app_list_strings['LBL_OPPORTUNITIES_BUGS_1_FROM_BUGS_TITLE'] ='Bug Tracker';",
+                . "\$app_list_strings['LBL_OPPORTUNITIES_BUGS_1_FROM_BUGS_TITLE'] ='Bugs';",
         );
 
         $labelDefinitions = array(
@@ -145,7 +145,7 @@ class Bug56228Test extends Sugar_PHPUnit_Framework_TestCase
             array(
                 'module' => 'application',
                 'system_label' => 'LBL_OPPORTUNITIES_BUGS_1_FROM_BUGS_TITLE',
-                'display_label' => 'Bug Tracker',
+                'display_label' => 'Bugs',
             ),
 
         );
@@ -168,7 +168,7 @@ class Bug56228Test extends Sugar_PHPUnit_Framework_TestCase
         $files = array(
             'custom/Extension/modules/relationships/language/application.php' => "<?php\n//THIS FILE IS AUTO GENERATED, DO NOT MODIFY\n"
                 . "\$app_list_strings['LBL_OPPORTUNITIES_BUGS_1_FROM_OPPORTUNITIES_TITLE'] = 'Opportunities';\n"
-                . "\$app_list_strings['LBL_OPPORTUNITIES_BUGS_1_FROM_BUGS_TITLE'] ='Bug Tracker';",
+                . "\$app_list_strings['LBL_OPPORTUNITIES_BUGS_1_FROM_BUGS_TITLE'] ='Bugs';",
         );
 
         $labelDefinitions = array(
@@ -180,7 +180,7 @@ class Bug56228Test extends Sugar_PHPUnit_Framework_TestCase
             array(
                 'module' => 'application',
                 'system_label' => 'LBL_OPPORTUNITIES_BUGS_1_FROM_BUGS_TITLE',
-                'display_label' => 'Bug Tracker',
+                'display_label' => 'Bugs',
             ),
         );
 

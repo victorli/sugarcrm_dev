@@ -124,11 +124,15 @@ $dictionary['SugarFeed'] = array(
     ),
 
     'indices' => array (
-        array('name' => 'sgrfeed_date', 
+        array('name' => 'sgrfeed_date',
               'type'=>'index',
               'fields'=>array('date_entered',
                               'deleted',
                   )),
+        array('name' =>'idx_sgrfeed_rmod_rid_date',
+              'type' =>'index',
+              'fields'=>array('related_module', 'related_id', 'date_entered')
+        ),
     ),
 
 	'optimistic_lock'=>true,

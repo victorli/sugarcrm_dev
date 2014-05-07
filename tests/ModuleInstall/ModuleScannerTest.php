@@ -165,6 +165,84 @@ EOQ;
     }
 
     /**
+     * Bug 56717
+     *
+     * When ModuleScanner is enabled, handle bars templates are invalidating published
+     * package installation.
+     *
+     * @group bug56717
+     */
+    public function testBug56717ValidExtsAllowed() {
+        // Allowed file names
+        $allowed = array(
+            'php' => 'test.php',
+            'htm' => 'test.htm',
+            'xml' => 'test.xml',
+            'hbs' => 'test.hbs',
+            'config' => 'custom/config.php',
+        );
+
+        // Disallowed file names
+        $notAllowed = array(
+            'docx' => 'test.docx',
+            'docx(2)' => '../sugarcrm.xml/../sugarcrm/test.docx',
+            'java' => 'test.java',
+            'phtm' => 'test.phtm',
+            'md5' => 'files.md5',
+            'md5(2)' => '../sugarcrm/files.md5',
+
+        );
+
+        // Get our scanner
+        $ms = new ModuleScanner();
+
+        // Test valid
+        foreach ($allowed as $ext => $file) {
+            $valid = $ms->isValidExtension($file);
+            $this->assertTrue($valid, "The $ext extension should be valid on $file but the ModuleScanner is saying it is not");
+        }
+
+        // Test not valid
+        foreach ($notAllowed as $ext => $file) {
+            $valid = $ms->isValidExtension($file);
+            $this->assertFalse($valid, "The $ext extension should not be valid on $file but the ModuleScanner is saying it is");
+        }
+    }
+
+    public function testConfigChecks()
+    {
+            $isconfig = array(
+            'config.php',
+            'config_override.php',
+            'custom/../config_override.php',
+            'custom/.././config.php',
+            );
+
+        // Disallowed file names
+        $notconfig = array(
+            'custom/config.php',
+            'custom/modules/config.php',
+            'cache/config_override.php',
+            'modules/Module/config.php'
+        );
+
+        // Get our scanner
+        $ms = new ModuleScanner();
+
+        // Test valid
+        foreach ($isconfig as $file) {
+            $valid = $ms->isConfigFile($file);
+            $this->assertTrue($valid, "$file should be recognized as config file");
+        }
+
+        // Test not valid
+        foreach ($notconfig as $ext => $file) {
+            $valid = $ms->isConfigFile($file);
+            $this->assertFalse($valid, "$file should not be recognized as config file");
+        }
+    }
+
+    /**
      * @group bug58072
      */
 	public function testLockConfig()

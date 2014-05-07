@@ -84,7 +84,11 @@ function smarty_function_sugar_field($params, &$smarty)
     if(isset($params['field'])) {
         $params['vardef']['name'] = $params['field'];
     }
-   
+
+    if (isset($params['module'])) {
+        $displayParams['module'] = $params['module'];
+    }
+
     if (isset($params['call_back_function'])) {
         $displayParams['call_back_function'] = $params['call_back_function'];
     }

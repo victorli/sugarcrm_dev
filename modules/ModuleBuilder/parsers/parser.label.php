@@ -70,7 +70,26 @@ class ParserLabel extends ModuleBuilderParser
             return self::addLabels ( $language, $labels, $this->moduleName, "custom/modulebuilder/packages/{$this->packageName}/modules/{$this->moduleName}/language" ) ;
         } else
         {
-            return self::addLabels ( $language, $labels, $this->moduleName ) ;
+            $addLabelsResult = true;
+            $addExtLabelsResult = true;
+            $extLabels = array();
+            $extFile = "custom/modules/".$this->moduleName."/Ext/Language/".$language.".lang.ext.php";
+            if (is_file($extFile)) {
+                include($extFile);
+                foreach ($labels as $key=>$value) {
+                    if (isset($mod_strings[$key])) {
+                        $extLabels[$key] = $value;
+                        unset($labels[$key]);
+                    }
+                }
+            }
+            if (!empty($labels)) {
+                $addLabelsResult =  self::addLabels($language, $labels, $this->moduleName);
+            }
+            if (!empty($extLabels)) {
+                $addExtLabelsResult =  self::addLabels($language, $extLabels, $this->moduleName, null, true);
+            }
+            return $addLabelsResult && $addExtLabelsResult;
         }
     }
 

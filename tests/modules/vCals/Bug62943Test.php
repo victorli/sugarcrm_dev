@@ -38,44 +38,37 @@ class Bug62943Test extends Sugar_PHPUnit_Framework_TestCase
 		unset($GLOBALS['current_user']);
 	}
 
-	public function testiCalEscaping()
+    public function testiCalNewline()
 	{
 		$res = vCal::get_ical_event($this->_getDummyBean("http://www.sugarcrm.com/"), $GLOBALS['current_user']);
 
-		$desc = $this->_grabiCalField($res, "DESCRIPTION");
-
-		// Test to see if there are two newlines after url for description
-		$this->assertContains("http://www.sugarcrm.com/\\n\\n", $desc);
-
-		// Test description encoding
-		$this->assertContains("\\,", $desc);
-		$this->assertContains("\\n", $desc);
-		$this->assertContains("\\\\", $desc);
-		$this->assertContains("\\;", $desc);
-
-		$location = $this->_grabiCalField($res, "LOCATION");
-
-		// Test location encoding
-		$this->assertContains("\\,", $location);
-		$this->assertContains("\\;", $location);
+        $desc = $this->grabiCalField($res, "DESCRIPTION");
+        // Test to see if there are two newlines after url for description
+        $this->assertContains("http://www.sugarcrm.com/\r\n\r\n", $desc);
 	}
 
 	public function testiCalEmptyJoinURL()
 	{
 		$res = vCal::get_ical_event($this->_getDummyBean(), $GLOBALS['current_user']);
 
-		$desc = $this->_grabiCalField($res, "DESCRIPTION");
+        $desc = $this->grabiCalField($res, "DESCRIPTION");
 
 		// Test to see if there are no newlines for empty url for description
 		$this->assertNotContains("\\n\\n", $desc);
 	}
 
-	private function _grabiCalField($iCal, $field)
-	{
-		$ret = strstr($iCal, $field . ':');
-		$ret = substr($ret, 0, strpos($ret, "\n"));
-		return $ret;
-	}
+    private function grabiCalField($iCal, $field)
+    {
+        $ical_arr = vCal::create_ical_array_from_string($iCal);
+
+        foreach ($ical_arr as $ical_val) {
+            if ($ical_val[0] == $field) {
+                return $ical_val[1];
+            }
+        }
+
+        return "";
+    }
 
 	private function _getDummyBean($join_url = "")
 	{

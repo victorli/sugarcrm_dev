@@ -142,5 +142,12 @@ if (!isset($GLOBALS['check_notify'])) {
 $focus->save($GLOBALS['check_notify']);
 $return_id = $focus->id;
 
+if(!empty($_POST['is_ajax_call']))
+{
+	$json = getJSONobj();
+	echo $json->encode(array('status' => 'success', 'get' => ''));
+	exit;
+}
+
 handleRedirect($return_id,'Tasks');
 ?>

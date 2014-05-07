@@ -35,16 +35,21 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-// created: 2008-10-03 14:31:59
-$config = array (
-  'name' => 'LinkedIn&#169;',
-  'order' => 1,
-  'eapm' => array(
-    'enabled' => true,
-  ),
-  'properties' => 
-  array (
-    'company_url'=>'http://www.linkedin.com/companyInsider?script&useBorder=no',
-  ),
-);
+
+class TemplateLink extends TemplateText
+{
+    public $type = 'link';
+
+    /**
+     * get array of field's properties
+     *
+     * @return array
+     */
+    public function get_field_def()
+    {
+        $defs = parent::get_field_def();
+        $defs['source'] = 'non-db';
+        return $defs;
+    }
+}
 ?>

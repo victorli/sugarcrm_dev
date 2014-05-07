@@ -48,6 +48,7 @@ class SugarTestMeetingUtilities
         $name = 'Meeting';
         $meeting = new Meeting();
         $meeting->name = $name . $time;
+        $meeting->date_start = $GLOBALS['timedate']->getNow()->asDb();
         $meeting->duration_hours = '0';
         $meeting->duration_minutes = '15';
         if(!empty($id))

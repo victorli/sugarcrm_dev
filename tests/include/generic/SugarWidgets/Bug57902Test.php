@@ -48,6 +48,20 @@ require_once('include/generic/SugarWidgets/SugarWidgetReportField.php');
 class Bug57902Test extends Sugar_PHPUnit_Framework_TestCase
 {
 
+    public static function setUpBeforeClass()
+    {
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('current_user');
+
+
+	}
+
+	public static function tearDownAfterClass()
+	{
+        SugarTestHelper::tearDown();
+	}
+
     public static function dataProvider()
     {
         return array(
@@ -59,7 +73,7 @@ class Bug57902Test extends Sugar_PHPUnit_Framework_TestCase
                     'table_alias' => 'calls',
                     'table_key' => 'self'
                 ),
-                'calls__count ASC'
+                'calls__count'
             ),
             array(
                 array(
@@ -72,7 +86,7 @@ class Bug57902Test extends Sugar_PHPUnit_Framework_TestCase
                     'table_key' => 'self',
                     'type' => 'int'
                 ),
-                'calls_avg_duration_hours ASC'
+                'calls_avg_duration_hours'
             ),
             array(
                 array(
@@ -85,7 +99,7 @@ class Bug57902Test extends Sugar_PHPUnit_Framework_TestCase
                     'table_key' => 'self',
                     'type' => 'int'
                 ),
-                'calls_max_duration_hours ASC'
+                'calls_max_duration_hours'
             ),
             array(
                 array(
@@ -98,7 +112,7 @@ class Bug57902Test extends Sugar_PHPUnit_Framework_TestCase
                     'table_key' => 'self',
                     'type' => 'int'
                 ),
-                'calls_min_duration_hours ASC'
+                'calls_min_duration_hours'
             ),
             array(
                 array(
@@ -111,7 +125,7 @@ class Bug57902Test extends Sugar_PHPUnit_Framework_TestCase
                     'table_key' => 'self',
                     'type' => 'int'
                 ),
-                'calls_sum_duration_hours ASC'
+                'calls_sum_duration_hours'
             )
         );
 
@@ -127,10 +141,13 @@ class Bug57902Test extends Sugar_PHPUnit_Framework_TestCase
     public function testQueryOrderBy($layout_def, $expected)
     {
         $layoutManager = new LayoutManager();
+        $db = new stdClass();
+        $db->db = $GLOBALS['db'];
+        $layoutManager->setAttributePtr('reporter', $db);
         $sugarWidgetReportField = new SugarWidgetReportField($layoutManager);
 
         $actual = $sugarWidgetReportField->queryOrderBy($layout_def);
 
-        $this->assertEquals($expected, $actual, 'ORDER BY string is incorrect');
+        $this->assertContains($expected, $actual, 'ORDER BY statement uses wrong field');
     }
 }

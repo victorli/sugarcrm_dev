@@ -56,7 +56,7 @@ class SugarFieldFloat extends SugarFieldInt
     
     public function unformatField($formattedField, $vardef){
         if ( $formattedField === '' || $formattedField === NULL ) {
-            return '';
+            return null;
         }
         return (float)unformat_number($formattedField);
     }
@@ -80,6 +80,6 @@ class SugarFieldFloat extends SugarFieldInt
             return false;
         }
         
-        return $value;
+        return (float)$value;
     }
 }

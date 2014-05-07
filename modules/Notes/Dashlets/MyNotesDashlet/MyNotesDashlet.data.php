@@ -82,7 +82,7 @@ $dashletData['MyNotesDashlet']['columns'] = array (
 											      0 => 'parent_id',
 											      1 => 'parent_type',
 											    ),
-											  ),  
+											  ),
 											  'filename' => 
 											  array (
 											    'width' => '20%',

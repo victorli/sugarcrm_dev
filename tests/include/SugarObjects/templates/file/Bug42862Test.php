@@ -35,7 +35,17 @@
  ********************************************************************************/
 
  
-class Bug42862Test extends Sugar_PHPUnit_Framework_TestCase  {
+class Bug42862Test extends Sugar_PHPUnit_Framework_TestCase
+{
+    public function setUp()
+    {
+        SugarTestHelper::setUp('current_user');
+    }
+
+    public function tearDown()
+    {
+        SugarTestHelper::tearDown();
+    }
 
 public function testDefaultPublishDate()
 {

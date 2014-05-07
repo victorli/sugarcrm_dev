@@ -1,5 +1,4 @@
 <?php
-if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
@@ -35,24 +34,50 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * "Powered by SugarCRM".
  ********************************************************************************/
 
-/*********************************************************************************
 
-* Description:  Defines the English language pack for the base application.
-* Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
-* All Rights Reserved.
-* Contributor(s): ______________________________________..
-********************************************************************************/
+require_once 'modules/ProductCategories/ProductCategory.php';
 
-$connector_strings = array (
-    //licensing information shown in config screen
-    'LBL_LICENSING_INFO' => '<table border="0" cellspacing="1"><tr><td valign="top" width="35%" class="dataLabel">This is the URL for the Company Insider plug-in that is used to display LinkedIn&#169; company information. You will not need to change the URL unless LinkedIn&#169; changes the URL for the plug-in.</td></tr></table>',
+class SugarTestProductCategoryUtilities
+{
+    protected static $_createdProductCategories = array();
 
-    'LBL_NAME' => 'Company Name',
+    private function __construct() {}
 
-	//Configuration labels
-	'company_url' => 'URL',
-    'oauth_consumer_key' => 'API Key',
-    'oauth_consumer_secret' => 'Secret Key'
-);
+    public static function createProductCategory($id = '')
+    {
+        $time = mt_rand();
+        $name = 'SugarProductCategory';
+        $product = new ProductCategory();
+        $product->name = $name . $time;
+        if (!empty($id)) {
+            $product->new_with_id = true;
+            $product->id = $id;
+        }
+        $product->save();
+        self::$_createdProductCategories[] = $product;
+        return $product;
+    }
 
-?>
+    public static function setCreatedProductCategory($ids) {
+        foreach ($ids as $item_id) {
+            $item = new ProductCategory();
+            $item->id = $item_id;
+            self::$_createdProductCategories[] = $item;
+        }
+    }
+
+    public static function removeAllCreatedProductCategories()
+    {
+        $ids = self::getCreatedProductCategoriesIds();
+        $GLOBALS['db']->query('DELETE FROM product_categories WHERE id IN (\'' . implode("', '", $ids) . '\')');
+    }
+
+    public static function getCreatedProductCategoriesIds()
+    {
+        $ids = array();
+        foreach (self::$_createdProductCategories as $item) {
+            $ids[] = $item->id;
+        }
+        return $ids;
+    }
+}

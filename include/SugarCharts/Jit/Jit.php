@@ -51,6 +51,11 @@ class Jit extends JsChart {
 	function getChartResources() {
 		return '
 		<!--[if lt IE 9]>
+        <script>
+            window.FlashCanvasOptions = {
+                swfPath: "' . $GLOBALS['sugar_config']['site_url'] . '/include/SugarCharts/Jit/FlashCanvas/"
+            };
+        </script>
 		<script type="text/javascript" src="'.getJSPath('include/SugarCharts/Jit/FlashCanvas/flashcanvas.js').'"></script>
 		<![endif]-->
 		<script language="javascript" type="text/javascript" src="'.getJSPath('include/SugarCharts/Jit/js/Jit/jit.js').'"></script>

@@ -64,7 +64,6 @@ $viewdefs['Accounts']['DetailView'] = array(
                 'module' => 'Accounts',
                 'connectors' => 
                 array (
-                  0 => 'ext_rest_linkedin',
                 ),
             ),          
           ),

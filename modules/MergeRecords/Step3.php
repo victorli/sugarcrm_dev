@@ -208,6 +208,54 @@ foreach ($temp_field_array as $field_array) {
         $xtpl->assign("EDIT_FIELD_NAME", $field_array['name']);
         $xtpl->assign("TAB_INDEX", $field_count);
 
+
+        //check to see if the value of the field is from a function
+        $valueFormatted = false;
+        if(!empty($field_array['function'])){
+
+            //process the function array if it exists
+            $function = $field_array['function'];
+            if(is_array($function) && isset($function['name'])){
+                $function = $field_array['function']['name'];
+            }else{
+                $function = $field_array['function'];
+            }
+            if(!empty($field_array['function']['include']) && file_exists($field_array['function']['include']))
+            {
+                require_once($field_array['function']['include']);
+            }
+
+            //if field is enum or multi enum, lets make sure we are returning options as html, as this is what
+            //merge step3 expects
+            if($field_check == 'multienum' || $field_check == 'enum'){
+                if(!empty($field_array['function']['returns']) && $field_array['function']['returns'] == 'html'){
+
+                    //use valueformatted to hold the returned options
+                    $valueFormatted = call_user_func($function,  $focus->merge_bean, $field_array['name'], $select_row_curr_field_value, 'Import');
+
+                }else{
+                    //if no html was returned, we have an array of options, lets create the html markup
+                    $field_array['options'] = call_user_func($function);
+
+                    foreach( $field_array['options'] as $k=>$v){
+                        //process and mark the field as selected if needed
+                        if($field_check == 'enum' && $select_row_curr_field_value == $k){
+                            $valueFormatted .="<option value='$k' selected>$v</option>";
+                        }elseif($field_check == 'multienum' && !empty($k) && strpos($select_row_curr_field_value, $k) !== false){
+                            $valueFormatted .="<option value='$k' selected>$v</option>";
+                        }else{
+                            
+                            $valueFormatted .="<option value='$k'>$v</option>";
+                        }
+                    }
+                }
+
+            }else{
+            
+                $select_row_curr_field_value = call_user_func($function);
+            }
+        }
+
         switch ($field_check) {
             case ('name') :
             case ('varchar') :
@@ -231,13 +279,27 @@ foreach ($temp_field_array as $field_array) {
                 $xtpl->parse("main.".$section_name.".merge_cell_edit_textarea");
                 break;
             case ('enum') :
-                $xtpl->assign("SELECT_OPTIONS", get_select_options_with_id($app_list_strings[$field_array['options']], $select_row_curr_field_value));
+
+                //assign value(s) directly if it is derived from a function
+                if(empty($field_array['function'])){
+                    $xtpl->assign("SELECT_OPTIONS", get_select_options_with_id($app_list_strings[$field_array['options']], $select_row_curr_field_value));
+                }elseif(is_string($valueFormatted)){
+                    //if this field has a function, then assign values directly
+                    $xtpl->assign("SELECT_OPTIONS", $valueFormatted);
+                }
                 $xtpl->assign("CELL_WIDTH",$col_width);
                 $xtpl->parse("main.".$section_name.".merge_cell_edit_dropdown");
                 break;
             case ('multienum') :
-                $select_row_curr_field_value = unencodeMultienum($select_row_curr_field_value);
-                $xtpl->assign("SELECT_OPTIONS", get_select_options_with_id($app_list_strings[$field_array['options']], $select_row_curr_field_value));
+
+                //assign value(s) directly if it is derived from a function
+                if(empty($field_array['function'])){
+                    $select_row_curr_field_value = unencodeMultienum($select_row_curr_field_value);
+                    $xtpl->assign("SELECT_OPTIONS", get_select_options_with_id($app_list_strings[$field_array['options']], $select_row_curr_field_value));
+                }elseif(is_string($valueFormatted)){
+                    $xtpl->assign("SELECT_OPTIONS", $valueFormatted);
+                }
+
                 $xtpl->assign("CELL_WIDTH",$col_width);
                 $xtpl->parse("main.".$section_name.".merge_cell_edit_multidropdown");
                 break;
@@ -316,7 +378,11 @@ foreach ($temp_field_array as $field_array) {
                     $field_name="main.".$section_name.".merge_cell_field_value_checkbox";
                     break;
                 case ('enum') :
-                    if ($mergeBeanArray[$id]-> $field_array['name'] != '' and isset($field_array['options']) and isset($app_list_strings[$field_array['options']][$mergeBeanArray[$id]-> $field_array['name']])) {
+                    if(!empty($field_array['function']) && !empty($field_array['options']) && !empty($mergeBeanArray[$id]-> $field_array['name'])){
+                        //if fieldoptions were set from a function, get the value directly
+                        display_field_value($field_array['options'][$mergeBeanArray[$id]-> $field_array['name']]);
+                    
+                    }else if ($mergeBeanArray[$id]-> $field_array['name'] != '' and isset($field_array['options']) and isset($app_list_strings[$field_array['options']][$mergeBeanArray[$id]-> $field_array['name']])) {
                         display_field_value( $app_list_strings[$field_array['options']][$mergeBeanArray[$id]-> $field_array['name']]);
                     } else {
                         display_field_value($mergeBeanArray[$id]-> $field_array['name']);
@@ -324,7 +390,17 @@ foreach ($temp_field_array as $field_array) {
                     $field_name="main.".$section_name.".merge_cell_field_value";
                     break;
                 case ('multienum') :
-                    if ($mergeBeanArray[$id]-> $field_array['name'] != '' and isset($field_array['options']) and isset($app_list_strings[$field_array['options']][$mergeBeanArray[$id]-> $field_array['name']])) {
+                     if(!empty($field_array['function']) && !empty($field_array['options']) && !empty($mergeBeanArray[$id]-> $field_array['name'])){
+                        //if fieldoptions were set from a function, get the value directly
+                        $displayME = str_replace("^","",$mergeBeanArray[$id]-> $field_array['name']);
+                        $meVals = explode(',', $displayME);
+                        //iterate through each entry and get the Options value
+                        foreach($meVals as $optionIndex){
+                            $displayME = str_replace($optionIndex,$field_array['options'][$optionIndex],$displayME);
+                        }
+                        display_field_value($displayME);
+
+                    }else if ($mergeBeanArray[$id]-> $field_array['name'] != '' and isset($field_array['options']) and isset($app_list_strings[$field_array['options']][$mergeBeanArray[$id]-> $field_array['name']])) {
                         display_field_value(str_replace("^","",$app_list_strings[$field_array['options']][$mergeBeanArray[$id]-> $field_array['name']]));
                     } else {
                         display_field_value(str_replace("^","",$mergeBeanArray[$id]-> $field_array['name']));
