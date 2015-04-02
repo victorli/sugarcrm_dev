@@ -40,6 +40,10 @@ if (!isset($_SESSION['SHOW_DUPLICATES']))
 // retrieve $_POST values out of the $_SESSION variable - placed in there by ContactFormBase to avoid the length limitations on URLs implicit with GETS
 //$GLOBALS['log']->debug('ShowDuplicates.php: _POST = '.print_r($_SESSION['SHOW_DUPLICATES'],true));
 parse_str($_SESSION['SHOW_DUPLICATES'],$_POST);
+$post = array_map("securexss", $_POST);
+foreach ($post as $k => $v) {
+    $_POST[$k] = $v;
+}
 unset($_SESSION['SHOW_DUPLICATES']);
 //$GLOBALS['log']->debug('ShowDuplicates.php: _POST = '.print_r($_POST,true));
 
@@ -73,13 +77,13 @@ $GLOBALS['check_notify'] = FALSE;
 
 
 $query = 'select id, first_name, last_name, title from contacts where deleted=0 ';
-$duplicates = $_POST['duplicate']; 
+$duplicates = $_POST['duplicate'];
 $count = count($duplicates);
 if ($count > 0)
 {
 	$query .= "and (";
-	$first = true; 
-	foreach ($duplicates as $duplicate_id) 
+	$first = true;
+	foreach ($duplicates as $duplicate_id)
 	{
 		if (!$first) $query .= ' OR ';
 		$first = false;
@@ -102,14 +106,14 @@ $xtpl->assign('FORMBODY', $contactForm->buildTableForm($duplicateContacts));
 
 $input = '';
 foreach ($contact->column_fields as $field)
-{	
+{
 	if (!empty($_POST['Contacts'.$field])) {
 		$input .= "<input type='hidden' name='$field' value='${_POST['Contacts'.$field]}'>\n";
 	}
 }
 
 foreach ($contact->additional_column_fields as $field)
-{	
+{
 	if (!empty($_POST['Contacts'.$field])) {
 		$input .= "<input type='hidden' name='$field' value='${_POST['Contacts'.$field]}'>\n";
 	}
@@ -138,31 +142,31 @@ else $get .= "DetailView";
 ////	INBOUND EMAIL WORKFLOW
 if(isset($_REQUEST['inbound_email_id'])) {
 	$xtpl->assign('INBOUND_EMAIL_ID', $_REQUEST['inbound_email_id']);
-	$xtpl->assign('RETURN_MODULE', 'Emails');	
+	$xtpl->assign('RETURN_MODULE', 'Emails');
 	$xtpl->assign('RETURN_ACTION', 'EditView');
 	if(isset($_REQUEST['start'])) {
 		$xtpl->assign('START', $_REQUEST['start']);
 	}
-		
+
 }
 ////	END INBOUND EMAIL WORKFLOW
 ///////////////////////////////////////////////////////////////////////////////
 
 
 
-if(!empty($_POST['popup'])) 
+if(!empty($_POST['popup']))
 	$input .= '<input type="hidden" name="popup" value="'.$_POST['popup'].'">';
-else 
+else
 	$input .= '<input type="hidden" name="popup" value="false">';
 
-if(!empty($_POST['to_pdf'])) 
+if(!empty($_POST['to_pdf']))
 	$input .= '<input type="hidden" name="to_pdf" value="'.$_POST['to_pdf'].'">';
-else 
+else
 	$input .= '<input type="hidden" name="to_pdf" value="false">';
-	
-if(!empty($_POST['create'])) 
+
+if(!empty($_POST['create']))
 	$input .= '<input type="hidden" name="create" value="'.$_POST['create'].'">';
-else 
+else
 	$input .= '<input type="hidden" name="create" value="false">';
 
 if(!empty($_POST['return_id'])) $xtpl->assign('RETURN_ID', $_POST['return_id']);

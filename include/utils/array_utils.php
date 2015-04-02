@@ -97,9 +97,10 @@ function override_recursive_helper($key_names, $array_name, $value){
 }
 
 function override_value_to_string_recursive2($array_name, $value_name, $value, $save_empty = true) {
+    $quoted_vname = var_export($value_name, true);
 	if (is_array($value)) {
 		$str = '';
-		$newArrayName = $array_name . "['$value_name']";
+        $newArrayName = $array_name . "[$quoted_vname]";
 		foreach($value as $key=>$val) {
 			$str.= override_value_to_string_recursive2($newArrayName, $key, $val, $save_empty);
 		}
@@ -108,7 +109,7 @@ function override_value_to_string_recursive2($array_name, $value_name, $value, $
 		if(!$save_empty && empty($value)){
 			return;
 		}else{
-			return "\$$array_name" . "['$value_name'] = " . var_export($value, true) . ";\n";
+            return "\$$array_name" . "[$quoted_vname] = " . var_export($value, true) . ";\n";
 		}
 	}
 }
@@ -290,4 +291,3 @@ class SugarArray extends ArrayObject
     }
 }
 
-?>

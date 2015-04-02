@@ -71,5 +71,6 @@ $entry_point_registry = array(
     'getYUIComboFile' => array('file' => 'include/javascript/getYUIComboFile.php', 'auth' => false),
     'UploadFileCheck' => array('file' => 'modules/Configurator/UploadFileCheck.php', 'auth' => true),
     'SAML'=>  array('file' => 'modules/Users/authentication/SAMLAuthenticate/index.php', 'auth' => false),
+    'jslang'=> array('file' => 'include/language/getJSLanguage.php', 'auth' => true),
 );
 ?>

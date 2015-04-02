@@ -36,10 +36,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
-if(!is_admin($GLOBALS['current_user'])){
-	sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);
-}
 require_once('modules/Administration/UpgradeWizardCommon.php');
 require_once('ModuleInstall/PackageManager/PackageManagerDisplay.php');
 require_once('ModuleInstall/ModuleScanner.php');

@@ -36,7 +36,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 
 
-
+if (!is_admin($GLOBALS['current_user'])) {
+    sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);
+}
 
 require_once('include/utils/db_utils.php');
 require_once('include/utils/zip_utils.php');
@@ -244,5 +246,3 @@ function getDiffFiles($unzip_dir, $install_file, $is_install = true, $previous_v
 	}//fi
 	return $modified_files;
 }
-
-?>

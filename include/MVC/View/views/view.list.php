@@ -84,11 +84,11 @@ class ViewList extends SugarView{
                 foreach($current_query_by_page as $search_key=>$search_value) {
                     if($search_key != $module.'2_'.strtoupper($this->bean->object_name).'_offset' && !in_array($search_key, $blockVariables)) {
                         if (!is_array($search_value)) {
-                            $_REQUEST[$search_key] = $GLOBALS['db']->quote($search_value);
+                            $_REQUEST[$search_key] = securexss($search_value);
                         }
                         else {
                             foreach ($search_value as $key=>&$val) {
-                                $val = $GLOBALS['db']->quote($val);
+                                $val = securexss($val);
                             }
                             $_REQUEST[$search_key] = $search_value;
                         }

@@ -72,7 +72,12 @@ class SAMLAuthenticateUser extends SugarAuthenticateUser{
 		require_once('modules/Users/authentication/SAMLAuthenticate/lib/onelogin/saml.php');
         require(get_custom_file_if_exists('modules/Users/authentication/SAMLAuthenticate/settings.php'));
 
-        $samlresponse = new SamlResponse($settings, $_POST['SAMLResponse']);
+        try {
+            $samlresponse = new SamlResponse($settings, $_POST['SAMLResponse']);
+        } catch (Exception $e) {
+            $GLOBALS['log']->error("Unexpected exception: " . $e->getMessage());
+            return '';
+        }
 
 		if ($samlresponse->is_valid()){
 			$GLOBALS['log']->debug('response is valid');
