@@ -44,6 +44,8 @@ global $sugar_config;
 $ignoreCase = (substr_count(strtolower($_SERVER['SERVER_SOFTWARE']), 'apache/2') > 0)?'(?i)':'';
 $htaccess_file   = getcwd() . "/.htaccess";
 $contents = '';
+$basePath = parse_url($sugar_config['site_url'], PHP_URL_PATH);
+if(empty($basePath)) $basePath = '/';
 
 $restrict_str = <<<EOQ
 # BEGIN SUGARCRM RESTRICTIONS
@@ -54,6 +56,13 @@ RedirectMatch 403 {$ignoreCase}/+emailmandelivery\.php
 RedirectMatch 403 {$ignoreCase}/+upload
 RedirectMatch 403 {$ignoreCase}/+cache/+diagnostic
 RedirectMatch 403 {$ignoreCase}/+files\.md5\$
+<IfModule mod_rewrite.c>
+    Options +FollowSymLinks
+    RewriteEngine On
+    RewriteBase {$basePath}
+    RewriteRule ^cache/jsLanguage/(.._..).js$ index.php?entryPoint=jslang&module=app_strings&lang=$1 [L,QSA]
+    RewriteRule ^cache/jsLanguage/(\w*)/(.._..).js$ index.php?entryPoint=jslang&module=$1&lang=$2 [L,QSA]
+</IfModule>
 # END SUGARCRM RESTRICTIONS
 EOQ;
 

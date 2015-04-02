@@ -1,8 +1,8 @@
 <?php
-// created: 2014-11-19 14:49:43
+// created: 2014-12-02 15:49:56
 $md5_string = array (
   './LICENSE' => 'd3f150e4a5bed444763ebe8a81742a95',
-  './sugar_version.json' => 'd89829ab843fae93c14570a04bbe7a48',
+  './sugar_version.json' => '6f644dbc844a77b2cc6ebfc5436c04e8',
   './.htaccess' => 'd41d8cd98f00b204e9800998ecf8427e',
   './config_override.php' => 'd41d8cd98f00b204e9800998ecf8427e',
   './config.php' => 'd41d8cd98f00b204e9800998ecf8427e',
@@ -5068,7 +5068,7 @@ $md5_string = array (
   './modules/Administration/RebuildAudit.php' => 'dc319d489e62622ca92c55a90417df78',
   './modules/Administration/Updater.html' => 'aa678db329bc0799f6f17b21ce3a19d7',
   './modules/Administration/Diagnostic.tpl' => '4ee2b91556ae6e01afd9ab4fa87bf3ca',
-  './modules/Administration/UpgradeAccess.php' => '72e105aceb518969714c594ffd6934ad',
+  './modules/Administration/UpgradeAccess.php' => '363cb81b9c82fa609d992e403e2341cc',
   './modules/Administration/Development.php' => '0c1acca9461db023b9e2963f28cc3b8d',
   './modules/Administration/RepairIE.php' => 'bfbffdeaadc940821724c696fca2e88f',
   './modules/Administration/templates/RepairXSS.tpl' => '6302d76f3bf9d259d6331cb141f61c63',
@@ -5351,7 +5351,7 @@ $md5_string = array (
   './metadata/prospect_lists_prospectsMetaData.php' => '7e3faa998b4fab3e2235775744413cc9',
   './metadata/inboundEmail_autoreplyMetaData.php' => 'a48873b7d72942a2ce8c75519e210ebd',
   './metadata/acl_roles_actionsMetaData.php' => '4d6ecdbf5b06104a468ec955616121e3',
-  './sugar_version.php' => 'd26c5a9d4ff5847d8fdfea08e66d0190',
+  './sugar_version.php' => '376769cf33724de7336d0b05b3e6e935',
   './cron.php' => 'a130498059ba9e03ad8c32a9cc79faca',
   './log4php/LoggerManager.php' => 'fa34194306cd50c01b71d8d5060ee362',
   './TreeData.php' => '261ed723f457b1fabd1c33ae230120e4',
