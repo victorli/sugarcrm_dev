@@ -1,14 +1,39 @@
 <?php
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
 
 require_once 'include/TimeDate.php';
 
@@ -24,7 +49,7 @@ class TimeDateTest extends Sugar_PHPUnit_Framework_TestCase
 	public static function setUpBeforeClass()
 	{
 	    unset($GLOBALS['disable_date_format']);
-        SugarTestHelper::setUp('current_user');
+        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
 	}
 
 	public function setUp()
@@ -42,7 +67,8 @@ class TimeDateTest extends Sugar_PHPUnit_Framework_TestCase
 
 	public static function tearDownAfterClass()
 	{
-        SugarTestHelper::tearDown();
+	    SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        unset($GLOBALS['current_user']);
 	}
 
 	public function dateTestSet()
@@ -910,186 +936,4 @@ class TimeDateTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEquals($start, $daterage[0]->format(TimeDate::DB_DATETIME_FORMAT), 'Start date is wrong');
         $this->assertEquals($end, $daterage[1]->format(TimeDate::DB_DATETIME_FORMAT), 'End date is wrong');
 	}
-
-	public function isoDateTimeTestSet()
-	{
-	    return array(
-    		// with offset
-    		array("input" => '2012-12-12T10:35:15-0700', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Boise',),
-    		array("input" => '2012-12-12T09:35:15-0800', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Los_Angeles',),
-    		array("input" => '2012-12-12T17:35:15-0000', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'Europe/London',),
-    		array("input" => '2012-12-12T17:35:15+0000', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'Europe/London',),
-    		array("input" => '2012-12-12T17:35:15Z',     "dbdate" => "2012-12-12 17:35:15", 'tz' => 'Europe/London',),
-    		array("input" => '2012-12-12T19:35:15+0200', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'Europe/Helsinki',),
-            // with offset in permissible but "strange" formats
-    		array("input" => '2012-12-12T10:35:15.1234-0700', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Boise',),
-    		array("input" => '20121212T103515-0700', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Boise',),
-    		array("input" => '20121212T103515.5678-0700', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Boise',),
-    		array("input" => '20121212T10:35:15-0700', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Boise',),
-    		array("input" => '2012-12-12T103515-0700', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Boise',),
-            // without offset
-    		array("input" => '2012-12-12T10:35:15', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Boise',),
-    		array("input" => '2012-12-12T09:35:15', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Los_Angeles',),
-    		array("input" => '2012-12-12T17:35:15', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'Europe/London',),
-    		array("input" => '2012-12-12T19:35:15', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'Europe/Helsinki',),
-            // without offset in permissible but "strange" formats
-    		array("input" => '2012-12-12T10:35:15.1234', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Boise',),
-    		array("input" => '20121212T103515', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Boise',),
-    		array("input" => '20121212T103515.1234', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Boise',),
-    		array("input" => '20121212T10:35:15', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Boise',),
-    		array("input" => '2012-12-12T103515', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Boise',),
-        );
-	}
-
-    /**
-     * @dataProvider isoDateTimeTestSet
-     */
-    public function testFromIso($input, $dbdate, $tz)
-    {
-        $this->_setPrefs('d/m/Y', 'h:i:sA', $tz);
-        
-        $timeDate = new TimeDate();
-
-        $dateTime = $timeDate->fromIso($input);
-        $this->assertEquals($dbdate,$timeDate->asDb($dateTime));
-    }
-
-	public function isoDateTimeReverseTestSet()
-	{
-	    return array(
-    		array("output" => '2012-12-12T10:35:15-07:00', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Boise',),
-    		array("output" => '2012-12-12T09:35:15-08:00', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'America/Los_Angeles',),
-    		array("output" => '2012-12-12T17:35:15+00:00', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'Europe/London',),
-    		array("output" => '2012-12-12T19:35:15+02:00', "dbdate" => "2012-12-12 17:35:15", 'tz' => 'Europe/Helsinki',),
-        );
-	}
-
-    /**
-     * @dataProvider isoDateTimeReverseTestSet
-     */
-
-    public function testAsIso($output, $dbdate, $tz)
-    {
-        $this->_setPrefs('d/m/Y', 'h:i:sA', $tz);
-        
-        $timeDate = new TimeDate();
-
-        $dateTime = $timeDate->fromDb($dbdate);
-        $outTime = $timeDate->asIso($dateTime);
-        $this->assertEquals($output,$outTime);
-        $this->assertEquals($dbdate,$timeDate->asDb($dateTime));
-    }
-
-    
-    /**
-     * @dataProvider isoDateTimeReverseTestSet
-     */
-    public function testAsIsoWithOptions($output, $dbdate, $tz)
-    {
-        $this->_setPrefs('d/m/Y', 'h:i:sA', $tz);
-        
-        $timeDate = new TimeDate();
-
-        $dateTime = $timeDate->fromDb($dbdate);
-        $outTime = $timeDate->asIso($dateTime, null, array('stripTZColon' => true));
-        $c = substr($outTime, -3, 1);
-        $this->assertNotEquals(':', $c);
-        $outTime = $timeDate->asIso($dateTime, null, array('stripTZColon' => false));
-        $c = substr($outTime, -3, 1);
-        $this->assertEquals(':',$c);
-    }
-
-    public function testAsDbDefaultsToSettingGMT()
-    {
-        $dateMock = $this->getMock('DateTime', array('setTimezone', 'format'));
-        $dateMock->expects($this->once())
-            ->method('setTimezone');
-        $dateMock->expects($this->once())
-            ->method('format');
-        $this->time_date->asDb($dateMock, true);
-    }
-
-    public function testAsDbDontSetGMT()
-    {
-        $dateMock = $this->getMock('DateTime', array('setTimezone', 'format'));
-        $dateMock->expects($this->never())//dont set GMT
-            ->method('setTimezone');
-        $dateMock->expects($this->once())
-            ->method('format');
-        $this->time_date->asDb($dateMock, false);
-    }
-
-    /**
-     * asDbType should process correct params to asDb, asDbDate and asDbtime
-     *
-     * @param string $type any type
-     * @param int $value offset in secods
-     * @param bool $GMT flag of GMT offset
-     * @param string $method name of expected method
-     * @dataProvider getDataForTestAsDbType
-     */
-    public function testAsDbType($type, $value, $GMT, $method)
-    {
-        $value = new DateTime('+' . $value . ' seconds');
-        /** @var TimeDate $timeDate */
-        $timeDate = $this->getMock('TimeDate', array($method));
-        if (isset($GMT)) {
-            $timeDate->expects($this->once())->method($method)->with($this->equalTo($value), $this->equalTo($GMT));
-        } else {
-            $timeDate->expects($this->once())->method($method)->with($this->equalTo($value));
-        }
-
-        $timeDate->asDbType($value, $type, $GMT);
-    }
-
-    /**
-     * Data provider for testAsDbType
-     * @return array
-     */
-    public static function getDataForTestAsDbType()
-    {
-        return array(
-            array('date', 1, false, 'asDbDate'),
-            array('time', 2, null, 'asDbtime'),
-            array('datetime', 3, false, 'asDb'),
-            array('datetimecombo', 4, false, 'asDb'),
-            array('other', 5, false, 'asDb'),
-
-            array('date', 6, true, 'asDbDate'),
-            array('datetime', 7, true, 'asDb'),
-            array('datetimecombo', 8, true, 'asDb'),
-            array('other', 9, true, 'asDb'),
-        );
-    }
-
-    /**
-     * Test fromUserType()
-     *
-     * @dataProvider fromUserTypeDataProvider
-     */
-    public function testFromUserType($date, $type, $user, $timezone, $expected, $function, $dateFormat)
-    {
-        $this->_setPrefs($dateFormat, "H:i:s", "GMT");
-
-        $GLOBALS['current_user']->setPreference('timezone', $timezone);
-
-        $value = $this->time_date->fromUserType($date, $type, $user);
-
-        $this->assertContains($expected, $value->$function());
-    }
-
-    public static function fromUserTypeDataProvider()
-    {
-        return array(
-            array(
-                '2014-01-01 09:00:00', 'date', null, 'Pacific/Kwajalein', '2013-12-31', 'asDbDate', 'Y-m-d H:i:s'
-            ),
-            array(
-                '2014-01-01 12:12:12', 'datetime', null, 'America/Denver', '2014-01-01 19:12:12', 'asDb', 'Y-m-d'
-            ),
-            array(
-                '12:12:12', 'time', null, 'GMT', '12:12:12', 'asDb', 'Y-m-d'
-            ),
-        );
-    }
 }

@@ -1,14 +1,39 @@
 <?php
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
 require_once 'include/Dashlets/Dashlet.php';
 
 /**
@@ -136,7 +161,7 @@ class DashletAutoRefreshTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEmpty($dashlet->processAutoRefresh());
     }
     
-    public function testProcessAutoRefreshReturnsNothingIfAutoRefreshingIsDisabled()
+    public function testProcessAutoRefreshReturnsNothingIfSystemLevelAutoRefreshingIsDisabled()
     {
         $dashlet = new DashletAutoRefreshTestMock('unit_test_run');
         $GLOBALS['sugar_config']['dashlet_auto_refresh_min'] = -1;
@@ -146,6 +171,33 @@ class DashletAutoRefreshTest extends Sugar_PHPUnit_Framework_TestCase
         $dashlet->seedBean->object_name = 'unit_test';
         
         $this->assertEmpty($dashlet->processAutoRefresh());
+    }
+
+    /**
+     * Tests whether dashlet ignores system settings if user disables auto refresh.
+     * @bug 52331
+     * @dataProvider refreshCases
+     * @param int $systemValue
+     * @param int $dashletValue
+     * @param int $forceSystemValue
+     */
+    public function testAllowAutoRefresh($systemValue, $dashletValue, $forceSystemValue)
+    {
+        $dashlet = new DashletAutoRefreshTestMock('unit_test_run');
+        $GLOBALS['sugar_config']['dashlet_auto_refresh_min'] = $systemValue;
+        $dashlet->autoRefresh = $dashletValue;
+
+        $this->assertEquals($forceSystemValue, $dashlet->getAutoRefresh());
+    }
+
+    public function refreshCases()
+    {
+        return array(
+            array(20, null, 0),
+            array(20, 10, 20000),
+            array(10, 20, 20000),
+            array(20, -1, 0)
+        );
     }
 }
 
@@ -164,5 +216,10 @@ class DashletAutoRefreshTestMock extends Dashlet
     public function processAutoRefresh() 
     {
         return parent::processAutoRefresh();
+    }
+
+    public function getAutoRefresh()
+    {
+        return parent::getAutoRefresh();
     }
 }

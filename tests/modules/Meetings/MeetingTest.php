@@ -1,231 +1,111 @@
-<?php
+<?php 
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
 
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
-
-require_once 'modules/Meetings/Meeting.php';
-require_once 'modules/Meetings/MeetingFormBase.php';
-require_once 'modules/Activities/EmailReminder.php';
-require_once 'include/externalAPI/ExternalAPIFactory.php';
-
+ 
+require_once('modules/Meetings/Meeting.php');
 
 class MeetingTest extends Sugar_PHPUnit_Framework_TestCase
 {
-    public $meeting = null;
-    public $contact = null;
-    public $lead = null;
-
-    protected function setUp()
+	var $meeting = null;
+	
+	public function setUp()
     {
-        global $current_user;
-        $current_user = SugarTestUserUtilities::createAnonymousUser();
-        SugarTestHelper::setUp("app_list_strings");
+        global $current_user, $currentModule ;
+		$mod_strings = return_module_language($GLOBALS['current_language'], "Meetings");
+		$current_user = SugarTestUserUtilities::createAnonymousUser();
 
-        $meeting = BeanFactory::newBean('Meetings');
+		$meeting = new Meeting();
+		$meeting->id = uniqid();
         $meeting->name = 'Test Meeting';
-        $meeting->assigned_user_id = $current_user->id;
         $meeting->save();
-        $this->meeting = $meeting;
-
-        $contact = BeanFactory::newBean('Contacts');
-        $contact->first_name = 'MeetingTest';
-        $contact->last_name = 'Contact';
-        $contact->save();
-        $this->contact = $contact;
-
-        $lead = BeanFactory::newBean('Leads');
-        $lead->first_name = 'MeetingTest';
-        $lead->last_name = 'Lead';
-        $lead->account_name = 'MeetingTest Lead Account';
-        $lead->save();
-        $this->lead = $lead;
-    }
-
-    protected function tearDown()
+		$this->meeting = $meeting;
+	}
+	
+    public function tearDown()
     {
-        SugarTestMeetingUtilities::removeMeetingUsers();
-        SugarTestMeetingUtilities::removeMeetingContacts();
-        SugarTestMeetingUtilities::removeAllCreatedMeetings();
-        SugarTestContactUtilities::removeAllCreatedContacts();
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset($GLOBALS['current_user']);
         unset($GLOBALS['mod_strings']);
-
+        
         $GLOBALS['db']->query("DELETE FROM meetings WHERE id = '{$this->meeting->id}'");
         unset($this->meeting);
-
-        $GLOBALS['db']->query("DELETE FROM contacts WHERE id = '{$this->contact->id}'");
-        unset($this->contact);
-
-        $GLOBALS['db']->query("DELETE FROM leads WHERE id = '{$this->lead->id}'");
-        unset($this->lead);
-
-        SugarTestHelper::tearDown();
     }
+	
+	function testMeetingTypeSaveDefault() {
+		// Assert doc type default is 'Sugar'
+    	$this->assertEquals($this->meeting->type, 'Sugar');
+	}
 
-    public function testMeetingTypeSaveDefault()
-    {
-        // Assert doc type default is 'Sugar'
-        $this->assertEquals($this->meeting->type, 'Sugar');
-    }
-
-    public function testMeetingTypeSaveDefaultInDb()
-    {
+    function testMeetingTypeSaveDefaultInDb() {
         $query = "SELECT * FROM meetings WHERE id = '{$this->meeting->id}'";
         $result = $GLOBALS['db']->query($query);
-        while ($row = $GLOBALS['db']->fetchByAssoc($result)) {
-            // Assert doc type default is 'Sugar'
-            $this->assertEquals($row['type'], 'Sugar');
-        }
-    }
+    	while($row = $GLOBALS['db']->fetchByAssoc($result))
+		// Assert doc type default is 'Sugar'
+    	$this->assertEquals($row['type'], 'Sugar');
+	}
+	
+	function testRecurringFromOutlook(){
+		$meeting = new Meeting();
+		$meeting->id = uniqid();
+		$meeting->name = 'Test Meeting Recurring';
+		
+		$meeting->recurring_source = 'Outlook';
+        // can't edit
+		$this->assertFalse($meeting->ACLAccess('edit'));
+		
+		$meeting->recurring_source = '';
+		// can edit
+		$this->assertTrue($meeting->ACLAccess('edit'));
+	}
+	
+	function testEmailReminder(){
+		$meeting = new Meeting();
+		$meeting->email_reminder_time = "20";
+		$meeting->name = 'Test Email Reminder';
+		$meeting->status = "Planned";
+		$meeting->date_start = $GLOBALS['timedate']->nowDb();
+		$meeting->save();
+		
+		require_once("modules/Activities/EmailReminder.php");
+		$er = new EmailReminder();
+		$to_remind = $er->getMeetingsForRemind();
 
-    public function testEmailReminder()
-    {
-        global $current_user;
-        $meeting = new Meeting();
-        $meeting->email_reminder_time = "20";
-        $meeting->name = 'Test Email Reminder';
-        $meeting->assigned_user_id = $current_user->id;
-        $meeting->status = "Planned";
-        $meeting->date_start = $GLOBALS['timedate']->nowDb();
-        $meeting->save();
+		$this->assertTrue(in_array($meeting->id,$to_remind));
+		$GLOBALS['db']->query("DELETE FROM meetings WHERE id = '{$meeting->id}'");
+	}
 
-        $er = new EmailReminder();
-        $to_remind = $er->getMeetingsForRemind();
-
-        $this->assertTrue(in_array($meeting->id, $to_remind));
-        $GLOBALS['db']->query("DELETE FROM meetings WHERE id = '{$meeting->id}'");
-    }
-
-    public function testMeetingFormBaseRelationshipsSetTest()
-    {
-        global $db;
-        // setup $_POST
-        $_POST = array();
-        $_POST['name'] = 'MeetingTestMeeting';
-        $_POST['lead_invitees'] = $this->lead->id;
-        $_POST['contact_invitees'] = $this->contact->id;
-        $_POST['assigned_user_id'] = $GLOBALS['current_user']->id;
-        $_POST['date_start'] = date('Y-m-d H:i:s');
-        // call handleSave
-        $mfb = new MeetingFormBase();
-        $meeting = $mfb->handleSave(null, false, false);
-        // verify the relationships exist
-        $q = "SELECT mu.contact_id FROM meetings_contacts mu WHERE mu.meeting_id = '{$meeting->id}'";
-        $r = $db->query($q);
-        $a = $db->fetchByAssoc($r);
-        $this->assertEquals($this->contact->id, $a['contact_id'], "Contact wasn't set as an invitee");
-
-        $q = "SELECT mu.lead_id FROM meetings_leads mu WHERE mu.meeting_id = '{$meeting->id}'";
-        $r = $db->query($q);
-        $a = $db->fetchByAssoc($r);
-        $this->assertEquals($this->lead->id, $a['lead_id'], "Lead wasn't set as an invitee");
-
-        $q = "SELECT mu.accept_status
-              FROM meetings_users mu WHERE mu.meeting_id = '{$meeting->id}' AND user_id = '{$GLOBALS['current_user']->id}'";
-        $r = $db->query($q);
-        $a = $db->fetchByAssoc($r);
-        $this->assertEquals('accept', $a['accept_status'], "Meeting wasn't accepted by the User");
-
-
-    }
-
-    public function testLoadFromRow()
-    {
-        /** @var Meeting $meeting */
-        $meeting = BeanFactory::getBean('Meetings');
-        $this->assertEmpty($meeting->reminder_checked);
-        $this->assertEmpty($meeting->email_reminder_checked);
-
-        $meeting->loadFromRow(array(
-            'reminder_time' => 30,
-            'email_reminder_time' => 30,
-        ));
-
-        $this->assertTrue($meeting->reminder_checked);
-        $this->assertTrue($meeting->email_reminder_checked);
-    }
-
-    public function testGetMeetingsExternalApiDropDown_NoCachedValues_ReturnsExternalAPIResults()
-    {
-        sugar_cache_clear('meetings_type_drop_down');
-        //no way to mock out ExternalAPIFactory, so just using the value returned, likely empty array
-        $expected = ExternalAPIFactory::getModuleDropDown('Meetings');
-        $expected = array_merge(array('Sugar' => 'Sugar'), $expected);
-        $actual = getMeetingsExternalApiDropDown();
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testGetMeetingsExternalApiDropDown_WithCachedValues_ReturnsCachedValues()
-    {
-        $cachedValues = array('Cached' => 'Cached');
-        sugar_cache_put('meetings_type_drop_down', $cachedValues);
-        $actual = getMeetingsExternalApiDropDown();
-        $this->assertEquals($cachedValues, $actual);
-    }
-
-    public function testGetMeetingsExternalApiDropDown_WithValuePassed_AppendValueToList()
-    {
-        $passedValue = 'PassedIn';
-        $cachedValues = array('Cached' => 'Cached');
-        sugar_cache_put('meetings_type_drop_down', $cachedValues);
-        $expected = array_merge($cachedValues, array($passedValue => $passedValue));
-        $actual = getMeetingsExternalApiDropDown(null, null, $passedValue);
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testGetMeetingsExternalApiDropDown_OptionsOnMeta_AppendToList()
-    {
-        SugarTestHelper::setUp("dictionary");
-        global $dictionary, $app_list_strings;
-        $dictionary['Meeting']['fields']['type']['options'] = 'foo_type';
-        $app_list_strings['foo_type'] = array('Foo' => 'Foo');
-        $cachedValues = array('Cached' => 'Cached');
-        sugar_cache_put('meetings_type_drop_down', $cachedValues);
-        $expected = array_merge($cachedValues, $app_list_strings['foo_type']);
-        $actual = getMeetingsExternalApiDropDown();
-        $this->assertEquals($expected, $actual);
-        unset($dictionary['Meeting']['fields']['type']['options']);
-    }
-
-    public function testGetNotificationRecipients_RecipientsAreAlreadyLoaded_ReturnsRecipients()
-    {
-        $contacts = array(
-            SugarTestContactUtilities::createContact(),
-            SugarTestContactUtilities::createContact(),
-        );
-
-        $meeting = BeanFactory::newBean('Meetings');
-        $meeting->users_arr = array($GLOBALS['current_user']->id);
-        $meeting->contacts_arr = array($contacts[0]->id, $contacts[1]->id);
-
-        $actual = $meeting->get_notification_recipients();
-        $this->assertArrayHasKey($GLOBALS['current_user']->id, $actual, 'The current user should be in the list.');
-        $this->assertArrayHasKey($contacts[0]->id, $actual, 'The first contact should be in the list.');
-        $this->assertArrayHasKey($contacts[1]->id, $actual, 'The second contact should be in the list.');
-    }
-
-    public function testGetNotificationRecipients_RecipientsAreNotAlreadyLoaded_ReturnsEmptyRecipients()
-    {
-        $contacts = array(
-            SugarTestContactUtilities::createContact(),
-            SugarTestContactUtilities::createContact(),
-        );
-
-        $meeting = SugarTestMeetingUtilities::createMeeting();
-        SugarTestMeetingUtilities::addMeetingUserRelation($meeting->id, $GLOBALS['current_user']->id);
-        SugarTestMeetingUtilities::addMeetingContactRelation($meeting->id, $contacts[0]->id);
-        SugarTestMeetingUtilities::addMeetingContactRelation($meeting->id, $contacts[1]->id);
-
-        $actual = $meeting->get_notification_recipients();
-        $this->assertEmpty($actual, 'The current user should be in the list.');
-    }
 }
+?>

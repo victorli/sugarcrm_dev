@@ -1,15 +1,40 @@
 <?php
 
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
 
 require_once 'include/database/DBManagerFactory.php';
 
@@ -34,6 +59,7 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
 	public function setUp()
     {
 	    $this->_db = DBManagerFactory::getInstance();
+        $this->useOutputBuffering = false;
 	}
 
 	public function tearDown()
@@ -398,7 +424,7 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
 					)
 				),
 				true
- 			),
+			),
 			array(
 				"calls",
 				$fieldDefs,
@@ -419,7 +445,7 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
 						'fields' => array('date_start'),
 					)
 				),
-				true,
+				false
 			),
 			array(
 				"calls",
@@ -463,30 +489,8 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
 						'fields' => array('date_start'),
 					)
 				),
-				true
-			),
-		    array(
-		        "calls",
-		        $fieldDefs,
-		        array(
-		                array(
-		                        'name' => 'idx_call_name2',
-		                        'type' => 'index',
-		                        'fields'=> array('name', 'status'),
-		                ),
-		                array(
-		                        'name' => 'idx_status',
-		                        'type' => 'index',
-		                        'fields'=> array('status'),
-		                ),
-		                array(
-		                        'name' => 'idx_calls_date_start',
-		                        'type' => 'index',
-		                        'fields' => array('date_start'),
-		                )
-		        ),
-		        false
-		    )
+				false
+			)
 
 		);
         return $returnArray;
@@ -513,10 +517,10 @@ class Bug43466 extends Sugar_PHPUnit_Framework_TestCase
     {
 
 		if ( $expectedResult ) {
-            $this->assertEquals(trim($this->_db->repairTableParams($tablename, $fielddefs, $indices, false)), "", "Expected empty result");
+            $this->assertTrue($this->isEmpty($this->_db->repairTableParams($tablename, $fielddefs, $indices, false)));
         }
         else {
-            $this->assertNotEquals(trim($this->_db->repairTableParams($tablename, $fielddefs, $indices, false)), "", "Expected not empty result");
+            $this->assertFalse($this->isEmpty($this->_db->repairTableParams($tablename, $fielddefs, $indices, false)));
         }
     }
 

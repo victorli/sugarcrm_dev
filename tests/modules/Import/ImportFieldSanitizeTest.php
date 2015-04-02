@@ -1,14 +1,39 @@
 <?php
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
 
 require_once('modules/Import/ImportFieldSanitize.php');
 require_once('modules/Import/sources/ImportFile.php');
@@ -81,7 +106,7 @@ class ImportFieldSanitizeTest extends Sugar_PHPUnit_Framework_TestCase
     public function testInvalidCurrency()
     {
         $this->_ifs->dec_sep = '.';
-        $this->_ifs->currency_symbol = 'ï¿½';
+        $this->_ifs->currency_symbol = '�';
 
         $this->assertNotEquals($this->_ifs->currency('$123.23',array()),123.23);
     }
@@ -444,47 +469,47 @@ class ImportFieldSanitizeTest extends Sugar_PHPUnit_Framework_TestCase
     {
         $this->_ifs->dec_sep = '.';
 
-        $this->assertEquals($this->_ifs->float('100',array()),100);
-        $this->assertEquals($this->_ifs->float('123.23',array()),123.23);
+        $this->assertEquals($this->_ifs->currency('100',array()),100);
+        $this->assertEquals($this->_ifs->currency('123.23',array()),123.23);
 
         $this->_ifs->dec_sep = ',';
 
-        $this->assertEquals($this->_ifs->float('123,23',array()),123.23);
+        $this->assertEquals($this->_ifs->currency('123,23',array()),123.23);
 
         $this->_ifs->num_grp_sep = ',';
 
-        $this->assertEquals($this->_ifs->float('1,123.23',array()),1123.23);
+        $this->assertEquals($this->_ifs->currency('1,123.23',array()),1123.23);
     }
 
     public function testInvalidFloat()
     {
         $this->_ifs->dec_sep = '.';
 
-        $this->assertNotEquals($this->_ifs->float('123,23',array()),123.23);
+        $this->assertNotEquals($this->_ifs->currency('123,23',array()),123.23);
     }
 
     public function testValidFullname()
     {
         $this->_ifs->default_locale_name_format = 'l f';
 
-        $focus = BeanFactory::getBean('Contacts');
+        $focus = loadBean('Contacts');
 
         $this->_ifs->fullname('Bar Foo',array(),$focus);
 
-        $this->assertEquals('Foo', $focus->first_name);
-        $this->assertEquals('Bar', $focus->last_name);
+        $this->assertEquals($focus->first_name,'Foo');
+        $this->assertEquals($focus->last_name,'Bar');
     }
 
     public function testInvalidFullname()
     {
         $this->_ifs->default_locale_name_format = 'f l';
 
-        $focus = BeanFactory::getBean('Contacts');
+        $focus = loadBean('Contacts');
 
         $this->_ifs->fullname('Bar Foo',array(),$focus);
 
-        $this->assertNotEquals('Foo', $focus->first_name);
-        $this->assertNotEquals('Bar', $focus->last_name);
+        $this->assertNotEquals($focus->first_name,'Foo');
+        $this->assertNotEquals($focus->last_name,'Bar');
     }
 
     public function testValidMultiEnum()
@@ -542,12 +567,12 @@ class ImportFieldSanitizeTest extends Sugar_PHPUnit_Framework_TestCase
     public function testParent()
     {
         $account_name = 'test case account'.date("YmdHis");
-        $focus = BeanFactory::getBean('Accounts');
+        $focus = loadBean('Accounts');
         $focus->name = $account_name;
         $focus->save();
         $account_id = $focus->id;
 
-        $focus = BeanFactory::getBean('Contacts');
+        $focus = loadBean('Contacts');
         $vardef = array(
           'required' => false,
           'source' => 'non-db',
@@ -586,12 +611,12 @@ class ImportFieldSanitizeTest extends Sugar_PHPUnit_Framework_TestCase
     public function testRelate()
     {
         $account_name = 'test case account'.date("YmdHis");
-        $focus = BeanFactory::getBean('Accounts');
+        $focus = loadBean('Accounts');
         $focus->name = $account_name;
         $focus->save();
         $account_id = $focus->id;
 
-        $focus = BeanFactory::getBean('Contacts');
+        $focus = loadBean('Contacts');
         $vardef = array (
 			'name' => 'account_name',
 			'rname' => 'name',
@@ -623,7 +648,7 @@ class ImportFieldSanitizeTest extends Sugar_PHPUnit_Framework_TestCase
     {
         $account_name = 'test case account'.date("YmdHis");
 
-        $focus = BeanFactory::getBean('Contacts');
+        $focus = loadBean('Contacts');
         $vardef = array (
 			'name' => 'account_name',
 			'rname' => 'name',
@@ -670,7 +695,7 @@ class ImportFieldSanitizeTest extends Sugar_PHPUnit_Framework_TestCase
     {
         $account_name = 'test case account'.date("YmdHis");
 
-        $focus = BeanFactory::getBean('Contacts');
+        $focus = loadBean('Contacts');
         $vardef = array (
 			'name' => 'account_name',
 			'rname' => 'name',
@@ -716,7 +741,7 @@ class ImportFieldSanitizeTest extends Sugar_PHPUnit_Framework_TestCase
     {
         $account_name = 'test case account'.date("YmdHis");
 
-        $focus = BeanFactory::getBean('Contacts');
+        $focus = loadBean('Contacts');
         $vardef = array (
 			'name' => 'account_name',
 			'id_name' => 'account_id',
@@ -812,7 +837,7 @@ class ImportFieldSanitizeTest extends Sugar_PHPUnit_Framework_TestCase
     public function testRelateDoNotCreateRecordIfRelatedModuleIsUsers()
     {
         $account_name = 'test case account'.date("YmdHis");
-        $focus = BeanFactory::getBean('Users');
+        $focus = new User;
         $vardef = array (
             'name' => 'account_name',
             'rname' => 'name',
@@ -846,6 +871,47 @@ class ImportFieldSanitizeTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertFalse($relaterow,'Record should not be added to the related table');
 
         $GLOBALS['db']->query("DELETE FROM accounts where id = '{$relaterow['id']}'");
+    }
+
+    /**
+     * @ticket 38885
+     */
+    public function testRelateToUserNameWhenFullNameIsGiven()
+    {
+        // setup
+        $beanList = array();
+        require('include/modules.php');
+        $GLOBALS['beanList'] = $beanList;
+        $GLOBALS['beanFiles'] = $beanFiles;
+
+        $accountFocus = new Account;
+        $userFocus = SugarTestUserUtilities::createAnonymousUser();
+        $vardef = array(
+            "name" => "assigned_user_name",
+            "link" => "assigned_user_link",
+            "vname" => "LBL_ASSIGNED_TO_NAME",
+            "rname" => "user_name",
+            "type" => "relate",
+            "reportable" => false,
+            "source" => "non-db",
+            "table" => "users",
+            "id_name" => "assigned_user_id",
+            "module" => "Users",
+            "duplicate_merge" => "disabled",
+            );
+
+        $this->assertEquals(
+            $userFocus->user_name,
+            $this->_ifs->relate(
+                $userFocus->first_name.' '.$userFocus->last_name,
+                $vardef,
+                $accountFocus,
+                false)
+            );
+
+        // teardown
+        unset($GLOBALS['beanList']);
+        unset($GLOBALS['beanFiles']);
     }
 
     /**
@@ -904,7 +970,7 @@ class ImportFieldSanitizeTest extends Sugar_PHPUnit_Framework_TestCase
     {
         $account_name = 'test case account'.date("YmdHis");
 
-        $focus = BeanFactory::getBean('Contacts');
+        $focus = loadBean('Contacts');
         $vardef = array (
 			'name' => 'account_name',
 			'rname' => 'name',
@@ -1019,25 +1085,6 @@ class ImportFieldSanitizeTest extends Sugar_PHPUnit_Framework_TestCase
             'Test $this->_ifs->synctooutlook() not returning false');
 
         $this->assertEquals($bad_names,array());
-    }
-    public function testValidSyncToOutlookTeam()
-    {
-        $team = SugarTestTeamUtilities::createAnonymousTeam();
-
-        $value = $team->id . ',' . $team->name;
-        $bad_names = array();
-
-        $this->assertTrue(
-            (bool) $this->_ifs->synctooutlook(
-                $value,
-                array(),
-                $bad_names
-                ),
-            'Test $this->_ifs->synctooutlook() not returning false');
-
-        $this->assertEquals($bad_names,array());
-
-        SugarTestTeamUtilities::removeAllCreatedAnonymousTeams();
     }
     public function testInvalidSyncToOutlook()
     {

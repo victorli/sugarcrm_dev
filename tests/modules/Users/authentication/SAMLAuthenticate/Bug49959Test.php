@@ -1,17 +1,43 @@
 <?php
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
 
 require_once 'modules/Users/authentication/SAMLAuthenticate/SAMLAuthenticateUser.php';
-require_once 'modules/Users/authentication/SAMLAuthenticate/SAMLAuthenticate.php';
+require_once 'modules/Users/authentication/SAMLAuthenticate/lib/onelogin/saml/settings.php';
+require_once 'modules/Users/authentication/SAMLAuthenticate/lib/onelogin/saml/response.php';
 
 /**
  * @ticket 49959
@@ -39,7 +65,7 @@ class Bug49959Test extends Sugar_PHPUnit_Framework_TestCase
     public static function setUpBeforeClass()
     {
         self::$auth = new SAMLAuthenticateUserTest;
-        $user = self::$user = BeanFactory::getBean('Users');
+        $user = self::$user = new User();
 
         $user->user_name = self::$user_name;
         $user->email1    = self::$user_email;
@@ -55,7 +81,7 @@ class Bug49959Test extends Sugar_PHPUnit_Framework_TestCase
      */
     public static function tearDownAfterClass()
     {
-        $GLOBALS['db']->query("DELETE FROM users WHERE user_name='".self::$user_name."'");
+        self::$user->mark_deleted(self::$user_id);
     }
 
     /**
@@ -85,21 +111,20 @@ class Bug49959Test extends Sugar_PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that get_nameid() method of OneLogin_Saml_Response is called by default
+     * Test that get_nameid() method of SamlResponse is called by default
      */
     public function testDefaultNameId()
     {
         // create a mock of SAML response
         $mock = $this->getResponse();
         $mock->expects($this->once())
-            ->method('getNameId');
+            ->method('get_nameid');
 
         // create a default SAML settings object
-        self::$auth->settings = SAMLAuthenticate::loadSettings();
-        self::$auth->samlresponse = $mock;
+        require(get_custom_file_if_exists('modules/Users/authentication/SAMLAuthenticate/settings.php'));
 
         // expect that get_nameid() method of response is used by default
-        self::$auth->get_user_id();
+        self::$auth->get_user_id($mock, $settings);
     }
 
     /**
@@ -114,26 +139,22 @@ class Bug49959Test extends Sugar_PHPUnit_Framework_TestCase
         $mock2->xml = $this->getResponseXml($node_id);
 
         // create SAML settings object with custom name id definition
-        self::$auth->settings = $settings = SAMLAuthenticate::loadSettings();
-        self::$auth->samlresponse = $mock2;
-
-        $settings->saml2_settings['check']['user_name'] = '//root';
-        $settings->useXML = true;
-        self::$auth->xpath = new DOMXPath($mock2->xml);
+        require(get_custom_file_if_exists('modules/Users/authentication/SAMLAuthenticate/settings.php'));
+        $settings->saml_settings['check']['user_name'] = '//root';
 
         // expect that user ID is fetched from the document according to settings
-        $result = self::$auth->get_user_id();
+        $result = self::$auth->get_user_id($mock2, $settings);
         $this->assertEquals($node_id, $result);
     }
 
     /**
      * Returns a mock of SamlResponse object
      *
-     * @return OneLogin_Saml_Response
+     * @return SamlResponse
      */
     protected function getResponse()
     {
-        return $this->getMock('OneLogin_Saml_Response', array(), array(), 'Bug49959Test_Response', false);
+        return $this->getMock('SamlResponse', array(), array(), '', false);
     }
 
     /**
@@ -157,15 +178,13 @@ class Bug49959Test extends Sugar_PHPUnit_Framework_TestCase
  */
 class SAMLAuthenticateUserTest extends SAMLAuthenticateUser
 {
-    public $xpath;
-
     public function fetch_user($id, $field = null)
     {
         return parent::fetch_user($id, $field);
     }
 
-    public function get_user_id()
+    public function get_user_id($samlresponse, $settings)
     {
-        return parent::get_user_id();
+        return parent::get_user_id($samlresponse, $settings);
     }
 }

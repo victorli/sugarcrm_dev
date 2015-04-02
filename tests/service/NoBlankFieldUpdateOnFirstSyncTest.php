@@ -1,14 +1,39 @@
 <?php
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
 
 
 /**
@@ -24,7 +49,7 @@
  * @author Collin Lee
  */
 
-require_once('vendor/nusoap//nusoap.php');
+require_once('include/nusoap/nusoap.php');
 require_once('tests/service/SOAPTestCase.php');
 
 class NoBlankFieldUpdateOnFirstSyncTest extends SOAPTestCase
@@ -66,8 +91,6 @@ class NoBlankFieldUpdateOnFirstSyncTest extends SOAPTestCase
         $contact2->disable_custom_fields = true;
         $contact2->email1 = '';
         $contact2->email2 = '';
-        $contact2->team_id = '1';
-        $contact2->team_set_id = '1';
         $contact2->save();
 		$this->c2 = $contact2;
         //DELETE contact_users entries that may have remained
@@ -82,10 +105,10 @@ class NoBlankFieldUpdateOnFirstSyncTest extends SOAPTestCase
         SugarTestContactUtilities::removeAllCreatedContacts();
         $GLOBALS['db']->query("DELETE FROM contacts WHERE id in ('{$this->_resultId}', '{$this->_resultId2}')");
         $GLOBALS['db']->query("DELETE FROM contacts_users WHERE user_id = '{$current_user->id}'");
+        $GLOBALS['db']->commit();
         unset($this->c);
         unset($this->c2);
         parent::tearDown();
-        $GLOBALS['db']->commit();
     }
 
 
@@ -120,8 +143,9 @@ class NoBlankFieldUpdateOnFirstSyncTest extends SOAPTestCase
         $this->assertEquals('Jenny - I Got Your Number', $existingContact->title, 'Assert that we have not changed the title field from first sync');
         $this->assertEquals(1, $existingContact->do_not_call, 'Assert the field "do_not_call" checkbox was checked and has value of 1');
 
-        $total = $GLOBALS['db']->getOne("SELECT count(id) AS total FROM contacts WHERE first_name = '{$existingContact->first_name}' AND last_name = '{$existingContact->last_name}'");
-        $this->assertEquals(1, $total, 'Assert we only have one Contact with the first and last name');
+        $result = $GLOBALS['db']->query("SELECT count(id) AS total FROM contacts WHERE first_name = '{$existingContact->first_name}' AND last_name = '{$existingContact->last_name}'");
+        $row = $GLOBALS['db']->fetchByAssoc($result);
+        $this->assertEquals(1, $row['total'], 'Assert we only have one Contact with the first and last name');
 
         //Now sync a second time
         $this->_login();
@@ -150,9 +174,11 @@ class NoBlankFieldUpdateOnFirstSyncTest extends SOAPTestCase
 
         $this->assertEquals('1-800-SUGARCRM', $existingContact->phone_mobile, 'Assert that we have changed the phone_mobile field from second sync');
         $this->assertEquals('', $existingContact->title, 'Assert that we have changed the title field to be (blank) from second sync');
-        $total = $GLOBALS['db']->getOne("SELECT count(id) AS total FROM contacts WHERE first_name = '{$existingContact->first_name}' AND last_name = '{$existingContact->last_name}'");
-        $this->assertEquals(1, $total, 'Assert we only have one Contact with the first and last name');
         $this->assertEquals(0, $existingContact->do_not_call, 'Assert the field "do_not_call" checkbox was UN-checked and has value of 0');
+
+        $result = $GLOBALS['db']->query("SELECT count(id) AS total FROM contacts WHERE first_name = '{$existingContact->first_name}' AND last_name = '{$existingContact->last_name}'");
+        $row = $GLOBALS['db']->fetchByAssoc($result);
+        $this->assertEquals(1, $row['total'], 'Assert we only have one Contact with the first and last name');
     }
     
 
@@ -186,8 +212,9 @@ class NoBlankFieldUpdateOnFirstSyncTest extends SOAPTestCase
         $this->assertEquals('867-5309', $existingContact->phone_mobile, 'Assert that we have not changed the phone_mobile field from first sync');
         $this->assertEquals('Jenny - I Got Your Number', $existingContact->title, 'Assert that we have not changed the title field from first sync');
 
-        $total = $GLOBALS['db']->getOne("SELECT count(id) AS total FROM contacts WHERE first_name = '{$existingContact->first_name}' AND last_name = '{$existingContact->last_name}'");
-        $this->assertEquals(1, $total, 'Assert we only have one Contact with the first and last name');
+        $result = $GLOBALS['db']->query("SELECT count(id) AS total FROM contacts WHERE first_name = '{$existingContact->first_name}' AND last_name = '{$existingContact->last_name}'");
+        $row = $GLOBALS['db']->fetchByAssoc($result);
+        $this->assertEquals(1, $row['total'], 'Assert we only have one Contact with the first and last name');
 
         //Now sync a second time
         $this->_login();
@@ -214,8 +241,9 @@ class NoBlankFieldUpdateOnFirstSyncTest extends SOAPTestCase
 
         $this->assertEquals('1-800-SUGARCRM', $existingContact->phone_mobile, 'Assert that we have changed the phone_mobile field from second sync');
         $this->assertEquals('', $existingContact->title, 'Assert that we have changed the title field to be (blank) from second sync');
-        $total = $GLOBALS['db']->getOne("SELECT count(id) AS total FROM contacts WHERE first_name = '{$existingContact->first_name}' AND last_name = '{$existingContact->last_name}'");
-        $this->assertEquals(1, $total, 'Assert we only have one Contact with the first and last name');
+        $result = $GLOBALS['db']->query("SELECT count(id) AS total FROM contacts WHERE first_name = '{$existingContact->first_name}' AND last_name = '{$existingContact->last_name}'");
+        $row = $GLOBALS['db']->fetchByAssoc($result);
+        $this->assertEquals(1, $row['total'], 'Assert we only have one Contact with the first and last name');
     }
 
 }

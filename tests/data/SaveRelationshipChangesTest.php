@@ -1,18 +1,58 @@
 <?php
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
 
 
 class SaveRelationshipChangesTest extends Sugar_PHPUnit_Framework_TestCase
 {
+
+    public function setUp()
+    {
+        SugarTestHelper::setUp('dictionary');
+        SugarTestHelper::setUp('moduleList');
+        SugarTestHelper::setUp('app_strings');
+        SugarTestHelper::setUp('app_list_strings');
+        SugarTestHelper::setUp('current_user', array(true, 1));
+    }
+
+    public function tearDown()
+    {
+        SugarTestHelper::tearDown();
+    }
+
     public function setRelationshipInfoDataProvider()
     {
         return array(
@@ -34,17 +74,18 @@ class SaveRelationshipChangesTest extends Sugar_PHPUnit_Framework_TestCase
         );
     }
 
+
     /**
      * @dataProvider setRelationshipInfoDataProvider
      */
     public function testSetRelationshipInfoViaRequestVars($id, $rel, $expected)
     {
-        $bean = new Account();
+        $bean = new MockAccountSugarBean();
 
         $_REQUEST['relate_to'] = $rel;
         $_REQUEST['relate_id'] = $id;
 
-        $return = SugarTestReflection::callProtectedMethod($bean, 'set_relationship_info');
+        $return = $bean->set_relationship_info();
 
         $this->assertSame($expected, $return);
     }
@@ -54,183 +95,191 @@ class SaveRelationshipChangesTest extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testSetRelationshipInfoViaBeanProperties($id, $rel, $expected)
     {
-        $bean = new Account();
+        $bean = new MockAccountSugarBean();
 
         $bean->not_use_rel_in_req = true;
         $bean->new_rel_id = $id;
         $bean->new_rel_relname = $rel;
 
-        $return = SugarTestReflection::callProtectedMethod($bean, 'set_relationship_info');
+        $return = $bean->set_relationship_info();
 
         $this->assertSame($expected, $return);
     }
 
     public function testHandlePresetRelationshipsAdd()
     {
-        $contactId = 'some_contact_id';
-        $account = $this->getMock('Account', array('load_relationship'));
-        $account->expects($this->once())
-            ->method('load_relationship')
-            ->with('contacts');
+        $acc = SugarTestAccountUtilities::createAccount();
 
-        $account->contacts = $this->getMock('Link2', array('add'), array(), '', false);
-        $account->contacts->expects($this->once())
-            ->method('add')
-            ->with($contactId)
-            ->willReturn(true);
+        $macc = new MockAccountSugarBean();
+        $macc->disable_row_level_security = true;
+        $macc->retrieve($acc->id);
 
-        $account->contact_id = $contactId;
-        $new_rel_id = SugarTestReflection::callProtectedMethod(
-            $account,
-            'handle_preset_relationships',
-            array($contactId, 'contacts')
-        );
+        // create an contact
+        $contact = SugarTestContactUtilities::createContact();
+
+        // set the contact id from the bean.
+        $macc->contact_id = $contact->id;
+
+        $new_rel_id = $macc->handle_preset_relationships($contact->id, 'contacts');
+
         $this->assertFalse($new_rel_id);
+
+        // make sure the relationship exists
+
+        $sql = "SELECT account_id, contact_id from accounts_contacts where account_id = '" . $macc->id . "' AND contact_id = '" . $contact->id . "' and deleted = 0";
+        $result = $GLOBALS['db']->query($sql);
+        $row = $GLOBALS['db']->fetchByAssoc($result);
+
+        $this->assertSame(array('account_id' => $macc->id, 'contact_id' => $contact->id), $row);
+
+        SugarTestAccountUtilities::removeAllCreatedAccounts();
+        SugarTestContactUtilities::removeAllCreatedContacts();
+
+        unset($macc);
+
     }
 
     public function testHandlePresetRelationshipsDelete()
     {
-        $contactId = 'some_contact_id';
-        $accountId = 'some_account_id';
-        $account = $this->getMock('Account', array('load_relationship'));
-        $account->id = $accountId;
-        $account->expects($this->once())
-            ->method('load_relationship')
-            ->with('contacts');
+        $acc = SugarTestAccountUtilities::createAccount();
 
-        $account->contacts = $this->getMock('Link2', array('delete'), array(), '', false);
-        $account->contacts->expects($this->once())
-            ->method('delete')
-            ->with($accountId, $contactId)
-            ->willReturn(true);
+        $macc = new MockAccountSugarBean();
+        $macc->disable_row_level_security = true;
+        $macc->retrieve($acc->id);
 
-        $account->rel_fields_before_value['contact_id'] = $contactId;
-        $new_rel_id = SugarTestReflection::callProtectedMethod(
-            $account,
-            'handle_preset_relationships',
-            array($contactId, 'contacts')
-        );
-        $this->assertEquals($contactId, $new_rel_id);
+        // create an contact
+        $contact = SugarTestContactUtilities::createContact();
+
+
+        // insert a dummy row
+        $rel_row_id = create_guid();
+        $sql = "INSERT INTO accounts_contacts (id, account_id, contact_id) VALUES ('" . $rel_row_id . "','" . $macc->id . "','" . $contact->id . "')";
+        $GLOBALS['db']->query($sql);
+        $GLOBALS['db']->commit();
+
+        // set the contact id from the bean.
+        $macc->rel_fields_before_value['contact_id'] = $contact->id;
+
+        $new_rel_id = $macc->handle_preset_relationships($contact->id, 'contacts');
+
+        $this->assertEquals($contact->id, $new_rel_id);
+
+        // make sure the relationship exists
+
+        $sql = "SELECT account_id, contact_id from accounts_contacts where account_id = '" . $macc->id . "' AND contact_id = '" . $contact->id . "' and deleted = 0";
+        $result = $GLOBALS['db']->query($sql);
+        $row = $GLOBALS['db']->fetchByAssoc($result);
+
+        $this->assertFalse($row);
+
+        SugarTestAccountUtilities::removeAllCreatedAccounts();
+        SugarTestContactUtilities::removeAllCreatedContacts();
+
+        unset($macc);
+
     }
 
     public function testHandleRemainingRelateFields()
     {
-        $thisId = 'this_id';
-        $relateId = 'relate_id';
+        // create a test relationship
+        // save cache reset value
+        $_cacheResetValue = SugarCache::$isCacheReset;
+        //$rel = $this->createRelationship('Accounts');
 
-        $account = $this->getMock('Account', array('load_relationship'));
-        $account->expects($this->atLeastOnce())
-            ->method('load_relationship')
-            ->with('relate_field_link')
-            ->willReturn(true);
+        $rel = SugarTestRelationshipUtilities::createRelationship(array(
+                    'relationship_type' => 'one-to-many',
+                    'lhs_module' => 'Accounts',
+                    'rhs_module' => 'Accounts',
+                ));
 
-        $account->relate_field_link = $this->getMock('Link2', array('add', 'delete'), array(), '', false);
-        $account->relate_field_link->expects($this->once())
-            ->method('add')
-            ->with($relateId)
-            ->willReturn(true);
-        $account->relate_field_link->expects($this->once())
-            ->method('delete')
-            ->with($thisId, $relateId)
-            ->willReturn(true);
+        if($rel == false) {
+            $this->fail('Relationship Not Created');
+        }
 
-        $account->field_defs['relate_field'] = array(
-            'name' => 'relate_field',
-            'id_name' => 'relate_field_id',
-            'type' => 'relate',
-            'save' => true,
-            'link' => 'relate_field_link',
-        );
-        $account->field_defs['relate_field_id'] = array(
-            'name' => 'relate_field_id',
-            'type' => 'id',
-        );
-        $account->field_defs['relate_field_link'] = array(
-            'name' => 'relate_field_link',
-            'type' => 'link',
-        );
+        $rel_name = $rel->getName();
+        $id = $rel->getIDName('Accounts');
 
-        SugarBean::clearLoadedDef('Account');
+        $acc1 = SugarTestAccountUtilities::createAccount();
+        $acc2 = SugarTestAccountUtilities::createAccount();
 
-        $account->id = $thisId;
-        $account->relate_field_id = $relateId;
-        $ret = SugarTestReflection::callProtectedMethod($account, 'handle_remaining_relate_fields');
-        $this->assertContains('relate_field_link', $ret['add']['success']);
+        $macc = new MockAccountSugarBean();
+        $macc->disable_row_level_security = true;
+        $macc->retrieve($acc2->id);
 
-        $account->rel_fields_before_value['relate_field_id'] = $relateId;
-        $account->relate_field_id = '';
-        $ret = SugarTestReflection::callProtectedMethod($account, 'handle_remaining_relate_fields');
-        $this->assertContains('relate_field_link', $ret['remove']['success']);
+        $macc->$id = $acc1->id;
+
+        $ret = $macc->handle_remaining_relate_fields();
+        $this->assertContains($rel_name, $ret['add']['success']);
+
+        $macc->rel_fields_before_value[$id] = $acc1->id;
+        $macc->$id = '';
+        $ret = $macc->handle_remaining_relate_fields();
+
+        $this->assertContains($rel_name, $ret['remove']['success']);
+
+        // variable cleanup
+        // delete the test relationship
+        //$this->removeRelationship($rel_name, 'Accounts');
+        SugarTestRelationshipUtilities::removeAllCreatedRelationships();
+
+        unset($macc);
+        SugarTestAccountUtilities::removeAllCreatedAccounts();
+        // reset the isCacheReset Value since this is all one request.
+        SugarCache::$isCacheReset = $_cacheResetValue;
     }
 
-    public function testHandleRequestRelate()
+    public function handleRequestRelateProvider()
     {
-        $relateId = 'relate_id';
-
-        $account = $this->getMock('Account', array('load_relationship'));
-        $account->expects($this->any())
-            ->method('load_relationship')
-            ->with('member_of')
-            ->willReturn(true);
-
-        $account->member_of = $this->getMock('Link2', array('add', 'delete'), array(), '', false);
-        $account->member_of->expects($this->once())
-            ->method('add')
-            ->with($relateId)
-            ->willReturn(true);
-
-        $ret = SugarTestReflection::callProtectedMethod(
-            $account,
-            'handle_request_relate',
-            array($relateId, 'member_of')
+        return array(
+            array('member_of', true),
+            array('MEMBER_OF', true),
+            array(time(), false),
         );
-        $this->assertTrue($ret);
     }
 
-    public function testHandleRequestRelateWithWrongLetterCase()
+    /**
+     *
+     * @dataProvider handleRequestRelateProvider
+     * @param $rel_link_name
+     */
+    public function testHandleRequestRelate($rel_link_name, $expected)
     {
-        $relateId = 'relate_id';
+        $acc1 = SugarTestAccountUtilities::createAccount();
+        $acc2 = SugarTestAccountUtilities::createAccount();
 
-        $account = $this->getMock('Account', array('load_relationship'));
-        $account->expects($this->at(0))
-            ->method('load_relationship')
-            ->with('MEMBER_OF')
-            ->willReturn(false);
+        $macc = new MockAccountSugarBean();
+        $macc->retrieve($acc2->id);
 
-        $account->expects($this->at(1))
-            ->method('load_relationship')
-            ->with('member_of')
-            ->willReturn(true);
 
-        $account->member_of = $this->getMock('Link2', array('add', 'delete'), array(), '', false);
-        $account->member_of->expects($this->once())
-            ->method('add')
-            ->with($relateId)
-            ->willReturn(true);
+        $ret = $macc->handle_request_relate($acc1->id, $rel_link_name);
 
-        $ret = SugarTestReflection::callProtectedMethod(
-            $account,
-            'handle_request_relate',
-            array($relateId, 'MEMBER_OF')
-        );
-        $this->assertTrue($ret);
+        $this->assertSame($expected, $ret);
+
+        unset($macc);
+        SugarTestAccountUtilities::removeAllCreatedAccounts();
+
+    }
+}
+
+class MockAccountSugarBean extends Account
+{
+    public function set_relationship_info(array $exclude = array())
+    {
+        return parent::set_relationship_info($exclude);
     }
 
-    public function testHandleRequestRelateWhenLinkNameDoesNotExist()
+    public function handle_preset_relationships($new_rel_id, $new_rel_name, $exclude = array())
     {
-        $rel_link_name = 'some_non_existing_link_name';
-        $relateId = 'relate_id';
+        return parent::handle_preset_relationships($new_rel_id, $new_rel_name, $exclude);
+    }
 
-        $account = $this->getMock('Account', array('load_relationship'));
-        $account->expects($this->any())
-            ->method('load_relationship')
-            ->willReturn(false);
+    public function handle_remaining_relate_fields($exclude = array())
+    {
+        return parent::handle_remaining_relate_fields($exclude);
+    }
 
-        $ret = SugarTestReflection::callProtectedMethod(
-            $account,
-            'handle_request_relate',
-            array($relateId, $rel_link_name)
-        );
-        $this->assertFalse($ret);
+    public function handle_request_relate($new_rel_id, $new_rel_link)
+    {
+        return parent::handle_request_relate($new_rel_id, $new_rel_link);
     }
 }

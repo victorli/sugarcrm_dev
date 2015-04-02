@@ -1,15 +1,40 @@
 <?php
 
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
 
 /**
  * Bug #45339
@@ -44,8 +69,6 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->markTestIncomplete("Marking as incomplete as it can take long time to run");
-        return;
         SugarTestHelper::setUp('current_user', array(true, 1));
         SugarTestHelper::setUp('beanFiles');
         SugarTestHelper::setUp('beanList');
@@ -113,48 +136,11 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
         VardefManager::refreshVardefs('Accounts', 'Account');
 
 
-
-           //create a new field for accounts
-        $this->field = get_widget('varchar');
-        $this->field->id = 'Accountstest_45339333_c';
-        $this->field->name = 'test_45339333_c';
-        $this->field->vname = 'LBL_TEST_CUSTOM_C';
-        //$this->field->comments = NULL;
-        $this->field->help = NULL;
-        $this->field->custom_module = 'Accounts';
-        $this->field->type = 'varchar';
-        $this->field->label = 'LBL_TEST_CUSTOM_C';
-        $this->field->len = 255;
-        $this->field->required = 0;
-        $this->field->default_value = NULL;
-        $this->field->date_modified = '2012-10-31 02:23:23';
-        $this->field->deleted = 0;
-        $this->field->audited = 0;
-        $this->field->massupdate = 0;
-        $this->field->duplicate_merge = 0;
-        $this->field->reportable = 1;
-        $this->field->importable = 'true';
-        $this->field->ext1 = NULL;
-        $this->field->ext2 = NULL;
-        $this->field->ext3 = NULL;
-        $this->field->ext4 = NULL;
-
-        //add field to metadata
-        $this->df = new DynamicField('Accounts');
-        $this->df->setup(new Account());
-        $this->df->addFieldObject($this->field);
-        $this->df->buildCache('Accounts');
-        VardefManager::clearVardef();
-        VardefManager::refreshVardefs('Accounts', 'Account');
-
-
         $this->mbPackage = new Bug45339MBPackageMock($this->packName);
     }
 
     public function tearDown()
     {
-        $this->markTestIncomplete("Marking as incomplete as it can take long time to run");
-        return;
         $this->df->deleteField($this->field);
         $relationshipAccountContact = new DeployedRelationships($this->relationAccountContact->getLhsModule());
         $relationshipAccountContact->delete($this->relationAccountContact->getName());
@@ -176,8 +162,6 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testGetCustomRelationshipsByModuleName()
     {
-        $this->markTestIncomplete("Marking as incomplete as it can take long time to run");
-        return;
         /* @var $this->mbPackage MBPackage */
         $accountsAllCustomRelationships = $this->mbPackage->getCustomRelationshipsByModuleNameTest('Accounts');
         // Created in the Account module.
@@ -198,8 +182,6 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testGetCustomRelationshipsMetaFilesByModuleName()
     {
-        $this->markTestIncomplete("Marking as incomplete as it can take long time to run");
-        return;
         $accountContactMetaPath = sprintf(
                 'custom%1$smetadata%1$s' . $this->relationAccountContact->getName() . 'MetaData.php',
                 DIRECTORY_SEPARATOR
@@ -234,8 +216,6 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
      */
    public function testGetExtensionsList()
     {
-        $this->markTestIncomplete("Marking as incomplete as it can take long time to run");
-        return;
         // Create new relationship between Leads and Accounts
         $_REQUEST['view_module'] = "Leads";
         $_REQUEST['lhs_module'] = "Leads";
@@ -306,8 +286,6 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testGetExtensionsManifestForPackage()
     {
-        $this->markTestIncomplete("Marking as incomplete as it can take long time to run");
-        return;
         /* @var $this->mbPackage MBPackage */
         $this->mbPackage->exportCustom(array('Accounts'), false, false);
         $installDefs = array();
@@ -341,8 +319,6 @@ class Bug45339Test extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testCustomBuildInstall()
     {
-        $this->markTestIncomplete("Marking as incomplete as it can take long time to run");
-        return;
         /* @var $this->mbPackage MBPackage */
         $this->mbPackage->exportCustom(array('Accounts'), false, false);
         $installDefString = $this->mbPackage->customBuildInstall(array('Accounts'), $this->mbPackage->getBuildDir());

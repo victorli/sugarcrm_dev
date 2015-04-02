@@ -1,93 +1,98 @@
 <?php
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
 require_once 'modules/Users/User.php';
 
 class UserPreferenceTest extends Sugar_PHPUnit_Framework_TestCase
 {
-    /**
-     * @var User
-     */
-    protected static $user;
+    protected $_user = null;
 
-    public static function setUpBeforeClass()
+    public function setUp()
     {
-        parent::setUpBeforeClass();
-        SugarTestHelper::setUp('app_list_strings');
-        SugarTestHelper::setUp('beanFiles');
-        SugarTestHelper::setUp('beanList');
-        self::$user = SugarTestHelper::setUp('current_user', array(true, false));
-    }
-
-    public static function tearDownAfterClass()
-    {
-        SugarTestHelper::tearDown();
-        parent::tearDownAfterClass();
-    }
-
-    protected function setUp()
-    {
-        global $current_user;
-        $current_user = self::$user;
+        $this->markTestIncomplete('Mark this test as skipped for now');
+        $this->_user = SugarTestUserUtilities::createAnonymousUser();
+        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
     }
 
     public function tearDown()
     {
-        $_SESSION = array();
+        unset($_SESSION[$GLOBALS['current_user']->user_name . '_PREFERENCES']);
+        unset($GLOBALS['current_user']);
+        unset($_SESSION[$this->_user->user_name . '_PREFERENCES']);
+        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+    }
+
+    public function testSettingAUserPreferenceNotSetInSession()
+    {
+        $this->_user->setPreference('test_pref', 'dog');
+
+        $this->assertEquals('dog', $this->_user->getPreference('test_pref'));
+        $this->assertFalse(isset($_SESSION[$this->_user->user_name . '_PREFERENCES']['global']['test_pref']));
     }
 
     public function testSettingAUserPreferenceInSession()
     {
-        self::$user->setPreference('test_pref', 'dog');
+        $GLOBALS['current_user'] = $this->_user;
+        $this->_user->setPreference('test_pref', 'dog');
 
-        $this->assertEquals('dog', self::$user->getPreference('test_pref'));
-        $this->assertEquals('dog', $_SESSION[self::$user->user_name . '_PREFERENCES']['global']['test_pref']);
+        $this->assertEquals('dog', $this->_user->getPreference('test_pref'));
+        $this->assertEquals('dog', $_SESSION[$this->_user->user_name . '_PREFERENCES']['global']['test_pref']);
     }
 
-    public function testGetUserDateTimePreferences()
+    public function testisCurrentUserReturnsFalseWhenCurrentUserIsNotSet()
     {
-        $res = self::$user->getUserDateTimePreferences();
-        $this->assertArrayHasKey('date', $res);
-        $this->assertArrayHasKey('time', $res);
-        $this->assertArrayHasKey('userGmt', $res);
-        $this->assertArrayHasKey('userGmtOffset', $res);
+        unset($GLOBALS['current_user']);
+        $obj = new TestUserPreference($this->_user);
+
+        $this->assertFalse($obj->isCurrentUser());
     }
 
-    public function testUpdateAllUserPrefs()
+    public function testisCurrentUserReturnsFalseWhenUserIsNotSet()
     {
-        global $current_user;
-        $current_user = SugarTestUserUtilities::createAnonymousUser(true, 1);
-        $bean = new UserPreference();
-        $result = $bean->updateAllUserPrefs('test_pref', 'Value');
-        $this->assertEmpty($result);
-    }
+        $obj = new TestUserPreference(null);
 
-    public function testPreferenceLifeTime()
-    {
-        $bean = new UserPreference(self::$user);
-        $bean->setPreference('test_pref', 'Value2');
-        $this->assertEquals('Value2', self::$user->getPreference('test_pref'));
-        $bean->removePreference('test_pref');
-        $this->assertEmpty(self::$user->getPreference('test_pref'));
+        $this->assertFalse($obj->isCurrentUser());
     }
+}
 
-    /**
-     * @depends testSettingAUserPreferenceInSession
-     */
-    public function testResetPreferences()
+
+class TestUserPreference extends UserPreference
+{
+    public function isCurrentUser()
     {
-        self::$user->setPreference('reminder_time', 25);
-        self::$user->setPreference('test_pref', 'Value3');
-        self::$user->resetPreferences();
-        $this->assertEquals(1800, self::$user->getPreference('reminder_time'));
-        $this->assertEmpty(self::$user->getPreference('test_pref'));
+        return parent::isCurrentUser();
     }
 }

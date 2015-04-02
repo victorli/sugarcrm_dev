@@ -1,14 +1,39 @@
 <?php
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
 
 require_once('service/v3/SugarWebServiceUtilv3.php');
 require_once('tests/service/APIv3Helper.php');
@@ -33,8 +58,8 @@ class SOAPAPI3Test extends SOAPTestCase
     	$this->_login();
         $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
         $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
-
         self::$helperObject = new APIv3Helper();
+        $GLOBALS['db']->commit();
     }
 
     public function tearDown()
@@ -144,49 +169,6 @@ class SOAPAPI3Test extends SOAPTestCase
             'Can not create new account using testSetEntriesForAccount. Error ('.$this->_soapClient->faultcode.'): '.$this->_soapClient->faultstring.': '.$this->_soapClient->faultdetail);
     } // fn
 
-    /**
-     * @depends testSetEntriesForAccount
-     */
-    public function testGetLastViewed()
-    {
-         $testModule = 'Accounts';
-         $testModuleID = create_guid();
-
-         $this->_createTrackerEntry($testModule,$testModuleID);
-
-		 $results = $this->_soapClient->call('get_last_viewed',array('session'=>$this->_sessionId,'module_names'=> array($testModule) ));
-
-		 $found = FALSE;
-         foreach ($results as $entry)
-         {
-             if($entry['item_id'] == $testModuleID)
-             {
-                 $found = TRUE;
-                 break;
-             }
-         }
-
-         $this->assertTrue($found, "Unable to get last viewed modules");
-     }
-
-     private function _createTrackerEntry($module, $id,$summaryText = "UNIT TEST SUMMARY")
-     {
-        $trackerManager = TrackerManager::getInstance();
-        $trackerManager->unPause();
-
-        $timeStamp = TimeDate::getInstance()->nowDb();
-        $monitor = $trackerManager->getMonitor('tracker');
-        $monitor->setValue('team_id', $GLOBALS['current_user']->getPrivateTeamID());
-        $monitor->setValue('action', 'detail');
-        $monitor->setValue('user_id', $GLOBALS['current_user']->id);
-        $monitor->setValue('module_name', $module);
-        $monitor->setValue('date_modified', $timeStamp);
-        $monitor->setValue('visible', true);
-        $monitor->setValue('item_id', $id);
-        $monitor->setValue('item_summary', $summaryText);
-        $trackerManager->saveMonitor($monitor, true, true);
-        $GLOBALS['db']->commit();
-     }
 
     /**
      * Get Module Layout functions not exposed to soap service, make sure they are not available.

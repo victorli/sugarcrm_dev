@@ -1,96 +1,57 @@
-<?php
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+<?php 
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
 
-require_once 'include/SugarFields/Fields/Password/SugarFieldPassword.php';
-require_once 'modules/Import/ImportFieldSanitize.php';
+ 
+require_once('include/SugarFields/Fields/Password/SugarFieldPassword.php');
+require_once('modules/Import/ImportFieldSanitize.php');
 
 class SugarFieldPasswordTest extends Sugar_PHPUnit_Framework_TestCase
 {
-    /** @var SugarFieldPassword */
-    protected $fieldObj;
-    protected $contactBean;
-    protected $currentPassword;
-
-    protected function setUp()
-    {
-        $this->fieldObj = new SugarFieldPassword('Password');
-    }
-
-    protected function tearDown()
-    {
-        unset($this->fieldObj);
-    }
-
-    /**
-     * @ticket 40304
-     */
-    public function testImportSanitize()
-    {
-        $settings = new ImportFieldSanitize();
-
+	/**
+	 * @ticket 40304
+	 */
+	public function testImportSanitize()
+	{
+	    $fieldObj = new SugarFieldPassword('Password');
+	    
+	    $settings = new ImportFieldSanitize();
+	    
         $this->assertEquals(
             md5('test value'),
-            $this->fieldObj->importSanitize('test value',array(),null,$settings)
+            $fieldObj->importSanitize('test value',array(),null,$settings)
             );
-    }
-
-    /**
-     * Test formatting the apiFormatField method of a Password field
-     */
-    public function testApiFormatField()
-    {
-        $data = array(
-            'id' => 'awesome',
-            'user_hash' => 'this-is-my-password',
-        );
-
-        $bean = BeanFactory::getBean('Users');
-        $args = array();
-        $fieldName = 'user_hash';
-        $properties = array();
-        $fieldList = array($fieldName);
-        $service = SugarTestRestUtilities::getRestServiceMock();
-        // no bean password set, so it returns empty string
-        $this->fieldObj->apiFormatField($data, $bean, $args, $fieldName, $properties, $fieldList, $service);
-        $this->assertEquals('', $data['user_hash']);
-        $this->assertEquals('awesome', $data['id']);
-
-        $bean->user_hash = 'this-is-my-password';
-        // bean password set so it returns value_setvalue_setvalue_set
-        $this->fieldObj->apiFormatField($data, $bean, $args, $fieldName, $properties, $fieldList, $service);
-        $this->assertEquals(true, $data['user_hash']);
-        $this->assertEquals('awesome', $data['id']);
-    }
-
-    /**
-     * Test the apiSave method of a Password field
-     */
-    public function testApiSave()
-    {
-        $contactBean = BeanFactory::getBean('Contacts');
-        $contactBean->portal_password = User::getPasswordHash('awesome');
-        $currentPassword = $contactBean->portal_password;
-
-        // dataProvider is not working when you need to check class vars
-        // test password not change
-        $this->fieldObj->apiSave($contactBean, array('portal_password' => true), 'portal_password', array());
-        $this->assertEquals($currentPassword, $contactBean->portal_password, "Password should not have changed");
-
-        // test password being unset
-        $this->fieldObj->apiSave($contactBean, array('portal_password' => ''), 'portal_password', array());
-        $this->assertEquals(null, $contactBean->portal_password, "Password should be null");
-
-        // test changing password
-        $this->fieldObj->apiSave($contactBean, array('portal_password' => '1234'), 'portal_password', array());
-        $this->assertTrue(User::checkPassword('1234', $contactBean->portal_password), "The password didn't change");
     }
 }

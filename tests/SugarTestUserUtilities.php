@@ -1,31 +1,54 @@
 <?php
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
  
 require_once 'modules/Users/User.php';
 
 class SugarTestUserUtilities
 {
-    private static $_createdUsers          = array();
-    private static $_createdUserSignatures = array();
+    private static $_createdUsers = array();
 
     private function __construct() {}
     
     public function __destruct()
     {
         self::removeAllCreatedAnonymousUsers();
-        self::removeAllCreatedUserSignatures();
     }
 
-    public static function createAnonymousUser($save = true, $is_admin=0, $fields=array())
+    public static function createAnonymousUser($save = true, $is_admin=0)
     {
         if (isset($_REQUEST['action'])) { 
         unset($_REQUEST['action']);
@@ -33,26 +56,15 @@ class SugarTestUserUtilities
         
         $time = mt_rand();
     	$userId = 'SugarUser';
-    	$user = BeanFactory::getBean("Users");
+    	$user = new User();
         $user->user_name = $userId . $time;
         $user->user_hash = md5($userId.$time);
         $user->first_name = $userId;
         $user->last_name = $time;
         $user->status='Active';
-        $user->is_group = 0;
-
         if ($is_admin) {
             $user->is_admin = 1;
         }
-
-        if (is_array($fields)) {
-            foreach ($fields as $field => $value) {
-                $user->$field = $value;
-            }
-        }
-
-        $user->default_team = '1'; //Set Default Team to Global
-        $user->team_id = '1';
         if ( $save ) {
             $user->save();
         }
@@ -66,15 +78,8 @@ class SugarTestUserUtilities
     {
         $user_ids = self::getCreatedUserIds();
         if ( count($user_ids) > 0 ) {
-            $in = "'" . implode("', '", $user_ids) . "'";
-            $GLOBALS['db']->query("DELETE FROM users WHERE id IN ({$in})");
-            $GLOBALS['db']->query("DELETE FROM user_preferences WHERE assigned_user_id IN ({$in})");
-            $GLOBALS['db']->query("DELETE FROM teams WHERE associated_user_id IN ({$in})");
-            $GLOBALS['db']->query("DELETE FROM team_memberships WHERE user_id IN ({$in})");
-            // delete any created email address rows
-            $GLOBALS['db']->query("DELETE FROM email_addresses WHERE id IN (SELECT DISTINCT email_address_id FROM email_addr_bean_rel WHERE bean_module ='Users' AND bean_id IN ({$in}))");
-            $GLOBALS['db']->query("DELETE FROM emails_beans WHERE bean_module='Users' AND bean_id IN ({$in})");
-            $GLOBALS['db']->query("DELETE FROM email_addr_bean_rel WHERE bean_module='Users' AND bean_id IN ({$in})");
+            $GLOBALS['db']->query('DELETE FROM users WHERE id IN (\'' . implode("', '", $user_ids) . '\')');
+            $GLOBALS['db']->query('DELETE FROM user_preferences WHERE assigned_user_id IN (\'' . implode("', '", $user_ids) . '\')');
         }
         self::$_createdUsers = array();
     }
@@ -83,57 +88,10 @@ class SugarTestUserUtilities
     {
         $user_ids = array();
         foreach (self::$_createdUsers as $user) {
-            if ( is_object($user) && $user instanceOf User && $user->id != false) {
+            if ($user instanceOf User && $user->id != false) {
                 $user_ids[] = $user->id;
             }
         }
-        
         return $user_ids;
-    }
-
-    public static function createUserSignature($id = "")
-    {
-        $time = mt_rand();
-        $name = "SugarUserSignature";
-
-        $userSignature                 = new UserSignature();
-        $userSignature->name           = "{$name}{$time}";
-        $userSignature->signature_html = "<b>{$name}{$time} -- html signature</b>";
-        $userSignature->signature      = "<b>{$name}{$time} -- text signature</b>";
-
-        if (!empty($id)) {
-            $userSignature->new_with_id = true;
-            $userSignature->id = $id;
-        }
-
-        $userSignature->save();
-        $GLOBALS['db']->commit();
-        self::$_createdUserSignatures[] = $userSignature;
-
-        return $userSignature;
-    }
-
-    public static function getCreatedUserSignatureIds()
-    {
-        $signatureIds = array();
-
-        foreach (self::$_createdUserSignatures as $signature) {
-            if (is_object($signature) && $signature instanceOf UserSignature) {
-                $signatureIds[] = $signature->id;
-            }
-        }
-
-        return $signatureIds;
-    }
-
-    public static function removeAllCreatedUserSignatures()
-    {
-        $ids = self::getCreatedUserSignatureIds();
-
-        if (count($ids) > 0) {
-            $GLOBALS["db"]->query("DELETE FROM users_signatures WHERE id IN ('" . implode("','", $ids) . "')");
-        }
-
-        self::$_createdUserSignatures = array();
     }
 }

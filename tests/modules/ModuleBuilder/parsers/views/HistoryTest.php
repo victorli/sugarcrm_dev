@@ -1,14 +1,39 @@
 <?php
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
 
 require_once("modules/ModuleBuilder/parsers/views/History.php");
 
@@ -27,70 +52,43 @@ class HistoryTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_path = sugar_cached('/history/' . time());
-        sugar_mkdir($this->getHistoryDir());
+        $this->_path = tempnam(sys_get_temp_dir() . 'tmp', 'history');
         $this->_history = new History($this->_path);
-    }
-
-    public function tearDown()
-    {
-        // Clean all temporary files created
-        $files = glob($this->getHistoryDir() . '/*');
-        foreach ($files as $file) {
-            @unlink($file);
-        }
-        @rmdir($this->getHistoryDir());
     }
 
     public function testConstructor()
     {
-        $this->assertTrue(is_dir($this->getHistoryDir()), "History dir not created");
+        $this->assertTrue(is_dir($this->getHistoryDir()), "__constructor() creates unique directory for file history");
     }
 
-    /**
-     * Append a file to the history, check if it's properly added, restore it, and check if it's there
-     */
-    public function testAppendRestoreUndo()
+    public function testAppendAndRestore()
     {
-        $tempFile = tempnam($this->getHistoryDir(), 'history');
-
-        $time = $this->_history->append($tempFile);
-        $this->assertTrue(file_exists($this->_history->getFileByTimestamp($time)), "Didn't create history file");
-        $this->assertEquals($this->_history->restoreByTimestamp($time), $time, 'Restore returns incorrect timestamp');
-
-        $this->assertTrue(file_exists($this->_path), 'Preview file not created');
-        $this->assertFileEquals($tempFile, $this->_path, 'Restored file incorrect');
-
-        $this->_history->undoRestore();
-        $this->assertFalse(file_exists($this->_path), 'Preview file not removed');
+        $time = $this->_history->append($this->_path);
+        $this->assertTrue(file_exists($this->_history->getFileByTimestamp($time)), '->append() creates history file');
+        $this->assertEquals($this->_history->restoreByTimestamp( $time ), $time, '->restoreByTimestamp() returns correct timestamp');
     }
 
-    /**
-     * Add several files to history, test getter functions for the history list
-     */
+    public function testUndoRestore()
+    {
+        $this->_history->undoRestore();
+        $this->assertFalse(file_exists($this->_path), '->undoRestore removes file');
+    }
+
     public function testPositioning()
     {
+        $other_file = tempnam(sys_get_temp_dir() . 'tmp', 'history');
+        
+        $el1 = $this->_history->append($other_file);
+        $el2 = $this->_history->append($other_file);
+        $el3 = $this->_history->append($other_file);
 
-        // Pause for a second in between each append for different timestamps
-        $el1 = $this->_history->append(tempnam($this->getHistoryDir(), 'history'));
-        $el2 = $this->_history->append(tempnam($this->getHistoryDir(), 'history'));
-        $el3 = $this->_history->append(tempnam($this->getHistoryDir(), 'history'));
-
-        // Grab our values for testing
-        $getFirst = $this->_history->getFirst();
-        $getLast  = $this->_history->getLast();
-        $getNth1  = $this->_history->getNth(1);
-        $getNext  = $this->_history->getNext();
-
-        // Assertions
-        $this->assertEquals($el3, $getFirst, "$el3 was not the timestamp returned by getFirst() [$getFirst]");
-        $this->assertEquals($el1, $getLast, "$el1 was not the timestamp returned by getLast() [$getLast]");
-        $this->assertEquals($el2, $getNth1, "$el2 was not the timestamp returned by getNth(1) [$getNth1]");
-        $this->assertEquals($el1, $getNext, "$el1 was not the timestamp returned by getNext() [$getNext]");
-
-        // Last assertion
-        $getNext  = $this->_history->getNext();
-        $this->assertFalse($getNext, "Expected getNext() [$getNext] to return false");
+        $this->assertEquals(3, $this->_history->getCount());
+        $this->assertEquals($el3, $this->_history->getFirst());
+        $this->assertEquals($el1, $this->_history->getLast());
+        $this->assertEquals($el2, $this->_history->getNth(1));
+        $this->assertEquals($el1, $this->_history->getNext());
+        $this->assertFalse($this->_history->getNext());
+        unlink($other_file);
     }
 
     private function getHistoryDir()

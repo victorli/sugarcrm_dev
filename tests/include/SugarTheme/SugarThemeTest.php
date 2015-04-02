@@ -1,15 +1,40 @@
 <?php
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
 
+ 
 require_once 'include/SugarTheme/SugarTheme.php';
 require_once 'include/dir_inc.php';
 
@@ -55,6 +80,8 @@ class SugarThemeTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
+        $themesToRemove = array($this->_themeObject->__toString(),$this->_themeObjectChild->__toString());
+
         SugarTestThemeUtilities::removeAllCreatedAnonymousThemes();
 
         if ( $this->_olddeveloperMode )
@@ -100,14 +127,6 @@ class SugarThemeTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertFalse(isset($this->_themeObject->_cssCache['style.css']));
     }
 
-    public function testClearImageCache()
-    {
-        // populate image cache first
-        $this->_themeObject->getAllImages();
-        $this->_themeObject->clearImageCache();
-        $this->assertAttributeEmpty('_imageCache', $this->_themeObject);
-    }
-
     public function testCreateInstance()
     {
         foreach ( $this->_themeDef as $key => $value )
@@ -132,16 +151,14 @@ class SugarThemeTest extends Sugar_PHPUnit_Framework_TestCase
             'themes/'.$this->_themeDef['name'].'/css');
     }
 
-    /**
-     *
-     */
     public function testGetCSS()
     {
         $matches = array();
         preg_match_all('/href="([^"]+)"/',$this->_themeObject->getCSS(),$matches);
         $i = 0;
         $this->assertRegExp('/themes\/'.$this->_themeObject->__toString().'\/css\/yui.css/',$matches[1][$i++]);
-        $this->assertRegExp('/include\/javascript\/jquery\/themes\/base\/jquery\.ui\.all\.css/',$matches[1][$i++]);
+        //$this->assertRegExp('/themes\/default\/css\/bootstrap.css/',$matches[1][$i++]);
+        $this->assertRegExp('/include\/javascript\/jquery\/themes\/base\/jquery.ui.all.css/',$matches[1][$i++]);
         $this->assertRegExp('/themes\/'.$this->_themeObject->__toString().'\/css\/deprecated.css/',$matches[1][$i++]);
         $this->assertRegExp('/themes\/'.$this->_themeObject->__toString().'\/css\/style.css/',$matches[1][$i++]);
 
@@ -155,7 +172,8 @@ class SugarThemeTest extends Sugar_PHPUnit_Framework_TestCase
         preg_match_all('/href="([^"]+)"/',$this->_themeObject->getCSS('blue','small'),$matches);
         $i = 0;
         $this->assertRegExp('/themes\/'.$this->_themeObject->__toString().'\/css\/yui.css/',$matches[1][$i++]);
-        $this->assertRegExp('/include\/javascript\/jquery\/themes\/base\/jquery\.ui\.all\.css/',$matches[1][$i++]);
+        //$this->assertRegExp('/themes\/default\/css\/bootstrap.css/',$matches[1][$i++]);
+        $this->assertRegExp('/include\/javascript\/jquery\/themes\/base\/jquery.ui.all.css/',$matches[1][$i++]);
         $this->assertRegExp('/themes\/'.$this->_themeObject->__toString().'\/css\/deprecated.css/',$matches[1][$i++]);
         $this->assertRegExp('/themes\/'.$this->_themeObject->__toString().'\/css\/style.css/',$matches[1][$i++]);
 
@@ -167,14 +185,14 @@ class SugarThemeTest extends Sugar_PHPUnit_Framework_TestCase
     {
         create_custom_directory('themes/'.$this->_themeObject->__toString().'/css/');
         sugar_file_put_contents('custom/themes/'.$this->_themeObject->__toString().'/css/style.css','h3 { color: red; }');
-        SugarAutoLoader::addToMap('custom/themes/'.$this->_themeObject->__toString().'/css/style.css', false);
 
         $matches = array();
         preg_match_all('/href="([^"]+)"/',$this->_themeObject->getCSS(),$matches);
         $i = 0;
 
         $this->assertRegExp('/themes\/'.$this->_themeObject->__toString().'\/css\/yui.css/',$matches[1][$i++]);
-        $this->assertRegExp('/include\/javascript\/jquery\/themes\/base\/jquery\.ui\.all\.css/',$matches[1][$i++]);
+        //$this->assertRegExp('/themes\/default\/css\/bootstrap.css/',$matches[1][$i++]);
+        $this->assertRegExp('/include\/javascript\/jquery\/themes\/base\/jquery.ui.all.css/',$matches[1][$i++]);
         $this->assertRegExp('/themes\/'.$this->_themeObject->__toString().'\/css\/deprecated.css/',$matches[1][$i++]);
         $this->assertRegExp('/themes\/'.$this->_themeObject->__toString().'\/css\/style.css/',$matches[1][$i++]);
 
@@ -189,7 +207,8 @@ class SugarThemeTest extends Sugar_PHPUnit_Framework_TestCase
         $i = 0;
 
         $this->assertRegExp('/themes\/'.$this->_themeObjectChild->__toString().'\/css\/yui.css/',$matches[1][$i++]);
-        $this->assertRegExp('/include\/javascript\/jquery\/themes\/base\/jquery\.ui\.all\.css/',$matches[1][$i++]);
+        //$this->assertRegExp('/themes\/default\/css\/bootstrap.css/',$matches[1][$i++]);
+        $this->assertRegExp('/include\/javascript\/jquery\/themes\/base\/jquery.ui.all.css/',$matches[1][$i++]);
         $this->assertRegExp('/themes\/'.$this->_themeObjectChild->__toString().'\/css\/deprecated.css/',$matches[1][$i++]);
         $this->assertRegExp('/themes\/'.$this->_themeObjectChild->__toString().'\/css\/style.css/',$matches[1][$i++]);
 
@@ -227,7 +246,7 @@ class SugarThemeTest extends Sugar_PHPUnit_Framework_TestCase
     public function testGetJSCustom()
     {
         create_custom_directory('themes/'.$this->_themeObject->__toString().'/js/');
-        SugarAutoLoader::put('custom/themes/'.$this->_themeObject->__toString().'/js/style.js','var x = 1;');
+        sugar_file_put_contents('custom/themes/'.$this->_themeObject->__toString().'/js/style.js','var x = 1;');
 
         $matches = array();
         preg_match_all('/src="([^"]+)"/',$this->_themeObject->getJS(),$matches);
@@ -281,7 +300,7 @@ class SugarThemeTest extends Sugar_PHPUnit_Framework_TestCase
     public function testGetImageURLCustom()
     {
         create_custom_directory('themes/'.$this->_themeObject->__toString().'/images/');
-        SugarAutoLoader::touch('custom/themes/'.$this->_themeObject->__toString().'/images/Accounts.gif');
+        sugar_touch('custom/themes/'.$this->_themeObject->__toString().'/images/Accounts.gif');
 
         $this->assertEquals('custom/themes/'.$this->_themeObject->__toString().'/images/Accounts.gif',
             $this->_themeObject->getImageURL('Accounts.gif',false));
@@ -290,7 +309,8 @@ class SugarThemeTest extends Sugar_PHPUnit_Framework_TestCase
     public function testGetImageURLCustomDifferentExtension()
     {
         create_custom_directory('themes/'.$this->_themeObject->__toString().'/images/');
-        SugarAutoLoader::touch('custom/themes/'.$this->_themeObject->__toString().'/images/Accounts.png');
+        sugar_touch('custom/themes/'.$this->_themeObject->__toString().'/images/Accounts.png');
+
         $this->assertEquals('custom/themes/'.$this->_themeObject->__toString().'/images/Accounts.png',
             $this->_themeObject->getImageURL('Accounts.gif',false));
     }
@@ -303,12 +323,12 @@ class SugarThemeTest extends Sugar_PHPUnit_Framework_TestCase
     public function testGetImageURLDefaultCustom()
     {
         create_custom_directory('themes/default/images/');
-        SugarAutoLoader::touch('custom/themes/default/images/Emails.gif');
+        sugar_touch('custom/themes/default/images/Emails.gif');
 
         $this->assertEquals('custom/themes/default/images/Emails.gif',
             $this->_themeObject->getImageURL('Emails.gif',false));
 
-        SugarAutoLoader::unlink('custom/themes/default/images/Emails.gif');
+        unlink('custom/themes/default/images/Emails.gif');
     }
 
     public function testGetImageURLNotFound()
@@ -341,7 +361,7 @@ class SugarThemeTest extends Sugar_PHPUnit_Framework_TestCase
     public function testGetTemplateCustom()
     {
         create_custom_directory('themes/'.$this->_themeObject->__toString().'/tpls/');
-        SugarAutoLoader::touch('custom/themes/'.$this->_themeObject->__toString().'/tpls/header.tpl');
+        sugar_touch('custom/themes/'.$this->_themeObject->__toString().'/tpls/header.tpl');
 
         $this->assertEquals('custom/themes/'.$this->_themeObject->__toString().'/tpls/header.tpl',
             $this->_themeObject->getTemplate('header.tpl'));
@@ -350,7 +370,7 @@ class SugarThemeTest extends Sugar_PHPUnit_Framework_TestCase
     public function testGetTemplateDefaultCustom()
     {
         create_custom_directory('themes/default/tpls/');
-        SugarAutoLoader::touch('custom/themes/default/tpls/SomeDefaultTemplate.tpl');
+        sugar_touch('custom/themes/default/tpls/SomeDefaultTemplate.tpl');
 
         $this->assertEquals('custom/themes/default/tpls/SomeDefaultTemplate.tpl',
             $this->_themeObject->getTemplate('SomeDefaultTemplate.tpl'));

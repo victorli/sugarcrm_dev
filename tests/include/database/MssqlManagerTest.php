@@ -1,19 +1,49 @@
 <?php
-/*
- * Your installation or use of this SugarCRM file is subject to the applicable
- * terms available at
- * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
- * If you do not agree to all of the applicable terms or do not have the
- * authority to bind the entity as an authorized representative, then do not
- * install or use this SugarCRM file.
- *
- * Copyright (C) SugarCRM Inc. All rights reserved.
- */
+/*********************************************************************************
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by SugarCRM".
+ ********************************************************************************/
+
 require_once 'include/database/MssqlManager.php';
 
 class MssqlManagerTest extends Sugar_PHPUnit_Framework_TestCase
 {
-    static public function setUpBeforeClass()
+    /**
+     * @var MssqlManager
+     */
+    private $_db = null;
+
+    static public function setupBeforeClass()
     {
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
         $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
@@ -127,10 +157,6 @@ class MssqlManagerTest extends Sugar_PHPUnit_Framework_TestCase
                     array('foo','add_date',array(5,'year')),
                     "DATEADD(year,5,foo)"
                 ),
-                array(
-                    array('1.23','round',array(6)),
-                    "round(1.23, 6)"
-                )
         );
         return $returnArray;
     }
@@ -206,331 +232,425 @@ class MssqlManagerTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertTrue($this->_db->connect($configOptions));
     }
 
-    /**
-     * Test sql for truncate table in SqlServer(s).
-     */
-    public function testTruncateTableSQL()
-    {
-        if(!$GLOBALS['db'] instanceof MssqlManager) {
-            $this->markTestSkipped('Only applies to SQL Server legacy driver.');
-        }
-
-        $sql = $GLOBALS['db']->truncateTableSQL('TEST_TABLE');
-
-        $this->assertEquals('TRUNCATE TABLE TEST_TABLE', $sql);
-    }
-
-    public function testSqlLikeString()
-    {
-        $str = '[[A-Z]';
-        $likestr = $this->_db->sqlLikeString($str, '%', false);
-        $this->assertEquals('[[][[]A-Z]', $likestr);
-    }
-
-    /**
-     * Data provider for test of check union(s) in query.
-     *
-     * @return array
-     */
-    public function providerIsUnionQuery()
+    public function providerFullTextQuery()
     {
         return array(
-            // If UNION(s) in main query and sub queries not exists then this's union query.
-            array(
-                "
-                    select
-                        emails1.id id,
-                        emails1.date_modified date_modified
-                    from emails1
-                    union
-                    select
-                        emails.id id,
-                        emails.date_modified date_modified
-                    from emails
-                    where emails.deleted = 0
-                    order by emails.date_modified desc
-                ",
-                true
-            ),
-            // If UNION(s) in sub queries and not exists in main query then this's not union query.
-            array(
-                "
-                    select
-                          emails.id id,
-                          emails.date_modified date_modified,
-                          emails.assigned_user_id assigned_user_id,
-                          emails.created_by created_by
-                    from emails
-                    inner join (
-                        select tst.team_set_id
-                        from team_sets_teams tst
-                        inner join team_memberships team_memberships on tst.team_id = team_memberships.team_id
-                                and team_memberships.user_id = N'2e98b15e-89a9-b6c2-a8a1-53b42599bd14'
-                                and team_memberships.deleted=0 group by tst.team_set_id
-                    ) emails_tf on emails_tf.team_set_id  = emails.team_set_id
-                    inner join (
-                        select eb.email_id, N'direct' source
-                        from emails_beans eb
-                        where eb.bean_module = N'leads'
-                            and eb.bean_id = N'c2c77a37-1732-96f0-1403-53b4253853cd' and eb.deleted=0
-                        union
-                        select distinct eear.email_id, N'relate' source
-                        from emails_email_addr_rel eear
-                        inner join email_addr_bean_rel eabr
-                        on eabr.bean_id = N'c2c77a37-1732-96f0-1403-53b4253853cd' and eabr.bean_module = N'leads' and
-                        eabr.email_address_id = eear.email_address_id and eabr.deleted=0
-                        where eear.deleted=0
-                    ) email_ids on emails.id=email_ids.email_id
-                    where emails.deleted = 0
-                    order by emails.date_modified desc
-                ",
-                false
-            ),
-            // If UNION(s) in sub queries and in main query then this's union query.
-            array(
-                "
-                    select
-                        emails1.id id,
-                        emails1.date_modified date_modified
-                    from emails1
-                    union
-                    select
-                        emails.id id,
-                        emails.date_modified date_modified
-                    from emails
-                    inner join (
-                        select tst.team_set_id
-                        from team_sets_teams tst
-                        inner join team_memberships team_memberships on tst.team_id = team_memberships.team_id
-                                and team_memberships.user_id = N'2e98b15e-89a9-b6c2-a8a1-53b42599bd14'
-                                and team_memberships.deleted=0 group by tst.team_set_id
-                    ) emails_tf on emails_tf.team_set_id  = emails.team_set_id
-                    inner join (
-                        select eb.email_id, N'direct' source
-                        from emails_beans eb
-                        where eb.bean_module = N'leads'
-                            and eb.bean_id = N'c2c77a37-1732-96f0-1403-53b4253853cd' and eb.deleted=0
-                        union
-                        select distinct eear.email_id, N'relate' source
-                        from emails_email_addr_rel eear
-                        inner join email_addr_bean_rel eabr
-                        on eabr.bean_id = N'c2c77a37-1732-96f0-1403-53b4253853cd' and eabr.bean_module = N'leads' and
-                        eabr.email_address_id = eear.email_address_id and eabr.deleted=0
-                        where eear.deleted=0
-                    ) email_ids on emails.id=email_ids.email_id
-                    where emails.deleted = 0
-                    order by emails.date_modified desc
-                ",
-                true
-            ),
-            // Without union(s)
-            array(
-                "
-                    select
-                          emails.id id,
-                          emails.date_modified date_modified,
-                          emails.assigned_user_id assigned_user_id,
-                          emails.created_by created_by
-                    from emails
-                    where emails.deleted = 0
-                    order by emails.date_modified desc
-                ",
-                false
-            ),
+            array(array('word1'), array(), array(),
+                "CONTAINS(unittest, '(\"word1\")')"),
+            array(array("'word1'"), array(), array(),
+                "CONTAINS(unittest, '(\"''word1''\")')"),
+            array(array("\"word1\""), array(), array(),
+                "CONTAINS(unittest, '(\"word1\")')"),
+            array(array('word1', 'word2'), array(), array(),
+                "CONTAINS(unittest, '(\"word1\" | \"word2\")')"),
+            array(array('word1', 'word2'), array('mustword'), array(),
+                "CONTAINS(unittest, '\"mustword\" AND (\"word1\" | \"word2\")')"),
+            array(array('word1', 'word2'), array('mustword', 'mustword2'), array(),
+                "CONTAINS(unittest, '\"mustword\" AND \"mustword2\" AND (\"word1\" | \"word2\")')"),
+            array(array(), array('mustword', 'mustword2'), array(),
+                "CONTAINS(unittest, '\"mustword\" AND \"mustword2\"')"),
+            array(array('word1'), array(), array('notword'),
+                "CONTAINS(unittest, '(\"word1\") AND  NOT \"notword\"')"),
+            array(array('word1'), array(), array('notword', 'notword2'),
+                "CONTAINS(unittest, '(\"word1\") AND  NOT \"notword\" AND  NOT \"notword2\"')"),
+            array(array('word1', 'word2'), array('mustword', 'mustword2'), array('notword', 'notword2'),
+                "CONTAINS(unittest, '\"mustword\" AND \"mustword2\" AND (\"word1\" | \"word2\") AND  NOT \"notword\" AND  NOT \"notword2\"')"),
         );
     }
 
     /**
-     * test of check union(s) in query.
-     *
-     * @dataProvider providerIsUnionQuery
-     *
-     * @param string $sql
-     * @param boolean $isUnionExpected
+     * @ticket 37435
+     * @dataProvider providerFullTextQuery
+     * @param array $terms
+     * @param string $result
      */
-    public function testIsUnionQuery($sql, $isUnionExpected)
+    public function testFullTextQuery($terms, $must_terms, $exclude_terms, $result)
     {
-        if (!$this->_db instanceof MssqlManager) {
-            $this->markTestSkipped('Only applies to SQL Server legacy driver.');
-        }
-        $isUnion = SugarTestReflection::callProtectedMethod($this->_db, 'isUnionQuery', array($sql));
-
-        $this->assertEquals($isUnionExpected, $isUnion);
+        $this->assertEquals($result,
+        		$this->_db->getFulltextQuery('unittest', $terms, $must_terms, $exclude_terms));
     }
 
     /**
-     * Data provider for testColumnLengthLimits()
+     * Test checks order by string in different queries
+     *
+     * @group 54990
+     * @dataProvider getQueriesForReturnOrderBy
+     */
+    public function testReturnOrderBy($query, $start, $count, $expected)
+    {
+        $actual = $this->_db->limitQuery($query, $start, $count, false, '', false);
+        $this->assertContains($expected, $actual, 'Order By is incorrect');
+    }
+
+    /**
+     * Data provider for testReturnOrderBy
+     * Returns queries with different functions, offsets & aliases
      *
      * @return array
      */
-    public function dataProviderColumnLengthLimits()
+    static public function getQueriesForReturnOrderBy()
     {
         return array(
-            // char with length less than 8000
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'char',
-                    'len' => '1024',
-                ),
-                '/foo\s+$baseType\(1024\)/i',
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a1 ASC",
+                0,
+                1,
+                "(ORDER BY t1.f1 ASC)"
             ),
-            // char with length greater than 8000
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'char',
-                    'len' => '9000',
-                ),
-                '/foo\s+$baseType\(8000\)/i',
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a2 ASC",
+                0,
+                1,
+                "(ORDER BY t1.f2 ASC)"
             ),
-            // varchar with length less than 8000
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'varchar',
-                    'len' => '1024',
-                ),
-                '/foo\s+$baseType\(1024\)/i',
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f1 ASC",
+                0,
+                1,
+                "(ORDER BY t1.f1 ASC)"
             ),
-            // varchar with length greater than 8000
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'varchar',
-                    'len' => '9000',
-                ),
-                '/foo\s+$baseType\(max\)/i',
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f2 ASC",
+                0,
+                1,
+                "(ORDER BY t1.f2 ASC)"
             ),
-            // varchar with length max
+
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'varchar',
-                    'len' => 'max',
-                ),
-                '/foo\s+$baseType\(max\)/i',
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a1 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f1 ASC)"
             ),
-            // binary with length less than 8000
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'binary',
-                    'len' => '1024',
-                ),
-                '/foo\s+$baseType\(1024\)/i',
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a2 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f2 ASC)"
             ),
-            // binary with length greater than 8000
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'binary',
-                    'len' => '9000',
-                ),
-                '/foo\s+$baseType\(8000\)/i',
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f1 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f1 ASC)"
             ),
-            // varbinary with length less than 8000
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'varbinary',
-                    'len' => '1024',
-                ),
-                '/foo\s+$baseType\(1024\)/i',
+                "SELECT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f2 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f2 ASC)"
             ),
-            // varbinary with length greater than 8000
+
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'varbinary',
-                    'len' => '9000',
-                ),
-                '/foo\s+$baseType\(max\)/i',
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a1 ASC",
+                0,
+                1,
+                "ORDER BY a1 ASC"
             ),
-            // varbinary with length max
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'varbinary',
-                    'len' => 'max',
-                ),
-                '/foo\s+$baseType\(max\)/i',
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a2 ASC",
+                0,
+                1,
+                "ORDER BY a2 ASC"
             ),
-            // nchar with length less than 4000
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'nchar',
-                    'len' => '1024',
-                ),
-                '/foo\s+$baseType\(1024\)/i',
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f1 ASC",
+                0,
+                1,
+                "ORDER BY t1.f1 ASC"
             ),
-            // nchar with length greater than 4000
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'nchar',
-                    'len' => '9000',
-                ),
-                '/foo\s+$baseType\(4000\)/i',
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f2 ASC",
+                0,
+                1,
+                "ORDER BY t1.f2 ASC"
             ),
-            // nvarchar with length less than 4000
+
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'nvarchar',
-                    'len' => '1024',
-                ),
-                '/foo\s+$baseType\(1024\)/i',
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a1 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f1 ASC)"
             ),
-            // nvarchar with length greater than 4000
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'nvarchar',
-                    'len' => '9000',
-                ),
-                '/foo\s+$baseType\(max\)/i',
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a2 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f2 ASC)"
             ),
-            // nvarchar with length max
             array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'nvarchar',
-                    'len' => 'max',
-                ),
-                '/foo\s+$baseType\(max\)/i',
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f1 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f1 ASC)"
+            ),
+            array(
+                "SELECT DISTINCT t1.f1 a1, t1.f2 a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f2 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f2 ASC)"
+            ),
+
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL( t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a1 ASC",
+                0,
+                1,
+                "(ORDER BY isnull( t1.f1, '' ) ASC)"
+            ),
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL( t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a2 ASC",
+                0,
+                1,
+                "(ORDER BY isnull( t1.f2, '' ) ASC)"
+            ),
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL( t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f1 ASC",
+                0,
+                1,
+                "(ORDER BY t1.f1 ASC)"
+            ),
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL( t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f2 ASC",
+                0,
+                1,
+                "(ORDER BY t1.f2 ASC)"
+            ),
+
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL(  t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a1 ASC",
+                1,
+                1,
+                "(ORDER BY isnull( t1.f1, '' ) ASC)"
+            ),
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL( t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY a2 ASC",
+                1,
+                1,
+                "(ORDER BY isnull( t1.f2, '' ) ASC)"
+            ),
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL( t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f1 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f1 ASC)"
+            ),
+            array(
+                "SELECT ISNULL( t1.f1, '' ) a1, ISNULL( t1.f2, '' ) a2 FROM table1 t1 WHERE 1 = 1 ORDER BY t1.f2 ASC",
+                1,
+                1,
+                "(ORDER BY t1.f2 ASC)"
+            ),
+
+            array(
+                "SELECT
+                    ISNULL(accounts.id,'') primaryid,
+                    ISNULL(accounts.name,'') accounts_name,
+                    ISNULL(l2.id,'') l2_id,
+                    l2.email_address l2_email_address
+                FROM
+                    accounts
+                INNER JOIN
+                    accounts_contacts l1_1
+                ON
+                    accounts.id=l1_1.account_id
+                    AND l1_1.deleted=0
+                INNER JOIN
+                    contacts l1
+                ON
+                    l1.id=l1_1.contact_id
+                    AND l1.deleted=0
+                    AND l1.team_set_id IN (
+                        SELECT
+                            tst.team_set_id
+                        from
+                            team_sets_teams tst
+                        INNER JOIN
+                            team_memberships team_memberships
+                        ON
+                            tst.team_id = team_memberships.team_id
+                            AND team_memberships.user_id = '5a409dc7-1cdb-278b-2222-511e6952dac8'
+                            AND team_memberships.deleted=0
+                    )
+                INNER JOIN
+                    email_addr_bean_rel l2_1
+                ON
+                    l1.id=l2_1.bean_id
+                    AND l2_1.deleted=0
+                    AND l2_1.primary_address = '1'
+                INNER JOIN
+                    email_addresses l2
+                ON
+                    l2.id=l2_1.email_address_id
+                    AND l2.deleted=0
+                WHERE
+                    ((1=1)
+                    AND accounts.team_set_id IN (
+                        SELECT
+                            tst.team_set_id
+                        FROM
+                            team_sets_teams tst
+                        INNER JOIN
+                            team_memberships team_memberships
+                        ON
+                            tst.team_id = team_memberships.team_id
+                            AND team_memberships.user_id = '5a409dc7-1cdb-278b-2222-511e6952dac8'
+                            AND team_memberships.deleted=0
+                    ))
+                    AND accounts.deleted=0
+                ORDER BY
+                    l2_email_address ASC
+                ",
+                1,
+                1,
+                "(ORDER BY l2.email_address ASC)"
+            ),
+
+            array(
+                "SELECT
+                    ISNULL(accounts.id,'') primaryid,
+                    ISNULL(accounts.name,'') accounts_name,
+                    ISNULL(l2.id,'') l2_id,
+                    l2.email_address l2_email_address
+                FROM
+                    accounts
+                INNER JOIN
+                    accounts_contacts l1_1
+                ON
+                    accounts.id=l1_1.account_id
+                    AND l1_1.deleted=0
+                INNER JOIN
+                    contacts l1
+                ON
+                    l1.id=l1_1.contact_id
+                    AND l1.deleted=0
+                    AND l1.team_set_id IN (
+                        SELECT
+                            tst.team_set_id
+                        from
+                            team_sets_teams tst
+                        INNER JOIN
+                            team_memberships team_memberships
+                        ON
+                            tst.team_id = team_memberships.team_id
+                            AND team_memberships.user_id = 'c71f4b54-2058-5d8b-1d17-511e6b730b27'
+                            AND team_memberships.deleted=0
+                    )
+                INNER JOIN
+                    email_addr_bean_rel l2_1
+                ON
+                    l1.id=l2_1.bean_id
+                    AND l2_1.deleted=0
+                    AND l2_1.primary_address = '1'
+                INNER JOIN
+                    email_addresses l2
+                ON
+                    l2.id=l2_1.email_address_id
+                    AND l2.deleted=0
+                WHERE
+                    ((1=1)
+                    AND accounts.team_set_id IN (
+                        SELECT
+                            tst.team_set_id
+                        FROM
+                            team_sets_teams tst
+                        INNER JOIN
+                            team_memberships team_memberships
+                        ON
+                            tst.team_id = team_memberships.team_id
+                            AND team_memberships.user_id = 'c71f4b54-2058-5d8b-1d17-511e6b730b27'
+                            AND team_memberships.deleted=0
+                    ))
+                    AND  accounts.deleted=0
+                ORDER BY
+                    accounts_name ASC
+                ",
+                1,
+                1,
+                "(ORDER BY isnull(accounts.name,'') ASC)"
+            ),
+
+            array(
+                "SELECT DISTINCT meetings.id,
+                    LTRIM(RTRIM(ISNULL(jt0.first_name,'')+' '+ISNULL(jt0.last_name,''))) assigned_user_name,
+                    'Users' assigned_user_name_mod,
+                    meetings.date_entered
+                FROM meetings
+                LEFT JOIN
+                    users jt0
+                ON
+                    meetings.assigned_user_id=jt0.id
+                    AND jt0.deleted=0
+                    AND jt0.deleted=0
+                LEFT JOIN
+                    sugarfavorites sfav
+                ON
+                    sfav.module ='Meetings'
+                    AND sfav.record_id=meetings.id
+                    AND sfav.created_by='1'
+                    AND sfav.deleted=0
+                where (
+                        (meetings.status IN ('Planned'))
+                        AND (meetings.assigned_user_id IN ('1','seed_chris_id','seed_jim_id'))
+                    ) AND meetings.deleted=0
+                ORDER BY
+                    meetings.date_entered DESC
+                ",
+                1,
+                1,
+                "group by meetings.id, LTRIM(RTRIM(ISNULL(jt0.first_name,'')+' '+ISNULL(jt0.last_name,''))), meetings.date_entered"
+            ),
+
+            array(
+                "SELECT DISTINCT m1.id,
+                    m1.name,
+                    m1.date_start,
+                    m1.date_end,
+                    m1.assigned_user_id
+                FROM
+                    meetings_users rt
+                inner join
+                    meetings m1
+                on
+                    rt.meeting_id = m1.id
+                inner join
+                    users m2
+                on
+                    rt.user_id = m2.id
+                    AND m2.id = '1'
+                WHERE
+                    (m1.deleted = 0)
+                    AND m2.id = '1'
+                ",
+                1,
+                1,
+                "(ORDER BY m1.id, m1.name, m1.date_start, m1.date_end, m1.assigned_user_id)"
+            ),
+
+            array(
+                "SELECT DISTINCT rt.id,
+                    m1.name,
+                    m1.date_start,
+                    m1.date_end,
+                    m1.assigned_user_id
+                FROM
+                    meetings_users rt
+                inner join
+                    meetings m1
+                on
+                    rt.meeting_id = m1.id
+                inner join
+                    users m2
+                on
+                    rt.user_id = m2.id
+                    AND m2.id = '1'
+                WHERE
+                    (m1.deleted = 0)
+                    AND m2.id = '1'
+                ",
+                1,
+                1,
+                "(ORDER BY rt.id, m1.name, m1.date_start, m1.date_end, m1.assigned_user_id)"
             ),
         );
-    }
-
-    /**
-     * Test for check valid column type limits.
-     *
-     * @dataProvider dataProviderColumnLengthLimits
-     */
-    public function testColumnLengthLimits(array $fieldDef, $successRegex)
-    {
-        $db = DBManagerFactory::getInstance();
-        if (!$db instanceof MssqlManager) {
-            $this->markTestSkipped('Only applies to SQL Server legacy driver.');
-        }
-
-        $colType = $db->getColumnType($db->getFieldType($fieldDef));
-        if ($type = $db->getTypeParts($colType)) {
-            $successRegex = preg_replace('/\$baseType/', $type['baseType'], $successRegex);
-        }
-
-        $result = SugarTestReflection::callProtectedMethod($db, 'oneColumnSQLRep', array($fieldDef));
-        $this->assertEquals(1, preg_match($successRegex, $result), "Resulting statement: $result failed to match /$successRegex/");
-    }
-
-    /**
-     * Test order_stability capability BR-2097
-     */
-    public function testOrderStability()
-    {
-        $msg = 'MssqlManager cannot have order_stability capability';
-        $this->assertFalse($this->_db->supports('order_stability'), $msg);
     }
 }
