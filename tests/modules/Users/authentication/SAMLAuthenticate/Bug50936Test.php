@@ -1,39 +1,14 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 require_once('modules/Users/authentication/AuthenticationController.php');
 require_once('tests/modules/Users/AuthenticateTest.php');
 
@@ -45,15 +20,15 @@ require_once('tests/modules/Users/AuthenticateTest.php');
  * This tests mimics the contents of modules/Users/authentication/SAMLAuthenticate/index.php by placing it
  * in a custom directory minus the header() function call.  We can't include that because it'd just cause other issues
  */
-class Bug50936Test extends Sugar_PHPUnit_Framework_OutputTestCase
+class Bug50936Test extends Sugar_PHPUnit_Framework_TestCase
 {
     var $customContents;
 
 	public function setUp()
     {
         $GLOBALS['app'] = new SugarApplication();
-    	$GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-    	$this->sugar_config_old = $GLOBALS['sugar_config'];
+        SugarTestHelper::setUp('current_user');
+        SugarTestHelper::setUp('files');
     	$_REQUEST['user_name'] = 'foo';
     	$_REQUEST['user_password'] = 'bar';
     	$_SESSION['authenticated_user_id'] = true;
@@ -69,22 +44,21 @@ class Bug50936Test extends Sugar_PHPUnit_Framework_OutputTestCase
 
 $contents = <<<EOQ
 <?php
-        require('modules/Users/authentication/SAMLAuthenticate/lib/onelogin/saml.php');
-        require(get_custom_file_if_exists('modules/Users/authentication/SAMLAuthenticate/settings.php'));
+    require_once 'modules/Users/authentication/SAMLAuthenticate/SAMLAuthenticate.php';
+    require_once 'modules/Users/authentication/SAMLAuthenticate/saml.php';
 
-        \$authrequest = new SamlAuthRequest(\$settings);
-        \$url = \$authrequest->create();
-        echo \$url;
+    \$authrequest = new OneLogin_Saml_AuthRequest(SAMLAuthenticate::loadSettings());
+    echo \$authrequest->getRedirectUrl();
 EOQ;
-
-        file_put_contents('custom/modules/Users/authentication/SAMLAuthenticate/index.php', $contents);
+        SugarTestHelper::saveFile('custom/modules/Users/authentication/SAMLAuthenticate/index.php');
+        SugarAutoLoader::put('custom/modules/Users/authentication/SAMLAuthenticate/index.php', $contents);
 
 $contents = <<<EOQ
 <?php
                 // this function should be modified to return the SAML settings for the current use
                 \$settings = new SamlSettings();
                 // when using Service Provider Initiated SSO (starting at index.php), this URL asks the IdP to authenticate the user.
-                \$settings->idp_sso_target_url = 'www.sugarcrm.com';
+                \$settings->idp_sso_target_url = 'http://www.sugarcrm.com/';
 
                 // the certificate for the users account in the IdP
                 \$settings->x509certificate = \$GLOBALS['sugar_config']['SAML_X509Cert'];
@@ -100,32 +74,14 @@ $contents = <<<EOQ
 
         ?>
 EOQ;
-
-        if(file_exists('custom/modules/Users/authentication/SAMLAuthenticate/settings.php')) {
-           $this->customContents = file_get_contents('custom/modules/Users/authentication/SAMLAuthenticate/settings.php');
-        }
-
-        file_put_contents('custom/modules/Users/authentication/SAMLAuthenticate/settings.php', $contents);
+        SugarTestHelper::saveFile('custom/modules/Users/authentication/SAMLAuthenticate/settings.php');
+        SugarAutoLoader::put('custom/modules/Users/authentication/SAMLAuthenticate/settings.php', $contents, false);
 	}
 
 	public function tearDown()
 	{
-        //If we had a custom settings.php file already, just restore it
-        if(!empty($this->customContents))
-        {
-            file_put_contents('custom/modules/Users/authentication/SAMLAuthenticate/settings.php', $this->customContents);
-        } else {
-            unlink('custom/modules/Users/authentication/SAMLAuthenticate/settings.php');
-        }
+	    SugarTestHelper::tearDown();
 
-        //Remove the test index.php file
-        if(file_exists('custom/modules/Users/authentication/SAMLAuthenticate/index.php'))
-        {
-            unlink('custom/modules/Users/authentication/SAMLAuthenticate/index.php');
-        }
-
-	    unset($GLOBALS['current_user']);
-	    $GLOBALS['sugar_config'] = $this->sugar_config_old;
 	    unset($_REQUEST['login_module']);
         unset($_REQUEST['login_action']);
         unset($_REQUEST['login_record']);
@@ -144,4 +100,3 @@ EOQ;
 
 
 }
-?>

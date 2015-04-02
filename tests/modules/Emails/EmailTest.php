@@ -1,41 +1,17 @@
-<?php 
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
+<?php
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 
- 
 require_once('modules/Emails/Email.php');
+require_once "tests/modules/OutboundEmailConfiguration/OutboundEmailConfigurationTestHelper.php";
 
 /**
  * Test cases for Bug 30591
@@ -43,23 +19,24 @@ require_once('modules/Emails/Email.php');
 class EmailTest extends Sugar_PHPUnit_Framework_TestCase
 {
 	private $email;
-	
+
 	public function setUp()
 	{
 	    global $current_user;
-		
-	    $current_user = SugarTestUserUtilities::createAnonymousUser();
+
+	    $current_user = BeanFactory::getBean("Users");
+        $current_user->getSystemUser();
 	    $this->email = new Email();
 	    $this->email->email2init();
 	}
-	
+
 	public function tearDown()
 	{
 		unset($this->email);
-		SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+		// SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
 		unset($GLOBALS['current_user']);
 	}
-	
+
 	public function testSafeAttachmentName ()
 	{
 		$extArray[] = '0.py';
@@ -85,7 +62,7 @@ class EmailTest extends Sugar_PHPUnit_Framework_TestCase
 			}
 		}
 	}
-	
+
 	public function testEmail2ParseAddresses()
 	{
 		$emailDisplayName[] = '';
@@ -100,7 +77,7 @@ class EmailTest extends Sugar_PHPUnit_Framework_TestCase
 				$emailString[] = $emailDisplayName[$j].$emailAddress[$j];
 			else
 				$emailString[] = $emailDisplayName[$j].'<'.$emailAddress[$j].'>';
-			
+
 		}
 		$emailAddressString = implode(', ', $emailString);
 		$result = $this->email->email2ParseAddresses($emailAddressString);
@@ -112,7 +89,13 @@ class EmailTest extends Sugar_PHPUnit_Framework_TestCase
 			$this->asserteQuals($onlyEmailResult[$v], $emailAddress[$v]);
 		}
 	}
-	
+
+    public function testEmail2ParseAddresses_ParameterIsEmpty_EmptyArrayIsReturned()
+    {
+        $actual = $this->email->email2ParseAddresses('');
+        $this->assertCount(0, $actual, 'An empty array should have been returned.');
+    }
+
 	public function testDecodeDuringSend()
 	{
 		$testString = 'Replace sugarLessThan and sugarGreaterThan with &lt; and &gt;';
@@ -136,6 +119,76 @@ class EmailTest extends Sugar_PHPUnit_Framework_TestCase
     }
 
     /**
+     * @group email
+     * @group mailer
+     */
+    public function testEmailSend_Success()
+    {
+        OutboundEmailConfigurationTestHelper::setUp();
+        $config = OutboundEmailConfigurationPeer::getSystemMailConfiguration($GLOBALS['current_user']);
+        $mockMailer = new MockMailer($config);
+        MockMailerFactory::setMailer($mockMailer);
+
+        $em = new Email();
+        $em->email2init();
+        $em->_setMailerFactoryClassName('MockMailerFactory');
+
+        $em->name = "This is the Subject";
+        $em->description_html = "This is the HTML Description";
+        $em->description      = "This is the Text Description";
+
+        $from       = new EmailIdentity("twolf@sugarcrm.com" , "Tim Wolf");
+        $replyto    = $from;
+        $to         = new EmailIdentity("twolf@sugarcrm.com" , "Tim Wolf");
+        $cc         = new EmailIdentity("twolf@sugarcrm.com" , "Tim Wolf");
+
+        $em->from_addr = $from->getEmail();
+        $em->from_name = $from->getName();
+
+        $em->reply_to_addr = $replyto->getEmail();
+        $em->reply_to_name = $replyto->getName();
+
+        $em->to_addrs_arr = array(
+            array(
+                'email'     => $to->getEmail(),
+                'display'   => $to->getName(),
+            )
+        );
+        $em->cc_addrs_arr = array(
+            array(
+                'email'     => $cc->getEmail(),
+                'display'   => $cc->getName(),
+            )
+        );
+
+        $em->send();
+
+        $data = $mockMailer->toArray();
+        $this->assertEquals($em->description_html, $data['htmlBody']);
+        $this->assertEquals($em->description, $data['textBody']);
+
+        $headers = $mockMailer->getHeaders();
+        $this->assertEquals($em->name, $headers['Subject']);
+        $this->assertEquals($from->getEmail(), $headers['From'][0]);
+        $this->assertEquals($from->getName(),  $headers['From'][1]);
+        $this->assertEquals($replyto->getEmail(), $headers['Reply-To'][0]);
+        $this->assertEquals($replyto->getName(),  $headers['Reply-To'][1]);
+
+        $recipients = $mockMailer->getRecipients();
+
+        $actual_to=array_values($recipients['to']);
+        $this->assertEquals($to->getEmail(), $actual_to[0]->getEmail(), "TO Email Address Incorrect");
+        $this->assertEquals($to->getName(),  $actual_to[0]->getName(),  "TO Name Incorrect");
+
+        $actual_cc=array_values($recipients['cc']);
+        $this->assertEquals($to->getEmail(), $actual_cc[0]->getEmail(), "CC Email Address Incorrect");
+        $this->assertEquals($to->getName(),  $actual_cc[0]->getName(),  "CC Name Incorrect");
+
+        $this->assertEquals(true,$mockMailer->wasSent());
+        OutboundEmailConfigurationTestHelper::tearDown();
+    }
+
+    /**
      * @group bug51804
      * @dataProvider configParamProvider
      * @param string $config_param
@@ -144,10 +197,71 @@ class EmailTest extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testArrayToDelimitedString($config_param, $address_array, $expected)
     {
-            $GLOBALS['sugar_config']['email_address_separator'] = $config_param;
+        $GLOBALS['sugar_config']['email_address_separator'] = $config_param;
 
-            $this->assertEquals($expected,$this->email->_arrayToDelimitedString($address_array), 'Array should be delimited with correct delimiter');
+        $this->assertEquals($expected,$this->email->_arrayToDelimitedString($address_array), 'Array should be delimited with correct delimiter');
 
     }
 }
-?>
+
+require_once "modules/Mailer/SmtpMailer.php"; // requires BaseMailer in order to extend it
+
+class MockMailer extends SmtpMailer
+{
+    var $_sent;
+
+    function __construct(OutboundEmailConfiguration $config) {
+        $this->_sent = false;
+        $this->config = $config;
+        $headers = new EmailHeaders();
+        $headers->setHeader(EmailHeaders::From,   $config->getFrom());
+        $headers->setHeader(EmailHeaders::Sender, $config->getFrom());
+        $this->headers = $headers;
+        $this->recipients = new RecipientsCollection();
+    }
+
+    public function getHeaders() {
+        return($this->headers->packageHeaders());
+    }
+
+    public function getRecipients() {
+        return $this->recipients->getAll();
+    }
+
+    public function send() {
+        $this->_sent = true;
+    }
+
+    public function wasSent() {
+        return $this->_sent;
+    }
+
+    public function toArray() {
+        return $this->asArray($this);
+    }
+
+    private function asArray($d) {
+        if (is_object($d)) {
+            $d = get_object_vars($d);
+        }
+        if (is_array($d)) {
+            return array_map(__METHOD__, $d);
+        }
+        return $d;
+    }
+}
+
+class MockMailerFactory extends MailerFactory
+{
+    private static $mailer;
+
+    public static function setMailer(BaseMailer $mailer)
+    {
+        static::$mailer = $mailer;
+    }
+
+    public static function getMailer(OutboundEmailConfiguration $config)
+    {
+        return static::$mailer;
+    }
+}

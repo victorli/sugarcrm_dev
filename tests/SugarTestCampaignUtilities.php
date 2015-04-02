@@ -1,53 +1,32 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
  
 require_once 'modules/Campaigns/Campaign.php';
+require_once 'modules/CampaignLog/CampaignLog.php';
+require_once 'modules/CampaignTrackers/CampaignTracker.php';
 
 class SugarTestCampaignUtilities
 {
-    private static $_createdCampaigns = array();
+    private static $_createdCampaigns    = array();
+    private static $_createdCampaignLogs = array();
+    private static $_createdCampaignTrackers = array();
 
     private function __construct() {}
 
-    public static function createCampaign($id = '') 
+    public static function createCampaign($id = '', $class='Campaign')
     {
         $time = mt_rand();
     	$name = 'SugarCampaign';
-    	$campaign = new Campaign();
+    	$campaign = new $class();
         $campaign->name = $name . $time;
         $campaign->status = 'Active';
         $campaign->campaign_type = 'Email';
@@ -87,5 +66,90 @@ class SugarTestCampaignUtilities
             self::$_createdCampaigns[] = $campaign;
         }
     }
+
+    public static function createCampaignLog($campaignId, $activityType, $relatedBean)
+    {
+        $campaignLog                = BeanFactory::getBean("CampaignLog");
+        $campaignLog->campaign_id   = $campaignId;
+        $campaignLog->related_id    = $relatedBean->id;
+        $campaignLog->related_type  = $relatedBean->module_dir;
+        $campaignLog->activity_type = $activityType;
+        $campaignLog->target_type   = $relatedBean->module_dir;
+        $campaignLog->target_id     = $relatedBean->id;
+
+        $campaignLog->save();
+        $GLOBALS["db"]->commit();
+        self::$_createdCampaignLogs[] = $campaignLog;
+
+        return $campaignLog;
+    }
+
+    public static function removeAllCreatedCampaignLogs()
+    {
+        $campaignLogIds = self::getCreatedCampaignLogsIds();
+        $GLOBALS["db"]->query("DELETE FROM campaigns WHERE id IN ('" . implode("', '", $campaignLogIds) . "')");
+    }
+
+    public static function getCreatedCampaignLogsIds()
+    {
+        $campaignLogIds = array();
+
+        foreach (self::$_createdCampaignLogs as $campaignLog) {
+            $campaignLogIds[] = $campaignLog->id;
+        }
+
+        return $campaignLogIds;
+    }
+
+    public static function createCampaignTracker($campaignId, $name = '', $url = '')
+    {
+        $time = mt_rand();
+        if ($name == '') {
+            $name = 'SugarCampaignTracker'.$time;
+        }
+        if ($url == '') {
+            $url = 'http://www.foo.com/'.$time;
+        }
+        $campaignTracker = BeanFactory::getBean("CampaignTrackers");
+        $campaignTracker->campaign_id   = $campaignId;
+        $campaignTracker->tracker_name    = $name;
+        $campaignTracker->tracker_url  = $url;
+
+        $campaignTracker->save();
+        $GLOBALS["db"]->commit();
+        self::$_createdCampaignTrackers[] = $campaignTracker;
+
+        return $campaignTracker;
+    }
+
+    public static function removeAllCreatedCampaignTrackers()
+    {
+        $campaignTrackerIds = self::getCreatedCampaignTrackerIds();
+        $GLOBALS["db"]->query("DELETE FROM campaign_trkrs WHERE id IN ('" . implode("', '", $campaignTrackerIds) . "')");
+    }
+
+    public static function getCreatedCampaignTrackerIds()
+    {
+        $campaignTrackerIds = array();
+
+        foreach (self::$_createdCampaignTrackers as $campaignTracker) {
+            $campaignTrackerIds[] = $campaignTracker->id;
+        }
+
+        return $campaignTrackerIds;
+    }
 }
-?>
+
+class CampaignMock extends Campaign
+{
+    public function getNotificationEmailTemplate($test = false)
+    {
+        if ($test) {
+            $templateName = $this->getTemplateNameForNotificationEmail();
+            return $this->createNotificationEmailTemplate($templateName);
+        }
+
+        return $this->createNotificationEmailTemplate($templateName);
+
+    }
+}

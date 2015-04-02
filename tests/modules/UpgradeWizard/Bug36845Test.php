@@ -1,39 +1,14 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 
 class Bug36845Test extends Sugar_PHPUnit_Framework_TestCase
 {
@@ -48,7 +23,7 @@ class Bug36845Test extends Sugar_PHPUnit_Framework_TestCase
 
         global $beanFiles, $beanList;
         require('include/modules.php');
-        
+
         if(file_exists(sugar_cached('modules/unified_search_modules.php')))
 
         {
@@ -107,7 +82,7 @@ EOQ;
         $fp = sugar_fopen($this->module_dir . '/metadata/SearchFields.php', "w");
         fwrite( $fp, $the_string );
         fclose( $fp );
-
+        SugarAutoLoader::addToMap($this->module_dir . '/metadata/SearchFields.php', false);
         $table_name = strtolower($this->module);
         $the_string = <<<EOQ
 <?php
@@ -130,6 +105,7 @@ EOQ;
         $fp = sugar_fopen($this->module_dir . '/vardefs.php', "w");
         fwrite( $fp, $the_string );
         fclose( $fp );
+        SugarAutoLoader::addToMap($this->module_dir . '/vardefs.php', false);
 
         $the_string = <<<EOQ
 <?php
@@ -141,7 +117,7 @@ EOQ;
         $fp = sugar_fopen($this->module_dir . '/clabc_Bug36845Test.php', "w");
         fwrite( $fp, $the_string );
         fclose( $fp );
-
+        SugarAutoLoader::addToMap($this->module_dir . '/clabc_Bug36845Test.php', false);
         require('include/modules.php');
         global $beanFiles, $beanList;
 
@@ -161,11 +137,6 @@ EOQ;
             unlink(sugar_cached('modules/unified_search_modules.php'));
         }
 
-        if(file_exists('custom/modules/unified_search_modules_display.php'))
-        {
-            unlink('custom/modules/unified_search_modules_display.php');
-        }
-
         if($this->has_custom_unified_search_modules)
         {
             copy(sugar_cached('modules/unified_search_modules.php.bak'), sugar_cached('modules/unified_search_modules.php'));
@@ -176,16 +147,20 @@ EOQ;
         {
             copy('custom/modules/unified_search_modules_display.php.bak', 'custom/modules/unified_search_modules_display.php');
             unlink('custom/modules/unified_search_modules_display.php.bak');
-        }	
+        } else {
+            SugarAutoLoader::unlink('custom/modules/unified_search_modules_display.php');
+        }
 
         if(file_exists("custom/{$this->module_dir}/metadata"))
         {
             rmdir_recursive("custom/{$this->module_dir}/metadata");
+            SugarAutoLoader::delFromMap("custom/{$this->module_dir}");
         }
 
         if(file_exists($this->module_dir))
         {
            rmdir_recursive($this->module_dir);
+           SugarAutoLoader::delFromMap($this->module_dir);
         }
     }
 
@@ -208,6 +183,7 @@ EOQ;
     public function test_update_custom_vardefs_without_searchfields()
     {
     	unlink("{$this->module_dir}/metadata/SearchFields.php");
+    	SugarAutoLoader::delFromMap("{$this->module_dir}/metadata/SearchFields.php", false);
         $this->assertTrue(!file_exists("{$this->module_dir}/metadata/SearchFields.php"), 'Assert that we have a SearchFields.php file');
         $this->assertTrue(file_exists("{$this->module_dir}/vardefs.php"), 'Assert that we have a vardefs.php file');
         require_once('modules/UpgradeWizard/uw_utils.php');
@@ -228,6 +204,7 @@ EOQ;
         if(file_exists('custom/modules/unified_search_modules_display.php'))
         {
             unlink('custom/modules/unified_search_modules_display.php');
+            SugarAutoLoader::delFromMap('custom/modules/unified_search_modules_display.php', false);
         }
 
         require_once('modules/UpgradeWizard/uw_utils.php');
@@ -236,6 +213,6 @@ EOQ;
         $usa->saveGlobalSearchSettings();
         $this->assertTrue(file_exists('custom/modules/unified_search_modules_display.php'), 'Assert that unified_search_modules_display.php file was created');
     }
-    
+
 
 }

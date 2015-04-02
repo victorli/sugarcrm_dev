@@ -1,39 +1,14 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 require_once 'modules/Calls/Call.php';
 
 class CallTest extends Sugar_PHPUnit_Framework_TestCase
@@ -42,14 +17,26 @@ class CallTest extends Sugar_PHPUnit_Framework_TestCase
      * @var Call our call object
      */
     private $callid;
+    public $contact = null;
 
     public function setUp()
     {
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
+
+        $contact = BeanFactory::newBean('Contacts');
+        $contact->first_name = 'CallTest';
+        $contact->last_name = 'Contact';
+        $contact->save();
+        $this->contact = $contact;        
     }
 
     public function tearDown()
     {
+        SugarTestCallUtilities::removeCallUsers();
+        SugarTestCallUtilities::removeCallContacts();
+        SugarTestCallUtilities::removeAllCreatedCalls();
+        SugarTestContactUtilities::removeAllCreatedContacts();
+
         if(!empty($this->callid)) {
             $GLOBALS['db']->query("DELETE FROM calls WHERE id='{$this->callid}'");
             $GLOBALS['db']->query("DELETE FROM vcals WHERE user_id='{$GLOBALS['current_user']->id}'");
@@ -57,6 +44,9 @@ class CallTest extends Sugar_PHPUnit_Framework_TestCase
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset( $GLOBALS['current_user']);
         unset( $GLOBALS['mod_strings']);
+
+        $GLOBALS['db']->query("DELETE FROM contacts WHERE id = '{$this->contact->id}'");
+        unset($this->contact);        
     }
 
     /**
@@ -64,10 +54,13 @@ class CallTest extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testCallStatus()
     {
+        global $current_user;
          $call = new Call();
          $this->callid = $call->id = create_guid();
          $call->new_with_id = 1;
          $call->status = 'Test';
+        $call->assigned_user_id = $current_user->id;
+         $call->date_start = TimeDate::getInstance()->getNow()->asDb();
          $call->save();
          // then retrieve
          $call = new Call();
@@ -80,9 +73,12 @@ class CallTest extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testCallEmptyStatus()
     {
+        global $current_user;
          $call = new Call();
          $this->callid = $call->id = create_guid();
          $call->new_with_id = 1;
+         $call->date_start = TimeDate::getInstance()->getNow()->asDb();
+        $call->assigned_user_id = $current_user->id;
          $call->save();
          // then retrieve
          $call = new Call();
@@ -96,6 +92,7 @@ class CallTest extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testCallEmptyStatusLang()
     {
+        global $current_user;
         $langpack = new SugarTestLangPackCreator();
         $langpack->setModString('LBL_DEFAULT_STATUS','FAILED!','Calls');
         $langpack->save();
@@ -104,6 +101,8 @@ class CallTest extends Sugar_PHPUnit_Framework_TestCase
          $call = new Call();
          $this->callid = $call->id = create_guid();
          $call->new_with_id = 1;
+         $call->date_start = TimeDate::getInstance()->getNow()->asDb();
+        $call->assigned_user_id = $current_user->id;
          $call->save();
          // then retrieve
          $call = new Call();
@@ -117,6 +116,7 @@ class CallTest extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testCallEmptyStatusLangConfig()
     {
+        global $db;
          $langpack = new SugarTestLangPackCreator();
          $langpack->setModString('LBL_DEFAULT_STATUS','FAILED!','Calls');
          $langpack->save();
@@ -127,10 +127,68 @@ class CallTest extends Sugar_PHPUnit_Framework_TestCase
          $call = new Call();
          $this->callid = $call->id = create_guid();
          $call->new_with_id = 1;
+         $call->date_start = TimeDate::getInstance()->getNow()->asDb();
+         $call->assigned_user_id = $GLOBALS['current_user']->id;
          $call->save();
          // then retrieve
          $call = new Call();
          $call->retrieve($this->callid);
          $this->assertEquals('My Call', $call->status);
+
+        $q = "SELECT cu.accept_status FROM calls_users cu WHERE cu.call_id = '{$this->callid}' AND user_id = '{$GLOBALS['current_user']->id}'";
+        $r = $db->query($q);
+        $a = $db->fetchByAssoc($r);
+        $this->assertEquals('accept', $a['accept_status'], "Call wasn't accepted by the User");         
+    }
+
+    public function testLoadFromRow()
+    {
+        /** @var Call $call */
+        $call = BeanFactory::getBean('Calls');
+        $this->assertEmpty($call->reminder_checked);
+        $this->assertEmpty($call->email_reminder_checked);
+
+        $call->loadFromRow(array(
+            'reminder_time' => 30,
+            'email_reminder_time' => 30,
+        ));
+
+        $this->assertTrue($call->reminder_checked);
+        $this->assertTrue($call->email_reminder_checked);
+    }
+
+    public function testGetNotificationRecipients_RecipientsAreAlreadyLoaded_ReturnsRecipients()
+    {
+        $contacts = array(
+            SugarTestContactUtilities::createContact(),
+            SugarTestContactUtilities::createContact(),
+        );
+
+        $call = BeanFactory::newBean('Calls');
+        $call->users_arr = array($GLOBALS['current_user']->id);
+        $call->contacts_arr = array($contacts[0]->id, $contacts[1]->id);
+
+        $actual = $call->get_notification_recipients();
+        $this->assertArrayHasKey($GLOBALS['current_user']->id, $actual, 'The current user should be in the list.');
+        $this->assertArrayHasKey($contacts[0]->id, $actual, 'The first contact should be in the list.');
+        $this->assertArrayHasKey($contacts[1]->id, $actual, 'The second contact should be in the list.');
+    }
+
+    public function testGetNotificationRecipients_RecipientsAreNotAlreadyLoaded_ReturnsRecipients()
+    {
+        $contacts = array(
+            SugarTestContactUtilities::createContact(),
+            SugarTestContactUtilities::createContact(),
+        );
+
+        $call = SugarTestCallUtilities::createCall();
+        SugarTestCallUtilities::addCallUserRelation($call->id, $GLOBALS['current_user']->id);
+        SugarTestCallUtilities::addCallContactRelation($call->id, $contacts[0]->id);
+        SugarTestCallUtilities::addCallContactRelation($call->id, $contacts[1]->id);
+
+        $actual = $call->get_notification_recipients();
+        $this->assertArrayHasKey($GLOBALS['current_user']->id, $actual, 'The current user should be in the list.');
+        $this->assertArrayHasKey($contacts[0]->id, $actual, 'The first contact should be in the list.');
+        $this->assertArrayHasKey($contacts[1]->id, $actual, 'The second contact should be in the list.');
     }
 }

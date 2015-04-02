@@ -1,39 +1,14 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 
 require_once('service/v3/SugarWebServiceUtilv3.php');
 require_once('tests/service/APIv3Helper.php');
@@ -49,15 +24,19 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
     private $_unified_search_modules_content;
 
+    public static function setUpBeforeClass() {
+        if(isset($_SESSION['ACL'])) {
+            unset($_SESSION['ACL']);
+        }
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('app_strings');
+        SugarTestHelper::setUp('app_list_strings');
+        SugarTestHelper::setUp('mod_strings', array('Accounts'));
+    }
+
     public function setUp()
     {
-        global $beanList, $beanFiles;
-        include('include/modules.php');
-
-        //Reload langauge strings
-        $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
-        $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
-        $GLOBALS['mod_strings'] = return_module_language($GLOBALS['current_language'], 'Accounts');
         //Create an anonymous user for login purposes/
         $this->_user = SugarTestUserUtilities::createAnonymousUser();
         $GLOBALS['current_user'] = $this->_user;
@@ -81,7 +60,6 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         $GLOBALS['db']->query("DELETE FROM calls WHERE name like 'UNIT TEST%' ");
         $GLOBALS['db']->query("DELETE FROM tasks WHERE name like 'UNIT TEST%' ");
         $GLOBALS['db']->query("DELETE FROM meetings WHERE name like 'UNIT TEST%' ");
-        $GLOBALS['db']->commit();
         //$this->useOutputBuffering = false;
     }
 
@@ -89,9 +67,6 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 	{
 	    if(isset($GLOBALS['listViewDefs'])) unset($GLOBALS['listViewDefs']);
 	    if(isset($GLOBALS['viewdefs'])) unset($GLOBALS['viewdefs']);
-	    unset($GLOBALS['app_list_strings']);
-	    unset($GLOBALS['app_strings']);
-	    unset($GLOBALS['mod_strings']);
 
         if(!empty($this->unified_search_modules_content))
         {
@@ -107,6 +82,10 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
         unset($GLOBALS['reload_vardefs']);
 	}
+
+    public static function tearDownAfterClass() {
+        SugarTestHelper::tearDown();
+    }
 
     protected function _makeRESTCall($method,$parameters)
     {
@@ -359,10 +338,15 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         else
             require($expected_file);
 
-        if($view == 'list')
+        if($view == 'list') {
             $expectedResults = $listViewDefs[$module];
-        else
-            $expectedResults = $viewdefs[$module][ucfirst($view) .'View' ];
+        } else {
+            if ($type == 'wireless') {
+                $expectedResults = $viewdefs[$module]['mobile']['view'][$view];
+            } else {
+                $expectedResults = $viewdefs[$module][ucfirst($view) .'View' ];
+            }
+        }
 
         $a_expectedResults = array();
         $a_expectedResults[$module][$type][$view] = $expectedResults;
@@ -391,16 +375,117 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
         else
             require($expected_file);
 
-        if($view == 'list')
+        if($view == 'list') {
             $expectedResults = $listViewDefs[$module];
-        else
-            $expectedResults = $viewdefs[$module][ucfirst($view) .'View' ];
+        } else {
+            if ($type == 'wireless') {
+                $expectedResults = $viewdefs[$module]['mobile']['view'][$view];
+            } else {
+                $expectedResults = $viewdefs[$module][ucfirst($view) .'View' ];
+            }
+        }
 
         $a_expectedResults = array();
         $a_expectedResults[$module][$type][$view] = $expectedResults;
 
         $this->assertEquals(md5(serialize($expectedResults)), $result[$module][$type][$view], "Unable to retrieve module layout md5: module {$module}, type $type, view $view");
 
+    }
+    
+    public static function _wirelessGridModuleLayoutProvider()
+    {
+        return array(
+            array('module' => 'Accounts', 'view' => 'edit', 'metadatafile' => 'modules/Accounts/clients/mobile/views/edit/edit.php',),
+            array('module' => 'Accounts', 'view' => 'detail', 'metadatafile' => 'modules/Accounts/clients/mobile/views/detail/detail.php',),
+        );
+                            
+    }
+    
+    /**
+     * Leaving as a provider in the event we need to extend it in the future
+     * 
+     * @static
+     * @return array
+     */
+    public static function _wirelessListModuleLayoutProvider()
+    {
+        return array(
+            array('module' => 'Cases'),
+        );
+                            
+    }
+    
+    /**
+     * @dataProvider _wirelessListModuleLayoutProvider
+     */
+    public function testGetWirelessListModuleLayout($module)
+    {
+        $result = $this->_login();
+        $session = $result['id'];
+        
+        $type = 'wireless';
+        $view = 'list';
+        
+        $result = $this->_makeRESTCall('get_module_layout',
+                        array(
+                            'session' => $session,
+                            'module' => array($module),
+                            'type' => array($type),
+                            'view' => array($view))
+                        );
+        
+        // This is carried over metadata from pre-6.6 OOTB installations
+        // This test if for backward compatibility with older API clients
+        require 'tests/service/metadata/' . $module . 'legacy' . $view . '.php';
+        
+        $legacy = $listViewDefs[$module];
+        
+        $this->assertTrue(isset($result[$module][$type][$view]), 'Result did not contain expected data');
+        $this->assertArrayHasKey('NAME', $result[$module][$type][$view], 'NAME not found in the REST call result');
+        
+        $legacyKeys = array_keys($legacy);
+        sort($legacyKeys);
+        
+        $convertedKeys = array_keys($result[$module][$type][$view]);
+        sort($convertedKeys);
+        
+        $this->assertEquals($legacyKeys, $convertedKeys, 'Converted list def keys not the same as known list def keys');
+    }
+    
+    /**
+     * @dataProvider _wirelessGridModuleLayoutProvider
+     */
+    public function testGetWirelessGridModuleLayout($module, $view, $metadatafile)
+    {
+        $result = $this->_login();
+        $session = $result['id'];
+        
+        $type = 'wireless';
+        $result = $this->_makeRESTCall('get_module_layout',
+                        array(
+                            'session' => $session,
+                            'module' => array($module),
+                            'type' => array($type),
+                            'view' => array($view))
+                        );
+        require 'tests/service/metadata/' . $module . 'legacy' . $view . '.php';
+        
+        // This is carried over metadata from pre-6.6 OOTB installations
+        $legacy = $viewdefs[$module][ucfirst($view) .'View' ];
+        unset($viewdefs); // Prevent clash with current viewdefs
+        
+        // Get our current OOTB metadata
+        require $metadatafile;
+        $current = $viewdefs[$module]['mobile']['view'][$view];
+        
+        $legacyFields = $legacy['panels'];
+        $currentFields = $current['panels'][0]['fields'];
+        
+        $this->assertArrayHasKey('panels', $result[$module][$type][$view], 'REST call result does not have a panels array');
+        
+        $panels = $result[$module][$type][$view]['panels'];
+        $this->assertTrue(isset($panels[0][0]['name']), 'No name index in the first row array of panel fields');
+        $this->assertEquals(count($legacyFields), count($currentFields), 'Field count differs between legacy and current metadata');
     }
 
     public function testGetAvailableModules()
@@ -418,6 +503,11 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
         $sh = new SugarWebServiceUtilv3();
 
+        $mobileResult = $this->_makeRESTCall('get_available_modules', array('session' => $session, 'filter' => 'mobile' ));
+        $mobileResultExpected = $sh->get_visible_mobile_modules($fullResult['modules']);
+        $mobileResultExpected = md5(serialize(array('modules' => $mobileResultExpected)));
+        $mobileResult = md5(serialize($mobileResult));
+        $this->assertEquals($mobileResultExpected, $mobileResult, "Unable to get all visible mobile modules");
 
         $defaultResult = $this->_makeRESTCall('get_available_modules', array('session' => $session, 'filter' => 'default' ));
         $defaultResult = md5(serialize($defaultResult['modules']));
@@ -429,6 +519,10 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function testGetVardefsMD5()
     {
+        // Since translate falls back to mod strings, and mod_strings is global
+        // for the Accounts module, we need to get rid of it for the direct soapHelper
+        // call.
+        unset($GLOBALS['mod_strings']);
         $GLOBALS['reload_vardefs'] = TRUE;
         $result = $this->_login();
         $this->assertTrue(!empty($result['id']) && $result['id'] != -1,$this->_returnLastRawResponse());
@@ -718,6 +812,11 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
                 'type' => 'default',
                 'view' => 'subpanel',
             ),
+            array(
+                'module' => 'Leads',
+                'type' => 'wireless',
+                'view' => 'subpanel',
+            ),
         );
     }
 
@@ -739,6 +838,59 @@ class RESTAPI3Test extends Sugar_PHPUnit_Framework_TestCase
 
         $this->assertTrue(isset($results[$module][$type][$view]), "Unable to get subpanel defs");
     }
+    /**
+     * @depends SOAPAPI3Test::testSetEntriesForAccount
+     */
+     public function testGetLastViewed()
+     {
+
+         $testModule = 'Accounts';
+         $testModuleID = create_guid();
+
+         $this->_createTrackerEntry($testModule,$testModuleID);
+
+         $result = $this->_login();
+         $this->assertTrue(!empty($result['id']) && $result['id'] != -1,$this->_returnLastRawResponse());
+         $session = $result['id'];
+
+         $results = $this->_makeRESTCall('get_last_viewed',
+                             array(
+                             'session' => $session,
+                             'modules' => array($testModule),
+                             )
+         );
+
+         $found = FALSE;
+         foreach ($results as $entry)
+         {
+             if($entry['item_id'] == $testModuleID)
+             {
+                 $found = TRUE;
+                 break;
+             }
+         }
+
+         $this->assertTrue($found, "Unable to get last viewed modules");
+     }
+
+     private function _createTrackerEntry($module, $id,$summaryText = "UNIT TEST SUMMARY")
+     {
+        $trackerManager = TrackerManager::getInstance();
+        $trackerManager->unPause();
+
+        $timeStamp = TimeDate::getInstance()->nowDb();
+        $monitor = $trackerManager->getMonitor('tracker');
+
+        $monitor->setValue('team_id', $this->_user->getPrivateTeamID());
+        $monitor->setValue('action', 'detail');
+        $monitor->setValue('user_id', $this->_user->id);
+        $monitor->setValue('module_name', $module);
+        $monitor->setValue('date_modified', $timeStamp);
+        $monitor->setValue('visible', true);
+        $monitor->setValue('item_id', $id);
+        $monitor->setValue('item_summary', $summaryText);
+        $trackerManager->saveMonitor($monitor, true, true);
+     }
      public function testGetUpcomingActivities()
      {
          $expected = $this->_createUpcomingActivities(); //Seed the data.

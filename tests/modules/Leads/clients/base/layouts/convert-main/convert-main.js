@@ -1,0 +1,325 @@
+describe('Leads.Base.Layout.ConvertMain', function() {
+    var app, layout, createLayout, hasAccessStub, mockAccess;
+
+    beforeEach(function() {
+        app = SugarTest.app;
+        SugarTest.testMetadata.init();
+        SugarTest.testMetadata.addLayoutDefinition('convert-main', {
+            modules: [
+                {
+                    module: 'Foo',
+                    required: true
+                },
+                {
+                    module: 'Bar',
+                    required: true
+                },
+                {
+                    module: 'Baz',
+                    required: false,
+                    dependentModules: {
+                        'Foo': {
+                            'fieldMapping': {
+                                'foo_id': 'id'
+                            }
+                        }
+                    }
+                }
+            ]
+        });
+        SugarTest.testMetadata.set();
+        app.data.declareModels();
+
+        mockAccess = {
+            Foo: true,
+            Bar: true,
+            Baz: true
+        };
+        hasAccessStub = sinon.stub(app.acl, 'hasAccess', function(access, module) {
+            return (_.isUndefined(mockAccess[module])) ? true : mockAccess[module];
+        });
+    });
+
+    afterEach(function() {
+        hasAccessStub.restore();
+        app.cache.cutAll();
+        app.view.reset();
+        Handlebars.templates = {};
+        SugarTest.testMetadata.dispose();
+    });
+
+    createLayout = function() {
+        return SugarTest.createLayout('base', 'Leads', 'convert-main', null, null, true);
+    };
+
+    describe('ACL Access Checks', function() {
+        it('should have all three convert panel components created if user has access to all', function() {
+            layout = createLayout();
+            expect(_.keys(layout.convertPanels)).toEqual(['Foo', 'Bar', 'Baz']);
+            expect(layout.noAccessRequiredModules).toEqual([]);
+        });
+
+        it('should have two convert panel components created if missing access to one optional module', function() {
+            mockAccess.Baz = false;
+            layout = createLayout();
+            expect(_.keys(layout.convertPanels)).toEqual(['Foo', 'Bar']);
+            expect(layout.noAccessRequiredModules).toEqual([]); //Baz is not required
+        });
+
+        it('should have one convert panel components created if missing access to one optional and one required module', function() {
+            mockAccess.Foo = false;
+            mockAccess.Baz = false;
+            layout = createLayout();
+            expect(_.keys(layout.convertPanels)).toEqual(['Bar']);
+            expect(layout.noAccessRequiredModules).toEqual(['Foo']); //Baz is not required
+        });
+
+        it('should display an error, prevent render, and close the drawer if user is missing access to a required module', function() {
+            var drawerCloseStub, renderStub,
+                alertShowStub = sinon.stub(app.alert, 'show');
+
+            app.drawer = app.drawer || {};
+            app.drawer.close = app.drawer.close || function() {};
+            drawerCloseStub = sinon.stub(app.drawer, 'close');
+
+            mockAccess.Foo = false;
+            layout = createLayout();
+            renderStub = sinon.stub(layout, '_render');
+            layout.render();
+
+            expect(alertShowStub.calledWith('convert_access_denied')).toBeTruthy();
+            expect(drawerCloseStub.called).toBeTruthy();
+            expect(renderStub.called).toBeFalsy();
+
+            alertShowStub.restore();
+            drawerCloseStub.restore();
+            renderStub.restore();
+        });
+    });
+
+    describe('After Initialize', function() {
+        var contextTriggerStub;
+
+        beforeEach(function() {
+            layout = createLayout();
+            contextTriggerStub = sinon.stub(layout.context, 'trigger');
+        });
+
+        afterEach(function() {
+            contextTriggerStub.restore();
+        });
+
+        it('should have created a convert options component with list of convert modules on the context', function() {
+            var convertOptions, expectedConvertModuleList;
+
+            convertOptions = layout.getComponent('convert-options');
+            expectedConvertModuleList = [
+                {id: 'Foo', text: 'Foo', required: true},
+                {id: 'Bar', text: 'Bar', required: true},
+                {id: 'Baz', text: 'Baz', required: false}
+            ];
+
+            expect(convertOptions).not.toBeUndefined();
+            expect(convertOptions.context.get('convertModuleList')).toEqual(expectedConvertModuleList);
+        });
+
+        it('should pull out the dependencies based on the module metadata', function() {
+            expect(layout.dependentModules['Foo']).toBeUndefined();
+            expect(layout.dependentModules['Bar']).toBeUndefined();
+            expect(layout.dependentModules['Baz']).not.toBeUndefined();
+        });
+
+        it('should retrieve the lead data from api and push model to the context for panel to use', function() {
+            var mockModel = new Backbone.Model({id: '123'}),
+                fetchStub = sinon.stub(mockModel, 'fetch', function(options) {
+                    options.success(mockModel);
+                });
+            layout.context.set('leadsModel', mockModel);
+            layout.render();
+            expect(contextTriggerStub.lastCall.args).toEqual(['lead:convert:populate', mockModel]);
+            fetchStub.restore();
+        });
+
+        it('should ignore hidden/shown events that are propagated to the panel body not directly on it', function() {
+            var mockPropagatedEvent = {
+                target: '<tooltip></tooltip>',
+                currentTarget: '<panelBody></panelBody>'
+            };
+            layout.handlePanelCollapseEvent(mockPropagatedEvent);
+            expect(contextTriggerStub.callCount).toEqual(0);
+        });
+
+        it('should pass along hidden/shown events to the context if event is fired directly on the panel body', function() {
+            var mockTargetHtml = '<div data-module="Foo"></div>';
+            var mockEvent = {
+                type: 'shown',
+                target: mockTargetHtml,
+                currentTarget: mockTargetHtml
+            };
+            layout.handlePanelCollapseEvent(mockEvent);
+            expect(contextTriggerStub.lastCall.args).toEqual(['lead:convert:Foo:shown']);
+        });
+
+        it('should add/remove model from associated model array when panel is complete/reset', function() {
+            var mockModel = {id: '123'};
+            expect(layout.associatedModels['Foo']).toBeUndefined();
+            layout.handlePanelComplete('Foo', mockModel);
+            expect(layout.associatedModels['Foo']).toEqual(mockModel);
+            layout.handlePanelReset('Foo');
+            expect(layout.associatedModels['Foo']).toBeUndefined();
+        });
+
+        it('should enable dependent panels when dependencies are met', function() {
+            layout.associatedModels['Foo'] = {id: '123'};
+            layout.checkDependentModules();
+            expect(contextTriggerStub.lastCall.args).toEqual(['lead:convert:Baz:enable', true]);
+        });
+
+        it('should disable dependent panels when dependencies are not met', function() {
+            delete layout.associatedModels['Foo'];
+            layout.checkDependentModules();
+            expect(contextTriggerStub.lastCall.args).toEqual(['lead:convert:Baz:enable', false]);
+        });
+
+        it('should enable save button when all required modules have been complete', function() {
+            layout.associatedModels['Foo'] = {id: '123'};
+            layout.associatedModels['Bar'] = {id: '456'};
+            layout.checkRequired();
+            expect(contextTriggerStub.lastCall.args).toEqual(['lead:convert-save:toggle', true]);
+        });
+
+        it('should enable save button when all required modules have been complete', function() {
+            delete layout.associatedModels['Foo'];
+            layout.associatedModels['Bar'] = {id: '456'};
+            layout.checkRequired();
+            expect(contextTriggerStub.lastCall.args).toEqual(['lead:convert-save:toggle', false]);
+        });
+
+        describe('Convert Save', function() {
+            var ajaxSpy, convertCompleteStub, leadConvertPattern, mockLeadConvertResponse;
+
+            beforeEach(function() {
+                ajaxSpy = sinon.spy($, 'ajax');
+                convertCompleteStub = sinon.stub(layout, 'convertComplete');
+
+                SugarTest.seedFakeServer();
+                leadConvertPattern = /.*rest\/v10\/Leads\/lead123\/convert.*/;
+                mockLeadConvertResponse = [200, { 'Content-Type': 'application/json'}, JSON.stringify({})];
+
+                layout.context.set('leadsModel', new Backbone.Model({id: 'lead123'}));
+            });
+
+            afterEach(function() {
+                ajaxSpy.restore();
+                convertCompleteStub.restore();
+            });
+
+            it('should call lead convert api with associated models', function() {
+                var expectedRequest,
+                    getEditableFieldsStub = sinon.stub(app.data, 'getEditableFields', function(model) {
+                        return model;
+                    });
+
+                layout.associatedModels = {
+                    Foo: {id: 123},
+                    Bar: {id: 456},
+                    Baz: {id: 789}
+                };
+                SugarTest.server.respondWith('POST', leadConvertPattern, mockLeadConvertResponse);
+
+                layout.handleSave();
+                SugarTest.server.respond();
+                expectedRequest = JSON.stringify({
+                    modules: layout.associatedModels,
+                    transfer_activities_action: undefined,
+                    transfer_activities_modules: []
+                });
+                expect(ajaxSpy.lastCall.args[0].data).toEqual(expectedRequest);
+                getEditableFieldsStub.restore();
+            });
+
+            it('should disable the save button while saving and re-enable if there is an error', function() {
+                mockLeadConvertResponse[0] = 500;
+                SugarTest.server.respondWith('POST', leadConvertPattern, mockLeadConvertResponse);
+                layout.handleSave();
+                SugarTest.server.respond();
+                expect(contextTriggerStub.calledWith('lead:convert-save:toggle', false)).toBe(true);
+                expect(contextTriggerStub.calledWith('lead:convert-save:toggle', true)).toBe(true);
+                expect(convertCompleteStub.calledWith('error')).toBe(true);
+            });
+        });
+
+        describe('parseEditableFields', function() {
+            afterEach(function() {
+                sinon.collection.restore();
+            });
+
+            it('should prune fields that the user does not have access to', function() {
+                var hash,
+                    dm = app.data;
+                    accountsModel = dm.createBean('Accounts', {id: '123'}),
+                    contactsModel = dm.createBean('Contacts', {first_name: 'First', last_name: 'Last', id: '123'}),
+                    associatedModels = {
+                        'Accounts' : accountsModel,
+                        'Contacts' : contactsModel
+                    };
+
+                sinon.collection.stub(app.acl, 'hasAccessToModel', function(action, model, field) {
+                    return !(action === 'edit' && field === 'last_name');
+                });
+
+                hash = layout.parseEditableFields(associatedModels);
+
+                expect(hash.Accounts['id']).toBeTruthy();
+                expect(hash.Contacts['last_name']).toBeFalsy();
+                expect(hash.Contacts['first_name']).toBeTruthy();
+                expect(hash.Accounts['id']).toBeTruthy();
+            });
+        });
+
+        describe('getTransferActivitiesAttributes', function() {
+            var leadConvActivityOptBefore;
+
+            beforeEach(function() {
+                leadConvActivityOptBefore = app.metadata.getConfig().leadConvActivityOpt;
+            });
+
+            afterEach(function() {
+                app.metadata.getConfig().leadConvActivityOpt = leadConvActivityOptBefore;
+            });
+
+            using('different transfer settings and modules', [
+                {
+                    message: 'should pass correct transfer activity attributes',
+                    associatedModules: ['Foo', 'Bar', 'Baz'],
+                    transferModules: ['Foo', 'Baz'],
+                    transferAction: 'move',
+                    expectedModules: ['Foo', 'Baz']
+                },
+                {
+                    message: 'should not have non-associated module on list of transfer activities modules',
+                    associatedModules: ['Foo', 'Bar'],
+                    transferModules: ['Foo', 'Baz'],
+                    transferAction: 'copy',
+                    expectedModules: ['Foo']
+                },
+                {
+                    message: 'should pass empty array for transfer activities modules when transfer action is donothing',
+                    associatedModules: ['Foo', 'Bar', 'Baz'],
+                    transferModules: ['Foo', 'Baz'],
+                    transferAction: 'donothing',
+                    expectedModules: []
+                }
+            ], function(data) {
+                it(data.message, function() {
+                    layout.model.set('transfer_activities_modules', data.transferModules);
+                    app.metadata.getConfig().leadConvActivityOpt = data.transferAction;
+                    expect(layout.getTransferActivitiesAttributes(data.associatedModules)).toEqual({
+                        transfer_activities_action: data.transferAction,
+                        transfer_activities_modules: data.expectedModules
+                    });
+                });
+            });
+        });
+    });
+});

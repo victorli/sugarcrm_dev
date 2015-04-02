@@ -1,39 +1,14 @@
 <?php 
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
  
 require_once 'include/utils/array_utils.php';
 
@@ -133,15 +108,158 @@ class SugarArrayUtilsTest extends Sugar_PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, override_value_to_string_recursive($key_names, $array_name, $value));	
 	} 
 
-	//Todo: hit the if statement
-	public function test_setDeepArrayValue()
-	{
-		$arrayActualSimple = array(1=>'a');
-		setDeepArrayValue($arrayActualSimple, 1, 'b');
-		$arrayExpectedSimple = array(1=>'b');
-		
-		$this->assertEquals($arrayExpectedSimple, $arrayActualSimple);	
-	}	
+    //Todo: hit the if statement
+    public function test_setDeepArrayValue()
+    {
+        $arrayActualSimple = array(1=>'a');
+        setDeepArrayValue($arrayActualSimple, 1, 'b');
+        $arrayExpectedSimple = array(1=>'b');
+
+        $this->assertEquals($arrayExpectedSimple, $arrayActualSimple);
+    }
+    
+    /**
+     * Note that this test case is moved from "array_utils.php".
+     * @ticket 396
+     * @dataProvider providerOverride
+     */
+    public function test_override_value_to_string_recursive2($array_name, $value_name, $value, $config, $expected)
+    {
+        $this->assertEquals(
+            $expected,
+            override_value_to_string_recursive2($array_name, $value_name, $value, true, $config)
+        );
+    }
+
+    /**
+     * This function provides inputs for test_override_value_to_string_recursive2().
+     *
+     * @return array the expected values of the test cases.
+     */
+    public function providerOverride()
+    {
+        $returnArray = array(
+            array( // Append: sequential array exists in config.php
+                "sugar_config",
+                "http_referer_396",
+                array('list' => array(3 => 'location.com')), // structure from config_override.php
+                array('http_referer_396' =>
+                    array('list' => array(0 => 'abc.com', 1 => '123.com', 2 => 'mylocation.com'))),
+                "\$sugar_config['http_referer_396']['list'][] = 'location.com';\n"
+            ),
+            array( // Append: non-sequential array exists in config.php
+                "sugar_config",
+                "http_referer_396",
+                array('list' => array(3 => 'location.com')), // structure from config_override.php
+                array('http_referer_396' => array('list' => array(0 => 'abc.com',  2 => 'mylocation.com'))),
+                "\$sugar_config['http_referer_396']['list'][3] = 'location.com';\n"
+            ),
+            array( // Append: no array exists in config.php and key = 0, treat it as append
+                "sugar_config",
+                "http_referer_396",
+                array('list' => array(0 => 'location.com')), // structure from config_override.php
+                array(),
+                "\$sugar_config['http_referer_396']['list'][] = 'location.com';\n"
+            ),
+            array( // Override: sequential array exists in config.php but old key is overridden
+                "sugar_config",
+                "http_referer_396",
+                array('list' => array(0 => 'otherlocation.com')), // structure from config_override.php
+                array('http_referer_396' => array('list' => array(0 => 'location.com', 1 => '123.com'))),
+                "\$sugar_config['http_referer_396']['list'][0] = 'otherlocation.com';\n"
+            ),
+            array( // Override: does not exist in config.php
+                "sugar_config",
+                "full_text_engine_396",
+                array('Elastic' => array('curl' => array(123 => 'user:password'))), // from config_override.php
+                array(),
+                "\$sugar_config['full_text_engine_396']['Elastic']['curl'][123] = 'user:password';\n"
+            ),
+            array( // Override: key is a string
+                "sugar_config",
+                "test_396",
+                array('def' => 'def2'), // structure from config_override.php
+                array("test_396" => array('abc' => 'abc', 'def' => 'def')),
+                "\$sugar_config['test_396']['def'] = 'def2';\n"
+            ),
+            array( // Override: test app_list_strings
+                "app_list_strings",
+                "http_referer_396",
+                array('list' => array(0 => 'location.com')), // structure from config_override.php
+                null,
+                "\$app_list_strings['http_referer_396']['list'][0] = 'location.com';\n"
+            ),
+        );
+        return $returnArray;
+    }
+
+    /**
+     * This function tests cases for the upgrade scenario.
+     *
+     * @param string $array_name : name of the array
+     * @param string $value_name : name of the array keys
+     * @param array  $value : value of current array
+     * @param array  $config : value of current array
+     * @param string $expected : the expected result of the test case.
+     *
+     * @dataProvider providers_Override2StringForUpgrade
+     */
+    public function test_Override2StringForUpgrade($array_name, $value_name, $value, $config, $expected)
+    {
+        $this->assertEquals(
+            $expected,
+            override_value_to_string_recursive2($array_name, $value_name, $value, true, $config)
+        );
+    }
+
+    /**
+     * This function provides inputs for test_Override2StringWithEmptyOriginal().
+     *
+     * @return array the expected values of the test.
+     */
+    public function providers_Override2StringForUpgrade()
+    {
+        $returnArray = array(
+            array( // Case: $value is boolean
+                "sugar_config",
+                "fts_disable_notification",
+                false,
+                array(),
+                "\$sugar_config['fts_disable_notification'] = false;\n"
+            ),
+            array( // Case: $value is an array
+                "sugar_config",
+                "dashlet_display_row_options",
+                array('0' => '1', '1' => '5', '2' => '10'),
+                array(),
+                "\$sugar_config['dashlet_display_row_options'][] = '1';\n" .
+                "\$sugar_config['dashlet_display_row_options'][1] = '5';\n" .
+                "\$sugar_config['dashlet_display_row_options'][2] = '10';\n"
+            ),
+            array( // Case: $value is an element added in an array
+                   // the original input from "config_override.php" could be
+                   // $sugar_config['dashlet_display_row_options'][3] = '20', or
+                   // $sugar_config['dashlet_display_row_options'][] = '20';
+                "sugar_config",
+                "dashlet_display_row_options",
+                array(3 => '20'),
+                array('dashlet_display_row_options' => array(0 => '1', 1 => '5', 2 => '10')),
+                "\$sugar_config['dashlet_display_row_options'][] = '20';\n"
+            ),
+            array( // Case: $value is a completely new element
+                   // the original input from "config_override.php" could be
+                   // $sugar_config['dashlet_display_row_options'][0] = '20', or
+                   // $sugar_config['dashlet_display_row_options'][] = '20';
+                "sugar_config",
+                "dashlet_display_row_options",
+                array(0 => '20'),
+                array(),
+                "\$sugar_config['dashlet_display_row_options'][] = '20';\n"
+            ),
+        );
+        return $returnArray;
+    }
+
 }
 
 class SimpleObejct

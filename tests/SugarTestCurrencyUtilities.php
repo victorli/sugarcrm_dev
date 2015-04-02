@@ -1,82 +1,109 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 
-
-require_once 'modules/Currencies/Currency.php';
-
+/**
+ * SugarTestCurrencyUtilities
+ *
+ * utility class for currencies
+ *
+ * @author Monte Ohrt <mohrt@sugarcrm.com>
+ */
 class SugarTestCurrencyUtilities
 {
+    private static $_createdCurrencies = array();
 
-    private static $createdCurrencies = array();
+    private function __construct() {}
 
-    private function __construct()
+    /**
+     * createCurrency
+     *
+     * This creates and returns a new currency object
+     *
+     * @param string $name the name of the currency
+     * @param string $symbol the symbol for the currency
+     * @param string $iso4217 the 3-letter ISO for the currency
+     * @param number $conversion_rate the conversion rate from the US dollar
+     * @param string $id the id for the currency record
+     * @return Currency
+     */
+    public static function createCurrency($name, $symbol, $iso4217, $conversion_rate, $id = null)
     {
-
-    }
-
-    public static function createCurrency($attributes)
-    {
-        $currency = new Currency();
-        if (!empty($attributes['id'])) {
+        $currency = BeanFactory::getBean('Currencies');
+        $currency->name = $name;
+        $currency->symbol = $symbol;
+        $currency->iso4217 = $iso4217;
+        $currency->conversion_rate = $conversion_rate;
+        $currency->status = 'Active';
+        if(!empty($id))
+        {
             $currency->new_with_id = true;
-            $currency->id = $attributes['id'];
-            unset($attributes['id']);
+            $currency->id = $id;
+        } else {
+            $currency->created_by = $GLOBALS['current_user']->id;
         }
-
-        foreach ($attributes as $attribute => $value) {
-            $currency->$attribute = $value;
-        }
-
         $currency->save();
-        self::$createdCurrencies[] = $currency;
+        self::$_createdCurrencies[] = $currency;
         return $currency;
     }
 
+    /**
+     * getCurrencyByISO
+     *
+     * get an existing currency by its ISO
+     *
+     * @param string $iso4217 the 3-letter ISO for the currency
+     * @return Currency
+     */
+    public static function getCurrencyByISO($iso4217)
+    {
+        $currency = BeanFactory::getBean('Currencies');
+        $currency->retrieve($currency->retrieveIDByISO($iso4217));
+        return $currency;
+    }
+
+    /**
+     * removeAllCreatedCurrencies
+     *
+     * remove currencies created by this test utility
+     *
+     * @return boolean true on successful removal
+     */
     public static function removeAllCreatedCurrencies()
     {
-        $ids = self::getCreatedCurrencyIds();
-        $GLOBALS['db']->query('DELETE FROM currencies WHERE id IN (\'' . implode("', '", $ids) . '\')');
+        if(empty(self::$_createdCurrencies))
+            return true;
+        $currency_ids = self::getCreatedCurrencyIds();
+        $GLOBALS['db']->query(
+            sprintf("DELETE FROM currencies WHERE id IN ('%s')",
+            implode("','", $currency_ids))
+        );
+        self::$_createdCurrencies = array();
+        return true;
     }
-        
+
+    /**
+     * getCreatedCurrencyIds
+     *
+     * get array of currency_ids created by this utility
+     *
+     * @return array list of currency_id's
+     */
     public static function getCreatedCurrencyIds()
     {
-        $ids = array();
-        foreach (self::$createdCurrencies as $currency) {
-            $ids[] = $currency->id;
+        $currency_ids = array();
+        foreach (self::$_createdCurrencies as $currency) {
+            $currency_ids[] = $currency->id;
         }
-        return $ids;
+        return $currency_ids;
     }
 }
+?>

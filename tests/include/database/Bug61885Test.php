@@ -1,140 +1,193 @@
 <?php
-/*********************************************************************************
- * By installing or using this file, you are confirming on behalf of the entity
- * subscribed to the SugarCRM Inc. product ("Company") that Company is bound by
- * the SugarCRM Inc. Master Subscription Agreement (“MSA”), which is viewable at:
- * http://www.sugarcrm.com/master-subscription-agreement
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
  *
- * If Company is not bound by the MSA, then by installing or using this file
- * you are agreeing unconditionally that Company will be bound by the MSA and
- * certifying that you have authority to bind Company accordingly.
- *
- * Copyright (C) 2004-2013 SugarCRM Inc.  All rights reserved.
- ********************************************************************************/
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 
 require_once 'include/database/DBManagerFactory.php';
 
-class Bug61885Test extends Sugar_PHPUnit_Framework_TestCase
+/**
+ * Unit test for Bug 61885
+ */
+class Bug61885 extends Sugar_PHPUnit_Framework_TestCase
 {
-    /**
-     * DataProvider function for test
-     * @static
-     * @return array
+    private $db;
+    private $created;
+
+    /*
+     * @see parent::setUp()
      */
-    public static function provideVarDefs()
+    public function setUp()
     {
-        $returnArray = array(
-            array(
-                array(
-                    'name' => 'FOO',
-                    'type' => 'VARCHAR',
-                    'len' => '255',
-                ),
-                array(
-                    'name' => 'foo',
-                    'type' => 'varchar',
-                    'len' => '255',
-                ),
-                true,
+        $this->db = DBManagerFactory::getInstance();
+    }
+
+    /*
+     * @see parent::tearDown()
+     */
+    public function tearDown()
+    {
+        foreach ($this->created as $table => $dummy) {
+            $this->dropTableName($table);
+        }
+        unset($this->db);
+        unset($this->created);
+    }
+
+    /*
+     * @group bug61885
+     */
+    public function testDefect61885()
+    {
+        $tableName = 'test1_' . mt_rand();
+        $params =  array(
+            'foo' => array (
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '36',
             ),
-            array(
-                array(
-                    'name' => 'foo',
-                    'type' => 'varchar',
-                    'len' => '255',
-                ),
-                array(
-                    'name' => 'FOO',
-                    'type' => 'VARCHAR',
-                    'len' => '255',
-                ),
-                true,
-            ),
-            array(
-                array(
-                    'name' => 'idx_ACCNT_id_del',
-                    'type' => 'index',
-                    'fields' => array('ID', 'deleted'),
-                ),
-                array(
-                    'name' => 'idx_accnt_id_del',
-                    'type' => 'index',
-                    'fields' => array('id', 'deleted'),
-                ),
-                true,
-            ),
-            array(
-                array(
-                    'name' => 'idx_ACCNT_id_del',
-                    'type' => 'index',
-                    'fields' => array('ID', 'DELETED'),
-                ),
-                array(
-                    'name' => 'idx_accnt_id_del',
-                    'type' => 'index',
-                    'fields' => array('id', 'deleted'),
-                ),
-                true,
-            ),
-            array(
-                array(
-                    'name' => 'idx_ACCNT_id_del',
-                    'type' => 'index',
-                    'fields' => array('IDxxx', 'DELETED'),
-                ),
-                array(
-                    'name' => 'idx_accnt_id_del',
-                    'type' => 'index',
-                    'fields' => array('id', 'deleted'),
-                ),
-                false,
-            ),
-            array(
-                array(
-                    'name' => 'idx_ACCNT_id_del',
-                    'type' => 'index',
-                    'fields' => array('IDxxx', 'deletedxxx'),
-                ),
-                array(
-                    'name' => 'idx_accnt_id_del',
-                    'type' => 'index',
-                    'fields' => array('id', 'deleted'),
-                ),
-                false,
-            ),
-            array(
-                array(
-                    'name' => 'idx_accnt_id_del',
-                    'type' => 'index',
-                    'fields' => array('id', 'deleted'),
-                ),
-                array(
-                    'name' => 'idx_ACCNT_id_del',
-                    'type' => 'index',
-                    'fields' => array('ID', 'DELETED'),
-                ),
-                true,
+            'bar' => array (
+                'name' => 'bar',
+                'type' => 'varchar',
+                'len' => '36',
             ),
         );
 
-        return $returnArray;
+        $index = array(
+            'name'			=> 'test_index',
+            'type'			=> 'index',
+            'fields'		=> array('foo', 'bar'),
+        );
+
+        $indexT1 = array(
+            'name'			=> 'test_index',
+            'type'			=> 'index',
+            'fields'		=> array('FOO', 'BAR'),
+        );
+        $indexT2 = array(
+            'name'			=> 'TEST_INDEX',
+            'type'			=> 'index',
+            'fields'		=> array('foo', 'bar'),
+        );
+
+        if ($this->db->tableExists($tableName)) {
+            $this->db->dropTableName($tableName);
+        }
+        $this->createTableParams($tableName, $params, $index);
+
+        $repair = $this->db->repairTableParams($tableName, $params, array($indexT1), false);
+
+        $this->assertEmpty($repair, "Failed on uppercase field names");
+
+        $repair = $this->db->repairTableParams($tableName, $params, array($indexT2), false);
+
+        $this->assertEmpty($repair, "Failed on uppercase index name");
     }
 
     /**
-     * @dataProvider provideVarDefs
-     * @group 61885
+     * @param string $tableName
+     * @param array $fieldDefs - Field definitions, in vardef format
+     * @param array $indices - Indices definitions, in vardef format
+     *
+     * @return mixed
      */
-    public function testCompareVarDefsNotCaseSensitive($fieldDef1, $fieldDef2, $expectedResult)
+    protected function createTableParams($tableName, $fieldDefs, $indices)
     {
-        $DBManager = DBManagerFactory::getInstance();
+        $this->created[$tableName] = true;
+        return $this->db->createTableParams($tableName, $fieldDefs, $indices);
+    }
 
-        if ($expectedResult)
-        {
-            $this->assertTrue($DBManager->compareVarDefs($fieldDef1, $fieldDef2));
+    /**
+     * @param string $tableName
+     *
+     * @return mixed
+     */
+    protected function dropTableName($tableName)
+    {
+        $indicies = $this->db->get_indices($tableName);
+        foreach ($indicies as $k => $index) {
+            $this->db->add_drop_constraint($tableName, $index, true);
         }
-        else
-        {
-            $this->assertFalse($DBManager->compareVarDefs($fieldDef1, $fieldDef2));
+        unset($this->created[$tableName]);
+        return $this->db->dropTableName($tableName);
+    }
+
+    
+
+    /*
+     * Tests the $sugar_config['dbconfigoption'[['skip_index_rebuild'] config flag is working
+     * @group bug61885
+     * @covers DBManager::repairTableParams
+     */
+    public function testSkipIndexRebuildConfig()
+    {
+        $tableName = 'test1_' . mt_rand();
+        $params =  array(
+            'foo' => array (
+                'name' => 'foo',
+                'type' => 'varchar',
+                'len' => '36',
+            ),
+            'bar' => array (
+                'name' => 'bar',
+                'type' => 'varchar',
+                'len' => '36',
+            ),
+            'mota' => array (
+                'name' => 'mota',
+                'type' => 'varchar',
+                'len' => '43',
+            ),
+        );
+
+        $index = array(
+            'name'			=> 'test_index',
+            'type'			=> 'index',
+            'fields'		=> array('foo', 'bar'),
+        );
+
+        $indexChange = array(
+            'name'			=> 'test_index',
+            'type'			=> 'index',
+            'fields'		=> array('foo', 'mota'),
+        );
+
+        if ($this->db->tableExists($tableName)) {
+            $this->db->dropTableName($tableName);
         }
+
+        $this->createTableParams($tableName, $params, $index);
+
+        // Config flag on
+        $dbOptions = $this->db->getOptions();
+        $dbOptions['skip_index_rebuild'] = true;
+        $this->db->setOptions($dbOptions);
+
+        $repair = $this->db->repairTableParams($tableName, $params, array($indexChange), false);
+        $this->assertEmpty($repair, "Failed on skip_index_rebuild config flag turned on");
+       
+
+        // Config flag off
+        $dbOptions = $this->db->getOptions();
+        $dbOptions['skip_index_rebuild'] = false;
+        $this->db->setOptions($dbOptions);
+
+        $repair = $this->db->repairTableParams($tableName, $params, array($indexChange), false);
+        $this->assertNotEmpty($repair, "Failed on skip_index_rebuild config flag turned off");
+
+        
+        // Config flag not present
+        $dbOptions = $this->db->getOptions();
+        unset($dbOptions['skip_index_rebuild']);
+        $this->db->setOptions($dbOptions);
+
+        $repair = $this->db->repairTableParams($tableName, $params, array($indexChange), false);
+        $this->assertNotEmpty($repair, "Failed on skip_index_rebuild config flag not present");
     }
 }

@@ -1,45 +1,20 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 
- 
 require_once 'include/vCard.php';
 
 class vCardTest extends Sugar_PHPUnit_Framework_TestCase
 {
-    public function setUp()
+    public static function setUpBeforeClass()
     {
         SugarTestHelper::setUp('beanFiles');
         SugarTestHelper::setUp('beanList');
@@ -47,11 +22,55 @@ class vCardTest extends Sugar_PHPUnit_Framework_TestCase
         SugarTestHelper::setUp('app_list_strings');
         $GLOBALS['beanList']['vCardMockModule'] = 'vCardMockModule';
         $GLOBALS['beanFiles']['vCardMockModule'] = 'tests/include/vCard/vCardTest.php';
+        global $app_strings, $app_list_strings, $current_language;
+        $app_strings = return_application_language($current_language);
+        $app_list_strings = return_app_list_strings_language($current_language);
     }
 
-    public function tearDown()
+    public static function tearDownAfterClass()
     {
         SugarTestHelper::tearDown();
+    }
+
+    // data providers
+
+    public function vCardsWithSalutations()
+    {
+        return array(
+            array('MAR-1510a.vcf'),
+            array('MAR-1510b.vcf'),
+        );
+    }
+
+    // test cases
+
+    /**
+     * Check if exception is thrown when required fields are not present
+     *
+     * @ticket 60613
+     * @dataProvider vCardsWithoutRequiredFields
+     * @expectedException SugarException
+     */
+    public function testImportVCardWithoutRequiredFields($filename, $module)
+    {
+        $filename  = dirname(__FILE__)."/vcf/$filename";
+
+        $vcard = new vCard();
+        $vcard->importVCard($filename, $module);
+    }
+
+    public static function vCardsWithoutRequiredFields()
+    {
+        return array(
+            array(
+                'VCardWithoutAllRequired.vcf', // vCard without last_name
+                'Contacts'
+            ),
+            array(
+                'VCardEmpty.vcf', // Empty vCard
+                'Leads'
+            ),
+        );
     }
 
     /**
@@ -59,7 +78,7 @@ class vCardTest extends Sugar_PHPUnit_Framework_TestCase
      */
 	public function testImportedVcardWithDifferentCharsetIsTranslatedToTheDefaultCharset()
     {
-        $filename  = dirname(__FILE__)."/ISO88591SampleFile.vcf";
+        $filename  = dirname(__FILE__)."/vcf/ISO88591SampleFile.vcf";
         $module = "vCardMockModule";
 
         $vcard = new vCard();
@@ -73,7 +92,7 @@ class vCardTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function testImportedVcardWithSameCharsetIsNotTranslated()
     {
-        $filename  = dirname(__FILE__)."/UTF8SampleFile.vcf";
+        $filename  = dirname(__FILE__)."/vcf/UTF8SampleFile.vcf";
         $module = "vCardMockModule";
 
         $vcard = new vCard();
@@ -83,6 +102,22 @@ class vCardTest extends Sugar_PHPUnit_Framework_TestCase
         $bean = $bean->retrieve($record);
 
         $this->assertEquals('Hans Müster',$bean->first_name.' '.$bean->last_name);
+    }
+
+    /**
+     * @dataProvider vCardsWithSalutations
+     */
+    public function testImportVcard_NameIncludesSalutation_PersonIsCreatedWithFirstNameAndLastNameAndSalutation($vcard)
+    {
+        $filename = dirname(__FILE__) . "/vcf/{$vcard}";
+        $module = 'vCardMockModule';
+        $vcard = new vCard();
+        $record = $vcard->importVCard($filename, $module);
+        $bean = new vCardMockModule();
+        $bean = $bean->retrieve($record);
+        $this->assertNotEmpty($bean->first_name, 'The first name should have been parsed from the vcard');
+        $this->assertNotEmpty($bean->last_name, 'The last name should have been parsed from the vcard');
+        $this->assertNotEmpty($bean->salutation, 'The salutation should have been parsed from the vcard');
     }
 
     public function vCardNames()

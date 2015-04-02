@@ -1,39 +1,14 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 
 require_once 'include/MVC/View/SugarView.php';
 
@@ -48,22 +23,22 @@ class SugarViewTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        global $moduleList, $beanList, $beanFiles;
-        require('include/modules.php');
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('moduleList');
+        SugarTestHelper::setUp('current_user');
+        SugarTestHelper::setUp('app_strings');
+        SugarTestHelper::setUp('mod_strings', array('Users'));
         $this->_view = new SugarViewTestMock();
-        $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
-        $GLOBALS['mod_strings'] = return_module_language($GLOBALS['current_language'], 'Users');
-        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-        $this->_backup['currentTheme'] = SugarThemeRegistry::current();
+        parent::setUp();
+        $this->dir = getcwd();
     }
 
     public function tearDown()
     {
-    	unset($GLOBALS['mod_strings']);
-    	unset($GLOBALS['app_strings']);
-        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-        unset($GLOBALS['current_user']);
-        SugarThemeRegistry::set($this->_backup['currentTheme']->dirName);
+        SugarTestHelper::tearDown();
+        parent::tearDown();
+        chdir($this->dir);
     }
 
     public function testGetModuleTab()
@@ -78,7 +53,7 @@ class SugarViewTest extends Sugar_PHPUnit_Framework_TestCase
         // backup custom file if it already exists
         if(file_exists('custom/modules/Contacts/metadata/listviewdefs.php')){
             copy('custom/modules/Contacts/metadata/listviewdefs.php', 'custom/modules/Contacts/metadata/listviewdefs.php.bak');
-            unlink('custom/modules/Contacts/metadata/listviewdefs.php');
+            SugarAutoLoader::unlink('custom/modules/Contacts/metadata/listviewdefs.php', false);
         }
         $this->_view->module = 'Contacts';
         $this->_view->type = 'list';
@@ -92,10 +67,10 @@ class SugarViewTest extends Sugar_PHPUnit_Framework_TestCase
         $customFile = 'custom/modules/Contacts/metadata/listviewdefs.php';
         if(!file_exists($customFile))
         {
-            sugar_file_put_contents($customFile, array());
+            SugarAutoLoader::touch($customFile, false);
             $customMetaDataFile = $this->_view->getMetaDataFile();
             $this->assertEquals($customFile, $customMetaDataFile, 'Did not load the correct custom metadata file');
-            unlink($customFile);
+            SugarAutoLoader::unlink($customFile, false);
         }
         // Restore custom file if we backed it up
         if(file_exists('custom/modules/Contacts/metadata/listviewdefs.php.bak')){
@@ -164,7 +139,8 @@ class SugarViewTest extends Sugar_PHPUnit_Framework_TestCase
         $this->_view->errors = array('error1','error2');
         $this->_view->suppressDisplayErrors = false;
 
-        $this->assertEmpty($this->_view->displayErrors());
+        $this->expectOutputString('<span class="error">error1</span><br><span class="error">error2</span><br>');
+        $this->_view->displayErrors();
     }
 
     public function testGetBrowserTitle()
@@ -193,22 +169,24 @@ class SugarViewTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function testGetBreadCrumbSymbolForLTRTheme()
     {
+        SugarTestHelper::setUp('theme');
         $theme = SugarTestThemeUtilities::createAnonymousTheme();
         SugarThemeRegistry::set($theme);
 
         $this->assertEquals(
-            "<span class='pointer'>&raquo;</span>",
+            "<span class='breadCrumbSymbol'>&raquo;</span>",
             $this->_view->getBreadCrumbSymbol()
             );
     }
 
     public function testGetBreadCrumbSymbolForRTLTheme()
     {
+        SugarTestHelper::setUp('theme');
         $theme = SugarTestThemeUtilities::createAnonymousRTLTheme();
         SugarThemeRegistry::set($theme);
 
         $this->assertEquals(
-            "<span class='pointer'>&laquo;</span>",
+            "<span class='breadCrumbSymbol'>&laquo;</span>",
             $this->_view->getBreadCrumbSymbol()
             );
     }
@@ -220,11 +198,7 @@ class SugarViewTest extends Sugar_PHPUnit_Framework_TestCase
         $sugar_config['js_available'] = array('default_action');
 
         $js_array = $this->_view->getSugarConfigJS();
-
-        // this should return 3 objects
-        $this->assertEquals(3, count($js_array));
-
-        $this->assertEquals('SUGAR.config.default_action = "index";', $js_array[2]);
+        $this->assertContains('SUGAR.config.default_action = "index";', $js_array);
     }
 }
 

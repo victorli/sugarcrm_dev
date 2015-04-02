@@ -1,68 +1,43 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 
 require_once('modules/Studio/wizards/RenameModules.php');
 
 
 class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
 {
-    private $language;
+    private $language = 'en_us';
     private $language_contents;
+    private $global_language_contents;
 
     public function setup()
     {
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('current_user');
         $mods = array('Accounts', 'Contacts', 'Campaigns');
         foreach($mods as $mod)
         {
             if(file_exists("custom/modules/{$mod}/language/en_us.lang.php"))
             {
                 $this->language_contents[$mod] = file_get_contents("custom/modules/{$mod}/language/en_us.lang.php");
-                unlink("custom/modules/{$mod}/language/en_us.lang.php");
+                SugarAutoLoader::unlink("custom/modules/{$mod}/language/en_us.lang.php", true);
             }
         }
 
-        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-        $this->language = 'en_us';
-
-        $beanList = array();
-        $beanFiles = array();
-        require('include/modules.php');
-        $GLOBALS['beanList'] = $beanList;
-        $GLOBALS['beanFiles'] = $beanFiles;
+        // check the global lang file
+        if (file_exists("custom/include/language/" . $this->language . ".lang.php")) {
+            $this->global_language_contents = file_get_contents("custom/include/language/" . $this->language . ".lang.php");
+        }
     }
 
     public function tearDown()
@@ -70,18 +45,21 @@ class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
         $this->removeCustomAppStrings();
         $this->removeModuleStrings(array('Accounts'));
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-        unset($GLOBALS['current_user']);
-        unset($GLOBALS['beanList']);
-        unset($GLOBALS['beanFiles']);
+
         SugarCache::$isCacheReset = false;
 
         if(!empty($this->language_contents))
         {
             foreach($this->language_contents as $key=>$contents)
             {
-                sugar_file_put_contents("custom/modules/{$key}/language/en_us.lang.php", $contents);
+                SugarAutoLoader::put("custom/modules/{$key}/language/en_us.lang.php", $contents, true);
             }
         }
+
+        if(!empty($this->global_language_contents)) {
+            SugarAutoLoader::put("custom/include/language/" . $this->language . ".lang.php", $this->global_language_contents, true);
+        }
+        SugarTestHelper::tearDown();
     }
 
 
@@ -94,6 +72,7 @@ class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function testRenameContactsModule()
     {
+        $this->markTestIncomplete('Needs to be fixed by FRM team.');
         $module = 'Accounts';
         $newSingular = 'Company';
         $newPlural = 'Companies';
@@ -119,6 +98,7 @@ class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
         }
         
         $rm->save(FALSE);
+        SugarAutoLoader::buildCache();
 
         //Test app list strings
         $app_list_string = return_app_list_strings_language('en_us');
@@ -135,11 +115,14 @@ class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEquals('View Companies', $accountStrings['LNK_ACCOUNT_LIST'], "Rename module failed for modules modStrings.");
         $this->assertEquals('Import Companies', $accountStrings['LNK_IMPORT_ACCOUNTS'], "Rename module failed for modules modStrings.");
         $this->assertEquals('Company Search', $accountStrings['LBL_SEARCH_FORM_TITLE'], "Rename module failed for modules modStrings.");
+        $this->assertEquals('Company', $accountStrings['LBL_MODULE_NAME_SINGULAR'], "Rename module failed for modules modstrings.");
 
         //Test related link renames
         $contactStrings = return_module_language('en_us','Contacts', TRUE);
         $this->assertEquals('Company Name:', $contactStrings['LBL_ACCOUNT_NAME'], "Rename related links failed for module.");
-        $this->assertEquals('Company ID:', $contactStrings['LBL_ACCOUNT_ID'], "Rename related links failed for module.");
+
+        //The next test is invalidated by the vardef change made in b2ed73ffbfc6cb912a0befffb5d9691526993240 which changes the account_id field to be of type id instead of relate
+        //$this->assertEquals('Company ID:', $contactStrings['LBL_ACCOUNT_ID'], "Rename related links failed for module.");
 
         //Test subpanel renames
         $campaignStrings = return_module_language('en_us','Campaigns', TRUE);
@@ -150,13 +133,13 @@ class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
         //Ensure we recorded which modules were modified.
         $renamedModules = $rm->getRenamedModules();
         $this->assertTrue( count($renamedModules) > 0 );
-
         $this->removeCustomAppStrings();
         $this->removeModuleStrings( $renamedModules );
     }
 
     public function testRenameNonExistantModule()
     {
+        $this->markTestIncomplete('Needs to be fixed by FRM team.');
         $module = 'UnitTestDNEModule';
         $newSingular = 'UnitTest';
         $newPlural = 'UnitTests';
@@ -192,10 +175,12 @@ class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
 
     private function removeCustomAppStrings()
     {
-        $fileName = 'custom'. DIRECTORY_SEPARATOR . 'include'. DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $this->language . '.lang.php';
+        $fileName = 'custom/include/language/' . $this->language . '.lang.php';
         if( file_exists($fileName) )
         {
-            @unlink($fileName);
+            @SugarAutoLoader::unlink($fileName, true);
+        } else {
+                SugarAutoLoader::delFromMap($fileName, true);
         }
     }
 
@@ -203,10 +188,12 @@ class RenameModulesTest extends Sugar_PHPUnit_Framework_TestCase
     {
         foreach($modules as $module => $v)
         {
-            $fileName = 'custom'. DIRECTORY_SEPARATOR . 'modules'. DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'language' . DIRECTORY_SEPARATOR . $this->language . '.lang.php';
+            $fileName = 'custom/modules/' . $module . '/language/' . $this->language . '.lang.php';
             if( file_exists($fileName) )
             {
-                @unlink($fileName);
+                @SugarAutoLoader::unlink($fileName, true);
+            } else {
+                SugarAutoLoader::delFromMap($fileName, true);
             }
 
         }

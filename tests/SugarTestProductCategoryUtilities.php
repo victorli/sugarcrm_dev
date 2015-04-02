@@ -1,38 +1,15 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
+
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 
 
 require_once 'modules/ProductCategories/ProductCategory.php';
@@ -43,41 +20,50 @@ class SugarTestProductCategoryUtilities
 
     private function __construct() {}
 
-    public static function createProductCategory($id = '')
+    public static function createProductCategory($id = '') 
     {
         $time = mt_rand();
         $name = 'SugarProductCategory';
-        $product = new ProductCategory();
-        $product->name = $name . $time;
-        if (!empty($id)) {
-            $product->new_with_id = true;
-            $product->id = $id;
+        $product_category = new ProductCategory();
+        $product_category->name = $name . $time;
+        if(!empty($id))
+        {
+            $product_category->new_with_id = true;
+            $product_category->id = $id;
         }
-        $product->save();
-        self::$_createdProductCategories[] = $product;
-        return $product;
+        $product_category->save();
+        self::$_createdProductCategories[] = $product_category;
+        return $product_category;
     }
 
-    public static function setCreatedProductCategory($ids) {
-        foreach ($ids as $item_id) {
-            $item = new ProductCategory();
-            $item->id = $item_id;
-            self::$_createdProductCategories[] = $item;
-        }
-    }
-
-    public static function removeAllCreatedProductCategories()
+    public static function setCreatedProductCategory($product_category_ids)
     {
-        $ids = self::getCreatedProductCategoriesIds();
-        $GLOBALS['db']->query('DELETE FROM product_categories WHERE id IN (\'' . implode("', '", $ids) . '\')');
+        foreach($product_category_ids as $product_category_id)
+        {
+            $product_category_id = new ProductCategory();
+            $product_category->id = $product_category_id;
+            self::$_createdProductCategories[] = $product_category;
+        }
     }
 
-    public static function getCreatedProductCategoriesIds()
+    public static function removeAllCreatedProductCategories() 
     {
-        $ids = array();
-        foreach (self::$_createdProductCategories as $item) {
-            $ids[] = $item->id;
+        $db = DBManagerFactory::getInstance();
+        $conditions = implode(',', array_map(array($db, 'quoted'), self::getCreatedProductCategoryIds()));
+        if (!empty($conditions)) {
+            $db->query('DELETE FROM product_categories WHERE id IN (' . $conditions . ')');
         }
-        return $ids;
+
+        self::$_createdProductCategories = array();
+    }
+
+    public static function getCreatedProductCategoryIds() 
+    {
+        $product_category_ids = array();
+        foreach (self::$_createdProductCategories as $product_category)
+        {
+            $product_category_ids[] = $product_category->id;
+        }
+        return $product_category_ids;
     }
 }

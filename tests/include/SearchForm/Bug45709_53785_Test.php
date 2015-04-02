@@ -1,41 +1,17 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 
 require_once "modules/Tasks/Task.php";
+require_once "modules/Teams/Team.php";
 require_once "modules/Contacts/Contact.php";
 require_once "include/SearchForm/SearchForm2.php";
 
@@ -65,12 +41,17 @@ class Bug45709_53785_Test extends Sugar_PHPUnit_Framework_TestCase
     	$this->task = SugarTestTaskUtilities::createTask();
     	$this->task->contact_id = $this->contact->id;
     	$this->task->save();
+        $this->team = SugarTestTeamUtilities::createAnonymousTeam();
+    	$this->team->name = '45709';
+    	$this->team->name_2 = '53785';
+    	$this->team->save();
     }
 
     public function tearDown()
     {
         SugarTestContactUtilities::removeAllCreatedContacts();
         SugarTestTaskUtilities::removeAllCreatedTasks();
+        SugarTestTeamUtilities::removeAllCreatedAnonymousTeams();
         SugarTestHelper::tearDown();
     }
 
@@ -119,4 +100,41 @@ class Bug45709_53785_Test extends Sugar_PHPUnit_Framework_TestCase
         $this->assertEquals($this->task->id, $row2['id'], "Couldn't find the expected related task");
     }
 
+    /**
+     * @ticket 53785
+     */
+    public function testGenerateSearchWhereForFieldsWhenFullTeamNameGiven()
+    {
+    	// Array to simulate REQUEST object
+    	$this->requestArray['module'] = 'Teams';
+    	$this->requestArray['action'] = 'index';
+    	$this->requestArray['searchFormTab'] = 'basic_search';
+    	$this->requestArray['name_basic'] = $this->team->name . " " . $this->team->name_2; //value of team name field set in REQUEST object
+    	$this->requestArray['query'] = 'true';
+
+		// Initialize search form
+    	$this->searchForm = new SearchForm($this->team, 'Teams');
+
+    	// Load the vardefs and search metadata
+    	require 'modules/Teams/vardefs.php';
+    	require 'modules/Teams/metadata/SearchFields.php';
+    	require 'modules/Teams/metadata/searchdefs.php';
+        $this->searchForm->searchFields = $searchFields[$this->searchForm->module];
+        $this->searchForm->searchdefs = $searchdefs[$this->searchForm->module];
+        $this->searchForm->fieldDefs = $this->team->getFieldDefinitions();
+        
+        // Fill the data from the array we are using to simulate REQUEST
+    	$this->searchForm->populateFromArray($this->requestArray, 'basic_search', false);
+    	
+    	// Get the generated search clause
+    	$whereArray = $this->searchForm->generateSearchWhere(true, $this->team->module_dir);
+    	
+    	// And use it to load the team created
+    	$test_query = "SELECT id FROM teams WHERE " . $whereArray[0];
+    	$result = $GLOBALS['db']->query($test_query);
+    	$row = $GLOBALS['db']->fetchByAssoc($result);
+
+    	// Check if the team was successfully loaded
+    	$this->assertEquals($this->team->id, $row['id'], "Didn't find the correct team id");
+    }
 }

@@ -1,39 +1,14 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 require_once 'include/database/MssqlManager.php';
 
 /**
@@ -73,7 +48,7 @@ class Bug52783Test extends Sugar_PHPUnit_Framework_TestCase
 	{
 		return array(
 		0 => array(
-				"SELECT  contacts.id , LTRIM(RTRIM(ISNULL(contacts.first_name,'')+' '+ISNULL(contacts.last_name,''))) as name, contacts.first_name , contacts.last_name , contacts.salutation  , accounts.name account_name, jtl0.account_id account_id, contacts.title , contacts.phone_work  , LTRIM(RTRIM(ISNULL(jt1.first_name,'')+' '+ISNULL(jt1.last_name,''))) assigned_user_name , jt1.created_by assigned_user_name_owner  , 'Users' assigned_user_name_mod, contacts.date_entered , contacts.assigned_user_id  , sfav.id is_favorite  FROM contacts   LEFT JOIN  accounts_contacts jtl0 ON contacts.id=jtl0.contact_id AND jtl0.deleted=0
+				"SELECT  contacts.id , LTRIM(RTRIM(ISNULL(contacts.first_name,'')+' '+ISNULL(contacts.last_name,''))) as name, contacts.first_name , contacts.last_name , contacts.salutation  , accounts.name account_name, jtl0.account_id account_id, contacts.title , contacts.phone_work  , LTRIM(RTRIM(ISNULL(jt1.first_name,'')+' '+ISNULL(jt1.last_name,''))) assigned_user_name , jt1.created_by assigned_user_name_owner  , 'Users' assigned_user_name_mod, contacts.date_entered , contacts.assigned_user_id  , sfav.id my_favorite  FROM contacts   LEFT JOIN  accounts_contacts jtl0 ON contacts.id=jtl0.contact_id AND jtl0.deleted=0
 				LEFT JOIN  accounts accounts ON accounts.id=jtl0.account_id AND accounts.deleted=0
 				AND accounts.deleted=0  LEFT JOIN  users jt1 ON contacts.assigned_user_id=jt1.id AND jt1.deleted=0
 				AND jt1.deleted=0 LEFT JOIN  sugarfavorites sfav ON sfav.module ='Contacts' AND sfav.record_id=contacts.id AND sfav.created_by='1' AND sfav.deleted=0  where contacts.deleted=0 ORDER BY name",
@@ -81,7 +56,7 @@ class Bug52783Test extends Sugar_PHPUnit_Framework_TestCase
 				"LTRIM(RTRIM(ISNULL(contacts.first_name,'')+' '+ISNULL(contacts.last_name,'')))"
 			),
 			1 => array(
-				"SELECT  contacts.id , LTRIM(RTRIM(ISNULL(contacts.first_name,'')+' '+ISNULL(contacts.last_name,''))) as name, contacts.first_name , contacts.last_name , contacts.salutation  , accounts.name account_name, jtl0.account_id account_id, contacts.title , contacts.phone_work  , LTRIM(RTRIM(ISNULL(jt1.first_name,'')+' '+ISNULL(jt1.last_name,''))) assigned_user_name , jt1.created_by assigned_user_name_owner  , 'Users' assigned_user_name_mod, contacts.date_entered , contacts.assigned_user_id  , sfav.id is_favorite  FROM contacts   LEFT JOIN  accounts_contacts jtl0 ON contacts.id=jtl0.contact_id AND jtl0.deleted=0
+				"SELECT  contacts.id , LTRIM(RTRIM(ISNULL(contacts.first_name,'')+' '+ISNULL(contacts.last_name,''))) as name, contacts.first_name , contacts.last_name , contacts.salutation  , accounts.name account_name, jtl0.account_id account_id, contacts.title , contacts.phone_work  , LTRIM(RTRIM(ISNULL(jt1.first_name,'')+' '+ISNULL(jt1.last_name,''))) assigned_user_name , jt1.created_by assigned_user_name_owner  , 'Users' assigned_user_name_mod, contacts.date_entered , contacts.assigned_user_id  , sfav.id my_favorite  FROM contacts   LEFT JOIN  accounts_contacts jtl0 ON contacts.id=jtl0.contact_id AND jtl0.deleted=0
 				LEFT JOIN  accounts accounts ON accounts.id=jtl0.account_id AND accounts.deleted=0
 				AND accounts.deleted=0  LEFT JOIN  users jt1 ON contacts.assigned_user_id=jt1.id AND jt1.deleted=0
 				AND jt1.deleted=0 LEFT JOIN  sugarfavorites sfav ON sfav.module ='Contacts' AND sfav.record_id=contacts.id AND sfav.created_by='1' AND sfav.deleted=0  where contacts.deleted=0 ORDER BY name ASC",
@@ -89,7 +64,7 @@ class Bug52783Test extends Sugar_PHPUnit_Framework_TestCase
 				"LTRIM(RTRIM(ISNULL(contacts.first_name,'')+' '+ISNULL(contacts.last_name,'')))"
 			),
 			2 => array(
-				"SELECT  contacts.id , LTRIM(RTRIM(ISNULL(contacts.first_name,'')+' '+ISNULL(contacts.last_name,''))) as name, contacts.first_name , contacts.last_name , contacts.salutation  , accounts.name account_name, jtl0.account_id account_id, contacts.title , contacts.phone_work  , LTRIM(RTRIM(ISNULL(jt1.first_name,'')+' '+ISNULL(jt1.last_name,''))) assigned_user_name , jt1.created_by assigned_user_name_owner  , 'Users' assigned_user_name_mod, contacts.date_entered , contacts.assigned_user_id  , sfav.id is_favorite  FROM contacts   LEFT JOIN  accounts_contacts jtl0 ON contacts.id=jtl0.contact_id AND jtl0.deleted=0
+				"SELECT  contacts.id , LTRIM(RTRIM(ISNULL(contacts.first_name,'')+' '+ISNULL(contacts.last_name,''))) as name, contacts.first_name , contacts.last_name , contacts.salutation  , accounts.name account_name, jtl0.account_id account_id, contacts.title , contacts.phone_work  , LTRIM(RTRIM(ISNULL(jt1.first_name,'')+' '+ISNULL(jt1.last_name,''))) assigned_user_name , jt1.created_by assigned_user_name_owner  , 'Users' assigned_user_name_mod, contacts.date_entered , contacts.assigned_user_id  , sfav.id my_favorite  FROM contacts   LEFT JOIN  accounts_contacts jtl0 ON contacts.id=jtl0.contact_id AND jtl0.deleted=0
 				LEFT JOIN  accounts accounts ON accounts.id=jtl0.account_id AND accounts.deleted=0
 				AND accounts.deleted=0  LEFT JOIN  users jt1 ON contacts.assigned_user_id=jt1.id AND jt1.deleted=0
 				AND jt1.deleted=0 LEFT JOIN  sugarfavorites sfav ON sfav.module ='Contacts' AND sfav.record_id=contacts.id AND sfav.created_by='1' AND sfav.deleted=0  where contacts.deleted=0 ORDER BY contacts.name ASC",
@@ -97,13 +72,21 @@ class Bug52783Test extends Sugar_PHPUnit_Framework_TestCase
 				"contacts.name"
 			),
 			3 => array(
-				"SELECT  contacts.id , ISNULL(contacts.last_name,''))) as name, contacts.first_name , contacts.last_name , contacts.salutation  , accounts.name account_name, jtl0.account_id account_id, contacts.title , contacts.phone_work  , LTRIM(RTRIM(ISNULL(jt1.first_name,'')+' '+ISNULL(jt1.last_name,''))) assigned_user_name , jt1.created_by assigned_user_name_owner  , 'Users' assigned_user_name_mod, contacts.date_entered , contacts.assigned_user_id  , sfav.id is_favorite  FROM contacts   LEFT JOIN  accounts_contacts jtl0 ON contacts.id=jtl0.contact_id AND jtl0.deleted=0
+				"SELECT  contacts.id , ISNULL(contacts.last_name,''))) as name, contacts.first_name , contacts.last_name , contacts.salutation  , accounts.name account_name, jtl0.account_id account_id, contacts.title , contacts.phone_work  , LTRIM(RTRIM(ISNULL(jt1.first_name,'')+' '+ISNULL(jt1.last_name,''))) assigned_user_name , jt1.created_by assigned_user_name_owner  , 'Users' assigned_user_name_mod, contacts.date_entered , contacts.assigned_user_id  , sfav.id my_favorite  FROM contacts   LEFT JOIN  accounts_contacts jtl0 ON contacts.id=jtl0.contact_id AND jtl0.deleted=0
 				LEFT JOIN  accounts accounts ON accounts.id=jtl0.account_id AND accounts.deleted=0
 				AND accounts.deleted=0  LEFT JOIN  users jt1 ON contacts.assigned_user_id=jt1.id AND jt1.deleted=0
 				AND jt1.deleted=0 LEFT JOIN  sugarfavorites sfav ON sfav.module ='Contacts' AND sfav.record_id=contacts.id AND sfav.created_by='1' AND sfav.deleted=0  where contacts.deleted=0 ORDER BY name ASC",
 			
 				"ISNULL(contacts.last_name,'')))"
 			),
+            // CRYS-676. Alias isn't converted when an order string contains a point or more than one part.
+            array(
+                'SELECT contacts.id as id_alias, contacts.title as title_alias
+                 FROM contacts
+                 WHERE contacts.deleted = 0
+                 ORDER BY id_alias ASC,title_alias ASC',
+                'ORDER BY contacts.id ASC,contacts.title ASC',
+            ),
 		);
 	}
 }

@@ -1,44 +1,19 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 require_once 'include/database/MysqlManager.php';
 
 class MysqlManagerTest extends Sugar_PHPUnit_Framework_TestCase
 {
-    static public function setupBeforeClass()
+    static public function setUpBeforeClass()
     {
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
         $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
@@ -53,11 +28,14 @@ class MysqlManagerTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        if (version_compare(phpversion(), '5.5.0', '>=')) {
+            $this->markTestSkipped('The mysql extension is deprecated since php 5.5.');
+        }
         if ( $GLOBALS['db']->dbType != 'mysql' ) {
             $this->markTestSkipped('Only applies to MySQL');
         }
 
-        $this->_db = new MysqlManager();
+        $this->_db = new MysqlManagerTestMock();
     }
 
     public function testQuote()
@@ -166,6 +144,10 @@ class MysqlManagerTest extends Sugar_PHPUnit_Framework_TestCase
                     array('foo','add_date',array(5,'year')),
                     "DATE_ADD(foo, INTERVAL 5 year)"
                 ),
+                array(
+                    array('1.23','round',array(6)),
+                    "round(1.23, 6)"
+                )
         );
         return $returnArray;
     }
@@ -222,39 +204,79 @@ class MysqlManagerTest extends Sugar_PHPUnit_Framework_TestCase
              $result);
     }
 
-    public function providerFullTextQuery()
+    public function providerEmptyValues()
     {
+        $returnArray = array(
+            array(
+                array("1970-01-01", 'date'), true,
+                ),
+            array(
+                array("1970-01-01 00:00:00", 'datetime'), true,
+                ),
+            array(
+                array("0000-00-00 00:00:00", 'datetime'), true,
+                ),
+            array(
+                array("0000-00-00", 'date'), true,
+                ),
+            array(
+                array("2013-01-01", 'date'), false,
+                ),
+            array(
+                array("2013-01-01 09:04:32", 'datetime'), false,
+                ),
+            array(
+                array("00:00:00", 'time'), true,
+                ),
+            array(
+                array("12:32:30", 'time'), false,
+                ),
+            );
+
+        return $returnArray;
+    }
+
+
+    /**
+     * @ticket BR-238
+     * @dataProvider providerEmptyValues
+     */
+    public function testEmptyValues($parameters, $result)
+    {
+        $this->assertEquals($result, $this->_db->_emptyValue($parameters[0], $parameters[1]));
+    }
+
+    /**
+     * This is the data provider for testSupports
+     */
+    public function supportsProvider() {
         return array(
-            array(array('word1'), array(), array(),
-                "MATCH(unittest) AGAINST('word1' IN BOOLEAN MODE)"),
-            array(array("'word1'"), array(), array(),
-                "MATCH(unittest) AGAINST('\'word1\'' IN BOOLEAN MODE)"),
-            array(array('word1', 'word2'), array(), array(),
-                "MATCH(unittest) AGAINST('word1 word2' IN BOOLEAN MODE)"),
-            array(array('word1', 'word2'), array('mustword'), array(),
-                "MATCH(unittest) AGAINST('word1 word2 +mustword' IN BOOLEAN MODE)"),
-            array(array('word1', 'word2'), array('mustword', 'mustword2'), array(),
-                "MATCH(unittest) AGAINST('word1 word2 +mustword +mustword2' IN BOOLEAN MODE)"),
-            array(array(), array('mustword', 'mustword2'), array(),
-                "MATCH(unittest) AGAINST('+mustword +mustword2' IN BOOLEAN MODE)"),
-            array(array('word1'), array(), array('notword'),
-                "MATCH(unittest) AGAINST('word1 -notword' IN BOOLEAN MODE)"),
-            array(array('word1'), array(), array('notword', 'notword2'),
-                "MATCH(unittest) AGAINST('word1 -notword -notword2' IN BOOLEAN MODE)"),
-            array(array('word1', 'word2'), array('mustword', 'mustword2'), array('notword', 'notword2'),
-                "MATCH(unittest) AGAINST('word1 word2 +mustword +mustword2 -notword -notword2' IN BOOLEAN MODE)"),
+            array('recursive_query', false),
+            array('fix:report_as_condition', true)
         );
     }
 
     /**
-     * @ticket 37435
-     * @dataProvider providerFullTextQuery
-     * @param array $terms
-     * @param string $result
+     * This is a test for known supported features
+     * @dataProvider supportsProvider
      */
-    public function testFullTextQuery($terms, $must_terms, $exclude_terms, $result)
+    public function testSupports($feature, $expectedSupport) {
+        $this->assertEquals($expectedSupport, $this->_db->supports($feature));
+    }
+
+    /**
+     * Test order_stability capability BR-2097
+     */
+    public function testOrderStability()
     {
-        $this->assertEquals($result,
-        		$this->_db->getFulltextQuery('unittest', $terms, $must_terms, $exclude_terms));
+        $msg = 'MysqlManager cannot have order_stability capability';
+        $this->assertFalse($this->_db->supports('order_stability'), $msg);
+    }
+}
+
+class MysqlManagerTestMock extends MysqlManager
+{
+    public function _emptyValue($val, $type) {
+        return parent::_emptyValue($val, $type);
     }
 }

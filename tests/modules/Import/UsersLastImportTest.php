@@ -1,63 +1,29 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
  
 require_once 'modules/Import/UsersLastImport.php';
 
 class UsersLastImportTest extends Sugar_PHPUnit_Framework_TestCase
 {
-    private $_importModule;
-    private $_importRecordCount;
-    private $_importIds;
+    private $_importModule = 'Notes';
+    private $_importObject = 'Note';
+    private $_importRecordCount = 3;
+    private $_importIds = array();
     private $_usersLastImport;
     private $_usersLastImportIds;
     
     public function setUp() 
     {
-        $beanList = array();
-        $beanFiles = array();
-        require('include/modules.php');
-        $GLOBALS['beanList'] = $beanList;
-        $GLOBALS['beanFiles'] = $beanFiles;
-        
-        $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
-        $this->_importModule = 'Notes';
-        $this->_importObject = 'Note';
-        $this->_importRecordCount = 3;
-        $this->_importIds = array();
+        SugarTestHelper::setUp("current_user");
         $this->_usersLastImport = new UsersLastImport();
         $this->_addImportedRecords();
     }
@@ -65,23 +31,18 @@ class UsersLastImportTest extends Sugar_PHPUnit_Framework_TestCase
     public function tearDown() 
     {
         $focus = $this->_loadBean($this->_importModule);
-        $GLOBALS['db']->query(
-            'DELETE FROM ' . $focus->table_name . ' 
-                WHERE id IN (\'' . 
-                    implode("','",$this->_importIds) . '\')');
-        $GLOBALS['db']->query(
-            'DELETE FROM users_last_import 
-                WHERE id IN (\'' . 
-                    implode("','",$this->_usersLastImportIds) . '\')');
-        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-        unset($GLOBALS['current_user']);
-        unset($GLOBALS['beanList']);
-        unset($GLOBALS['beanFiles']);
+        
+        $sql = "DELETE FROM {$focus->table_name} WHERE id IN ('" . implode("','", $this->_importIds) . "')";
+        $GLOBALS['db']->query($sql);
+        
+        $sql = 'DELETE FROM users_last_import WHERE id IN (\'' . implode("','",$this->_usersLastImportIds) . '\')';
+        $GLOBALS['db']->query($sql);
+        SugarTestHelper::tearDown();
     }
     
-    private function _loadBean()
+    private function _loadBean($module)
     {
-        return loadBean($this->_importModule);
+        return BeanFactory::getBean($module);
     }
     
     private function _addImportedRecords()
@@ -142,7 +103,6 @@ class UsersLastImportTest extends Sugar_PHPUnit_Framework_TestCase
         
         $focus = new Account();
         $focus->id = "Account_".$unid;
-        $focus->save();
         
         $last_import = new UsersLastImport();
         $last_import->assigned_user_id = $GLOBALS['current_user']->id;
@@ -168,11 +128,7 @@ class UsersLastImportTest extends Sugar_PHPUnit_Framework_TestCase
                 )
             );
         
-        // teardown
-        unset($GLOBALS['beanList']);
-        unset($GLOBALS['beanFiles']);
-    	
-    	$result = $GLOBALS['db']->query("SELECT * FROM email_addr_bean_rel where id = '{$this->email_addr_bean_rel_id}'");
+        $result = $GLOBALS['db']->query("SELECT * FROM email_addr_bean_rel where id = '{$this->email_addr_bean_rel_id}'");
 		$rows = $GLOBALS['db']->fetchByAssoc($result);
     	$this->assertFalse($rows);
     	

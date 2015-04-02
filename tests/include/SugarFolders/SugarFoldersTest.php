@@ -1,39 +1,14 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 
 require_once('include/SugarFolders/SugarFolders.php');
 
@@ -48,28 +23,21 @@ class SugarFoldersTest extends Sugar_PHPUnit_Framework_TestCase
 
 	public function setUp()
     {
-        global $current_user, $currentModule;
-
         $this->_user = SugarTestUserUtilities::createAnonymousUser();
+        $current_user = $this->_user;
         $GLOBALS['current_user'] = $this->_user;
 		$this->folder = new SugarFolder();
 		$this->additionalFolders = array();
 		$this->emails = array();
-        $beanList = array();
-        $beanFiles = array();
-        require('include/modules.php');
-        $GLOBALS['beanList'] = $beanList;
-        $GLOBALS['beanFiles'] = $beanFiles;
-        if (empty($GLOBALS['current_language'])) {
-            $GLOBALS['current_language'] = 'en_us';
-        }
-        $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
+        SugarTestHelper::setUp('beanList');
+        SugarTestHelper::setUp('beanFiles');
+        SugarTestHelper::setUp('app_strings');
+        $GLOBALS['mod_strings'] = return_module_language($GLOBALS['current_language'], "Emails");
     }
 
     public function tearDown()
     {
         SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
-        unset($GLOBALS['current_user']);
 
         $GLOBALS['db']->query("DELETE FROM folders_subscriptions WHERE assigned_user_id='{$this->_user->id}'");
         $this->_clearFolder($this->folder->id);
@@ -81,7 +49,6 @@ class SugarFoldersTest extends Sugar_PHPUnit_Framework_TestCase
             $GLOBALS['db']->query("DELETE FROM emails WHERE id='$emailID'");
 
         unset($this->folder);
-        unset($GLOBALS['mod_strings']);
     }
 
     /**
@@ -95,6 +62,7 @@ class SugarFoldersTest extends Sugar_PHPUnit_Framework_TestCase
         $this->folder->new_with_id = TRUE;
 
         $fields = array('name' => 'TEST_FOLDER','parent_folder' => 'PRNT_FOLDER',
+                        'team_id' => create_guid(),'team_set_id' => create_guid(),
                         );
 
         $this->folder->setFolder($fields);
@@ -105,6 +73,8 @@ class SugarFoldersTest extends Sugar_PHPUnit_Framework_TestCase
 
         $this->assertEquals($fields['name'], $this->folder->name, $error_message );
         $this->assertEquals($fields['parent_folder'], $this->folder->parent_folder, $error_message );
+        $this->assertEquals($fields['team_id'], $this->folder->team_id, $error_message );
+        $this->assertEquals($fields['team_set_id'], $this->folder->team_set_id, $error_message );
         $this->assertEquals($this->_user->id, $this->folder->assign_to_id, $error_message );
 
         //Check for folder subscriptions create for global user
@@ -190,7 +160,6 @@ class SugarFoldersTest extends Sugar_PHPUnit_Framework_TestCase
      */
     function testGetUserFolders()
     {
-        $GLOBALS['mod_strings'] = return_module_language($GLOBALS['current_language'], "Emails");
         require_once('modules/Emails/EmailUI.php');
         $emailUI = new EmailUI();
         $emailUI->preflightUser($GLOBALS['current_user']);
@@ -213,6 +182,7 @@ class SugarFoldersTest extends Sugar_PHPUnit_Framework_TestCase
      */
     function testAddBean()
     {
+        $this->markTestIncomplete('Needs to be fixed by FRM team.');
         $emailParams = array('status' => 'unread');
         $email = $this->_createEmailObject($emailParams);
         $this->emails[] = $email->id;
@@ -286,6 +256,7 @@ class SugarFoldersTest extends Sugar_PHPUnit_Framework_TestCase
      */
     function testGetListItemsForEmailXML()
     {
+        $this->markTestIncomplete('Needs to be fixed by FRM team.');
         //Create the my Emails Folder
         $GLOBALS['mod_strings'] = return_module_language($GLOBALS['current_language'], "Emails");
         require_once('modules/Emails/EmailUI.php');
@@ -318,6 +289,17 @@ class SugarFoldersTest extends Sugar_PHPUnit_Framework_TestCase
 
         $this->assertEquals($email->id,$emailList['out'][0]['uid'],$error_message );
 
+    }
+
+    function testGetUpdateQuery_WithIDField_FiltersOutIDFieldInSet()
+    {
+        $result = SugarTestReflection::callProtectedMethod(
+            $this->folder,
+            'getUpdateQuery',
+            array(array('id','foo','bar'))
+        );
+        $expected = "UPDATE folders SET foo=NULL,bar=NULL where id = ''";
+        $this->assertEquals($expected, $result, "Should filter ID from SET clause");
     }
 
 

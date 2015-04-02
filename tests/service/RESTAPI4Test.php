@@ -1,39 +1,14 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
 
 require_once('service/v3/SugarWebServiceUtilv3.php');
 require_once('tests/service/APIv3Helper.php');
@@ -52,26 +27,22 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $beanList = array();
-		$beanFiles = array();
-		require('include/modules.php');
-		$GLOBALS['beanList'] = $beanList;
-		$GLOBALS['beanFiles'] = $beanFiles;
+        SugarTestHelper::setUp("beanList");
+        SugarTestHelper::setUp("beanFiles");
+        //Create an anonymous user for login purposes/
+        $this->_user = SugarTestHelper::setUp("current_user");
 
         //Reload langauge strings
         $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
         $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
         $GLOBALS['mod_strings'] = return_module_language($GLOBALS['current_language'], 'Accounts');
-        //Create an anonymous user for login purposes/
-        $this->_user = SugarTestUserUtilities::createAnonymousUser();
+
 
         $this->_admin_user = SugarTestUserUtilities::createAnonymousUser();
         $this->_admin_user->status = 'Active';
         $this->_admin_user->is_admin = 1;
         $this->_admin_user->save();
         $GLOBALS['db']->commit(); // Making sure we commit any changes before continuing
-
-        $GLOBALS['current_user'] = $this->_user;
 
         self::$helperObject = new APIv3Helper();
 
@@ -83,22 +54,25 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
 
         $this->aclRole->set_relationship('acl_roles_users', array('role_id'=>$this->aclRole->id ,'user_id'=> $this->_user->id), false);
         $GLOBALS['db']->commit(); // Making sure we commit any changes before continuing
+        $this->aclField = new ACLField();
+        $this->aclField->setAccessControl('Accounts', $this->aclRole->id, 'website', -99);
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before continuing
+        ACLField::loadUserFields('Accounts', 'Account', $this->_user->id, true );
+        $GLOBALS['db']->commit(); // Making sure we commit any changes before continuing
     }
 
     public function tearDown()
 	{
+	    $GLOBALS['db']->query("DELETE FROM acl_fields WHERE role_id IN ( SELECT id FROM acl_roles WHERE id IN ( SELECT role_id FROM acl_roles_users WHERE user_id = '{$GLOBALS['current_user']->id}' ) )");
 	    $GLOBALS['db']->query("DELETE FROM acl_roles WHERE id IN ( SELECT role_id FROM acl_roles_users WHERE user_id = '{$GLOBALS['current_user']->id}' )");
 	    $GLOBALS['db']->query("DELETE FROM acl_roles_users WHERE user_id = '{$GLOBALS['current_user']->id}'");
 
 	    if(isset($GLOBALS['listViewDefs'])) unset($GLOBALS['listViewDefs']);
 	    if(isset($GLOBALS['viewdefs'])) unset($GLOBALS['viewdefs']);
-	    unset($GLOBALS['beanList']);
-		unset($GLOBALS['beanFiles']);
-		unset($GLOBALS['app_list_strings']);
+	    unset($GLOBALS['app_list_strings']);
 	    unset($GLOBALS['app_strings']);
 	    unset($GLOBALS['mod_strings']);
-	    unset($GLOBALS['current_user']);
-        SugarTestUserUtilities::removeAllCreatedAnonymousUsers();
+        SugarTestHelper::tearDown();
 	}
 
     protected function _makeRESTCall($method,$parameters)
@@ -152,6 +126,84 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
                 'name_value_list' => array(),
                 )
             );
+    }
+
+    /**
+     * Test the get_entry_list call with Export access disabled to ensure results are returned.
+     *
+     */
+    public function testGetEntryListWithExportRole()
+    {
+        $this->_user = SugarTestUserUtilities::createAnonymousUser();
+
+        //Set the Export Role to no access for user.
+        $aclRole = new ACLRole();
+        $aclRole->name = "Unit Test Export";
+        $aclRole->save();
+        $aclRole->set_relationship('acl_roles_users', array('role_id'=> $aclRole->id ,'user_id'=> $this->_user->id), false);
+        $role_actions = $aclRole->getRoleActions($aclRole->id);
+        $action_id = $role_actions['Accounts']['module']['export']['id'];
+        $aclRole->setAction($aclRole->id, $action_id, -99);
+
+        $result = $this->_login($this->_user);
+        $session = $result['id'];
+
+        $module = 'Accounts';
+        $orderBy = 'name';
+        $offset = 0;
+        $returnFields = array('name');
+        $linkNameFields = "";
+        $maxResults = 2;
+        $deleted = FALSE;
+        $favorites = FALSE;
+        $result = $this->_makeRESTCall('get_entry_list', array($session, $module, '', $orderBy,$offset, $returnFields,$linkNameFields, $maxResults, $deleted, $favorites));
+
+        $this->assertFalse(isset($result['name']));
+        if ( isset($result['name']) ) {
+            $this->assertNotEquals('Access Denied',$result['name']);
+        }
+    }
+
+    /**
+     * Test the ability to retrieve quote PDFs
+     *
+     */
+    public function testGetQuotesPDF()
+    {
+        $log_result = $this->_login($this->_admin_user);
+        $session = $log_result['id'];
+
+        //Retrieve a list of quote ids to work with
+        $whereClause = "";
+        $module = 'Quotes';
+        $orderBy = 'name';
+        $offset = 0;
+        $returnFields = array('id');
+        $linkNameFields = "";
+        $maxResults = 2;
+        $deleted = FALSE;
+        $favorites = FALSE;
+        $list_result = $this->_makeRESTCall('get_entry_list', array($session, $module, $whereClause, $orderBy,$offset, $returnFields,$linkNameFields, $maxResults, $deleted, $favorites));
+
+        //Test for standard oob layouts
+        foreach ($list_result['entry_list'] as $entry)
+        {
+            $quote_id = $entry['id'];
+            $result = $this->_makeRESTCall('get_quotes_pdf', array($session, $quote_id, 'Standard' ));
+            $this->assertTrue(!empty($result['file_contents']));
+        }
+
+        //Test for a fake pdf type.
+        if( count($list_result['entry_list']) > 0 )
+        {
+            $quote_id = $list_result['entry_list'][0]['id'];
+            $result = $this->_makeRESTCall('get_quotes_pdf', array($session, $quote_id, 'Fake' ));
+            $this->assertTrue(!empty($result['file_contents']));
+        }
+
+        //Test for a fake bean.
+        $result = $this->_makeRESTCall('get_quotes_pdf', array($session, '-1', 'Standard' ));
+        $this->assertTrue(!empty($result['file_contents']));
     }
     /**
      * Ensure the ability to retrieve a module list of recrods that are favorites.
@@ -276,6 +328,92 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
 
         $this->assertTrue( self::$helperObject->findBeanIdFromEntryList($results['entry_list'],$account->id,'Accounts'), "Unable to find {$account->id} id in favorites search.");
         $this->assertFalse( self::$helperObject->findBeanIdFromEntryList($results['entry_list'],$account2->id,'Accounts'), "Account {$account2->id} id in favorites search should not be there.");
+    }
+    public function _aclEditViewFieldProvider()
+    {
+        return array(
+
+            array('Accounts','wireless','edit', array( 'name'=> 99, 'website'=> -99, 'phone_office'=> 99, 'email1'=> 99, 'nofield'=> null ) ),
+            array('Contacts','wireless','edit', array('first_name'=> 99, 'last_name'=> 99 ) ),
+            array('Reports','wireless','edit', array('name'=> 99)),
+
+            array('Accounts','wireless','detail', array('name'=>99, 'website'=> -99, 'phone_office'=> 99, 'email1'=> 99, 'nofield'=> null )),
+            array('Contacts','wireless','detail', array('first_name'=> 99, 'last_name'=> 99 )),
+            array('Reports','wireless','detail', array('name'=> 99)),
+
+
+            );
+    }
+
+    /**
+     * @dataProvider _aclEditViewFieldProvider
+     */
+    public function testMetadataEditViewFieldLevelACLS($module, $view_type, $view, $expected_fields)
+    {
+        $result = $this->_login();
+        $session = $result['id'];
+
+        $results = $this->_makeRESTCall('get_module_layout',
+        array(
+            'session' => $session,
+            'module' => array($module),
+            'type' => array($view_type),
+            'view' => array($view))
+        );
+
+        if($view == 'list')
+            $fields = $results[$module][$view_type][$view];
+        else
+            $fields = $results[$module][$view_type][$view]['panels'];
+
+        foreach ($fields as $field_row)
+        {
+            foreach ($field_row as $field_def)
+            {
+                if( isset($expected_fields[$field_def['name']]) )
+                {
+                    $this->assertEquals($expected_fields[$field_def['name']], $field_def['acl'] );
+                    break;
+                }
+            }
+        }
+    }
+
+    public function _aclListViewFieldProvider()
+    {
+        return array(
+            array('Accounts','wireless', array('name' => 99,  'website' => -99, 'phone_office' => 99, 'email1' => 99 )),
+            array('Contacts','wireless', array('name' => 99,  'title' => 99 )),
+            array('Reports','wireless', array('name' => 99 ) )
+
+            );
+    }
+
+    /**
+     * @dataProvider _aclListViewFieldProvider
+     */
+    public function testMetadataListViewFieldLevelACLS($module, $view_type, $expected_fields)
+    {
+        $result = $this->_login();
+        $session = $result['id'];
+        $results = $this->_makeRESTCall('get_module_layout',
+        array(
+            'session' => $session,
+            'module' => array($module),
+            'type' => array($view_type),
+            'view' => array('list') )
+        );
+
+        $fields = $results[$module][$view_type]['list'];
+
+        foreach ($fields as $field_name => $field_row)
+        {
+            $tmpName = strtolower($field_name);
+            if( isset($expected_fields[$tmpName]) )
+            {
+                $this->assertEquals($expected_fields[$tmpName], $field_row['acl'] );
+            }
+        }
     }
     /**
      * Private helper function to mark a bean as a favorite item.
@@ -409,5 +547,114 @@ class RESTAPI4Test extends Sugar_PHPUnit_Framework_TestCase
         $this->assertNull($result);
 
     }
-
+    public static function _wirelessGridModuleLayoutProvider()
+    {
+        return array(
+            array('module' => 'Accounts', 'view' => 'edit', 'metadatafile' => 'modules/Accounts/clients/mobile/views/edit/edit.php',),
+            array('module' => 'Accounts', 'view' => 'detail', 'metadatafile' => 'modules/Accounts/clients/mobile/views/detail/detail.php',),
+        );
+                            
+    }
+    
+    /**
+     * Leaving as a provider in the event we need to extend it in the future
+     * 
+     * @static
+     * @return array
+     */
+    public static function _wirelessListModuleLayoutProvider()
+    {
+        return array(
+            array('module' => 'Cases'),
+        );
+                            
+    }
+    
+    /**
+     * @dataProvider _wirelessListModuleLayoutProvider
+     */
+    public function testGetWirelessListModuleLayout($module)
+    {
+        $result = $this->_login();
+        $session = $result['id'];
+        
+        $type = 'wireless';
+        $view = 'list';
+        
+        $result = $this->_makeRESTCall('get_module_layout',
+                        array(
+                            'session' => $session,
+                            'module' => array($module),
+                            'type' => array($type),
+                            'view' => array($view))
+                        );
+        
+        // This is carried over metadata from pre-6.6 OOTB installations
+        // This test if for backward compatibility with older API clients
+        require 'tests/service/metadata/' . $module . 'legacy' . $view . '.php';
+        
+        $legacy = $listViewDefs[$module];
+        
+        $this->assertTrue(isset($result[$module][$type][$view]), 'Result did not contain expected data');
+    
+        foreach($result[$module][$type][$view] AS $def) {
+            $this->assertArrayHasKey('name', $def, 'Name key not found in result definitions');
+        }
+    
+        
+        $legacyKeys = array_keys($legacy);
+        sort($legacyKeys);
+        
+        foreach($result[$module][$type][$view] AS $def) {
+            $convertedKeys[] = $def['name'];
+        }
+        
+        sort($convertedKeys);
+        
+        $this->assertEquals($legacyKeys, $convertedKeys, 'Converted list def keys not the same as known list def keys');
+    }
+    
+    /**
+     * @dataProvider _wirelessGridModuleLayoutProvider
+     */
+    public function testGetWirelessGridModuleLayout($module, $view, $metadatafile)
+    {
+        $result = $this->_login();
+        $session = $result['id'];
+        
+        $type = 'wireless';
+        $result = $this->_makeRESTCall('get_module_layout',
+                        array(
+                            'session' => $session,
+                            'module' => array($module),
+                            'type' => array($type),
+                            'view' => array($view))
+                        );
+        require 'tests/service/metadata/' . $module . 'legacy' . $view . '.php';
+        
+        // This is carried over metadata from pre-6.6 OOTB installations
+        $legacy = $viewdefs[$module][ucfirst($view) .'View' ];
+        unset($viewdefs); // Prevent clash with current viewdefs
+        
+        // Get our current OOTB metadata
+        require $metadatafile;
+        $current = $viewdefs[$module]['mobile']['view'][$view];
+        
+        $legacyFields = $legacy['panels'];
+        $currentFields = $current['panels'][0]['fields'];
+        
+        $this->assertArrayHasKey('panels', $result[$module][$type][$view], 'REST call result does not have a panels array');
+        
+        $panels = $result[$module][$type][$view]['panels'];
+        $this->assertTrue(isset($panels[0][0]['name']), 'No name index in the first row array of panel fields');
+        $this->assertEquals(count($legacyFields), count($currentFields), 'Field count differs between legacy and current metadata');
+    }
+    
+    /*
+    public function testAddFieldLevelACLsToWirelessList() {
+        require_once 'service/v4/SugarWebServiceUtilv4.php';
+        $v4 = new SugarWebServiceUtilv4();
+        $defs = $v4->get_module_view_defs('Cases', 'wireless', 'list');
+    }
+    */
 }

@@ -1,39 +1,14 @@
 <?php
-/*********************************************************************************
- * SugarCRM Community Edition is a customer relationship management program developed by
- * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License version 3 as published by the
- * Free Software Foundation with the addition of the following permission added
- * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with
- * this program; if not, see http://www.gnu.org/licenses or write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301 USA.
- * 
- * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
- * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License version 3.
- * 
- * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
- * these Appropriate Legal Notices must retain the display of the "Powered by
- * SugarCRM" logo. If the display of the logo is not reasonably feasible for
- * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by SugarCRM".
- ********************************************************************************/
-
+/*
+ * Your installation or use of this SugarCRM file is subject to the applicable
+ * terms available at
+ * http://support.sugarcrm.com/06_Customer_Center/10_Master_Subscription_Agreements/.
+ * If you do not agree to all of the applicable terms or do not have the
+ * authority to bind the entity as an authorized representative, then do not
+ * install or use this SugarCRM file.
+ *
+ * Copyright (C) SugarCRM Inc. All rights reserved.
+ */
  
 require_once 'include/database/DBManagerFactory.php';
 require_once 'modules/Contacts/Contact.php';
@@ -41,10 +16,21 @@ require_once 'modules/Cases/Case.php';
 
 class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
 {
-    private $_db;
-    private $_helper;
+    /**
+     * DB Manager
+     * @var DBManager
+     */
+    protected $_db;
+    /**
+     * DB Manager - for BC
+     * @var DBManager
+     */
+    protected $_helper;
 
-    static public function setupBeforeClass()
+    public $usePreparedStatements = false;
+
+
+    static public function setUpBeforeClass()
     {
         $GLOBALS['current_user'] = SugarTestUserUtilities::createAnonymousUser();
         $GLOBALS['app_strings'] = return_application_language($GLOBALS['current_language']);
@@ -61,6 +47,7 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
     {
         $this->_db = DBManagerFactory::getInstance();
         $this->_helper = $this->_db;
+        $this->_db->usePreparedStatements = $this->usePreparedStatements;
     }
 
     public function tearDown()
@@ -77,7 +64,7 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
 
     public function testCreateTableSQLParams()
     {
-        $bean = new Contact;
+        $bean = BeanFactory::getBean('Contacts');
 
         $sql = $this->_helper->createTableSQLParams(
             $bean->getTableName(),
@@ -99,7 +86,7 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testInsertSQLProperlyDecodesHtmlEntities()
     {
-        $bean = new Contact;
+        $bean = BeanFactory::getBean('Contacts');
         $bean->last_name = '&quot;Test&quot;';
 
         $sql = $this->_helper->insertSQL($bean);
@@ -120,7 +107,7 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
      */
     public function testUpdateSQLProperlyDecodesHtmlEntities()
     {
-        $bean = new Contact;
+        $bean = BeanFactory::getBean('Contacts');
         $bean->last_name = '&quot;Test&quot;';
 
         $sql = $this->_helper->updateSQL($bean, array("id" => "1"));
@@ -196,7 +183,7 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
     }
     public function testGetAutoIncrement()
     {
-        $case = new aCase();
+        $case = BeanFactory::getBean('Cases');
         $case->name = "foo";
         $case->save();
         $case->retrieve($case->id);
@@ -209,7 +196,7 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
     }
     public function testSetAutoIncrementStart()
     {
-        $case = new aCase();
+        $case = BeanFactory::getBean('Cases');
         $case->name = "foo";
         $case->save();
         $case->retrieve($case->id);
@@ -218,7 +205,7 @@ class DBHelperTest extends Sugar_PHPUnit_Framework_TestCase
         $case->save();
     	$newAuto = $lastAuto + 5;
         $this->_helper->setAutoIncrementStart("cases", "case_number", $newAuto);
-        $case2 = new aCase();
+        $case2 = BeanFactory::getBean('Cases');
         $case2->name = "foo2";
         $case2->save();
         $case2->retrieve($case2->id);
