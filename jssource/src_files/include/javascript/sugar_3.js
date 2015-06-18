@@ -185,9 +185,9 @@ function checkMaxSupported(c, s) {
 SUGAR.isSupportedBrowser = function(){
     var supportedBrowsers = {
         msie : {min:9, max:10}, // IE 9, 10
-        safari : {min:534}, // Safari 5.1
-        mozilla : {min:31.0}, // Firefox 31.0
-        chrome : {min:37} // Chrome 37 
+        safari : {min:536}, // Safari 6.0
+        mozilla : {min:37.0}, // Firefox 37.0
+        chrome : {min:42} // Chrome 42
     };
     var current = String($.browser.version);
     var supported;

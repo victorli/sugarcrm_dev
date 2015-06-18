@@ -68,6 +68,9 @@ class EAPMController extends SugarController
 
     public function pre_save()
     {
+        if (!empty($_POST['password']) && $_POST['password'] == EAPM::$passwordPlaceholder) {
+            unset($_POST['password']);
+        }
         parent::pre_save();
         $this->api = ExternalAPIFactory::loadAPI($this->bean->application,true);
         if(empty($this->api)) {

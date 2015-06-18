@@ -111,6 +111,8 @@ class EAPMViewEdit extends ViewEdit {
     }
 
  	function display() {
+        $this->bean->password = empty($this->bean->password) ? '' : EAPM::$passwordPlaceholder;
+
         $this->ss->assign('return_id', $this->_returnId);
 
         $cancelUrl = "index.php?action=EditView&module=Users&record={$this->_returnId}#tab5";

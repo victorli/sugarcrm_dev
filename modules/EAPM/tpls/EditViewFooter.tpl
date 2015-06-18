@@ -42,6 +42,7 @@
 EAPMFormName = 'EditView';
 EAPMOAuthNotice = '{$MOD.LBL_OAUTH_SAVE_NOTICE}';
 EAPMBAsicAuthNotice = '{$MOD.LBL_BASIC_SAVE_NOTICE}';
+EAPMBClickToEdit = '<span class="button">{$MOD.LBL_CLICK_TO_EDIT}</span>';
 YAHOO.util.Event.onDOMReady(function() {ldelim}
 EAPMEditStart(
 {if is_admin($current_user) } true {else} false {/if}
