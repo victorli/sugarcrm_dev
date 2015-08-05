@@ -63,6 +63,11 @@ class ExternalAPIFactory
                             && $connector->isRequiredConfigFieldsSet()) {
                                 $filteredList[$name] = $data;
                         }
+                     } elseif (isset($data['authMethod']) && $data['authMethod'] == 'oauth2') {
+                        $connector = SourceFactory::getSource($data['connector'], false);
+                        if (!empty($connector) && $connector->isRequiredConfigFieldsSet()) {
+                            $filteredList[$name] = $data;
+                        }
                      }else{
                         $filteredList[$name] = $data;
                      }

@@ -96,7 +96,7 @@ class EAPM extends Basic {
            if ( !$includeInactive ) {
                $queryArray['validated'] = 1;
            }
-           $eapmBean = $eapmBean->retrieve_by_string_fields($queryArray);
+           $eapmBean = $eapmBean->retrieve_by_string_fields($queryArray, false);
            
            // Don't cache the include inactive results
            if ( !$includeInactive ) {

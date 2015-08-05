@@ -56,6 +56,9 @@
 {/if}
 {$INSTRUCTION}
 
+<script>
+    var externalApis = {$EXTERNAL_APIS|@json};
+</script>
 <form enctype="multipart/form-data" name="importstep1" method="post" action="index.php" id="importstep1">
 <input type="hidden" name="module" value="Import">
 <input type="hidden" name="action" value="Step2">

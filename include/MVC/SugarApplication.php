@@ -514,7 +514,7 @@ class SugarApplication
      * The list of the actions excepted from referer checks by default
      * @var array
      */
-	protected $whiteListActions = array('index', 'ListView', 'DetailView', 'EditView', 'oauth', 'authorize', 'Authenticate', 'Login', 'SupportPortal');
+	protected $whiteListActions = array('index', 'ListView', 'DetailView', 'EditView', 'oauth', 'authorize', 'Authenticate', 'Login', 'SupportPortal', 'GoogleOauth2Redirect');
 
 	/**
 	 *

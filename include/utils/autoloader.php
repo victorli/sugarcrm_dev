@@ -88,6 +88,23 @@ class SugarAutoLoader{
         }
 
 
+        // Autoload Google libraries
+        $classPath = explode('_', $class);
+
+        if ($classPath[0] != 'Google') {
+            return false;
+        }
+
+        // Drop 'Google', and maximum class file path depth in this project is 3.
+        $classPath = array_slice($classPath, 1, 2);
+
+        $filePath = 'include/google-api-php-client/src/Google/' . implode('/', $classPath) . '.php';
+
+        if (file_exists($filePath)) {
+            require_once($filePath);
+            return true;
+        }
+
   		return false;
 	}
 
