@@ -26,6 +26,11 @@ class Bug56573Test extends Sugar_PHPUnit_Framework_TestCase
      */
     protected $id;
 
+    public static function setUpBeforeClass()
+    {
+        SugarTestHelper::tearDown();
+    }
+
     public function setUp()
     {
         $this->id = null;

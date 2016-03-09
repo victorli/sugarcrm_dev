@@ -1,5 +1,4 @@
 <?php
- if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
@@ -36,12 +35,41 @@
  ********************************************************************************/
 
 
+require_once 'XTemplate/xtpl.php';
 
+class XTemplateTest extends Sugar_PHPUnit_Framework_TestCase
+{
+    protected $files;
 
-$sugar_version      = '6.5.23';
-$sugar_db_version   = '6.5.23';
-$sugar_flavor       = 'CE';
-$sugar_build		= '1061';
-$sugar_timestamp    = '2015-10-16 04:48pm';
+    public function setUp()
+    {
+        $file1 = 'upload/' . uniqid().'.xtpl';
+        $fp = fopen($file1, "w");
+        fputs($fp, 'xtemplate recursive include works');
+        fclose($fp);
 
-?>
+        $file2 = 'upload/' . uniqid().'.xtpl';
+        $fp = fopen($file2, "w");
+        fputs($fp, '<!-- BEGIN: main -->{FILE "'.$file1.'"}<!-- END: main -->');
+        fclose($fp);
+
+        $this->files['primary'] = $file2;
+        $this->files['secondary'] = $file1;
+    }
+
+    public function tearDown()
+    {
+        foreach ($this->files as $file ) {
+            @unlink($file);
+        }
+    }
+
+    public function testRecursiveParse()
+    {
+        $xtpl = new XTemplate($this->files['primary']);
+        $xtpl->rparse('main.inc');
+        $xtpl->parse('main');
+
+        $this->assertEquals('xtemplate recursive include works', $xtpl->text('main'));
+    }
+}
