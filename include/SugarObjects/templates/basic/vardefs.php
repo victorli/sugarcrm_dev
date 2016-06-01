@@ -45,6 +45,17 @@ $vardefs = array(
 	    'reportable'=>true,
 	    'comment' => 'Unique identifier'
 	  ),
+	  'tenant_id'=>
+	  array(
+	  	'name' 		=> 	'tenant_id',
+	  	'vname' 	=> 	'LBL_TENANT_ID',
+	  	'type'		=>	'user_id',
+	  	'dbType'	=>	'id',
+	  	'required'	=>	true,
+	  	'reportable'=>	true,
+	  	'default'	=> '0',
+	  	'comment'	=>	'Using to identify tenant and filter all records for current tenant'
+	  ),
 	  'name'=>
 	    array(
 	    'name'=>'name',

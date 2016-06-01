@@ -435,6 +435,15 @@ $vardefs =array(
             'reportable'=>false,
             'massupdate' => false,
         ),
+     'is_tenant'=>
+        array(
+        	'name'	=>	'is_tenant',
+        	'type'	=>	'bool',
+        	'vname'	=>	'LBL_IS_TENANT',
+        	'reportable'	=>	false,
+        	'default'	=>	'0',
+        	'comment'	=>	'Using to identify current user whether or not a tenant'
+        ),
 ), 
 'relationships'=>array(
     strtolower($module).'_email_addresses' => 

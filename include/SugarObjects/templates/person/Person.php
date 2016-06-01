@@ -49,6 +49,12 @@ class Person extends Basic
      * @var Link2
      */
     public $email_addresses;
+    
+    /**
+     * One tenant has at least one sub-user
+     * @var bool to identify user whether or not a tenant
+     */
+    var $is_tenant = false;
 
 	public function Person()
 	{
