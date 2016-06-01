@@ -105,6 +105,8 @@ class User extends Person {
 
 
 	var $new_schema = true;
+	
+	var $is_tenant = false;
 
 	function User() {
 		parent::Person();
@@ -1494,6 +1496,15 @@ EOQ;
         }
         return false;
     }
+    /**
+     * Is this user a tenant
+     * 
+     * @return bool
+     */
+    public function isTenant(){
+    	return $this->is_tenant;
+    }
+    
     /**
      * List the modules a user has developer access to
      *

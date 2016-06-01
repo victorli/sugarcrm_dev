@@ -624,6 +624,15 @@ $dictionary['User'] = array(
 			'source' => 'non-db',
 			'vname' => 'LBL_PROJECTS',
 		),
+		'is_tenant'=>
+        array(
+        	'name'	=>	'is_tenant',
+        	'type'	=>	'bool',
+        	'vname'	=>	'LBL_IS_TENANT',
+        	'reportable'	=>	false,
+        	'default'	=>	'0',
+        	'comment'	=>	'Using to identify current user whether or not a tenant'
+        ),
     ) ,
     'indices' => array(
         array(
