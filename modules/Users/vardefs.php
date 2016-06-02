@@ -627,10 +627,10 @@ $dictionary['User'] = array(
 		'is_tenant'=>
         array(
         	'name'	=>	'is_tenant',
-        	'type'	=>	'bool',
+        	'type'	=>	'enum',
         	'vname'	=>	'LBL_IS_TENANT',
         	'reportable'	=>	false,
-        	'default'	=>	'0',
+        	'options'	=>	'user_tenant_dom',
         	'comment'	=>	'Using to identify current user whether or not a tenant'
         ),
     ) ,
