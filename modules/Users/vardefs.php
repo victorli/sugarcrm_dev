@@ -638,7 +638,7 @@ $dictionary['User'] = array(
 		'is_tenant'=>
         array(
         	'name'	=>	'is_tenant',
-        	'type'	=>	'enum',
+        	'type'	=>	'bool',
         	'vname'	=>	'LBL_IS_TENANT',
         	'reportable'	=>	false,
         	'options'	=>	'user_tenant_dom',
