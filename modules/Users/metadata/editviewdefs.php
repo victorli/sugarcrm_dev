@@ -64,6 +64,10 @@ $viewdefs['Users']['EditView'] = array(
                       'name'=>'UserType',
                       'customCode'=>'{if $IS_ADMIN}{$USER_TYPE_DROPDOWN}{else}{$USER_TYPE_READONLY}{/if}',
                       ),
+                  array(
+                      'name'=>'is_tenant',
+                      'displayParams' => array('required'=>true),
+                      ),
                 ),
             array('picture'),
         ),
