@@ -44,6 +44,17 @@ $dictionary['User'] = array(
             'type' => 'id',
             'required' => true,
         ) ,
+        'tenant_id'=>
+	  array(
+	  	'name' 		=> 	'tenant_id',
+	  	'vname' 	=> 	'LBL_TENANT_ID',
+	  	'type'		=>	'user_id',
+	  	'dbType'	=>	'id',
+	  	'required'	=>	true,
+	  	'reportable'=>	true,
+	  	'default'	=> '0',
+	  	'comment'	=>	'Using to identify tenant and filter all records for current tenant'
+	  ),
         'user_name' => array(
             'name' => 'user_name',
             'vname' => 'LBL_USER_NAME',
