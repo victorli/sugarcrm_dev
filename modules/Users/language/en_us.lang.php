@@ -393,6 +393,9 @@ $mod_strings = array (
     'LBL_UPDATE_FINISH'                 => 'Update complete',
     'LBL_AFFECTED'                      => 'affected',
 
+	'LBL_TENANT_USRE'					=>	'Tenant User',
+	'LBL_TENANT_DESC'					=>	'Tenant User',
+
     'LBL_USER_NAME_FOR_ROLE'            =>'Users/Teams/Roles',
     'LBL_SESSION_EXPIRED'               => 'You have been logged out because your session has expired.',
 
