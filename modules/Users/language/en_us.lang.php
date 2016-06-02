@@ -98,7 +98,7 @@ $mod_strings = array (
 	'LBL_ADDRESS_STREET'				=> 'Address Street',
 	'LBL_ADDRESS'						=> 'Address',
 	'LBL_ADMIN_USER'					=> 'System Administrator User',
-	'LBL_TENANT_USRE'					=>	'Tenant User',
+	'LBL_TENANT_USER'					=>	'Tenant User',
 	'LBL_TENANT_DESC'					=>	'Tenant User',
 
 	'LBL_ADMIN_DESC'					=> 'User can access the Administration page all records.',
