@@ -66,6 +66,7 @@ $viewdefs['Users']['EditView'] = array(
                       ),
                   array(
                       'name'=>'is_tenant',
+                      'customCode'=>'@@FIELD@@',
                       'displayParams' => array('required'=>true),
                       ),
                 ),
