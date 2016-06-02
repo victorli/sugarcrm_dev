@@ -3292,4 +3292,9 @@ $app_strings ['documentation'] = array (
 	'PRO' => '04_Sugar_Professional',
 	'COM' => '05_Sugar_Community_Edition'
 );
+
+$app_list_strings['is_tenant_dom'] = array(
+	'0' => 'No',
+	'1' => 'Yes'
+);
 ?>
