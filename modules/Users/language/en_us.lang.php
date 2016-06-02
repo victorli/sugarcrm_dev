@@ -577,6 +577,7 @@ $mod_strings = array (
     'LBL_DELETED' => 'Deleted',
     'LBL_HIDEOPTIONS' => 'Hide Options',
     'LBL_SHOWOPTIONS' => 'Show Options',
+    'LBL_IS_TENANT' => 'Tenant',
 
 ); // END STRINGS DEFS
 
