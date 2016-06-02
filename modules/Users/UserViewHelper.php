@@ -210,7 +210,7 @@ class UserViewHelper {
      *
      */
     public function setupUserTypeDropdown() {
-        global $current_user;
+        global $current_user,$app_list_strings;
 
 
         //if this is an existing bean and the type is empty, then populate user type
@@ -236,6 +236,10 @@ class UserViewHelper {
                 'label' => translate('LBL_ADMIN_USER','Users'),
                 'description' => translate('LBL_ADMIN_DESC','Users'),
             ),
+            'TenantUser' => array(
+            	'label' => translate('LBL_TENANT_USER','Users'),
+            	'description' => translate('LBL_TENANT_DESC','Users'),
+            ),
         );
 
         if ( $userType == 'GROUP' || $userType == 'PORTAL_ONLY' ) {
@@ -248,7 +252,7 @@ class UserViewHelper {
             } elseif($this->ss->get_template_vars('IS_SUPER_ADMIN')) {
                 $availableUserTypes = array(
                     'RegularUser',
-                	'TenantUser',
+                    'TenantUser',
                     'Administrator',
                     );
             } else {
@@ -278,6 +282,7 @@ class UserViewHelper {
         $this->ss->assign('USER_TYPE_DROPDOWN',$userTypeDropdown);
         $this->ss->assign('USER_TYPE_READONLY',$userTypes[$userType]['label'] . "<input type='hidden' id='UserType' value='{$userType}'><div id='UserTypeDesc'>&nbsp;</div>");
 
+	$this->ss->assign('USER_TENANT_READONLY',$app_list_strings['user_tenant_dom'][$user->is_tenant] . "<input type='hidden' id='is_tenant' value='{$user->is_tenant}'>");
     }
 
     protected function setupPasswordTab() {
@@ -768,6 +773,10 @@ class UserViewHelper {
         else if ($user->is_group)
         {
             $user->user_type = 'GROUP';
+        }
+        else if($user->is_tenant)
+        {
+            $user->user_type = 'TenantUser';
         }
         else
         {
