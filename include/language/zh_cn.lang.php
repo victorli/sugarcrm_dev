@@ -56,6 +56,7 @@ $app_list_strings = array (
 'user_type_dom' =>
   array (
     'RegularUser' => '普通用户',
+  	'TenantUser'	  => '租户用户',
     'Administrator' => '管理员',
   ),
 
