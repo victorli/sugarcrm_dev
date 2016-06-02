@@ -248,6 +248,7 @@ class UserViewHelper {
             } elseif($this->ss->get_template_vars('IS_SUPER_ADMIN')) {
                 $availableUserTypes = array(
                     'RegularUser',
+                	'TenantUser',
                     'Administrator',
                     );
             } else {
