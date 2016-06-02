@@ -98,7 +98,8 @@ $mod_strings = array (
 	'LBL_ADDRESS_STREET'				=> 'Address Street',
 	'LBL_ADDRESS'						=> 'Address',
 	'LBL_ADMIN_USER'					=> 'System Administrator User',
-
+	'LBL_TENANT_USRE'					=>	'Tenant User',
+	'LBL_TENANT_DESC'					=>	'Tenant User',
 
 	'LBL_ADMIN_DESC'					=> 'User can access the Administration page all records.',
 	'LBL_REGULAR_DESC'					=> 'User can access modules and records based on roles.',
@@ -393,8 +394,6 @@ $mod_strings = array (
     'LBL_UPDATE_FINISH'                 => 'Update complete',
     'LBL_AFFECTED'                      => 'affected',
 
-	'LBL_TENANT_USRE'					=>	'Tenant User',
-	'LBL_TENANT_DESC'					=>	'Tenant User',
 
     'LBL_USER_NAME_FOR_ROLE'            =>'Users/Teams/Roles',
     'LBL_SESSION_EXPIRED'               => 'You have been logged out because your session has expired.',
