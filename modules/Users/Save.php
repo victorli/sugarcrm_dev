@@ -143,7 +143,7 @@ if(!$current_user->is_admin && !$GLOBALS['current_user']->isAdminForModule('User
 		$focus->user_name = $_POST['user_name'];
 	}
 
-	// if the user saved is a Regular User
+	// if the user saved is a Regular User or Tenant User
 	if(!$focus->is_group && !$focus->portal_only){
 
         foreach ($focus->column_fields as $fieldName)
@@ -160,6 +160,14 @@ if(!$current_user->is_admin && !$GLOBALS['current_user']->isAdminForModule('User
                 $GLOBALS['log']->fatal("Field '$fieldName' does not have a SugarField handler");
             }
         }
+        
+        //setting is_tenant field
+        if(!empty($_POST['UserType']) && $_POST['UserType'] == 'TenantUser'){
+        	$focus->is_tenant = 1;
+        }else{
+        	$focus->is_tenant = 0;
+        }
+        
         foreach ($focus->additional_column_fields as $fieldName)
         {
             $field = $focus->field_defs[$fieldName];
