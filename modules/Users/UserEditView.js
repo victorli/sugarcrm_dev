@@ -100,7 +100,7 @@ function user_status_display(field) {
 		break;
 	case 'TenantUser':
 		document.getElementById('is_tenant').value = '1';
-		document.getElementById('is_admin').value = '0';
+		document.getElementById('is_admin').value = '1'; //tenant is admin but only has come rights of admin
 		document.getElementById('is_group').value = '0';
 		document.getElementById('UserTypeDesc').innerHTML = SUGAR.language.get(
 				'Users','LBL_TENANT_DESC');
