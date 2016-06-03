@@ -64,11 +64,11 @@ $viewdefs['Users']['EditView'] = array(
                       'name'=>'UserType',
                       'customCode'=>'{if $IS_ADMIN}{$USER_TYPE_DROPDOWN}{else}{$USER_TYPE_READONLY}{/if}',
                       ),
-                  array(
+                  /*array(
                       'name'=>'is_tenant',
                       'customCode'=>'{if $IS_ADMIN}@@FIELD@@{else}{$USER_TENANT_READONLY}{/if}',
                       'displayParams' => array('required'=>true),
-                      ),
+                      ),*/
                 ),
             array('picture'),
         ),
