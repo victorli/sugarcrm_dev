@@ -60,6 +60,15 @@ function user_status_display(field) {
 		input.setAttribute("value", "");
 		field.form.appendChild(input);
 	}
+	if(typeof field.form.is_tenant == 'undefined'){
+		var input = document.createElement("input");
+		input.setAttribute("id","is_tenant");
+		input.setAttribute("type","hidden");
+		input.setAttribute("name","is_tenant");
+		input.setAttribute("value","0");
+		field.form.appendChild(input);
+	}
+	
 	switch (field.value) {
 	case 'Administrator':
 		document.getElementById('UserTypeDesc').innerHTML = SUGAR.language.get(
@@ -88,6 +97,13 @@ function user_status_display(field) {
 		document.getElementById('portal_only').value = '1';
 		document.getElementById('UserTypeDesc').innerHTML = SUGAR.language.get(
 				'Users', 'LBL_PORTAL_ONLY_DESC');
+		break;
+	case 'TenantUser':
+		document.getElementById('is_tenant').value = '1';
+		document.getElementById('is_admin').value = '0';
+		document.getElementById('is_group').value = '0';
+		document.getElementById('UserTypeDesc').innerHTML = SUGAR.language.get(
+				'Users','LBL_TENANT_DESC');
 		break;
 	}
 }
