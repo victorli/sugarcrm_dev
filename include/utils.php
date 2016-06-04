@@ -2999,7 +2999,9 @@ function sugar_cleanup($exit = false) {
     if (!class_exists('Tracker', true)) {
 		require_once 'modules/Trackers/Tracker.php';
 	}
-	Tracker::logPage();
+	
+	$Tracker = new Tracker();
+	$Tracker->logPage();
 	// Now write the cached tracker_queries
 	if(!empty($GLOBALS['savePreferencesToDB']) && $GLOBALS['savePreferencesToDB']) {
 	    if ( isset($GLOBALS['current_user']) && $GLOBALS['current_user'] instanceOf User )
