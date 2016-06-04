@@ -1465,6 +1465,11 @@ EOQ;
                 ) {
                 $myModules[] = $module;
             }
+            
+            //TODO: added tenant process
+            if(($this->isTenant() && isset($actions['modules'][key]))){
+            	$myModules[] = $module;
+            }
         }
 
         return $myModules;
@@ -1502,7 +1507,10 @@ EOQ;
      * @return bool
      */
     public function isTenant(){
-    	return $this->is_tenant;
+    	if(isset($this->is_tenant) && ($this->is_tenant == '1' || $this->is_tenant == 'on'))
+    		return true;
+    		
+    	return false;
     }
     
     /**
