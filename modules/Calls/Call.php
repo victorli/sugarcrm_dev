@@ -3,31 +3,31 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
  * Free Software Foundation with the addition of the following permission added
  * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
  * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
  * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with
  * this program; if not, see http://www.gnu.org/licenses or write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
- * 
+ *
  * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
  * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
+ *
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
  * Section 5 of the GNU Affero General Public License version 3.
- * 
+ *
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
  * SugarCRM" logo. If the display of the logo is not reasonably feasible for
@@ -37,11 +37,11 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 /*********************************************************************************
 
- * Description:  TODO: To be written.
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
- * All Rights Reserved.
- * Contributor(s): ______________________________________..
- ********************************************************************************/
+* Description:  TODO: To be written.
+* Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
+* All Rights Reserved.
+* Contributor(s): ______________________________________..
+********************************************************************************/
 
 class Call extends SugarBean {
 	var $field_name_map;
@@ -87,7 +87,7 @@ class Call extends SugarBean {
 	var $case_id;
 	var $assigned_user_name;
 	var $note_id;
-    var $outlook_id;
+	var $outlook_id;
 	var $update_vcal = true;
 	var $contacts_arr;
 	var $users_arr;
@@ -98,7 +98,7 @@ class Call extends SugarBean {
 	var $table_name = "calls";
 	var $rel_users_table = "calls_users";
 	var $rel_contacts_table = "calls_contacts";
-    var $rel_leads_table = "calls_leads";
+	var $rel_leads_table = "calls_leads";
 	var $module_dir = 'Calls';
 	var $object_name = "Call";
 	var $new_schema = true;
@@ -116,13 +116,13 @@ class Call extends SugarBean {
 										'assigned_user_id'	=> 'users',
 										'note_id'			=> 'notes',
                                         'lead_id'			=> 'leads',
-								);
+	);
 
 	function Call() {
 		parent::SugarBean();
 		global $app_list_strings;
 
-       	$this->setupCustomFields('Calls');
+		$this->setupCustomFields('Calls');
 
 		foreach ($this->field_defs as $field) {
 			$this->field_name_map[$field['name']] = $field;
@@ -131,8 +131,8 @@ class Call extends SugarBean {
 
 
 
-         if(!empty($GLOBALS['app_list_strings']['duration_intervals']))
-        	$this->minutes_values = $GLOBALS['app_list_strings']['duration_intervals'];
+		if(!empty($GLOBALS['app_list_strings']['duration_intervals']))
+		$this->minutes_values = $GLOBALS['app_list_strings']['duration_intervals'];
 	}
 
 	/**
@@ -156,23 +156,23 @@ class Call extends SugarBean {
 		}
 		return parent::ACLAccess($view,$is_owner);
 	}
-    // save date_end by calculating user input
-    // this is for calendar
+	// save date_end by calculating user input
+	// this is for calendar
 	function save($check_notify = FALSE) {
 		global $timedate,$current_user;
 
-	    if(isset($this->date_start) && isset($this->duration_hours) && isset($this->duration_minutes))
-        {
-    	    $td = $timedate->fromDb($this->date_start);
-    	    if($td)
-    	    {
-	        	$this->date_end = $td->modify("+{$this->duration_hours} hours {$this->duration_minutes} mins")->asDb();
-    	    }
-        }
+		if(isset($this->date_start) && isset($this->duration_hours) && isset($this->duration_minutes))
+		{
+			$td = $timedate->fromDb($this->date_start);
+			if($td)
+			{
+				$this->date_end = $td->modify("+{$this->duration_hours} hours {$this->duration_minutes} mins")->asDb();
+			}
+		}
 
 		if(!empty($_REQUEST['send_invites']) && $_REQUEST['send_invites'] == '1') {
 			$check_notify = true;
-        } else {
+		} else {
 			$check_notify = false;
 		}
 		if(empty($_REQUEST['send_invites'])) {
@@ -186,41 +186,41 @@ class Call extends SugarBean {
 				if(!isset($GLOBALS['resavingRelatedBeans']) || $GLOBALS['resavingRelatedBeans'] == false) {
 					$check_notify = true;
 				}
-                if(isset($_REQUEST['assigned_user_name'])) {
-                    $this->new_assigned_user_name = $_REQUEST['assigned_user_name'];
-                }
+				if(isset($_REQUEST['assigned_user_name'])) {
+					$this->new_assigned_user_name = $_REQUEST['assigned_user_name'];
+				}
 			}
 		}
-        if (empty($this->status) ) {
-            $this->status = $this->getDefaultStatus();
-        }
+		if (empty($this->status) ) {
+			$this->status = $this->getDefaultStatus();
+		}
 
 		// prevent a mass mailing for recurring meetings created in Calendar module
 		if (empty($this->id) && !empty($_REQUEST['module']) && $_REQUEST['module'] == "Calendar" && !empty($_REQUEST['repeat_type']) && !empty($this->repeat_parent_id)) {
 			$check_notify = false;
 		}
 		/*nsingh 7/3/08  commenting out as bug #20814 is invalid
-		if($current_user->getPreference('reminder_time')!= -1 &&  isset($_POST['reminder_checked']) && isset($_POST['reminder_time']) && $_POST['reminder_checked']==0  && $_POST['reminder_time']==-1){
+		 if($current_user->getPreference('reminder_time')!= -1 &&  isset($_POST['reminder_checked']) && isset($_POST['reminder_time']) && $_POST['reminder_checked']==0  && $_POST['reminder_time']==-1){
 			$this->reminder_checked = '1';
 			$this->reminder_time = $current_user->getPreference('reminder_time');
-		}*/
+			}*/
 
-        $return_id = parent::save($check_notify);
-        global $current_user;
+		$return_id = parent::save($check_notify);
+		global $current_user;
 
 
-        if($this->update_vcal) {
+		if($this->update_vcal) {
 			vCal::cache_sugar_vcal($current_user);
-        }
+		}
 
-        return $return_id;
+		return $return_id;
 	}
 
 	/** Returns a list of the associated contacts
 	 * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc..
 	 * All Rights Reserved..
 	 * Contributor(s): ______________________________________..
-	*/
+	 */
 	function get_contacts()
 	{
 		// First, get the list of IDs.
@@ -235,106 +235,130 @@ class Call extends SugarBean {
 		return "$this->name";
 	}
 
+	/**
+	 * @deprecated
+	 */
 	function create_list_query($order_by, $where, $show_deleted=0)
 	{
-        $custom_join = $this->getCustomJoin();
-                $query = "SELECT ";
+		$custom_join = $this->getCustomJoin();
+		$query = "SELECT ";
 		$query .= "
 			calls.*,";
-			if ( preg_match("/calls_users\.user_id/",$where))
-			{
-				$query .= "calls_users.required,
+		if ( preg_match("/calls_users\.user_id/",$where))
+		{
+			$query .= "calls_users.required,
 				calls_users.accept_status,";
-			}
+		}
 
-			$query .= "
+		$query .= "
 			users.user_name as assigned_user_name";
-        $query .= $custom_join['select'];
+		$query .= $custom_join['select'];
 
-			// this line will help generate a GMT-metric to compare to a locale's timezone
+		// this line will help generate a GMT-metric to compare to a locale's timezone
 
-			if ( preg_match("/contacts/",$where)){
-				$query .= ", contacts.first_name, contacts.last_name";
-				$query .= ", contacts.assigned_user_id contact_name_owner";
-			}
-			$query .= " FROM calls ";
+		if ( preg_match("/contacts/",$where)){
+			$query .= ", contacts.first_name, contacts.last_name";
+			$query .= ", contacts.assigned_user_id contact_name_owner";
+		}
+		$query .= " FROM calls ";
 
-			if ( preg_match("/contacts/",$where)){
-				$query .=	"LEFT JOIN calls_contacts
+		if ( preg_match("/contacts/",$where)){
+			$query .=	"LEFT JOIN calls_contacts
 	                    ON calls.id=calls_contacts.call_id
 	                    LEFT JOIN contacts
 	                    ON calls_contacts.contact_id=contacts.id ";
-			}
-			if ( preg_match('/calls_users\.user_id/',$where))
-			{
-		$query .= "LEFT JOIN calls_users
+		}
+		if ( preg_match('/calls_users\.user_id/',$where))
+		{
+			$query .= "LEFT JOIN calls_users
 			ON calls.id=calls_users.call_id and calls_users.deleted=0 ";
-			}
-			$query .= "
+		}
+		$query .= "
 			LEFT JOIN users
 			ON calls.assigned_user_id=users.id ";
-        $query .= $custom_join['join'];
-			$where_auto = '1=1';
-       		 if($show_deleted == 0){
-            	$where_auto = " $this->table_name.deleted=0  ";
-			}else if($show_deleted == 1){
-				$where_auto = " $this->table_name.deleted=1 ";
-			}
+		$query .= $custom_join['join'];
+		$where_auto = '1=1';
+		if($show_deleted == 0){
+			$where_auto = " $this->table_name.deleted=0  ";
+		}else if($show_deleted == 1){
+			$where_auto = " $this->table_name.deleted=1 ";
+		}
 
-			//$where_auto .= " GROUP BY calls.id";
+		//$where_auto .= " GROUP BY calls.id";
 
 		if($where != "")
-			$query .= "where $where AND ".$where_auto;
+		$query .= "where $where AND ".$where_auto;
 		else
-			$query .= "where ".$where_auto;
+		$query .= "where ".$where_auto;
 
-        $order_by = $this->process_order_by($order_by);
-        if (empty($order_by)) {
-            $order_by = 'calls.name';
-        }
-        $query .= ' ORDER BY ' . $order_by;
+		$order_by = $this->process_order_by($order_by);
+		if (empty($order_by)) {
+			$order_by = 'calls.name';
+		}
+		$query .= ' ORDER BY ' . $order_by;
 
 		return $query;
 	}
+	
+	/**
+	 * Override the parent function and added the filter by user type
+	 * @see SugarBean::create_new_list_query()
+	 * @author victorli
+	 */
+	function create_new_list_query($order_by, $where,$filter=array(),$params=array(), $show_deleted = 0,$join_type='', $return_array = false,$parentbean=null, $singleSelect = false, $ifListForExport = false){
+		
+		if(isset($this->field_defs['created_by'])){
+			if(!is_admin($GLOBALS['current_user']) || is_tenant($GLOBALS['current_user'])){
+				if(empty($where))
+	        		$where = "$this->table_name.created_by = '".$GLOBALS['current_user']->id."'";
+	        	else 
+	        		$where .= " AND $this->table_name.created_by = '".$GLOBALS['current_user']->id."'";
+	        }
+		}else{
+			sugar_die("Module:".$this->object_name.",no created_by exist.");
+		}
+		
+		return parent::create_new_list_query($order_by, $where, $filter,$params, $show_deleted, $join_type, $return_array, $parentbean, $singleSelect);
+	}
 
-        function create_export_query(&$order_by, &$where, $relate_link_join='')
-        {
-            $custom_join = $this->getCustomJoin(true, true, $where);
-            $custom_join['join'] .= $relate_link_join;
-			$contact_required = stristr($where, "contacts");
-            if($contact_required)
-            {
-                    $query = "SELECT calls.*, contacts.first_name, contacts.last_name, users.user_name as assigned_user_name ";
-                    $query .= $custom_join['select'];
-                    $query .= " FROM contacts, calls, calls_contacts ";
-                    $where_auto = "calls_contacts.contact_id = contacts.id AND calls_contacts.call_id = calls.id AND calls.deleted=0 AND contacts.deleted=0";
-            }
-            else
-            {
-                    $query = 'SELECT calls.*, users.user_name as assigned_user_name ';
-                    $query .= $custom_join['select'];
-                    $query .= ' FROM calls ';
-                    $where_auto = "calls.deleted=0";
-            }
+	function create_export_query(&$order_by, &$where, $relate_link_join='')
+	{
+		$custom_join = $this->getCustomJoin(true, true, $where);
+		$custom_join['join'] .= $relate_link_join;
+		$contact_required = stristr($where, "contacts");
+		if($contact_required)
+		{
+			$query = "SELECT calls.*, contacts.first_name, contacts.last_name, users.user_name as assigned_user_name ";
+			$query .= $custom_join['select'];
+			$query .= " FROM contacts, calls, calls_contacts ";
+			$where_auto = "calls_contacts.contact_id = contacts.id AND calls_contacts.call_id = calls.id AND calls.deleted=0 AND contacts.deleted=0";
+		}
+		else
+		{
+			$query = 'SELECT calls.*, users.user_name as assigned_user_name ';
+			$query .= $custom_join['select'];
+			$query .= ' FROM calls ';
+			$where_auto = "calls.deleted=0";
+		}
 
 
-			$query .= "  LEFT JOIN users ON calls.assigned_user_id=users.id ";
+		$query .= "  LEFT JOIN users ON calls.assigned_user_id=users.id ";
 
-            $query .= $custom_join['join'];
+		$query .= $custom_join['join'];
 
-			if($where != "")
-                    $query .= "where $where AND ".$where_auto;
-            else
-                    $query .= "where ".$where_auto;
+		if($where != "")
+		$query .= "where $where AND ".$where_auto;
+		else
+		$query .= "where ".$where_auto;
 
-        $order_by = $this->process_order_by($order_by);
-        if (empty($order_by)) {
-            $order_by = 'calls.name';
-        }
-        $query .= ' ORDER BY ' . $order_by;
+		$order_by = $this->process_order_by($order_by);
+		if (empty($order_by)) {
+			$order_by = 'calls.name';
+		}
+		$query .= ' ORDER BY ' . $order_by;
 
-            return $query;
-        }
+		return $query;
+	}
 
 
 
@@ -363,16 +387,16 @@ class Call extends SugarBean {
 			$this->duration_minutes = $this->minutes_value_default;
 		}
 
-        global $timedate;
-        //setting default date and time
+		global $timedate;
+		//setting default date and time
 		if (is_null($this->date_start)) {
 			$this->date_start = $timedate->now();
 		}
 
 		if (is_null($this->duration_hours))
-			$this->duration_hours = "0";
+		$this->duration_hours = "0";
 		if (is_null($this->duration_minutes))
-			$this->duration_minutes = "1";
+		$this->duration_minutes = "1";
 
 		$this->fill_in_additional_parent_fields();
 
@@ -392,9 +416,9 @@ class Call extends SugarBean {
 		}
 
 		if ( empty($this->id) ) {
-		    $reminder_t = $GLOBALS['current_user']->getPreference('reminder_time');
-		    if ( isset($reminder_t) )
-		        $this->reminder_time = $reminder_t;
+			$reminder_t = $GLOBALS['current_user']->getPreference('reminder_time');
+			if ( isset($reminder_t) )
+			$this->reminder_time = $reminder_t;
 		}
 		$this->reminder_checked = $this->reminder_time == -1 ? false : true;
 
@@ -404,7 +428,7 @@ class Call extends SugarBean {
 		if(empty($this->id)){
 			$reminder_t = $GLOBALS['current_user']->getPreference('email_reminder_time');
 			if(isset($reminder_t))
-		    		$this->email_reminder_time = $reminder_t;
+			$this->email_reminder_time = $reminder_t;
 		}
 		$this->email_reminder_checked = $this->email_reminder_time == -1 ? false : true;
 
@@ -428,14 +452,14 @@ class Call extends SugarBean {
 		if ($this->status == "Planned") {
 			//cn: added this if() to deal with sequential Closes in Meetings.  this is a hack to a hack (formbase.php->handleRedirect)
 			if(empty($action))
-			    $action = "index";
+			$action = "index";
 
-            $setCompleteUrl = "<a id='{$this->id}' onclick='SUGAR.util.closeActivityPanel.show(\"{$this->module_dir}\",\"{$this->id}\",\"Held\",\"listview\",\"1\");'>";
+			$setCompleteUrl = "<a id='{$this->id}' onclick='SUGAR.util.closeActivityPanel.show(\"{$this->module_dir}\",\"{$this->id}\",\"Held\",\"listview\",\"1\");'>";
 			if ($this->ACLAccess('edit')) {
-                $call_fields['SET_COMPLETE'] = $setCompleteUrl . SugarThemeRegistry::current()->getImage("close_inline"," border='0'",null,null,'.gif',translate('LBL_CLOSEINLINE'))."</a>";
-            } else {
-                $call_fields['SET_COMPLETE'] = '';
-            }
+				$call_fields['SET_COMPLETE'] = $setCompleteUrl . SugarThemeRegistry::current()->getImage("close_inline"," border='0'",null,null,'.gif',translate('LBL_CLOSEINLINE'))."</a>";
+			} else {
+				$call_fields['SET_COMPLETE'] = '';
+			}
 		}
 		global $timedate;
 		$today = $timedate->nowDb();
@@ -453,19 +477,19 @@ class Call extends SugarBean {
 
 		//make sure we grab the localized version of the contact name, if a contact is provided
 		if (!empty($this->contact_id)) {
-           // Bug# 46125 - make first name, last name, salutation and title of Contacts respect field level ACLs
-            $contact_temp = BeanFactory::getBean("Contacts", $this->contact_id);
-            if(!empty($contact_temp)) {
-                $contact_temp->_create_proper_name_field();
-                $this->contact_name = $contact_temp->full_name;
-            }
+			// Bug# 46125 - make first name, last name, salutation and title of Contacts respect field level ACLs
+			$contact_temp = BeanFactory::getBean("Contacts", $this->contact_id);
+			if(!empty($contact_temp)) {
+				$contact_temp->_create_proper_name_field();
+				$this->contact_name = $contact_temp->full_name;
+			}
 		}
 
-        $call_fields['CONTACT_ID'] = $this->contact_id;
-        $call_fields['CONTACT_NAME'] = $this->contact_name;
+		$call_fields['CONTACT_ID'] = $this->contact_id;
+		$call_fields['CONTACT_NAME'] = $this->contact_name;
 		$call_fields['PARENT_NAME'] = $this->parent_name;
-        $call_fields['REMINDER_CHECKED'] = $this->reminder_time==-1 ? false : true;
-	    $call_fields['EMAIL_REMINDER_CHECKED'] = $this->email_reminder_time==-1 ? false : true;
+		$call_fields['REMINDER_CHECKED'] = $this->reminder_time==-1 ? false : true;
+		$call_fields['EMAIL_REMINDER_CHECKED'] = $this->email_reminder_time==-1 ? false : true;
 
 		return $call_fields;
 	}
@@ -477,7 +501,7 @@ class Call extends SugarBean {
 		global $app_list_strings;
 		global $timedate;
 
-        // rrs: bug 42684 - passing a contact breaks this call
+		// rrs: bug 42684 - passing a contact breaks this call
 		$notifyUser =($call->current_notify_user->object_name == 'User') ? $call->current_notify_user : $current_user;
 
 
@@ -523,7 +547,7 @@ class Call extends SugarBean {
 			$template->accept_status = $row['accept_status'];
 
 			if($record != null) {
-			    // this copies the object into the array
+				// this copies the object into the array
 				$list[] = $template;
 			}
 		}
@@ -531,65 +555,65 @@ class Call extends SugarBean {
 	}
 
 
-  function get_invite_calls(&$user)
-  {
-    $template = $this;
-    // First, get the list of IDs.
-    $query = "SELECT calls_users.required, calls_users.accept_status, calls_users.call_id from calls_users where calls_users.user_id='$user->id' AND ( calls_users.accept_status IS NULL OR  calls_users.accept_status='none') AND calls_users.deleted=0";
-    $GLOBALS['log']->debug("Finding linked records $this->object_name: ".$query);
+	function get_invite_calls(&$user)
+	{
+		$template = $this;
+		// First, get the list of IDs.
+		$query = "SELECT calls_users.required, calls_users.accept_status, calls_users.call_id from calls_users where calls_users.user_id='$user->id' AND ( calls_users.accept_status IS NULL OR  calls_users.accept_status='none') AND calls_users.deleted=0";
+		$GLOBALS['log']->debug("Finding linked records $this->object_name: ".$query);
 
 
-    $result = $this->db->query($query, true);
+		$result = $this->db->query($query, true);
 
 
-    $list = Array();
+		$list = Array();
 
 
-    while($row = $this->db->fetchByAssoc($result))
-    {
-      $record = $template->retrieve($row['call_id']);
-      $template->required = $row['required'];
-      $template->accept_status = $row['accept_status'];
+		while($row = $this->db->fetchByAssoc($result))
+		{
+			$record = $template->retrieve($row['call_id']);
+			$template->required = $row['required'];
+			$template->accept_status = $row['accept_status'];
 
 
-      if($record != null)
-      {
-        // this copies the object into the array
-        $list[] = $template;
-      }
-    }
-    return $list;
+			if($record != null)
+			{
+				// this copies the object into the array
+				$list[] = $template;
+			}
+		}
+		return $list;
 
-  }
+	}
 
 
-  function set_accept_status(&$user,$status)
-  {
-    if ( $user->object_name == 'User')
-    {
-      $relate_values = array('user_id'=>$user->id,'call_id'=>$this->id);
-      $data_values = array('accept_status'=>$status);
-      $this->set_relationship($this->rel_users_table, $relate_values, true, true,$data_values);
-      global $current_user;
+	function set_accept_status(&$user,$status)
+	{
+		if ( $user->object_name == 'User')
+		{
+			$relate_values = array('user_id'=>$user->id,'call_id'=>$this->id);
+			$data_values = array('accept_status'=>$status);
+			$this->set_relationship($this->rel_users_table, $relate_values, true, true,$data_values);
+			global $current_user;
 
-      if ( $this->update_vcal )
-      {
-        vCal::cache_sugar_vcal($user);
-      }
-    }
-    else if ( $user->object_name == 'Contact')
-    {
-      $relate_values = array('contact_id'=>$user->id,'call_id'=>$this->id);
-      $data_values = array('accept_status'=>$status);
-      $this->set_relationship($this->rel_contacts_table, $relate_values, true, true,$data_values);
-    }
-    else if ( $user->object_name == 'Lead')
-    {
-      $relate_values = array('lead_id'=>$user->id,'call_id'=>$this->id);
-      $data_values = array('accept_status'=>$status);
-      $this->set_relationship($this->rel_leads_table, $relate_values, true, true,$data_values);
-    }
-  }
+			if ( $this->update_vcal )
+			{
+				vCal::cache_sugar_vcal($user);
+			}
+		}
+		else if ( $user->object_name == 'Contact')
+		{
+			$relate_values = array('contact_id'=>$user->id,'call_id'=>$this->id);
+			$data_values = array('accept_status'=>$status);
+			$this->set_relationship($this->rel_contacts_table, $relate_values, true, true,$data_values);
+		}
+		else if ( $user->object_name == 'Lead')
+		{
+			$relate_values = array('lead_id'=>$user->id,'call_id'=>$this->id);
+			$data_values = array('accept_status'=>$status);
+			$this->set_relationship($this->rel_leads_table, $relate_values, true, true,$data_values);
+		}
+	}
 
 
 
@@ -598,9 +622,9 @@ class Call extends SugarBean {
 			return parent::get_notification_recipients();
 		}
 
-//		$GLOBALS['log']->debug('Call.php->get_notification_recipients():'.print_r($this,true));
+		//		$GLOBALS['log']->debug('Call.php->get_notification_recipients():'.print_r($this,true));
 		$list = array();
-        if(!is_array($this->contacts_arr)) {
+		if(!is_array($this->contacts_arr)) {
 			$this->contacts_arr =	array();
 		}
 
@@ -608,7 +632,7 @@ class Call extends SugarBean {
 			$this->users_arr =	array();
 		}
 
-        if(!is_array($this->leads_arr)) {
+		if(!is_array($this->leads_arr)) {
 			$this->leads_arr =	array();
 		}
 
@@ -628,7 +652,7 @@ class Call extends SugarBean {
 			$list[$notify_user->id] = $notify_user;
 		}
 
-        foreach($this->leads_arr as $lead_id) {
+		foreach($this->leads_arr as $lead_id) {
 			$notify_user = new Lead();
 			$notify_user->retrieve($lead_id);
 			$notify_user->new_assigned_user_name = $notify_user->full_name;
@@ -639,13 +663,13 @@ class Call extends SugarBean {
 		if(isset($sugar_config['disable_notify_current_user']) && $sugar_config['disable_notify_current_user']) {
 			global $current_user;
 			if(isset($list[$current_user->id]))
-				unset($list[$current_user->id]);
+			unset($list[$current_user->id]);
 		}
-//		$GLOBALS['log']->debug('Call.php->get_notification_recipients():'.print_r($list,true));
+		//		$GLOBALS['log']->debug('Call.php->get_notification_recipients():'.print_r($list,true));
 		return $list;
 	}
 
-    function bean_implements($interface){
+	function bean_implements($interface){
 		switch($interface){
 			case 'ACL':return true;
 		}
@@ -662,11 +686,11 @@ class Call extends SugarBean {
 				$is_owner = $current_user->id == $this->parent_name_owner;
 			}
 		}
-			if(!ACLController::moduleSupportsACL($this->parent_type) || ACLController::checkAccess($this->parent_type, 'view', $is_owner)){
-				$array_assign['PARENT'] = 'a';
-			}else{
-				$array_assign['PARENT'] = 'span';
-			}
+		if(!ACLController::moduleSupportsACL($this->parent_type) || ACLController::checkAccess($this->parent_type, 'view', $is_owner)){
+			$array_assign['PARENT'] = 'a';
+		}else{
+			$array_assign['PARENT'] = 'span';
+		}
 		$is_owner = false;
 		if(!empty($this->contact_name)){
 
@@ -675,11 +699,11 @@ class Call extends SugarBean {
 				$is_owner = $current_user->id == $this->contact_name_owner;
 			}
 		}
-			if( ACLController::checkAccess('Contacts', 'view', $is_owner)){
-				$array_assign['CONTACT'] = 'a';
-			}else{
-				$array_assign['CONTACT'] = 'span';
-			}
+		if( ACLController::checkAccess('Contacts', 'view', $is_owner)){
+			$array_assign['CONTACT'] = 'a';
+		}else{
+			$array_assign['CONTACT'] = 'span';
+		}
 
 		return $array_assign;
 	}
@@ -687,50 +711,50 @@ class Call extends SugarBean {
 	function save_relationship_changes($is_update) {
 		$exclude = array();
 		if(empty($this->in_workflow))
-        {
-            if(empty($this->in_import))
-            {
-                //if the global soap_server_object variable is not empty (as in from a soap/OPI call), then process the assigned_user_id relationship, otherwise
-                //add assigned_user_id to exclude list and let the logic from MeetingFormBase determine whether assigned user id gets added to the relationship
-                if(!empty($GLOBALS['soap_server_object']))
-                {
-           		    $exclude = array('lead_id', 'contact_id', 'user_id');
-           	    }
-                else
-                {
-	                $exclude = array('lead_id', 'contact_id', 'user_id', 'assigned_user_id');
-           	    }
-            }
-            else
-            {
-                $exclude = array('user_id');
-            }
+		{
+			if(empty($this->in_import))
+			{
+				//if the global soap_server_object variable is not empty (as in from a soap/OPI call), then process the assigned_user_id relationship, otherwise
+				//add assigned_user_id to exclude list and let the logic from MeetingFormBase determine whether assigned user id gets added to the relationship
+				if(!empty($GLOBALS['soap_server_object']))
+				{
+					$exclude = array('lead_id', 'contact_id', 'user_id');
+				}
+				else
+				{
+					$exclude = array('lead_id', 'contact_id', 'user_id', 'assigned_user_id');
+				}
+			}
+			else
+			{
+				$exclude = array('user_id');
+			}
 
 
-        }
+		}
 		parent::save_relationship_changes($is_update, $exclude);
 	}
 
-    public function getDefaultStatus()
-    {
-         $def = $this->field_defs['status'];
-         if (isset($def['default'])) {
-             return $def['default'];
-         } else {
-            $app = return_app_list_strings_language($GLOBALS['current_language']);
-            if (isset($def['options']) && isset($app[$def['options']])) {
-                $keys = array_keys($app[$def['options']]);
-                return $keys[0];
-            }
-        }
-        return '';
-    }
+	public function getDefaultStatus()
+	{
+		$def = $this->field_defs['status'];
+		if (isset($def['default'])) {
+			return $def['default'];
+		} else {
+			$app = return_app_list_strings_language($GLOBALS['current_language']);
+			if (isset($def['options']) && isset($app[$def['options']])) {
+				$keys = array_keys($app[$def['options']]);
+				return $keys[0];
+			}
+		}
+		return '';
+	}
 
-    public function mark_deleted($id)
-    {
-        require_once("modules/Calendar/CalendarUtils.php");
-        CalendarUtils::correctRecurrences($this, $id);
+	public function mark_deleted($id)
+	{
+		require_once("modules/Calendar/CalendarUtils.php");
+		CalendarUtils::correctRecurrences($this, $id);
 
-        parent::mark_deleted($id);
-    }
+		parent::mark_deleted($id);
+	}
 }

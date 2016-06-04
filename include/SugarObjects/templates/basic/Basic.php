@@ -67,14 +67,6 @@ class Basic extends SugarBean
 	        	else 
 	        		$where .= " AND $this->table_name.created_by = '".$GLOBALS['current_user']->id."'";
 	        }
-	        
-	        //TODO: we temp consider all regular user has one tenant,this maybe changed later
-	        /*if(is_regularUser($GLOBALS['current_user'])){
-	        	if(empty($where))
-	        		$where = "$this->table_name.created_by = '".$GLOBALS['current_user']->created_by."'";
-	        	else
-	        		$where .= " AND $this->table_name.created_by = '".$GLOBALS['current_user']->created_by."'";
-	        }*/
 		}else{
 			sugar_die("Module:".$this->object_name.",no created_by exist.");
 		}
