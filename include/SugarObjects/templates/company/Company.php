@@ -168,26 +168,4 @@ class Company extends Basic
 
         return $query;
     }
-    
-	/**
-	 * Override the parent function and added the filter by user type
-	 * @see SugarBean::create_new_list_query()
-	 * @author victorli
-	 */
-	function create_new_list_query($order_by, $where,$filter=array(),$params=array(), $show_deleted = 0,$join_type='', $return_array = false,$parentbean=null, $singleSelect = false, $ifListForExport = false){
-		
-		if(isset($this->field_defs['created_by'])){
-			if(!is_admin($GLOBALS['current_user'])){
-				if(empty($where))
-	        		$where = "$this->table_name.created_by = '".$GLOBALS['current_user']->id."'";
-	        	else 
-	        		$where .= " AND $this->table_name.created_by = '".$GLOBALS['current_user']->id."'";
-	        }
-		}else{
-			sugar_die("Module:".$this->object_name.",no created_by exist.");
-		}
-		
-		return parent::create_new_list_query($order_by, $where, $filter,$params, $show_deleted, $join_type, $return_array, $parentbean, $singleSelect);
-	}
-
 }
