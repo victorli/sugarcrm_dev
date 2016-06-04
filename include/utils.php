@@ -1493,7 +1493,7 @@ function is_regularUser($user){
 function is_createdByTenant($obj,$record,$tenant_id){
 	$obj->retrieve($record);
 	
-	return $m->created_by == $tenant_id; 
+	return $obj->created_by == $tenant_id; 
 }
 
 /**
