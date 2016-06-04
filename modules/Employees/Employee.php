@@ -108,9 +108,10 @@ class Employee extends Person {
 		$this->setupCustomFields('Users');
 		$this->emailAddress = new SugarEmailAddress();
 		
-		if(!is_admin($GLOBALS['current_user']) && !is_tenant($GLOBALS['current_user'])){
+		/*if(!is_admin($GLOBALS['current_user']) && !is_tenant($GLOBALS['current_user'])){
 			sugar_die("Sorry,you dont have the privileges to access module:".$this->object_name);
 		}
+		*/
 	}
 
 
