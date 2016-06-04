@@ -254,8 +254,8 @@ class Employee extends Person {
             $where .= ' and users.portal_only = 0 ';
         }
         
-        if(is_regularUser($GLOBALS['current_user'])){
-        	$where .= ' AND '.$this->getRegularUserOnlyWhere($GLOBALS['current_user']->id);
+        if(is_tenant($GLOBALS['current_user'])){
+        	$where .= " AND users.created_by = '".$GLOBALS['current_user']->id."'";
         }
 
         //return parent method, specifying for array to be returned
