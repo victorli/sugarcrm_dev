@@ -47,6 +47,18 @@ class EmployeesController extends SugarController{
 		return true;
 	}
 	
+	function action_detailview(){
+		if(is_admin($GLOBALS['current_user']) && !is_tenant($GLOBALS['current_user'])
+		 || $_REQUEST['record'] == $GLOBALS['current_user']->id 
+		 || is_tenant($GLOBALS['current_user']) && is_createdByTenant('Users', $_REQUEST['record'], $GLOBALS['current_user']->id)){
+		 	$this->view = 'detail';
+		 }else{
+		 	sugar_die("Unauthorized access to employees.");
+		 }
+		 
+		 return true;
+	}
+	
 	protected function action_delete()
 	{
 	    if($_REQUEST['record'] != $GLOBALS['current_user']->id && $GLOBALS['current_user']->isAdminForModule('Users'))
