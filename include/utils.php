@@ -1487,7 +1487,7 @@ function is_regularUser($user){
 	if(empty($user))
 		return false;
 		
-	return $user->usertype == 'RegularUser';
+	return (!is_admin($user) && !is_tenant($user) && !$user->is_group);
 }
 
 /**
