@@ -310,7 +310,7 @@ class UserViewHelper {
         $this->ss->assign('USER_TYPE_DROPDOWN',$userTypeDropdown);
         $this->ss->assign('USER_TYPE_READONLY',$userTypes[$userType]['label'] . "<input type='hidden' id='UserType' value='{$userType}'><div id='UserTypeDesc'>&nbsp;</div>");
 
-		$this->ss->assign('USER_TENANT_READONLY',$app_list_strings['user_tenant_dom'][$user->is_tenant] . "<input type='hidden' id='is_tenant' value='{$user->is_tenant}'>");
+		//$this->ss->assign('USER_TENANT_READONLY',$app_list_strings['user_tenant_dom'][$user->is_tenant] . "<input type='hidden' id='is_tenant' value='{$user->is_tenant}'>");
     }
 
     protected function setupPasswordTab() {
