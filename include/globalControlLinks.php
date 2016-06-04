@@ -80,10 +80,8 @@ $global_control_links['users'] = array(
 'linkinfo' => array($app_strings['LBL_LOGOUT'] => 'index.php?module=Users&action=Logout'),
 'submenu' => ''
 );
-
-$global_control_links['about'] = array('linkinfo' => array($app_strings['LNK_ABOUT'] => 'index.php?module=Home&action=About'),
-'submenu' => ''
-);
+if(is_admin($current_user) && !is_tenant($current_user))
+	$global_control_links['about'] = array('linkinfo' => array($app_strings['LNK_ABOUT'] => 'index.php?module=Home&action=About'),'submenu' => '');
 
 if (sugar_is_file('custom/include/globalControlLinks.php')) {
     include('custom/include/globalControlLinks.php');
