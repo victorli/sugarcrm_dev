@@ -57,7 +57,7 @@ $global_control_links['employees'] = array(
 'submenu' => ''
 );
 if (
-        is_admin($current_user)
+        is_admin($current_user) || is_tenant($current_user)
 
         ) $global_control_links['admin'] = array(
 

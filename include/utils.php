@@ -1473,6 +1473,17 @@ function is_admin($user) {
 }
 
 /**
+ * Check if user id belongs to a tenant
+ * Contributor:zs.li@blx90.com
+ */
+function isTenant($user){
+	if(empty($user))
+		return false;
+		
+	return $user->isTenant();
+}
+
+/**
  * Return the display name for a theme if it exists.
  * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
  * All Rights Reserved.
@@ -1692,7 +1703,7 @@ function array_csort() {
 function parse_calendardate($local_format) {
 	preg_match('/\(?([^-]{1})[^-]*-([^-]{1})[^-]*-([^-]{1})[^-]*\)/', $local_format, $matches);
 	$calendar_format = "%" . $matches[1] . "-%" . $matches[2] . "-%" . $matches[3];
-	return str_replace(array("y", "ￄ1�7", "a", "j"), array("Y", "Y", "Y", "d"), $calendar_format);
+	return str_replace(array("y", "锟�锟�", "a", "j"), array("Y", "Y", "Y", "d"), $calendar_format);
 }
 
 
@@ -4637,13 +4648,13 @@ function verify_image_file($path, $jpeg = false)
         $fp = fopen($path, "rb");
         if(!$fp) return false;
         $data = '';
-        // read the whole file in chunks
+        //聽read聽the聽whole聽file聽in聽chunks
         while(!feof($fp)) {
             $data .= fread($fp,8192);
         }
 
 	    fclose($fp);
-	    if(preg_match("/<(\?php|html|!doctype|script|body|head|plaintext|table|img |pre(>| )|frameset|iframe|object|link|base|style|font|applet|meta|center|form|isindex)/i",
+	    if(preg_match("/<(\?php|html|!doctype|script|body|head|plaintext|table|img聽|pre(>|聽)|frameset|iframe|object|link|base|style|font|applet|meta|center|form|isindex)/i",
 	         $data, $m)) {
 	        $GLOBALS['log']->fatal("Found {$m[0]} in $path, not allowing upload");
 	        return false;

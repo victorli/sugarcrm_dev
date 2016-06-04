@@ -290,5 +290,5 @@ class Person extends Basic
 
         return $query;
     }
-
+ 
 }
