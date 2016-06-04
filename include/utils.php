@@ -1487,7 +1487,7 @@ function is_regularUser($user){
 	if(empty($user))
 		return false;
 		
-	return $user->user_type == 'RegularUser';
+	return $user->usertype == 'RegularUser';
 }
 
 /**
