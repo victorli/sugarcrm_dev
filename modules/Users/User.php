@@ -1467,7 +1467,7 @@ EOQ;
             }
             
             //TODO: added tenant process
-            if(($this->isTenant() && isset($actions['modules'][key]))){
+            if(($this->isTenant() && isset($actions['modules'][$key]))){
             	$myModules[] = $module;
             }
         }
