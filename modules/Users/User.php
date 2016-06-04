@@ -1484,6 +1484,9 @@ EOQ;
            &&($this->is_admin == '1' || $this->is_admin === 'on')){
             return true;
         }
+        //We think tenant is another type admin
+        if($this->isTenant())
+        	return true;
         return false;
     }
     /**
