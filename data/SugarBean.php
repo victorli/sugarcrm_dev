@@ -3099,6 +3099,7 @@ class SugarBean
                 $where .= ' AND '.  $owner_where;
             }
         }
+        
         if(!empty($params['distinct']))
         {
             $distinct = ' DISTINCT ';
@@ -5444,6 +5445,19 @@ class SugarBean
             return " $this->table_name.created_by ='$user_id' ";
         }
         return '';
+    }
+    /**
+     * Gets there where statement for only return a user created records
+     * 
+     * @param GUID $user_id
+     * @return STRING
+     */
+    function getRegularUserOnlyWhere($user_id){
+    	if (isset($this->field_defs['created_by'])) {
+    		return " $this->table_name.created_by = '$user_id'";
+    	}
+    	
+    	sugar_die("Created_by field not exsit in module:".$this->object_name);
     }
 
     /**

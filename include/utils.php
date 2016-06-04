@@ -1483,6 +1483,13 @@ function is_tenant($user){
 	return $user->isTenant();
 }
 
+function is_regularUser($user){
+	if(empty($user))
+		return false;
+		
+	return $user->user_type == 'RegularUser';
+}
+
 /**
  * Return the display name for a theme if it exists.
  * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
