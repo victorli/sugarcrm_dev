@@ -1476,7 +1476,7 @@ function is_admin($user) {
  * Check if user id belongs to a tenant
  * Contributor:zs.li@blx90.com
  */
-function isTenant($user){
+function is_tenant($user){
 	if(empty($user))
 		return false;
 		
