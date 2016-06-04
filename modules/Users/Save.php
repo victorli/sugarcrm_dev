@@ -169,7 +169,7 @@ if(!$current_user->is_admin && !$GLOBALS['current_user']->isAdminForModule('User
         }
         
         //setting tenant_id field if new user belongs to current user
-        if($GLOBALS['current_user']->isTenant()){
+        if($newUser && $GLOBALS['current_user']->isTenant()){
         	$focus->tenant_id = $GLOBALS['current_user']->id;
         }
         
