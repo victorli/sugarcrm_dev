@@ -254,15 +254,6 @@ class Employee extends Person {
         }else{
             $where .= ' and users.portal_only = 0 ';
         }
-        
-        if(is_tenant($GLOBALS['current_user'])){
-        	$where .= " AND users.created_by = '".$GLOBALS['current_user']->id."'";
-        }
-        
-        //TODO: we temp consider all regular user has one tenant,this maybe changed later
-        if(is_regularUser($GLOBALS['current_user'])){
-        	$where .= " AND users.created_by = '".$GLOBALS['current_user']->created_by."'";
-        }
 
         //return parent method, specifying for array to be returned
         return parent::create_new_list_query($order_by, $where, $filter,$params, $show_deleted, $join_type, $return_array, $parentbean, $singleSelect);

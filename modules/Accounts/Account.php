@@ -3,31 +3,31 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
  * Free Software Foundation with the addition of the following permission added
  * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
  * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
  * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with
  * this program; if not, see http://www.gnu.org/licenses or write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
- * 
+ *
  * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
  * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
+ *
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
  * Section 5 of the GNU Affero General Public License version 3.
- * 
+ *
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
  * SugarCRM" logo. If the display of the logo is not reasonably feasible for
@@ -37,9 +37,9 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 /*********************************************************************************
 
- * Description:  Defines the Account SugarBean Account entity with the necessary
- * methods and variables.
- ********************************************************************************/
+* Description:  Defines the Account SugarBean Account entity with the necessary
+* methods and variables.
+********************************************************************************/
 
 require_once("include/SugarObjects/templates/company/Company.php");
 
@@ -58,9 +58,9 @@ class Account extends Company {
 	var $billing_address_country;
 	var $billing_address_postalcode;
 
-    var $billing_address_street_2;
-    var $billing_address_street_3;
-    var $billing_address_street_4;
+	var $billing_address_street_2;
+	var $billing_address_street_3;
+	var $billing_address_street_4;
 
 	var $description;
 	var $email1;
@@ -82,13 +82,13 @@ class Account extends Company {
 	var $shipping_address_state;
 	var $shipping_address_country;
 	var $shipping_address_postalcode;
-    
-    var $shipping_address_street_2;
-    var $shipping_address_street_3;
-    var $shipping_address_street_4;
-    
-    var $campaign_id;
-    
+
+	var $shipping_address_street_2;
+	var $shipping_address_street_3;
+	var $shipping_address_street_4;
+
+	var $campaign_id;
+
 	var $sic_code;
 	var $ticker_symbol;
 	var $account_type;
@@ -129,18 +129,18 @@ class Account extends Company {
 									'contact_id'=>'contacts', 'task_id'=>'tasks', 'note_id'=>'notes',
 									'meeting_id'=>'meetings', 'call_id'=>'calls', 'email_id'=>'emails','member_id'=>'members',
 									'project_id'=>'project',
-									);
+	);
 
-    //Meta-Data Framework fields
-    var $push_billing;
-    var $push_shipping;
+	//Meta-Data Framework fields
+	var $push_billing;
+	var $push_shipping;
 
 	function Account() {
-        parent::Company();
+		parent::Company();
 
-        $this->setupCustomFields('Accounts');
+		$this->setupCustomFields('Accounts');
 
-		foreach ($this->field_defs as $field) 
+		foreach ($this->field_defs as $field)
 		{
 			if(isset($field['name']))
 			{
@@ -149,9 +149,9 @@ class Account extends Company {
 		}
 
 
-        //Email logic
+		//Email logic
 		if (!empty($_REQUEST['parent_id']) && !empty($_REQUEST['parent_type']) && $_REQUEST['parent_type'] == 'Emails'
-        	&& !empty($_REQUEST['return_module']) && $_REQUEST['return_module'] == 'Emails') {
+		&& !empty($_REQUEST['return_module']) && $_REQUEST['return_module'] == 'Emails') {
 			$_REQUEST['parent_name'] = '';
 			$_REQUEST['parent_id'] = '';
 		}
@@ -177,15 +177,15 @@ class Account extends Company {
 	}
 
 	/**
-	* This method is used to provide backward compatibility with old data that was prefixed with http://
-	* We now automatically prefix http://
-	* @deprecated.
- 	*/
+	 * This method is used to provide backward compatibility with old data that was prefixed with http://
+	 * We now automatically prefix http://
+	 * @deprecated.
+	 */
 	function remove_redundant_http()
 	{	/*
 		if(preg_match("@http://@", $this->website))
 		{
-			$this->website = substr($this->website, 7);
+		$this->website = substr($this->website, 7);
 		}
 		*/
 	}
@@ -193,18 +193,18 @@ class Account extends Company {
 	function fill_in_additional_list_fields()
 	{
 		parent::fill_in_additional_list_fields();
-	// Fill in the assigned_user_name
-	//	$this->assigned_user_name = get_assigned_user_name($this->assigned_user_id);
+		// Fill in the assigned_user_name
+		//	$this->assigned_user_name = get_assigned_user_name($this->assigned_user_id);
 
 	}
 
 	function fill_in_additional_detail_fields()
 	{
-        parent::fill_in_additional_detail_fields();
+		parent::fill_in_additional_detail_fields();
 
-        //rrs bug: 28184 - instead of removing this code altogether just adding this check to ensure that if the parent_name
-        //is empty then go ahead and fill it.
-        if(empty($this->parent_name) && !empty($this->id)){
+		//rrs bug: 28184 - instead of removing this code altogether just adding this check to ensure that if the parent_name
+		//is empty then go ahead and fill it.
+		if(empty($this->parent_name) && !empty($this->id)){
 			$query = "SELECT a1.name from accounts a1, accounts a2 where a1.id = a2.parent_id and a2.id = '$this->id' and a1.deleted=0";
 			$result = $this->db->query($query,true," Error filling in additional detail fields: ");
 
@@ -219,15 +219,15 @@ class Account extends Company {
 			{
 				$this->parent_name = '';
 			}
-        }		
-        
-        // Set campaign name if there is a campaign id
+		}
+
+		// Set campaign name if there is a campaign id
 		if( !empty($this->campaign_id)){
-			
+				
 			$camp = new Campaign();
-		    $where = "campaigns.id='{$this->campaign_id}'";
-		    $campaign_list = $camp->get_full_list("campaigns.name", $where, true);
-		    $this->campaign_name = $campaign_list[0]->name;
+			$where = "campaigns.id='{$this->campaign_id}'";
+			$campaign_list = $camp->get_full_list("campaigns.name", $where, true);
+			$this->campaign_name = $campaign_list[0]->name;
 		}
 	}
 
@@ -247,69 +247,69 @@ class Account extends Company {
 		}
 		$temp_array["BILLING_ADDRESS_STREET"]  = $this->billing_address_street;
 		$temp_array["SHIPPING_ADDRESS_STREET"] = $this->shipping_address_street;
-    	
+		 
 		return $temp_array;
 	}
 	/**
 		builds a generic search based on the query string using or
 		do not include any $this-> because this is called on without having the class instantiated
-	*/
+		*/
 	function build_generic_where_clause ($the_query_string) {
-	$where_clauses = Array();
-	$the_query_string = $this->db->quote($the_query_string);
-	array_push($where_clauses, "accounts.name like '$the_query_string%'");
-	if (is_numeric($the_query_string)) {
-		array_push($where_clauses, "accounts.phone_alternate like '%$the_query_string%'");
-		array_push($where_clauses, "accounts.phone_fax like '%$the_query_string%'");
-		array_push($where_clauses, "accounts.phone_office like '%$the_query_string%'");
+		$where_clauses = Array();
+		$the_query_string = $this->db->quote($the_query_string);
+		array_push($where_clauses, "accounts.name like '$the_query_string%'");
+		if (is_numeric($the_query_string)) {
+			array_push($where_clauses, "accounts.phone_alternate like '%$the_query_string%'");
+			array_push($where_clauses, "accounts.phone_fax like '%$the_query_string%'");
+			array_push($where_clauses, "accounts.phone_office like '%$the_query_string%'");
+		}
+
+		$the_where = "";
+		foreach($where_clauses as $clause)
+		{
+			if(!empty($the_where)) $the_where .= " or ";
+			$the_where .= $clause;
+		}
+
+		return $the_where;
 	}
 
-	$the_where = "";
-	foreach($where_clauses as $clause)
+
+	function create_export_query(&$order_by, &$where, $relate_link_join='')
 	{
-		if(!empty($the_where)) $the_where .= " or ";
-		$the_where .= $clause;
-	}
-
-	return $the_where;
-}
-
-
-        function create_export_query(&$order_by, &$where, $relate_link_join='')
-        {
-            $custom_join = $this->getCustomJoin(true, true, $where);
-            $custom_join['join'] .= $relate_link_join;
-                         $query = "SELECT
+		$custom_join = $this->getCustomJoin(true, true, $where);
+		$custom_join['join'] .= $relate_link_join;
+		$query = "SELECT
                                 accounts.*,
                                 email_addresses.email_address email_address,
                                 '' email_addresses_non_primary, " . // email_addresses_non_primary needed for get_field_order_mapping()
                                 "accounts.name as account_name,
                                 users.user_name as assigned_user_name ";
-            $query .= $custom_join['select'];
-						 $query .= " FROM accounts ";
-                         $query .= "LEFT JOIN users
+		$query .= $custom_join['select'];
+		$query .= " FROM accounts ";
+		$query .= "LEFT JOIN users
 	                                ON accounts.assigned_user_id=users.id ";
 
-						//join email address table too.
-						$query .=  ' LEFT JOIN  email_addr_bean_rel on accounts.id = email_addr_bean_rel.bean_id and email_addr_bean_rel.bean_module=\'Accounts\' and email_addr_bean_rel.deleted=0 and email_addr_bean_rel.primary_address=1 ';
-						$query .=  ' LEFT JOIN email_addresses on email_addresses.id = email_addr_bean_rel.email_address_id ' ;
+		//join email address table too.
+		$query .=  ' LEFT JOIN  email_addr_bean_rel on accounts.id = email_addr_bean_rel.bean_id and email_addr_bean_rel.bean_module=\'Accounts\' and email_addr_bean_rel.deleted=0 and email_addr_bean_rel.primary_address=1 ';
+		$query .=  ' LEFT JOIN email_addresses on email_addresses.id = email_addr_bean_rel.email_address_id ' ;
 
-            $query .= $custom_join['join'];
+		$query .= $custom_join['join'];
 
-		        $where_auto = "( accounts.deleted IS NULL OR accounts.deleted=0 )";
+		$where_auto = "( accounts.deleted IS NULL OR accounts.deleted=0 )";
 
-                if($where != "")
-                        $query .= "where ($where) AND ".$where_auto;
-                else
-                        $query .= "where ".$where_auto;
+		if($where != "")
+		$query .= "where ($where) AND ".$where_auto;
+		else
+		$query .= "where ".$where_auto;
 
-        $order_by = $this->process_order_by($order_by);
-        if (!empty($order_by)) {
-            $query .= ' ORDER BY ' . $order_by;
-        }
+		$order_by = $this->process_order_by($order_by);
+		if (!empty($order_by)) {
+			$query .= ' ORDER BY ' . $order_by;
+		}
 
-                return $query;
-        }
+		return $query;
+	}
 
 	function set_notification_body($xtpl, $account)
 	{

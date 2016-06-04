@@ -1606,13 +1606,6 @@ EOQ;
 
 	function create_new_list_query($order_by, $where,$filter=array(),$params=array(), $show_deleted = 0,$join_type='', $return_array = false,$parentbean=null, $singleSelect = false)
 	{
-		if(is_tenant($GLOBALS['current_user'])){
-			if(empty($where))
-				$where = "users.created_by = '".$GLOBALS['current_user']->id."'";
-			else 
-        		$where .= " AND users.created_by = '".$GLOBALS['current_user']->id."'";
-        }
-
 		//call parent method, specifying for array to be returned
 		$ret_array = parent::create_new_list_query($order_by, $where,$filter,$params, $show_deleted,$join_type, true,$parentbean, $singleSelect);
 
