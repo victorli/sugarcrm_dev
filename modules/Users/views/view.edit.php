@@ -42,6 +42,12 @@ require_once('modules/Users/UserViewHelper.php');
 class UsersViewEdit extends ViewEdit {
 var $useForSubpanel = true;
  	function UsersViewEdit(){
+
+ 		//security check when regular user access without record id
+        if($current_user->user_type == 'RegularUser' && empty($this->bean->id)){
+        	sugar_die("You dont have the permition to access this page.");
+        }
+ 		
  		parent::ViewEdit();
  	}
 
@@ -72,12 +78,6 @@ var $useForSubpanel = true;
 
     function display() {
         global $current_user, $app_list_strings;
-
-        
-        //security check when regular user access without record id
-        if($current_user->user_type == 'RegularUser' && empty($this->bean->id)){
-        	sugar_die("You dont have the permition to access this page.");
-        }
 
         //lets set the return values
         if(isset($_REQUEST['return_module'])){
