@@ -61,7 +61,7 @@ class Basic extends SugarBean
 	function create_new_list_query($order_by, $where,$filter=array(),$params=array(), $show_deleted = 0,$join_type='', $return_array = false,$parentbean=null, $singleSelect = false, $ifListForExport = false){
 		
 		if(isset($this->field_defs['created_by'])){
-			if(!is_admin($GLOBALS['current_user'])){
+			if(!is_admin($GLOBALS['current_user']) || is_tenant($GLOBALS['current_user'])){
 				if(empty($where))
 	        		$where = "$this->table_name.created_by = '".$GLOBALS['current_user']->id."'";
 	        	else 
