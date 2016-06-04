@@ -66,6 +66,11 @@ class UserViewHelper {
      */
     protected $is_super_admin;
     /**
+     * Is the current user a tenant for partial modules
+     * @var bool
+     */
+    protected $is_tenant_admin;
+    /**
      * The current user type
      * One of: REGULAR ADMIN GROUP PORTAL_ONLY
      * @var string
@@ -102,11 +107,17 @@ class UserViewHelper {
         // There is a lot of extra stuff that needs to go in here to properly render
         $this->is_current_admin=is_admin($current_user)
             ||$current_user->isAdminForModule('Users');
-        $this->is_super_admin = is_admin($current_user);
+        $this->is_super_admin = is_admin($current_user) && !is_tenant($current_user);
 
         $this->usertype='REGULAR';
         if($this->is_super_admin){
             $this->usertype='Administrator';
+        }
+        
+        $this->is_tenant_admin = is_tenant($current_user);
+        if($this->is_tenant_admin){
+        	$this->usertype = 'TenantUser';
+        	$this->is_super_admin = false; //not wide admin
         }
 
 
@@ -118,6 +129,12 @@ class UserViewHelper {
             $this->ss->assign('IS_ADMIN','1');
         } else {
             $this->ss->assign('IS_ADMIN', '0');
+        }
+        
+        if ($this->is_tenant_admin){
+        	$this->ss->assign('IS_TENANT_ADMIN','1');
+        }else{
+        	$this->ss->assign('IS_TENANT_ADMIN','0');
         }
 
         if ($this->is_super_admin) {
@@ -137,6 +154,7 @@ class UserViewHelper {
 
         $edit_self = $current_user->id == $this->bean->id;
         $admin_edit_self = is_admin($current_user) && $edit_self;
+        $tenant_edit_self = is_tenant($current_user) && $edit_self;
 
 
         $this->ss->assign('IS_FOCUS_ADMIN', is_admin($this->bean));
@@ -144,6 +162,12 @@ class UserViewHelper {
         if($edit_self) {
             $this->ss->assign('EDIT_SELF','1');
         }
+        
+        if($tenant_edit_self){
+        	$admin_edit_self = false;
+        	$this->ss->assign('TENANT_EDIT_SELF','1');		
+        }
+        
         if($admin_edit_self) {
             $this->ss->assign('ADMIN_EDIT_SELF','1');
         }
@@ -247,7 +271,11 @@ class UserViewHelper {
         } else {
             if ( $this->ss->get_template_vars('USER_ADMIN') ) {
                 $availableUserTypes = array('RegularUser');
-            } elseif($this->ss->get_template_vars('ADMIN_EDIT_SELF')) {
+            }elseif($this->ss->get_template_vars('TENANT_EDIT_SELF')){
+            	$availableUserTypes = array('TenantUser');
+            }elseif($this->ss->get_template_vars('IS_TENANT_ADMIN')){ //tenant only allow to create regular user
+            	$availableUserTypes = array('RegularUser');
+            }elseif($this->ss->get_template_vars('ADMIN_EDIT_SELF')) {
                 $availableUserTypes = array('Administrator');
             } elseif($this->ss->get_template_vars('IS_SUPER_ADMIN')) {
                 $availableUserTypes = array(
@@ -282,7 +310,7 @@ class UserViewHelper {
         $this->ss->assign('USER_TYPE_DROPDOWN',$userTypeDropdown);
         $this->ss->assign('USER_TYPE_READONLY',$userTypes[$userType]['label'] . "<input type='hidden' id='UserType' value='{$userType}'><div id='UserTypeDesc'>&nbsp;</div>");
 
-	$this->ss->assign('USER_TENANT_READONLY',$app_list_strings['user_tenant_dom'][$user->is_tenant] . "<input type='hidden' id='is_tenant' value='{$user->is_tenant}'>");
+		$this->ss->assign('USER_TENANT_READONLY',$app_list_strings['user_tenant_dom'][$user->is_tenant] . "<input type='hidden' id='is_tenant' value='{$user->is_tenant}'>");
     }
 
     protected function setupPasswordTab() {
