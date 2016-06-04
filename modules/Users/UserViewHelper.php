@@ -157,7 +157,7 @@ class UserViewHelper {
         $tenant_edit_self = is_tenant($current_user) && $edit_self;
 
 
-        $this->ss->assign('IS_FOCUS_ADMIN', is_admin($this->bean));
+        $this->ss->assign('IS_FOCUS_ADMIN', is_admin($this->bean) && !is_tenant($this->bean));
 
         if($edit_self) {
             $this->ss->assign('EDIT_SELF','1');
