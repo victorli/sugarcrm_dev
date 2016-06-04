@@ -438,7 +438,7 @@ $vardefs =array(
      'is_tenant'=>
         array(
         	'name'	=>	'is_tenant',
-        	'type'	=>	'bool',
+        	'type'	=>	'enum',
         	'vname'	=>	'LBL_IS_TENANT',
         	'reportable'	=>	false,
         	'default'	=>	'0',

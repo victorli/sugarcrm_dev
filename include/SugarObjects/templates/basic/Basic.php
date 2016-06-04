@@ -37,7 +37,6 @@
 
 class Basic extends SugarBean
 {
-	var $tenant_id = 0;
     /** 
      * Constructor
      */
@@ -52,9 +51,5 @@ class Basic extends SugarBean
 	public function get_summary_text()
 	{
 		return "$this->name";
-	}
-	
-	public function get_tenant_id(){
-		return $this->tenant_id;
 	}
 }
