@@ -168,11 +168,6 @@ if(!$current_user->is_admin && !$GLOBALS['current_user']->isAdminForModule('User
         	$focus->is_tenant = 0;
         }
         
-        //setting tenant_id field if new user belongs to current user
-        if($newUser && $GLOBALS['current_user']->isTenant()){
-        	$focus->tenant_id = $GLOBALS['current_user']->id;
-        }
-        
         foreach ($focus->additional_column_fields as $fieldName)
         {
             $field = $focus->field_defs[$fieldName];
