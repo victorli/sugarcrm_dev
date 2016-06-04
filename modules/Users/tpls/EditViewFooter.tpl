@@ -117,7 +117,7 @@
                             </tr>
                         </table>
                             <!-- hide field if user is admin that is not editing themselves -->
-                            <div id='generate_password_old_password' {if ($IS_ADMIN && !$ADMIN_EDIT_SELF)} style='display:none' {/if}>
+                            <div id='generate_password_old_password' {if ($IS_ADMIN && !$ADMIN_EDIT_SELF || $IS_TENANT_ADMIN && !$TENANT_EDIT_SELF)} style='display:none' {/if}>
 
                                  <table width='100%' cellspacing='0' cellpadding='0' border='0' >
                                     <tr>
