@@ -1481,7 +1481,7 @@ EOQ;
         }
         
         //We think tenant is an other type of administrator
-        if(isset($this->is_tenant) && $this->isTenant())
+        if($this->isTenant())
         	return true;
         	
         return false;
@@ -1493,7 +1493,7 @@ EOQ;
      */
     public function isTenant(){
     	if(isset($this->is_tenant)
-           &&($this->is_tenant == '1' || $this->is_tenant === 'on')){
+           &&($this->is_tenant == '1' || $this->is_tenant == 'on')){
             return true;
         }
         return false;
