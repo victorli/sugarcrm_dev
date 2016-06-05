@@ -108,6 +108,12 @@ class UserViewHelper {
         if($this->is_super_admin){
             $this->usertype='Administrator';
         }
+        
+        $this->is_tenant_admin = is_tenant($current_user);
+        if($this->is_tenant_admin){
+        	$this->usertype = 'TenantUser';
+        	$this->is_super_admin = false;
+        }
 
 
         // check if the user has access to the User Management
@@ -118,6 +124,12 @@ class UserViewHelper {
             $this->ss->assign('IS_ADMIN','1');
         } else {
             $this->ss->assign('IS_ADMIN', '0');
+        }
+        
+    	if ($this->is_tenant_admin){
+        	$this->ss->assign('IS_TENANT_ADMIN','1');
+        }else{
+        	$this->ss->assign('IS_TENANT_ADMIN','0');
         }
 
         if ($this->is_super_admin) {
@@ -137,12 +149,16 @@ class UserViewHelper {
 
         $edit_self = $current_user->id == $this->bean->id;
         $admin_edit_self = is_admin($current_user) && $edit_self;
-
+		$tenant_edit_self = is_tenant($current_user) && $edit_self;
 
         $this->ss->assign('IS_FOCUS_ADMIN', is_admin($this->bean));
 
         if($edit_self) {
             $this->ss->assign('EDIT_SELF','1');
+        }
+    	if($tenant_edit_self){
+        	$admin_edit_self = false;
+        	$this->ss->assign('TENANT_EDIT_SELF','1');		
         }
         if($admin_edit_self) {
             $this->ss->assign('ADMIN_EDIT_SELF','1');
@@ -232,6 +248,10 @@ class UserViewHelper {
                 'label' => translate('LBL_GROUP_USER','Users'),
                 'description' => translate('LBL_GROUP_DESC','Users'),
             ),
+            'TenantUser' => array(
+            	'label' => translate('LBL_TENANT_USER','Users'),
+            	'description' => translate('LBL_TENANT_DESC','Users'),
+            ),
             'Administrator' => array(
                 'label' => translate('LBL_ADMIN_USER','Users'),
                 'description' => translate('LBL_ADMIN_DESC','Users'),
@@ -241,13 +261,18 @@ class UserViewHelper {
         if ( $userType == 'GROUP' || $userType == 'PORTAL_ONLY' ) {
             $availableUserTypes = array($this->usertype);
         } else {
-            if ( $this->ss->get_template_vars('USER_ADMIN') ) {
+        	if ( $this->ss->get_template_vars('USER_ADMIN') ) {
                 $availableUserTypes = array('RegularUser');
-            } elseif($this->ss->get_template_vars('ADMIN_EDIT_SELF')) {
+            }elseif($this->ss->get_template_vars('TENANT_EDIT_SELF')){
+            	$availableUserTypes = array('TenantUser');
+            }elseif($this->ss->get_template_vars('IS_TENANT_ADMIN')){ //tenant only allow to create regular user
+            	$availableUserTypes = array('RegularUser');
+            }elseif($this->ss->get_template_vars('ADMIN_EDIT_SELF')) {
                 $availableUserTypes = array('Administrator');
             } elseif($this->ss->get_template_vars('IS_SUPER_ADMIN')) {
                 $availableUserTypes = array(
                     'RegularUser',
+                    'TenantUser',
                     'Administrator',
                     );
             } else {
@@ -298,7 +323,7 @@ class UserViewHelper {
         }
 
         // If my account page or portal only user or regular user without system generated password or a duplicate user
-        if((($current_user->id == $this->bean->id) || $this->usertype=='PORTAL_ONLY' || (($this->usertype=='REGULAR' || $this->usertype == 'Administrator' || (isset($_REQUEST['isDuplicate']) && $_REQUEST['isDuplicate'] == 'true' && $this->usertype!='GROUP')) && !$enable_syst_generate_pwd)) && !$this->bean->external_auth_only ) {
+        if((($current_user->id == $this->bean->id) || $this->usertype=='PORTAL_ONLY' || (($this->usertype=='REGULAR' || $this->usertype == 'TenantUser' || $this->usertype == 'Administrator' || (isset($_REQUEST['isDuplicate']) && $_REQUEST['isDuplicate'] == 'true' && $this->usertype!='GROUP')) && !$enable_syst_generate_pwd)) && !$this->bean->external_auth_only ) {
             $this->ss->assign('CHANGE_PWD', '1');
         } else {
             $this->ss->assign('CHANGE_PWD', '0');

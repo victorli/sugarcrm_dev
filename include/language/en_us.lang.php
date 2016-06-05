@@ -415,6 +415,7 @@ $app_list_strings = array (
   'user_type_dom' =>
   array (
     'RegularUser' => 'Regular User',
+  	'TenantUser'	=> 'Tenant User',	
     'Administrator' => 'Administrator',
   ),
   'user_status_dom' =>

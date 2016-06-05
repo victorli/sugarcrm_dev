@@ -179,6 +179,13 @@ $dictionary['User'] = array(
             'default' => '0',
             'studio' => array('listview' => false, 'searchview'=>false, 'related' => false),
         ) ,
+        'is_tenant' => array(
+            'name' => 'is_tenant',
+            'vname' => 'LBL_IS_TENANT',
+            'type' => 'bool',
+            'default' => '0',
+            'studio' => array('listview' => false, 'searchview'=>false, 'related' => false),
+        ) ,
         'external_auth_only' => array(
             'name' => 'external_auth_only',
             'vname' => 'LBL_EXT_AUTHENTICATE',

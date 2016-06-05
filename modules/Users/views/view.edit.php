@@ -80,6 +80,7 @@ var $useForSubpanel = true;
         }
 
         $this->ss->assign('IS_ADMIN', $current_user->is_admin ? true : false);
+        $this->ss->assign('IS_TENANT', $current_user->is_tenant ? true : false);
 
         //make sure we can populate user type dropdown.  This usually gets populated in predisplay unless this is a quickeditform
         if(!isset($this->fieldHelper)){

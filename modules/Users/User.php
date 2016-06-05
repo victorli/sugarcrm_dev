@@ -105,6 +105,8 @@ class User extends Person {
 
 
 	var $new_schema = true;
+	
+	var $is_tenant;
 
 	function User() {
 		parent::Person();
@@ -1475,6 +1477,18 @@ EOQ;
     public function isAdmin() {
         if(isset($this->is_admin)
            &&($this->is_admin == '1' || $this->is_admin === 'on')){
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Is this user a tenant
+     *
+     * @return bool
+     */
+    public function isTenant(){
+    	if(isset($this->is_tenant)
+           &&($this->is_tenant == '1' || $this->is_tenant === 'on')){
             return true;
         }
         return false;
