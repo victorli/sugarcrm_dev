@@ -66,6 +66,11 @@ class UserViewHelper {
      */
     protected $is_super_admin;
     /**
+     * Is the current user a tenant admin
+     * @var bool
+     */
+    protected $is_tenant_admin;
+    /**
      * The current user type
      * One of: REGULAR ADMIN GROUP PORTAL_ONLY
      * @var string
@@ -151,7 +156,7 @@ class UserViewHelper {
         $admin_edit_self = is_admin($current_user) && $edit_self;
 		$tenant_edit_self = is_tenant($current_user) && $edit_self;
 
-        $this->ss->assign('IS_FOCUS_ADMIN', is_admin($this->bean));
+        $this->ss->assign('IS_FOCUS_ADMIN', is_admin($this->bean) && !is_tenant($this->bean));
 
         if($edit_self) {
             $this->ss->assign('EDIT_SELF','1');

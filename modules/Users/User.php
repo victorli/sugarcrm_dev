@@ -1493,7 +1493,7 @@ EOQ;
      */
     public function isTenant(){
     	if(isset($this->is_tenant)
-           &&($this->is_tenant == '1' || $this->is_tenant == 'on')){
+           &&($this->is_tenant == '1' || $this->is_tenant === 'on')){
             return true;
         }
         return false;
