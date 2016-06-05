@@ -1479,6 +1479,11 @@ EOQ;
            &&($this->is_admin == '1' || $this->is_admin === 'on')){
             return true;
         }
+        
+        //We think tenant is an other type of administrator
+        if(isset($this->is_tenant) && $this->isTenant())
+        	return true;
+        	
         return false;
     }
     /**
