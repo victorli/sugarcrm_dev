@@ -1490,10 +1490,10 @@ function is_regularUser($user){
 	return (!is_admin($user) && !is_tenant($user) && !$user->is_group);
 }
 
-function is_createdByTenant($obj,$record,$tenant_id){
+function is_createdByUser($obj,$record,$user_id){
 	$obj->retrieve($record);
 	
-	return $obj->created_by == $tenant_id; 
+	return $obj->created_by == $user_id; 
 }
 
 /**
