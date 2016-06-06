@@ -181,6 +181,7 @@ class UsersViewDetail extends ViewDetail {
         $theTitle = '';
 
         if($GLOBALS['current_user']->isAdminForModule('Users')
+        	&& is_admin($GLOBALS['current_user'])
         ) {
         $createImageURL = SugarThemeRegistry::current()->getImageURL('create-record.gif');
         $url = ajaxLink("index.php?module=$module&action=EditView&return_module=$module&return_action=DetailView");
