@@ -9,3 +9,8 @@ Changes:
 ---
 * added new user type "TenantUser"
 * added new field "is_tenant" in User module, and when admin creating TenantUser, this field set True
+* 
+
+Fixed Bugs:
+---
+* bug 56131: In SugarView.php, function getModuleTitle() does not really using the override function getHelpText() of each child class of SugarView
