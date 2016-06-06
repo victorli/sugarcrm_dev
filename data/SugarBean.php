@@ -3099,6 +3099,19 @@ class SugarBean
                 $where .= ' AND '.  $owner_where;
             }
         }
+        
+     	//TODO: victorli:auto filter all user created records
+    	if(isset($this->field_defs['created_by'])){
+			if(!is_admin($GLOBALS['current_user']) || is_tenant($GLOBALS['current_user'])){
+				if(empty($where))
+	        		$where = "$this->table_name.created_by = '".$GLOBALS['current_user']->id."'";
+	        	else 
+	        		$where .= " AND $this->table_name.created_by = '".$GLOBALS['current_user']->id."'";
+	        }
+		}else{
+			sugar_die("Module:".$this->object_name.",no created_by exist.");
+		}
+        
         if(!empty($params['distinct']))
         {
             $distinct = ' DISTINCT ';

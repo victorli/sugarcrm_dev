@@ -58,7 +58,7 @@ class Basic extends SugarBean
 	 * @see SugarBean::create_new_list_query()
 	 * @author victorli
 	 */
-	function create_new_list_query($order_by, $where,$filter=array(),$params=array(), $show_deleted = 0,$join_type='', $return_array = false,$parentbean=null, $singleSelect = false, $ifListForExport = false){
+	/*function create_new_list_query($order_by, $where,$filter=array(),$params=array(), $show_deleted = 0,$join_type='', $return_array = false,$parentbean=null, $singleSelect = false, $ifListForExport = false){
 		
 		if(isset($this->field_defs['created_by'])){
 			if(!is_admin($GLOBALS['current_user']) || is_tenant($GLOBALS['current_user'])){
@@ -72,5 +72,5 @@ class Basic extends SugarBean
 		}
 		
 		return parent::create_new_list_query($order_by, $where, $filter,$params, $show_deleted, $join_type, $return_array, $parentbean, $singleSelect);
-	}
+	}*/
 }
