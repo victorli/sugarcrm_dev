@@ -3101,6 +3101,7 @@ class SugarBean
         }
         
      	//TODO: victorli:auto filter all user created records
+     	//does not contain assigned to current user records
     	if(isset($this->field_defs['created_by'])){
 			if(!is_admin($GLOBALS['current_user']) || is_tenant($GLOBALS['current_user'])){
 				if(empty($where))
