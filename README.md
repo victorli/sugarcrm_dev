@@ -9,7 +9,7 @@ Changes:
 ---
 * added new user type "TenantUser"
 * added new field "is_tenant" in User module, and when admin creating TenantUser, this field set True
-* 
+* override create_new_list_query() function,in Basic class, to filter records
 
 Fixed Bugs:
 ---
