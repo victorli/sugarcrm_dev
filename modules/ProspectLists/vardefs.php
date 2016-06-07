@@ -47,6 +47,14 @@ $dictionary['ProspectList'] = array (
 			'required' => true,
 			'reportable'=>false,
 		),
+		'tenant_id' => array(
+		  	'name' => 'tenant_id',
+		  	'vname' => 'LBL_TENANT_ID',
+		  	'type' => 'id',
+		  	'required' => true,
+		  	'default'  => '1',
+		  	'comment'  => 'the tenant id of this record creator'
+		 ),
 		'name' => array (
 			'name' => 'name',
 			'vname' => 'LBL_NAME',
