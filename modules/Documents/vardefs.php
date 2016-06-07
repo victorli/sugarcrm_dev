@@ -68,6 +68,14 @@ $dictionary['Document'] = array('table' => 'documents',
             'importable' => false,
             'studio' => 'false',
         ),
+        'tenant_id' => array(
+    	  	'name' => 'tenant_id',
+    	  	'vname' => 'LBL_TENANT_ID',
+    	  	'type' => 'id',
+    	  	'required' => true,
+    	  	'default'  => '1',
+    	  	'comment'  => 'the tenant id of this record creator'
+	  ),
         'doc_type' =>
         array(
             'name' => 'doc_type',
