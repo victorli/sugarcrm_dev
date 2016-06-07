@@ -47,6 +47,14 @@ $dictionary['Tracker'] = array(
             'auto_increment' => true,
             'reportable'=>true,
         ),
+        'tenant_id' => array(
+		  	'name' => 'tenant_id',
+		  	'vname' => 'LBL_TENANT_ID',
+		  	'type' => 'id',
+		  	'required' => true,
+		  	'default'  => '1',
+		  	'comment'  => 'the tenant id of this record creator'
+		 ),
 	    'monitor_id'=>array (
 		    'name' => 'monitor_id',
 		    'vname' => 'LBL_MONITOR_ID',
