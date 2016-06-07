@@ -39,6 +39,14 @@ $dictionary['Task'] = array('table' => 'tasks',
 	'unified_search' => true,
 	'full_text_search' => true,
                                'fields' => array (
+  'tenant_id' => array(
+  	'name' => 'tenant_id',
+  	'vname' => 'LBL_TENANT_ID',
+  	'type' => 'id',
+  	'required' => true,
+  	'default'  => '1',
+  	'comment'  => 'the tenant id of this record creator'
+ ),
   'name' =>
   array (
     'name' => 'name',
