@@ -3131,7 +3131,8 @@ class SugarBean
         		//ommit
         	}
         }else{
-        	sugar_die("Module:".$this->object_name.",no tenant_id field.");
+        	//sugar_die("Module:".$this->object_name.",no tenant_id field.");
+        	$GLOBALS['log']->error("Module:".$this->object_name.",no tenant_id field.");
         }
         
         
