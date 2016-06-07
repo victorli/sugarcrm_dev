@@ -39,6 +39,14 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 $dictionary['Opportunity'] = array('table' => 'opportunities','audited'=>true, 'unified_search' => true, 'full_text_search' => true, 'unified_search_default_enabled' => true, 'duplicate_merge'=>true,
 		'comment' => 'An opportunity is the target of selling activities',
 		'fields' => array (
+  'tenant_id' => array(
+		  	'name' => 'tenant_id',
+		  	'vname' => 'LBL_TENANT_ID',
+		  	'type' => 'id',
+		  	'required' => true,
+		  	'default'  => '1',
+		  	'comment'  => 'the tenant id of this record creator'
+		 ),
   'name' =>
   array (
     'name' => 'name',
