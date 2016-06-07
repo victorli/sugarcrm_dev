@@ -59,6 +59,14 @@ $dictionary['Campaign'] = array ('audited'=>true,
 			'default' => '0',
 			'comment' => 'The number of accesses made to the tracker URL; no longer used as of 4.2 (see campaign_trkrs)'
 		),
+		'tenant_id' => array(
+		  	'name' => 'tenant_id',
+		  	'vname' => 'LBL_TENANT_ID',
+		  	'type' => 'id',
+		  	'required' => true,
+		  	'default'  => '1',
+		  	'comment'  => 'the tenant id of this record creator'
+	  	),
 		'name' => array (
 			'name' => 'name',
 			'vname' => 'LBL_CAMPAIGN_NAME',
