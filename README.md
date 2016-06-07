@@ -10,6 +10,7 @@ Changes:
 * added new user type "TenantUser"
 * added new field "is_tenant" in User module, and when admin creating TenantUser, this field set True
 * added new field "tenant_id" in each module, and when creating record,siggend the creator's tenant to this field
+* update each vardefs.php to support tenant_id field
 * override create_new_list_query() function,in Basic class, to filter records
 
 Fixed Bugs:
