@@ -3120,15 +3120,24 @@ class SugarBean
 			sugar_die("Module:".$this->object_name.",no created_by exist.");
 		}
         */
-        
+        /*
+        tenant is another type of admin
+        */
         if(isset($this->field_defs['tenant_id'])){
-        	if(!is_admin($GLOBALS['current_user']) || is_tenant($GLOBALS['current_user'])){
+        	if(!is_admin($GLOBALS['current_user'])){ //regular user
         		if(empty($where))
         			$where = "$this->table_name.tenant_id = '".$GLOBALS['current_user']->tenant_id."'";
         		else
         			$where .= " AND $this->table_name.tenant_id = '".$GLOBALS['current_user']->tenant_id."'";
+        	}elseif(is_tenant($GLOBALS['current_user'])){
+        		if(empty($where))
+        			$where = "$this->table_name.tenant_id = '".$GLOBALS['current_user']->id."'";
+        		else
+        			$where .= " AND $this->table_name.tenant_id = '".$GLOBALS['current_user']->id."'";
+        	}elseif(is_admin($GLOBALS['current_user'])){
+        		//no filter
         	}else{
-        		//ommit
+        		$GLOBALS['current_user']->error('Unknown user type:'.$GLOBALS['current_user']->usertype);
         	}
         }else{
         	//sugar_die("Module:".$this->object_name.",no tenant_id field.");
