@@ -296,6 +296,13 @@ class SugarBean
      * @var array
      */
     static protected $fileFields = array();
+    /**
+     * to tag each record created by user with the tenant flag
+     * default tenant is the admin and value =1
+     * 
+     * @var id
+     */
+    var $tenant_id = 1;
 
     /**
      * Constructor for the bean, it performs following tasks:
