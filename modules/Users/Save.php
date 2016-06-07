@@ -161,12 +161,14 @@ if(!$current_user->is_admin && !$GLOBALS['current_user']->isAdminForModule('User
             }
         }
         
-		//setting is_tenant field
+	//setting is_tenant field
         if(!empty($_POST['UserType']) && $_POST['UserType'] == 'TenantUser'){
         	$focus->is_tenant = 1;
         }else{
         	$focus->is_tenant = 0;
         }
+        //set tenant_id to creator's id
+        $focus->tenant_id = $GLOBALS['current_user']->id;
         
         foreach ($focus->additional_column_fields as $fieldName)
         {
