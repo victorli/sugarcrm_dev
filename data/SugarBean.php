@@ -3109,7 +3109,7 @@ class SugarBean
         
      	//TODO: victorli:auto filter all user created records
      	//does not contain assigned to current user records
-    	if(isset($this->field_defs['created_by'])){
+    	/*if(isset($this->field_defs['created_by'])){
 			if(!is_admin($GLOBALS['current_user']) || is_tenant($GLOBALS['current_user'])){
 				if(empty($where))
 	        		$where = "$this->table_name.created_by = '".$GLOBALS['current_user']->id."'";
@@ -3119,6 +3119,22 @@ class SugarBean
 		}else{
 			sugar_die("Module:".$this->object_name.",no created_by exist.");
 		}
+        */
+        
+        if(isset($this->field_defs['tenant_id'])){
+        	if(!is_admin($GLOBALS['current_user']) || is_tenant($GLOBALS['current_user'])){
+        		if(empty($where))
+        			$where = "$this->table_name.tenant_id = '".$GLOBALS['current_user']->tenant_id."'";
+        		else
+        			$where .= " AND $this->table_name.tenant_id = '".$GLOBALS['current_user']->tenant_id."'";
+        	}else{
+        		//ommit
+        	}
+        }else{
+        	sugar_die("Module:".$this->object_name.",no tenant_id field.");
+        }
+        
+        
         
         if(!empty($params['distinct']))
         {
