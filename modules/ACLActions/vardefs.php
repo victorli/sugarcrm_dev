@@ -49,6 +49,14 @@ $dictionary['ACLAction'] = array('table' => 'acl_actions', 'comment' => 'Determi
     'reportable'=>false,
     'comment' => 'Unique identifier'
   ),
+  'tenant_id' => array(
+  	'name' => 'tenant_id',
+  	'vname' => 'LBL_TENANT_ID',
+  	'type' => 'id',
+  	'required' => true,
+  	'default'  => '1',
+  	'comment'  => 'the tenant id of this record creator'
+ ),
    'date_entered' =>
   array (
     'name' => 'date_entered',
