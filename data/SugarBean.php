@@ -1405,6 +1405,15 @@ class SugarBean
             {
                 $this->id = create_guid();
             }
+            
+            //when create new record setting the tenant id
+            if(isset($this->field_defs['tenant_id'])){
+            	if(is_tenant($current_user)){
+            		$this->tenant_id = $current_user->id;
+            	}else{
+            		$this->tenant_id = $current_user->tenant_id;
+            	}
+            }
         }
 
 

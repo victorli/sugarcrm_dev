@@ -493,6 +493,7 @@ function handleSave($prefix,$redirect=true, $useRequired=false){
 			return null;
 		}
 	}
+	
 	if(!$focus->ACLAccess('Save')){
 		ACLController::displayNoAccess(true);
 		sugar_cleanup(true);

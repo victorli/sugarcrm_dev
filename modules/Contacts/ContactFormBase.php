@@ -445,6 +445,7 @@ function handleSave($prefix, $redirect=true, $useRequired=false){
 		if (!isset($_POST[$prefix.'do_not_call'])) $focus->do_not_call = 0;
 
 	}
+	
 	if(!$focus->ACLAccess('Save')){
 			ACLController::displayNoAccess(true);
 			sugar_cleanup(true);

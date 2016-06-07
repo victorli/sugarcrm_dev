@@ -3,31 +3,31 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
  * Free Software Foundation with the addition of the following permission added
  * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
  * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
  * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with
  * this program; if not, see http://www.gnu.org/licenses or write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
- * 
+ *
  * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
  * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
+ *
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
  * Section 5 of the GNU Affero General Public License version 3.
- * 
+ *
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
  * SugarCRM" logo. If the display of the logo is not reasonably feasible for
@@ -37,11 +37,11 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 /*********************************************************************************
 
- * Description:  TODO: To be written.
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
- * All Rights Reserved.
- * Contributor(s): ______________________________________..
- ********************************************************************************/
+* Description:  TODO: To be written.
+* Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
+* All Rights Reserved.
+* Contributor(s): ______________________________________..
+********************************************************************************/
 
 require_once('modules/MySettings/TabController.php');
 
@@ -55,11 +55,11 @@ parse_str($tabs_def,$DISPLAY_ARR);
 //of the admin user.
 if(isset($_POST['record']) && !is_admin($GLOBALS['current_user']) && !$GLOBALS['current_user']->isAdminForModule('Employees') && ($_POST['record'] != $GLOBALS['current_user']->id))
 {
-    sugar_die("Unauthorized access to administration.");
+	sugar_die("Unauthorized access to administration.");
 }
 elseif (!isset($_POST['record']) && !is_admin($GLOBALS['current_user']) && !$GLOBALS['current_user']->isAdminForModule('Employees'))
 {
-    sugar_die ("Unauthorized access to user administration.");
+	sugar_die ("Unauthorized access to user administration.");
 }
 
 $focus = new Employee();
@@ -70,9 +70,6 @@ $focus->retrieve($_POST['record']);
 $old_reports_to_id = $focus->reports_to_id;
 
 populateFromRow($focus,$_POST);
-
-//set employee's tenant_id to be current user's id
-$focus->tenant_id = $GLOBALS['current_user']->id;
 
 $focus->save();
 $return_id = $focus->id;
@@ -96,15 +93,15 @@ function populateFromRow(&$focus,$row){
 	//only employee specific field values need to be copied.
 	$e_fields=array('first_name','last_name','reports_to_id','description','phone_home','phone_mobile','phone_work','phone_other','phone_fax','address_street','address_city','address_state','address_country','address_country', 'address_postalcode', 'messenger_id','messenger_type');
 	if ( is_admin($GLOBALS['current_user']) ) {
-        $e_fields = array_merge($e_fields,array('title','department','employee_status'));
-    }
-    // Also add custom fields
-    foreach ($focus->field_defs as $fieldName => $field ) {
-        if ( isset($field['source']) && $field['source'] == 'custom_fields' ) {
-            $e_fields[] = $fieldName;
-        }
-    }
-    $nullvalue='';
+		$e_fields = array_merge($e_fields,array('title','department','employee_status'));
+	}
+	// Also add custom fields
+	foreach ($focus->field_defs as $fieldName => $field ) {
+		if ( isset($field['source']) && $field['source'] == 'custom_fields' ) {
+			$e_fields[] = $fieldName;
+		}
+	}
+	$nullvalue='';
 	foreach($e_fields as $field)
 	{
 		$rfield = $field; // fetch returns it in lowercase only

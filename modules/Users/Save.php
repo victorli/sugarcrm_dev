@@ -167,8 +167,6 @@ if(!$current_user->is_admin && !$GLOBALS['current_user']->isAdminForModule('User
         }else{
         	$focus->is_tenant = 0;
         }
-        //set tenant_id to creator's id
-        $focus->tenant_id = $GLOBALS['current_user']->id;
         
         foreach ($focus->additional_column_fields as $fieldName)
         {
