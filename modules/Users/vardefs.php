@@ -44,6 +44,14 @@ $dictionary['User'] = array(
             'type' => 'id',
             'required' => true,
         ) ,
+        'tenant_id' => array(
+	  	'name' => 'tenant_id',
+	  	'vname' => 'LBL_TENANT_ID',
+	  	'type' => 'id',
+	  	'required' => true,
+	  	'default'  => '1',
+	  	'comment'  => 'the tenant id of this record creator'
+	  ),
         'user_name' => array(
             'name' => 'user_name',
             'vname' => 'LBL_USER_NAME',
