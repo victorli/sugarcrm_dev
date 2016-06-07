@@ -38,6 +38,14 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 $dictionary['Call'] = array('table' => 'calls', 'comment' => 'A Call is an activity representing a phone call',
                                'unified_search' => true, 'full_text_search' => true, 'unified_search_default_enabled' => true, 'fields' => array (
 
+  'tenant_id' => array(
+	  	'name' => 'tenant_id',
+	  	'vname' => 'LBL_TENANT_ID',
+	  	'type' => 'id',
+	  	'required' => true,
+	  	'default'  => '1',
+	  	'comment'  => 'the tenant id of this record creator'
+	  ),
   'name' =>
   array (
     'name' => 'name',
