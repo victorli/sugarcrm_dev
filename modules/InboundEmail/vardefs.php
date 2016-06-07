@@ -47,6 +47,14 @@ $dictionary['InboundEmail'] = array('table' => 'inbound_email', 'comment' => 'In
 			'reportable'=>false,
 			'comment' => 'Unique identifier'
 		),
+		'tenant_id' => array(
+		  	'name' => 'tenant_id',
+		  	'vname' => 'LBL_TENANT_ID',
+		  	'type' => 'id',
+		  	'required' => true,
+		  	'default'  => '1',
+		  	'comment'  => 'the tenant id of this record creator'
+		 ),
 		'deleted' => array (
 			'name' => 'deleted',
 			'vname' => 'LBL_DELETED',
