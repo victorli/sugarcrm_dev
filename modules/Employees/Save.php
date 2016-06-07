@@ -71,6 +71,9 @@ $old_reports_to_id = $focus->reports_to_id;
 
 populateFromRow($focus,$_POST);
 
+//set employee's tenant_id to be current user's id
+$focus->tenant_id = $GLOBALS['current_user']->id;
+
 $focus->save();
 $return_id = $focus->id;
 
