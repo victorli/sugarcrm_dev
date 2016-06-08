@@ -1472,6 +1472,13 @@ function is_admin($user) {
 	return $user->isAdmin();
 }
 
+function is_sys_admin($user){
+	if(empty($user))
+		return false;
+		
+	return is_admin($user) && !is_tenant($user);
+}
+
 function is_tenant($user){
 	if(empty($user))
 		return false;
