@@ -91,7 +91,7 @@ class ViewDetail extends SugarView
        		}
        		
        		if($this->bean->tenant_id != $tenant_id){
-       			if($_REQUEST['record'] != $this->bean->id){
+       			if($_REQUEST['record'] != $GLOBALS['current_user']->id){
        				sugar_die("You dont have permission to access this record.");
        			}else{
        				$GLOBALS['log']->warn("Maybe user:".$GLOBALS['current_user']->user_name.",is viewing its self,in module:".$this->module);
