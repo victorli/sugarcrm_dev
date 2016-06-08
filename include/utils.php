@@ -1486,6 +1486,27 @@ function is_tenant($user){
 	return $user->isTenant();
 }
 
+function check_tenant_privileges($user,$bean,$action='detail'){
+	if(is_sys_admin($user))
+		return true;
+	$tenant_id = $user->tenant_id;
+	if(is_tenant($user))
+		$tenant_id = $user->id;
+	
+	switch(strtolower($action)){
+		case 'detail':
+			if($bean->tenant_id == $tenant_id)
+				return true;
+			if($_REQUEST['record'] == $user->id) //user view her/himself
+				return true;
+			return false;
+		default: break;
+	}	
+	
+	$GLOBALS['log']->warn('Unknown action:'.$action);
+	return false;
+}
+
 /**
  * Return the display name for a theme if it exists.
  * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
