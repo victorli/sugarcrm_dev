@@ -82,22 +82,12 @@ class ViewDetail extends SugarView
     {
         if(empty($this->bean->id)){
             sugar_die($GLOBALS['app_strings']['ERROR_NO_RECORD']);
-        }		
+        }
         
-       	if(!is_sys_admin($GLOBALS['current_user'])){
-       		$tenant_id = $GLOBALS['current_user']->tenant_id;
-       		if(is_tenant($GLOBALS['current_user'])){
-       			$tenant_id = $GLOBALS['current_user']->id;
-       		}
-       		
-       		if($this->bean->tenant_id != $tenant_id){
-       			if($_REQUEST['record'] != $GLOBALS['current_user']->id){
-       				sugar_die("You dont have permission to access this record.");
-       			}else{
-       				$GLOBALS['log']->warn("Maybe user:".$GLOBALS['current_user']->user_name.",is viewing its self,in module:".$this->module);
-       			}
-       		}
-       	}
+        if(!check_tenant_privileges($GLOBALS['current_user'],$this->bean,'detail')){
+        	sugar_die('Sorry, you do not have the privileges to access this record.');
+        }
+        
         $this->dv->process();
         echo $this->dv->display();
     }
