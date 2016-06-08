@@ -12,6 +12,7 @@ Changes:
 * added new field "tenant_id" in each module, and when creating record,siggend the creator's tenant to this field
 * update each vardefs.php to support tenant_id field
 * override create_new_list_query() function,in Basic class, to filter records
+* modified view.detail.php to make each user can only view records with the same tenant with it
 
 Fixed Bugs:
 ---
