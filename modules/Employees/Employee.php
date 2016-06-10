@@ -249,6 +249,15 @@ class Employee extends Person {
         }else{
             $where .= ' and users.portal_only = 0 ';
         }
+        
+        //added tenant self in array
+   	if(!is_sys_admin($GLOBALS['current_user'])){
+   		if(is_tenant($GLOBALS['current_user'])){
+   			$where .=" AND ($this->table_name.id='".$GLOBALS['current_user']->id."' OR $this->table_name.tenant_id='".$GLOBALS['current_user']->id."') ";	
+   		}else{
+   			$where .=" AND ($this->table_name.id='".$GLOBALS['current_user']->tenant_id."' OR $this->table_name.tenant_id='".$GLOBALS['current_user']->tenant_id."') ";	
+   		}
+   	}
 
         //return parent method, specifying for array to be returned
         return parent::create_new_list_query($order_by, $where, $filter,$params, $show_deleted, $join_type, $return_array, $parentbean, $singleSelect);
