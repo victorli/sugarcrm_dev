@@ -798,6 +798,9 @@ class UserViewHelper {
         {
             $user->user_type = 'GROUP';
         }
+        else if($user->is_tenant){
+            $user->user_type = 'TenantUser';
+        }
         else
         {
             $user->user_type = 'RegularUser';
