@@ -57,7 +57,7 @@ if(isset( $sugar_config['disc_client']) && $sugar_config['disc_client']){
 	'submenu' => ''
 	);
 //}
-if (is_admin($current_user) && !is_tenant($current_user))
+if (is_admin($current_user))
 	$global_control_links['admin'] = array(
 	'linkinfo' => array($app_strings['LBL_ADMIN'] => 'index.php?module=Administration&action=index'),
 	'submenu' => ''
