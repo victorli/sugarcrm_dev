@@ -3133,8 +3133,6 @@ class SugarBean
         			$where = " $this->table_name.tenant_id='".$current_user->tenant_id."' ";
         		else
         			$where .= " AND $this->table_name.tenant_id='".$current_user->tenant_id."' ";
-        	}else{
-        		$GLOBALS['log']->error('Unknown user type:'.$GLOBALS['current_user']->usertype);
         	}
         }else{
         	//sugar_die("Module:".$this->object_name.",no tenant_id field.");
