@@ -162,7 +162,7 @@ if(!$current_user->is_admin && !$GLOBALS['current_user']->isAdminForModule('User
         }
         
 	//setting is_tenant field
-        if(!empty($_POST['UserType']) && $_POST['UserType'] == 'TenantUser'){
+        if(!empty($_POST['UserType']) && $_POST['UserType'] == 'TenantUser' || $_POST['is_tenant_admin'] && $_POST['tenant_edit_self']){
         	$focus->is_tenant = 1;
         }else{
         	$focus->is_tenant = 0;
