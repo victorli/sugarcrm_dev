@@ -1604,7 +1604,7 @@ EOQ;
    function create_new_list_query($order_by, $where,$filter=array(),$params=array(), $show_deleted = 0,$join_type='', $return_array = false,$parentbean=null, $singleSelect = false)
    {	
    	//added tenant self in array
-   	if(!is_sys_admin($GLOBALS['current_user'])){
+   	/*if(!is_sys_admin($GLOBALS['current_user'])){
    		if(is_tenant($GLOBALS['current_user'])){
    			if(empty($where))
    				$where =" 1=1 OR $this->table_name.id='".$GLOBALS['current_user']->id."' ";
@@ -1616,7 +1616,7 @@ EOQ;
    			else
    				$where .=" OR $this->table_name.id='".$GLOBALS['current_user']->tenant_id."' ";	
    		}
-   	}
+   	}*/
    	//call parent method, specifying for array to be returned
    	$ret_array = parent::create_new_list_query($order_by, $where,$filter,$params, $show_deleted,$join_type, true,$parentbean, $singleSelect);
 
