@@ -641,7 +641,7 @@ function get_user_array($add_blank=true, $status="Active", $user_id='', $use_rea
 		
 		if(!is_sys_admin($current_user)){
 			if(is_tenant($current_user)){
-				$query .= " AND tenant_id='".$current_user->id."' ";
+				$query .= " AND (tenant_id='".$current_user->id."' OR id='".$current_user->id."') "; //allow to show tenant self
 			}else{
 				$query .= " AND tenant_id='".$current_user->tenant_id."' ";
 			}
@@ -754,7 +754,7 @@ function getUserArrayFromFullName($args, $hide_portal_users = false) {
 	
 	if(!is_sys_admin($current_user)){
 		if(is_tenant($current_user)){
-			$query .= " AND tenant_id='".$current_user->id."' ";
+			$query .= " AND (tenant_id='".$current_user->id."' OR id='".$current_user->id."') ";
 		}else{
 			$query .= " AND tenant_id='".$current_user->tenant_id."' ";
 		}
