@@ -638,6 +638,14 @@ function get_user_array($add_blank=true, $status="Active", $user_id='', $use_rea
 		else {
 			$query = "SELECT id, first_name, last_name, user_name from users WHERE status='$status'".$portal_filter;
 		}
+		
+		if(!is_sys_admin($current_user)){
+			if(is_tenant($current_user)){
+				$query .= " AND tenant_id='".$current_user->id."' ";
+			}else{
+				$query .= " AND tenant_id='".$current_user->tenant_id."' ";
+			}
+		}
 
 		if (!empty($user_name_filter)) {
 		    $user_name_filter = $db->quote($user_name_filter);
@@ -743,6 +751,15 @@ function getUserArrayFromFullName($args, $hide_portal_users = false) {
 	    $query .= " portal_only=0 AND ";
 	}
 	$query .= $inClause;
+	
+	if(!is_sys_admin($current_user)){
+		if(is_tenant($current_user)){
+			$query .= " AND tenant_id='".$current_user->id."' ";
+		}else{
+			$query .= " AND tenant_id='".$current_user->tenant_id."' ";
+		}
+	}
+	
 	$query .= " ORDER BY last_name ASC";
 
 	$r = $db->query($query);
