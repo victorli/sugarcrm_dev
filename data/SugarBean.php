@@ -3120,25 +3120,26 @@ class SugarBean
         tenant is another type of admin
         */
         $current_user = $GLOBALS['current_user'];
-        if(isset($this->field_defs['tenant_id'])){
-        	if(is_sys_admin($current_user)){
-        		//no filter
-        	}elseif(is_tenant($current_user)){
-        		if(empty($where))
-        			$where = " $this->table_name.tenant_id='".$current_user->id."' ";
-        		else
-        			$where .= " AND $this->table_name.tenant_id='".$current_user->id."' ";
-        	}else{
-        		if(empty($where))
-        			$where = " $this->table_name.tenant_id='".$current_user->tenant_id."' ";
-        		else
-        			$where .= " AND $this->table_name.tenant_id='".$current_user->tenant_id."' ";
-        	}
-        }else{
-        	//sugar_die("Module:".$this->object_name.",no tenant_id field.");
-        	$GLOBALS['log']->error("Module:".$this->object_name.",no tenant_id field.");
+        if(strtolower($this->table_name) !='users'){//Users module using its own tenant where filter
+	        if(isset($this->field_defs['tenant_id'])){
+	        	if(is_sys_admin($current_user)){
+	        		//no filter
+	        	}elseif(is_tenant($current_user)){
+	        		if(empty($where))
+	        			$where = " $this->table_name.tenant_id='".$current_user->id."' ";
+	        		else
+	        			$where .= " AND $this->table_name.tenant_id='".$current_user->id."' ";
+	        	}else{
+	        		if(empty($where))
+	        			$where = " $this->table_name.tenant_id='".$current_user->tenant_id."' ";
+	        		else
+	        			$where .= " AND $this->table_name.tenant_id='".$current_user->tenant_id."' ";
+	        	}
+	        }else{
+	        	//sugar_die("Module:".$this->object_name.",no tenant_id field.");
+	        	$GLOBALS['log']->error("Module:".$this->object_name.",no tenant_id field.");
+	        }
         }
-        
         
         
         if(!empty($params['distinct']))
