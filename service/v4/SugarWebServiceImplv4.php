@@ -164,7 +164,7 @@ class SugarWebServiceImplv4 extends SugarWebServiceImplv3_1 {
             $nameValueArray['user_language'] = self::$helperObject->get_name_value('user_language', $current_language);
             $cur_id = $current_user->getPreference('currency');
             $nameValueArray['user_currency_id'] = self::$helperObject->get_name_value('user_currency_id', $cur_id);
-            $nameValueArray['user_is_admin'] = self::$helperObject->get_name_value('user_is_admin', is_admin($current_user));
+            $nameValueArray['user_is_admin'] = self::$helperObject->get_name_value('user_is_admin', is_sys_admin($current_user));
             
             $nameValueArray['user_is_tenant'] = self::$helperObject->get_name_value('user_is_tenant',is_tenant($current_user));
             $nameValueArray['user_tenant_id'] = self::$helperObject->get_name_value('user_tenant_id',is_tenant($current_user) ? $current_user->id : $current_user->tenant_id);
