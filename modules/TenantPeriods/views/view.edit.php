@@ -36,10 +36,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  ********************************************************************************/
 class TenantPeriodsViewEdit extends ViewEdit {
 
- 	function TenantPeriodsViewEdit(){
- 		parent::ViewEdit();
- 	}
-
     function preDisplay() {
 
         parent::preDisplay();
@@ -50,35 +46,5 @@ class TenantPeriodsViewEdit extends ViewEdit {
 
 		parent::display();
 
-    }
-
-    /**
-     * getHelpText
-     *
-     * This is a protected function that returns the help text portion.  It is called from getModuleTitle.
-     * We override the function from SugarView.php to make sure the create link only appears if the current user
-     * meets the valid criteria.
-     *
-     * @param $module String the formatted module name
-     * @return $theTitle String the HTML for the help text
-     */
-    protected function getHelpText($module)
-    {
-        $theTitle = '';
-
-        if($GLOBALS['current_user']->isAdminForModule('Users')
-        	&& is_admin($GLOBALS['current_user'])
-        ) {
-        $createImageURL = SugarThemeRegistry::current()->getImageURL('create-record.gif');
-        $url = ajaxLink("index.php?module=$module&action=EditView&return_module=$module&return_action=DetailView");
-        $theTitle = <<<EOHTML
-&nbsp;
-<img src='{$createImageURL}' alt='{$GLOBALS['app_strings']['LNK_CREATE']}'>
-<a href="{$url}" class="utilsLink">
-{$GLOBALS['app_strings']['LNK_CREATE']}
-</a>
-EOHTML;
-        }
-        return $theTitle;
     }
 }
