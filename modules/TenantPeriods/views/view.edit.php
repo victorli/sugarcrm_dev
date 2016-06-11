@@ -34,11 +34,6 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by SugarCRM".
  ********************************************************************************/
-
-
-require_once('modules/Users/UserViewHelper.php');
-
-
 class TenantPeriodsViewEdit extends ViewEdit {
 
  	function TenantPeriodsViewEdit(){
