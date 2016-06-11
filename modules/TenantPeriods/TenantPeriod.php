@@ -20,6 +20,8 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 class TenantPeriod extends SugarBean{
 	
 	var $id;
+	var $tenant_user_id;
+	var $tenant_user_name;
 	var $date_entered;
 	var $date_modified;
 	var $modified_user_id;
