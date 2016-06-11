@@ -106,14 +106,14 @@ $dictionary['TenantPeriod'] = array(
 		'date_from' => array(
 			'name' => 'date_from',
 			'vname' => 'LBL_DATE_FROM',
-			'type' => 'datetime',
+			'type' => 'date',
 			'required' => true,
 			'comment' => 'The rent period start date'
 		),
 		'date_to' => array(
 			'name' => 'date_to',
 			'vname' => 'LBL_DATE_TO',
-			'type' => 'datetime',
+			'type' => 'date',
 			'required' => true,
 			'comment' => 'The rent period end date'
 		),
