@@ -26,8 +26,8 @@ $viewdefs['TenantPeriods']['EditView'] = array(
 			array('label' => '10','field'=>'30')
 		),
 		'form' => array(
-			'headerTpl' => 'modules/TenantPeriods/tpls/EditViewHeader.tpl',
-			'footerTpl' => 'modules/TenantPeriods/tpls/EditViewFooter.tpl'
+			//'headerTpl' => 'modules/TenantPeriods/tpls/EditViewHeader.tpl',
+			//'footerTpl' => 'modules/TenantPeriods/tpls/EditViewFooter.tpl'
 		),
 	),
 	'panels' => array(

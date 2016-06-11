@@ -3,31 +3,31 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 /*********************************************************************************
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
  * Free Software Foundation with the addition of the following permission added
  * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
  * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
  * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License along with
  * this program; if not, see http://www.gnu.org/licenses or write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
- * 
+ *
  * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
  * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
- * 
+ *
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
  * Section 5 of the GNU Affero General Public License version 3.
- * 
+ *
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
  * SugarCRM" logo. If the display of the logo is not reasonably feasible for
@@ -37,11 +37,11 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 /*********************************************************************************
 
- * Description:  Defines the English language pack for the base application.
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
- * All Rights Reserved.
- * Contributor(s): ______________________________________..
- ********************************************************************************/
+* Description:  Defines the English language pack for the base application.
+* Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
+* All Rights Reserved.
+* Contributor(s): ______________________________________..
+********************************************************************************/
 
 //the left value is the key stored in the db and the right value is ie display value
 //to translate, only modify the right value in each key/value pair
@@ -49,7 +49,7 @@ $app_list_strings = array (
 //e.g. auf Deutsch 'Contacts'=>'Contakten',
   'language_pack_name' => 'US English',
   'moduleList' =>
-  array (
+array (
     'Home' => 'Home',
     'Contacts' => 'Contacts',
     'Accounts' => 'Accounts',
@@ -103,14 +103,16 @@ $app_list_strings = array (
     'Newsletters' => 'Newsletters',
     'SugarFeed'=>'Sugar Feed',
     'KBDocuments' => 'Knowledge Base',
-  'SugarFavorites'=>'Favorites',
-
+  	'SugarFavorites'=>'Favorites',
+	
     'OAuthKeys' => 'OAuth Consumer Keys',
     'OAuthTokens' => 'OAuth Tokens',
-  ),
+
+	'TenantPeriods' => 'Tenant Periods',
+),
 
   'moduleListSingular' =>
-  array (
+array (
     'Home' => 'Home',
     'Dashboard' => 'Dashboard',
     'Contacts' => 'Contact',
@@ -140,7 +142,7 @@ $app_list_strings = array (
     'Users' => 'User',
   'SugarFavorites'=>'SugarFavorites'
 
-        ),
+  ),
 
   'checkbox_dom'=> array(
     ''=>'',
@@ -224,7 +226,7 @@ $app_list_strings = array (
     'New Business' => 'New Business',
   ),
   'roi_type_dom' =>
-    array (
+  array (
     'Revenue' => 'Revenue',
     'Investment'=>'Investment',
     'Expected_Revenue'=>'Expected Revenue',
@@ -232,7 +234,7 @@ $app_list_strings = array (
 
   ),
   //Note:  do not translate opportunity_relationship_type_default_key
-//       it is the key for the default opportunity_relationship_type_dom value
+  //       it is the key for the default opportunity_relationship_type_dom value
   'opportunity_relationship_type_default_key' => 'Primary Decision Maker',
   'opportunity_relationship_type_dom' =>
   array (
@@ -247,7 +249,7 @@ $app_list_strings = array (
     'Other' => 'Other',
   ),
   //Note:  do not translate case_relationship_type_default_key
-//       it is the key for the default case_relationship_type_dom value
+  //       it is the key for the default case_relationship_type_dom value
   'case_relationship_type_default_key' => 'Primary Contact',
   'case_relationship_type_dom' =>
   array (
@@ -265,9 +267,9 @@ $app_list_strings = array (
   'fts_type' => array (
       '' => '',
       'Elastic' => 'elasticsearch'
-  ),
+      ),
   'sales_stage_dom' =>
-  array (
+      array (
     'Prospecting' => 'Prospecting',
     'Qualification' => 'Qualification',
     'Needs Analysis' => 'Needs Analysis',
@@ -278,7 +280,7 @@ $app_list_strings = array (
     'Negotiation/Review' => 'Negotiation/Review',
     'Closed Won' => 'Closed Won',
     'Closed Lost' => 'Closed Lost',
-  ),
+      ),
   'in_total_group_stages' => array (
     'Draft' => 'Draft',
     'Negotiation' => 'Negotiation',
@@ -288,9 +290,9 @@ $app_list_strings = array (
     'Closed Accepted' => 'Closed Accepted',
     'Closed Lost' => 'Closed Lost',
     'Closed Dead' => 'Closed Dead',
-  ),
+      ),
   'sales_probability_dom' => // keys must be the same as sales_stage_dom
-  array (
+      array (
     'Prospecting' => '10',
     'Qualification' => '20',
     'Needs Analysis' => '25',
@@ -301,15 +303,15 @@ $app_list_strings = array (
     'Negotiation/Review' => '80',
     'Closed Won' => '100',
     'Closed Lost' => '0',
-  ),
+      ),
   'activity_dom' =>
-  array (
+      array (
     'Call' => 'Call',
     'Meeting' => 'Meeting',
     'Task' => 'Task',
     'Email' => 'Email',
     'Note' => 'Note',
-  ),
+      ),
   'salutation_dom' =>
       array (
         '' => '',
@@ -319,67 +321,67 @@ $app_list_strings = array (
         'Dr.' => 'Dr.',
         'Prof.' => 'Prof.',
       ),
-  //time is in seconds; the greater the time the longer it takes;
+      //time is in seconds; the greater the time the longer it takes;
   'reminder_max_time' => 90000,
   'reminder_time_options' => array( 60=> '1 minute prior',
-                                  300=> '5 minutes prior',
-                                  600=> '10 minutes prior',
-                                  900=> '15 minutes prior',
-                                  1800=> '30 minutes prior',
-                                  3600=> '1 hour prior',
-                                  7200 => '2 hours prior',
-                                  10800 => '3 hours prior',
-                                  18000 => '5 hours prior',
-                                  86400 => '1 day prior',
-                                 ),
+      300=> '5 minutes prior',
+      600=> '10 minutes prior',
+      900=> '15 minutes prior',
+      1800=> '30 minutes prior',
+      3600=> '1 hour prior',
+      7200 => '2 hours prior',
+      10800 => '3 hours prior',
+      18000 => '5 hours prior',
+      86400 => '1 day prior',
+      ),
 
   'task_priority_default' => 'Medium',
   'task_priority_dom' =>
-  array (
+      array (
     'High' => 'High',
     'Medium' => 'Medium',
     'Low' => 'Low',
-  ),
+      ),
   'task_status_default' => 'Not Started',
   'task_status_dom' =>
-  array (
+      array (
     'Not Started' => 'Not Started',
     'In Progress' => 'In Progress',
     'Completed' => 'Completed',
     'Pending Input' => 'Pending Input',
     'Deferred' => 'Deferred',
-  ),
+      ),
   'meeting_status_default' => 'Planned',
   'meeting_status_dom' =>
-  array (
+      array (
     'Planned' => 'Planned',
     'Held' => 'Held',
     'Not Held' => 'Not Held',
-  ),
+      ),
   'extapi_meeting_password' =>
-  array (
+      array (
       'WebEx' => 'WebEx',
-  ),
+      ),
   'meeting_type_dom' =>
-   array (
+      array (
       'Other' => 'Other',
       'Sugar' => 'SugarCRM',
-   ),
+      ),
   'call_status_default' => 'Planned',
   'call_status_dom' =>
-  array (
+      array (
     'Planned' => 'Planned',
     'Held' => 'Held',
     'Not Held' => 'Not Held',
-  ),
+      ),
   'call_direction_default' => 'Outbound',
   'call_direction_dom' =>
-  array (
+      array (
     'Inbound' => 'Inbound',
     'Outbound' => 'Outbound',
-  ),
+      ),
   'lead_status_dom' =>
-  array (
+      array (
     '' => '',
     'New' => 'New',
     'Assigned' => 'Assigned',
@@ -387,60 +389,60 @@ $app_list_strings = array (
     'Converted' => 'Converted',
     'Recycled' => 'Recycled',
     'Dead' => 'Dead',
-  ),
+      ),
    'gender_list' =>
-  array (
+      array (
     'male' => 'Male',
     'female' => 'Female',
-  ),
-  //Note:  do not translate case_status_default_key
-//       it is the key for the default case_status_dom value
+      ),
+      //Note:  do not translate case_status_default_key
+      //       it is the key for the default case_status_dom value
   'case_status_default_key' => 'New',
   'case_status_dom' =>
-  array (
+      array (
     'New' => 'New',
     'Assigned' => 'Assigned',
     'Closed' => 'Closed',
     'Pending Input' => 'Pending Input',
     'Rejected' => 'Rejected',
     'Duplicate' => 'Duplicate',
-  ),
+      ),
   'case_priority_default_key' => 'P2',
   'case_priority_dom' =>
-  array (
+      array (
     'P1' => 'High',
     'P2' => 'Medium',
     'P3' => 'Low',
-  ),
+      ),
   'user_type_dom' =>
-  array (
+      array (
     'RegularUser' => 'Regular User',
   	'TenantUser'	=> 'Tenant User',	
     'Administrator' => 'Administrator',
-  ),
+      ),
   'user_status_dom' =>
-  array (
+      array (
     'Active' => 'Active',
     'Inactive' => 'Inactive',
-  ),
+      ),
   'employee_status_dom' =>
-  array (
+      array (
     'Active' => 'Active',
     'Terminated' => 'Terminated',
     'Leave of Absence' => 'Leave of Absence',
-  ),
+      ),
   'messenger_type_dom' =>
-  array (
+      array (
     '' => '',
     'MSN' => 'MSN',
     'Yahoo!' => 'Yahoo!',
     'AOL' => 'AOL',
-  ),
+      ),
     'project_task_priority_options' => array (
         'High' => 'High',
         'Medium' => 'Medium',
         'Low' => 'Low',
-    ),
+      ),
     'project_task_priority_default' => 'Medium',
 
     'project_task_status_options' => array (
@@ -449,38 +451,38 @@ $app_list_strings = array (
         'Completed' => 'Completed',
         'Pending Input' => 'Pending Input',
         'Deferred' => 'Deferred',
-    ),
+      ),
     'project_task_utilization_options' => array (
         '0' => 'none',
         '25' => '25',
         '50' => '50',
         '75' => '75',
         '100' => '100',
-    ),
+      ),
 
     'project_status_dom' => array (
         'Draft' => 'Draft',
         'In Review' => 'In Review',
         'Published' => 'Published',
-    ),
+      ),
     'project_status_default' => 'Draft',
 
     'project_duration_units_dom' => array (
         'Days' => 'Days',
         'Hours' => 'Hours',
-    ),
+      ),
 
     'project_priority_options' => array (
         'High' => 'High',
         'Medium' => 'Medium',
         'Low' => 'Low',
-    ),
+      ),
     'project_priority_default' => 'Medium',
-  //Note:  do not translate record_type_default_key
-//       it is the key for the default record_type_module value
+      //Note:  do not translate record_type_default_key
+      //       it is the key for the default record_type_module value
   'record_type_default_key' => 'Accounts',
   'record_type_display' =>
-  array (
+      array (
     '' => '',
     'Accounts' => 'Account',
     'Opportunities' => 'Opportunity',
@@ -498,10 +500,10 @@ $app_list_strings = array (
 
     'Tasks' => 'Task',
 
-  ),
+      ),
 
   'record_type_display_notes' =>
-  array (
+      array (
     'Accounts' => 'Account',
     'Contacts' => 'Contact',
     'Opportunities' => 'Opportunity',
@@ -517,10 +519,10 @@ $app_list_strings = array (
 
     'Meetings' => 'Meeting',
     'Calls' => 'Call',
-  ),
+      ),
 
   'parent_type_display' =>
-  array (
+      array (
     'Accounts' => 'Account',
     'Contacts' => 'Contact',
     'Tasks' => 'Task',
@@ -537,48 +539,48 @@ $app_list_strings = array (
 
     'Prospects' => 'Target',
 
-  ),
+      ),
 
   'issue_priority_default_key' => 'Medium',
   'issue_priority_dom' =>
-  array (
+      array (
     'Urgent' => 'Urgent',
     'High' => 'High',
     'Medium' => 'Medium',
     'Low' => 'Low',
-  ),
+      ),
   'issue_resolution_default_key' => '',
   'issue_resolution_dom' =>
-  array (
+      array (
     '' => '',
     'Accepted' => 'Accepted',
     'Duplicate' => 'Duplicate',
     'Closed' => 'Closed',
     'Out of Date' => 'Out of Date',
     'Invalid' => 'Invalid',
-  ),
+      ),
 
   'issue_status_default_key' => 'New',
   'issue_status_dom' =>
-  array (
+      array (
     'New' => 'New',
     'Assigned' => 'Assigned',
     'Closed' => 'Closed',
     'Pending' => 'Pending',
     'Rejected' => 'Rejected',
-  ),
+      ),
 
   'bug_priority_default_key' => 'Medium',
   'bug_priority_dom' =>
-  array (
+      array (
     'Urgent' => 'Urgent',
     'High' => 'High',
     'Medium' => 'Medium',
     'Low' => 'Low',
-  ),
+      ),
    'bug_resolution_default_key' => '',
   'bug_resolution_dom' =>
-  array (
+      array (
     '' => '',
     'Accepted' => 'Accepted',
     'Duplicate' => 'Duplicate',
@@ -586,42 +588,42 @@ $app_list_strings = array (
     'Out of Date' => 'Out of Date',
     'Invalid' => 'Invalid',
     'Later' => 'Later',
-  ),
+      ),
   'bug_status_default_key' => 'New',
   'bug_status_dom' =>
-  array (
+      array (
     'New' => 'New',
     'Assigned' => 'Assigned',
     'Closed' => 'Closed',
     'Pending' => 'Pending',
     'Rejected' => 'Rejected',
-  ),
+      ),
    'bug_type_default_key' => 'Bug',
   'bug_type_dom' =>
-  array (
+      array (
     'Defect' => 'Defect',
     'Feature' => 'Feature',
-  ),
+      ),
  'case_type_dom' =>
-  array (
+      array (
     'Administration' => 'Administration',
     'Product' => 'Product',
     'User' => 'User',
-  ),
+      ),
 
   'source_default_key' => '',
   'source_dom' =>
-  array (
+      array (
     '' => '',
     'Internal' => 'Internal',
     'Forum' => 'Forum',
     'Web' => 'Web',
     'InboundEmail' => 'Email'
-  ),
+    ),
 
   'product_category_default_key' => '',
   'product_category_dom' =>
-  array (
+    array (
     '' => '',
     'Accounts' => 'Accounts',
     'Activities' => 'Activities',
@@ -651,10 +653,10 @@ $app_list_strings = array (
     'Studio' => 'Studio',
     'Upgrade' => 'Upgrade',
     'Users' => 'Users',
-  ),
-  /*Added entries 'Queued' and 'Sending' for 4.0 release..*/
+    ),
+    /*Added entries 'Queued' and 'Sending' for 4.0 release..*/
   'campaign_status_dom' =>
-  array (
+    array (
         '' => '',
         'Planning' => 'Planning',
         'Active' => 'Active',
@@ -662,9 +664,9 @@ $app_list_strings = array (
         'Complete' => 'Complete',
         'In Queue' => 'In Queue',
         'Sending'=> 'Sending',
-  ),
+    ),
   'campaign_type_dom' =>
-  array (
+    array (
         '' => '',
         'Telesales' => 'Telesales',
         'Mail' => 'Mail',
@@ -674,21 +676,21 @@ $app_list_strings = array (
         'Radio' => 'Radio',
         'Television' => 'Television',
         'NewsLetter' => 'Newsletter',
-        ),
+    ),
 
   'newsletter_frequency_dom' =>
-  array (
+    array (
         '' => '',
         'Weekly' => 'Weekly',
         'Monthly' => 'Monthly',
         'Quarterly' => 'Quarterly',
         'Annually' => 'Annually',
-        ),
+    ),
 
   'notifymail_sendtype' =>
-  array (
+    array (
     'SMTP' => 'SMTP',
-  ),
+    ),
       'dom_cal_month_long'=>array(
                 '0'=>"",
                 '1'=>"January",
@@ -703,7 +705,7 @@ $app_list_strings = array (
                 '10'=>"October",
                 '11'=>"November",
                 '12'=>"December",
-                ),
+    ),
         'dom_cal_month_short'=>array(
                 '0'=>"",
                 '1'=>"Jan",
@@ -718,7 +720,7 @@ $app_list_strings = array (
                 '10'=>"Oct",
                 '11'=>"Nov",
                 '12'=>"Dec",
-                ),
+    ),
         'dom_cal_day_long'=>array(
                 '0'=>"",
                 '1'=>"Sunday",
@@ -728,7 +730,7 @@ $app_list_strings = array (
                 '5'=>"Thursday",
                 '6'=>"Friday",
                 '7'=>"Saturday",
-                ),
+    ),
         'dom_cal_day_short'=>array(
                 '0'=>"",
                 '1'=>"Sun",
@@ -738,22 +740,22 @@ $app_list_strings = array (
                 '5'=>"Thu",
                 '6'=>"Fri",
                 '7'=>"Sat",
-        ),
+    ),
     'dom_meridiem_lowercase'=>array(
                 'am'=>"am",
                 'pm'=>"pm"
-        ),
+                ),
     'dom_meridiem_uppercase'=>array(
                  'AM'=>'AM',
                  'PM'=>'PM'
-        ),
+                 ),
 
     'dom_report_types'=>array(
                 'tabular'=>'Rows and Columns',
                 'summary'=>'Summation',
                 'detailed_summary'=>'Summation with details',
                 'Matrix' => 'Matrix',
-        ),
+                 ),
 
 
     'dom_email_types'=> array(
@@ -762,7 +764,7 @@ $app_list_strings = array (
         'draft'     => 'Draft',
         'inbound'   => 'Inbound',
         'campaign'  => 'Campaign'
-    ),
+        ),
     'dom_email_status' => array (
         'archived'  => 'Archived',
         'closed'    => 'Closed',
@@ -772,36 +774,36 @@ $app_list_strings = array (
         'sent'      => 'Sent',
         'send_error'=> 'Send Error',
         'unread'    => 'Unread',
-    ),
+        ),
     'dom_email_archived_status' => array (
         'archived'  => 'Archived',
-    ),
+        ),
 
     'dom_email_server_type' => array(   ''          => '--None--',
                                         'imap'      => 'IMAP',
-    ),
+        ),
     'dom_mailbox_type'      => array(/*''           => '--None Specified--',*/
                                      'pick'     => '--None--',
                                      'createcase'  => 'Create Case',
                                      'bounce'   => 'Bounce Handling',
-    ),
+        ),
     'dom_email_distribution'=> array(''             => '--None--',
                                      'direct'       => 'Direct Assign',
                                      'roundRobin'   => 'Round-Robin',
                                      'leastBusy'    => 'Least-Busy',
-    ),
+        ),
     'dom_email_distribution_for_auto_create'=> array('roundRobin'   => 'Round-Robin',
                                                      'leastBusy'    => 'Least-Busy',
-    ),
+        ),
     'dom_email_errors'      => array(1 => 'Only select one user when Direct Assigning items.',
-                                     2 => 'You must assign Only Checked Items when Direct Assigning items.',
-    ),
+        2 => 'You must assign Only Checked Items when Direct Assigning items.',
+        ),
     'dom_email_bool'        => array('bool_true' => 'Yes',
                                      'bool_false' => 'No',
-    ),
+        ),
     'dom_int_bool'          => array(1 => 'Yes',
-                                     0 => 'No',
-    ),
+        0 => 'No',
+        ),
     'dom_switch_bool'       => array ('on' => 'Yes',
                                         'off' => 'No',
                                         '' => 'No', ),
@@ -820,7 +822,7 @@ $app_list_strings = array (
                                         'failed'        => 'Failed',
                                         'completed'     => 'Completed',
                                         'no curl'       => 'Not Run: No cURL available',
-    ),
+        ),
 
     'scheduler_status_dom' =>
         array (
@@ -834,61 +836,61 @@ $app_list_strings = array (
         'hour' => 'Hours',
         ),
     'forecast_schedule_status_dom' =>
-    array (
+        array (
     'Active' => 'Active',
     'Inactive' => 'Inactive',
-  ),
+        ),
     'forecast_type_dom' =>
-    array (
+        array (
     'Direct' => 'Direct',
     'Rollup' => 'Rollup',
-  ),
+        ),
     'document_category_dom' =>
-    array (
+        array (
     '' => '',
     'Marketing' => 'Marketing',
     'Knowledege Base' => 'Knowledge Base',
     'Sales' => 'Sales',
-  ),
+        ),
 
     'document_subcategory_dom' =>
-    array (
+        array (
     '' => '',
     'Marketing Collateral' => 'Marketing Collateral',
     'Product Brochures' => 'Product Brochures',
     'FAQ' => 'FAQ',
-  ),
+        ),
 
     'document_status_dom' =>
-    array (
+        array (
     'Active' => 'Active',
     'Draft' => 'Draft',
     'FAQ' => 'FAQ',
     'Expired' => 'Expired',
     'Under Review' => 'Under Review',
     'Pending' => 'Pending',
-  ),
+        ),
   'document_template_type_dom' =>
-  array(
+        array(
     ''=>'',
     'mailmerge'=>'Mail Merge',
     'eula'=>'EULA',
     'nda'=>'NDA',
     'license'=>'License Agreement',
-  ),
+        ),
     'dom_meeting_accept_options' =>
-    array (
+        array (
     'accept' => 'Accept',
     'decline' => 'Decline',
     'tentative' => 'Tentative',
-  ),
+        ),
     'dom_meeting_accept_status' =>
-    array (
+        array (
     'accept' => 'Accepted',
     'decline' => 'Declined',
     'tentative' => 'Tentative',
     'none'      => 'None',
-  ),
+        ),
     'duration_intervals' => array('0'=>'00',
                                     '15'=>'15',
                                     '30'=>'30',
@@ -900,7 +902,7 @@ $app_list_strings = array (
 	'Weekly' => 'Weekly',
 	'Monthly' => 'Monthly',
 	'Yearly' => 'Yearly',
-    ),
+        ),
 
     'repeat_intervals' => array(
         '' => '',
@@ -908,7 +910,7 @@ $app_list_strings = array (
         'Weekly' => 'week(s)',
         'Monthly' => 'month(s)',
         'Yearly' => 'year(s)',
-    ),
+        ),
 
     'duration_dom' => array(
     	'' => 'None',
@@ -924,41 +926,41 @@ $app_list_strings = array (
 	'172800' => '2 days',
 	'259200' => '3 days',
 	'604800' => '1 week',
-    ),
+        ),
 
-// deferred
-/*// QUEUES MODULE DOMs
-'queue_type_dom' => array(
-    'Users' => 'Users',
-    'Mailbox' => 'Mailbox',
-),
-*/
-//prospect list type dom
+        // deferred
+        /*// QUEUES MODULE DOMs
+        'queue_type_dom' => array(
+        'Users' => 'Users',
+        'Mailbox' => 'Mailbox',
+        ),
+        */
+        //prospect list type dom
   'prospect_list_type_dom' =>
-  array (
+        array (
     'default' => 'Default',
     'seed' => 'Seed',
     'exempt_domain' => 'Suppression List - By Domain',
     'exempt_address' => 'Suppression List - By Email Address',
     'exempt' => 'Suppression List - By Id',
     'test' => 'Test',
-  ),
+        ),
 
   'email_settings_num_dom' =>
-  array(
+        array(
         '10'    => '10',
         '20'    => '20',
         '50'    => '50'
-    ),
+        ),
   'email_marketing_status_dom' =>
-  array (
+        array (
     '' => '',
     'active'=>'Active',
     'inactive'=>'Inactive'
-  ),
+    ),
 
   'campainglog_activity_type_dom' =>
-  array (
+    array (
     ''=>'',
     'targeted' => 'Message Sent/Attempted',
     'send error'=>'Bounced Messages,Other',
@@ -969,27 +971,27 @@ $app_list_strings = array (
     'lead'=>'Leads Created',
     'contact'=>'Contacts Created',
     'blocked'=>'Suppressed by address or domain',
-  ),
+    ),
 
   'campainglog_target_type_dom' =>
-  array (
+    array (
     'Contacts' => 'Contacts',
     'Users'=>'Users',
     'Prospects'=>'Targets',
     'Leads'=>'Leads',
     'Accounts'=>'Accounts',
-  ),
+    ),
   'merge_operators_dom' => array (
     'like'=>'Contains',
     'exact'=>'Exactly',
     'start'=>'Starts With',
-  ),
+    ),
 
   'custom_fields_importable_dom' => array (
     'true'=>'Yes',
     'false'=>'No',
     'required'=>'Required',
-  ),
+    ),
 
     'Elastic_boost_options' => array (
         '0' =>'Disabled',
@@ -999,14 +1001,14 @@ $app_list_strings = array (
     ),
 
   'custom_fields_merge_dup_dom'=> array (
-        0=>'Disabled',
-        1=>'Enabled',
-  ),
+    0=>'Disabled',
+    1=>'Enabled',
+    ),
 
   'navigation_paradigms' => array(
         'm'=>'Modules',
         'gm'=>'Grouped Modules',
-  ),
+    ),
 
 
     'projects_priority_options' => array (
@@ -1089,7 +1091,7 @@ $app_list_strings = array (
         '600'   => 'Every 10 minutes',
     ),
   'date_range_search_dom' =>
-  array(
+    array(
     '=' => 'Equals',
     'not_equal' => 'Not On',
     'greater_than' => 'After',
@@ -1105,9 +1107,9 @@ $app_list_strings = array (
     'this_year' => 'This Year',
     'next_year' => 'Next Year',
     'between' => 'Is Between',
-  ),
+    ),
   'numeric_range_search_dom' =>
-  array(
+    array(
     '=' => 'Equals',
     'not_equal' => 'Does Not Equal',
     'greater_than' => 'Greater Than',
@@ -1115,16 +1117,16 @@ $app_list_strings = array (
     'less_than' => 'Less Than',
     'less_than_equals' => 'Less Than Or Equal To',
     'between' => 'Is Between',
-  ),
+    ),
   'lead_conv_activity_opt' =>
-  array(
+    array(
         'copy' => 'Copy',
         'move' => 'Move',
         'donothing' => 'Do Nothing'
-  ),
-);
+        ),
+        );
 
-$app_strings = array (
+        $app_strings = array (
   'LBL_TOUR_NEXT' => 'Next',
   'LBL_TOUR_SKIP' => 'Skip',
   'LBL_TOUR_BACK' => 'Back',
@@ -1603,7 +1605,7 @@ $app_strings = array (
         '15' => 'Every 15 minutes',
         '30' => 'Every 30 minutes',
         '60' => 'Every hour'
-    ),
+        ),
 
 
     'LBL_EMAIL_MESSAGE_NO'                  => 'Message No',
@@ -1947,7 +1949,7 @@ $app_strings = array (
     'LBL_SELECT_USER_BUTTON_KEY' => 'U',
     'LBL_SELECT_USER_BUTTON_LABEL' => 'Select User',
     'LBL_SELECT_USER_BUTTON_TITLE' => 'Select User',
-    // Clear buttons take up too many keys, lets default the relate and collection ones to be empty
+        // Clear buttons take up too many keys, lets default the relate and collection ones to be empty
     'LBL_ACCESSKEY_CLEAR_RELATE_KEY' => ' ',
     'LBL_ACCESSKEY_CLEAR_RELATE_TITLE' => 'Clear Selection',
     'LBL_ACCESSKEY_CLEAR_RELATE_LABEL' => 'Clear Selection',
@@ -2013,13 +2015,13 @@ $app_strings = array (
 
     'LBL_INBOUNDEMAIL_ID' => 'Inbound Email ID',
 
-    /* The following version of LBL_SUGAR_COPYRIGHT is intended for Sugar Open Source only. */
+        /* The following version of LBL_SUGAR_COPYRIGHT is intended for Sugar Open Source only. */
 
     'LBL_SUGAR_COPYRIGHT' => '&copy; 2004-2013 SugarCRM Inc. The Program is provided AS IS, without warranty.  Licensed under <a href="LICENSE.txt" target="_blank" class="copyRightLink">AGPLv3</a>.<br />SugarCRM is a trademark of SugarCRM, Inc. All other company and product names may be trademarks of the respective companies with which they are associated.',
 
 
 
-    // The following version of LBL_SUGAR_COPYRIGHT is for Professional and Enterprise editions.
+        // The following version of LBL_SUGAR_COPYRIGHT is for Professional and Enterprise editions.
 
     'LBL_SUGAR_COPYRIGHT_SUB' => '&copy; 2004-2013 <a href="http://www.sugarcrm.com" target="_blank" class="copyRightLink">SugarCRM Inc.</a> All Rights Reserved.<br />SugarCRM is a trademark of SugarCRM, Inc. All other company and product names may be trademarks of the respective companies with which they are associated.',
 
@@ -2128,7 +2130,7 @@ $app_strings = array (
     'LBL_MANAGE_SUBSCRIPTIONS_FOR'=>'Manage Subscriptions for ',
     'LBL_SUBSCRIBE'=>'Subscribe',
     'LBL_UNSUBSCRIBE'=>'Unsubscribe',
-    // Ajax status strings
+        // Ajax status strings
     'LBL_LOADING' => 'Loading ...',
     'LBL_SEARCHING' => 'Searching...',
     'LBL_SAVING_LAYOUT' => 'Saving Layout ...',
@@ -2173,7 +2175,7 @@ $app_strings = array (
 	'MSG_EMPTY_LIST_VIEW_NO_RESULTS_SUBMSG' =>	"<item4> to learn more about the <item1> module. In order to access more information, use the user menu drop down located on the main navigation bar to access Help.",
 
     'LBL_CLICK_HERE' => "Click here",
-    // contextMenu strings
+        // contextMenu strings
     'LBL_ADD_TO_FAVORITES' => 'Add to My Favorites',
     'LBL_MARK_AS_FAVORITES' => 'Mark as Favorite',
     'LBL_CREATE_CONTACT' => 'Create Contact',
@@ -2184,7 +2186,7 @@ $app_strings = array (
     'LBL_SCHEDULE_MEETING' => 'Schedule Meeting',
     'LBL_CREATE_TASK' => 'Create Task',
     'LBL_REMOVE_FROM_FAVORITES' => 'Remove From My Favorites',
-    //web to lead
+        //web to lead
     'LBL_GENERATE_WEB_TO_LEAD_FORM' => 'Generate Form',
     'LBL_SAVE_WEB_TO_LEAD_FORM' =>'Save Web To Lead Form',
 
@@ -2200,7 +2202,7 @@ $app_strings = array (
     'ERR_MSSQL_DB_CONTEXT' =>'Changed database context to',
   'ERR_MSSQL_WARNING' =>'Warning:',
 
-    //Meta-Data framework
+        //Meta-Data framework
     'ERR_MISSING_VARDEF_NAME' => 'Warning: field [[field]] does not have a mapped entry in [moduleDir] vardefs.php file',
     'ERR_CANNOT_CREATE_METADATA_FILE' => 'Error: File [[file]] is missing.  Unable to create because no corresponding HTML file was found.',
   'ERR_CANNOT_FIND_MODULE' => 'Error: Module [module] does not exist.',
@@ -2208,14 +2210,14 @@ $app_strings = array (
     'ERR_SMARTY_UNEQUAL_RELATED_FIELD_PARAMETERS' => 'Error: There are an unequal number of arguments for the \'key\' and \'copy\' elements in the displayParams array.',
     'ERR_SMARTY_MISSING_DISPLAY_PARAMS' => 'Missing index in displayParams Array for: ',
 
-    /* MySugar Framework (for Home and Dashboard) */
+        /* MySugar Framework (for Home and Dashboard) */
     'LBL_DASHLET_CONFIGURE_GENERAL' => 'General',
     'LBL_DASHLET_CONFIGURE_FILTERS' => 'Filters',
     'LBL_DASHLET_CONFIGURE_MY_ITEMS_ONLY' => 'Only My Items',
     'LBL_DASHLET_CONFIGURE_TITLE' => 'Title',
     'LBL_DASHLET_CONFIGURE_DISPLAY_ROWS' => 'Display Rows',
 
-    // MySugar status strings
+        // MySugar status strings
     'LBL_CREATING_NEW_PAGE' => 'Creating New Page ...',
     'LBL_NEW_PAGE_FEEDBACK' => 'You have created a new page. You may add new content with the Add Sugar Dashlets menu option.',
     'LBL_DELETE_PAGE_CONFIRM' => 'Are you sure you want to delete this page?',
@@ -2228,7 +2230,7 @@ $app_strings = array (
     'LBL_REMOVING_DASHLET' => 'Removing Sugar Dashlet ...',
     'LBL_REMOVED_DASHLET' => 'Sugar Dashlet Removed',
 
-    // MySugar Menu Options
+        // MySugar Menu Options
     'LBL_ADD_PAGE' => 'Add Page',
     'LBL_DELETE_PAGE' => 'Delete Page',
     'LBL_CHANGE_LAYOUT' => 'Change Layout',
@@ -2256,23 +2258,23 @@ $app_strings = array (
     'LBL_SEARCH_RESULTS_FOUND' => 'Search Results Found',
     'LBL_SEARCH_RESULTS_TIME' => 'ms.',
     'ERR_BLANK_PAGE_NAME' => 'Please enter a page name.',
-    /* End MySugar Framework strings */
+        /* End MySugar Framework strings */
 
     'LBL_NO_IMAGE' => 'No Image',
 
     'LBL_MODULE' => 'Module',
 
-    //adding a label for address copy from left
+        //adding a label for address copy from left
     'LBL_COPY_ADDRESS_FROM_LEFT' => 'Copy address from left:',
     'LBL_SAVE_AND_CONTINUE' => 'Save and Continue',
 
     'LBL_SEARCH_HELP_TEXT' => '<p><br /><strong>Multiselect controls</strong></p><ul><li>Click on the values to select an attribute.</li><li>Ctrl-click&nbsp;to&nbsp;select multiple. Mac users use CMD-click.</li><li>To select all values between two attributes,&nbsp; click first value&nbsp;and then shift-click last value.</li></ul><p><strong>Advanced Search & Layout Options</strong><br><br>Using the <b>Saved Search & Layout</b> option, you can save a set of search parameters and/or a custom List View layout in order to quickly obtain the desired search results in the future. You can save an unlimited number of custom searches and layouts. All saved searches appear by name in the Saved Searches list, with the last loaded saved search appearing at the top of the list.<br><br>To customize the List View layout, use the Hide Columns and Display Columns boxes to select which fields to display in the search results. For example, you can view or hide details such as the record name, and assigned user, and assigned team in the search results. To add a column to List View, select the field from the Hide Columns list and use the left arrow to move it to the Display Columns list. To remove a column from List View, select it from the Display Columns list and use the right arrow to move it to the Hide Columns list.<br><br>If you save layout settings, you will be able to load them at any time to view the search results in the custom layout.<br><br>To save and update a search and/or layout:<ol><li>Enter a name for the search results in the <b>Save this search as</b> field and click <b>Save</b>.The name now displays in the Saved Searches list adjacent to the <b>Clear</b> button.</li><li>To view a saved search, select it from the Saved Searches list. The search results are displayed in the List View.</li><li>To update the properties of a saved search, select the saved search from the list, enter the new search criteria and/or layout options in the Advanced Search area, and click <b>Update</b> next to <b>Modify Current Search</b>.</li><li>To delete a saved search, select it in the Saved Searches list, click <b>Delete</b> next to <b>Modify Current Search</b>, and then click <b>OK</b> to confirm the deletion.</li></ol><p><strong>Tips</strong><br><br>By using the % as a wildcard operator you can make your search more broad.  For example instead of just searching for results that equal "Apples" you could change your search to "Apples%" which would match all results that start with the word Apples but could contain other characters as well.</p>' ,
 
-    //resource management
+        //resource management
     'ERR_QUERY_LIMIT' => 'Error: Query limit of $limit reached for $module module.',
     'ERROR_NOTIFY_OVERRIDE' => 'Error: ResourceObserver->notify() needs to be overridden.',
 
-    //tracker labels
+        //tracker labels
     'ERR_MONITOR_FILE_MISSING' => 'Error: Unable to create monitor because metadata file is empty or file does not exist.',
     'ERR_MONITOR_NOT_CONFIGURED' => 'Error: There is no monitor configured for requested name',
     'ERR_UNDEFINED_METRIC' => 'Error: Unable to set value for undefined metric',
@@ -2293,7 +2295,7 @@ $app_strings = array (
 
 
 
-    //jc:#12287 - For javascript validation messages
+        //jc:#12287 - For javascript validation messages
     'MSG_IS_NOT_BEFORE' => 'is not before',
   'MSG_IS_MORE_THAN' => 'is more than',
   'MSG_IS_LESS_THAN' => 'is less than',
@@ -2313,25 +2315,25 @@ $app_strings = array (
     'DATA_TYPE_MODIFIED' => 'Modified:',
 
 
-    //jchi at 608/06/2008 10913am china time for the bug 12253.
+        //jchi at 608/06/2008 10913am china time for the bug 12253.
     'LBL_REPORT_NEWREPORT_COLUMNS_TAB_COUNT' => 'Count',
-    //jchi #19433
+        //jchi #19433
     'LBL_OBJECT_IMAGE' => 'object image',
-    //jchi #12300
+        //jchi #12300
     'LBL_MASSUPDATE_DATE' => 'Select Date',
 
     'LBL_VALIDATE_RANGE' => 'is not within the valid range',
     'LBL_CHOOSE_START_AND_END_DATES' => 'Please choose both a starting and ending date range',
     'LBL_CHOOSE_START_AND_END_ENTRIES' => 'Please choose both starting and ending range entries',
 
-    //jchi #  20776
+        //jchi #  20776
     'LBL_DROPDOWN_LIST_ALL' => 'All',
 
     'LBL_OPERATOR_IN_TEXT' => 'is one of the following:',
     'LBL_OPERATOR_NOT_IN_TEXT' => 'is not one of the following:',
 
 
-  //Connector
+        //Connector
     'ERR_CONNECTOR_FILL_BEANS_SIZE_MISMATCH' => 'Error: The Array count of the bean parameter does not match the Array count of the results.',
   'ERR_MISSING_MAPPING_ENTRY_FORM_MODULE' => 'Error: Missing mapping entry for module.',
   'ERROR_UNABLE_TO_RETRIEVE_DATA' => 'Error: Unable to retrieve data for {0} Connector.  The service may currently be inaccessible or the configuration settings may be invalid.  Connector error message: ({1}).',
@@ -2339,24 +2341,24 @@ $app_strings = array (
   'LBL_MERGE_CONNECTORS_BUTTON_KEY' => '[D]',
   'LBL_REMOVE_MODULE_ENTRY' => 'Are you sure you want to disable connector integration for this module?',
 
-    // fastcgi checks
+        // fastcgi checks
     'LBL_FASTCGI_LOGGING'      => 'For optimal experience using IIS/FastCGI sapi, set fastcgi.logging to 0 in your php.ini file.',
 
-    //cma
+        //cma
     'LBL_MASSUPDATE_DELETE_GLOBAL_TEAM'=> 'The Global team cannot be deleted.',
     'LBL_MASSUPDATE_DELETE_USER_EXISTS'=>'This private team [{0}] cannot be deleted until the user [{1}] is deleted.',
 
-    //martin #25548
+        //martin #25548
     'LBL_NO_FLASH_PLAYER' => 'You either have Abobe Flash turned off or are using an older version of the Adobe Flash Player. To get the latest version of the Flash Player, <a href="http://www.adobe.com/go/getflashplayer/">click here</a>.',
-  //Collection Field
+        //Collection Field
   'LBL_COLLECTION_NAME' => 'Name',
   'LBL_COLLECTION_PRIMARY' => 'Primary',
   'ERROR_MISSING_COLLECTION_SELECTION' => 'Empty required field',
     'LBL_COLLECTION_EXACT' => 'Exact',
 
-    // fastcgi checks
+        // fastcgi checks
     'LBL_FASTCGI_LOGGING'      => 'For optimal experience using IIS/FastCGI sapi, set fastcgi.logging to 0 in your php.ini file.',
-    //MB -Fixed Bug #32812 -Max
+        //MB -Fixed Bug #32812 -Max
     'LBL_ASSIGNED_TO_NAME' => 'Assigned to',
     'LBL_DESCRIPTION' => 'Description',
 
@@ -2375,7 +2377,7 @@ $app_strings = array (
   'LBL_NEXT_YEAR'=> 'next year',
     'LBL_FILTERED' => 'Filtered',
 
-    //Datetimecombo fields
+        //Datetimecombo fields
     'LBL_HOURS' => 'Hours',
     'LBL_MINUTES' => 'Minutes',
     'LBL_MERIDIEM' => 'Meridiem',
@@ -2389,22 +2391,22 @@ $app_strings = array (
     'LBL_DURATION_HOURS' => 'hours',
     'LBL_DURATION_MINUTES' => 'minutes',
 
-    //Calendar widget labels
+        //Calendar widget labels
     'LBL_CHOOSE_MONTH' => 'Choose Month',
     'LBL_ENTER_YEAR' => 'Enter Year',
     'LBL_ENTER_VALID_YEAR' => 'Please enter a valid year',
 
-    //SugarFieldPhone labels
+        //SugarFieldPhone labels
     'LBL_INVALID_USA_PHONE_FORMAT' => 'Please enter a numeric U.S. phone number, including area code.',
 
-    //File write error label
+        //File write error label
     'ERR_FILE_WRITE' => 'Error: Could not write file {0}.  Please check system and web server permissions.',
   'ERR_FILE_NOT_FOUND' => 'Error: Could not load file {0}.  Please check system and web server permissions.',
 
     'LBL_AND' => 'And',
     'LBL_BEFORE' => 'Before',
 
-    // File fields
+        // File fields
     'LBL_UPLOAD_FROM_COMPUTER' => 'Upload From Your Computer',
     'LBL_SEARCH_EXTERNAL_API' => 'File on External Source',
     'LBL_EXTERNAL_SECURITY_LEVEL' => 'Security',
@@ -2414,19 +2416,19 @@ $app_strings = array (
     'LBL_SHARE_PUBLIC' => 'Public',
 
 
-    // Web Services REST RSS
+        // Web Services REST RSS
     'LBL_RSS_FEED' => 'RSS Feed',
     'LBL_RSS_RECORDS_FOUND' => 'record(s) found',
     'ERR_RSS_INVALID_INPUT' => 'RSS is not a valid input_type',
     'ERR_RSS_INVALID_RESPONSE' => 'RSS is not a valid response_type for this method',
 
-    //External API Error Messages
+        //External API Error Messages
     'ERR_GOOGLE_API_415' => 'Google Docs does not support the file format you provided.',
 
     'LBL_EMPTY' => 'Empty',
     'LBL_IS_EMPTY' => 'Is empty',
     'LBL_IS_NOT_EMPTY' => 'Is not empty',
-    //IMPORT SAMPLE TEXT
+        //IMPORT SAMPLE TEXT
     'LBL_IMPORT_SAMPLE_FILE_TEXT' => '
 "This is a sample import file which provides an example of the expected contents of a file that is ready for import."
 "The file is a comma-delimited .csv file, using double-quotes as the field qualifier."
@@ -2445,7 +2447,7 @@ $app_strings = array (
 "4. Save the file to a known location on your system"
 "5. Click on the Import option from the Actions menu in the application and choose the file to upload"
    ',
-    //define labels to be used for overriding local values during import/export
+        //define labels to be used for overriding local values during import/export
     'LBL_EXPORT_ASSIGNED_USER_ID' => 'Assigned To',
     'LBL_EXPORT_ASSIGNED_USER_NAME' => 'Assigned User',
     'LBL_EXPORT_REPORTS_TO_ID' => 'Reports To ID',
@@ -2481,7 +2483,7 @@ $app_strings = array (
     'LBL_TEAM_SELECTED_TITLE' => 'Team Selected ',
     'LBL_TEAM_SELECT_AS_PRIM_TITLE' => 'Select to make this team primary',
 
-    //for upload errors
+        //for upload errors
     'UPLOAD_ERROR_TEXT'          => 'ERROR: There was an error during upload. Error code: {0} - {1}',
     'UPLOAD_ERROR_TEXT_SIZEINFO' => 'ERROR: There was an error during upload. Error code: {0} - {1}. The upload_maxsize is {2} ',
     'UPLOAD_ERROR_HOME_TEXT'     => 'ERROR: There was an error during your upload, please contact an administrator for help.',
@@ -2489,7 +2491,7 @@ $app_strings = array (
     'UPLOAD_REQUEST_ERROR'    => 'An error has occured. Please refresh your page and try again.',
 
 
-    //508 used Access Keys
+        //508 used Access Keys
     'LBL_EDIT_BUTTON_KEY' => 'i',
     'LBL_EDIT_BUTTON_LABEL' => 'Edit',
     'LBL_EDIT_BUTTON_TITLE' => 'Edit',
@@ -2515,28 +2517,28 @@ $app_strings = array (
     'ERR_CONNECTOR_NOT_ARRAY' => 'connector array in {0} been defined incorrectly or is empty and could not be used.',
     'ERR_SUHOSIN' => 'Upload stream is blocked by Suhosin, please add &quot;upload&quot; to suhosin.executor.include.whitelist (See sugarcrm.log for more information)',
     'ERR_BAD_RESPONSE_FROM_SERVER' => 'Bad response from the server',
-    );
+        );
 
-$app_list_strings['moduleList']['Library'] = 'Library';
-$app_list_strings['library_type'] = array('Books'=>'Book', 'Music'=>'Music', 'DVD'=>'DVD', 'Magazines'=>'Magazines');
-$app_list_strings['moduleList']['EmailAddresses'] = 'Email Address';
-$app_list_strings['project_priority_default'] = 'Medium';
-$app_list_strings['project_priority_options'] = array (
+        $app_list_strings['moduleList']['Library'] = 'Library';
+        $app_list_strings['library_type'] = array('Books'=>'Book', 'Music'=>'Music', 'DVD'=>'DVD', 'Magazines'=>'Magazines');
+        $app_list_strings['moduleList']['EmailAddresses'] = 'Email Address';
+        $app_list_strings['project_priority_default'] = 'Medium';
+        $app_list_strings['project_priority_options'] = array (
     'High' => 'High',
     'Medium' => 'Medium',
     'Low' => 'Low',
-);
+        );
 
 
-$app_list_strings['kbdocument_status_dom'] = array (
+        $app_list_strings['kbdocument_status_dom'] = array (
     'Draft' => 'Draft',
     'Expired' => 'Expired',
     'In Review' => 'In Review',
     'Published' => 'Published',
-  );
+        );
 
-   $app_list_strings['kbadmin_actions_dom'] =
-    array (
+        $app_list_strings['kbadmin_actions_dom'] =
+        array (
     ''          => '--Admin Actions--',
     'Create New Tag' => 'Create New Tag',
     'Delete Tag'=>'Delete Tag',
@@ -2544,22 +2546,22 @@ $app_list_strings['kbdocument_status_dom'] = array (
     'Move Selected Articles'=>'Move Selected Articles',
     'Apply Tags On Articles'=>'Apply Tags To Articles',
     'Delete Selected Articles'=>'Delete Selected Articles',
-  );
+        );
 
 
-  $app_list_strings['kbdocument_attachment_option_dom'] =
-    array(
+        $app_list_strings['kbdocument_attachment_option_dom'] =
+        array(
         ''=>'',
         'some' => 'Has Attachments',
         'none' => 'Has None',
         'mime' => 'Specify Mime Type',
         'name' => 'Specify Name',
-    );
+        );
 
-  $app_list_strings['moduleList']['KBDocuments'] = 'Knowledge Base';
-  $app_strings['LBL_CREATE_KB_DOCUMENT'] = 'Create Article';
-  $app_list_strings['kbdocument_viewing_frequency_dom'] =
-  array(
+        $app_list_strings['moduleList']['KBDocuments'] = 'Knowledge Base';
+        $app_strings['LBL_CREATE_KB_DOCUMENT'] = 'Create Article';
+        $app_list_strings['kbdocument_viewing_frequency_dom'] =
+        array(
     ''=>'',
     'Top_5'  => 'Top 5',
     'Top_10' => 'Top 10',
@@ -2567,17 +2569,17 @@ $app_list_strings['kbdocument_status_dom'] = array (
     'Bot_5'  => 'Bottom 5',
     'Bot_10' => 'Bottom 10',
     'Bot_20' => 'Bottom 20',
-  );
+        );
 
-   $app_list_strings['kbdocument_canned_search'] =
-    array(
+        $app_list_strings['kbdocument_canned_search'] =
+        array(
         'all'=>'All',
         'added' => 'Added Last 30 days',
         'pending' => 'Pending my Approval',
         'updated' =>'Updated Last 30 days',
         'faqs' => 'FAQs',
-    );
-    $app_list_strings['kbdocument_date_filter_options'] =
+        );
+        $app_list_strings['kbdocument_date_filter_options'] =
         array(
     '' => '',
     'on' => 'On',
@@ -2597,7 +2599,7 @@ $app_list_strings['kbdocument_status_dom'] = array (
     'isnull' => 'Is Null',
         );
 
-    $app_list_strings['countries_dom'] = array(
+        $app_list_strings['countries_dom'] = array(
         '' => '',
         'ABU DHABI' => 'ABU DHABI',
         'ADEN' => 'ADEN',
@@ -2834,12 +2836,12 @@ $app_list_strings['kbdocument_status_dom'] = array (
         'ZAIRE' => 'ZAIRE',
         'ZAMBIA' => 'ZAMBIA',
         'ZIMBABWE' => 'ZIMBABWE',
-    );
+        );
 
-  $app_list_strings['charset_dom'] = array(
+        $app_list_strings['charset_dom'] = array(
     'BIG-5'     => 'BIG-5 (Taiwan and Hong Kong)',
-    /*'CP866'     => 'CP866', // ms-dos Cyrillic */
-    /*'CP949'     => 'CP949 (Microsoft Korean)', */
+        /*'CP866'     => 'CP866', // ms-dos Cyrillic */
+        /*'CP949'     => 'CP949 (Microsoft Korean)', */
     'CP1251'    => 'CP1251 (MS Cyrillic)',
     'CP1252'    => 'CP1252 (MS Western European & US)',
     'EUC-CN'    => 'EUC-CN (Simplified Chinese GB2312)',
@@ -2865,9 +2867,9 @@ $app_list_strings['kbdocument_status_dom'] = array (
     'KOI8-U'    => 'KOI8-U (Cyrillic Ukranian)',
     'SJIS'      => 'SJIS (MS Japanese)',
     'UTF-8'     => 'UTF-8',
-  );
+        );
 
-  $app_list_strings['timezone_dom'] = array(
+        $app_list_strings['timezone_dom'] = array(
 
       'Africa/Algiers' => 'Africa/Algiers',
   'Africa/Luanda' => 'Africa/Luanda',
@@ -3244,10 +3246,10 @@ $app_list_strings['kbdocument_status_dom'] = array (
   'America/Port_of_Spain' => 'America/Port_of_Spain',
   'America/Montevideo' => 'America/Montevideo',
   'America/Caracas' => 'America/Caracas',
-  );
+        );
 
-  $app_list_strings['moduleList']['Sugar_Favorites'] = 'Favorites';
-  $app_list_strings['eapm_list']= array(
+        $app_list_strings['moduleList']['Sugar_Favorites'] = 'Favorites';
+        $app_list_strings['eapm_list']= array(
     'Sugar'=>'Sugar',
     'WebEx'=>'WebEx',
     'GoToMeeting'=>'GoToMeeting',
@@ -3256,41 +3258,41 @@ $app_list_strings['kbdocument_status_dom'] = array (
     'Box' => 'Box.net',
     'Facebook'=>'Facebook',
     'Twitter'=>'Twitter',
-  );
-  $app_list_strings['eapm_list_import']= array(
+        );
+        $app_list_strings['eapm_list_import']= array(
     'Google' => 'Google Contacts',
-  );
-  $app_list_strings['eapm_list_documents']= array(
+        );
+        $app_list_strings['eapm_list_documents']= array(
     'Google' => 'Google Drive',
-  );
-	$app_list_strings['token_status'] = array(
+        );
+        $app_list_strings['token_status'] = array(
         1 => 'Request',
         2 => 'Access',
         3 => 'Invalid',
-    );
+        );
 
-$app_list_strings ['emailTemplates_type_list'] = array (
+        $app_list_strings ['emailTemplates_type_list'] = array (
     '' => '' ,
     'campaign' => 'Campaign' ,
     'email' => 'Email',
-  );
+        );
 
-$app_list_strings ['emailTemplates_type_list_campaigns'] = array (
+        $app_list_strings ['emailTemplates_type_list_campaigns'] = array (
     '' => '' ,
     'campaign' => 'Campaign' ,
-  );
+        );
 
-$app_list_strings ['emailTemplates_type_list_no_workflow'] = array (
+        $app_list_strings ['emailTemplates_type_list_no_workflow'] = array (
     '' => '' ,
     'campaign' => 'Campaign' ,
     'email' => 'Email',
-  );
-$app_strings ['documentation'] = array (
+        );
+        $app_strings ['documentation'] = array (
     'LBL_DOCS' => 'Documentation',
     'ULT' => '02_Sugar_Ultimate',
 	'ENT' => '02_Sugar_Enterprise',
 	'CORP' => '03_Sugar_Corporate',
 	'PRO' => '04_Sugar_Professional',
 	'COM' => '05_Sugar_Community_Edition'
-);
-?>
+        );
+        ?>
