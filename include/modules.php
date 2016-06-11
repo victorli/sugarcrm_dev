@@ -306,6 +306,13 @@ $modInvisList[] = 'OAuthTokens';
 
 
 
+
+// added new created modules here
+$moduleList[] = 'TenantPeriods';
+$beanList['TenantPeriods'] = 'TenantPeriod';
+$beanFiles['TenantPeriod'] = 'modules/TenantPeriods/TenantPeriod.php';
+
+
 //Object list is only here to correct for modules that break
 //the bean class name == dictionary entry/object name convention
 //No future module should need an entry here.
