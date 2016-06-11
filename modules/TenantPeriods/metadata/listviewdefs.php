@@ -19,14 +19,14 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 */
 
 $listViewDefs['TenantPeriods'] = array(
-	'TENANT_NAME' => array(
+	'TENANT_USER_NAME' => array(
 		'width' => 20,
-		'label' => 'LBL_LIST_TENANT',
+		'label' => 'LBL_LIST_TENANT_USER_NAME',
 		'link' => true,
-		'id' => 'tenant_id',
+		'id' => 'tenant_user_id',
 		'module' => 'Users',
 		'default' => true,
-		'related_fields' => array('tenant_id')
+		'related_fields' => array('tenant_user_id')
 	),
 	'CATEGORY' => array(
 		'width' => 20,
