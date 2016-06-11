@@ -3297,4 +3297,26 @@ array (
 	'PRO' => '04_Sugar_Professional',
 	'COM' => '05_Sugar_Community_Edition'
         );
-        ?>
+        
+        
+        $app_list_strings['tenant_category_dom'] = array(
+		    'Accounts' => 'Accounts',
+		    'Activities' => 'Activities',
+		    'Bugs' => 'Bugs',
+		    'Calendar' => 'Calendar',
+		    'Calls' => 'Calls',
+		    'Campaigns' => 'Campaigns',
+		    'Cases' => 'Cases',
+		    'Contacts' => 'Contacts',
+		  	'Documents' => 'Documents',
+		    'Emails' => 'Emails',
+		  	'Leads' => 'Leads',
+		  	'Meetings' => 'Meetings',
+		    'Notes' => 'Notes',
+		    'Opportunities' => 'Opportunities',
+		    'Projects' => 'Projects',
+		    'Quotes' => 'Quotes',
+		    'Releases' => 'Releases',
+		    'RSS' => 'RSS',
+        );
+ ?>
