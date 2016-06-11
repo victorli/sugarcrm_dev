@@ -140,7 +140,9 @@ array (
     'SugarFollowing'=>'SugarFollowing',
     'Sync'=>'Sync',
     'Users' => 'User',
-  'SugarFavorites'=>'SugarFavorites'
+  	'SugarFavorites'=>'SugarFavorites',
+	
+	'TenantPeriods' => 'TenantPeriod',
 
   ),
 
