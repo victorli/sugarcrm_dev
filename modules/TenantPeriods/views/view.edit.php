@@ -53,16 +53,7 @@ class TenantPeriodsViewEdit extends ViewEdit {
     function display() {
         global $current_user, $app_list_strings;
 
-
-        //lets set the return values
-        if(isset($_REQUEST['return_module'])){
-            $this->ss->assign('RETURN_MODULE',$_REQUEST['return_module']);
-        }
-
-        $this->ss->assign('IS_ADMIN', $current_user->is_admin ? true : false);
-        $this->ss->assign('IS_TENANT', $current_user->is_tenant ? true : false);
-
-		echo $this->ev->display($this->showTitle);
+		parent::display();
 
     }
 
