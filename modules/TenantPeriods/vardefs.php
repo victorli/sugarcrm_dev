@@ -100,6 +100,7 @@ $dictionary['TenantPeriod'] = array(
 			'options' => 'tenant_category_dom',
 			'len' => 100,
 			'reportable' => true,
+			'required' => true,
 			'comment' => 'Category of the tenant rented(usually the name of a module)'
 		),
 		'date_from' => array(
