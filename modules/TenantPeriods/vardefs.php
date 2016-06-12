@@ -30,6 +30,17 @@ $dictionary['TenantPeriod'] = array(
 			'reportable' => false,
 			'comment' => 'Unique identifier'
 		),
+		'name' => array(
+			'name' => 'name',
+			'vname' => 'LBL_NAME',
+			'type' => 'name',
+			'dbType' => 'varchar',
+			'len' => 50,
+			'unified_search' => true,
+			'full_text_search' => array('boost'=>3),
+			'importable' => 'required',
+			'required' => true,
+		),
 		'tenant_user_id' => array(
 			'name' => 'tenant_user_id',
 			'vname' => 'LBL_TENANT_USER_ID',
