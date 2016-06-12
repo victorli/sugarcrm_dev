@@ -61,7 +61,7 @@ $dictionary['TenantPeriod'] = array(
 			'join_name' => 'users',
 			'type' => 'relate',
 			'module' => 'Users',
-			'link' => 'users',
+			//'link' => 'users',
 			'table' => 'users',
 		),
 		'date_entered' => array(
