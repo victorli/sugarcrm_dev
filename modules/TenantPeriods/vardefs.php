@@ -51,7 +51,7 @@ $dictionary['TenantPeriod'] = array(
 		),
 		'tenant_user_name' => array(
 			'name' => 'tenant_user_name',
-			'rname' => 'name',
+			'rname' => 'user_name',
 			'source' => 'non-db',
 			'len' => '120',
 			'group' => 'tenant_user_name',
