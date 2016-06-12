@@ -30,10 +30,10 @@ $listViewDefs['TenantPeriods'] = array(
 		'label' => 'LBL_LIST_TENANT_USER_NAME',
 		'link' => true,
 		'default' => true,
-		//'id' => 'tenant_user_id',
-		//'module' => 'Users',
-		//'default' => true,
-		//'related_fields' => array('tenant_user_id')
+		'id' => 'tenant_user_id',
+		'module' => 'Users',
+		'default' => true,
+		'related_fields' => array('tenant_user_id')
 	),
 	'CATEGORY' => array(
 		'width' => 20,
