@@ -108,6 +108,8 @@ $dictionary['TenantPeriod'] = array(
 			'vname' => 'LBL_DATE_FROM',
 			'type' => 'date',
 			'required' => true,
+			'enable_range_search' => true,
+			'options' => 'date_range_search_dom',
 			'comment' => 'The rent period start date'
 		),
 		'date_to' => array(
@@ -115,6 +117,9 @@ $dictionary['TenantPeriod'] = array(
 			'vname' => 'LBL_DATE_TO',
 			'type' => 'date',
 			'required' => true,
+			'validation' => array('type' => 'isAfter','compareto'=>'date_from','blank'=>false),
+			'enable_range_search' => true,
+			'options' => 'date_range_search_dom',
 			'comment' => 'The rent period end date'
 		),
 		'deleted' => array(
@@ -126,5 +131,8 @@ $dictionary['TenantPeriod'] = array(
 		),
 		
 	),
-	'indices' => array(),
+	'indices' => array(
+		array('name'=>'idx_tp_tenant_id','type'=>'index','fields'=>array('tenant_user_id')),
+		array('name'=>'idx_tp_category','type'=>'index','fields'=>array('category'))
+	),
 );
