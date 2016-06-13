@@ -18,4 +18,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @date  2016-6-11
 */
-$mod_strings = array();
+$mod_strings = array(
+	'LNK_NEW_TENANT_PERIOD' => 'New TenantPeriod',
+	'LNK_TENANT_PERIOD_LIST' => 'View TenantPeriods'
+);
