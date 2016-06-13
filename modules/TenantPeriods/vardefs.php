@@ -147,5 +147,4 @@ $dictionary['TenantPeriod'] = array(
 		array('name'=>'idx_tp_category','type'=>'index','fields'=>array('category'))
 	),
 );
- //VardefManager::createVardef('TenantPeriods','TenantPeriod', array('default', 'assignable',
-));
+ //VardefManager::createVardef('TenantPeriods','TenantPeriod', array('default', 'assignable',''));
