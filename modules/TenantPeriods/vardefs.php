@@ -61,7 +61,7 @@ $dictionary['TenantPeriod'] = array(
 			'join_name' => 'users',
 			'type' => 'relate',
 			'module' => 'Users',
-			//'link' => 'users',
+			'link' => 'users',
 			'table' => 'users',
 		),
 		'date_entered' => array(
@@ -139,6 +139,14 @@ $dictionary['TenantPeriod'] = array(
 		    'type' => 'bool',
 		    'reportable'=>false,
 		    'comment' => 'Record deletion indicator'
+		),
+		'users'=>	array(
+			'name' => 'users',
+			'type' => 'link',
+			'relationship' => 'user_tenantperiods',
+			'source'=>'non-db',
+			'side'=>'right',
+			'vname'=>'LBL_USERS',
 		),
 		
 	),
