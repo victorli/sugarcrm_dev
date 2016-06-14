@@ -48,7 +48,7 @@ class TenantPeriod extends SugarBean{
 	}
 	
 	function get_summary_text(){
-		return $this->category;
+		return $this->name;
 	}
 	
 	function save($check_notify = false){
