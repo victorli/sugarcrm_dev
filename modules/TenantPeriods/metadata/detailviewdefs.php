@@ -46,7 +46,10 @@ $viewdefs['TenantPeriods']['DetailView'] = array(
 	'panels' => array(
 		'LBL_TENANT_PERIOD_INFORMATION' => array(
 			array(
-				array('name' => 'name','label' => 'LBL_SUBJECT'),
+				array('name' =>'name','label' => 'LBL_SUBJECT'),	
+			),
+			array(
+				array('name' => 'tenant_user_name','label' => 'LBL_TENANT_USER_NAME'),
 				array('name' => 'category','label' => 'LBL_CATEGORY')
 			),
 			array(
@@ -55,9 +58,6 @@ $viewdefs['TenantPeriods']['DetailView'] = array(
 			),
 		),
 		'LBL_PANEL_ASSIGNMENT' => array(
-			array(
-				array('name'=>'assigned_user_name','label'=>'LBL_ASSIGNED_TO'),
-			),
 			array(
 				array('name'=>'date_entered','customCode' => '{$fields.date_entered.value} {$APP.LBL_BY} {$fields.created_by_name.value}','label'=>'LBL_DATE_ENTERED'),
 				array('name'=>'date_modified','customCode' => '{$fields.date_modified.value} {$APP.LBL_BY} {$fields.modified_by_name.value}','label'=>'LBL_DATE_MODIFIED'),
