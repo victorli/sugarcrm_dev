@@ -51,7 +51,8 @@ $dictionary['TenantPeriod'] = array(
 			'isnull' => 'false',
 			'group' => 'tenant_by_name',
 			'dbType' => 'id',
-			'reportable' => true
+			'reportable' => true,
+			'massupdate' => false,
 		),
 		'tenant_user_name' => array(
 			'name' => 'tenant_user_name',
@@ -75,7 +76,8 @@ $dictionary['TenantPeriod'] = array(
 			'len' => 100,
 			'reportable' => true,
 			'required' => true,
-			'comment' => 'Category of the tenant rented(usually the name of a module)'
+			'comment' => 'Category of the tenant rented(usually the name of a module)',
+			'massupdate' => false,
 		),
 		'date_from' => array(
 			'name' => 'date_from',
