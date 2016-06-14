@@ -19,6 +19,12 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 */
 
 $listViewDefs['TenantPeriods'] = array(
+	'NAME' => array(
+		'width' => 15,
+		'label' => 'LBL_SUBJECT',
+		'link' => true,
+		'default' => true
+	),
 	'CATEGORY' => array(
 		'width' => 20,
 		'label' => 'LBL_LIST_CATEGORY',
