@@ -40,17 +40,14 @@ $viewdefs['TenantPeriods']['DetailView'] = array(
 			array('label'=>'10','field'=>'30'),
 			),
 		'includes' => array(
-			array('file' => 'modules/TenantPeriods/TP.js'),
+			//array('file' => 'modules/TenantPeriods/TP.js'),
 			),
 	),
 	'panels' => array(
 		'LBL_TENANT_PERIOD_INFORMATION' => array(
 			array(
 				array('name' => 'name','label' => 'LBL_SUBJECT'),
-			),
-			array(
-				'tenant_user_name',
-				'category'
+				array('name' => 'category','label' => 'LBL_CATEGORY')
 			),
 			array(
 				'date_from',
