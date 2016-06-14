@@ -25,6 +25,9 @@ class TenantPeriod extends Basic{
 	var $date_from;
 	var $date_to;
 	
+	var $assigned_user_id;
+	var $assigned_user_name;
+	
 	var $table_name = "tenant_periods";
 	var $object_name = "TenantPeriod";
 	var $module_dir = 'TenantPeriods';
