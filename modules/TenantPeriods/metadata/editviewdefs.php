@@ -33,16 +33,16 @@ $viewdefs['TenantPeriods']['EditView'] = array(
 	'panels' => array(
 		'LBL_TENANTPERIOD_INFORMATION' => array(
 			array(
-				array('name'=>'name','label'=>'LBL_NAME'),
+				array('name'),	
+			),
+			array(
+				array('name'=>'tenant_user_name','label'=>'LBL_TENANT_USER_NAME'),
 				array('name'=>'category','label'=>'LBL_CATEGORY')
 			),
 			array(
 				array('name'=>'date_from','label'=>'LBL_DATE_FROM'),
 				array('name'=>'date_to','label'=>'LBL_DATE_TO')
 			),
-		),
-		'LBL_PANEL_ASSIGNMENT' => array(
-			array('assigned_user_name')	
 		),
 	),
 );
