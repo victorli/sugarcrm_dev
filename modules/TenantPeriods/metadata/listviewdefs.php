@@ -27,7 +27,7 @@ $listViewDefs['TenantPeriods'] = array(
 	),
 	'TENANT_USER_NAME' => array(
 		'width' => '15',
-		'lable' => 'LBL_LIST_TENANT_USER_NAME',
+		'label' => 'LBL_LIST_TENANT_USER_NAME',
 		'link' => true,
 		'id' => 'TENANT_USER_ID',
 		'module' => 'Users',
