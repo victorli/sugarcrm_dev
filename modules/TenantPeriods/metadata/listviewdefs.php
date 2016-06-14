@@ -25,6 +25,12 @@ $listViewDefs['TenantPeriods'] = array(
 		'link' => true,
 		'default' => true
 	),
+	'TENANT_USRE_NAME' => array(
+		'width' => '15',
+		'lable' => 'LBL_LIST_TENANT_USER_NAME',
+		'link' => true,
+		'default' => true,
+	),
 	'CATEGORY' => array(
 		'width' => 20,
 		'label' => 'LBL_LIST_CATEGORY',
@@ -43,14 +49,14 @@ $listViewDefs['TenantPeriods'] = array(
 		'link'	=> false,
 		'default' => true
 	),
-	'ASSIGNED_USER_NAME' => array(
-		'width' => 15,
-		'label' => 'LBL_LIST_ASSIGNED_USER_NAME',
-		'default' => true
-	),
 	'DATE_ENTERED' => array(
 		'width'=>10,
 		'label' => 'LBL_LIST_DATE_ENTERED',
 		'default' => true
+	),
+	'CREATED_BY_NAME' => array(
+		'width' => '10',
+		'lable' => 'LBL_LIST_CREATED_BY_NAME',
+		'default' => true,
 	),
 );
