@@ -165,6 +165,14 @@ $dictionary['TenantPeriod'] = array(
 			'importable' => false,
 			'massupdate' => false,
 		),
+		'deleted' => array(
+			'name' => 'deleted',
+			'vname' => 'LBL_DELETED',
+			'type' => 'bool',
+			'default' => '0',
+			'importable' => true,
+			'massupdate' => true,
+		),
 		'modified_user_link'=>array(
 			'name' => 'modified_user_link',
 			'type' => 'link',
