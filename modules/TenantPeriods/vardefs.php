@@ -214,12 +214,12 @@ $dictionary['TenantPeriod'] = array(
 		'tp_created_by' => array(
 			'lhs_module' => 'Users','lhs_table'=>'users','lhs_key'=>'id',
 			'rhs_module' => 'TenantPeriods','rhs_table' => 'tenant_periods','rhs_key'=>'created_by',
-			'relationship_type' => 'one_to_many',
+			'relationship_type' => 'one-to-many',
 		),
 		'tp_modified_user' => array(
 			'lhs_module' => 'Users','lhs_table'=>'users','lhs_key'=>'id',
 			'rhs_module' => 'TenantPeriods','rhs_table'=>'tenant_periods','rhs_key'=>'modified_user_id',
-			'relationship_type'=>'one_to_many',
+			'relationship_type'=>'one-to-many',
 		),
 		'tp_tenant_user' => array(
 			'lhs_module' => 'Users',
@@ -228,7 +228,7 @@ $dictionary['TenantPeriod'] = array(
 			'rhs_module' => 'TenantPeriods',
 			'rhs_table'  => 'tenant_periods',
 			'rhs_key'    => 'tenant_user_id',
-			'relationship_type' => 'one_to_many'
+			'relationship_type' => 'one-to-many'
 		),	
 	),
 );
