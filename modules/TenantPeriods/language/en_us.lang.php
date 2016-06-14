@@ -31,5 +31,6 @@ $mod_strings = array(
 	'LBL_LIST_DATE_FROM' => 'Date From',
 	'LBL_LIST_DATE_TO' => 'Date To',
 	'LBL_LIST_CREATED_BY_NAME' => 'CreatedBy',
+	'LBL_TENANT_PERIOD_INFORMATION' => 'Overview',
 	
 );

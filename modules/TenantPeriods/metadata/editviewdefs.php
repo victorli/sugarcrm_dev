@@ -31,7 +31,7 @@ $viewdefs['TenantPeriods']['EditView'] = array(
 		),
 	),
 	'panels' => array(
-		'LBL_TENANTPERIOD_INFORMATION' => array(
+		'LBL_TENANT_PERIOD_INFORMATION' => array(
 			array(
 				array('name' => 'name','label' => 'LBL_SUBJECT'),	
 			),
