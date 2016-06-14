@@ -59,7 +59,7 @@ $listViewDefs['TenantPeriods'] = array(
 	),
 	'CREATED_BY_NAME' => array(
 		'width' => '10',
-		'lable' => 'LBL_LIST_CREATED_BY_NAME',
+		'label' => 'LBL_LIST_CREATED_BY_NAME',
 		'default' => true,
 	),
 );
