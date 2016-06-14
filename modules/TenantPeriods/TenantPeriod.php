@@ -17,16 +17,17 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 *  @copyright 2014 BLX90
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 */
-class TenantPeriod extends Basic{
+class TenantPeriod extends SugarBean{
 	
 	var $id;
-
+	var $name;
+	
 	var $category;
 	var $date_from;
 	var $date_to;
 	
-	var $assigned_user_id;
-	var $assigned_user_name;
+	var $tenant_user_id;
+	var $tenant_user_name;
 	
 	var $table_name = "tenant_periods";
 	var $object_name = "TenantPeriod";
