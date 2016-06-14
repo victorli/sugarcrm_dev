@@ -20,5 +20,16 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 */
 $mod_strings = array(
 	'LNK_NEW_TENANT_PERIOD' => 'New TenantPeriod',
-	'LNK_TENANT_PERIOD_LIST' => 'View TenantPeriods'
+	'LNK_TENANT_PERIOD_LIST' => 'View TenantPeriods',
+	'LBL_TENANT_USER_ID' => 'TenantUser Id',
+	'LBL_TENANT_USER_NAME' => 'TenantUser Name',
+	'LBL_CATEGORY'	=> 'Module',
+	'LBL_DATE_FROM' => 'Date From',
+	'LBL_DATE_TO'	=> 'Date To',
+	'LBL_LIST_TENANT_USER_NAME' => 'TenantUser Name',
+	'LBL_LIST_CATEGORY' =>'Module',
+	'LBL_LIST_DATE_FROM' => 'Date From',
+	'LBL_LIST_DATE_TO' => 'Date To',
+	'LBL_LIST_CREATED_BY_NAME' => 'CreatedBy',
+	
 );
