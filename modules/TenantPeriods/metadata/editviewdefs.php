@@ -40,6 +40,9 @@ $viewdefs['TenantPeriods']['EditView'] = array(
 				array('name'=>'date_to','label'=>'LBL_DATE_TO')
 			),
 		),
+		'LBL_PANEL_ASSIGNMENT' => array(
+			'assigned_user_name',	
+		),
 	),
 );
 
