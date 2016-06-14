@@ -54,7 +54,7 @@ $dictionary['TenantPeriod'] = array(
 		
 	),
 	'indices' => array(
-		array('name'=>'idx_tp_tenant_id','type'=>'index','fields'=>array('tenant_user_id')),
+		array('name'=>'idx_tp_assigned_user_id','type'=>'index','fields'=>array('assigned_user_id')),
 		array('name'=>'idx_tp_category','type'=>'index','fields'=>array('category'))
 	),
 );
