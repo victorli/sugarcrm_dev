@@ -70,6 +70,8 @@ if(isset($_REQUEST['query']))
 	append_where_clause($where_clauses, "first_name", "users.first_name");
 	append_where_clause($where_clauses, "last_name", "users.last_name");
 	append_where_clause($where_clauses, "user_name", "users.user_name");
+	
+	append_where_clause($where_clauses, 'is_tenant','users.is_tenant');
 
 	$where = generate_where_statement($where_clauses);
 }

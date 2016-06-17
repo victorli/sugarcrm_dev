@@ -45,6 +45,7 @@ $popupMeta = array(
 		'last_name' => 'users.last_name',
 		'user_name' => 'users.user_name',
 		'is_group' => 'users.is_group',
+		'is_tenant' => 'users.is_tenant',
 	),
 	'whereStatement'=> " users.status = 'Active' and users.portal_only= '0'",
 	'searchInputs' => array(
