@@ -42,7 +42,8 @@ $searchFields['Users'] =
 		'last_name'=> array('query_type'=>'default'),
         'search_name'=> array('query_type'=>'default','db_field'=>array('first_name','last_name'),'force_unifiedsearch'=>true),
         'is_admin'=> array('query_type'=>'default', 'operator'=>'=', 'input_type' => 'checkbox'),
-        'is_group'=> array('query_type'=>'default', 'operator'=>'=', 'input_type' => 'checkbox'),
+        //'is_group'=> array('query_type'=>'default', 'operator'=>'=', 'input_type' => 'checkbox'),
+        'is_tenant'=> array('query_type'=>'default', 'operator'=>'=', 'input_type' => 'checkbox'),
         'status'=> array('query_type'=>'default', 'options' => 'user_status_dom', 'template_var' => 'STATUS_OPTIONS', 'options_add_blank' => true),
         'email'=> array(
             'query_type' => 'default',
