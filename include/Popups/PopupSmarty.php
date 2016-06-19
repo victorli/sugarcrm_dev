@@ -436,6 +436,7 @@ class PopupSmarty extends ListViewSmarty{
 	function _get_where_clause()
 	{
 		$where = '';
+		//TODO maybe a bug? 
 		$where_clauses = $this->searchForm->generateSearchWhere(true, $this->seed->module_dir);
 
 		// Bug 43452 - FG - Changed the way generated Where array is imploded into the string.

@@ -36,7 +36,7 @@ $viewdefs['TenantPeriods']['EditView'] = array(
 				array('name' => 'name','label' => 'LBL_SUBJECT'),	
 			),
 			array(
-				array('name'=>'tenant_user_name','label'=>'LBL_TENANT_USER_NAME','displayParams'=>array('initial_filter'=>'&is_tenant=true')),
+				array('name'=>'tenant_user_name','label'=>'LBL_TENANT_USER_NAME','displayParams'=>array('initial_filter'=>'&is_tenant=1')),
 				array('name'=>'category','label'=>'LBL_CATEGORY')
 			),
 			array(
