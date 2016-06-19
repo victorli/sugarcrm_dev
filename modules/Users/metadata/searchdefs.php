@@ -55,7 +55,8 @@
                     	    'status',
                     	    'is_admin',
                     	    'title',
-                    	    'is_group',
+                    	    //'is_group',
+                    	    'is_tenant',
                     	    'department',
                     	    'phone' => 
                               array (
