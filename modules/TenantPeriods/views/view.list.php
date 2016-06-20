@@ -45,7 +45,7 @@ class TenantPeriodsViewList extends ViewList
     		sugar_die("You dont have the permission to access this module.");
     	}
     	
-    	$_REQUEST['query'] = 'true';//to fix search form bug
+    	$_REQUEST['query'] = 'true';//to fix search form bug,make basic_search as default view at listview
     	
         $this->lv = new ListViewSmarty();
         $this->lv->delete = false;
