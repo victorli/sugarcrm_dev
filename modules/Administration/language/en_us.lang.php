@@ -1177,5 +1177,9 @@ $mod_strings = array (
     'LBL_REPAIR_UPLOAD_FOLDER_DESC' => 'Please note that removal can take a lot of time',
     'LBL_TOTAL_FILES' => 'Total files',
     'LBL_REMOVED_FILES' => 'Removed files',
+
+
+	'LBL_MANAGE_TENANT_PERIOD_TITLE' => 'Tenant Periods',
+	'LBL_MANAGE_TENANT_PERIODS' => 'Manage tenant rent periods of modules',
 );
 
