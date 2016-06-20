@@ -44,6 +44,10 @@ $admin_option_defs['Users']['roles_management']= array('Roles','LBL_MANAGE_ROLES
 if(is_sys_admin($current_user)){
 	$admin_option_defs['Administration']['password_management']= array('Password','LBL_MANAGE_PASSWORD_TITLE','LBL_MANAGE_PASSWORD','./index.php?module=Administration&action=PasswordManager');
 }
+if(is_sys_admin($current_user)){
+	$admin_option_defs['TenantPeriods']['tenantperiods_management'] = array('Tenants','LBL_MANAGE_TENANT_PERIOD_TITLE','LBL_MANAGE_TENANT_PERIODS','./index.php?module=TenantPeriods&action=index');
+}
+
 $admin_group_header[]= array('LBL_USERS_TITLE','',false,$admin_option_defs, 'LBL_USERS_DESC');
 $license_management = false;
     if (!isset($GLOBALS['sugar_config']['hide_admin_licensing']) || !$GLOBALS['sugar_config']['hide_admin_licensing']) {
