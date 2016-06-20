@@ -23,7 +23,7 @@ $searchdefs['TenantPeriods'] = array(
 			'name' => array('name'=>'name','default'=>true,'width'=>'10%')
 		),
 		'advanced_search' => array(
-			'name'=>array('name'=>'name','default'=>true,'width'=>'10%'),
+			'name'=>array('name'=>'name','width'=>'10%'),
 			'tenant_user_name' => array('name'=>'tenant_user_name','label'=>'LBL_TENANT_USER_NAME','type'=>'name','default'=>true,'width'=>'10%'),
 			'category' => array('name'=>'category','default'=>true,'width'=>'15%'),
 			'date_from' => array('name'=>'date_from','default'=>false,'width'=>'10%'),
