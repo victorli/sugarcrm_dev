@@ -48,8 +48,4 @@ class TenantPeriodsViewList extends ViewList
         $this->lv = new ListViewSmarty();
         $this->lv->delete = false;
     }
-    
-    public function listViewProcess(){
-    	
-    }
 }
