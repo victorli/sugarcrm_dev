@@ -37,6 +37,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 require_once('modules/ACLActions/actiondefs.php');
 require_once('modules/ACL/ACLJSController.php');
+require_once('modules/TenantPeriods/TenantPeriod.php');
 class ACLController {
 
 
@@ -46,7 +47,7 @@ class ACLController {
 		if(is_sys_admin($current_user))return true;
 		
 		//before acl access checking, check tenant periods firstly
-		if(!TenantPeriods::checkAccess($category)){
+		if(!TenantPeriod::checkAccess($category)){
 			return false;
 		}
 		
