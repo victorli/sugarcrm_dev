@@ -44,6 +44,12 @@ class ACLController {
 
 		global $current_user;
 		if(is_sys_admin($current_user))return true;
+		
+		//before acl access checking, check tenant periods firstly
+		if(!TenantPeriods::checkAccess($category)){
+			return false;
+		}
+		
 		//calendar is a special case since it has 3 modules in it (calls, meetings, tasks)
 
 		if($category == 'Calendar'){
