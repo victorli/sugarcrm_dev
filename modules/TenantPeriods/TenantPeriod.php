@@ -54,6 +54,35 @@ class TenantPeriod extends SugarBean{
 	function save($check_notify = false){
 		parent::save($check_notify);
 	}
+
+	public static function checkAccess($category,$action=null){
+		global $current_user;
+		
+
+		if(is_sys_admin($current_user)) return true;
+	
+		$tenant_id = null;
+		if(is_tenant($current_user))
+			$tenant_id = $current_user->id;
+		else
+			$tenant_id = $current_user->tenant_id;
+
+		if($tenant_id == 1){ //inner employee 
+			//TODO leave blank for further using
+			return true;
+		}
+		
+		$sql = "select DATEDIFF(MAX(date_to),DATE(NOW())) from tenant_periods where tenant_user_id='".$tenant_id."' AND category='".$category."' AND deleted=0";
+		$r = DBManagerFactory::getInstance()->fetchOne($sql);
+
+		if($r == false)
+			return true;//no record to limit for this category
+
+		if($r[0] >= 0)
+			return true;
+
+		return false;
+	}
 	
 	
 }
