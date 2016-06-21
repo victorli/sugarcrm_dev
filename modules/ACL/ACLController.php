@@ -43,7 +43,7 @@ class ACLController {
 	function checkAccess($category, $action, $is_owner=false, $type='module'){
 
 		global $current_user;
-		if(is_admin($current_user))return true;
+		if(is_sys_admin($current_user))return true;
 		//calendar is a special case since it has 3 modules in it (calls, meetings, tasks)
 
 		if($category == 'Calendar'){
@@ -57,14 +57,14 @@ class ACLController {
 
 	function requireOwner($category, $value, $type='module'){
 			global $current_user;
-			if(is_admin($current_user))return false;
+			if(is_sys_admin($current_user))return false;
 			return ACLAction::userNeedsOwnership($current_user->id, $category, $value,$type);
 	}
 
 	function filterModuleList(&$moduleList, $by_value=true){
 
 		global $aclModuleList, $current_user;
-		if(is_admin($current_user)) return;
+		if(is_sys_admin($current_user)) return;
 		$actions = ACLAction::getUserActions($current_user->id, false);
 
 		$compList = array();
@@ -128,7 +128,7 @@ class ACLController {
 
 	static function disabledModuleList($moduleList, $by_value=true,$view='list'){
 		global $aclModuleList, $current_user;
-		if(is_admin($GLOBALS['current_user'])) return array();
+		if(is_sys_admin($GLOBALS['current_user'])) return array();
 		$actions = ACLAction::getUserActions($current_user->id, false);
 		$disabled = array();
 		$compList = array();
