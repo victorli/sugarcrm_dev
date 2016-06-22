@@ -144,6 +144,7 @@ array (
   	'SugarFavorites'=>'SugarFavorites',
 	
 	'TenantPeriods' => 'TenantPeriod',
+	'ProductCatalogs' => 'ProductCatalog',
 
   ),
 
