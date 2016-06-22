@@ -25,7 +25,7 @@ class ProductCatalogsViewEdit extends ViewEdit{
 		else 
 			$isNew = false;
 			
-		$this->ss->assign('PARENTS_DROPDOWN',$this->bean->getParentDropdown($this->bean->parent_id));
+		$this->ss->assign('PARENTS_DROPDOWN',$this->bean->getParentsDropdown($this->bean->parent_id));
 		$this->ev->process();
 		echo $this->ev->display($this->showTitle);
 	}
