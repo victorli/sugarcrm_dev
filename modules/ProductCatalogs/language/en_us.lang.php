@@ -22,6 +22,6 @@ $mod_strings = array(
 	'LNK_NEW_PRODUCT_CATALOG' => 'New Catalog',
 	'LNK_PRODUCT_CATALOG_LIST' => 'View Catalogs',
 
-	'LBL_ROOT' => 'ROOT',
+	'LBL_ROOT' => '-- ROOT --',
 	
 );

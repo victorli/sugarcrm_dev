@@ -5982,4 +5982,22 @@ class SugarBean
             return false;
         }
     }
+    
+    /**
+     * 
+     * Save for photo field
+     * @param var $file
+     * @param string $path
+     * @return bool or filepath
+     */
+    public function save_photo($file,$path="cache/images/"){
+    	
+    	if(!isset($_FILES[$file])){
+    		$GLOBALS['log']->error("File:".$file." does not exist in \$_FILES");
+    		return false;
+    	}
+    	
+    	if(empty($this->id))
+    		$this->id = create_guid();
+    }
 }
