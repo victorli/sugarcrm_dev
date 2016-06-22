@@ -109,6 +109,7 @@ array (
     'OAuthTokens' => 'OAuth Tokens',
 
 	'TenantPeriods' => 'Tenant Periods',
+	'ProductCatalogs' => 'Catalogs',
 ),
 
   'moduleListSingular' =>
