@@ -17,3 +17,27 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @date  2016-6-21
 */
+$listViewDefs['ProductCatalogs'] = array(
+	'NAME' => array(
+		'width' => 15,
+		'label' => 'LBL_SUBJECT',
+		'link' => true,
+		'default' => true
+	),
+	'VISIBLE' => array(
+		'width' => 20,
+		'label' => 'LBL_LIST_VISIBLE',
+		'link' => false,
+		'default' => true
+	),
+	'DATE_ENTERED' => array(
+		'width'=>10,
+		'label' => 'LBL_LIST_DATE_ENTERED',
+		'default' => true
+	),
+	'CREATED_BY_NAME' => array(
+		'width' => '10',
+		'label' => 'LBL_LIST_CREATED_BY_NAME',
+		'default' => true,
+	),
+);
