@@ -46,6 +46,36 @@ class ProductCatalog extends SugarBean{
 		}
 	}
 	
+	function getParentsDropdown($select_id=0){
+		global $current_user,$mod_strings;
+		
+		$sql = "select * from $this->table_name where deleted=0 and visible=1 ";
+		
+		if(is_sys_admin($current_user)){
+			$where .= " AND 1=1";
+		}elseif(is_tenant($current_user)){
+			$where .= " AND tenant_id='".$current_user->id."'";
+		}else{
+			$where .= " AND tenant_id='".$current_user->tenant_id."'";
+		}
+		$orderby = " order by id asc";
+		
+		$GLOBALS['log']->debug($sql.$where.$orderby);
+		
+		$r = $this->db->query($sql . $where . $orderby);
+		$parents_select = "<select id='parent_id' name='parent_id'>";
+		$parents_select .= "<option value='0'>".$mod_strings['LBL_ROOT']."</option>";
+			while ($d = $this->db->fetchByAssoc($r)){
+				$selected = "";
+				if($d['id'] == $select_id)
+					$selected = "selected";
+				$parents_select .= "<option value='".$d['id']."' $selected>".$d['name']."</option>";
+			}
+		$parents_select .= "</select>";
+		
+		return $parents_select;
+	}
+	
 	function get_summary_text(){
 		return $this->name;
 	}

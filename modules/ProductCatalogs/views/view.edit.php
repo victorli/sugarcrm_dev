@@ -20,7 +20,12 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 */
 class ProductCatalogsViewEdit extends ViewEdit{
 	function display(){
-		$this->ss->assign('PARENTS_DROPDOWN','<select><option>Hello</option></select>');
+		if(empty($this->bean->id))
+			$isNew = true;
+		else 
+			$isNew = false;
+			
+		$this->ss->assign('PARENTS_DROPDOWN',$this->bean->getParentDropdown($this->bean->parent_id));
 		$this->ev->process();
 		echo $this->ev->display($this->showTitle);
 	}
