@@ -34,7 +34,7 @@ $viewdefs['ProductCatalogs']['EditView'] = array(
 				array('name' => 'name','label' => 'LBL_SUBJECT'),	
 			),
 			array(
-			  array('name' => 'parent_id','label' => 'LBL_PARENT_ID'),
+			  array('name' => 'parent_id','label' => 'LBL_PARENT','customCode' => '{$PARENTS_DROPDOWN}'),
 			  array('name' => 'visible','label' => 'LBL_VISIBLE'),
 			),
 			array(
