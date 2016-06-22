@@ -17,3 +17,33 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @date  2016-6-21
 */
+$viewdefs['ProductCatalogs']['EditView'] = array(
+	'templateMeta' => array(
+		'maxColumns' => '2',
+		'widths' => array(
+			array('label' => '10','field'=>'30'),
+			array('label' => '10','field'=>'30')
+		),
+		'form' => array(
+			'enctype' => 'multipart/form-data'
+		),
+	),
+	'panels' => array(
+		'LBL_PRODUCT_CATALOG_INFORMATION' => array(
+			array(
+				array('name' => 'name','label' => 'LBL_SUBJECT'),	
+			),
+			array(
+			  array('name' => 'parent_id','label' => 'LBL_PARENT_ID'),
+			  array('name' => 'visible','label' => 'LBL_VISIBLE'),
+			),
+			array(
+				array('name'=>'cover_image','label'=>'LBL_COVER_IMAGE'),
+				array('name'=>'thumbnail','label'=>'LBL_THUMBNAIL')
+			),
+			array(
+				array('name'=>'description','label'=>'LBL_DESCRIPTION'),
+			),
+		),
+	),
+);
