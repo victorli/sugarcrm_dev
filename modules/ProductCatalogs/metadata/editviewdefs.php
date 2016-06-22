@@ -38,8 +38,8 @@ $viewdefs['ProductCatalogs']['EditView'] = array(
 			  array('name' => 'visible','label' => 'LBL_VISIBLE'),
 			),
 			array(
-				array('name'=>'cover_image','label'=>'LBL_COVER_IMAGE'),
-				array('name'=>'thumbnail','label'=>'LBL_THUMBNAIL')
+				array('name'=>'cover_image','label'=>'LBL_COVER_IMAGE','type'=>'photo','displayParams'=>array('id'=>'id')),
+				array('name'=>'thumbnail','label'=>'LBL_THUMBNAIL','type'=>'photo','displayParams'=>array('id'=>'id')),
 			),
 			array(
 				array('name'=>'description','label'=>'LBL_DESCRIPTION'),
