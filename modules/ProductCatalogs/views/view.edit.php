@@ -21,6 +21,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 class ProductCatalogsViewEdit extends ViewEdit{
 	function display(){
 		$this->ss->assign('PARENTS_LIST','<select><option>Hello</option></select>');
-		parent::display();
+		$this->ev->process();
+		echo $this->ev->display($this->showTitle);
 	}
 }
