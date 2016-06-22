@@ -88,8 +88,8 @@ $dictionary['ProductCatalog'] = array(
 			'comment' => '',
 		),
 		'tenant_id' => array(
-			'name' => 'tenant_user_id',
-			'vname' => 'LBL_TENANT_USER_ID',
+			'name' => 'tenant_id',
+			'vname' => 'LBL_TENANT_ID',
 			'dbType' => 'id',
 			'reportable' => true,
 			'massupdate' => false,
@@ -174,7 +174,7 @@ $dictionary['ProductCatalog'] = array(
 		'modified_user_link'=>array(
 			'name' => 'modified_user_link',
 			'type' => 'link',
-			'relationship' => 'tp_modified_user',
+			'relationship' => 'pc_modified_user',
 			'vname' => 'LBL_MODIFIED_USER',
 			'link_type' => 'one',
 			'module' => 'Users',
@@ -184,7 +184,7 @@ $dictionary['ProductCatalog'] = array(
 		'created_by_link'=>array(
 			'name' => 'created_by_link',
 			'type' => 'link',
-			'relationship' => 'tp_created_by',
+			'relationship' => 'pc_created_by',
 			'vname' => 'LBL_CREATED_USER',
 			'link_type' => 'one',
 			'module' => 'Users',
@@ -198,14 +198,14 @@ $dictionary['ProductCatalog'] = array(
 		array('name'=>'idx_tp_tenant_id','type'=>'index','fields'=>array('tenant_id')),
 	),
 	'relationships' => array(
-		'tp_created_by' => array(
+		'pc_created_by' => array(
 			'lhs_module' => 'Users','lhs_table'=>'users','lhs_key'=>'id',
-			'rhs_module' => 'TenantPeriods','rhs_table' => 'tenant_periods','rhs_key'=>'created_by',
+			'rhs_module' => 'ProductCatalogs','rhs_table' => 'product_catalogs','rhs_key'=>'created_by',
 			'relationship_type' => 'one-to-many',
 		),
-		'tp_modified_user' => array(
+		'pc_modified_user' => array(
 			'lhs_module' => 'Users','lhs_table'=>'users','lhs_key'=>'id',
-			'rhs_module' => 'TenantPeriods','rhs_table'=>'tenant_periods','rhs_key'=>'modified_user_id',
+			'rhs_module' => 'ProductCatalogs','rhs_table'=>'product_catalogs','rhs_key'=>'modified_user_id',
 			'relationship_type'=>'one-to-many',
 		),
 	),
