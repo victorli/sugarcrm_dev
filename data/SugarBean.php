@@ -5986,18 +5986,51 @@ class SugarBean
     /**
      * 
      * Save for photo field
-     * @param var $file
-     * @param string $path
-     * @return bool or filepath
+     * @param var $file   input file name
+     * @param string $flag  addtional flag to join at filename
+     * @param integer $size  allowed max file size :2M
+     * @param string $path   save path
+     * @return array('result','message')
      */
-    public function save_photo($file,$path="cache/images/"){
+    public function save_photo($file,$flag=null,$size=2,$path="cache/images/"){
     	
     	if(!isset($_FILES[$file])){
     		$GLOBALS['log']->error("File:".$file." does not exist in \$_FILES");
-    		return false;
+    		return array('result'=>false,'message'=>"File:".$file." does not exist in \$_FILES");
     	}
+    	
+    	if($_FILES[$file]['error'] > 0){
+    		$GLOBALS['log']->error("Upload Error:".$_FILES[$file]['error']);
+    		return array('result'=>false,'message'=>"Upload Error:".$_FILES[$file]['error']);
+    	}
+    	
+    	$allowTypes = array('image/gif','image/jpg','image/png','image/jpeg','image/pjpeg');
+    	if(!in_array($_FILES[$file]['type'],$allowTypes)){
+    		$GLOBALS['log']->error("File Type:".$_FILES[$file]['type']." is not allowed.");
+    		return array('result'=>false,'message'=>"File Type:".$_FILES[$file]['type']." is not allowed.");
+    	}
+    	
+    	$filesize = $_FILES[$file]['size']/1024/1024; // Mbytes
+    	if(($filesize > $size){
+    		$GLOBALS['log']->error('System allowed max file size is: '.$size.'M, but uploaded is:'.$filesize.'M');
+    		return array('result'=>false,'message'=>'System allowed max file size is: '.$size.'M, but uploaded is:'.$filesize.'M');
+    	}
+    	
+    	if(is_null($flag))
+    		$flag = time();
     	
     	if(empty($this->id))
     		$this->id = create_guid();
+    		
+    	$fileType = substr($_FILES[$file]['name'],strrpos($_FILES[$file]['name'],"."));
+    	$filename = $this->module_dir . "_" . $this->id."_".$flag . "." . $fileType;
+    	if(file_exists($path . $filename)){
+    		$GLOBALS['log']->error('File:'.$filename.' has been existed in path:'.$path);
+    		return false;
+    	}elseif(move_uploaded_file($_FILES[$file]['tmp'],$path.$filename)){
+    		return array('result'=>true,'message'=>'okay');
+    	}else{
+    		return array('result'=>false,'message'=>'fail to move uploaded file to path:'.$path);
+    	}
     }
 }
