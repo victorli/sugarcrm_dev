@@ -6028,7 +6028,7 @@ class SugarBean
     		$GLOBALS['log']->error('File:'.$filename.' has been existed in path:'.$path);
     		return false;
     	}elseif(move_uploaded_file($_FILES[$file]['tmp'],$path.$filename)){
-    		return array('result'=>true,'message'=>'okay');
+    		return array('result'=>true,'message'=>$path . $filename);
     	}else{
     		return array('result'=>false,'message'=>'fail to move uploaded file to path:'.$path);
     	}
