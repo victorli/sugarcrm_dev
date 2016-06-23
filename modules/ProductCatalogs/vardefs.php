@@ -57,6 +57,19 @@ $dictionary['ProductCatalog'] = array(
 			'default' => '0',
 			'massupdate' => true
 		),
+		'parent_name' => array(
+			'name' => 'parent_name',
+			'vname' => 'LBL_PARENT_NAME',
+			'type' => 'relate',
+			'reportable'=>false,
+			'source' => 'non-db',
+			'rname' =>'name',
+			'table' => 'product_catalogs',
+			'id_name' => 'parent_id',
+			'module' => 'ProductCatalogs',
+			'link' => 'parent_name_link',
+			'massupdate'=>false,
+		),
 		'description' => array(
 			'name' => 'description',
 			'vname' => 'LBL_DESCRIPTION',
@@ -191,6 +204,16 @@ $dictionary['ProductCatalog'] = array(
 			'bean_name' => 'User',
 			'source' => 'non-db'
 		),
+		'parent_name_link'=>array(
+			'name' => 'parent_name_link',
+			'type' => 'link',
+			'relationship' => 'pc_parent_name',
+			'vname' => 'LBL_PARENT_NAME',
+			'link_type' => 'one',
+			'module' => 'ProductCatalogs',
+			'bean_name' => 'ProductCatalog',
+			'source' => 'non-db',
+		),
 		
 	),
 	'indices' => array(
@@ -207,6 +230,11 @@ $dictionary['ProductCatalog'] = array(
 			'lhs_module' => 'Users','lhs_table'=>'users','lhs_key'=>'id',
 			'rhs_module' => 'ProductCatalogs','rhs_table'=>'product_catalogs','rhs_key'=>'modified_user_id',
 			'relationship_type'=>'one-to-many',
+		),
+		'pc_parent_name' => array(
+			'lhs_module' => 'ProductCatalogs','lhs_table'=>'product_catalogs','lhs_key'=>'id',
+			'rhs_module' => 'ProductCatalogs','rhs_table'=>'product_catalogs','rhs_key'=>'parent_id',
+			'relationship_type' => 'one-to-many',
 		),
 	),
 );
