@@ -81,7 +81,7 @@ class ProductCatalog extends SugarBean{
 	}
 	
 	function save($check_notify = false){
-
+		
 		//process cover image
 		if(isset($_FILES['cover_image'])){
 			$r = $this->save_photo('cover_image');
@@ -89,6 +89,10 @@ class ProductCatalog extends SugarBean{
 				$this->cover_image = $r['message'];
 			}else{
 				sugar_die($r['message']);
+			}
+			//try to delete old cover image
+			if(!empty($this->id) && isset($_REQUEST['old_cover_image']) && !empty($_REQUEST['old_cover_image'])){
+				unlink($_REQUEST['old_cover_image']);
 			}
 		}
 		//process thumbnail
@@ -98,6 +102,10 @@ class ProductCatalog extends SugarBean{
 				$this->thumbnail = $r['message'];
 			else
 				sugar_die($r['message']);
+				
+			if(!empty($this->id) && isset($_REQUEST['old_thumbnail']) && !empty($_REQUEST['old_thumbnail'])){
+				unlink($_REQUEST['old_thumbnail']);
+			}
 		}
 		
 		parent::save($check_notify);
