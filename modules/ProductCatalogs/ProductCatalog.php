@@ -81,6 +81,25 @@ class ProductCatalog extends SugarBean{
 	}
 	
 	function save($check_notify = false){
+
+		//process cover image
+		if(isset($_FILES['cover_image'])){
+			$r = $this->save_photo('cover_image');
+			if($r['result']){
+				$this->cover_image = $r['message'];
+			}else{
+				sugar_die($r['message']);
+			}
+		}
+		//process thumbnail
+		if(isset($_FILES['thumbnail'])){
+			$r = $this->save_photo('thumbnail');
+			if($r['result'])
+				$this->thumbnail = $r['message'];
+			else
+				sugar_die($r['message']);
+		}
+		
 		parent::save($check_notify);
 	}
 }
