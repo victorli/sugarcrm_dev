@@ -5992,7 +5992,7 @@ class SugarBean
      * @param string $path   save path
      * @return array('result','message')
      */
-    public function save_photo($file,$flag=null,$size=2,$path=null){
+    public function save_photo($file,$flag=null,$size=2,$path='cache/images/'){
     	global $sugar_config;
     	if(!isset($_FILES[$file])){
     		$GLOBALS['log']->error("File:".$file." does not exist in \$_FILES");
@@ -6031,7 +6031,7 @@ class SugarBean
     	if(file_exists($path . $filename)){
     		$GLOBALS['log']->error('File:'.$filename.' has been existed in path:'.$path);
     		return false;
-    	}elseif(move_uploaded_file($_FILES[$file]['tmp'],$path.$filename)){
+    	}elseif(move_uploaded_file($_FILES[$file]['tmp_name'],$path.$filename)){
     		return array('result'=>true,'message'=>$path . $filename);
     	}else{
     		return array('result'=>false,'message'=>'fail to move uploaded file to path:'.$path);
