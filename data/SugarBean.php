@@ -5988,12 +5988,12 @@ class SugarBean
      * Save for photo field
      * @param var $file   input file name
      * @param string $flag  addtional flag to join at filename
-     * @param integer $size  allowed max file size :2M
+     * @param integer $size  allowed max file size :bytes default 2M
      * @param string $path   save path
      * @return array('result','message')
      */
-    public function save_photo($file,$flag=null,$size=2,$path='cache/images/'){
-    	global $sugar_config;
+    public function save_photo($file,$flag=null,$size=null,$path='cache/images/'){
+    	global $sugar_config,$current_user;
     	if(!isset($_FILES[$file])){
     		$GLOBALS['log']->error("File:".$file." does not exist in \$_FILES");
     		return array('result'=>false,'message'=>"File:".$file." does not exist in \$_FILES");
@@ -6010,24 +6010,26 @@ class SugarBean
     		return array('result'=>false,'message'=>"File Type:".$_FILES[$file]['type']." is not allowed.");
     	}
     	
-    	$filesize = $_FILES[$file]['size']/1024/1024; // Mbytes
+    	if(is_null($size) || empty($size)){
+    		$size = $sugar_config['upload_maxsize'];
+    	}
+    	
+    	$filesize = $_FILES[$file]['size']; // Mbytes
     	if($filesize > $size){
-    		$GLOBALS['log']->error('System allowed max file size is: '.$size.'M, but uploaded is:'.$filesize.'M');
-    		return array('result'=>false,'message'=>'System allowed max file size is: '.$size.'M, but uploaded is:'.$filesize.'M');
+    		$GLOBALS['log']->error('System allowed max file size is: '.($size/1024/1024).'M, but uploaded is:'.($filesize/1024/1024).'M');
+    		return array('result'=>false,'message'=>'System allowed max file size is: '.($size/1024/1024).'M, but uploaded is:'.($filesize/1024/1024).'M');
     	}
     	
     	if(is_null($flag))
     		$flag = time();
     	
-    	if(empty($this->id))
-    		$this->id = create_guid();
-    		
     	if(is_null($path) or empty($path)){
     		$path = $sugar_config['cache_dir'].'images/';
     	}
     	
     	$fileType = substr($_FILES[$file]['name'],strrpos($_FILES[$file]['name'],"."));
-    	$filename = $this->module_dir . "_" . $this->id."_".$flag . $fileType;
+    	//filename = $module-$user_id-$flag.jpg
+    	$filename = $this->module_dir . "-" . $current_user->id."-".$flag . $fileType;
     	if(file_exists($path . $filename)){
     		$GLOBALS['log']->error('File:'.$filename.' has been existed in path:'.$path);
     		return false;
