@@ -14,6 +14,8 @@ Changes:
 * override create_new_list_query() function,in Basic class, to filter records
 * modified view.detail.php to make each user can only view records with the same tenant with it
 * added TenantPeriods module to manage the using periods of each module for current tenant
+* added SugarField Photo to process upload photo
+* added save_photo function in SugarBean to process photo save processing
 
 Fixed Bugs:
 ---
