@@ -68,7 +68,7 @@ class ProductCatalog extends SugarBean{
 		$r = $this->db->query($sql);
 		while($d = $this->db->fetchByAssoc($r)){
 			$this->sortedCatalogs[$d['id']] = $d['name'];
-			$this->getSortedCatalogs($d['id']);
+			$this->caculateSortedCatalogs($d['id']);
 		}
 	}
 	
