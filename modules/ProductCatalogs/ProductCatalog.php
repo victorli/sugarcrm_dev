@@ -24,6 +24,7 @@ class ProductCatalog extends SugarBean{
 	
 	var $visible;
 	var $parent_id;
+	var $parent_name;
 	var $description;
 	
 	var $cover_image;
