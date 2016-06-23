@@ -5993,7 +5993,7 @@ class SugarBean
      * @return array('result','message')
      */
     public function save_photo($file,$flag=null,$size=2,$path=null){
-    	
+    	global $sugar_config;
     	if(!isset($_FILES[$file])){
     		$GLOBALS['log']->error("File:".$file." does not exist in \$_FILES");
     		return array('result'=>false,'message'=>"File:".$file." does not exist in \$_FILES");
