@@ -5992,7 +5992,7 @@ class SugarBean
      * @param string $path   save path
      * @return array('result','message')
      */
-    public function save_photo($file,$flag=null,$size=2,$path="cache/images/"){
+    public function save_photo($file,$flag=null,$size=2,$path=null){
     	
     	if(!isset($_FILES[$file])){
     		$GLOBALS['log']->error("File:".$file." does not exist in \$_FILES");
@@ -6022,6 +6022,10 @@ class SugarBean
     	if(empty($this->id))
     		$this->id = create_guid();
     		
+    	if(is_null($path) or empty($path)){
+    		$path = $sugar_config['cache_dir'].'images/';
+    	}
+    	
     	$fileType = substr($_FILES[$file]['name'],strrpos($_FILES[$file]['name'],"."));
     	$filename = $this->module_dir . "_" . $this->id."_".$flag . "." . $fileType;
     	if(file_exists($path . $filename)){
