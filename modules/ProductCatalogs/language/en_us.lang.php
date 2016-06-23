@@ -30,5 +30,5 @@ $mod_strings = array(
 	'LBL_COVER_IMAGE' => 'Cover',
 	'LBL_THUMBNAIL' => 'Thumbnail',
 	'LBL_LIST_CREATED_BY_NAME' => 'Creator',
-	
+	'LBL_LIST_VISIBLE' => 'Visible',
 );
