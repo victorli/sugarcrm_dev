@@ -6027,7 +6027,7 @@ class SugarBean
     	}
     	
     	$fileType = substr($_FILES[$file]['name'],strrpos($_FILES[$file]['name'],"."));
-    	$filename = $this->module_dir . "_" . $this->id."_".$flag . "." . $fileType;
+    	$filename = $this->module_dir . "_" . $this->id."_".$flag . $fileType;
     	if(file_exists($path . $filename)){
     		$GLOBALS['log']->error('File:'.$filename.' has been existed in path:'.$path);
     		return false;
