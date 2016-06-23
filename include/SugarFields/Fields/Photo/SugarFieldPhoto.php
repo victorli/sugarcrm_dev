@@ -13,11 +13,11 @@ class SugarFieldPhoto extends SugarFieldBase{
 		$tabindex){
 		global $app_strings;
 		
-		if(!isset($displayParams['id'])){
+		/*if(!isset($displayParams['id'])){
 			$error = $app_strings['ERR_SMARTY_MISSING_DISPLAY_PARAMS'] . 'id';
 			$GLOBALS['log']->error($error);
 			return;
-		}
+		}*/
 
 		$this->setup($parentFieldArray, $vardef, $displayParams, $tabindex);
 		return $this->fetch('include/SugarFields/Fields/Photo/DetailView.tpl');
