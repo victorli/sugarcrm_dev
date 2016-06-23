@@ -30,6 +30,8 @@ class ProductCatalog extends SugarBean{
 	var $cover_image;
 	var $thumbnail;
 	
+	var $sortedCatalogs = array();
+	
 	var $table_name = "product_catalogs";
 	var $object_name = "ProductCatalog";
 	var $module_dir = "ProductCatalogs";
@@ -47,8 +49,8 @@ class ProductCatalog extends SugarBean{
 		}
 	}
 	
-	function getParentsDropdown($select_id=0){
-		global $current_user,$mod_strings;
+	function caculateSortedCatalogs($parent_id=0){
+		global $current_user;
 		
 		$sql = "select * from $this->table_name where deleted=0 and visible=1 ";
 		
@@ -59,18 +61,30 @@ class ProductCatalog extends SugarBean{
 		}else{
 			$where .= " AND tenant_id='".$current_user->tenant_id."'";
 		}
-		$orderby = " order by id asc";
+		$where .= " AND parent_id='".$parent_id."'";
+		$orderby = " order by date_entered asc";
 		
-		$GLOBALS['log']->debug($sql.$where.$orderby);
+		$sql .= $where . $orderby;
+		$r = $this->db->query($sql);
+		while($d = $this->db->fetchByAssoc($r)){
+			$this->sortedCatalogs[$d['id']] = $d['name'];
+			$this->getSortedCatalogs($d['id']);
+		}
+	}
+	
+	function getParentsDropdown($select_id=0){
+		global $current_user,$mod_strings;
 		
-		$r = $this->db->query($sql . $where . $orderby);
+		unset($this->sortedCatalogs);
+		$this->caculateSortedCatalogs();
+		
 		$parents_select = "<select id='parent_id' name='parent_id'>";
 		$parents_select .= "<option value='0'>".$mod_strings['LBL_ROOT']."</option>";
-			while ($d = $this->db->fetchByAssoc($r)){
+			foreach ($this->sortedCatalogs as $id=>$name){
 				$selected = "";
-				if($d['id'] == $select_id)
+				if($id == $select_id)
 					$selected = "selected";
-				$parents_select .= "<option value='".$d['id']."' $selected>".$d['name']."</option>";
+				$parents_select .= "<option value='".$id."' $selected>".$name."</option>";
 			}
 		$parents_select .= "</select>";
 		
