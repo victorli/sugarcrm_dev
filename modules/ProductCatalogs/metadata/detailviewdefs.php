@@ -38,7 +38,7 @@ $viewdefs['ProductCatalogs']['DetailView'] = array(
 				array('name' =>'name','label' => 'LBL_SUBJECT'),	
 			),
 			array(
-				array('name' => 'parent_id','label' => 'LBL_PARENT_NAME','customCode'=>'parent name'),
+				array('name' => 'parent_name','label' => 'LBL_PARENT_NAME','link'=>true),
 				array('name' => 'visible','label' => 'LBL_VISIBLE'),
 			),
 			array(
