@@ -22,6 +22,13 @@ $mod_strings = array(
 	'LNK_NEW_PRODUCT_CATALOG' => 'New Catalog',
 	'LNK_PRODUCT_CATALOG_LIST' => 'View Catalogs',
 
+	'LBL_PRODUCT_CATALOG_INFORMATION' => 'Overview',
 	'LBL_ROOT' => '-- ROOT --',
+	'LBL_VISIBLE' => 'Visible',
+	'LBL_PARENT_NAME' => 'Parent',
+	'LBL_PARENT_ID' => 'Parent ID',
+	'LBL_COVER_IMAGE' => 'Cover',
+	'LBL_THUMBNAIL' => 'Thumbnail',
+	'LBL_LIST_CREATED_BY_NAME' => 'Creator',
 	
 );
