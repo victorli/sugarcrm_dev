@@ -49,7 +49,7 @@ class ProductCatalog extends SugarBean{
 		}
 	}
 	
-	function caculateSortedCatalogs($parent_id=0){
+	function caculateSortedCatalogs($parent_id=0,$level=0){
 		global $current_user;
 		
 		$sql = "select * from $this->table_name where deleted=0 and visible=1 ";
@@ -67,8 +67,8 @@ class ProductCatalog extends SugarBean{
 		$sql .= $where . $orderby;
 		$r = $this->db->query($sql);
 		while($d = $this->db->fetchByAssoc($r)){
-			$this->sortedCatalogs[$d['id']] = $d['name'];
-			$this->caculateSortedCatalogs($d['id']);
+			$this->sortedCatalogs[$d['id']] = array('name'=>$d['name'],'level'=>$level);
+			$this->caculateSortedCatalogs($d['id'],$level++);
 		}
 	}
 	
@@ -80,11 +80,14 @@ class ProductCatalog extends SugarBean{
 		
 		$parents_select = "<select id='parent_id' name='parent_id'>";
 		$parents_select .= "<option value='0'>".$mod_strings['LBL_ROOT']."</option>";
-			foreach ($this->sortedCatalogs as $id=>$name){
+			foreach ($this->sortedCatalogs as $id=>$arr){
 				$selected = "";
 				if($id == $select_id)
 					$selected = "selected";
-				$parents_select .= "<option value='".$id."' $selected>".$name."</option>";
+				$indent = "";
+				for($i=0;$i<$arr['level'];$i++)
+					$indent .="-";
+				$parents_select .= "<option value='".$id."' $selected>".$indent . $arr['name']."</option>";
 			}
 		$parents_select .= "</select>";
 		
