@@ -6011,7 +6011,7 @@ class SugarBean
     	}
     	
     	$filesize = $_FILES[$file]['size']/1024/1024; // Mbytes
-    	if(($filesize > $size){
+    	if($filesize > $size){
     		$GLOBALS['log']->error('System allowed max file size is: '.$size.'M, but uploaded is:'.$filesize.'M');
     		return array('result'=>false,'message'=>'System allowed max file size is: '.$size.'M, but uploaded is:'.$filesize.'M');
     	}
