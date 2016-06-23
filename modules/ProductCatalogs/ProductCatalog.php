@@ -83,7 +83,7 @@ class ProductCatalog extends SugarBean{
 	function save($check_notify = false){
 		
 		//process cover image
-		if(isset($_FILES['cover_image']) && !empty($_FILES['cover_image']['name')){
+		if(isset($_FILES['cover_image']) && !empty($_FILES['cover_image']['name'])){
 			$r = $this->save_photo('cover_image');
 			if($r['result']){
 				$this->cover_image = $r['message'];
