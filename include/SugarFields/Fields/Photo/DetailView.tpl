@@ -3,5 +3,5 @@ created by eCartx at 20160621
 ***}
 
 {if !empty({{sugarvar key=>'value' string=true}})}
-	<img src='cache/images/{$fields.{{$displayParams.id}}.value}_{{sugarvar key='value'}}' height='{{$displayParams.height|default:100}}' width='{{$displayParams.width|default:100}}'>
+	<img src='{{sugarvar key='value'}}' height='{{$displayParams.height|default:100}}' width='{{$displayParams.width|default:100}}'>
 {/if}}
