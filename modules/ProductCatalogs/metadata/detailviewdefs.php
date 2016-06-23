@@ -39,11 +39,11 @@ $viewdefs['ProductCatalogs']['DetailView'] = array(
 			),
 			array(
 				array('name' => 'parent_id','label' => 'LBL_PARENT_NAME','customCode'=>'parent name'),
-				array('name' => 'visible','label' => 'LBL_VISIBLE')
+				array('name' => 'visible','label' => 'LBL_VISIBLE'),
 			),
 			array(
-				array('name'=>'cover_image','type'=>'photo')
-				array('name'=>'thumbnail','type'=>'photo')
+				array('name'=>'cover_image','type'=>'photo'),
+				array('name'=>'thumbnail','type'=>'photo'),
 			),
 			array(
 			  'description',  
