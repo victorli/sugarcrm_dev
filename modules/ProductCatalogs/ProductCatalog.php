@@ -87,7 +87,7 @@ class ProductCatalog extends SugarBean{
 					$selected = "selected";
 				$indent = "";
 				for($i=0;$i<$arr['level'];$i++)
-					$indent .="-";
+					$indent .="--";
 				$parents_select .= "<option value='".$id."' $selected>".$indent . $arr['name']."</option>";
 			}
 		$parents_select .= "</select>";
