@@ -30,7 +30,7 @@ $listViewDefs['ProductCatalogs'] = array(
 		'link' => true,
 		'id' => 'PARENT_ID',
 		'module' => 'ProductCatalogs',
-		'related_fields'=>array('parent_id')
+		'related_fields'=>array('parent_id'),
 		'default' => true,
 	),
 	'VISIBLE' => array(
