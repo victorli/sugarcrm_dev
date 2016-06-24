@@ -19,7 +19,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 *  @date  2016-6-21
 */
 $searchFields['ProductCatalogs'] = array(
-	'name' => array('query_type'=>'default'),
+	'name' => array('query_type'=>'default','unified_search'=>true),
 	'parent_name' => array('query_type'=>'default'),
 	'visible' => array('query_type' => 'default'),
 );
