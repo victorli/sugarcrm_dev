@@ -17,3 +17,23 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @date  2016-6-21
 */
+$searchdefs['ProductCatalogs'] = array(
+	'layout' => array(
+		'basic_search' => array(
+			'name' => array('name'=>'name','default'=>true,'width'=>'10%')
+		),
+		'advanced_search' => array(
+			'name'=>array('name'=>'name','width'=>'10%'),
+			'parent_name' => array('name'=>'parent_name','label'=>'LBL_PARENT_NAME','type'=>'name','default'=>true,'width'=>'10%'),
+			'visible' => array('name'=>'visible','default'=>true,'width'=>'15%'),
+		),
+	),
+	'templateMeta' => array(
+		'maxColumns' => '3',
+		'maxColumnsBasic' => '4',
+		'widths' => array(
+			'label' => '10',
+			'field' => '30'
+		),
+	),
+);
