@@ -18,3 +18,8 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @date  2016-6-21
 */
+$searchFields['ProductCatalogs'] = array(
+	'name' => array('query_type'=>'default'),
+	'parent_name' => array('query_type'=>'default'),
+	'visible' => array('query_type' => 'default'),
+);
