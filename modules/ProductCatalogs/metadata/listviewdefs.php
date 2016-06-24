@@ -28,7 +28,9 @@ $listViewDefs['ProductCatalogs'] = array(
 		'width' => 15,
 		'label' => 'LBL_PARENT_NAME',
 		'link' => true,
-		'id' => 'parent_id',
+		'id' => 'PARENT_ID',
+		'module' => 'ProductCatalogs',
+		'related_fields'=>array('parent_id')
 		'default' => true,
 	),
 	'VISIBLE' => array(
