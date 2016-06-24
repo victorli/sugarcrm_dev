@@ -24,6 +24,13 @@ $listViewDefs['ProductCatalogs'] = array(
 		'link' => true,
 		'default' => true
 	),
+	'PARENT_NAME' => array(
+		'width' => 15,
+		'label' => 'LBL_PARENT_NAME',
+		'link' => true,
+		'id' => 'parent_id',
+		'default' => true,
+	),
 	'VISIBLE' => array(
 		'width' => 20,
 		'label' => 'LBL_LIST_VISIBLE',
