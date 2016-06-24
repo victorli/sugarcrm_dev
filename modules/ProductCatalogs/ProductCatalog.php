@@ -66,12 +66,10 @@ class ProductCatalog extends SugarBean{
 		
 		$sql .= $where . $orderby;
 		$r = $this->db->query($sql);
-		if(count($r) == 0)
-			--$level;
+		
 		while($d = $this->db->fetchByAssoc($r)){
 			$this->sortedCatalogs[$d['id']] = array('name'=>$d['name'],'level'=>$level);
-			$this->caculateSortedCatalogs($d['id'],++$level);
-			$level = 0;
+			$this->caculateSortedCatalogs($d['id'],$level+1);
 		}
 	}
 	
