@@ -52,6 +52,9 @@ class Product extends SugarBean{
 	
 	function save($check_notify = false){
 		
+		if(isset($_REQUEST['description']) && !empty($_REQUEST['description'])){
+			$this->description = addslashes($_REQUEST['description']);
+		}
 		parent::save($check_notify);
 	}
 }
