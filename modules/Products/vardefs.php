@@ -72,8 +72,8 @@ $dictionary['Product'] = array(
 			'default' => true,
 		),
 		'summary' => array(
-			'name' => 'description',
-			'vname' => 'LBL_DESCRIPTION',
+			'name' => 'summary',
+			'vname' => 'LBL_SUMMARY',
 			'required' => false,
 			'massupdate' => false,
 			'type' => 'text',
