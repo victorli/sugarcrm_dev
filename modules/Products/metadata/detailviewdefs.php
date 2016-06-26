@@ -46,7 +46,7 @@ $viewdefs['Products']['DetailView'] = array(
 				'summary'
 			),
 			array(
-			  'description',  
+			  array('name'=>'description','customCode'=>'{$HTML_DESC}'),  
 			),
 			array(
 				'tags'

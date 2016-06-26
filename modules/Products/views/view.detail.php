@@ -26,7 +26,7 @@ class ProductsViewDetail extends ViewDetail{
 	}
 	
 	function preDisplay(){
-		$this->bean->description = to_html($this->bean->description);
+		$this->ss->assign('HTML_DESC',to_html($this->bean->description));
 		
 		parent::preDisplay();
 	}
