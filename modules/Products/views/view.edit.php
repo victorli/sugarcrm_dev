@@ -28,12 +28,12 @@ class ProductsViewEdit extends ViewEdit{
 			$isNew = false;
 			
 		//$this->ss->assign('PARENTS_DROPDOWN',$this->bean->getParentsDropdown($this->bean->parent_id));
-		$summary_texarea = "<textarea id='summary' rows='4' cols='60'>".$this->bean->summary."</textarea>";
-		$description_texarea = "<textarea id='description' rows='4' cols='60'>".$this->bean->description."</textarea>";
+		//$summary_textarea = "<textarea id='summary' rows='4' cols='60'>".$this->bean->summary."</textarea>";
+		$description_textarea = "<textarea id='description' rows='4' cols='60'>".$this->bean->description."</textarea>";
 			
 		$tiny = new SugarTinyMCE();
-		$this->ss->assign('TinySumm',$summary_texarea . $tiny->getInstance('summary'));
-		$this->ss->assign('TinyDesc',$description_texarea . $tiny->getInstance('description'));
+		$this->ss->assign('TinySumm',$summary_textarea);
+		$this->ss->assign('TinyDesc',$description_textarea . $tiny->getInstance('description'));
 			
 		$this->ev->process();
 		echo $this->ev->display($this->showTitle);
