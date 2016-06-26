@@ -18,9 +18,9 @@
 *  @date  2016-6-21
 */
 $listViewDefs['ProductCatalogs'] = array(
-	'KEY' => array(
+	'PKEY' => array(
 		'width' => 10,
-		'label' => 'LBL_KEY',
+		'label' => 'LBL_PKEY',
 		'default' => true
 	),	
 	'NAME' => array(

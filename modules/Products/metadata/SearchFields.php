@@ -20,7 +20,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 */
 $searchFields['Products'] = array(
 	'name' => array('query_type'=>'default','unified_search'=>true),
-	'key' => array('query_type'=>'default'),
+	'pkey' => array('query_type'=>'default'),
 	'barcode' => array('query_type' => 'default'),
 	'active' => array('query_type'=>'default'),
 );

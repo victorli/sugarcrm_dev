@@ -35,7 +35,7 @@ $viewdefs['Products']['DetailView'] = array(
 	'panels' => array(
 		'LBL_PRODUCT_INFORMATION' => array(
 			array(
-				array('name'=>'key'),
+				array('name'=>'pkey'),
 				array('name' =>'name','label' => 'LBL_SUBJECT'),	
 			),
 			array(

@@ -41,11 +41,11 @@ $dictionary['Product'] = array(
 			'importable' => 'required',
 			'required' => true
 		),
-		'key' => array(
-			'name' => 'key',
-			'vname' => 'LBL_KEY',
+		'pkey' => array(
+			'name' => 'pkey',
+			'vname' => 'LBL_PKEY',
 			'type' => 'int',
-			'requried' => true,
+			'required' => true,
 			'len' => '11',
 			'auto_increment' => true,
 			'importable' => 'required',

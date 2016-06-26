@@ -21,7 +21,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 class Product extends SugarBean{
 	var $id;
 	var $name;
-	var $key; //the auto increment id
+	var $pkey; //the auto increment id
 	
 	var $barcode; //global unique barcode
 	var $active;

@@ -24,7 +24,7 @@ $searchdefs['ProductCatalogs'] = array(
 		),
 		'advanced_search' => array(
 			'name'=>array('name'=>'name','width'=>'10%'),
-			'key' => array('name'=>'key','default'=>true,'width'=>'10%'),
+			'pkey' => array('name'=>'key','default'=>true,'width'=>'10%'),
 			'barcode' => array('name'=>'bar_code','default'=>true,'width'=>'15%'),
 			'active',
 		),
