@@ -107,9 +107,6 @@ array (
 	
     'OAuthKeys' => 'OAuth Consumer Keys',
     'OAuthTokens' => 'OAuth Tokens',
-
-	'TenantPeriods' => 'Tenant Periods',
-	'ProductCatalogs' => 'Catalogs',
 ),
 
   'moduleListSingular' =>
@@ -142,9 +139,6 @@ array (
     'Sync'=>'Sync',
     'Users' => 'User',
   	'SugarFavorites'=>'SugarFavorites',
-	
-	'TenantPeriods' => 'TenantPeriod',
-	'ProductCatalogs' => 'ProductCatalog',
 
   ),
 
@@ -3321,4 +3315,12 @@ array (
 		    'Releases' => 'Releases',
 		    'RSS' => 'RSS',
         );
+        
+        $app_list_strings['moduleList']['TenantPeriods'] = 'TenantPeriods';
+        $app_list_strings['moduleList']['ProductCatalogs'] = 'Catalogs';
+        $app_list_strings['moduleList']['Products'] = 'Products';
+        
+        $app_list_strings['moduleListSingular']['TenantPeriods'] = 'TenantPeriod';
+        $app_list_strings['moduleListSingular']['ProductCatalogs'] = 'ProductCatalog';
+        $app_list_strings['moduleListSingular']['Products'] = 'Product';
  ?>

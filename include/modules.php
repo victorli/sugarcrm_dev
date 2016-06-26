@@ -316,6 +316,10 @@ $moduleList[] = 'ProductCatalogs';
 $beanList['ProductCatalogs'] = 'ProductCatalog';
 $beanFiles['ProductCatalog'] = 'modules/ProductCatalogs/ProductCatalog.php';
 
+$moduleList[] = 'Products';
+$beanList['Products'] = 'Product';
+$beanFiles['Product'] = 'modules/Products/Product.php';
+
 
 //Object list is only here to correct for modules that break
 //the bean class name == dictionary entry/object name convention
