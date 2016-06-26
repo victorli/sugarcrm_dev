@@ -206,7 +206,7 @@ $dictionary['Product'] = array(
 	),
 	'indices' => array(
 		array('name'=>'idx_tp_id','type'=>'index','fields'=>array('id')),
-		array('name'=>'idx_tp_key','type'=>'index','fields'=>array('key')),
+		array('name'=>'idx_tp_pkey','type'=>'index','fields'=>array('pkey')),
 		array('name'=>'idx_tp_barcode','type'=>'index','fields'=>array('barcode')),
 		array('name'=>'idx_tp_tenant_id','type'=>'index','fields'=>array('tenant_id')),
 	),
