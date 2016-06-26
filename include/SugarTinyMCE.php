@@ -55,7 +55,7 @@ class SugarTinyMCE {
 						'buttonConfig' => "code,help,separator,bold,italic,underline,strikethrough,separator,justifyleft,justifycenter,justifyright,
 	                     					justifyfull,separator,forecolor,backcolor,separator,styleselect,formatselect,fontselect,fontsizeselect,",
 	                    'buttonConfig2' => "cut,copy,paste,pastetext,pasteword,selectall,separator,search,replace,separator,bullist,numlist,separator,outdent,
-	                     					indent,separator,ltr,rtl,separator,undo,redo,separator, link,unlink,anchor,image,separator,sub,sup,separator,charmap,
+	                     					indent,separator,ltr,rtl,separator,undo,redo,separator, link,unlink,anchor,image,jbimages,separator,sub,sup,separator,charmap,
 	                     					visualaid",
 	                    'buttonConfig3' => "tablecontrols,separator,advhr,hr,removeformat,separator,insertdate,inserttime,separator,preview"),
 	        'email_compose' => array(
@@ -89,11 +89,12 @@ class SugarTinyMCE {
 		'strict_loading_mode'	=> true,
 		'mode'	=> 'exact',
 		'language' => 'en',
-	    'plugins' => 'advhr,insertdatetime,table,preview,paste,searchreplace,directionality',
+	    'plugins' => 'jbimages,advhr,insertdatetime,table,preview,paste,searchreplace,directionality',
 		'elements'	=> '',
         'extended_valid_elements' => 'style[dir|lang|media|title|type],hr[class|width|size|noshade],@[class|style]',
         'content_css' => 'include/javascript/tiny_mce/themes/advanced/skins/default/content.css',
         'gecko_spellcheck' => 'true',
+		'relative_urls ' => 'false',
 	);
 
 
