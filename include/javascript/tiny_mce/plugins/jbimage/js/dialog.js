@@ -20,7 +20,7 @@ var jbImagesDialog = {
 	timeoutStore : false,
 	
 	init : function() {
-		document.getElementById("upload_target").src += '/' + tinyMCEPopup.getLang('jbimages_dlg.lang_id', 'english');
+		//document.getElementById("upload_target").src += '/' + tinyMCEPopup.getLang('jbimages_dlg.lang_id', 'english');
 		if (navigator.userAgent.indexOf('Opera') > -1)
 		{
 			document.getElementById("close_link").style.display = 'block';
