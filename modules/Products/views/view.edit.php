@@ -28,7 +28,7 @@ class ProductsViewEdit extends ViewEdit{
 			$isNew = false;
 			
 		//$this->ss->assign('PARENTS_DROPDOWN',$this->bean->getParentsDropdown($this->bean->parent_id));
-		//$summary_textarea = "<textarea id='summary' rows='4' cols='60'>".$this->bean->summary."</textarea>";
+		$summary_textarea = "<textarea id='summary' rows='4' cols='60'>".$this->bean->summary."</textarea>";
 		$description_textarea = "<textarea id='description' rows='4' cols='60'>".$this->bean->description."</textarea>";
 			
 		$tiny = new SugarTinyMCE();
