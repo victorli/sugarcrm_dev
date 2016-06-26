@@ -18,6 +18,8 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @date  2016-6-22
 */
+require_once('include/SugarTinyMCE.php');
+
 class ProductsViewEdit extends ViewEdit{
 	function display(){
 		if(empty($this->bean->id))
@@ -26,6 +28,10 @@ class ProductsViewEdit extends ViewEdit{
 			$isNew = false;
 			
 		//$this->ss->assign('PARENTS_DROPDOWN',$this->bean->getParentsDropdown($this->bean->parent_id));
+		$tiny = new SugarTinyMCE();
+		$this->ss->assign('TinySumm',$tiny->getInstance('summary'));
+		$this->ss->assign('TinyDesc',$tiny->getInstance('description'));
+			
 		$this->ev->process();
 		echo $this->ev->display($this->showTitle);
 	}

@@ -40,10 +40,10 @@ $viewdefs['Products']['EditView'] = array(
 				'active',
 			),
 			array(
-				array('name'=>'summary','label'=>'LBL_SUMMARY',),
+				array('name'=>'summary','label'=>'LBL_SUMMARY','customCode'=>'{$TinySumm}'),
 			),
 			array(
-				array('name'=>'description','label'=>'LBL_DESCRIPTION'),
+				array('name'=>'description','label'=>'LBL_DESCRIPTION','customCode'=>'{$TinyDesc}'),
 			),
 			array(
 				'tags'
