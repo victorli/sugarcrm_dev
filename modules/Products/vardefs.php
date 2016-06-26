@@ -185,7 +185,7 @@ $dictionary['Product'] = array(
 		'modified_user_link'=>array(
 			'name' => 'modified_user_link',
 			'type' => 'link',
-			'relationship' => 'pc_modified_user',
+			'relationship' => 'p_modified_user',
 			'vname' => 'LBL_MODIFIED_USER',
 			'link_type' => 'one',
 			'module' => 'Users',
@@ -195,7 +195,7 @@ $dictionary['Product'] = array(
 		'created_by_link'=>array(
 			'name' => 'created_by_link',
 			'type' => 'link',
-			'relationship' => 'pc_created_by',
+			'relationship' => 'p_created_by',
 			'vname' => 'LBL_CREATED_USER',
 			'link_type' => 'one',
 			'module' => 'Users',
@@ -206,23 +206,20 @@ $dictionary['Product'] = array(
 	),
 	'indices' => array(
 		array('name'=>'idx_tp_id','type'=>'index','fields'=>array('id')),
+		array('name'=>'idx_tp_key','type'=>'index','fields'=>array('key')),
+		array('name'=>'idx_tp_barcode','type'=>'index','fields'=>array('barcode')),
 		array('name'=>'idx_tp_tenant_id','type'=>'index','fields'=>array('tenant_id')),
 	),
 	'relationships' => array(
-		'pc_created_by' => array(
+		'p_created_by' => array(
 			'lhs_module' => 'Users','lhs_table'=>'users','lhs_key'=>'id',
-			'rhs_module' => 'ProductCatalogs','rhs_table' => 'product_catalogs','rhs_key'=>'created_by',
+			'rhs_module' => 'Products','rhs_table' => 'products','rhs_key'=>'created_by',
 			'relationship_type' => 'one-to-many',
 		),
-		'pc_modified_user' => array(
+		'p_modified_user' => array(
 			'lhs_module' => 'Users','lhs_table'=>'users','lhs_key'=>'id',
-			'rhs_module' => 'ProductCatalogs','rhs_table'=>'product_catalogs','rhs_key'=>'modified_user_id',
+			'rhs_module' => 'Products','rhs_table'=>'products','rhs_key'=>'modified_user_id',
 			'relationship_type'=>'one-to-many',
-		),
-		'pc_parent_name' => array(
-			'lhs_module' => 'ProductCatalogs','lhs_table'=>'product_catalogs','lhs_key'=>'id',
-			'rhs_module' => 'ProductCatalogs','rhs_table'=>'product_catalogs','rhs_key'=>'parent_id',
-			'relationship_type' => 'one-to-many',
 		),
 	),
 );
