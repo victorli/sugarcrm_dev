@@ -21,8 +21,8 @@ $viewdefs['Products']['EditView'] = array(
 	'templateMeta' => array(
 		'maxColumns' => '2',
 		'widths' => array(
-			array('label' => '10','field'=>'30'),
-			array('label' => '10','field'=>'30')
+			array('label' => '10','field'=>'50'),
+			//array('label' => '10','field'=>'30')
 		),
 		'form' => array(
 			//'enctype' => 'multipart/form-data'
@@ -35,7 +35,9 @@ $viewdefs['Products']['EditView'] = array(
 			),
 			array(
 			  'barcode',
-			  'active',
+			),
+			array(
+				'active',
 			),
 			array(
 				array('name'=>'summary','label'=>'LBL_SUMMARY',),
