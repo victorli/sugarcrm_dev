@@ -17,7 +17,7 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @date  2016-6-21
 */
-$searchdefs['ProductCatalogs'] = array(
+$searchdefs['Products'] = array(
 	'layout' => array(
 		'basic_search' => array(
 			'name' => array('name'=>'name','default'=>true,'width'=>'10%')

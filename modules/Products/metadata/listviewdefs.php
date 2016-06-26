@@ -17,7 +17,7 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @date  2016-6-21
 */
-$listViewDefs['ProductCatalogs'] = array(
+$listViewDefs['Products'] = array(
 	'PKEY' => array(
 		'width' => 10,
 		'label' => 'LBL_PKEY',

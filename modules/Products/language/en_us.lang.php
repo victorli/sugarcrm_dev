@@ -24,7 +24,7 @@ $mod_strings = array(
 
 	'LBL_PRODUCT_INFORMATION' => 'Overview',
 	'LBL_ACTIVE' => 'Active',
-	'LBL_KEY' => 'Key',
+	'LBL_PKEY' => 'PID',
 	'LBL_BARCODE' => 'Barcode',
 	'LBL_SUMMARY' => 'Summary',
 	'LBL_DESCRIPTION' => 'Description',
