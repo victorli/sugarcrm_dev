@@ -174,5 +174,14 @@ $dictionary['ProductFeature'] = array(
 			'rhs_module' => 'ProductFeatures','rhs_table'=>'product_features','rhs_key'=>'modified_user_id',
 			'relationship_type'=>'one-to-many',
 		),
+		'productfeatures_productfeature_values' => array(
+			'lhs_module' => 'ProductFeatures',
+			'lhs_table' => 'product_features',
+			'lhs_key' => 'id',
+			'rhs_module' => 'ProductFeatureValues',
+			'rhs_table' => 'product_feature_values',
+			'rhs_key' => 'fid',
+			'relationship_type' => 'one-to-many',
+		),
 	),
 );
