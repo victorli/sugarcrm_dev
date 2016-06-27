@@ -17,40 +17,18 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @date  2016-6-21
 */
-$viewdefs['Products']['DetailView'] = array(
-	'templateMeta' => array(
-		'form' => array(
-			'buttons'=>array(
-				'EDIT',
-				'DELETE',
-				),
-			),
-		'maxColumns' => '2',
-		'widths' => array(
-			array('label'=>10,'field'=>30),
-			array('label'=>'10','field'=>'30'),
-			),
-		'includes' => array(),
+$searchdefs['ProductFeatures'] = array(
+	'layout' => array(
+		'basic_search' => array(
+			'name' => array('name'=>'name','default'=>true,'width'=>'10%')
+		),
 	),
-	'panels' => array(
-		'LBL_PRODUCT_INFORMATION' => array(
-			array(
-				array('name' =>'name','label' => 'LBL_SUBJECT'),
-				array('name'=>'pkey'),	
-			),
-			array(
-				array('name' => 'barcode'),
-				array('name' => 'active'),
-			),
-			array(
-				'summary'
-			),
-			array(
-			  array('name'=>'description','customCode'=>'{$HTML_DESC}'),  
-			),
-			array(
-				'tags'
-			),
+	'templateMeta' => array(
+		'maxColumns' => '3',
+		'maxColumnsBasic' => '4',
+		'widths' => array(
+			'label' => '10',
+			'field' => '30'
 		),
 	),
 );

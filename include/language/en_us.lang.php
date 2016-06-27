@@ -3319,8 +3319,10 @@ array (
         $app_list_strings['moduleList']['TenantPeriods'] = 'TenantPeriods';
         $app_list_strings['moduleList']['ProductCatalogs'] = 'Catalogs';
         $app_list_strings['moduleList']['Products'] = 'Products';
+        $app_list_strings['moduleList']['ProductFeatures'] = 'ProductFeatures';
         
         $app_list_strings['moduleListSingular']['TenantPeriods'] = 'TenantPeriod';
         $app_list_strings['moduleListSingular']['ProductCatalogs'] = 'ProductCatalog';
         $app_list_strings['moduleListSingular']['Products'] = 'Product';
+        $app_list_strings['moduleListSingular']['ProductFeatures'] = 'ProductFeature';
  ?>

@@ -17,7 +17,7 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @date  2016-6-21
 */
-$viewdefs['Products']['DetailView'] = array(
+$viewdefs['ProductFeatures']['DetailView'] = array(
 	'templateMeta' => array(
 		'form' => array(
 			'buttons'=>array(
@@ -33,23 +33,9 @@ $viewdefs['Products']['DetailView'] = array(
 		'includes' => array(),
 	),
 	'panels' => array(
-		'LBL_PRODUCT_INFORMATION' => array(
+		'LBL_PRODUCT_FEATURE_INFORMATION' => array(
 			array(
 				array('name' =>'name','label' => 'LBL_SUBJECT'),
-				array('name'=>'pkey'),	
-			),
-			array(
-				array('name' => 'barcode'),
-				array('name' => 'active'),
-			),
-			array(
-				'summary'
-			),
-			array(
-			  array('name'=>'description','customCode'=>'{$HTML_DESC}'),  
-			),
-			array(
-				'tags'
 			),
 		),
 	),
