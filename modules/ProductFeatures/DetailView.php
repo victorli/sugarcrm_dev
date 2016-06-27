@@ -16,40 +16,19 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 *  @author BLX90 <zs.li@blx90.com>
 *  @copyright 2014 BLX90
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  @date  2016-6-21
+*  @date  2016-6-27
 */
-class ProductFeature extends SugarBean{
-	var $id;
-	var $name;
-	
-	var $table_name = "product_features";
-	var $object_name = "ProductFeature";
-	var $module_dir = "ProductFeatures";
-	
-	var $new_schema = true;
-	
-	function ProductFeature(){
-		parent::SugarBean();
-	}
-	
-	function bean_implements($interface){
-		switch ($interface){
-			case 'ACL': return true;
-			default: return false;
-		}
-	}
-	
-	function get_summary_text(){
-		return $this->name;
-	}
-	
-	function save($check_notify = false){
-		parent::save();
-	}
-	
-	static function getDefaultValues($id){
-		$pfv = new ProductFeatureValues();
-		$vs = $pfv->getDefaultValues($id);
-		return $vs;
-	}
-}
+$ss = new Sugar_Smarty();
+$ss->assign('MOD',$mod_strings);
+$ss->assign('APP',$app_strings);
+$ss->assign('APP_LIST',$app_list_strings);
+
+$pf = new ProductFeature();
+$pf->retrieve($_REQUEST['record']);
+$defaultValues = ProductFeature::getDefaultValues($_REQUEST['record']);
+$ss->assign('PF',$pf->toArray());
+$ss->assign('DVS',$defaultValues);
+
+$ss->assign('RETURN',array('module'=>'ProductFeatures','action'=>'DetailView','record'=>$pf->id));
+
+echo $ss->fetch('modules/ProductFeatures/DetailView.tpl');

@@ -1503,6 +1503,15 @@ function is_tenant($user){
 	return $user->isTenant();
 }
 
+function get_tenant_id($user){
+	if(is_sys_admin($user))
+		return '1';
+	if(is_tenant($user))
+		return $user->id;
+		
+	return $user->tenant_id;
+}
+
 function check_tenant_privileges($user,$bean,$action='detail'){
 	if(is_sys_admin($user))
 		return true;

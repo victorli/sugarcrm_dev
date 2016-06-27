@@ -39,4 +39,17 @@ class ProductFeatureValues extends SugarBean{
 	function get_summary_text(){
 		return $this->value;
 	}
+	
+	function getDefaultValues($fid){
+		if(!isset($fid) || empty($fid)){
+			$GLOBALS['log']->error('Product Feature Id is empty');
+			return false;
+		}
+		
+		$sql = "select * from $this->table_name where fid='".$fid."' and deleted=0 and is_default=1 ";
+		if(!is_sys_admin($GLOBALS['current_user']))
+			$sql .= " AND tenant_id='".get_tenant_id($GLOBALS['current_id'])."'";
+		$r = $this->db->query($sql);
+		return $r;
+	}
 }
