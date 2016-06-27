@@ -18,9 +18,9 @@
 *  @date  2016-6-21
 */
 $listViewDefs['ProductFeatures'] = array(
-	'ID' => array(
+	'FKEY' => array(
 		'width' => 10,
-		'label' => 'LBL_ID',
+		'label' => 'LBL_FKEY',
 		'default' => true
 	),	
 	'NAME' => array(

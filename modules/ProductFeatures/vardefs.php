@@ -30,6 +30,17 @@ $dictionary['ProductFeature'] = array(
 			'reportable' => true,
 			'comment' => 'Unique identifier'
 		),
+		'fkey' => array(
+			'name' => 'fkey',
+			'vname' => 'LBL_FKEY',
+			'type' => 'int',
+			'required' => true,
+			'len' => '11',
+			'auto_increment' => true,
+			'importable' => 'required',
+			'massupdate' => false,
+			'comment' => 'The unique internal ID of each product feature'
+		),
 		'name' => array(
 			'name' => 'name',
 			'vname' => 'LBL_SUBJECT',
@@ -149,6 +160,7 @@ $dictionary['ProductFeature'] = array(
 	),
 	'indices' => array(
 		array('name'=>'idx_tp_id','type'=>'index','fields'=>array('id')),
+		array('name'=>'idx_tp_fkey','type'=>'index','fields'=>array('fkey')),
 		array('name'=>'idx_tp_tenant_id','type'=>'index','fields'=>array('tenant_id')),
 	),
 	'relationships' => array(
