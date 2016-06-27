@@ -18,6 +18,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @date  2016-6-21
 */
+require_once 'ProductFeatureValues.php';
 class ProductFeature extends SugarBean{
 	var $id;
 	var $name;
