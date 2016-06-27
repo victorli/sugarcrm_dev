@@ -18,7 +18,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  @date  2016-6-27
 */
-$$dictionary['ProductFeatureValues'] = array(
+$dictionary['ProductFeatureValues'] = array(
 	'table' => 'product_feature_values',
 	'fields' => array(
 		'id' => array(
