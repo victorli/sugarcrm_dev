@@ -96,6 +96,8 @@ include("metadata/documents_bugsMetaData.php");
 include("metadata/oauth_nonce.php");
 include("metadata/cron_remove_documentsMetaData.php");
 
+include("metadata/product_feature_valuesMetaData.php");
+
 if(file_exists('custom/application/Ext/TableDictionary/tabledictionary.ext.php')){
 	include('custom/application/Ext/TableDictionary/tabledictionary.ext.php');
 }
