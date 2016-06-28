@@ -26,8 +26,8 @@ function cancelForm(){
 <table width="100%" cellpadding="0" cellspacing="0" border="0" class="actionsContainer">
     <tr>
         <td>
-            <input type="button" value="{$APP.LBL_SAVE_BUTTON_LABEL}" onclick="submitForm()">
-            <input type="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" onclick="cancelForm()">
+            <input id="SAVE_HEADER" type="button" value="{$APP.LBL_SAVE_BUTTON_LABEL}" onclick="submitForm()">
+            <input id="CANCEL_HEADER" type="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" onclick="cancelForm()">
         </td>
         <td align="right" nowrap>
             <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span> {$APP.NTC_REQUIRED}
