@@ -52,6 +52,16 @@ $dictionary['ProductFeature'] = array(
 			'importable' => 'required',
 			'required' => true
 		),
+		'description' => array(
+			'name' => 'description',
+			'vname' => 'LBL_DESCRIPTION',
+			'type' => 'text',
+			'dbType' => 'varchar',
+			'len' => '255',
+			'importable' => true,
+			'required'=>false,
+			'massupdate' => false,
+		),
 		'tenant_id' => array(
 			'name' => 'tenant_id',
 			'vname' => 'LBL_TENANT_ID',
