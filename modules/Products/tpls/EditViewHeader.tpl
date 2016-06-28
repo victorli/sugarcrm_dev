@@ -18,6 +18,7 @@ function cancelForm(){
 	<input type="hidden" name="module" value="Products">
 	<input type="hidden" name="record" id="record" value="{$ID}">
 	<input type="hidden" name="action">
+	<input type="hidden" name="page" value="EditView">
 	<input type="hidden" name="return_module" value="Products">
 	<input type="hidden" name="return_id" value="{$ID}">
 	<input type="hidden" name="return_action" value="DetailView">
