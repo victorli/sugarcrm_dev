@@ -25,5 +25,6 @@ $mod_strings = array(
 	'LBL_PRODUCT_FEATURE_INFORMATION' => 'Overview',
 	'LBL_LIST_CREATED_BY_NAME' => 'Creator',
 	'LBL_FKEY' => 'FID',
+	'LBL_SUBJECT' => 'Subject',
 	'LBL_DESCRIPTION' => 'Description',
 );
