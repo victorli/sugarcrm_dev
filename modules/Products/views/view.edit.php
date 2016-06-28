@@ -35,6 +35,22 @@ class ProductsViewEdit extends ViewEdit{
 		$this->ss->assign('TinySumm',$summary_textarea);
 		$this->ss->assign('TinyDesc',$description_textarea . $tiny->getInstance('description'));
 			
+		//header actions
+		$action_button_header[] = <<<EOD
+                    <input type="button" id="SAVE_HEADER" title="{$APP['LBL_SAVE_BUTTON_TITLE']}" accessKey="{$APP['LBL_SAVE_BUTTON_KEY']}"
+                          class="button primary" onclick="var _form = $('#EditView')[0]; if (!set_password(_form,newrules('{$minpwdlength}','{$maxpwdlength}','{$REGEX}'))) return false; if (!Admin_check()) return false; _form.action.value='Save'; {$CHOOSER_SCRIPT} {$REASSIGN_JS} if(verify_data(EditView)) _form.submit();"
+                          name="button" value="{$APP['LBL_SAVE_BUTTON_LABEL']}">
+EOD
+        ;
+        $action_button_header[] = <<<EOD
+                    <input	title="{$APP['LBL_CANCEL_BUTTON_TITLE']}" id="CANCEL_HEADER" accessKey="{$APP['LBL_CANCEL_BUTTON_KEY']}"
+                              class="button" onclick="var _form = $('#EditView')[0]; _form.action.value='{$RETURN_ACTION}'; _form.module.value='{$RETURN_MODULE}'; _form.record.value='{$RETURN_ID}'; _form.submit()"
+                              type="button" name="button" value="{$APP['LBL_CANCEL_BUTTON_LABEL']}">
+EOD
+        ;
+        $action_button_header = array_merge($action_button_header, $this->ss->get_template_vars('BUTTONS_HEADER'));
+        $this->ss->assign('ACTION_BUTTON_HEADER', $action_button_header);
+        
 		$this->ev->process();
 		echo $this->ev->display($this->showTitle);
 	}
