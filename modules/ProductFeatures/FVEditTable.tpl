@@ -22,8 +22,8 @@
 <table width=100%>
   <thead>
     <tr>
+      <td>{$MOD.LBL_PFV_ID}</td>
       <td>{$MOD.LBL_PFV_VALUE}</td>
-      <td>{$MOD.LBL_PFV_}</td>
     </tr>
   </thead>
   <tbody>
