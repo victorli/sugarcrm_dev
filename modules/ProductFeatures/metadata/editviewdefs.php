@@ -37,5 +37,10 @@ $viewdefs['ProductFeatures']['EditView'] = array(
 				'description'	
 			),
 		),
+		'LBL_PRODUCT_FEATURE_VALUES' => array(
+			array(
+				array('name' => 'values','label' => 'LBL_VALUES','customCode'=>'{$PFVS}')
+			),	
+		),
 	),
 );
