@@ -71,7 +71,7 @@ EOD
 		<p>
 		<TABLE width='100%' class='detail view' border='0' cellpadding=0 cellspacing = 1  >
 		<TR>
-<td valign='top' width='15%' align='right'><b>{$MOD.LBL_NAME}:</b></td><td width='85%' colspan='3'>{$PF.name}</td>
+<td valign='top' width='15%' align='right'><b>{$MOD.LBL_SUBJECT}:</b></td><td width='85%' colspan='3'>{$PF.name}</td>
 </tr
 ><TR>
 <td valign='top'  width='15%' align='right'><b>{$MOD.LBL_DESCRIPTION}:</b></td><td colspan='3' valign='top'  width='85%' align='left'>{$PF.description | nl2br}</td>
