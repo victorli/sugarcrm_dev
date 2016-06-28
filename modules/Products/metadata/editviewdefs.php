@@ -25,7 +25,8 @@ $viewdefs['Products']['EditView'] = array(
 			//array('label' => '10','field'=>'30')
 		),
 		'form' => array(
-			//'enctype' => 'multipart/form-data'
+			'headerTpl'=>'modules/Products/tpls/EditViewHeader.tpl',
+            'footerTpl'=>'modules/Products/tpls/EditViewFooter.tpl',
 		),
 	),
 	'panels' => array(
