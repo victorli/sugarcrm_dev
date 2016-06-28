@@ -5,6 +5,7 @@ $(function(){
 	$('#tabs').tabs();
 });
 function submitForm(){
+	$('input[name=action]').val('Save');
 	$('form#EditView').submit();
 }
 
