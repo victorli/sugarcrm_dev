@@ -35,6 +35,6 @@ class ProductFeaturesViewDetail extends ViewDetail{
 		//display feature default values
 		$vs = ProductFeatureValues::getDefaultValues($this->bean->id);
 		$this->ss->assign('DVS',$vs);
-		$this->ss->fetch('modules/ProductFeatures/FVEditTable.tpl');
+		echo $this->ss->fetch('modules/ProductFeatures/FVEditTable.tpl');
 	}
 }
