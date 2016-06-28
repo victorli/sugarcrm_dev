@@ -13,7 +13,3 @@ $(function(){
 		<li><a href="#feature">{$MOD.LBL_TAB_FEATURE}</a></li>
 	</ul>
 	<div id="#info">
-		info
-	</div>
-</div>
-<!-- End Tabs -->

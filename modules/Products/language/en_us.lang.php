@@ -30,4 +30,8 @@ $mod_strings = array(
 	'LBL_DESCRIPTION' => 'Description',
 	'LBL_LIST_CREATED_BY_NAME' => 'Creator',
 	'LBL_TAGS' => 'Tags',
+
+	'LBL_TAB_INFORMATION' => 'Infomation',
+	'LBL_TAB_CATALOG' => 'Catalogs',
+	'LBL_TAB_FEATURE' => 'Features',
 );
