@@ -33,6 +33,9 @@ $viewdefs['ProductFeatures']['EditView'] = array(
 			array(
 				array('name' => 'name','label' => 'LBL_SUBJECT'),
 			),
+			array(
+				'description'	
+			),
 		),
 	),
 );
