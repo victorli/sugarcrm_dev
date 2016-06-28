@@ -18,9 +18,9 @@ function cancelForm(){
 	<input type="hidden" name="module" value="Products">
 	<input type="hidden" name="record" id="record" value="{$ID}">
 	<input type="hidden" name="action">
-	<input type="hidden" name="return_module" value="{$RETURN_MODULE}">
-	<input type="hidden" name="return_id" value="{$RETURN_ID}">
-	<input type="hidden" name="return_action" value="{$RETURN_ACTION}">
+	<input type="hidden" name="return_module" value="Products">
+	<input type="hidden" name="return_id" value="{$ID}">
+	<input type="hidden" name="return_action" value="DetailView">
 		
 <table width="100%" cellpadding="0" cellspacing="0" border="0" class="actionsContainer">
     <tr>

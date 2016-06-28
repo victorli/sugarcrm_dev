@@ -34,7 +34,7 @@ class ProductsViewEdit extends ViewEdit{
 		$tiny = new SugarTinyMCE();
 		$this->ss->assign('TinySumm',$summary_textarea);
 		$this->ss->assign('TinyDesc',$description_textarea . $tiny->getInstance('description'));
-        
+        $this->ss->assign('ID',$this->bean->id);
 		$this->ev->process();
 		echo $this->ev->display($this->showTitle);
 	}
