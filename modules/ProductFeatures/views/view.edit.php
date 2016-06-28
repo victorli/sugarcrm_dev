@@ -21,7 +21,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 class ProductFeaturesViewEdit extends ViewEdit{
 	function display(){
 	
-		$this->ss->assign('PFVS','hello');
+		//$this->ss->assign('PFVS','hello');
 			
 		$this->ev->process();
 		echo $this->ev->display($this->showTitle);
