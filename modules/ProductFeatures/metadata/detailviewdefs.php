@@ -28,7 +28,7 @@ $viewdefs['ProductFeatures']['DetailView'] = array(
 		'maxColumns' => '2',
 		'widths' => array(
 			array('label'=>10,'field'=>30),
-			//array('label'=>'10','field'=>'30'),
+			array('label'=>'10','field'=>'30'),
 			),
 		'includes' => array(),
 	),
@@ -36,6 +36,7 @@ $viewdefs['ProductFeatures']['DetailView'] = array(
 		'LBL_PRODUCT_FEATURE_INFORMATION' => array(
 			array(
 				array('name' =>'name','label' => 'LBL_SUBJECT'),
+				array('name'=>'value','label'=>'LBL_VALUE'),
 			),
 			array(
 				array('name' =>'description','label' => 'LBL_DESCRIPTION'),
