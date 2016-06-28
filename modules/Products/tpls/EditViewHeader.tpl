@@ -9,7 +9,7 @@ function submitForm(){
 }
 
 function cancelForm(){
-	$('form#EditView').action.value = 'DetailView';
+	$('input[name=action]').value = 'DetailView';
 	$('form#EditView').submit();
 }
 {/literal}
