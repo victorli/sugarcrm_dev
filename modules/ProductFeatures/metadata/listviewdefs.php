@@ -29,6 +29,11 @@ $listViewDefs['ProductFeatures'] = array(
 		'link' => true,
 		'default' => true
 	),
+	'VALUE' => array(
+		'width'=>10,
+		'label' => 'LBL_VALUE',
+		'default'=>true,
+	),
 	'DATE_ENTERED' => array(
 		'width'=>10,
 		'label' => 'LBL_LIST_DATE_ENTERED',
