@@ -812,7 +812,10 @@ EOHTML;
                 require_once("jssource/minify_utils.php");
                 ConcatenateFiles(".");
             }
-            echo getVersionedScript('cache/include/javascript/sugar_grp1_jquery.js');
+            //echo getVersionedScript('cache/include/javascript/sugar_grp1_jquery.js');
+            //using newest jquery1.7 and jquery-ui.1.12 to replace the old one
+            echo getVersionedScript('include/javascript/jquery/jquery-1.10.2.js');
+            echo getVersionedScript('include/javascript/jquery/jquery-ui-1.11.4.min.js');
             echo getVersionedScript('cache/include/javascript/sugar_grp1_yui.js');
             echo getVersionedScript('cache/include/javascript/sugar_grp1.js');
             echo getVersionedScript('include/javascript/calendar.js');
