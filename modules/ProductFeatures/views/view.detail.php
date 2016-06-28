@@ -28,4 +28,10 @@ class ProductFeaturesViewDetail extends ViewDetail{
 		
 		parent::preDisplay();
 	}
+	
+	function display(){
+		parent::display();
+		
+		echo "<h1>Hello</h1>";
+	}
 }
