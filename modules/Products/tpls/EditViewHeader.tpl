@@ -1,8 +1,10 @@
 <!-- Begin Tabs -->
+{literal}
 <script type="text/javascript">
 $(function(){
 	$('#tabs').tabs();
 });
+{/literal}
 </script>
 <div id="tabs">
 	<ul>
